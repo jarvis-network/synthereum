@@ -12,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openzeppelin/contracts": "^2.4.0",
     "protocol": "github:UMAprotocol/protocol",
-    "provable-eth-api": "github:provable-things/ethereum-api"
+    "provable-eth-api": "github:provable-things/ethereum-api",
+    "truffle-hdwallet-provider": "^1.0.17"
   }
 }
