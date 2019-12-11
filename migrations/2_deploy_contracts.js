@@ -1,5 +1,5 @@
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
+var ProvablePriceFeed = artifacts.require("./ProvablePriceFeed.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(SimpleStorage);
+  deployer.deploy(ProvablePriceFeed, true);
 };
