@@ -49,6 +49,11 @@ contract ProvablePriceFeed is
             uint256(Roles.Governance),
             msg.sender
         );
+        _createExclusiveRole(
+            uint256(Roles.Writer),
+            uint256(Roles.Governance),
+            msg.sender
+        );
         createWithdrawRole(
             uint256(Roles.Withdraw),
             uint256(Roles.Governance),
@@ -87,7 +92,11 @@ contract ProvablePriceFeed is
         emit ProvableUpdate(_result);
     }
 
-    function updatePrice(bytes32 identifier) public payable {
+    function updatePrice(bytes32 identifier)
+        public
+        payable
+        onlyRoleHolder(uint256(Roles.Writer))
+    {
         if (provable_getPrice("URL") <= address(this).balance) {
             emit ProvableQueryLog("Provable query was sent, update pending");
             bytes32 queryId = provable_query(
