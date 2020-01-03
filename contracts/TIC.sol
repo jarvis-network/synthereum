@@ -22,6 +22,8 @@ contract TIC is Ownable, ReentrancyGuard {
     uint256 private constant INT_MAX = 2**255 - 1;
     uint256 private constant UINT_FP_SCALING_FACTOR = 1e18;
 
+    uint256 private supportedMove;
+    TokenizedDerivative private derivative;
     RToken private rtoken;
     address private provider;
     uint256 private hatID;
@@ -31,15 +33,22 @@ contract TIC is Ownable, ReentrancyGuard {
     mapping(address => uint256) private userDeposits;
 
     constructor(
-        TokenizedDerivativeParams.ConstructorParams memory params,
-        string memory _name,
-        string memory _symbol,
+        TokenizedDerivativeCreator derivativeCreator,
+        TokenizedDerivativeCreator.Params memory params,
         RToken _rtoken,
         address _provider
     )
         public
-        TokenizedDerivative(params, _name, _symbol)
     {
+        // stack error occurs when trying to get params from an existing
+        // derivative, instead we create a new derivative and get the supported
+        // move from the initial params.
+        supportedMove = params.supportedMove;
+
+        address derivativeAddress = derivativeCreator
+            .createTokenizedDerivative(params);
+        derivative = TokenizedDerivative(derivativeAddress);
+
         rtoken = _rtoken;
         provider = _provider;
 
@@ -64,15 +73,12 @@ contract TIC is Ownable, ReentrancyGuard {
      */
     function mint(uint256 amount) external nonReentrant {
         // get margin required for user's deposit
-        uint256 newMargin = takePercentage(
-            amount,
-            derivativeStorage.fixedParameters.supportedMove
-        );
+        uint256 newMargin = takePercentage(amount, supportedMove);
 
         require(newMargin <= INT_MAX);
 
         // get outstanding short margin requirement
-        int256 excessMargin = derivativeStorage._calcExcessMargin();
+        int256 excessMargin = derivative.calcExcessMargin();
         int256 requiredMargin = int256(newMargin) - excessMargin;
 
         require(providerDeposit <= INT_MAX);
@@ -106,7 +112,7 @@ contract TIC is Ownable, ReentrancyGuard {
 
         // deposit margin so users can mint synthetic assets
         // should not need to approve transfer because `this` holds the R tokens
-        derivativeStorage._deposit(amountToDeposit);
+        derivative.deposit(amountToDeposit);
     }
 
     // TODO: redeem functions
@@ -115,7 +121,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Returns the required margin a liquidity provider must supply
      */
     function getProviderRequiredMargin() external view returns (int256) {
-        return derivativeStorage._getCurrentRequiredMargin();
+        return derivative.getCurrentRequiredMargin();
     }
  
     /**
@@ -123,7 +129,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @dev Value will be negative if the margin is below the margin requirement
      */
     function getProviderExcessMargin() external view returns (int256) {
-        return derivativeStorage._calcExcessMargin();
+        return derivative.calcExcessMargin();
     }
 
     /**
@@ -146,9 +152,9 @@ contract TIC is Ownable, ReentrancyGuard {
         private
     {
         // TODO: figure out format of price (decimal places)
-        (int256 price, ) = derivativeStorage._getUpdatedUnderlyingPrice();
+        (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
         // should not need to approve transfer because `this` holds the R tokens
-        derivativeStorage._depositAndCreateTokens(
+        derivative.depositAndCreateTokens(
             // TODO: this may only be `amount` if LP already deposited, double check
             marginAmount,
             uint256(price < 0 ? 0 : price).mul(marginAmount)
