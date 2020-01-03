@@ -94,8 +94,8 @@ contract TIC is Ownable, ReentrancyGuard {
         // mint r tokens for derivative margin
         mintRTokens(amount);
 
-        // mint synthetic asset with margin
-        mintSynTokens(amount);
+        // mint synthetic asset with margin from user and provider
+        mintSynTokens(amount, newMargin);
     }
 
     /**
@@ -148,16 +148,15 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Mints synthetic tokens with the available margin
      */
-    function mintSynTokens(uint256 marginAmount)
+    function mintSynTokens(uint256 longMargin, uint256 shortMargin)
         private
     {
         // TODO: figure out format of price (decimal places)
         (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
         // should not need to approve transfer because `this` holds the R tokens
         derivative.depositAndCreateTokens(
-            // TODO: this may only be `amount` if LP already deposited, double check
-            marginAmount,
-            uint256(price < 0 ? 0 : price).mul(marginAmount)
+            longMargin + shortMargin,
+            longMargin.div(uint256(price < 0 ? 0 : price))
         );
     }
 
