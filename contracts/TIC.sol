@@ -2,12 +2,13 @@ pragma solidity >=0.5.14 <0.7.0;
 pragma experimental ABIEncoderV2;
 
 // prevent conflict with RToken declarations
-import {Ownable as ZOwnable} from "@openzeppelin/contracts/ownership/Ownable.sol";
-import {ReentrancyGuard as ZReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@rtoken/contracts/contracts/RToken.sol";
-import "protocol/core/contracts/TokenizedDerivative.sol";
+import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
+import {IERC20, RToken} from "@rtoken/contracts/contracts/RToken.sol";
+import {TokenizedDerivative} from "protocol/core/contracts/TokenizedDerivative.sol";
+import {TokenizedDerivativeCreator} from "protocol/core/contracts/TokenizedDerivativeCreator.sol";
 
 /**
  * @title Token Issuer Contract
@@ -15,7 +16,7 @@ import "protocol/core/contracts/TokenizedDerivative.sol";
  * @dev Margin currency is sent to an `RToken` and used as collateral for a
  *      `TokenizedDerivative` synthetic asset
  */
-contract TIC is ZOwnable, ZReentrancyGuard, TokenizedDerivative {
+contract TIC is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     uint256 private constant INT_MAX = 2**255 - 1;
