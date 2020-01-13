@@ -111,7 +111,7 @@ contract TIC is Ownable, ReentrancyGuard {
         mintRTokens(amountToDeposit);
 
         // deposit margin so users can mint synthetic assets
-        // should not need to approve transfer because `this` holds the R tokens
+        rtoken.approve(address(derivative), amountToDeposit);
         derivative.deposit(amountToDeposit);
     }
 
@@ -152,8 +152,7 @@ contract TIC is Ownable, ReentrancyGuard {
         private
     {
         (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
-        // should not need to approve transfer because `this` holds the R tokens
-        // TODO: handle approval
+        rtoken.approve(address(derivative), margin);
         // no need to send short margin to mint long margin worth of tokens
         derivative.depositAndCreateTokens(
             margin,
