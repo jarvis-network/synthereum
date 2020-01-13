@@ -151,12 +151,12 @@ contract TIC is Ownable, ReentrancyGuard {
     function mintSynTokens(uint256 longMargin, uint256 shortMargin)
         private
     {
-        // TODO: figure out format of price (decimal places)
         (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
         // should not need to approve transfer because `this` holds the R tokens
+        // TODO: handle approval
         derivative.depositAndCreateTokens(
             longMargin + shortMargin,
-            longMargin.div(uint256(price < 0 ? 0 : price))
+            takeFactor(longMargin, uint256(price < 0 ? 0 : price))
         );
     }
 
@@ -166,5 +166,13 @@ contract TIC is Ownable, ReentrancyGuard {
         returns (uint256)
     {
         return value.mul(percentage).div(UINT_FP_SCALING_FACTOR);
+    }
+
+    function takeFactor(uint256 value, uint256 factor)
+        private
+        pure
+        returns (uint256)
+    {
+        return value.mul(UINT_FP_SCALING_FACTOR).div(factor);
     }
 }

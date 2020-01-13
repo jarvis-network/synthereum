@@ -14,6 +14,8 @@ contract ProvablePriceFeed is
 {
     using SafeMath for uint256;
 
+    uint8 constant DECIMALS = 18;
+
     // A single price update.
     struct PriceTick {
         uint256 timestamp;
@@ -39,7 +41,7 @@ contract ProvablePriceFeed is
         Withdraw
     }
 
-    event PriceUpdated(bytes32 indexed identifier, uint indexed time, string price);
+    event PriceUpdated(bytes32 indexed identifier, uint256 indexed time, string price);
     event ProvableQueryLog(string message);
     event ProvableUpdate(string result);
 
@@ -82,9 +84,10 @@ contract ProvablePriceFeed is
             "Identifier is not supported"
         );
         publishTime = prices[identifier].timestamp;
-        price = int256(safeParseInt(prices[identifier].price));
+        price = int256(safeParseInt(prices[identifier].price, DECIMALS));
     }
 
+    // TODO: Implement recursive Provable queries to create update loop
     function __callback(bytes32 _myid, string memory _result) public {
         if (msg.sender != provable_cbAddress()) revert();
         pushLatestPrice(queryIdentifiers[_myid], now, _result);
@@ -98,11 +101,18 @@ contract ProvablePriceFeed is
         onlyRoleHolder(uint256(Roles.Writer))
     {
         if (provable_getPrice("URL") <= address(this).balance) {
+            string memory endpoint = "https://data.jarvis.exchange/jarvis/prices/history";
+            string memory url = string(abi.encodePacked(
+                "json(",
+                endpoint,
+                "?symbol=EURUSD&resolution=1&from=",
+                now - 60,
+                "&to=",
+                now,
+                ").c"
+            ));
             emit ProvableQueryLog("Provable query was sent, update pending");
-            bytes32 queryId = provable_query(
-                "URL",
-                "json(https://api.myjson.com/bins/ih5ek).price" // Test JSON file
-            );
+            bytes32 queryId = provable_query("URL", url);
             queryIdentifiers[queryId] = identifier;
         } else {
             emit ProvableQueryLog("Provable query not sent, insufficient funds");
