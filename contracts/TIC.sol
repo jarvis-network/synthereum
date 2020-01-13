@@ -129,6 +129,14 @@ contract TIC is Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Withdraw the excess short margin supplied by the provider
+     * @param amount The amount of short margin to withdraw
+     */
+    function withdraw(uint256 amount) external onlyProvider {
+        derivative.withdraw(amount);
+    }
+
+    /**
      * @notice Returns the required margin a liquidity provider must supply
      */
     function getProviderRequiredMargin() external view returns (int256) {
