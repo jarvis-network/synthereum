@@ -17,6 +17,9 @@ const mnemonic = getEnv(mnemonicEnv);
 const rinkebyEnv = 'ETH_RINKEBY_ENDPOINT';
 const rinkebyEndpoint = getEnv(rinkebyEnv);
 
+const kovanEnv = 'ETH_KOVAN_ENDPOINT';
+const kovanEndpoint = getEnv(kovanEnv);
+
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
@@ -33,6 +36,12 @@ module.exports = {
         return new HDWalletProvider(mnemonic, rinkebyEndpoint);
       },
       network_id: 4
+    },
+    kovan: {
+      provider: function() {
+        return new HDWalletProvider(mnemonic, kovanEndpoint);
+      },
+      network_id: 42
     }
   },
   compilers: {
