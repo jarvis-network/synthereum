@@ -115,7 +115,18 @@ contract TIC is Ownable, ReentrancyGuard {
         derivative.deposit(amountToDeposit);
     }
 
-    // TODO: redeem functions
+    /**
+     * @notice Redeem a user's SynFiat tokens for margin currency
+     * @param tokensToRedeem The amount of tokens to redeem
+     */
+    function redeemTokens(uint256 tokensToRedeem) external {
+        require(tokensToRedeem > 0);
+        require(derivative.balanceOf(msg.sender) >= tokensToRedeem);
+
+        derivative.redeemTokens(tokensToRedeem);
+
+        require(rtoken.redeemAndTransfer(msg.sender, tokensToRedeem));
+    }
 
     /**
      * @notice Returns the required margin a liquidity provider must supply
