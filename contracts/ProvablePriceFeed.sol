@@ -121,7 +121,7 @@ contract ProvablePriceFeed is
                 uint2str(now - 60),
                 "&to=",
                 uint2str(now),
-                ").c"
+                ").c[0]"
             ));
             emit ProvableQueryLog("Provable query was sent, update pending");
             bytes32 queryId = provable_query("URL", url);
