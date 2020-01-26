@@ -123,6 +123,22 @@ contract ProvablePriceFeed is
     }
 
     /**
+     * @notice Allows the withdraw role to empty balance
+     * @notice Useful for debugging without running out of testnet ether
+     */
+    function withdraw() external onlyRoleHolder(uint256(Roles.Withdraw)) {
+        msg.sender.transfer(address(this).balance);
+    }
+
+    /**
+     * @notice Allows the withdraw role to withdraw an amount of ether
+     */
+    function withdraw(uint256 amount) external onlyRoleHolder(uint256(Roles.Withdraw)) {
+        require(amount <= address(this).balance);
+        msg.sender.transfer(amount);
+    }
+
+    /**
      * @notice Adds a new price to the series for a given identifier.
      * @dev The pushed publishTime must be later than the last time pushed so far.
      */
