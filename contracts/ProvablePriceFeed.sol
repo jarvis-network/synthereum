@@ -1,11 +1,11 @@
 pragma solidity >=0.5.14 <0.7.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "protocol/core/contracts/PriceFeedInterface.sol";
-import "protocol/core/contracts/Withdrawable.sol";
-import "protocol/core/contracts/Testable.sol";
-import "provable-eth-api/provableAPI_0.5.sol";
-import "./ForexTime.sol";
+import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
+import {PriceFeedInterface} from "protocol/core/contracts/PriceFeedInterface.sol";
+import {Withdrawable} from "protocol/core/contracts/Withdrawable.sol";
+import {Testable} from "protocol/core/contracts/Testable.sol";
+import {usingProvable} from "provable-eth-api/provableAPI_0.5.sol";
+import {ForexTime} from "./ForexTime.sol";
 
 contract ProvablePriceFeed is
     PriceFeedInterface,
