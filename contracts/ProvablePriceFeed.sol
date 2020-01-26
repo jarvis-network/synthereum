@@ -109,9 +109,9 @@ contract ProvablePriceFeed is
                 "json(",
                 endpoint,
                 "?symbol=EURUSD&resolution=1&from=",
-                now - 60,
+                uint2str(now - 60),
                 "&to=",
-                now,
+                uint2str(now),
                 ").c"
             ));
             emit ProvableQueryLog("Provable query was sent, update pending");
