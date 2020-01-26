@@ -9,6 +9,7 @@ import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {IERC20, RToken} from "@rtoken/contracts/contracts/RToken.sol";
 import {TokenizedDerivative} from "protocol/core/contracts/TokenizedDerivative.sol";
 import {TokenizedDerivativeCreator} from "protocol/core/contracts/TokenizedDerivativeCreator.sol";
+import {ForexTime} from "./ForexTime.sol";
 
 /**
  * @title Token Issuer Contract
@@ -16,7 +17,7 @@ import {TokenizedDerivativeCreator} from "protocol/core/contracts/TokenizedDeriv
  * @dev Margin currency is sent to an `RToken` and used as collateral for a
  *      `TokenizedDerivative` synthetic asset
  */
-contract TIC is Ownable, ReentrancyGuard {
+contract TIC is Ownable, ReentrancyGuard, ForexTime {
     using SafeMath for uint256;
 
     uint256 private constant INT_MAX = 2**255 - 1;
@@ -71,7 +72,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Requires authorization to transfer the margin currency
      * @param amount The amount of margin supplied
      */
-    function mint(uint256 amount) external nonReentrant {
+    function mint(uint256 amount) external nonReentrant forexOpen {
         // get margin required for user's deposit
         uint256 newMargin = takePercentage(amount, supportedMove);
 
@@ -119,7 +120,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Redeem a user's SynFiat tokens for margin currency
      * @param tokensToRedeem The amount of tokens to redeem
      */
-    function redeemTokens(uint256 tokensToRedeem) external {
+    function redeemTokens(uint256 tokensToRedeem) external forexOpen {
         require(tokensToRedeem > 0);
         require(derivative.balanceOf(msg.sender) >= tokensToRedeem);
 
