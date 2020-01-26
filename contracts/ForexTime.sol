@@ -6,7 +6,7 @@ contract ForexTime is BokkyPooBahsDateTimeContract {
     uint256 constant closeDay = 5;
     uint256 constant closeHour = 21;
     uint256 constant openDay = 7;
-    uint256 constant openHour = 17;
+    uint256 constant openHour = 22;
 
     modifier forexOpen() {
         uint256 dayOfWeek = getDayOfWeek(now);
