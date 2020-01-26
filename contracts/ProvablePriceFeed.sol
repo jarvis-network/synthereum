@@ -47,7 +47,10 @@ contract ProvablePriceFeed is
     event ProvableQueryLog(string message);
     event ProvableUpdate(string result);
 
-    constructor(bool _isTest) public Testable(_isTest) {
+    constructor(bool _isTest, string memory startingPrice, bytes32 identifier)
+        public
+        Testable(_isTest)
+    {
         _createExclusiveRole(
             uint256(Roles.Governance),
             uint256(Roles.Governance),
@@ -63,6 +66,12 @@ contract ProvablePriceFeed is
             uint256(Roles.Governance),
             msg.sender
         );
+
+        if (bytes(startingPrice).length == 0) {
+            updatePrice(identifier);
+        } else {
+            pushLatestPrice(identifier, now, startingPrice);
+        }
     }
 
     /**
