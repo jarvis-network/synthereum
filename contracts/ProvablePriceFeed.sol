@@ -5,12 +5,14 @@ import "protocol/core/contracts/PriceFeedInterface.sol";
 import "protocol/core/contracts/Withdrawable.sol";
 import "protocol/core/contracts/Testable.sol";
 import "provable-eth-api/provableAPI_0.5.sol";
+import "./ForexTime.sol";
 
 contract ProvablePriceFeed is
     PriceFeedInterface,
     Withdrawable,
     Testable,
-    usingProvable
+    usingProvable,
+    ForexTime
 {
     using SafeMath for uint256;
 
@@ -99,6 +101,7 @@ contract ProvablePriceFeed is
         public
         payable
         onlyRoleHolder(uint256(Roles.Writer))
+        forexOpen
     {
         if (provable_getPrice("URL") <= address(this).balance) {
             string memory endpoint = "https://data.jarvis.exchange/jarvis/prices/history";
