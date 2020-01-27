@@ -76,14 +76,8 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
         uint256 newMargin = takePercentage(amount, supportedMove);
 
         require(newMargin <= INT_MAX);
-
-        // get outstanding short margin requirement
-        int256 excessMargin = derivative.calcExcessMargin();
-        int256 requiredMargin = int256(newMargin) - excessMargin;
-
-        require(providerDeposit <= INT_MAX);
         require(
-            int256(providerDeposit) >= requiredMargin,
+            derivative.calcExcessMargin() >= int256(newMargin),
             'Insufficient margin'
         );
 
