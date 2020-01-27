@@ -142,6 +142,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
      */
     function withdraw(uint256 amount) external onlyProvider {
         derivative.withdraw(amount);
+        require(rtoken.redeemAndTransfer(msg.sender, amount));
     }
 
     /**
