@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@openzeppelin/contracts": "^2.4.0",
+    "@openzeppelin/test-helpers": "^0.5.4",
     "@rtoken/contracts": "github:rtoken-project/rtoken-contracts",
     "bokkypoobahsdatetimelibrary": "github:opz/BokkyPooBahsDateTimeLibrary",
     "events.once": "^2.0.2",
