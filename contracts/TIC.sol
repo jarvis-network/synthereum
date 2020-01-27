@@ -107,6 +107,9 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
     /**
      * @notice Redeem a user's SynFiat tokens for margin currency
      * @notice Requires authorization to transfer the SynFiat tokens
+     * @dev Because of rtoken's Compound allocation strategy, redeeming an
+     *      extremely tiny amount of tokens will cause a "redeemTokens zero"
+     *      error from the cToken contract.
      * @param tokensToRedeem The amount of tokens to redeem
      */
     function redeemTokens(uint256 tokensToRedeem) external forexOpen {
