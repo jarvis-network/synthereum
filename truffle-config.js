@@ -39,7 +39,8 @@ module.exports = {
     },
     kovan: {
       provider: function() {
-        return new HDWalletProvider(mnemonic, kovanEndpoint);
+        // Create 2 addresses for testing purposes
+        return new HDWalletProvider(mnemonic, kovanEndpoint, 0, 2);
       },
       network_id: 42,
       gas: 8000000, // Necessary for creating a new TIC
