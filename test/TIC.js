@@ -309,4 +309,42 @@ contract("TIC", accounts => {
       assert.equal(newBalance2 - balance2, 10);
     }
   });
+
+  it("should let a user redeem tokens after minting them.", async () => {
+    if (await web3.eth.net.getId() === 42) {
+      const dai = new web3.eth.Contract(erc20ABI, daiAddr);
+
+      const tic = await TIC.deployed();
+      const derivativeAddr = await tic.derivative();
+      const derivative = new web3.eth.Contract(erc20ABI, derivativeAddr);
+
+      const marginToApprove = web3.utils.toWei("0.12", "ether");
+      await dai.methods.approve(tic.address, marginToApprove).send({
+        from: accounts[0]
+      });
+
+      const balance = await derivative.methods.balanceOf(accounts[0]).call();
+
+      const amountOfMargin = web3.utils.toWei("0.02", "ether");
+      const amountOfSynTokens = web3.utils.toWei("0.1", "ether");
+      await tic.deposit(amountOfMargin, { from: accounts[0] });
+      await tic.mint(amountOfSynTokens, { from: accounts[0] });
+
+      const newBalance = await derivative.methods.balanceOf(accounts[0]).call();
+      const daiBalance = await dai.methods.balanceOf(accounts[0]).call();
+
+      assert.equal(newBalance - balance, amountOfSynTokens);
+
+      await derivative.methods.approve(tic.address, amountOfSynTokens).send({
+        from: accounts[0]
+      });
+      await tic.redeemTokens(amountOfSynTokens, { from: accounts[0] });
+
+      const afterRedeemBalance = await derivative.methods.balanceOf(accounts[0]).call();
+      const newDaiBalance = await dai.methods.balanceOf(accounts[0]).call();
+
+      assert.equal(newBalance - afterRedeemBalance, amountOfSynTokens);
+      assert.equal(newDaiBalance - daiBalance, amountOfSynTokens);
+    }
+  });
 });
