@@ -106,6 +106,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
 
     /**
      * @notice Redeem a user's SynFiat tokens for margin currency
+     * @notice Requires authorization to transfer the SynFiat tokens
      * @param tokensToRedeem The amount of tokens to redeem
      */
     function redeemTokens(uint256 tokensToRedeem) external forexOpen {
