@@ -34,24 +34,26 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
     mapping(address => uint256) private userDeposits;
 
     /**
-     * @notice _supportedMove must match the derivative supportedMove
-     * @notice _rtoken must match the derivative marginCurrency
+     * @notice Margin currency must be a rtoken
+     * @dev TIC creates a new derivative so it is set as the sponsor
      */
     constructor(
-        TokenizedDerivative _derivative,
-        uint256 _supportedMove,
-        RToken _rtoken,
+        TokenizedDerivativeCreator derivativeCreator,
+        TokenizedDerivativeCreator.Params memory params,
         address _provider
     )
         public
     {
         // stack error occurs when trying to get params from an existing
-        // derivative so instead we manually pass the supported move and
-        // rtoken.
-        derivative = _derivative;
-        supportedMove = _supportedMove;
-        rtoken = _rtoken;
+        // derivative, instead we create a new derivative and get the supported
+        // move from the initial params.
+        supportedMove = params.supportedMove;
+        rtoken = RToken(params.marginCurrency);
         provider = _provider;
+
+        address derivativeAddress = derivativeCreator
+            .createTokenizedDerivative(params);
+        derivative = TokenizedDerivative(derivativeAddress);
 
         // all interest accrued is distributed to the owner
         address[] memory recipients = new address[](1);
