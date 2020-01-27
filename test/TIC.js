@@ -1,7 +1,8 @@
 const TIC = artifacts.require("./TIC.sol");
 
-contract("TIC", accounts => {
-  it("should mint tokens when enough collateral is supplied.", async () => {
+// Only test on Kovan network for UMA and DAI/rDAI contracts
+if (web3.version.network === "42") {
+  contract("TIC", accounts => {
     const erc20ABI = [
       {
         "constant": true,
@@ -243,3 +244,4 @@ contract("TIC", accounts => {
     assert.equal(balance, 10);
   });
 });
+}
