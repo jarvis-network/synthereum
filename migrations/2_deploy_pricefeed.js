@@ -23,10 +23,8 @@ module.exports = function(deployer, network, accounts) {
     deployer.deploy(ProvablePriceFeed, true, "1", identifier);
   } else {
     deployer.deploy(ProvablePriceFeed, true, "", identifier)
-      .then(() => {
-        ProvablePriceFeed.deployed()
-        return once(feed.ProvableUpdate());
-      })
+      .then(() => ProvablePriceFeed.deployed())
+      .then(feed => once(feed.ProvableUpdate()))
       .then(result => {
         console.log(result);
       });
