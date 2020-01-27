@@ -117,7 +117,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
         mintRTokens(amountToDeposit);
 
         // deposit margin so users can mint synthetic assets
-        rtoken.approve(address(derivative), amountToDeposit);
+        require(rtoken.approve(address(derivative), amountToDeposit));
         derivative.deposit(amountToDeposit);
     }
 
