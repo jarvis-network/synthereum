@@ -225,23 +225,25 @@ if (web3.version.network === "42") {
         "type": "event"
       }
     ];
-    const daiAddr = "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa";
-    const dai = new web3.eth.Contract(erc20ABI, daiAddr);
 
-    const tic = await TIC.deployed();
-    const derivativeAddr = await tic.derivative();
-    const derivative = new web3.eth.Contract(erc20ABI, derivativeAddr);
+    it("should mint tokens when enough collateral is supplied.", async () => {
+      const daiAddr = "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa";
+      const dai = new web3.eth.Contract(erc20ABI, daiAddr);
 
-    await dai.methods.approve(tic.address, 12).send({
-      from: accounts[0]
+      const tic = await TIC.deployed();
+      const derivativeAddr = await tic.derivative();
+      const derivative = new web3.eth.Contract(erc20ABI, derivativeAddr);
+
+      await dai.methods.approve(tic.address, 12).send({
+        from: accounts[0]
+      });
+
+      await tic.deposit(2, { from: accounts[0] });
+      await tic.mint(10, { from: accounts[0] });
+
+      const balance = await derivative.methods.balanceOf(accounts[0]).call();
+
+      assert.equal(balance, 10);
     });
-
-    await tic.deposit(2, { from: accounts[0] });
-    await tic.mint(10, { from: accounts[0] });
-
-    const balance = await derivative.methods.balanceOf(accounts[0]).call();
-
-    assert.equal(balance, 10);
   });
-});
 }
