@@ -28,7 +28,6 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
     RToken private rtoken;
     address private provider;
     uint256 private hatID;
-    uint256 private providerDeposit;
 
     /**
      * @notice Margin currency must be a rtoken
@@ -97,9 +96,6 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
      * @param amountToDeposit The amount of margin supplied
      */
     function deposit(uint256 amountToDeposit) external payable onlyProvider {
-        // update underlying asset deposit balance
-        providerDeposit = providerDeposit.add(amountToDeposit);
-
         // mint r tokens for derivative margin
         mintRTokens(amountToDeposit);
 
