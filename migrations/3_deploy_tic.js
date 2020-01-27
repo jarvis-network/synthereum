@@ -1,6 +1,5 @@
 const web3Utils = require("web3-utils");
 var TIC = artifacts.require("TIC");
-var TDCreator = artifacts.require("TokenizedDerivativeCreator");
 var ProvablePriceFeed = artifacts.require("./ProvablePriceFeed.sol");
 
 module.exports = function(deployer, network, accounts) {
@@ -52,23 +51,7 @@ module.exports = function(deployer, network, accounts) {
         params.marginCurrency = marginCurrency;
       }
 
-      return deployer
-        .then(() => TDCreator.at(TDCreatorAddr))
-        .then(TDCreator => TDCreator.createTokenizedDerivative(params))
-        .then(tx => {
-          const derivativeAddr = tx
-            .logs[tx.logs.length - 1]
-            .args.contractAddress;
-
-          return deployer.deploy(
-            TIC,
-            derivativeAddr,
-            supportedMove,
-            marginCurrency,
-            provider
-          );
-        })
-        .catch(err => console.log(err));
+      return deployer.deploy(TIC, TDCreatorAddr, params, provider);
     })
     .catch(err => console.log(err));
 };
