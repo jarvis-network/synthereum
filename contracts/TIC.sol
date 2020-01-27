@@ -98,7 +98,10 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
         mintRTokens(amount);
 
         // mint synthetic asset with margin from user and provider
-        mintSynTokens(amount);
+        uint256 tokensMinted = mintSynTokens(amount);
+
+        // transfer synthetic asset to the user
+        require(derivative.transfer(msg.sender, tokensMinted));
     }
 
     /**
@@ -170,16 +173,19 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
     /**
      * @notice Mints synthetic tokens with the available margin
      */
-    function mintSynTokens(uint256 margin)
-        private
-    {
+    function mintSynTokens(uint256 margin) private returns (uint256) {
+        require(rtoken.approve(address(derivative), margin));
+
         (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
-        rtoken.approve(address(derivative), margin);
-        // no need to send short margin to mint long margin worth of tokens
-        derivative.depositAndCreateTokens(
+        uint256 tokensToMint = takeFactor(
             margin,
-            takeFactor(margin, uint256(price < 0 ? 0 : price))
+            uint256(price < 0 ? 0 : price)
         );
+
+        // no need to send short margin to mint long margin worth of tokens
+        derivative.depositAndCreateTokens(margin, tokensToMint);
+
+        return tokensToMint;
     }
 
     function takePercentage(uint256 value, uint256 percentage)
