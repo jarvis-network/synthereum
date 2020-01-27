@@ -273,4 +273,40 @@ contract("TIC", accounts => {
       assert.equal(newBalance - balance, 0);
     }
   });
+
+  it("should mint tokens for multiple users when enough collateral is supplied.", async () => {
+    if (await web3.eth.net.getId() === 42) {
+      const dai = new web3.eth.Contract(erc20ABI, daiAddr);
+
+      const tic = await TIC.deployed();
+      const derivativeAddr = await tic.derivative();
+      const derivative = new web3.eth.Contract(erc20ABI, derivativeAddr);
+
+      await dai.methods.approve(tic.address, 14).send({
+        from: accounts[0]
+      });
+
+      const balance1 = await derivative.methods.balanceOf(accounts[0]).call();
+
+      await tic.deposit(2, { from: accounts[0] });
+      await tic.mint(10, { from: accounts[0] });
+
+      const newBalance1 = await derivative.methods.balanceOf(accounts[0]).call();
+
+      assert.equal(newBalance1 - balance1, 10);
+
+      const balance2 = await derivative.methods.balanceOf(accounts[1]).call();
+
+      await dai.methods.approve(tic.address, 10).send({
+        from: accounts[1]
+      });
+
+      await tic.deposit(2, { from: accounts[0] });
+      await tic.mint(10, { from: accounts[1] });
+
+      const newBalance2 = await derivative.methods.balanceOf(accounts[1]).call();
+
+      assert.equal(newBalance2 - balance2, 10);
+    }
+  });
 });
