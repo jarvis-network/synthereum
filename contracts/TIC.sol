@@ -121,9 +121,15 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
             'Token approve failed'
         );
 
+
+        uint256 balance = rtoken.balanceOf(address(this));
+
         derivative.redeemTokens(tokensToRedeem);
 
-        require(rtoken.redeemAndTransfer(msg.sender, tokensToRedeem));
+        uint256 marginToRedeem = rtoken.balanceOf(address(this)) - balance;
+
+        require(marginToRedeem > 0, "Redeemed tokens have zero value");
+        require(rtoken.redeemAndTransfer(msg.sender, marginToRedeem));
     }
 
     /**
