@@ -15,7 +15,7 @@ module.exports = function(deployer, network, accounts) {
       let marginCurrency = "";
       let returnCalculator = "";
 
-      const supportedMove = web3Utils.toWei("0.2", "ether");
+      const supportedMove = web3Utils.toWei("0.1", "ether");
       const provider = accounts[0]; // Whoever the liquidity provider should be
       const withdrawLimit = "1000000000000000000000000000000000000";
 
@@ -31,8 +31,8 @@ module.exports = function(deployer, network, accounts) {
           expiry: 0, // Temporarily set no expiry
           returnType: "0", // Linear
           startingUnderlyingPrice: price,
-          name: "SynEuro",
-          symbol: "synEUR"
+          name: "Jarvis Synthetic Euro",
+          symbol: "jEUR"
       };
 
       if (
