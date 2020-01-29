@@ -20,9 +20,9 @@ module.exports = function(deployer, network, accounts) {
     || (currentDay === forexDayOpen && currentHour <= forexHourOpen);
 
   if (isDryRun || isForexClosed) {
-    deployer.deploy(ProvablePriceFeed, true, "1", identifier);
+    deployer.deploy(ProvablePriceFeed, false, "1", identifier);
   } else {
-    deployer.deploy(ProvablePriceFeed, true, "", identifier)
+    deployer.deploy(ProvablePriceFeed, false, "", identifier)
       .then(() => ProvablePriceFeed.deployed())
       .then(feed => once(feed.ProvableUpdate()))
       .then(result => {
