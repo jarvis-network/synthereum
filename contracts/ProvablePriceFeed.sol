@@ -70,7 +70,7 @@ contract ProvablePriceFeed is
         if (bytes(startingPrice).length == 0) {
             updatePrice(identifier);
         } else {
-            pushLatestPrice(identifier, now, startingPrice);
+            pushLatestPrice(identifier, getCurrentTime(), startingPrice);
         }
     }
 
@@ -101,7 +101,7 @@ contract ProvablePriceFeed is
     // TODO: Implement recursive Provable queries to create update loop
     function __callback(bytes32 _myid, string memory _result) public {
         if (msg.sender != provable_cbAddress()) revert();
-        pushLatestPrice(queryIdentifiers[_myid], now, _result);
+        pushLatestPrice(queryIdentifiers[_myid], getCurrentTime(), _result);
         delete queryIdentifiers[_myid];
         emit ProvableUpdate(_result);
     }
@@ -118,9 +118,9 @@ contract ProvablePriceFeed is
                 "json(",
                 endpoint,
                 "?symbol=EURUSD&resolution=1&from=",
-                uint2str(now - 60),
+                uint2str(getCurrentTime() - 60),
                 "&to=",
-                uint2str(now),
+                uint2str(getCurrentTime()),
                 ").c[0]"
             ));
             emit ProvableQueryLog("Provable query was sent, update pending");
