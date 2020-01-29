@@ -25,7 +25,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
 
     uint256 private supportedMove;
     TokenizedDerivative public derivative;
-    RToken private rtoken;
+    RToken public rtoken;
     address private provider;
     uint256 private hatID;
 
