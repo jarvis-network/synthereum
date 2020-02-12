@@ -5,7 +5,7 @@ const getEnv = env => {
   const value = process.env[env];
 
   if (typeof value === 'undefined') {
-    throw new Error(`${env} environment variable has not been set.`);
+    console.log(`${env} environment variable has not been set.`);
   }
 
   return value;
