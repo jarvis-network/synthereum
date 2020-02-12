@@ -25,6 +25,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
 
     uint256 private supportedMove;
     TokenizedDerivative public derivative;
+    IERC20 public token; // Added for convenience
     RToken public rtoken;
     address private provider;
     uint256 private hatID;
@@ -45,6 +46,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
         // move from the initial params.
         supportedMove = params.supportedMove;
         rtoken = RToken(params.marginCurrency);
+        token = IERC20(rtoken.token());
         provider = _provider;
 
         address derivativeAddress = derivativeCreator
