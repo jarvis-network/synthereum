@@ -14,9 +14,6 @@ const getEnv = env => {
 const mnemonicEnv = 'ETH_WALLET_MNEMONIC';
 const mnemonic = getEnv(mnemonicEnv);
 
-const rinkebyEnv = 'ETH_RINKEBY_ENDPOINT';
-const rinkebyEndpoint = getEnv(rinkebyEnv);
-
 const kovanEnv = 'ETH_KOVAN_ENDPOINT';
 const kovanEndpoint = getEnv(kovanEnv);
 
@@ -28,14 +25,11 @@ module.exports = {
     useColors: false
   },
   networks: {
-    develop: {
-      port: 8545
-    },
-    rinkeby: {
+    "develop-fork": {
       provider: function() {
-        return new HDWalletProvider(mnemonic, rinkebyEndpoint);
+        return new HDWalletProvider(mnemonic, "http://localhost:8545");
       },
-      network_id: 4
+      network_id: 42
     },
     kovan: {
       provider: function() {
