@@ -19,7 +19,7 @@ module.exports = function(deployer, network, accounts) {
     || (currentDay === forexDayClose && currentHour >= forexHourClose)
     || (currentDay === forexDayOpen && currentHour <= forexHourOpen);
 
-  if (isDryRun || isForexClosed) {
+  if (isDryRun || isForexClosed || network === "kovan") {
     deployer.deploy(ProvablePriceFeed, false, "1", identifier);
   } else {
     deployer.deploy(ProvablePriceFeed, false, "", identifier)
