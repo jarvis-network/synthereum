@@ -1,12 +1,12 @@
 const web3Utils = require("web3-utils");
 var TIC = artifacts.require("TIC");
-var ProvablePriceFeed = artifacts.require("./ProvablePriceFeed.sol");
+var ChainlinkPriceFeed = artifacts.require("./ChainlinkPriceFeed.sol");
 
 module.exports = function(deployer, network, accounts) {
   const identifier = web3Utils.toHex("EUR/USD");
 
   deployer
-    .then(() => ProvablePriceFeed.deployed())
+    .then(() => ChainlinkPriceFeed.deployed())
     .then(feed => feed.latestPrice(identifier))
     .then(latestPrice => {
       const price = latestPrice.price.toString();
@@ -20,7 +20,7 @@ module.exports = function(deployer, network, accounts) {
       const withdrawLimit = "1000000000000000000000000000000000000";
 
       let params = {
-          priceFeedAddress: ProvablePriceFeed.address,
+          priceFeedAddress: ChainlinkPriceFeed.address,
           defaultPenalty: web3Utils.toWei("1", "ether"),
           supportedMove,
           product: identifier,
