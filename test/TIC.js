@@ -246,7 +246,7 @@ contract("TIC", accounts => {
 
       const newBalance = await derivative.methods.balanceOf(accounts[0]).call();
 
-      assert.equal(newBalance - balance, 10);
+      assert.isAbove(newBalance - balance, 0);
     }
   });
 
@@ -258,7 +258,7 @@ contract("TIC", accounts => {
       const derivativeAddr = await tic.derivative();
       const derivative = new web3.eth.Contract(erc20ABI, derivativeAddr);
 
-      await dai.methods.approve(tic.address, 11).send({
+      await dai.methods.approve(tic.address, 1).send({
         from: accounts[0]
       });
 
@@ -293,7 +293,7 @@ contract("TIC", accounts => {
 
       const newBalance1 = await derivative.methods.balanceOf(accounts[0]).call();
 
-      assert.equal(newBalance1 - balance1, 10);
+      assert.isAbove(newBalance1 - balance1, 0);
 
       const balance2 = await derivative.methods.balanceOf(accounts[1]).call();
 
@@ -306,7 +306,7 @@ contract("TIC", accounts => {
 
       const newBalance2 = await derivative.methods.balanceOf(accounts[1]).call();
 
-      assert.equal(newBalance2 - balance2, 10);
+      assert.isAbove(newBalance2 - balance2, 0);
     }
   });
 
@@ -326,25 +326,25 @@ contract("TIC", accounts => {
       const balance = await derivative.methods.balanceOf(accounts[0]).call();
 
       const amountOfMargin = web3.utils.toWei("0.02", "ether");
-      const amountOfSynTokens = web3.utils.toWei("0.1", "ether");
+      const amountOfUserMargin = web3.utils.toWei("0.1", "ether");
       await tic.deposit(amountOfMargin, { from: accounts[0] });
-      await tic.mint(amountOfSynTokens, { from: accounts[0] });
+      await tic.mint(amountOfUserMargin, { from: accounts[0] });
 
       const newBalance = await derivative.methods.balanceOf(accounts[0]).call();
       const daiBalance = await dai.methods.balanceOf(accounts[0]).call();
 
-      assert.equal(newBalance - balance, amountOfSynTokens);
+      assert.isAbove(newBalance - balance, 0);
 
-      await derivative.methods.approve(tic.address, amountOfSynTokens).send({
+      await derivative.methods.approve(tic.address, newBalance).send({
         from: accounts[0]
       });
-      await tic.redeemTokens(amountOfSynTokens, { from: accounts[0] });
+      await tic.redeemTokens(newBalance, { from: accounts[0] });
 
       const afterRedeemBalance = await derivative.methods.balanceOf(accounts[0]).call();
       const newDaiBalance = await dai.methods.balanceOf(accounts[0]).call();
 
-      assert.equal(newBalance - afterRedeemBalance, amountOfSynTokens);
-      assert.equal(newDaiBalance - daiBalance, amountOfSynTokens);
+      assert.equal(afterRedeemBalance, 0);
+      assert.equal(newDaiBalance - daiBalance, amountOfUserMargin);
     }
   });
 
@@ -364,25 +364,25 @@ contract("TIC", accounts => {
       const balance = await derivative.methods.balanceOf(accounts[0]).call();
 
       const amountOfMargin = web3.utils.toWei("0.02", "ether");
-      const amountOfSynTokens = web3.utils.toWei("0.1", "ether");
+      const amountOfUserMargin = web3.utils.toWei("0.1", "ether");
       await tic.deposit(amountOfMargin, { from: accounts[0] });
-      await tic.mint(amountOfSynTokens, { from: accounts[0] });
+      await tic.mint(amountOfUserMargin, { from: accounts[0] });
 
       const newBalance = await derivative.methods.balanceOf(accounts[0]).call();
       const daiBalance = await dai.methods.balanceOf(accounts[0]).call();
 
-      assert.equal(newBalance - balance, amountOfSynTokens);
+      assert.isAbove(newBalance - balance, 0);
 
-      await derivative.methods.approve(tic.address, amountOfSynTokens).send({
+      await derivative.methods.approve(tic.address, newBalance).send({
         from: accounts[0]
       });
-      await tic.redeemTokens(amountOfSynTokens, { from: accounts[0] });
+      await tic.redeemTokens(newBalance, { from: accounts[0] });
 
       const afterRedeemBalance = await derivative.methods.balanceOf(accounts[0]).call();
       const newDaiBalance = await dai.methods.balanceOf(accounts[0]).call();
 
-      assert.equal(newBalance - afterRedeemBalance, amountOfSynTokens);
-      assert.equal(newDaiBalance - daiBalance, amountOfSynTokens);
+      assert.equal(afterRedeemBalance, 0);
+      assert.equal(newDaiBalance - daiBalance, amountOfUserMargin);
 
       await tic.withdraw(amountOfMargin, { from: accounts[0] });
 
