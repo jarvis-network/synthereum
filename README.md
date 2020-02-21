@@ -86,29 +86,52 @@ truffle --network kovan migrate
 ```
 If the contracts have already been deployed but changes have been made and they must be deployed again, use the `--reset` flag.
 
-### Changing TokenizedDerivative parameters
-The parameters for the TokenizedDerivative created by the TIC can be changed in `./migrations/3_deploy_tic.js`.
+### Changing base TokenizedDerivative parameters
+The parameters for the TokenizedDerivative contracts created by TICs can be changed in `./migrations/4_deploy_tics.js`.
 
 ```
 let params = {
-  priceFeedAddress: ProvablePriceFeed.address,
   defaultPenalty: web3Utils.toWei("1", "ether"),
   supportedMove,
-  product: identifier,
   fixedYearlyFee: "0",
   withdrawLimit,
   disputeDeposit: web3Utils.toWei("1", "ether"),
-  startingTokenPrice: price,
   expiry: 0, // Temporarily set no expiry
   returnType: "0", // Linear
-  startingUnderlyingPrice: price,
-  name: "Jarvis Synthetic Euro",
-  symbol: "jEUR"
+  returnCalculator,
+  marginCurrency
 };
 ```
 
-## Using the Price Feed
-*Pending integration with Chainlink.*
+### Creating new SynFiat assets
+New synthetic assets can be created by modifying `./synthetic-assets.json` and `./chainlink-aggregators.json` before running the migration scripts.
+
+Simply add a new object to the JSON array in `./synthetic-assets.json` such as:
+
+```
+[
+  ...
+  {
+    "name": "Jarvis Synthetic Euro", // The ERC-20 name
+    "symbol": "jEUR", // The ERC-20 symbol
+    "identifier": "EUR/USD" // The price feed identifier
+  }
+]
+```
+
+Then add the address of a Chainlink aggregator to `./chainlink-aggregators.json`. Make sure to put it under the correct network ID (Kovan is "42") and to make the object key the same as the identifier used for the new synthetic asset that has been configured.
+
+For example:
+```
+{
+  "42": { // The network the aggregator is deployed to
+    ...
+    "EUR/USD": "0xf23CCdA8333f658c43E7fC19aa00f6F5722eB225"
+  }
+}
+```
+
+Now when running `truffle --network kovan migrate --reset`, this new synthetic asset will also be deployed.
 
 ## Using the TIC (Token Issuer Contract)
 First import the Truffle artifact stored in `./client/src/contracts` and create the contract instance with web3.
