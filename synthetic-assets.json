@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Jarvis Synthetic Euro",
+    "symbol": "jEUR",
+    "identifier": "EUR/USD"
+  },
+  {
+    "name": "Jarvis Synthetic Swiss Franc",
+    "symbol": "jCHF",
+    "identifier": "CHF/USD"
+  },
+  {
+    "name": "Jarvis Synthetic British Pound",
+    "symbol": "jGBP",
+    "identifier": "GBP/USD"
+  },
+  {
+    "name": "Jarvis Synthetic Gold",
+    "symbol": "jXAU",
+    "identifier": "XAU/USD"
+  }
+]
