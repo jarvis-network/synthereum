@@ -17,7 +17,7 @@ import {ForexTime} from "./ForexTime.sol";
  * @dev Margin currency is sent to an `RToken` and used as collateral for a
  *      `TokenizedDerivative` synthetic asset
  */
-contract TIC is Ownable, ReentrancyGuard, ForexTime {
+contract TIC is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     uint256 private constant INT_MAX = 2**255 - 1;
@@ -72,7 +72,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
      * @notice Requires authorization to transfer the margin currency
      * @param amount The amount of margin supplied
      */
-    function mint(uint256 amount) external nonReentrant forexOpen {
+    function mint(uint256 amount) external nonReentrant {
         // get margin required for user's deposit
         uint256 newMargin = takePercentage(amount, supportedMove);
 
@@ -114,7 +114,7 @@ contract TIC is Ownable, ReentrancyGuard, ForexTime {
      *      error from the cToken contract.
      * @param tokensToRedeem The amount of tokens to redeem
      */
-    function redeemTokens(uint256 tokensToRedeem) external forexOpen {
+    function redeemTokens(uint256 tokensToRedeem) external {
         require(tokensToRedeem > 0);
         require(derivative.balanceOf(msg.sender) >= tokensToRedeem);
 
