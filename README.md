@@ -134,12 +134,17 @@ For example:
 Now when running `truffle --network kovan migrate --reset`, this new synthetic asset will also be deployed.
 
 ## Using the TIC (Token Issuer Contract)
-First import the Truffle artifact stored in `./client/src/contracts` and create the contract instance with web3.
+First import the `TICFactory` Truffle artifact stored in `./client/src/contracts` and create the contract instance with web3.
 ```
-import TIC from "./contracts/TIC.json";
+import TICFactory from "./contracts/TICFactory.json";
 
 const networkId = await web3.eth.net.getId();
-const tic = new web3.eth.Contract(TIC.abi, TIC.networks[networkId].address);
+const factory = new web3.eth.Contract(TICFactory.abi, TICFactory.networks[networkId].address);
+```
+
+The factory is then used to retrieve the TIC for the synthetic asset you wish to interact with.
+```
+const tic = await factory.methods.symbolToTIC("jEUR").call();
 ```
 
 Then create the DAI contract instance. This is needed to approve the DAI transfers that will be made by the TIC.
