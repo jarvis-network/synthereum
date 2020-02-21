@@ -25,7 +25,6 @@ contract TIC is Ownable, ReentrancyGuard {
 
     uint256 private supportedMove;
     TokenizedDerivative public derivative;
-    IERC20 public token; // Added for convenience
     RToken public rtoken;
     address private provider;
     uint256 private hatID;
@@ -46,7 +45,6 @@ contract TIC is Ownable, ReentrancyGuard {
         // move from the initial params.
         supportedMove = params.supportedMove;
         rtoken = RToken(params.marginCurrency);
-        token = IERC20(rtoken.token());
         provider = _provider;
 
         address derivativeAddress = derivativeCreator
@@ -160,6 +158,14 @@ contract TIC is Ownable, ReentrancyGuard {
      */
     function getProviderExcessMargin() external view returns (int256) {
         return derivative.calcExcessMargin();
+    }
+
+    /**
+     * @notice Get the collateral token
+     * @return The ERC20 collateral token
+     */
+    function token() external view returns (IERC20) {
+        return rtoken.token();
     }
 
     /**
