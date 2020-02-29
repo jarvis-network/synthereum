@@ -10,7 +10,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    context.setFirstValidConnector(['MetaMask', 'Infura']);
+    if (!context.active) {
+      context.setFirstValidConnector(['MetaMask', 'Infura']);
+    }
   }, [context]);
 
   useEffect(() => {
