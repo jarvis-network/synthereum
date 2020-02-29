@@ -31,7 +31,7 @@ export default function App() {
     if (context.active) {
       setLoading(false);
     }
-  });
+  }, [context.active]);
 
   if (!context.active && !context.error) {
     return (
