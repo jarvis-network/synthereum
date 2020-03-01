@@ -7,9 +7,8 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {IERC20, RToken} from "@rtoken/contracts/contracts/RToken.sol";
-import {TokenizedDerivative} from "protocol/core/contracts/TokenizedDerivative.sol";
-import {TokenizedDerivativeCreator} from "protocol/core/contracts/TokenizedDerivativeCreator.sol";
-import {ForexTime} from "./ForexTime.sol";
+import {TokenizedDerivative} from "protocol/core/contracts/tokenized-derivative/TokenizedDerivative.sol";
+import {TokenizedDerivativeCreator} from "protocol/core/contracts/tokenized-derivative/TokenizedDerivativeCreator.sol";
 
 /**
  * @title Token Issuer Contract

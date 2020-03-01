@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {TIC} from "./TIC.sol";
-import {TokenizedDerivativeCreator} from "protocol/core/contracts/TokenizedDerivativeCreator.sol";
+import {TokenizedDerivativeCreator} from "protocol/core/contracts/tokenized-derivative/TokenizedDerivativeCreator.sol";
 
 contract TICFactory is Ownable {
     TokenizedDerivativeCreator private derivativeCreator;
