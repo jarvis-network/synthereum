@@ -13,6 +13,9 @@ const useStyles = makeStyles(theme => ({
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
+  wallet: {
+    marginTop: theme.spacing(4),
+  },
 }));
 
 export default function App() {
@@ -49,7 +52,7 @@ export default function App() {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Container maxWidth="md">
-          <Wallet setLoading={setLoading} />
+          <Wallet className={classes.wallet} setLoading={setLoading} />
         </Container>
       </div>
     );

@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Wallet(props) {
-  const { setLoading } = props;
+  const { className, setLoading } = props;
 
   const classes = useStyles();
 
@@ -108,7 +108,7 @@ export default function Wallet(props) {
   }, [context, context.active]);
 
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={4} className={className}>
       <Grid item xs={12}>
         <FormControl>
           <InputLabel>Token</InputLabel>
