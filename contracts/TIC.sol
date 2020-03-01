@@ -178,12 +178,12 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Mints an amount of R tokens using the default hat
      */
     function mintRTokens(uint256 amount) private {
-        IERC20 token = rtoken.token();
+        IERC20 _token = rtoken.token();
         require(
-            token.transferFrom(msg.sender, address(this), amount),
+            _token.transferFrom(msg.sender, address(this), amount),
             'Token transfer failed'
         );
-        require(token.approve(address(rtoken), amount), 'Token approve failed');
+        require(_token.approve(address(rtoken), amount), 'Token approve failed');
         require(rtoken.mintWithSelectedHat(amount, hatID));
     }
 
