@@ -160,6 +160,13 @@ contract TIC is Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Returns the expected value of the synthetic tokens
+     */
+    function getTokenPrice() external view returns (int256) {
+        return derivative.calcTokenValue();
+    }
+
+    /**
      * @notice Get the collateral token
      * @return The ERC20 collateral token
      */
