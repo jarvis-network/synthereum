@@ -5,7 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+
+import Wallet from "./Wallet";
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -47,11 +48,8 @@ export default function App() {
         <Backdrop className={classes.backdrop} open={loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Container maxWidth="sm">
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-            </Grid>
-          </Grid>
+        <Container maxWidth="md">
+          <Wallet setLoading={setLoading} />
         </Container>
       </div>
     );
