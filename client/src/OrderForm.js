@@ -33,6 +33,7 @@ export default function OrderForm(props) {
     }).then(tx => {
       setLoading(false);
       setLastTx(tx.transactionHash);
+      setOrderAmount("");
     });
   };
 
@@ -49,6 +50,7 @@ export default function OrderForm(props) {
     }).then(tx => {
       setLoading(false);
       setLastTx(tx.transactionHash);
+      setOrderAmount("");
     });
   };
 
