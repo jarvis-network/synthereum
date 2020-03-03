@@ -5,6 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
 
 import Wallet from "./Wallet";
 
@@ -15,6 +17,9 @@ const useStyles = makeStyles(theme => ({
   },
   wallet: {
     marginTop: theme.spacing(4),
+  },
+  fullscreen: {
+    height: "100vh",
   },
 }));
 
@@ -45,6 +50,23 @@ export default function App() {
     );
   } else if (context.error) {
     return <div>Error</div>
+  } else if (context.networkId !== 42) {
+    return (
+      <div className="App">
+        <Container maxWidth="md">
+          <Grid className={classes.fullscreen} container alignItems="center">
+            <Grid item xs={12}>
+              <Typography variant="h6" align="center">
+                Jarvis Synthetic Tokens are only available on the Kovan network.
+              </Typography>
+              <Typography variant="subtitle1" align="center">
+                Please switch MetaMask to the Kovan network.
+              </Typography>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+    );
   } else {
     return (
       <div className="App">
