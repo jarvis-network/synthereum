@@ -34,6 +34,9 @@ export default function OrderForm(props) {
       setLoading(false);
       setLastTx(tx.transactionHash);
       setOrderAmount("");
+    }).catch(() => {
+      setLoading(false);
+      setOrderAmount("");
     });
   };
 
@@ -50,6 +53,9 @@ export default function OrderForm(props) {
     }).then(tx => {
       setLoading(false);
       setLastTx(tx.transactionHash);
+      setOrderAmount("");
+    }).catch(() => {
+      setLoading(false);
       setOrderAmount("");
     });
   };
