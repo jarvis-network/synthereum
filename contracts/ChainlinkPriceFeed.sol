@@ -1,7 +1,7 @@
 pragma solidity >=0.5.14 <0.7.0;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
-import {PriceFeedInterface} from "protocol/core/contracts/PriceFeedInterface.sol";
+import {PriceFeedInterface} from "protocol/core/contracts/tokenized-derivative/PriceFeedInterface.sol";
 import {AggregatorInterface} from "chainlink/v0.5/contracts/dev/AggregatorInterface.sol";
 
 contract ChainlinkPriceFeed is PriceFeedInterface, Ownable {

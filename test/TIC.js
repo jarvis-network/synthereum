@@ -231,19 +231,12 @@ contract("TIC", accounts => {
   let derivative;
 
   beforeEach(async () => {
-    let daiAddr;
-
-    if (await web3.eth.net.getId() === 42) {
-      daiAddr = "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa";
-    } else {
-      daiAddr = constants.ZERO_ADDRESS;
-    }
-
-    dai = new web3.eth.Contract(erc20ABI, daiAddr);
-
     const factory = await TICFactory.deployed();
     const ticAddr = await factory.symbolToTIC("jEUR");
     tic = await TIC.at(ticAddr);
+
+    const daiAddr = await tic.token();
+    dai = new web3.eth.Contract(erc20ABI, daiAddr);
 
     const derivativeAddr = await tic.derivative();
     derivative = new web3.eth.Contract(erc20ABI, derivativeAddr);

@@ -1,17 +1,14 @@
 const { constants } = require("@openzeppelin/test-helpers");
+const config = require("../truffle-config.js");
+const contracts = require("../contract-dependencies.json");
 var TICFactory = artifacts.require("TICFactory");
 
 module.exports = function(deployer, network) {
   let TDCreatorAddr = constants.ZERO_ADDRESS;
 
-  if (
-    network === "develop-fork"
-    || network === "develop-fork-fork"
-    || network === "kovan-fork"
-    || network === "kovan"
-  ) {
-    TDCreatorAddr = "0xad7c5516b25661e0A204646b08024cD82ffe6C48";
-  }
+  const networkId = config.networks[network.replace(/-fork$/, "")].network_id;
+
+  TDCreatorAddr = contracts[networkId]["tokenizedDerivativeCreator"];
 
   deployer.deploy(TICFactory, TDCreatorAddr);
 };
