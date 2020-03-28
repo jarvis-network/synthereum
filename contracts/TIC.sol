@@ -31,6 +31,10 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Margin currency must be a rtoken
      * @dev TIC creates a new derivative so it is set as the sponsor
+     * @param derivativeCreator The `TokenizedDerivativeCreator`
+     * @param params The `TokenizedDerivative` parameters
+     * @param _provider The liquidity provider
+     * @param _owner The account that receives interest from the collateral
      */
     constructor(
         TokenizedDerivativeCreator derivativeCreator,
