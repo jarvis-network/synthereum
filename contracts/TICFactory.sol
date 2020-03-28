@@ -31,7 +31,8 @@ contract TICFactory is Ownable {
         symbolToTIC[params.symbol] = new TIC(
             derivativeCreator,
             params,
-            liquidityProvider
+            liquidityProvider,
+            owner()
         );
     }
 }

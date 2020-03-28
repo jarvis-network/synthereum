@@ -35,7 +35,8 @@ contract TIC is Ownable, ReentrancyGuard {
     constructor(
         TokenizedDerivativeCreator derivativeCreator,
         TokenizedDerivativeCreator.Params memory params,
-        address _provider
+        address _provider,
+        address _owner
     )
         public
     {
@@ -49,6 +50,8 @@ contract TIC is Ownable, ReentrancyGuard {
         address derivativeAddress = derivativeCreator
             .createTokenizedDerivative(params);
         derivative = TokenizedDerivative(derivativeAddress);
+
+        transferOwnership(_owner);
 
         // all interest accrued is distributed to the owner
         address[] memory recipients = new address[](1);
