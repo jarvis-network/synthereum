@@ -39,6 +39,7 @@ contract TIC is Ownable, ReentrancyGuard {
         address _owner
     )
         public
+        nonReentrant
     {
         // stack error occurs when trying to get params from an existing
         // derivative, instead we create a new derivative and get the supported
@@ -72,7 +73,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Requires authorization to transfer the margin currency
      * @param amount The amount of margin supplied
      */
-    function mint(uint256 amount) external nonReentrant {
+    function mint(uint256 amount) external {
         // get margin required for user's deposit
         uint256 newMargin = takePercentage(amount, supportedMove);
 
@@ -89,7 +90,7 @@ contract TIC is Ownable, ReentrancyGuard {
         uint256 tokensMinted = mintSynTokens(amount);
 
         // transfer synthetic asset to the user
-        require(derivative.transfer(msg.sender, tokensMinted));
+        transferSynTokens(msg.sender, tokensMinted);
     }
 
     /**
@@ -97,13 +98,12 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Requires authorization to transfer the margin currency
      * @param amountToDeposit The amount of margin supplied
      */
-    function deposit(uint256 amountToDeposit) external payable onlyProvider {
+    function deposit(uint256 amountToDeposit) external onlyProvider {
         // mint r tokens for derivative margin
         mintRTokens(amountToDeposit);
 
         // deposit margin so users can mint synthetic assets
-        require(rtoken.approve(address(derivative), amountToDeposit));
-        derivative.deposit(amountToDeposit);
+        depositRTokens(amountToDeposit);
     }
 
     /**
@@ -114,7 +114,7 @@ contract TIC is Ownable, ReentrancyGuard {
      *      error from the cToken contract.
      * @param tokensToRedeem The amount of tokens to redeem
      */
-    function redeemTokens(uint256 tokensToRedeem) external {
+    function redeemTokens(uint256 tokensToRedeem) external nonReentrant {
         require(tokensToRedeem > 0);
         require(derivative.balanceOf(msg.sender) >= tokensToRedeem);
 
@@ -142,7 +142,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Withdraw the excess short margin supplied by the provider
      * @param amount The amount of short margin to withdraw
      */
-    function withdraw(uint256 amount) external onlyProvider {
+    function withdraw(uint256 amount) external onlyProvider nonReentrant {
         derivative.withdraw(amount);
         require(rtoken.redeemAndTransfer(msg.sender, amount));
     }
@@ -180,7 +180,7 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Mints an amount of R tokens using the default hat
      */
-    function mintRTokens(uint256 amount) private {
+    function mintRTokens(uint256 amount) private nonReentrant {
         IERC20 _token = rtoken.token();
         require(
             _token.transferFrom(msg.sender, address(this), amount),
@@ -193,7 +193,7 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Mints synthetic tokens with the available margin
      */
-    function mintSynTokens(uint256 margin) private returns (uint256) {
+    function mintSynTokens(uint256 margin) private nonReentrant returns (uint256) {
         require(rtoken.approve(address(derivative), margin));
 
         (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
@@ -206,6 +206,23 @@ contract TIC is Ownable, ReentrancyGuard {
         derivative.depositAndCreateTokens(margin, tokensToMint);
 
         return tokensToMint;
+    }
+
+    /**
+     * @notice Deposits R tokens as margin to the derivative
+     * @dev Refactored from `deposit` to guard against reentrancy
+     */
+    function depositRTokens(uint256 amountToDeposit) private nonReentrant {
+        require(rtoken.approve(address(derivative), amountToDeposit));
+        derivative.deposit(amountToDeposit);
+    }
+
+    /**
+     * @notice Transfer synthetic tokens from the derivative to an address
+     * @dev Refactored from `mint` to guard against reentrancy
+     */
+    function transferSynTokens(address to, uint256 tokensToTransfer) private nonReentrant {
+        require(derivative.transfer(to, tokensToTransfer));
     }
 
     function takePercentage(uint256 value, uint256 percentage)
