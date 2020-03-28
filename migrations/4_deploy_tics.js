@@ -1,7 +1,8 @@
 const web3Utils = require("web3-utils");
 const { constants } = require("@openzeppelin/test-helpers");
+
 const assets = require("../synthetic-assets.json");
-const aggregators = require("../chainlink-aggregators.json");
+
 var TICFactory = artifacts.require("TICFactory");
 var ChainlinkPriceFeed = artifacts.require("./ChainlinkPriceFeed.sol");
 
@@ -43,7 +44,6 @@ module.exports = function(deployer, network, accounts) {
   console.log("\n");
 
   for (let asset of assets) {
-    const aggregator = aggregators[networkId][asset.identifier];
     const identifier = web3Utils.toHex(asset.identifier);
 
     console.log(`   Deploying '${asset.symbol}'`);
@@ -51,7 +51,6 @@ module.exports = function(deployer, network, accounts) {
     deployer
       .then(() => ChainlinkPriceFeed.deployed())
       .then(async feed => {
-        await feed.addAggregator(identifier, aggregator);
         const price = await feed.latestPrice(identifier);
         return price;
       })
