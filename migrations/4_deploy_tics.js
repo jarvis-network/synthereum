@@ -1,42 +1,31 @@
 const web3Utils = require("web3-utils");
-const { constants } = require("@openzeppelin/test-helpers");
 
+const config = require("../truffle-config.js");
+const contracts = require("../contract-dependencies.json");
 const assets = require("../synthetic-assets.json");
+const TICConfig = require("../TIC-config.json");
 
 var TICFactory = artifacts.require("TICFactory");
 var ChainlinkPriceFeed = artifacts.require("./ChainlinkPriceFeed.sol");
 
 module.exports = function(deployer, network, accounts) {
-  const supportedMove = web3Utils.toWei("0.1", "ether");
-  const withdrawLimit = "1000000000000000000000000000000000000";
   const provider = accounts[0]; // Whoever the liquidity provider should be
 
+  const networkId = config.networks[network.replace(/-fork$/, "")].network_id;
 
-  let networkId = "*";
-  let marginCurrency = constants.ZERO_ADDRESS;
-  let returnCalculator = constants.ZERO_ADDRESS;
-
-  if (
-    network === "develop-fork"
-    || network === "develop-fork-fork"
-    || network === "kovan-fork"
-    || network === "kovan"
-  ) {
-    networkId = "42";
-    // Kovan UMA Return Calculator address
-    returnCalculator = "0xad8fD1f418FB860A383c9D4647880af7f043Ef39";
-    // Kovan rDAI address
-    marginCurrency = "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB";
-  }
+  // Kovan UMA Return Calculator address
+  returnCalculator = contracts[networkId]["returnCalculator"];
+  // Kovan rDAI address
+  marginCurrency = contracts[networkId]["marginCurrency"];
 
   let params = {
-    defaultPenalty: web3Utils.toWei("1", "ether"),
-    supportedMove,
-    fixedYearlyFee: "0",
-    withdrawLimit,
-    disputeDeposit: web3Utils.toWei("1", "ether"),
-    expiry: 0, // Temporarily set no expiry
-    returnType: "0", // Linear
+    defaultPenalty: TICConfig["defaultPenalty"],
+    supportedMove: TICConfig["supportedMove"],
+    fixedYearlyFee: TICConfig["fixedYearlyFee"],
+    withdrawLimit: TICConfig["withdrawLimit"],
+    disputeDeposit: TICConfig["disputeDeposit"],
+    expiry: TICConfig["expiry"],
+    returnType: TICConfig["returnType"],
     returnCalculator,
     marginCurrency
   };
