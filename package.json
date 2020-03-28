@@ -15,11 +15,8 @@
     "@openzeppelin/contracts": "^2.4.0",
     "@openzeppelin/test-helpers": "^0.5.4",
     "@rtoken/contracts": "github:rtoken-project/rtoken-contracts",
-    "bokkypoobahsdatetimelibrary": "github:opz/BokkyPooBahsDateTimeLibrary",
     "chainlink": "^0.8.2",
-    "events.once": "^2.0.2",
     "protocol": "github:UMAprotocol/protocol",
-    "provable-eth-api": "github:provable-things/ethereum-api",
     "truffle-hdwallet-provider": "^1.0.17"
   }
 }
