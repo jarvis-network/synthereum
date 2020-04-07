@@ -14,7 +14,6 @@
   "dependencies": {
     "@openzeppelin/contracts": "^3.0.0-beta.0",
     "@openzeppelin/test-helpers": "^0.5.4",
-    "@rtoken/contracts": "github:rtoken-project/rtoken-contracts",
     "chainlink": "^0.8.2",
     "protocol": "github:UMAprotocol/protocol#e11e7069d25a7ef83262ba3c22d3b3b888e80f06",
     "truffle-hdwallet-provider": "^1.0.17"
