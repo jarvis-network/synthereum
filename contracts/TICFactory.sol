@@ -4,15 +4,15 @@ pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {TIC} from "./TIC.sol";
-import {TokenizedDerivativeCreator} from "protocol/core/contracts/tokenized-derivative/TokenizedDerivativeCreator.sol";
+import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable {
-    TokenizedDerivativeCreator private derivativeCreator;
+    ExpiringMultiPartyCreator private derivativeCreator;
 
     // Get a TIC using its token symbol
     mapping(string => TIC) public symbolToTIC;
 
-    constructor(TokenizedDerivativeCreator _derivativeCreator) public {
+    constructor(ExpiringMultiPartyCreator _derivativeCreator) public {
         derivativeCreator = _derivativeCreator;
     }
 
@@ -22,7 +22,7 @@ contract TICFactory is Ownable {
      * @param liquidityProvider The LP for the TIC
      */
     function createTIC(
-        TokenizedDerivativeCreator.Params calldata params,
+        ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider
     )
         external
