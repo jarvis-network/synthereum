@@ -58,11 +58,13 @@ contract TIC is Ownable, ReentrancyGuard {
 
         transferOwnership(_owner);
 
-        // all interest accrued is distributed to the owner
-        address[] memory recipients = new address[](1);
+        // Interest is distributed 90/10 to the protocol and liquidity provider
+        address[] memory recipients = new address[](2);
         recipients[0] = owner();
+        recipients[1] = liquidityProvider;
         uint32[] memory proportions = new uint32[](1);
-        proportions[0] = 100;
+        proportions[0] = 10;
+        proportions[1] = 90;
 
         hatID = rtoken.createHat(recipients, proportions, false);
     }
