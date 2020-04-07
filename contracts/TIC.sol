@@ -25,7 +25,7 @@ contract TIC is Ownable, ReentrancyGuard {
     uint256 private supportedMove;
     TokenizedDerivative public derivative;
     IRToken public rtoken;
-    address private provider;
+    address private liquidityProvider;
     uint256 private hatID;
 
     /**
@@ -33,13 +33,13 @@ contract TIC is Ownable, ReentrancyGuard {
      * @dev TIC creates a new derivative so it is set as the sponsor
      * @param derivativeCreator The `TokenizedDerivativeCreator`
      * @param params The `TokenizedDerivative` parameters
-     * @param _provider The liquidity provider
+     * @param _liquidityProvider The liquidity provider
      * @param _owner The account that receives interest from the collateral
      */
     constructor(
         TokenizedDerivativeCreator derivativeCreator,
         TokenizedDerivativeCreator.Params memory params,
-        address _provider,
+        address _liquidityProvider,
         address _owner
     )
         public
@@ -50,7 +50,7 @@ contract TIC is Ownable, ReentrancyGuard {
         // move from the initial params.
         supportedMove = params.supportedMove;
         rtoken = IRToken(params.marginCurrency);
-        provider = _provider;
+        liquidityProvider = _liquidityProvider;
 
         address derivativeAddress = derivativeCreator
             .createTokenizedDerivative(params);
@@ -67,8 +67,8 @@ contract TIC is Ownable, ReentrancyGuard {
         hatID = rtoken.createHat(recipients, proportions, false);
     }
 
-    modifier onlyProvider() {
-        require(msg.sender == provider, 'Must be liquidity provider');
+    modifier onlyLiquidityProvider() {
+        require(msg.sender == liquidityProvider, 'Must be liquidity provider');
         _;
     }
 
@@ -102,7 +102,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Requires authorization to transfer the margin currency
      * @param amountToDeposit The amount of margin supplied
      */
-    function deposit(uint256 amountToDeposit) external onlyProvider {
+    function deposit(uint256 amountToDeposit) external onlyLiquidityProvider {
         // mint r tokens for derivative margin
         mintRTokens(amountToDeposit);
 
@@ -146,7 +146,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Withdraw the excess short margin supplied by the provider
      * @param amount The amount of short margin to withdraw
      */
-    function withdraw(uint256 amount) external onlyProvider nonReentrant {
+    function withdraw(uint256 amount) external onlyLiquidityProvider nonReentrant {
         derivative.withdraw(amount);
         require(rtoken.redeemAndTransfer(msg.sender, amount));
     }
