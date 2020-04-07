@@ -1,4 +1,4 @@
-pragma solidity >=0.5.14 <0.7.0;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 // prevent conflict with RToken declarations
@@ -6,9 +6,10 @@ import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import {IERC20, RToken} from "@rtoken/contracts/contracts/RToken.sol";
-import {TokenizedDerivative} from "protocol/core/contracts/tokenized-derivative/TokenizedDerivative.sol";
-import {TokenizedDerivativeCreator} from "protocol/core/contracts/tokenized-derivative/TokenizedDerivativeCreator.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IRToken} from "./IRToken.sol";
+import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 /**
  * @title Token Issuer Contract
@@ -24,7 +25,7 @@ contract TIC is Ownable, ReentrancyGuard {
 
     uint256 private supportedMove;
     TokenizedDerivative public derivative;
-    RToken public rtoken;
+    IRToken public rtoken;
     address private provider;
     uint256 private hatID;
 
@@ -49,7 +50,7 @@ contract TIC is Ownable, ReentrancyGuard {
         // derivative, instead we create a new derivative and get the supported
         // move from the initial params.
         supportedMove = params.supportedMove;
-        rtoken = RToken(params.marginCurrency);
+        rtoken = IRToken(params.marginCurrency);
         provider = _provider;
 
         address derivativeAddress = derivativeCreator
