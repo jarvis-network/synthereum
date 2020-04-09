@@ -5,6 +5,7 @@ import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
+import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoint.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
 import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
@@ -14,16 +15,13 @@ import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templ
  * @title Token Issuer Contract
  * @notice Collects margin, issues synthetic assets, and distributes accrued interest
  * @dev Margin currency is sent to an `RToken` and used as collateral for a
- *      `TokenizedDerivative` synthetic asset
+ *      `ExpiringMultiParty` synthetic asset
  */
 contract TIC is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
+    using FixedPoint for FixedPoint.Unsigned;
 
-    uint256 private constant INT_MAX = 2**255 - 1;
-    uint256 private constant UINT_FP_SCALING_FACTOR = 1e18;
-
-    uint256 private supportedMove;
-    TokenizedDerivative public derivative;
+    ExpiringMultiParty public derivative;
     IRToken public rtoken;
     address private liquidityProvider;
     uint256 private hatID;
@@ -31,30 +29,25 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Margin currency must be a rtoken
      * @dev TIC creates a new derivative so it is set as the sponsor
-     * @param derivativeCreator The `TokenizedDerivativeCreator`
-     * @param params The `TokenizedDerivative` parameters
+     * @param derivativeCreator The `ExpiringMultiPartyCreator`
+     * @param params The `ExpiringMultiParty` parameters
      * @param _liquidityProvider The liquidity provider
      * @param _owner The account that receives interest from the collateral
      */
     constructor(
-        TokenizedDerivativeCreator derivativeCreator,
-        TokenizedDerivativeCreator.Params memory params,
+        ExpiringMultiPartyCreator derivativeCreator,
+        ExpiringMultiPartyCreator.Params memory params,
         address _liquidityProvider,
         address _owner
     )
         public
         nonReentrant
     {
-        // stack error occurs when trying to get params from an existing
-        // derivative, instead we create a new derivative and get the supported
-        // move from the initial params.
-        supportedMove = params.supportedMove;
-        rtoken = IRToken(params.marginCurrency);
+        rtoken = IRToken(params.collateralAddress);
         liquidityProvider = _liquidityProvider;
 
-        address derivativeAddress = derivativeCreator
-            .createTokenizedDerivative(params);
-        derivative = TokenizedDerivative(derivativeAddress);
+        address derivativeAddress = derivativeCreator.createExpiringMultiParty(params);
+        derivative = ExpiringMultiParty(derivativeAddress);
 
         transferOwnership(_owner);
 
@@ -75,41 +68,43 @@ contract TIC is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Sender supplies margin to the TIC and receives synthetic assets
-     * @notice Requires authorization to transfer the margin currency
-     * @param amount The amount of margin supplied
+     * @notice User supplies collateral to the TIC and receives synthetic assets
+     * @notice Requires authorization to transfer the collateral tokens
+     * @param collateralAmount The amount of collateral supplied
+     * @param numTokens The number of tokens the user wants to mint
      */
-    function mint(uint256 amount) external {
-        // get margin required for user's deposit
-        uint256 newMargin = takePercentage(amount, supportedMove);
+    function mint(
+        FixedPoint.Unsigned calldata collateralAmount,
+        FixedPoint.Unsigned calldata numTokens
+    ) external {
+        // Check that LP collateral can support the tokens to be minted
+        FixedPoint.Unsigned globalCollateralization = getGlobalCollateralizationRatio();
 
-        require(newMargin <= INT_MAX);
         require(
-            derivative.calcExcessMargin() >= int256(newMargin),
-            'Insufficient margin'
+            checkCollateralizationRatio(globalCollateralization, collateralAmount, numTokens),
+            "Insufficient collateral available from Liquidity Provider"
         );
 
-        // mint r tokens for derivative margin
-        mintRTokens(amount);
+        // Convert user's collateral to an RToken
+        mintRTokens(collateralAmount);
 
-        // mint synthetic asset with margin from user and provider
-        uint256 tokensMinted = mintSynTokens(amount);
+        // Mint synthetic asset with margin from user and provider
+        mintSynTokens(numTokens.mul(globalCollateralization), numTokens);
 
-        // transfer synthetic asset to the user
-        transferSynTokens(msg.sender, tokensMinted);
+        // Transfer synthetic asset to the user
+        transferSynTokens(msg.sender, numTokens);
     }
 
     /**
      * @notice Liquidity provider supplies margin to the TIC to collateralize user deposits
-     * @notice Requires authorization to transfer the margin currency
-     * @param amountToDeposit The amount of margin supplied
+     * @param collateralAmount The amount of margin supplied
      */
-    function deposit(uint256 amountToDeposit) external onlyLiquidityProvider {
-        // mint r tokens for derivative margin
-        mintRTokens(amountToDeposit);
-
-        // deposit margin so users can mint synthetic assets
-        depositRTokens(amountToDeposit);
+    function deposit(FixedPoint.Unsigned calldata collateralAmount)
+        external
+        onlyLiquidityProvider
+    {
+        // Convert LP's collateral to an RToken and hold it in the TIC
+        mintRTokens(collateralAmount);
     }
 
     /**
@@ -154,39 +149,18 @@ contract TIC is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Returns the required margin a liquidity provider must supply
-     */
-    function getProviderRequiredMargin() external view returns (int256) {
-        return derivative.getCurrentRequiredMargin();
-    }
- 
-    /**
-     * @notice Returns the margin in excess of the liquidity providers margin requirement
-     * @dev Value will be negative if the margin is below the margin requirement
-     */
-    function getProviderExcessMargin() external view returns (int256) {
-        return derivative.calcExcessMargin();
-    }
-
-    /**
-     * @notice Returns the expected value of the synthetic tokens
-     */
-    function getTokenPrice() external view returns (int256) {
-        return derivative.calcTokenValue();
-    }
-
-    /**
      * @notice Get the collateral token
      * @return The ERC20 collateral token
      */
-    function token() external view returns (IERC20) {
+    function token() external view nonReentrant returns (IERC20) {
         return rtoken.token();
     }
 
     /**
-     * @notice Mints an amount of R tokens using the default hat
+     * @notice Mints an amount of RTokens using the default hat
+     * @param amount The amount of underlying used to mint RTokens
      */
-    function mintRTokens(uint256 amount) private nonReentrant {
+    function mintRTokens(FixedPoint.Unsigned memory amount) private nonReentrant {
         IERC20 _token = rtoken.token();
         require(
             _token.transferFrom(msg.sender, address(this), amount),
@@ -198,29 +172,14 @@ contract TIC is Ownable, ReentrancyGuard {
 
     /**
      * @notice Mints synthetic tokens with the available margin
+     * TODO: This function should probably be refactored into something else
      */
-    function mintSynTokens(uint256 margin) private nonReentrant returns (uint256) {
-        require(rtoken.approve(address(derivative), margin));
-
-        (int256 price, ) = derivative.getUpdatedUnderlyingPrice();
-        uint256 tokensToMint = takeFactor(
-            margin,
-            uint256(price < 0 ? 0 : price)
-        );
-
-        // no need to send short margin to mint long margin worth of tokens
-        derivative.depositAndCreateTokens(margin, tokensToMint);
-
-        return tokensToMint;
-    }
-
-    /**
-     * @notice Deposits R tokens as margin to the derivative
-     * @dev Refactored from `deposit` to guard against reentrancy
-     */
-    function depositRTokens(uint256 amountToDeposit) private nonReentrant {
-        require(rtoken.approve(address(derivative), amountToDeposit));
-        derivative.deposit(amountToDeposit);
+    function mintSynTokens(
+        FixedPoint.Unsigned memory collateralAmount,
+        FixedPoint.Unsigned memory numTokens
+    ) private nonReentrant {
+        require(rtoken.approve(address(derivative), collateralAmount));
+        derivative.create(collateralAmount, tokensToMint);
     }
 
     /**
@@ -231,19 +190,47 @@ contract TIC is Ownable, ReentrancyGuard {
         require(derivative.transfer(to, tokensToTransfer));
     }
 
-    function takePercentage(uint256 value, uint256 percentage)
+    /**
+     * @notice Get the global collateralization ratio of the derivative
+     * @return The collateralization ratio
+     */
+    function getGlobalCollateralizationRatio()
         private
-        pure
-        returns (uint256)
+        view
+        nonReentrant
+        returns (FixedPoint.Unsigned memory)
     {
-        return value.mul(percentage).div(UINT_FP_SCALING_FACTOR);
+        FixedPoint.Unsigned totalTokensOutstanding = derivative.totalTokensOutstanding();
+
+        if (totalTokensOutstanding.isGreaterThan(0)) {
+            return derivative.totalPositionCollateral().div(totalTokensOutstanding);
+        } else {
+            return FixedPoint.fromUnscaledUint(0);
+        }
     }
 
-    function takeFactor(uint256 value, uint256 factor)
-        private
-        pure
-        returns (uint256)
-    {
-        return value.mul(UINT_FP_SCALING_FACTOR).div(factor);
+    /**
+     * @notice Check if a call to `mint` with the supplied parameters will succeed
+     * @dev Compares the new collateral from `collateralAmount` combined with LP collateral
+     *      against the collateral requirements of the derivative.
+     * @param globalCollateralization The global collateralization ratio of the derivative
+     * @param collateralAmount The amount of additional collateral supplied
+     * @param numTokens The number of tokens to mint
+     * @return `true` if there is sufficient collateral
+     */
+    function checkCollateralizationRatio(
+        FixedPoint.Unsigned memory globalCollateralization,
+        FixedPoint.Unsigned memory collateralAmount,
+        FixedPoint.Unsigned memory numTokens
+    ) private view nonReentrant returns (bool) {
+        // Collateral ratio possible for new tokens accounting for LP collateral
+        FixedPoint.Unsigned newCollateralization = collateralAmount
+            .add(rtoken.balanceOf(address(this)))
+            .div(numTokens);
+
+        // Check that LP collateral can support the tokens to be minted
+        return newCollateralization.isGreaterThanOrEqual(
+            derivative.collateralRequirement().max(globalCollateralization)
+        );
     }
 }
