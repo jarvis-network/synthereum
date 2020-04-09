@@ -109,34 +109,34 @@ contract TIC is Ownable, ReentrancyGuard {
 
     /**
      * @notice Redeem a user's SynFiat tokens for margin currency
-     * @notice Requires authorization to transfer the SynFiat tokens
-     * @dev Because of rtoken's Compound allocation strategy, redeeming an
+     * @notice Requires authorization to transfer the synthetic tokens
+     * @dev Because of RToken's Compound allocation strategy, redeeming an
      *      extremely tiny amount of tokens will cause a "redeemTokens zero"
      *      error from the cToken contract.
-     * @param tokensToRedeem The amount of tokens to redeem
+     * @param numTokens The amount of tokens to redeem
      */
-    function redeemTokens(uint256 tokensToRedeem) external nonReentrant {
-        require(tokensToRedeem > 0);
-        require(derivative.balanceOf(msg.sender) >= tokensToRedeem);
+    function redeemTokens(FixedPoint.Unsigned calldata numTokens) external nonReentrant {
+        require(numTokens > 0);
+        require(derivative.balanceOf(msg.sender) >= numTokens);
 
+        // Move synthetic tokens from the user to the TIC
+        // - This is because derivative expects the tokens to come from the sponsor address
         require(
-            derivative.transferFrom(msg.sender, address(this), tokensToRedeem),
+            derivative.transferFrom(msg.sender, address(this), numTokens),
             'Token transfer failed'
         );
+
+        // Allow the derivative to transfer tokens from the TIC
         require(
-            derivative.approve(address(derivative), tokensToRedeem),
+            derivative.approve(address(derivative), numTokens),
             'Token approve failed'
         );
 
+        FixedPoint.Unsigned amountWithdrawn = derivative.redeem(numTokens);
+        require(amountWithdrawn > 0, "No tokens were redeemed");
 
-        uint256 balance = rtoken.balanceOf(address(this));
-
-        derivative.redeemTokens(tokensToRedeem);
-
-        uint256 marginToRedeem = rtoken.balanceOf(address(this)) - balance;
-
-        require(marginToRedeem > 0, "Redeemed tokens have zero value");
-        require(rtoken.redeemAndTransfer(msg.sender, marginToRedeem));
+        // Redeem the RToken collateral for the underlying and transfer to the user
+        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn));
     }
 
     /**
