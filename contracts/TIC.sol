@@ -172,7 +172,8 @@ contract TIC is Ownable, ReentrancyGuard {
 
     /**
      * @notice Mints synthetic tokens with the available margin
-     * TODO: This function should probably be refactored into something else
+     * @param collateralAmount The amount of collateral to send
+     * @param numTokens The number of tokens to mint
      */
     function mintSynTokens(
         FixedPoint.Unsigned memory collateralAmount,
