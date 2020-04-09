@@ -141,12 +141,25 @@ contract TIC is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Withdraw the excess short margin supplied by the provider
-     * @param amount The amount of short margin to withdraw
+     * @notice Start a withdrawal request
+     * @notice Collateral can be withdrawn once the liveness period has elapsed
+     * @param collateralAmount The amount of short margin to withdraw
      */
-    function withdraw(uint256 amount) external onlyLiquidityProvider nonReentrant {
-        derivative.withdraw(amount);
-        require(rtoken.redeemAndTransfer(msg.sender, amount));
+    function withdrawRequest(FixedPoint.Unsigned calldata collateralAmount)
+        external
+        onlyLiquidityProvider
+        nonReentrant
+    {
+        derivative.requestWithdrawal(collateralAmount);
+    }
+
+    /**
+     * @notice Withdraw collateral after a withdraw request has passed it's liveness period
+     */
+    function withdrawPassedRequest() external onlyLiquidityProvider nonReentrant {
+        FixedPoint.Unsigned amountWithdrawn = derivative.withdrawPassedRequest();
+        require(amountWithdrawn > 0, "No tokens were redeemed");
+        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn));
     }
 
     /**
