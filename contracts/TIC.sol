@@ -132,6 +132,7 @@ contract TIC is Ownable, ReentrancyGuard {
             'Token approve failed'
         );
 
+        // Redeem the synthetic tokens for RToken collateral
         FixedPoint.Unsigned amountWithdrawn = derivative.redeem(numTokens);
         require(amountWithdrawn > 0, "No tokens were redeemed");
 
