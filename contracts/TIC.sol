@@ -196,7 +196,7 @@ contract TIC is Ownable, ReentrancyGuard {
         FixedPoint.Unsigned memory numTokens
     ) private nonReentrant {
         require(rtoken.approve(address(derivative), collateralAmount));
-        derivative.create(collateralAmount, tokensToMint);
+        derivative.create(collateralAmount, numTokens);
     }
 
     /**
