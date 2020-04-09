@@ -78,7 +78,7 @@ contract TIC is Ownable, ReentrancyGuard {
         FixedPoint.Unsigned calldata numTokens
     ) external {
         // Check that LP collateral can support the tokens to be minted
-        FixedPoint.Unsigned globalCollateralization = getGlobalCollateralizationRatio();
+        FixedPoint.Unsigned memory globalCollateralization = getGlobalCollateralizationRatio();
 
         require(
             checkCollateralizationRatio(globalCollateralization, collateralAmount, numTokens),
@@ -133,7 +133,7 @@ contract TIC is Ownable, ReentrancyGuard {
         );
 
         // Redeem the synthetic tokens for RToken collateral
-        FixedPoint.Unsigned amountWithdrawn = derivative.redeem(numTokens);
+        FixedPoint.Unsigned memory amountWithdrawn = derivative.redeem(numTokens);
         require(amountWithdrawn > 0, "No tokens were redeemed");
 
         // Redeem the RToken collateral for the underlying and transfer to the user
@@ -157,7 +157,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Withdraw collateral after a withdraw request has passed it's liveness period
      */
     function withdrawPassedRequest() external onlyLiquidityProvider nonReentrant {
-        FixedPoint.Unsigned amountWithdrawn = derivative.withdrawPassedRequest();
+        FixedPoint.Unsigned memory amountWithdrawn = derivative.withdrawPassedRequest();
         require(amountWithdrawn > 0, "No tokens were redeemed");
         require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn));
     }
@@ -203,7 +203,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @param recipient The address to send the tokens
      * @param amount The number of tokens to send
      */
-    function transferSynTokens(address recipient, FixedPoint.Unsigned amount)
+    function transferSynTokens(address recipient, FixedPoint.Unsigned memory amount)
         private
         nonReentrant
     {
@@ -220,7 +220,7 @@ contract TIC is Ownable, ReentrancyGuard {
         nonReentrant
         returns (FixedPoint.Unsigned memory)
     {
-        FixedPoint.Unsigned totalTokensOutstanding = derivative.totalTokensOutstanding();
+        FixedPoint.Unsigned memory totalTokensOutstanding = derivative.totalTokensOutstanding();
 
         if (totalTokensOutstanding.isGreaterThan(0)) {
             return derivative.totalPositionCollateral().div(totalTokensOutstanding);
@@ -244,7 +244,7 @@ contract TIC is Ownable, ReentrancyGuard {
         FixedPoint.Unsigned memory numTokens
     ) private view nonReentrant returns (bool) {
         // Collateral ratio possible for new tokens accounting for LP collateral
-        FixedPoint.Unsigned newCollateralization = collateralAmount
+        FixedPoint.Unsigned memory newCollateralization = collateralAmount
             .add(rtoken.balanceOf(address(this)))
             .div(numTokens);
 
