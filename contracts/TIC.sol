@@ -14,8 +14,8 @@ import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templ
 /**
  * @title Token Issuer Contract
  * @notice Collects margin, issues synthetic assets, and distributes accrued interest
- * @dev Margin currency is sent to an `RToken` and used as collateral for a
- *      `ExpiringMultiParty` synthetic asset
+ * @dev Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent
+ *      to the `ExpiringMultiParty` contract
  */
 contract TIC is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
