@@ -186,9 +186,14 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Transfer synthetic tokens from the derivative to an address
      * @dev Refactored from `mint` to guard against reentrancy
+     * @param recipient The address to send the tokens
+     * @param amount The number of tokens to send
      */
-    function transferSynTokens(address to, uint256 tokensToTransfer) private nonReentrant {
-        require(derivative.transfer(to, tokensToTransfer));
+    function transferSynTokens(address recipient, FixedPoint.Unsigned amount)
+        private
+        nonReentrant
+    {
+        require(derivative.transfer(recipient, amount));
     }
 
     /**
