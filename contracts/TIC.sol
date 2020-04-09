@@ -117,18 +117,20 @@ contract TIC is Ownable, ReentrancyGuard {
      */
     function redeemTokens(FixedPoint.Unsigned calldata numTokens) external nonReentrant {
         require(numTokens > 0);
-        require(derivative.balanceOf(msg.sender) >= numTokens);
+
+        IERC20 tokenCurrency = derivative.tokenCurrency();
+        require(tokenCurrency.balanceOf(msg.sender) >= numTokens);
 
         // Move synthetic tokens from the user to the TIC
         // - This is because derivative expects the tokens to come from the sponsor address
         require(
-            derivative.transferFrom(msg.sender, address(this), numTokens),
+            tokenCurrency.transferFrom(msg.sender, address(this), numTokens),
             'Token transfer failed'
         );
 
         // Allow the derivative to transfer tokens from the TIC
         require(
-            derivative.approve(address(derivative), numTokens),
+            tokenCurrency.approve(address(derivative), numTokens),
             'Token approve failed'
         );
 
@@ -207,7 +209,7 @@ contract TIC is Ownable, ReentrancyGuard {
         private
         nonReentrant
     {
-        require(derivative.transfer(recipient, amount));
+        require(derivative.tokenCurrency().transfer(recipient, amount));
     }
 
     /**
