@@ -173,7 +173,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Get the collateral token
      * @return The ERC20 collateral token
      */
-    function token() external view returns (IERC20) {
+    function collateralToken() external view returns (IERC20) {
         return rtoken.token();
     }
 
