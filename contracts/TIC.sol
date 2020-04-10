@@ -274,7 +274,7 @@ contract TIC is ReentrancyGuard {
         require(
             _fee.redeemFeeRecipients.length == _fee.redeemFeeProportions.length,
             "Fee recipients and fee proportions do not match"
-        )
+        );
 
         fee = _fee;
 
