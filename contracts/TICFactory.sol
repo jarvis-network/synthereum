@@ -24,7 +24,7 @@ contract TICFactory is Ownable {
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider,
-        TIC.Fee memory fee
+        TIC.Fee calldata fee
     )
         external
         onlyOwner

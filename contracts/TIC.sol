@@ -172,8 +172,8 @@ contract TIC is ReentrancyGuard {
         require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
 
         // Calculate fees
-        FixedPoint.Unsigned feeTotal = amountWithdrawn.mul(fee.redeemFee);
-        FixedPoint.Unsigned totalToRedeem = amountWithdrawn.sub(feeTotal);
+        FixedPoint.Unsigned memory feeTotal = amountWithdrawn.mul(fee.redeemFee);
+        FixedPoint.Unsigned memory totalToRedeem = amountWithdrawn.sub(feeTotal);
 
         // Redeem the RToken collateral for the underlying and transfer to the user
         require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
