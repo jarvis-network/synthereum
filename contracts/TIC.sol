@@ -141,6 +141,27 @@ contract TIC is ReentrancyGuard {
     }
 
     /**
+     * @notice Called by a source TIC's `exchange` function to mint destination tokens
+     * @dev This function could be called by any account to mint tokens, however they will lose
+     *      their excess collateral to the liquidity provider when they redeem the tokens.
+     * @param collateralAmount The amount of collateral to use from the source TIC
+     * @param numTokens The number of new tokens to mint
+     */
+    function exchangeMint(
+        FixedPoint.Unsigned calldata collateralAmount,
+        FixedPoint.Unsigned calldata numTokens
+    ) external {
+        // Pull RToken collateral from calling TIC contract
+        require(pullRTokens(numTokens));
+
+        // Mint new tokens with the collateral
+        mintSynTokens(collateralAmount, numTokens);
+
+        // Transfer new tokens back to the calling TIC where they will be sent to the user
+        transferSynTokens(msg.sender, numTokens);
+    }
+
+    /**
      * @notice Redeem a user's SynFiat tokens for margin currency
      * @notice Requires authorization to transfer the synthetic tokens
      * @dev Because of RToken's Compound allocation strategy, redeeming an
@@ -210,6 +231,33 @@ contract TIC is ReentrancyGuard {
         require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
     }
 
+    /**
+     * @notice Perform an atomic of tokens between this TIC and the destination TIC
+     * @dev The number of destination tokens needs to be calculated relative to the value of the
+     *      source tokens and the destination's collateral ratio. If too many destination tokens
+     *      are requested the transaction will fail.
+     * @param destTIC The destination TIC
+     * @param numTokens The number of source tokens to swap
+     * @param destNumTokens The number of destination tokens the swap attempts to procure
+     */
+    function exchange(
+        TIC destTIC,
+        FixedPoint.Unsigned calldata numTokens,
+        FixedPoint.Unsigned calldata destNumTokens
+    ) external nonReentrant {
+        // Burn the source tokens to get collateral
+        FixedPoint.Unsigned memory amountWithdrawn = redeemForCollateral(numTokens);
+        require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
+
+        require(rtoken.approve(address(destTIC), amountWithdrawn.rawValue));
+
+        // Mint the destination tokens with the withdrawn collateral
+        destTIC.exchangeMint(destNumTokens, amountWithdrawn);
+
+        // Transfer the new tokens to the user
+        transferSynTokens(msg.sender, destNumTokens);
+    }
+
     //----------------------------------------
     // External views
     //----------------------------------------
@@ -238,6 +286,19 @@ contract TIC is ReentrancyGuard {
         );
         require(_token.approve(address(rtoken), amount.rawValue), 'Token approve failed');
         require(rtoken.mintWithSelectedHat(amount.rawValue, hatID));
+    }
+
+    /**
+     * @notice Pulls RTokens from the sender to store in the TIC
+     * @param numTokens The number of tokens to pull
+     * @return `true` if the transfer succeeded, otherwise `false`
+     */
+    function pullRTokens(FixedPoint.Unsigned memory numTokens)
+        private
+        nonReentrant
+        returns (bool)
+    {
+        return rtoken.transferFrom(msg.sender, address(this), numTokens.rawValue);
     }
 
     /**
@@ -282,6 +343,38 @@ contract TIC is ReentrancyGuard {
         for (uint256 i = 0; i < fee.redeemFeeProportions.length; i++) {
             totalRedeemFeeProportions += fee.redeemFeeProportions[i];
         }
+    }
+
+    /**
+     * @notice Redeem synthetic tokens for collateral from the derivative
+     * @param numTokens The number of tokens to redeem
+     * @return The amount of collateral withdrawn
+     */
+    function redeemForCollateral(FixedPoint.Unsigned memory numTokens)
+        private
+        nonReentrant
+        returns (FixedPoint.Unsigned memory)
+    {
+        require(numTokens.isGreaterThan(0));
+
+        IERC20 tokenCurrency = derivative.tokenCurrency();
+        require(tokenCurrency.balanceOf(msg.sender) >= numTokens.rawValue);
+
+        // Move synthetic tokens from the user to the TIC
+        // - This is because derivative expects the tokens to come from the sponsor address
+        require(
+            tokenCurrency.transferFrom(msg.sender, address(this), numTokens.rawValue),
+            'Token transfer failed'
+        );
+
+        // Allow the derivative to transfer tokens from the TIC
+        require(
+            tokenCurrency.approve(address(derivative), numTokens.rawValue),
+            'Token approve failed'
+        );
+
+        // Redeem the synthetic tokens for RToken collateral and return the amount redeemed
+        return derivative.redeem(numTokens);
     }
 
     /**
