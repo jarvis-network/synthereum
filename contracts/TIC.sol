@@ -17,6 +17,10 @@ import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templ
  *      to the `ExpiringMultiParty` contract
  */
 contract TIC is ReentrancyGuard {
+    //----------------------------------------
+    // Type definitions
+    //----------------------------------------
+
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
 
@@ -32,6 +36,10 @@ contract TIC is ReentrancyGuard {
         uint32[] interestFeeProportions;
     }
 
+    //----------------------------------------
+    // State variables
+    //----------------------------------------
+
     ExpiringMultiParty public derivative;
     address private liquidityProvider;
     IRToken public rtoken;
@@ -39,6 +47,10 @@ contract TIC is ReentrancyGuard {
     Fee public fee;
     // Used with individual proportions to scale values
     uint256 private totalRedeemFeeProportions;
+
+    //----------------------------------------
+    // Constructor
+    //----------------------------------------
 
     /**
      * @notice Margin currency must be a rtoken
@@ -70,10 +82,18 @@ contract TIC is ReentrancyGuard {
         derivative = ExpiringMultiParty(derivativeAddress);
     }
 
+    //----------------------------------------
+    // Modifiers
+    //----------------------------------------
+
     modifier onlyLiquidityProvider() {
         require(msg.sender == liquidityProvider, 'Must be liquidity provider');
         _;
     }
+
+    //----------------------------------------
+    // External functions
+    //----------------------------------------
 
     /**
      * @notice User supplies collateral to the TIC and receives synthetic assets
@@ -190,6 +210,10 @@ contract TIC is ReentrancyGuard {
         require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
     }
 
+    //----------------------------------------
+    // External views
+    //----------------------------------------
+
     /**
      * @notice Get the collateral token
      * @return The ERC20 collateral token
@@ -197,6 +221,10 @@ contract TIC is ReentrancyGuard {
     function collateralToken() external view returns (IERC20) {
         return rtoken.token();
     }
+
+    //----------------------------------------
+    // Private functions
+    //----------------------------------------
 
     /**
      * @notice Mints an amount of RTokens using the default hat
@@ -257,6 +285,41 @@ contract TIC is ReentrancyGuard {
     }
 
     /**
+     * @notice Protects against reentrancy attacks
+     * @dev Use in functions where state is modified
+     * @dev Use the original function when calling from a view
+     * @return The collateralization ratio
+     */
+    function getGlobalCollateralizationRatioNonReentrant()
+        private
+        nonReentrant
+        returns (FixedPoint.Unsigned memory)
+    {
+        return getGlobalCollateralizationRatio();
+    }
+
+    /**
+     * @notice Protects against reentrancy attacks
+     * @dev Use in functions where state is modified
+     * @dev Use the original function when calling from a view
+     * @param globalCollateralization The global collateralization ratio of the derivative
+     * @param collateralAmount The amount of additional collateral supplied
+     * @param numTokens The number of tokens to mint
+     * @return `true` if there is sufficient collateral
+     */
+    function checkCollateralizationRatioNonReentrant(
+        FixedPoint.Unsigned memory globalCollateralization,
+        FixedPoint.Unsigned memory collateralAmount,
+        FixedPoint.Unsigned memory numTokens
+    ) private nonReentrant returns (bool) {
+        return checkCollateralizationRatio(globalCollateralization, collateralAmount, numTokens);
+    }
+
+    //----------------------------------------
+    // Private views
+    //----------------------------------------
+
+    /**
      * @notice Get the global collateralization ratio of the derivative
      * @return The collateralization ratio
      */
@@ -274,20 +337,6 @@ contract TIC is ReentrancyGuard {
         } else {
             return FixedPoint.fromUnscaledUint(0);
         }
-    }
-
-    /**
-     * @notice Protects against reentrancy attacks
-     * @dev Use in functions where state is modified
-     * @dev Use the original function when calling from a view
-     * @return The collateralization ratio
-     */
-    function getGlobalCollateralizationRatioNonReentrant()
-        private
-        nonReentrant
-        returns (FixedPoint.Unsigned memory)
-    {
-        return getGlobalCollateralizationRatio();
     }
 
     /**
@@ -311,22 +360,5 @@ contract TIC is ReentrancyGuard {
 
         // Check that LP collateral can support the tokens to be minted
         return newCollateralization.isGreaterThanOrEqual(globalCollateralization);
-    }
-
-    /**
-     * @notice Protects against reentrancy attacks
-     * @dev Use in functions where state is modified
-     * @dev Use the original function when calling from a view
-     * @param globalCollateralization The global collateralization ratio of the derivative
-     * @param collateralAmount The amount of additional collateral supplied
-     * @param numTokens The number of tokens to mint
-     * @return `true` if there is sufficient collateral
-     */
-    function checkCollateralizationRatioNonReentrant(
-        FixedPoint.Unsigned memory globalCollateralization,
-        FixedPoint.Unsigned memory collateralAmount,
-        FixedPoint.Unsigned memory numTokens
-    ) private nonReentrant returns (bool) {
-        return checkCollateralizationRatio(globalCollateralization, collateralAmount, numTokens);
     }
 }
