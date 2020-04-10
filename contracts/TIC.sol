@@ -116,30 +116,30 @@ contract TIC is Ownable, ReentrancyGuard {
      * @param numTokens The amount of tokens to redeem
      */
     function redeemTokens(FixedPoint.Unsigned calldata numTokens) external nonReentrant {
-        require(numTokens > 0);
+        require(numTokens.isGreaterThan(0));
 
         IERC20 tokenCurrency = derivative.tokenCurrency();
-        require(tokenCurrency.balanceOf(msg.sender) >= numTokens);
+        require(tokenCurrency.balanceOf(msg.sender) >= numTokens.rawValue);
 
         // Move synthetic tokens from the user to the TIC
         // - This is because derivative expects the tokens to come from the sponsor address
         require(
-            tokenCurrency.transferFrom(msg.sender, address(this), numTokens),
+            tokenCurrency.transferFrom(msg.sender, address(this), numTokens.rawValue),
             'Token transfer failed'
         );
 
         // Allow the derivative to transfer tokens from the TIC
         require(
-            tokenCurrency.approve(address(derivative), numTokens),
+            tokenCurrency.approve(address(derivative), numTokens.rawValue),
             'Token approve failed'
         );
 
         // Redeem the synthetic tokens for RToken collateral
         FixedPoint.Unsigned memory amountWithdrawn = derivative.redeem(numTokens);
-        require(amountWithdrawn > 0, "No tokens were redeemed");
+        require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
 
         // Redeem the RToken collateral for the underlying and transfer to the user
-        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn));
+        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
     }
 
     /**
@@ -160,8 +160,8 @@ contract TIC is Ownable, ReentrancyGuard {
      */
     function withdrawPassedRequest() external onlyLiquidityProvider nonReentrant {
         FixedPoint.Unsigned memory amountWithdrawn = derivative.withdrawPassedRequest();
-        require(amountWithdrawn > 0, "No tokens were redeemed");
-        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn));
+        require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
+        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
     }
 
     /**
@@ -179,11 +179,11 @@ contract TIC is Ownable, ReentrancyGuard {
     function mintRTokens(FixedPoint.Unsigned memory amount) private nonReentrant {
         IERC20 _token = rtoken.token();
         require(
-            _token.transferFrom(msg.sender, address(this), amount),
+            _token.transferFrom(msg.sender, address(this), amount.rawValue),
             'Token transfer failed'
         );
-        require(_token.approve(address(rtoken), amount), 'Token approve failed');
-        require(rtoken.mintWithSelectedHat(amount, hatID));
+        require(_token.approve(address(rtoken), amount.rawValue), 'Token approve failed');
+        require(rtoken.mintWithSelectedHat(amount.rawValue, hatID));
     }
 
     /**
@@ -195,7 +195,7 @@ contract TIC is Ownable, ReentrancyGuard {
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
     ) private nonReentrant {
-        require(rtoken.approve(address(derivative), collateralAmount));
+        require(rtoken.approve(address(derivative), collateralAmount.rawValue));
         derivative.create(collateralAmount, numTokens);
     }
 
@@ -209,7 +209,7 @@ contract TIC is Ownable, ReentrancyGuard {
         private
         nonReentrant
     {
-        require(derivative.tokenCurrency().transfer(recipient, amount));
+        require(derivative.tokenCurrency().transfer(recipient, amount.rawValue));
     }
 
     /**
@@ -222,7 +222,9 @@ contract TIC is Ownable, ReentrancyGuard {
         nonReentrant
         returns (FixedPoint.Unsigned memory)
     {
-        FixedPoint.Unsigned memory totalTokensOutstanding = derivative.totalTokensOutstanding();
+        FixedPoint.Unsigned memory totalTokensOutstanding = FixedPoint.Unsigned(
+            derivative.totalTokensOutstanding()
+        );
 
         if (totalTokensOutstanding.isGreaterThan(0)) {
             return derivative.totalPositionCollateral().div(totalTokensOutstanding);
@@ -247,12 +249,12 @@ contract TIC is Ownable, ReentrancyGuard {
     ) private view nonReentrant returns (bool) {
         // Collateral ratio possible for new tokens accounting for LP collateral
         FixedPoint.Unsigned memory newCollateralization = collateralAmount
-            .add(rtoken.balanceOf(address(this)))
+            .add(FixedPoint.Unsigned(rtoken.balanceOf(address(this))))
             .div(numTokens);
 
         // Check that LP collateral can support the tokens to be minted
         return newCollateralization.isGreaterThanOrEqual(
-            derivative.collateralRequirement().max(globalCollateralization)
+            globalCollateralization.max(FixedPoint.Unsigned(derivative.collateralRequirement()))
         );
     }
 }
