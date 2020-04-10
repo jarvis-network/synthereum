@@ -20,10 +20,25 @@ contract TIC is ReentrancyGuard {
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
 
+    // Describe fee structure
+    struct Fee {
+        // Fees charged when a user redeems tokens
+        FixedPoint.Unsigned redeemFee;
+        address[] redeemFeeRecipients;
+        uint32[] redeemFeeProportions;
+
+        // Fees taken from the interest accrued by collateral
+        address[] interestFeeRecipients;
+        uint32[] interestFeeProportions;
+    }
+
     ExpiringMultiParty public derivative;
-    IRToken public rtoken;
     address private liquidityProvider;
+    IRToken public rtoken;
     uint256 private hatID;
+    Fee public fee;
+    // Used with individual proportions to scale values
+    uint256 private totalRedeemFeeProportions;
 
     /**
      * @notice Margin currency must be a rtoken
@@ -31,30 +46,28 @@ contract TIC is ReentrancyGuard {
      * @param derivativeCreator The `ExpiringMultiPartyCreator`
      * @param params The `ExpiringMultiParty` parameters
      * @param _liquidityProvider The liquidity provider
+     * @param _fee The fee structure
      */
     constructor(
         ExpiringMultiPartyCreator derivativeCreator,
         ExpiringMultiPartyCreator.Params memory params,
         address _liquidityProvider,
+        Fee memory _fee
     )
         public
         nonReentrant
     {
-        rtoken = IRToken(params.collateralAddress);
         liquidityProvider = _liquidityProvider;
 
+        setFee(_fee);
+
+        // Set RToken hat according to the interest fee structure
+        rtoken = IRToken(params.collateralAddress);
+        hatID = rtoken.createHat(fee.interestRecipients, fee.interestProportions, false);
+
+        // Create the derivative contract
         address derivativeAddress = derivativeCreator.createExpiringMultiParty(params);
         derivative = ExpiringMultiParty(derivativeAddress);
-
-
-        // Interest is distributed 90/10 to the protocol and liquidity provider
-        address[] memory recipients = new address[](2);
-        recipients[1] = liquidityProvider;
-        uint32[] memory proportions = new uint32[](1);
-        proportions[0] = 10;
-        proportions[1] = 90;
-
-        hatID = rtoken.createHat(recipients, proportions, false);
     }
 
     modifier onlyLiquidityProvider() {
@@ -138,8 +151,21 @@ contract TIC is ReentrancyGuard {
         FixedPoint.Unsigned memory amountWithdrawn = derivative.redeem(numTokens);
         require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
 
+        // Calculate fees
+        FixedPoint.Unsigned feeTotal = amountWithdrawn.mul(fee.redeemFee);
+        FixedPoint.Unsigned totalToRedeem = amountWithdrawn.sub(feeTotal);
+
         // Redeem the RToken collateral for the underlying and transfer to the user
         require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
+
+        // Distribute fees
+        for (uint256 i = 0; i < fee.redeemFeeRecipients.length; i++) {
+            require(rtoken.redeemAndTransfer(
+                fee.redeemFeeRecipients[i],
+                // This order is important because it mixes FixedPoint with unscaled uint
+                feeTotal.mul(fee.redeemFeeProportions).div(totalRedeemFeeProportions)
+            ));
+        }
     }
 
     /**
@@ -210,6 +236,24 @@ contract TIC is ReentrancyGuard {
         nonReentrant
     {
         require(derivative.tokenCurrency().transfer(recipient, amount.rawValue));
+    }
+
+    /**
+     * @notice Set the TIC fee structure parameters
+     * @param _fee The fee structure
+     */
+    function setFee(Fee memory _fee) private {
+        require(
+            _fee.redeemFeeRecipients.length == _fee.redeemFeeProportions.length,
+            "Fee recipients and fee proportions do not match"
+        )
+
+        fee = _fee;
+
+        // Store the sum of all proportions
+        for (uint256 i = 0; i < fee.redeemFeeProportions.length; i++) {
+            totalRedeemFeeProportions += fee.redeemFeeProportions[i];
+        }
     }
 
     /**

@@ -23,7 +23,8 @@ contract TICFactory is Ownable {
      */
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
-        address liquidityProvider
+        address liquidityProvider,
+        TIC.Fee memory fee
     )
         external
         onlyOwner
@@ -31,7 +32,8 @@ contract TICFactory is Ownable {
         symbolToTIC[params.syntheticSymbol] = new TIC(
             derivativeCreator,
             params,
-            liquidityProvider
+            liquidityProvider,
+            fee
         );
     }
 }
