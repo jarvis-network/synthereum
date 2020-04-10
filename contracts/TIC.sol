@@ -75,7 +75,7 @@ contract TIC is ReentrancyGuard {
 
         // Set RToken hat according to the interest fee structure
         rtoken = IRToken(params.collateralAddress);
-        hatID = rtoken.createHat(fee.interestRecipients, fee.interestProportions, false);
+        hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
 
         // Create the derivative contract
         address derivativeAddress = derivativeCreator.createExpiringMultiParty(params);
