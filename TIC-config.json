@@ -4,6 +4,6 @@
   "fixedYearlyFee": "0",
   "withdrawLimit": "1000000000000000000000000000000000000",
   "disputeDeposit": "1000000000000000000",
-  "expiry": 0,
   "returnType": "0"
+  "expirationTimestamp": 1585699200,
 }
