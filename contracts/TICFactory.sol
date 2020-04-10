@@ -28,7 +28,7 @@ contract TICFactory is Ownable {
         external
         onlyOwner
     {
-        symbolToTIC[params.symbol] = new TIC(
+        symbolToTIC[params.syntheticSymbol] = new TIC(
             derivativeCreator,
             params,
             liquidityProvider,
