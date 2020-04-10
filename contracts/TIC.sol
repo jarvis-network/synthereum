@@ -176,14 +176,14 @@ contract TIC is ReentrancyGuard {
         FixedPoint.Unsigned memory totalToRedeem = amountWithdrawn.sub(feeTotal);
 
         // Redeem the RToken collateral for the underlying and transfer to the user
-        require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
+        require(rtoken.redeemAndTransfer(msg.sender, totalToRedeem.rawValue));
 
         // Distribute fees
         for (uint256 i = 0; i < fee.redeemFeeRecipients.length; i++) {
             require(rtoken.redeemAndTransfer(
                 fee.redeemFeeRecipients[i],
                 // This order is important because it mixes FixedPoint with unscaled uint
-                feeTotal.mul(fee.redeemFeeProportions).div(totalRedeemFeeProportions)
+                feeTotal.mul(fee.redeemFeeProportions[i]).div(totalRedeemFeeProportions).rawValue
             ));
         }
     }
