@@ -254,7 +254,7 @@ contract TIC is Ownable, ReentrancyGuard {
     /**
      * @notice Check if a call to `mint` with the supplied parameters will succeed
      * @dev Compares the new collateral from `collateralAmount` combined with LP collateral
-     *      against the collateral requirements of the derivative.
+     *      against the collateralization ratio of the derivative.
      * @param globalCollateralization The global collateralization ratio of the derivative
      * @param collateralAmount The amount of additional collateral supplied
      * @param numTokens The number of tokens to mint
@@ -271,9 +271,7 @@ contract TIC is Ownable, ReentrancyGuard {
             .div(numTokens);
 
         // Check that LP collateral can support the tokens to be minted
-        return newCollateralization.isGreaterThanOrEqual(
-            globalCollateralization.max(FixedPoint.Unsigned(derivative.collateralRequirement()))
-        );
+        return newCollateralization.isGreaterThanOrEqual(globalCollateralization);
     }
 
     /**
