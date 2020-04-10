@@ -3,7 +3,7 @@ pragma solidity >=0.6.0 <0.7.0;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 abstract contract IRToken is IERC20 {
-    function token() external virtual returns (IERC20);
+    IERC20 public token;
 
     function redeemAndTransfer(
         address redeemTo,
