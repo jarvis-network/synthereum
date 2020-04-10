@@ -8,7 +8,7 @@ module.exports = function(deployer, network) {
 
   const networkId = config.networks[network.replace(/-fork$/, "")].network_id;
 
-  TDCreatorAddr = contracts[networkId]["tokenizedDerivativeCreator"];
+  TDCreatorAddr = contracts[networkId]["expiringMultiPartyCreator"];
 
   deployer.deploy(TICFactory, TDCreatorAddr);
 };

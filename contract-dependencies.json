@@ -1,7 +1,6 @@
 {
   "42": {
-    "tokenizedDerivativeCreator": "0xad7c5516b25661e0A204646b08024cD82ffe6C48",
-    "returnCalculator": "0xad8fD1f418FB860A383c9D4647880af7f043Ef39",
-    "marginCurrency": "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB"
+    "expiringMultiPartyCreator": "0x3ffefa0ecA0Aa7263D1B77402E86aCE7eDA51f32",
+    "collateralAddress": "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB"
   }
 }

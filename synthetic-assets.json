@@ -1,22 +1,26 @@
 [
   {
-    "name": "Jarvis Synthetic Euro",
-    "symbol": "jEUR",
-    "identifier": "EUR/USD"
+    "syntheticName": "Jarvis Synthetic Euro",
+    "syntheticSymbol": "jEUR",
+    "priceFeedIdentifier": "EUR/USD",
+    "collateralRequirement": { "rawValue": "1100000000000000000" }
   },
   {
-    "name": "Jarvis Synthetic Swiss Franc",
-    "symbol": "jCHF",
-    "identifier": "CHF/USD"
+    "syntheticName": "Jarvis Synthetic Swiss Franc",
+    "syntheticSymbol": "jCHF",
+    "priceFeedIdentifier": "CHF/USD",
+    "collateralRequirement": { "rawValue": "1100000000000000000" }
   },
   {
-    "name": "Jarvis Synthetic British Pound",
-    "symbol": "jGBP",
-    "identifier": "GBP/USD"
+    "syntheticName": "Jarvis Synthetic British Pound",
+    "syntheticSymbol": "jGBP",
+    "priceFeedIdentifier": "GBP/USD",
+    "collateralRequirement": { "rawValue": "1100000000000000000" }
   },
   {
-    "name": "Jarvis Synthetic Gold",
-    "symbol": "jXAU",
-    "identifier": "XAU/USD"
+    "syntheticName": "Jarvis Synthetic Gold",
+    "syntheticSymbol": "jXAU",
+    "priceFeedIdentifier": "XAU/USD",
+    "collateralRequirement": { "rawValue": "1100000000000000000" }
   }
 ]
