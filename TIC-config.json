@@ -1,9 +1,7 @@
 {
-  "defaultPenalty": "1000000000000000000",
-  "supportedMove": "100000000000000000",
-  "fixedYearlyFee": "0",
-  "withdrawLimit": "1000000000000000000000000000000000000",
-  "disputeDeposit": "1000000000000000000",
-  "returnType": "0"
   "expirationTimestamp": 1585699200,
+  "disputeBondPct": { "rawValue": "1500000000000000000" },
+  "sponsorDisputeRewardPct": { "rawValue": "500000000000000000" },
+  "disputerDisputeRewardPct": { "rawValue": "500000000000000000" },
+  "minSponsorTokens": { "rawValue": "0" }
 }
