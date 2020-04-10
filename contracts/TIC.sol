@@ -78,10 +78,15 @@ contract TIC is Ownable, ReentrancyGuard {
         FixedPoint.Unsigned calldata numTokens
     ) external {
         // Check that LP collateral can support the tokens to be minted
-        FixedPoint.Unsigned memory globalCollateralization = getGlobalCollateralizationRatio();
+        FixedPoint.Unsigned memory globalCollateralization =
+            getGlobalCollateralizationRatioNonReentrant();
 
         require(
-            checkCollateralizationRatio(globalCollateralization, collateralAmount, numTokens),
+            checkCollateralizationRatioNonReentrant(
+                globalCollateralization,
+                collateralAmount,
+                numTokens
+            ),
             "Insufficient collateral available from Liquidity Provider"
         );
 
@@ -168,7 +173,7 @@ contract TIC is Ownable, ReentrancyGuard {
      * @notice Get the collateral token
      * @return The ERC20 collateral token
      */
-    function token() external view nonReentrant returns (IERC20) {
+    function token() external view returns (IERC20) {
         return rtoken.token();
     }
 
@@ -219,7 +224,6 @@ contract TIC is Ownable, ReentrancyGuard {
     function getGlobalCollateralizationRatio()
         private
         view
-        nonReentrant
         returns (FixedPoint.Unsigned memory)
     {
         FixedPoint.Unsigned memory totalTokensOutstanding = FixedPoint.Unsigned(
@@ -231,6 +235,20 @@ contract TIC is Ownable, ReentrancyGuard {
         } else {
             return FixedPoint.fromUnscaledUint(0);
         }
+    }
+
+    /**
+     * @notice Protects against reentrancy attacks
+     * @dev Use in functions where state is modified
+     * @dev Use the original function when calling from a view
+     * @return The collateralization ratio
+     */
+    function getGlobalCollateralizationRatioNonReentrant()
+        private
+        nonReentrant
+        returns (FixedPoint.Unsigned memory)
+    {
+        return getGlobalCollateralizationRatio();
     }
 
     /**
@@ -246,7 +264,7 @@ contract TIC is Ownable, ReentrancyGuard {
         FixedPoint.Unsigned memory globalCollateralization,
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
-    ) private view nonReentrant returns (bool) {
+    ) private view returns (bool) {
         // Collateral ratio possible for new tokens accounting for LP collateral
         FixedPoint.Unsigned memory newCollateralization = collateralAmount
             .add(FixedPoint.Unsigned(rtoken.balanceOf(address(this))))
@@ -256,5 +274,22 @@ contract TIC is Ownable, ReentrancyGuard {
         return newCollateralization.isGreaterThanOrEqual(
             globalCollateralization.max(FixedPoint.Unsigned(derivative.collateralRequirement()))
         );
+    }
+
+    /**
+     * @notice Protects against reentrancy attacks
+     * @dev Use in functions where state is modified
+     * @dev Use the original function when calling from a view
+     * @param globalCollateralization The global collateralization ratio of the derivative
+     * @param collateralAmount The amount of additional collateral supplied
+     * @param numTokens The number of tokens to mint
+     * @return `true` if there is sufficient collateral
+     */
+    function checkCollateralizationRatioNonReentrant(
+        FixedPoint.Unsigned memory globalCollateralization,
+        FixedPoint.Unsigned memory collateralAmount,
+        FixedPoint.Unsigned memory numTokens
+    ) private nonReentrant returns (bool) {
+        return checkCollateralizationRatio(globalCollateralization, collateralAmount, numTokens);
     }
 }
