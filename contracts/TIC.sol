@@ -1,7 +1,6 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
@@ -17,7 +16,7 @@ import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templ
  * @dev Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent
  *      to the `ExpiringMultiParty` contract
  */
-contract TIC is Ownable, ReentrancyGuard {
+contract TIC is ReentrancyGuard {
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
 
@@ -32,13 +31,11 @@ contract TIC is Ownable, ReentrancyGuard {
      * @param derivativeCreator The `ExpiringMultiPartyCreator`
      * @param params The `ExpiringMultiParty` parameters
      * @param _liquidityProvider The liquidity provider
-     * @param _owner The account that receives interest from the collateral
      */
     constructor(
         ExpiringMultiPartyCreator derivativeCreator,
         ExpiringMultiPartyCreator.Params memory params,
         address _liquidityProvider,
-        address _owner
     )
         public
         nonReentrant
@@ -49,11 +46,9 @@ contract TIC is Ownable, ReentrancyGuard {
         address derivativeAddress = derivativeCreator.createExpiringMultiParty(params);
         derivative = ExpiringMultiParty(derivativeAddress);
 
-        transferOwnership(_owner);
 
         // Interest is distributed 90/10 to the protocol and liquidity provider
         address[] memory recipients = new address[](2);
-        recipients[0] = owner();
         recipients[1] = liquidityProvider;
         uint32[] memory proportions = new uint32[](1);
         proportions[0] = 10;
