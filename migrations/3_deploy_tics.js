@@ -3,7 +3,7 @@ const web3Utils = require("web3-utils");
 const config = require("../truffle-config.js");
 const contracts = require("../contract-dependencies.json");
 const assets = require("../synthetic-assets.json");
-const TICConfig = require("../TIC-config.json");
+const TICConfig = require("../tic-config.json");
 
 var TICFactory = artifacts.require("TICFactory");
 
