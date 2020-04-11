@@ -232,6 +232,67 @@ contract TIC is ReentrancyGuard {
     }
 
     /**
+     * @notice Redeem tokens after contract expiry
+     * @notice After derivative expiry, an LP should use this instead of `withdrawRequest` to
+     *         retrieve their collateral.
+     */
+    function settleExpired() external nonReentrant {
+        IERC20 tokenCurrency = derivative.tokenCurrency();
+
+        FixedPoint.Unsigned memory numTokens = FixedPoint.Unsigned(
+            tokenCurrency.balanceOf(msg.sender)
+        );
+
+        // Make sure there is something for the user to settle
+        require(
+            numTokens.isGreaterThan(0) || msg.sender == liquidityProvider,
+            "Account has nothing to settle"
+        );
+
+        if (numTokens.isGreaterThan(0)) {
+            // Move synthetic tokens from the user to the TIC
+            // - This is because derivative expects the tokens to come from the sponsor address
+            require(
+                tokenCurrency.transferFrom(msg.sender, address(this), numTokens.rawValue),
+                'Token transfer failed'
+            );
+
+            // Allow the derivative to transfer tokens from the TIC
+            require(
+                tokenCurrency.approve(address(derivative), numTokens.rawValue),
+                'Token approve failed'
+            );
+        }
+
+        // Redeem the synthetic tokens for RToken collateral
+        FixedPoint.Unsigned memory amountWithdrawn = derivative.settleExpired();
+        require(amountWithdrawn.isGreaterThan(0), "No collateral was withdrawn");
+
+        // Amount of RToken collateral that will be redeemed and sent to the user
+        FixedPoint.Unsigned memory totalToRedeem;
+
+        // If the user is the LP, send redeemed token collateral plus excess collateral
+        if (msg.sender == liquidityProvider) {
+            totalToRedeem = amountWithdrawn.add(
+                // Redeem LP collateral held in TIC pool
+                // Includes excess collateral withdrawn by a user previously calling `settleExpired`
+                FixedPoint.Unsigned(rtoken.balanceOf(address(this)))
+            );
+        } else {
+            // Otherwise, separate excess collateral from redeemed token value
+            // Must be called after `derivative.settleExpired` to make sure expiryPrice is set
+            totalToRedeem = numTokens.mul(FixedPoint.Unsigned(derivative.expiryPrice()));
+            require(
+                amountWithdrawn.isGreaterThanOrEqual(totalToRedeem),
+                "Insufficient collateral withdrawn to redeem tokens"
+            );
+        }
+
+        // Redeem the RToken collateral for the underlying and transfer to the user
+        require(rtoken.redeemAndTransfer(msg.sender, totalToRedeem.rawValue));
+    }
+
+    /**
      * @notice Perform an atomic of tokens between this TIC and the destination TIC
      * @dev The number of destination tokens needs to be calculated relative to the value of the
      *      source tokens and the destination's collateral ratio. If too many destination tokens
