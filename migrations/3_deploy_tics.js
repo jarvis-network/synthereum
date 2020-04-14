@@ -17,9 +17,9 @@ module.exports = function(deployer, network, accounts) {
   collateralAddress = contracts[networkId]["collateralAddress"];
 
   const fee = {
-    "redeemFee": { "rawValue": web3Utils.toWei("0.001") },
-    "redeemFeeRecipients": [protocolOwner, liquidityProvider],
-    "redeemFeeProportions": [50, 50],
+    "mintFee": { "rawValue": web3Utils.toWei("0.001") },
+    "mintFeeRecipients": [protocolOwner, liquidityProvider],
+    "mintFeeProportions": [50, 50],
     "interestFeeRecipients": [protocolOwner, liquidityProvider],
     "interestFeeProportions": [10, 90]
   };
