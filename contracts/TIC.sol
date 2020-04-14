@@ -26,10 +26,10 @@ contract TIC is ReentrancyGuard {
 
     // Describe fee structure
     struct Fee {
-        // Fees charged when a user redeems tokens
-        FixedPoint.Unsigned redeemFee;
-        address[] redeemFeeRecipients;
-        uint32[] redeemFeeProportions;
+        // Fees charged when a user mints tokens
+        FixedPoint.Unsigned mintFee;
+        address[] mintFeeRecipients;
+        uint32[] mintFeeProportions;
 
         // Fees taken from the interest accrued by collateral
         address[] interestFeeRecipients;
@@ -46,7 +46,7 @@ contract TIC is ReentrancyGuard {
     uint256 private hatID;
     Fee public fee;
     // Used with individual proportions to scale values
-    uint256 private totalRedeemFeeProportions;
+    uint256 private totalMintFeeProportions;
 
     //----------------------------------------
     // Constructor
@@ -118,6 +118,12 @@ contract TIC is ReentrancyGuard {
             "Insufficient collateral available from Liquidity Provider"
         );
 
+        // Calculate fees
+        FixedPoint.Unsigned memory feeTotal = collateralAmount.mul(fee.mintFee);
+
+        // Pull user's collateral and mint fee into the TIC
+        pullUnderlying(collateralAmount.add(feeTotal));
+
         // Convert user's collateral to an RToken
         mintRTokens(collateralAmount);
 
@@ -126,6 +132,17 @@ contract TIC is ReentrancyGuard {
 
         // Transfer synthetic asset to the user
         transferSynTokens(msg.sender, numTokens);
+
+        // Distribute fees
+        // TODO: Consider using the withdrawal pattern for fees
+        // TODO: Consider edge cases where math could fail due to truncation
+        for (uint256 i = 0; i < fee.mintFeeRecipients.length; i++) {
+            require(rtoken.token().transfer(
+                fee.mintFeeRecipients[i],
+                // This order is important because it mixes FixedPoint with unscaled uint
+                feeTotal.mul(fee.mintFeeProportions[i]).div(totalMintFeeProportions).rawValue
+            ));
+        }
     }
 
     /**
@@ -136,7 +153,10 @@ contract TIC is ReentrancyGuard {
         external
         onlyLiquidityProvider
     {
-        // Convert LP's collateral to an RToken and hold it in the TIC
+        // Pull LP's collateral into the TIC
+        pullUnderlying(collateralAmount);
+
+        // Convert LP's collateral to an RToken
         mintRTokens(collateralAmount);
     }
 
@@ -337,16 +357,14 @@ contract TIC is ReentrancyGuard {
 
     /**
      * @notice Mints an amount of RTokens using the default hat
-     * @param amount The amount of underlying used to mint RTokens
+     * @param numTokens The amount of underlying used to mint RTokens
      */
-    function mintRTokens(FixedPoint.Unsigned memory amount) private nonReentrant {
-        IERC20 _token = rtoken.token();
+    function mintRTokens(FixedPoint.Unsigned memory numTokens) private nonReentrant {
         require(
-            _token.transferFrom(msg.sender, address(this), amount.rawValue),
-            'Token transfer failed'
+            rtoken.token().approve(address(rtoken), numTokens.rawValue),
+            'Token approve failed'
         );
-        require(_token.approve(address(rtoken), amount.rawValue), 'Token approve failed');
-        require(rtoken.mintWithSelectedHat(amount.rawValue, hatID));
+        require(rtoken.mintWithSelectedHat(numTokens.rawValue, hatID));
     }
 
     /**
@@ -360,6 +378,19 @@ contract TIC is ReentrancyGuard {
         returns (bool)
     {
         return rtoken.transferFrom(msg.sender, address(this), numTokens.rawValue);
+    }
+
+    /**
+     * @notice Pulls underlying tokens from the sender to store in the TIC
+     * @param numTokens The number of tokens to pull
+     * @return `true` if the transfer succeeded, otherwise `false`
+     */
+    function pullUnderlying(FixedPoint.Unsigned memory numTokens)
+        private
+        nonReentrant
+        returns (bool)
+    {
+        return rtoken.token().transferFrom(msg.sender, address(this), numTokens.rawValue);
     }
 
     /**
@@ -394,15 +425,15 @@ contract TIC is ReentrancyGuard {
      */
     function setFee(Fee memory _fee) private {
         require(
-            _fee.redeemFeeRecipients.length == _fee.redeemFeeProportions.length,
+            _fee.mintFeeRecipients.length == _fee.mintFeeProportions.length,
             "Fee recipients and fee proportions do not match"
         );
 
         fee = _fee;
 
         // Store the sum of all proportions
-        for (uint256 i = 0; i < fee.redeemFeeProportions.length; i++) {
-            totalRedeemFeeProportions += fee.redeemFeeProportions[i];
+        for (uint256 i = 0; i < fee.mintFeeProportions.length; i++) {
+            totalMintFeeProportions += fee.mintFeeProportions[i];
         }
     }
 
