@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {TIC} from "./TIC.sol";
+import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable {
@@ -29,9 +30,13 @@ contract TICFactory is Ownable {
         external
         onlyOwner
     {
+        // Create the derivative contract
+        // TODO: Make sure identifiers are on the whitelist
+        address derivative = derivativeCreator.createExpiringMultiParty(params);
+
+        // Create the TIC
         symbolToTIC[params.syntheticSymbol] = new TIC(
-            derivativeCreator,
-            params,
+            ExpiringMultiParty(derivative),
             liquidityProvider,
             fee
         );

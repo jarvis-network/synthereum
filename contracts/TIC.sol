@@ -8,7 +8,6 @@ import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoi
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
 import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
-import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 /**
  * @title Token Issuer Contract
@@ -55,31 +54,25 @@ contract TIC is ReentrancyGuard {
     /**
      * @notice Margin currency must be a rtoken
      * @dev TIC creates a new derivative so it is set as the sponsor
-     * @param derivativeCreator The `ExpiringMultiPartyCreator`
-     * @param params The `ExpiringMultiParty` parameters
+     * @param _derivative The `ExpiringMultiParty`
      * @param _liquidityProvider The liquidity provider
      * @param _fee The fee structure
      */
     constructor(
-        ExpiringMultiPartyCreator derivativeCreator,
-        ExpiringMultiPartyCreator.Params memory params,
+        ExpiringMultiParty _derivative,
         address _liquidityProvider,
         Fee memory _fee
     )
         public
         nonReentrant
     {
+        derivative = _derivative;
         liquidityProvider = _liquidityProvider;
-
         setFee(_fee);
 
         // Set RToken hat according to the interest fee structure
-        rtoken = IRToken(params.collateralAddress);
+        rtoken = IRToken(address(derivative.collateralCurrency()));
         hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
-
-        // Create the derivative contract
-        address derivativeAddress = derivativeCreator.createExpiringMultiParty(params);
-        derivative = ExpiringMultiParty(derivativeAddress);
     }
 
     //----------------------------------------
