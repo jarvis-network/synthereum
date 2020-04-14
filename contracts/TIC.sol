@@ -237,9 +237,19 @@ contract TIC is ReentrancyGuard {
 
     /**
      * @notice Withdraw collateral after a withdraw request has passed it's liveness period
+     * TODO: `derivative.withdrawPassedRequest` gets an `amountWithdrawn` return value in commit
+     *       86d8ffcd694bbed40140dede179692e7036f2996
      */
     function withdrawPassedRequest() external onlyLiquidityProvider nonReentrant {
-        FixedPoint.Unsigned memory amountWithdrawn = derivative.withdrawPassedRequest();
+        uint256 prevBalance = rtoken.balanceOf(address(this));
+
+        // TODO: This will return the amount withdrawn after commit
+        //       86d8ffcd694bbed40140dede179692e7036f2996
+        derivative.withdrawPassedRequest();
+
+        FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
+            rtoken.balanceOf(address(this)).sub(prevBalance)
+        );
         require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
         require(rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue));
     }
@@ -248,6 +258,8 @@ contract TIC is ReentrancyGuard {
      * @notice Redeem tokens after contract expiry
      * @notice After derivative expiry, an LP should use this instead of `withdrawRequest` to
      *         retrieve their collateral.
+     * TODO: `derivative.settleExpired` gets an `amountWithdrawn` return value in commit
+     *       86d8ffcd694bbed40140dede179692e7036f2996
      */
     function settleExpired() external nonReentrant {
         IERC20 tokenCurrency = derivative.tokenCurrency();
@@ -277,8 +289,16 @@ contract TIC is ReentrancyGuard {
             );
         }
 
+        uint256 prevBalance = rtoken.balanceOf(address(this));
+
         // Redeem the synthetic tokens for RToken collateral
-        FixedPoint.Unsigned memory amountWithdrawn = derivative.settleExpired();
+        // TODO: This will return the amount withdrawn after commit
+        //       86d8ffcd694bbed40140dede179692e7036f2996
+        derivative.settleExpired();
+
+        FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
+            rtoken.balanceOf(address(this)).sub(prevBalance)
+        );
         require(amountWithdrawn.isGreaterThan(0), "No collateral was withdrawn");
 
         // Amount of RToken collateral that will be redeemed and sent to the user
@@ -319,8 +339,16 @@ contract TIC is ReentrancyGuard {
         FixedPoint.Unsigned calldata numTokens,
         FixedPoint.Unsigned calldata destNumTokens
     ) external nonReentrant {
+        uint256 prevBalance = rtoken.balanceOf(address(this));
+
         // Burn the source tokens to get collateral
-        FixedPoint.Unsigned memory amountWithdrawn = redeemForCollateral(numTokens);
+        // TODO: This will be able to return the amount withdrawn after commit
+        //       86d8ffcd694bbed40140dede179692e7036f2996
+        redeemForCollateral(numTokens);
+
+        FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
+            rtoken.balanceOf(address(this)).sub(prevBalance)
+        );
         require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
 
         require(rtoken.approve(address(destTIC), amountWithdrawn.rawValue));
@@ -433,13 +461,10 @@ contract TIC is ReentrancyGuard {
     /**
      * @notice Redeem synthetic tokens for collateral from the derivative
      * @param numTokens The number of tokens to redeem
-     * @return The amount of collateral withdrawn
+     * TODO: `derivative.redeem` gets an `amountWithdrawn` return value in commit
+     *       86d8ffcd694bbed40140dede179692e7036f2996
      */
-    function redeemForCollateral(FixedPoint.Unsigned memory numTokens)
-        private
-        nonReentrant
-        returns (FixedPoint.Unsigned memory)
-    {
+    function redeemForCollateral(FixedPoint.Unsigned memory numTokens) private nonReentrant {
         require(numTokens.isGreaterThan(0));
 
         IERC20 tokenCurrency = derivative.tokenCurrency();
@@ -458,8 +483,8 @@ contract TIC is ReentrancyGuard {
             'Token approve failed'
         );
 
-        // Redeem the synthetic tokens for RToken collateral and return the amount redeemed
-        return derivative.redeem(numTokens);
+        // Redeem the synthetic tokens for RToken collateral
+        derivative.redeem(numTokens);
     }
 
     /**

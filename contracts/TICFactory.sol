@@ -31,7 +31,8 @@ contract TICFactory is Ownable {
         onlyOwner
     {
         // Create the derivative contract
-        // TODO: Make sure identifiers are on the whitelist
+        // TODO: `ExpiringMultiPartyCreator` past commit b6dc123e11d7253cdbe0fcc40b7ab4a992c4e56d
+        //       requires `minSponsorTokens` param.
         address derivative = derivativeCreator.createExpiringMultiParty(params);
 
         // Create the TIC
