@@ -1,6 +1,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import {TICInterface} from "./TICInterface.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
@@ -15,25 +16,13 @@ import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/im
  * @dev Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent
  *      to the `ExpiringMultiParty` contract
  */
-contract TIC is ReentrancyGuard {
+contract TIC is TICInterface, ReentrancyGuard {
     //----------------------------------------
     // Type definitions
     //----------------------------------------
 
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
-
-    // Describe fee structure
-    struct Fee {
-        // Fees charged when a user mints tokens
-        FixedPoint.Unsigned mintFee;
-        address[] mintFeeRecipients;
-        uint32[] mintFeeProportions;
-
-        // Fees taken from the interest accrued by collateral
-        address[] interestFeeRecipients;
-        uint32[] interestFeeProportions;
-    }
 
     //----------------------------------------
     // State variables
@@ -44,36 +33,12 @@ contract TIC is ReentrancyGuard {
     IRToken public rtoken;
     uint256 private hatID;
     Fee public fee;
+
     // Used with individual proportions to scale values
     uint256 private totalMintFeeProportions;
 
-    //----------------------------------------
-    // Constructor
-    //----------------------------------------
-
-    /**
-     * @notice Margin currency must be a rtoken
-     * @dev TIC creates a new derivative so it is set as the sponsor
-     * @param _derivative The `ExpiringMultiParty`
-     * @param _liquidityProvider The liquidity provider
-     * @param _fee The fee structure
-     */
-    constructor(
-        ExpiringMultiParty _derivative,
-        address _liquidityProvider,
-        Fee memory _fee
-    )
-        public
-        nonReentrant
-    {
-        derivative = _derivative;
-        liquidityProvider = _liquidityProvider;
-        setFee(_fee);
-
-        // Set RToken hat according to the interest fee structure
-        rtoken = IRToken(address(derivative.collateralCurrency()));
-        hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
-    }
+    // Used to prevent the contract from being re-initialized
+    bool private initialized = false;
 
     //----------------------------------------
     // Modifiers
@@ -97,7 +62,7 @@ contract TIC is ReentrancyGuard {
     function mint(
         FixedPoint.Unsigned calldata collateralAmount,
         FixedPoint.Unsigned calldata numTokens
-    ) external {
+    ) external override {
         // Check that LP collateral can support the tokens to be minted
         FixedPoint.Unsigned memory globalCollateralization =
             getGlobalCollateralizationRatioNonReentrant();
@@ -144,6 +109,7 @@ contract TIC is ReentrancyGuard {
      */
     function deposit(FixedPoint.Unsigned calldata collateralAmount)
         external
+        override
         onlyLiquidityProvider
     {
         // Pull LP's collateral into the TIC
@@ -163,7 +129,7 @@ contract TIC is ReentrancyGuard {
     function exchangeMint(
         FixedPoint.Unsigned calldata collateralAmount,
         FixedPoint.Unsigned calldata numTokens
-    ) external {
+    ) external override {
         // Pull RToken collateral from calling TIC contract
         require(pullRTokens(numTokens));
 
@@ -229,6 +195,7 @@ contract TIC is ReentrancyGuard {
      */
     function withdrawRequest(FixedPoint.Unsigned calldata collateralAmount)
         external
+        override
         onlyLiquidityProvider
         nonReentrant
     {
@@ -240,7 +207,7 @@ contract TIC is ReentrancyGuard {
      * TODO: `derivative.withdrawPassedRequest` gets an `amountWithdrawn` return value in commit
      *       86d8ffcd694bbed40140dede179692e7036f2996
      */
-    function withdrawPassedRequest() external onlyLiquidityProvider nonReentrant {
+    function withdrawPassedRequest() external override onlyLiquidityProvider nonReentrant {
         uint256 prevBalance = rtoken.balanceOf(address(this));
 
         // TODO: This will return the amount withdrawn after commit
@@ -261,7 +228,7 @@ contract TIC is ReentrancyGuard {
      * TODO: `derivative.settleExpired` gets an `amountWithdrawn` return value in commit
      *       86d8ffcd694bbed40140dede179692e7036f2996
      */
-    function settleExpired() external nonReentrant {
+    function settleExpired() external override nonReentrant {
         IERC20 tokenCurrency = derivative.tokenCurrency();
 
         FixedPoint.Unsigned memory numTokens = FixedPoint.Unsigned(
@@ -335,10 +302,10 @@ contract TIC is ReentrancyGuard {
      * @param destNumTokens The number of destination tokens the swap attempts to procure
      */
     function exchange(
-        TIC destTIC,
+        TICInterface destTIC,
         FixedPoint.Unsigned calldata numTokens,
         FixedPoint.Unsigned calldata destNumTokens
-    ) external nonReentrant {
+    ) external override nonReentrant {
         uint256 prevBalance = rtoken.balanceOf(address(this));
 
         // Burn the source tokens to get collateral
@@ -368,8 +335,41 @@ contract TIC is ReentrancyGuard {
      * @notice Get the collateral token
      * @return The ERC20 collateral token
      */
-    function collateralToken() external view returns (IERC20) {
+    function collateralToken() external view override returns (IERC20) {
         return rtoken.token();
+    }
+
+    //----------------------------------------
+    // Public functions
+    //----------------------------------------
+
+    /**
+     * @notice Set initial TIC parameters
+     * @dev Has to be marked `public` instead of `external` so the fee struct can be `memory`.
+     *      Compilation will fail attempting to use `setFee` if the struct is in `calldata`.
+     * @dev Should be called in the same transaction that creates the contract to prevent a third
+     *      party from front-running initialization.
+     * @dev `initialize` is separate from the constructor so it could be specified in an interface
+     * @dev Margin currency must be a RToken
+     * @param _derivative The `ExpiringMultiParty`
+     * @param _liquidityProvider The liquidity provider
+     * @param _fee The fee structure
+     */
+    function initialize (
+        ExpiringMultiParty _derivative,
+        address _liquidityProvider,
+        Fee memory _fee
+    ) public override nonReentrant {
+        require(!initialized, "The TIC has already been initialized");
+        initialized = true;
+
+        derivative = _derivative;
+        liquidityProvider = _liquidityProvider;
+        setFee(_fee);
+
+        // Set RToken hat according to the interest fee structure
+        rtoken = IRToken(address(derivative.collateralCurrency()));
+        hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
     }
 
     //----------------------------------------

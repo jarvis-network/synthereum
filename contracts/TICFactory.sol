@@ -1,9 +1,8 @@
 pragma solidity ^0.6.0;
-
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
-import {TIC} from "./TIC.sol";
+import {TICInterface} from "./TICInterface.sol";
 import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
@@ -11,7 +10,7 @@ contract TICFactory is Ownable {
     ExpiringMultiPartyCreator private derivativeCreator;
 
     // Get a TIC using its token symbol
-    mapping(string => TIC) public symbolToTIC;
+    mapping(string => TICInterface) public symbolToTIC;
 
     constructor(ExpiringMultiPartyCreator _derivativeCreator) public {
         derivativeCreator = _derivativeCreator;
@@ -25,7 +24,7 @@ contract TICFactory is Ownable {
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider,
-        TIC.Fee calldata fee
+        TICInterface.Fee calldata fee
     )
         external
         onlyOwner
@@ -36,10 +35,9 @@ contract TICFactory is Ownable {
         address derivative = derivativeCreator.createExpiringMultiParty(params);
 
         // Create the TIC
-        symbolToTIC[params.syntheticSymbol] = new TIC(
-            ExpiringMultiParty(derivative),
-            liquidityProvider,
-            fee
-        );
+        TICInterface tic = new TICInterface();
+        tic.initialize(ExpiringMultiParty(derivative), liquidityProvider, fee);
+
+        symbolToTIC[params.syntheticSymbol] = tic;
     }
 }
