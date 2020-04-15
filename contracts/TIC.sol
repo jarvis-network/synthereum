@@ -93,7 +93,6 @@ contract TIC is TICInterface, ReentrancyGuard {
 
         // Distribute fees
         // TODO: Consider using the withdrawal pattern for fees
-        // TODO: Consider edge cases where math could fail due to truncation
         for (uint256 i = 0; i < fee.mintFeeRecipients.length; i++) {
             require(rtoken.token().transfer(
                 fee.mintFeeRecipients[i],
