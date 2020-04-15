@@ -319,6 +319,14 @@ contract TIC is TICInterface, ReentrancyGuard {
         // Set RToken hat according to the interest fee structure
         rtoken = IRToken(address(derivative.collateralCurrency()));
         hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
+
+        // Use hat inheritance to set the derivative's hat
+        // - This is necessary to stop an attacker from transfering RToken directly to the
+        //   derivative before an LP and redirect all the fees to themselves.
+        require(
+            rtoken.transfer(address(derivative), 1),
+            "Failed to set the derivative's RToken hat"
+        );
     }
 
     //----------------------------------------
