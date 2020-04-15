@@ -31,7 +31,6 @@ module.exports = {
         return new HDWalletProvider(mnemonic, kovanEndpoint, 0, 2);
       },
       network_id: 42,
-      gas: 8000000, // Necessary for creating a new TIC
       gasPrice: 3000000000
     }
   },
