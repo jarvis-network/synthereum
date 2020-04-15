@@ -307,6 +307,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      *      party from front-running initialization.
      * @dev `initialize` is separate from the constructor so it could be specified in an interface
      * @dev Margin currency must be a RToken
+     * @dev `_startingCollateralization should be greater than the expected asset price multiplied
+     *      by the collateral requirement. The degree to which it is greater should be based on
+     *      the expected asset volatility.
      * @param _derivative The `ExpiringMultiParty`
      * @param _liquidityProvider The liquidity provider
      * @param _startingCollateralization Collateralization ratio to use before a global one is set
