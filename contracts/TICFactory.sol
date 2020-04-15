@@ -2,11 +2,14 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
+import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoint.sol";
 import {TICInterface} from "./TICInterface.sol";
 import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable {
+    using FixedPoint for FixedPoint.Unsigned;
+
     ExpiringMultiPartyCreator private derivativeCreator;
 
     // Get a TIC using its token symbol
@@ -24,6 +27,7 @@ contract TICFactory is Ownable {
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider,
+        FixedPoint.Unsigned calldata startingCollateralization,
         TICInterface.Fee calldata fee
     )
         external
@@ -36,7 +40,12 @@ contract TICFactory is Ownable {
 
         // Create the TIC
         TICInterface tic = new TICInterface();
-        tic.initialize(ExpiringMultiParty(derivative), liquidityProvider, fee);
+        tic.initialize(
+            ExpiringMultiParty(derivative),
+            liquidityProvider,
+            startingCollateralization,
+            fee
+        );
 
         symbolToTIC[params.syntheticSymbol] = tic;
     }

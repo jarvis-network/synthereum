@@ -29,6 +29,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     //----------------------------------------
 
     ExpiringMultiParty public derivative;
+    FixedPoint.Unsigned private startingCollateralization;
     address private liquidityProvider;
     IRToken public rtoken;
     uint256 private hatID;
@@ -63,13 +64,19 @@ contract TIC is TICInterface, ReentrancyGuard {
         FixedPoint.Unsigned calldata collateralAmount,
         FixedPoint.Unsigned calldata numTokens
     ) external override {
-        // Check that LP collateral can support the tokens to be minted
         FixedPoint.Unsigned memory globalCollateralization =
             getGlobalCollateralizationRatioNonReentrant();
 
+        // Target the starting collateralization ratio if there is no global ratio
+        FixedPoint.Unsigned memory targetCollateralization =
+            globalCollateralization.isGreaterThan(0)
+                ? globalCollateralization
+                : startingCollateralization;
+
+        // Check that LP collateral can support the tokens to be minted
         require(
             checkCollateralizationRatioNonReentrant(
-                globalCollateralization,
+                targetCollateralization,
                 collateralAmount,
                 numTokens
             ),
@@ -86,7 +93,7 @@ contract TIC is TICInterface, ReentrancyGuard {
         mintRTokens(collateralAmount);
 
         // Mint synthetic asset with margin from user and provider
-        mintSynTokens(numTokens.mul(globalCollateralization), numTokens);
+        mintSynTokens(numTokens.mul(targetCollateralization), numTokens);
 
         // Transfer synthetic asset to the user
         transferSynTokens(msg.sender, numTokens);
@@ -302,11 +309,13 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @dev Margin currency must be a RToken
      * @param _derivative The `ExpiringMultiParty`
      * @param _liquidityProvider The liquidity provider
+     * @param _startingCollateralization Collateralization ratio to use before a global one is set
      * @param _fee The fee structure
      */
     function initialize (
         ExpiringMultiParty _derivative,
         address _liquidityProvider,
+        FixedPoint.Unsigned memory _startingCollateralization,
         Fee memory _fee
     ) public override nonReentrant {
         require(!initialized, "The TIC has already been initialized");
@@ -314,6 +323,7 @@ contract TIC is TICInterface, ReentrancyGuard {
 
         derivative = _derivative;
         liquidityProvider = _liquidityProvider;
+        startingCollateralization = _startingCollateralization;
         setFee(_fee);
 
         // Set RToken hat according to the interest fee structure

@@ -29,11 +29,14 @@ module.exports = function(deployer, network, accounts) {
   const deployments = Promise.all(assets.map(async asset => {
     console.log(`   Deploying '${asset.syntheticSymbol}'`);
 
+    const startingCollateralization = asset["startingCollateralization"];
+    delete asset["startingCollateralization"];
+
     let params = { ...TICConfig, collateralAddress, ...asset };
     params.priceFeedIdentifier = web3Utils.toHex(asset.priceFeedIdentifier);
 
     const factory = await TICFactory.deployed();
-    await factory.createTIC(params, liquidityProvider, fee);
+    await factory.createTIC(params, liquidityProvider, startingCollateralization, fee);
   }));
 
   deployer.then(() => deployments).catch(err => console.log(err));

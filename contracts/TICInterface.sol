@@ -70,6 +70,7 @@ contract TICInterface {
     function initialize(
         ExpiringMultiParty _derivative,
         address _liquidityProvider,
+        FixedPoint.Unsigned memory _startingCollateralization,
         Fee memory _fee
     ) public virtual {}
 }
