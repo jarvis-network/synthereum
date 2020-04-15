@@ -33,7 +33,7 @@ module.exports = function(deployer, network, accounts) {
     params.priceFeedIdentifier = web3Utils.toHex(asset.priceFeedIdentifier);
 
     const factory = await TICFactory.deployed();
-    return await factory.createTIC(params, liquidityProvider, fee);
+    await factory.createTIC(params, liquidityProvider, fee);
   }));
 
   deployer.then(() => deployments).catch(err => console.log(err));
