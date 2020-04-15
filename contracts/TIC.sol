@@ -225,11 +225,9 @@ contract TIC is TICInterface, ReentrancyGuard {
 
         // If the user is the LP, send redeemed token collateral plus excess collateral
         if (msg.sender == liquidityProvider) {
-            totalToRedeem = amountWithdrawn.add(
-                // Redeem LP collateral held in TIC pool
-                // Includes excess collateral withdrawn by a user previously calling `settleExpired`
-                FixedPoint.Unsigned(rtoken.balanceOf(address(this)))
-            );
+            // Redeem LP collateral held in TIC pool
+            // Includes excess collateral withdrawn by a user previously calling `settleExpired`
+            totalToRedeem = FixedPoint.Unsigned(rtoken.balanceOf(address(this)));
         } else {
             // Otherwise, separate excess collateral from redeemed token value
             // Must be called after `derivative.settleExpired` to make sure expiryPrice is set
