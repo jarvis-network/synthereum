@@ -141,54 +141,6 @@ contract TIC is TICInterface, ReentrancyGuard {
     }
 
     /**
-     * @notice Redeem a user's SynFiat tokens for margin currency
-     * @notice Requires authorization to transfer the synthetic tokens
-     * @dev Because of RToken's Compound allocation strategy, redeeming an
-     *      extremely tiny amount of tokens will cause a "redeemTokens zero"
-     *      error from the cToken contract.
-     * @param numTokens The amount of tokens to redeem
-     */
-    function redeemTokens(FixedPoint.Unsigned calldata numTokens) external nonReentrant {
-        require(numTokens.isGreaterThan(0));
-
-        IERC20 tokenCurrency = derivative.tokenCurrency();
-        require(tokenCurrency.balanceOf(msg.sender) >= numTokens.rawValue);
-
-        // Move synthetic tokens from the user to the TIC
-        // - This is because derivative expects the tokens to come from the sponsor address
-        require(
-            tokenCurrency.transferFrom(msg.sender, address(this), numTokens.rawValue),
-            'Token transfer failed'
-        );
-
-        // Allow the derivative to transfer tokens from the TIC
-        require(
-            tokenCurrency.approve(address(derivative), numTokens.rawValue),
-            'Token approve failed'
-        );
-
-        // Redeem the synthetic tokens for RToken collateral
-        FixedPoint.Unsigned memory amountWithdrawn = derivative.redeem(numTokens);
-        require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
-
-        // Calculate fees
-        FixedPoint.Unsigned memory feeTotal = amountWithdrawn.mul(fee.redeemFee);
-        FixedPoint.Unsigned memory totalToRedeem = amountWithdrawn.sub(feeTotal);
-
-        // Redeem the RToken collateral for the underlying and transfer to the user
-        require(rtoken.redeemAndTransfer(msg.sender, totalToRedeem.rawValue));
-
-        // Distribute fees
-        for (uint256 i = 0; i < fee.redeemFeeRecipients.length; i++) {
-            require(rtoken.redeemAndTransfer(
-                fee.redeemFeeRecipients[i],
-                // This order is important because it mixes FixedPoint with unscaled uint
-                feeTotal.mul(fee.redeemFeeProportions[i]).div(totalRedeemFeeProportions).rawValue
-            ));
-        }
-    }
-
-    /**
      * @notice Start a withdrawal request
      * @notice Collateral can be withdrawn once the liveness period has elapsed
      * @param collateralAmount The amount of short margin to withdraw
