@@ -8,16 +8,32 @@ import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/im
 import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable {
+    //----------------------------------------
+    // Type definitions
+    //----------------------------------------
+
     using FixedPoint for FixedPoint.Unsigned;
+
+    //----------------------------------------
+    // State variables
+    //----------------------------------------
 
     ExpiringMultiPartyCreator private derivativeCreator;
 
     // Get a TIC using its token symbol
     mapping(string => TICInterface) public symbolToTIC;
 
+    //----------------------------------------
+    // Constructor
+    //----------------------------------------
+
     constructor(ExpiringMultiPartyCreator _derivativeCreator) public {
         derivativeCreator = _derivativeCreator;
     }
+
+    //----------------------------------------
+    // External functions
+    //----------------------------------------
 
     /**
      * @notice Creates a new TIC
