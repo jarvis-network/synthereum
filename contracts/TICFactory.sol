@@ -3,9 +3,30 @@ pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoint.sol";
-import {TICInterface} from "./TICInterface.sol";
+import {TIC} from "./TIC.sol";
 import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
+
+/**
+ * @notice Holds the TIC bytecode to reduce deployment cost of the TICFactory
+ */
+library TICFactoryHelper {
+    /**
+     * @notice Creates a new TIC
+     * @param derivative The `ExpiringMultiParty`
+     * @param liquidityProvider The liquidity provider
+     * @param startingCollateralization Collateralization ratio to use before a global one is set
+     * @param fee The fee structure
+     */
+    function createTIC(
+        ExpiringMultiParty derivative,
+        address liquidityProvider,
+        FixedPoint.Unsigned calldata startingCollateralization,
+        TIC.Fee calldata fee
+    ) external returns (TIC) {
+        return new TIC(derivative, liquidityProvider, startingCollateralization, fee);
+    }
+}
 
 contract TICFactory is Ownable {
     //----------------------------------------
@@ -21,7 +42,7 @@ contract TICFactory is Ownable {
     ExpiringMultiPartyCreator private derivativeCreator;
 
     // Get a TIC using its token symbol
-    mapping(string => TICInterface) public symbolToTIC;
+    mapping(string => TIC) public symbolToTIC;
 
     //----------------------------------------
     // Constructor
@@ -38,13 +59,15 @@ contract TICFactory is Ownable {
     /**
      * @notice Creates a new TIC
      * @param params The parameters used to create the underlying derivative
-     * @param liquidityProvider The LP for the TIC
+     * @param liquidityProvider The liquidity provider
+     * @param startingCollateralization Collateralization ratio to use before a global one is set
+     * @param fee The fee structure
      */
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider,
         FixedPoint.Unsigned calldata startingCollateralization,
-        TICInterface.Fee calldata fee
+        TIC.Fee calldata fee
     )
         external
         onlyOwner
@@ -55,14 +78,14 @@ contract TICFactory is Ownable {
         address derivative = derivativeCreator.createExpiringMultiParty(params);
 
         // Create the TIC
-        TICInterface tic = new TICInterface();
-        tic.initialize(
+        //
+        // If this were done without the library, the TIC bytecode would be deployed with the
+        // TICFactory contract and exceed gas limits.
+        symbolToTIC[params.syntheticSymbol] = TICFactoryHelper.createTIC(
             ExpiringMultiParty(derivative),
             liquidityProvider,
             startingCollateralization,
             fee
         );
-
-        symbolToTIC[params.syntheticSymbol] = tic;
     }
 }

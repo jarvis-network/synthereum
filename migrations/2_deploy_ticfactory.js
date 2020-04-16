@@ -1,14 +1,17 @@
 const { constants } = require("@openzeppelin/test-helpers");
 const config = require("../truffle-config.js");
 const contracts = require("../contract-dependencies.json");
+var TICFactoryHelper = artifacts.require("TICFactoryHelper");
 var TICFactory = artifacts.require("TICFactory");
 
 module.exports = function(deployer, network) {
-  let TDCreatorAddr = constants.ZERO_ADDRESS;
+  let ExpiringMultiPartyCreatorAddr = constants.ZERO_ADDRESS;
 
   const networkId = config.networks[network.replace(/-fork$/, "")].network_id;
 
-  TDCreatorAddr = contracts[networkId]["expiringMultiPartyCreator"];
+  ExpiringMultiPartyCreatorAddr = contracts[networkId]["expiringMultiPartyCreator"];
 
-  deployer.deploy(TICFactory, TDCreatorAddr);
+  deployer.deploy(TICFactoryHelper);
+  deployer.link(TICFactoryHelper, TICFactory);
+  deployer.deploy(TICFactory, ExpiringMultiPartyCreatorAddr);
 };
