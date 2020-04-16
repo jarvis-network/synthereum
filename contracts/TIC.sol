@@ -24,6 +24,18 @@ contract TIC is TICInterface, ReentrancyGuard {
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
 
+    // Describe fee structure
+    struct Fee {
+        // Fees charged when a user mints tokens
+        FixedPoint.Unsigned mintFee;
+        address[] mintFeeRecipients;
+        uint32[] mintFeeProportions;
+
+        // Fees taken from the interest accrued by collateral
+        address[] interestFeeRecipients;
+        uint32[] interestFeeProportions;
+    }
+
     //----------------------------------------
     // State variables
     //----------------------------------------
@@ -38,8 +50,43 @@ contract TIC is TICInterface, ReentrancyGuard {
     // Used with individual proportions to scale values
     uint256 private totalMintFeeProportions;
 
-    // Used to prevent the contract from being re-initialized
-    bool private initialized = false;
+    //----------------------------------------
+    // Constructor
+    //----------------------------------------
+
+    /**
+     * @dev Margin currency must be a RToken
+     * @dev `_startingCollateralization should be greater than the expected asset price multiplied
+     *      by the collateral requirement. The degree to which it is greater should be based on
+     *      the expected asset volatility.
+     * @param _derivative The `ExpiringMultiParty`
+     * @param _liquidityProvider The liquidity provider
+     * @param _startingCollateralization Collateralization ratio to use before a global one is set
+     * @param _fee The fee structure
+     */
+    constructor (
+        ExpiringMultiParty _derivative,
+        address _liquidityProvider,
+        FixedPoint.Unsigned memory _startingCollateralization,
+        Fee memory _fee
+    ) public nonReentrant {
+        derivative = _derivative;
+        liquidityProvider = _liquidityProvider;
+        startingCollateralization = _startingCollateralization;
+        setFee(_fee);
+
+        // Set RToken hat according to the interest fee structure
+        rtoken = IRToken(address(derivative.collateralCurrency()));
+        hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
+
+        // Use hat inheritance to set the derivative's hat
+        // - This is necessary to stop an attacker from transfering RToken directly to the
+        //   derivative before an LP and redirect all the fees to themselves.
+        require(
+            rtoken.transfer(address(derivative), 0),
+            "Failed to set the derivative's RToken hat"
+        );
+    }
 
     //----------------------------------------
     // Modifiers
@@ -295,51 +342,12 @@ contract TIC is TICInterface, ReentrancyGuard {
         return rtoken.token();
     }
 
-    //----------------------------------------
-    // Public functions
-    //----------------------------------------
-
     /**
-     * @notice Set initial TIC parameters
-     * @dev Has to be marked `public` instead of `external` so the fee struct can be `memory`.
-     *      Compilation will fail attempting to use `setFee` if the struct is in `calldata`.
-     * @dev Should be called in the same transaction that creates the contract to prevent a third
-     *      party from front-running initialization.
-     * @dev `initialize` is separate from the constructor so it could be specified in an interface
-     * @dev Margin currency must be a RToken
-     * @dev `_startingCollateralization should be greater than the expected asset price multiplied
-     *      by the collateral requirement. The degree to which it is greater should be based on
-     *      the expected asset volatility.
-     * @param _derivative The `ExpiringMultiParty`
-     * @param _liquidityProvider The liquidity provider
-     * @param _startingCollateralization Collateralization ratio to use before a global one is set
-     * @param _fee The fee structure
+     * @notice Get the synthetic token from the derivative contract
+     * @return The ERC20 synthetic token
      */
-    function initialize (
-        ExpiringMultiParty _derivative,
-        address _liquidityProvider,
-        FixedPoint.Unsigned memory _startingCollateralization,
-        Fee memory _fee
-    ) public override nonReentrant {
-        require(!initialized, "The TIC has already been initialized");
-        initialized = true;
-
-        derivative = _derivative;
-        liquidityProvider = _liquidityProvider;
-        startingCollateralization = _startingCollateralization;
-        setFee(_fee);
-
-        // Set RToken hat according to the interest fee structure
-        rtoken = IRToken(address(derivative.collateralCurrency()));
-        hatID = rtoken.createHat(fee.interestFeeRecipients, fee.interestFeeProportions, false);
-
-        // Use hat inheritance to set the derivative's hat
-        // - This is necessary to stop an attacker from transfering RToken directly to the
-        //   derivative before an LP and redirect all the fees to themselves.
-        require(
-            rtoken.transfer(address(derivative), 1),
-            "Failed to set the derivative's RToken hat"
-        );
+    function syntheticToken() external view override returns (IERC20) {
+        return derivative.tokenCurrency();
     }
 
     //----------------------------------------

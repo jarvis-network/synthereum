@@ -7,28 +7,8 @@ import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/im
 
 /**
  * @title Token Issuer Contract Interface
- * @dev Necessary for use with the `TICFactory`. Attempting to import the full `TIC` into the
- *      `TICFactory` exceeds gas limits when deploying the `TICFactory`.
  */
-contract TICInterface {
-    //----------------------------------------
-    // Type definitions
-    //----------------------------------------
-
-    using FixedPoint for FixedPoint.Unsigned;
-
-    // Describe fee structure
-    struct Fee {
-        // Fees charged when a user mints tokens
-        FixedPoint.Unsigned mintFee;
-        address[] mintFeeRecipients;
-        uint32[] mintFeeProportions;
-
-        // Fees taken from the interest accrued by collateral
-        address[] interestFeeRecipients;
-        uint32[] interestFeeProportions;
-    }
-
+interface TICInterface {
     //----------------------------------------
     // External functions
     //----------------------------------------
@@ -36,41 +16,32 @@ contract TICInterface {
     function mint(
         FixedPoint.Unsigned calldata collateralAmount,
         FixedPoint.Unsigned calldata numTokens
-    ) external virtual {}
+    ) external;
 
-    function deposit(FixedPoint.Unsigned calldata collateralAmount) external virtual {}
+    function deposit(FixedPoint.Unsigned calldata collateralAmount) external;
 
     function exchangeMint(
         FixedPoint.Unsigned calldata collateralAmount,
         FixedPoint.Unsigned calldata numTokens
-    ) external virtual {}
+    ) external;
 
-    function withdrawRequest(FixedPoint.Unsigned calldata collateralAmount) external virtual {}
+    function withdrawRequest(FixedPoint.Unsigned calldata collateralAmount) external;
 
-    function withdrawPassedRequest() external virtual {}
+    function withdrawPassedRequest() external;
 
-    function settleExpired() external virtual {}
+    function settleExpired() external;
 
     function exchange(
         TICInterface destTIC,
         FixedPoint.Unsigned calldata numTokens,
         FixedPoint.Unsigned calldata destNumTokens
-    ) external virtual {}
+    ) external;
 
     //----------------------------------------
     // External views
     //----------------------------------------
 
-    function collateralToken() external view virtual returns (IERC20) {}
+    function collateralToken() external view returns (IERC20);
 
-    //----------------------------------------
-    // Public functions
-    //----------------------------------------
-
-    function initialize(
-        ExpiringMultiParty _derivative,
-        address _liquidityProvider,
-        FixedPoint.Unsigned memory _startingCollateralization,
-        Fee memory _fee
-    ) public virtual {}
+    function syntheticToken() external view  returns (IERC20);
 }
