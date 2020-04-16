@@ -27,16 +27,22 @@ module.exports = function(deployer, network, accounts) {
   console.log("\n");
 
   const deployments = Promise.all(assets.map(async asset => {
-    console.log(`   Deploying '${asset.syntheticSymbol}'`);
+    // Necessary so changes to asset do not persist in other migrations run from the same console
+    const assetParams = { ...asset };
 
-    const startingCollateralization = asset["startingCollateralization"];
-    delete asset["startingCollateralization"];
+    console.log(`   Deploying '${assetParams.syntheticSymbol}'`);
+    console.log("   -------------------------------------");
 
-    let params = { ...TICConfig, collateralAddress, ...asset };
-    params.priceFeedIdentifier = web3Utils.toHex(asset.priceFeedIdentifier);
+    const startingCollateralization = assetParams["startingCollateralization"];
+    delete assetParams["startingCollateralization"];
+
+    let params = { ...TICConfig, collateralAddress, ...assetParams };
+    params.priceFeedIdentifier = web3Utils.toHex(assetParams.priceFeedIdentifier);
 
     const factory = await TICFactory.deployed();
-    await factory.createTIC(params, liquidityProvider, startingCollateralization, fee);
+    const { receipt } = await factory.createTIC(params, liquidityProvider, startingCollateralization, fee);
+    console.log(`   > gas used: ${receipt.gasUsed}`);
+    console.log("\n");
   }));
 
   deployer.then(() => deployments).catch(err => console.log(err));
