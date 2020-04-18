@@ -41,6 +41,8 @@ interface TICInterface {
     // External views
     //----------------------------------------
 
+    function derivative() external view returns (ExpiringMultiParty);
+
     function collateralToken() external view returns (IERC20);
 
     function syntheticToken() external view  returns (IERC20);
