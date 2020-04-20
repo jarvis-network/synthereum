@@ -196,4 +196,12 @@ contract TIC is TICInterface, ReentrancyGuard {
     function syntheticToken() external view override returns (IERC20) {
         return ticStorage.derivative.tokenCurrency();
     }
+
+    /**
+     * @notice Calculate the fees a user will have to pay to mint tokens with their collateral
+     * @return The fee structure
+     */
+    function calculateMintFee(uint256 collateralAmount) external view override returns (uint256) {
+        return FixedPoint.Unsigned(collateralAmount).mul(ticStorage.fee.mintFee).rawValue;
+    }
 }

@@ -48,4 +48,6 @@ interface TICInterface {
     function collateralToken() external view returns (IERC20);
 
     function syntheticToken() external view returns (IERC20);
+
+    function calculateMintFee(uint256 collateralAmount) external view returns (uint256);
 }
