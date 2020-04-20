@@ -50,10 +50,10 @@ contract("TIC", accounts => {
 
     const userCollateral = web3.utils.toWei("0.001");
     const mintFee = web3.utils.toBN(await tic.calculateMintFee(userCollateral));
+
     const totalCollateral = web3.utils.toBN(userCollateral).add(mintFee).toString();
-    await collateralToken.approve(tic.address, totalCollateral, {
-      from: accounts[0]
-    });
+    await collateralToken.approve(tic.address, totalCollateral, { from: accounts[0] });
+
     const numTokens = web3.utils.toWei("0.001");
     await expectRevert.unspecified(tic.mint(userCollateral, numTokens, { from: accounts[0] }));
 
