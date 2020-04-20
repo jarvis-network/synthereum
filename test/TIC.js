@@ -4,20 +4,20 @@ const IERC20 = artifacts.require("IERC20");
 const { constants, expectRevert } = require("@openzeppelin/test-helpers");
 
 contract("TIC", accounts => {
-  let dai;
   let tic;
-  let derivative;
+  let collateralToken;
+  let syntheticToken;
 
   beforeEach(async () => {
     const factory = await TICFactory.deployed();
     const ticAddr = await factory.symbolToTIC("jEUR");
     tic = await TIC.at(ticAddr);
 
-    const daiAddr = await tic.token();
-    dai = new web3.eth.Contract(IERC20.abi, daiAddr);
+    const collateralTokenAddr = await tic.collateralToken();
+    collateralToken = await IERC20.at(collateralTokenAddr);
 
-    const derivativeAddr = await tic.derivative();
-    derivative = new web3.eth.Contract(IERC20.abi, derivativeAddr);
+    const syntheticTokenAddr = await tic.syntheticToken();
+    syntheticToken = await IERC20.at(syntheticTokenAddr);
   });
 
   it("should mint tokens when enough collateral is supplied.", async () => {
