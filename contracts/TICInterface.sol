@@ -9,6 +9,18 @@ import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/im
  * @title Token Issuer Contract Interface
  */
 interface TICInterface {
+    // Describe fee structure
+    struct Fee {
+        // Fees charged when a user mints tokens
+        FixedPoint.Unsigned mintFee;
+        address[] mintFeeRecipients;
+        uint32[] mintFeeProportions;
+
+        // Fees taken from the interest accrued by collateral
+        address[] interestFeeRecipients;
+        uint32[] interestFeeProportions;
+    }
+
     //----------------------------------------
     // External functions
     //----------------------------------------

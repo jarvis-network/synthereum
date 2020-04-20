@@ -26,18 +26,6 @@ contract TIC is TICInterface, ReentrancyGuard {
     using FixedPoint for FixedPoint.Unsigned;
     using TICHelper for Storage;
 
-    // Describe fee structure
-    struct Fee {
-        // Fees charged when a user mints tokens
-        FixedPoint.Unsigned mintFee;
-        address[] mintFeeRecipients;
-        uint32[] mintFeeProportions;
-
-        // Fees taken from the interest accrued by collateral
-        address[] interestFeeRecipients;
-        uint32[] interestFeeProportions;
-    }
-
     struct Storage {
         ExpiringMultiParty derivative;
         FixedPoint.Unsigned startingCollateralization;

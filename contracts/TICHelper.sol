@@ -44,7 +44,7 @@ library TICHelper {
         ExpiringMultiParty _derivative,
         address _liquidityProvider,
         FixedPoint.Unsigned memory _startingCollateralization,
-        TIC.Fee memory _fee
+        TICInterface.Fee memory _fee
     ) public {
         self.derivative = _derivative;
         self.liquidityProvider = _liquidityProvider;
@@ -386,7 +386,7 @@ library TICHelper {
      * @param self Data type the library is attached to
      * @param _fee The fee structure
      */
-    function setFee(TIC.Storage storage self, TIC.Fee memory _fee) internal {
+    function setFee(TIC.Storage storage self, TICInterface.Fee memory _fee) internal {
         require(
             _fee.mintFeeRecipients.length == _fee.mintFeeProportions.length,
             "Fee recipients and fee proportions do not match"
