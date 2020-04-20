@@ -43,17 +43,22 @@ contract("TIC", accounts => {
   });
 
   it("should not mint tokens when there is insufficient collateral.", async () => {
-    await dai.methods.approve(tic.address, 1).send({
+    const balance = await syntheticToken.balanceOf(accounts[0]);
+
+    const lpCollateral = web3.utils.toWei("0.0001", "ether");
+    await collateralToken.approve(tic.address, lpCollateral, { from: accounts[0] });
+    await tic.deposit(lpCollateral, { from: accounts[0] });
+
+    const userCollateral = web3.utils.toWei("0.001");
+    const mintFee = web3.utils.toBN(await tic.calculateMintFee(userCollateral));
+    const totalCollateral = web3.utils.toBN(userCollateral).add(mintFee).toString();
+    await collateralToken.approve(tic.address, totalCollateral, {
       from: accounts[0]
     });
+    const numTokens = web3.utils.toWei("0.001");
+    await expectRevert.unspecified(tic.mint(userCollateral, numTokens, { from: accounts[0] }));
 
-    const balance = await derivative.methods.balanceOf(accounts[0]).call();
-
-    await tic.deposit(1, { from: accounts[0] });
-
-    await expectRevert.unspecified(tic.mint(10, { from: accounts[0] }));
-
-    const newBalance = await derivative.methods.balanceOf(accounts[0]).call();
+    const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
     assert.equal(newBalance - balance, 0);
   });
