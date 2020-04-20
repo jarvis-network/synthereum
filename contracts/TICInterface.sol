@@ -25,29 +25,19 @@ interface TICInterface {
     // External functions
     //----------------------------------------
 
-    function mint(
-        FixedPoint.Unsigned calldata collateralAmount,
-        FixedPoint.Unsigned calldata numTokens
-    ) external;
+    function mint(uint256 collateralAmount, uint256 numTokens) external;
 
-    function deposit(FixedPoint.Unsigned calldata collateralAmount) external;
+    function deposit(uint256 collateralAmount) external;
 
-    function exchangeMint(
-        FixedPoint.Unsigned calldata collateralAmount,
-        FixedPoint.Unsigned calldata numTokens
-    ) external;
+    function exchangeMint(uint256 collateralAmount, uint256 numTokens) external;
 
-    function withdrawRequest(FixedPoint.Unsigned calldata collateralAmount) external;
+    function withdrawRequest(uint256 collateralAmount) external;
 
     function withdrawPassedRequest() external;
 
     function settleExpired() external;
 
-    function exchange(
-        TICInterface destTIC,
-        FixedPoint.Unsigned calldata numTokens,
-        FixedPoint.Unsigned calldata destNumTokens
-    ) external;
+    function exchange(TICInterface destTIC, uint256 numTokens, uint256 destNumTokens) external;
 
     //----------------------------------------
     // External views

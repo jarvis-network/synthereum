@@ -302,7 +302,7 @@ library TICHelper {
         require(self.rtoken.approve(address(destTIC), amountWithdrawn.rawValue));
 
         // Mint the destination tokens with the withdrawn collateral
-        destTIC.exchangeMint(destNumTokens, amountWithdrawn);
+        destTIC.exchangeMint(destNumTokens.rawValue, amountWithdrawn.rawValue);
 
         // Transfer the new tokens to the user
         self.transferSynTokens(msg.sender, destNumTokens);

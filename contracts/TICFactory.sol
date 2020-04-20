@@ -2,18 +2,11 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
-import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoint.sol";
 import {TIC} from "./TIC.sol";
 import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable {
-    //----------------------------------------
-    // Type definitions
-    //----------------------------------------
-
-    using FixedPoint for FixedPoint.Unsigned;
-
     //----------------------------------------
     // State variables
     //----------------------------------------
@@ -45,7 +38,7 @@ contract TICFactory is Ownable {
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider,
-        FixedPoint.Unsigned calldata startingCollateralization,
+        uint256 startingCollateralization,
         TIC.Fee calldata fee
     )
         external

@@ -61,10 +61,15 @@ contract TIC is TICInterface, ReentrancyGuard {
     constructor (
         ExpiringMultiParty _derivative,
         address _liquidityProvider,
-        FixedPoint.Unsigned memory _startingCollateralization,
+        uint256 _startingCollateralization,
         Fee memory _fee
     ) public nonReentrant {
-        ticStorage.initialize(_derivative, _liquidityProvider, _startingCollateralization, _fee);
+        ticStorage.initialize(
+            _derivative,
+            _liquidityProvider,
+            FixedPoint.Unsigned(_startingCollateralization),
+            _fee
+        );
     }
 
     //----------------------------------------
@@ -86,37 +91,31 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param collateralAmount The amount of collateral supplied
      * @param numTokens The number of tokens the user wants to mint
      */
-    function mint(
-        FixedPoint.Unsigned calldata collateralAmount,
-        FixedPoint.Unsigned calldata numTokens
-    ) external override {
-        ticStorage.mint(collateralAmount, numTokens);
+    function mint(uint256 collateralAmount, uint256 numTokens) external override {
+        ticStorage.mint(FixedPoint.Unsigned(collateralAmount), FixedPoint.Unsigned(numTokens));
     }
 
     /**
      * @notice Liquidity provider supplies margin to the TIC to collateralize user deposits
      * @param collateralAmount The amount of margin supplied
      */
-    function deposit(FixedPoint.Unsigned calldata collateralAmount)
-        external
-        override
-        onlyLiquidityProvider
-    {
-        ticStorage.deposit(collateralAmount);
+    function deposit(uint256 collateralAmount) external override onlyLiquidityProvider {
+        ticStorage.deposit(FixedPoint.Unsigned(collateralAmount));
     }
 
     /**
+     * TODO: Potentially restrict this function to only TICs registered on a whitelist
      * @notice Called by a source TIC's `exchange` function to mint destination tokens
      * @dev This function could be called by any account to mint tokens, however they will lose
      *      their excess collateral to the liquidity provider when they redeem the tokens.
      * @param collateralAmount The amount of collateral to use from the source TIC
      * @param numTokens The number of new tokens to mint
      */
-    function exchangeMint(
-        FixedPoint.Unsigned calldata collateralAmount,
-        FixedPoint.Unsigned calldata numTokens
-    ) external override {
-        ticStorage.exchangeMint(collateralAmount, numTokens);
+    function exchangeMint(uint256 collateralAmount, uint256 numTokens) external override {
+        ticStorage.exchangeMint(
+            FixedPoint.Unsigned(collateralAmount),
+            FixedPoint.Unsigned(numTokens)
+        );
     }
 
     /**
@@ -124,13 +123,13 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice Collateral can be withdrawn once the liveness period has elapsed
      * @param collateralAmount The amount of short margin to withdraw
      */
-    function withdrawRequest(FixedPoint.Unsigned calldata collateralAmount)
+    function withdrawRequest(uint256 collateralAmount)
         external
         override
         onlyLiquidityProvider
         nonReentrant
     {
-        ticStorage.withdrawRequest(collateralAmount);
+        ticStorage.withdrawRequest(FixedPoint.Unsigned(collateralAmount));
     }
 
     /**
@@ -158,12 +157,16 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param numTokens The number of source tokens to swap
      * @param destNumTokens The number of destination tokens the swap attempts to procure
      */
-    function exchange(
-        TICInterface destTIC,
-        FixedPoint.Unsigned calldata numTokens,
-        FixedPoint.Unsigned calldata destNumTokens
-    ) external override nonReentrant {
-        ticStorage.exchange(destTIC, numTokens, destNumTokens);
+    function exchange(TICInterface destTIC, uint256 numTokens, uint256 destNumTokens)
+        external
+        override
+        nonReentrant
+    {
+        ticStorage.exchange(
+            destTIC,
+            FixedPoint.Unsigned(numTokens),
+            FixedPoint.Unsigned(destNumTokens)
+        );
     }
 
     //----------------------------------------
