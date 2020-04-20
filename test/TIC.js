@@ -21,16 +21,23 @@ contract("TIC", accounts => {
   });
 
   it("should mint tokens when enough collateral is supplied.", async () => {
-    await dai.methods.approve(tic.address, 12).send({
+    const balance = await syntheticToken.balanceOf(accounts[0]);
+
+    const lpCollateral = web3.utils.toWei("0.0003", "ether");
+    await collateralToken.approve(tic.address, lpCollateral, { from: accounts[0] });
+    await tic.deposit(lpCollateral, { from: accounts[0] });
+
+    const userCollateral = web3.utils.toWei("0.001");
+    const mintFee = web3.utils.toBN(await tic.calculateMintFee(userCollateral));
+    const totalCollateral = web3.utils.toBN(userCollateral).add(mintFee).toString();
+    await collateralToken.approve(tic.address, totalCollateral, {
       from: accounts[0]
     });
 
-    const balance = await derivative.methods.balanceOf(accounts[0]).call();
+    const numTokens = web3.utils.toWei("0.001");
+    await tic.mint(userCollateral, numTokens, { from: accounts[0] });
 
-    await tic.deposit(2, { from: accounts[0] });
-    await tic.mint(10, { from: accounts[0] });
-
-    const newBalance = await derivative.methods.balanceOf(accounts[0]).call();
+    const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
     assert.isAbove(newBalance - balance, 0);
   });
