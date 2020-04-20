@@ -47,5 +47,5 @@ interface TICInterface {
 
     function collateralToken() external view returns (IERC20);
 
-    function syntheticToken() external view  returns (IERC20);
+    function syntheticToken() external view returns (IERC20);
 }
