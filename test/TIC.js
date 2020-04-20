@@ -29,10 +29,9 @@ contract("TIC", accounts => {
 
     const userCollateral = web3.utils.toWei("0.001");
     const mintFee = web3.utils.toBN(await tic.calculateMintFee(userCollateral));
+
     const totalCollateral = web3.utils.toBN(userCollateral).add(mintFee).toString();
-    await collateralToken.approve(tic.address, totalCollateral, {
-      from: accounts[0]
-    });
+    await collateralToken.approve(tic.address, totalCollateral, { from: accounts[0] });
 
     const numTokens = web3.utils.toWei("0.001");
     await tic.mint(userCollateral, numTokens, { from: accounts[0] });
@@ -64,29 +63,31 @@ contract("TIC", accounts => {
   });
 
   it("should mint tokens for multiple users when enough collateral is supplied.", async () => {
-    await dai.methods.approve(tic.address, 14).send({
-      from: accounts[0]
-    });
+    const balance1 = await syntheticToken.balanceOf(accounts[0]);
 
-    const balance1 = await derivative.methods.balanceOf(accounts[0]).call();
+    const lpCollateral = web3.utils.toWei("0.0006", "ether");
+    await collateralToken.approve(tic.address, lpCollateral, { from: accounts[0] });
+    await tic.deposit(lpCollateral, { from: accounts[0] });
 
-    await tic.deposit(2, { from: accounts[0] });
-    await tic.mint(10, { from: accounts[0] });
+    const userCollateral = web3.utils.toWei("0.001");
+    const mintFee = web3.utils.toBN(await tic.calculateMintFee(userCollateral));
 
-    const newBalance1 = await derivative.methods.balanceOf(accounts[0]).call();
+    const totalCollateral = web3.utils.toBN(userCollateral).add(mintFee).toString();
+    await collateralToken.approve(tic.address, totalCollateral, { from: accounts[0] });
+
+    const numTokens = web3.utils.toWei("0.001");
+    await tic.mint(userCollateral, numTokens, { from: accounts[0] });
+
+    const newBalance1 = await syntheticToken.balanceOf(accounts[0]);
 
     assert.isAbove(newBalance1 - balance1, 0);
 
-    const balance2 = await derivative.methods.balanceOf(accounts[1]).call();
+    const balance2 = await syntheticToken.balanceOf(accounts[1]);
 
-    await dai.methods.approve(tic.address, 10).send({
-      from: accounts[1]
-    });
+    await collateralToken.approve(tic.address, totalCollateral, { from: accounts[1] });
+    await tic.mint(userCollateral, numTokens, { from: accounts[1] });
 
-    await tic.deposit(2, { from: accounts[0] });
-    await tic.mint(10, { from: accounts[1] });
-
-    const newBalance2 = await derivative.methods.balanceOf(accounts[1]).call();
+    const newBalance2 = await syntheticToken.balanceOf(accounts[1]);
 
     assert.isAbove(newBalance2 - balance2, 0);
   });
