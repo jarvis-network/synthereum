@@ -19,6 +19,7 @@
     "protocol": "github:UMAprotocol/protocol#8df987bee7aa90780b524c701c19db8b6d9d113b"
   },
   "devDependencies": {
+    "ganache-time-traveler": "^1.0.14",
     "husky": "^4.2.3"
   }
 }
