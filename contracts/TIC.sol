@@ -5,11 +5,11 @@ import {TICInterface} from "./TICInterface.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoint.sol";
+import {FixedPoint} from "./uma-contracts/common/implementation/FixedPoint.sol";
 import {TICHelper} from "./TICHelper.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
-import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 
 /**
  * @title Token Issuer Contract

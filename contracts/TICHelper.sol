@@ -5,10 +5,10 @@ import {TIC} from "./TIC.sol";
 import {TICInterface} from "./TICInterface.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import {FixedPoint} from "protocol/core/contracts/common/implementation/FixedPoint.sol";
+import {FixedPoint} from "./uma-contracts/common/implementation/FixedPoint.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
-import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
 
 /**
  * @notice TIC implementation is stored here to reduce deployment costs
@@ -208,6 +208,7 @@ library TICHelper {
      *         retrieve their collateral.
      * TODO: `derivative.settleExpired` gets an `amountWithdrawn` return value in commit
      *       86d8ffcd694bbed40140dede179692e7036f2996
+     * TODO: Revert function if DVM does not have a price available
      */
     function settleExpired(TIC.Storage storage self) public {
         IERC20 tokenCurrency = self.derivative.tokenCurrency();
@@ -247,6 +248,7 @@ library TICHelper {
         FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
             self.rtoken.balanceOf(address(this)).sub(prevBalance)
         );
+        // TODO: May need to allow LPs to continue despite noting being withdrawn
         require(amountWithdrawn.isGreaterThan(0), "No collateral was withdrawn");
 
         // Amount of RToken collateral that will be redeemed and sent to the user

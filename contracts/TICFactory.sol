@@ -3,8 +3,8 @@ pragma experimental ABIEncoderV2;
 
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {TIC} from "./TIC.sol";
-import {ExpiringMultiParty} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiParty.sol";
-import {ExpiringMultiPartyCreator} from "protocol/core/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
+import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {ExpiringMultiPartyCreator} from "./uma-contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable {
     //----------------------------------------
