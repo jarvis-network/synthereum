@@ -116,7 +116,7 @@ contract("TIC", accounts => {
 
     const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
-    assert.isAbove(newBalance - balance, 0);
+    assert.equal(newBalance - balance, numTokens);
   });
 
   it("should not mint tokens when there is insufficient collateral.", async () => {
@@ -158,7 +158,7 @@ contract("TIC", accounts => {
 
     const newBalance1 = await syntheticToken.balanceOf(accounts[0]);
 
-    assert.isAbove(newBalance1 - balance1, 0);
+    assert.equal(newBalance1 - balance1, numTokens);
 
     const balance2 = await syntheticToken.balanceOf(accounts[1]);
 
