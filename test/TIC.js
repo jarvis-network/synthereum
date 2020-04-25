@@ -131,4 +131,29 @@ contract("TIC", accounts => {
     assert.equal(newSyntheticBalance, 0);
     assert.equal(newCollateralBalance - collateralBalance, totalCollateral);
   });
+
+  it("should let a user exchange one synthetic token for another", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await mintUserTokens(tic, collateralToken, accounts[0], "0.001", numTokens);
+    const balance = await syntheticToken.balanceOf(accounts[0]);
+
+    const blocktime = (await web3.eth.getBlock("latest"))["timestamp"];
+    const otherDerivative = await createDerivative(networkId, finder.address, blocktime);
+    const otherTIC = await createTIC(otherDerivative.address, accounts[0], accounts[0]);
+    const syntheticTokenAddr = await otherTIC.syntheticToken();
+    const otherSyntheticToken = await IERC20.at(syntheticTokenAddr);
+    const otherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
+
+    const numTokensWei = web3.utils.toWei(numTokens);
+    await syntheticToken.approve(tic.address, numTokensWei, { from: accounts[0] });
+    await tic.exchange(otherTIC.address, numTokensWei, numTokensWei);
+
+    const newBalance = await syntheticToken.balanceOf(accounts[0]);
+    const newOtherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
+
+    assert.equal(balance - newBalance, numTokensWei);
+    assert.equal(newOtherBalance - otherBalance, numTokensWei);
+  });
 });
