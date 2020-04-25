@@ -161,7 +161,7 @@ library TICHelper {
         FixedPoint.Unsigned memory numTokens
     ) public {
         // Pull RToken collateral from calling TIC contract
-        require(self.pullRTokens(numTokens));
+        require(self.pullRTokens(collateralAmount));
 
         // Mint new tokens with the collateral
         self.mintSynTokens(collateralAmount, numTokens);
@@ -304,10 +304,12 @@ library TICHelper {
         require(self.rtoken.approve(address(destTIC), amountWithdrawn.rawValue));
 
         // Mint the destination tokens with the withdrawn collateral
-        destTIC.exchangeMint(destNumTokens.rawValue, amountWithdrawn.rawValue);
+        destTIC.exchangeMint(amountWithdrawn.rawValue, destNumTokens.rawValue);
 
         // Transfer the new tokens to the user
-        self.transferSynTokens(msg.sender, destNumTokens);
+        require(
+            destTIC.derivative().tokenCurrency().transfer(msg.sender, destNumTokens.rawValue)
+        );
     }
 
     //----------------------------------------
