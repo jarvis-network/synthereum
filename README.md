@@ -1,5 +1,7 @@
 # SynFiat
 
+Built on top of the priceless contracts developed by [UMA](https://docs.umaproject.org/uma/index.html).
+
 ## Requirements
 - NPM
 - Truffle
