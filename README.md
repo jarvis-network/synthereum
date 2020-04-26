@@ -80,9 +80,7 @@ truffle --network kovan-fork test
 
 ## Deployment
 ### Deployment requirements
-The SynFiat migration scripts in `./migrations` will only deploy when used with either the Kovan network or a fork of Kovan.
-
-Any network configuration used for deployment must have a gas limit of at least 8,000,000 in order to deploy the TIC. The default Kovan configuration in `truffle-config.js` has this limit already set.
+The SynFiat migration scripts in `./migrations` will only deploy properly when used with either the Kovan network or a fork of Kovan.
 
 ### Running migrations
 To deploy the SynFiat smart contracts with the migration scripts, run the following Truffle command:
@@ -91,49 +89,45 @@ truffle --network kovan migrate
 ```
 If the contracts have already been deployed but changes have been made and they must be deployed again, use the `--reset` flag.
 
-### Changing base TokenizedDerivative parameters
-The parameters for the TokenizedDerivative contracts created by TICs can be changed in `./migrations/4_deploy_tics.js`.
+### Changing derivative parameters
+Derivative parameters can be changed in `./tic-config.json`. The following parameters are used:
+- expirationTimestamp: Time that the derivative expires.
+- disputeBondPct: Percent of a liquidation position's locked collateral to be deposited by a potential disputer.
+- sponsorDisputeRewardPct: Percent of price paid to sponsor in the Disputed state (i.e. following a successful dispute).
+- disputerDisputeRewardPct: Percent of price paid to disputer in the Disputed state (i.e. following a successful dispute).
 
+E.g.
 ```
-let params = {
-  defaultPenalty: web3Utils.toWei("1", "ether"),
-  supportedMove,
-  fixedYearlyFee: "0",
-  withdrawLimit,
-  disputeDeposit: web3Utils.toWei("1", "ether"),
-  expiry: 0, // Temporarily set no expiry
-  returnType: "0", // Linear
-  returnCalculator,
-  marginCurrency
-};
+{
+  "expirationTimestamp": 1590969600,
+  "disputeBondPct": { "rawValue": "1500000000000000000" },
+  "sponsorDisputeRewardPct": { "rawValue": "500000000000000000" },
+  "disputerDisputeRewardPct": { "rawValue": "400000000000000000" }
+}
 ```
 
 ### Creating new SynFiat assets
-New synthetic assets can be created by modifying `./synthetic-assets.json` and `./chainlink-aggregators.json` before running the migration scripts.
+New synthetic assets can be created by modifying `./synthetic-assets.json` before running the migration scripts.
 
-Simply add a new object to the JSON array in `./synthetic-assets.json` such as:
+Simply add a new object to the JSON array in `./synthetic-assets.json`. The following parameters are used:
+- syntheticName: The name which describes the new token.
+- syntheticSymbol: The ticker abbreviation of the name.
+- priceFeedIdentifier: Unique identifier for DVM price feed ticker.
+- collateralRequirement: The collateral ratio required to prevent liquidation
+- startingCollateralization: The collateral to token ratio used when the global ratio is zero
 
+E.g.
 ```
 [
   ...
   {
-    "name": "Jarvis Synthetic Euro", // The ERC-20 name
-    "symbol": "jEUR", // The ERC-20 symbol
-    "identifier": "EUR/USD" // The price feed identifier
+    "syntheticName": "Jarvis Synthetic Euro",
+    "syntheticSymbol": "jEUR",
+    "priceFeedIdentifier": "EUR/USD",
+    "collateralRequirement": { "rawValue": "1100000000000000000" },
+    "startingCollateralization": "1300000000000000000"
   }
 ]
-```
-
-Then add the address of a Chainlink aggregator to `./chainlink-aggregators.json`. Make sure to put it under the correct network ID (Kovan is "42") and to make the object key the same as the identifier used for the new synthetic asset that has been configured.
-
-For example:
-```
-{
-  "42": { // The network the aggregator is deployed to
-    ...
-    "EUR/USD": "0xf23CCdA8333f658c43E7fC19aa00f6F5722eB225"
-  }
-}
 ```
 
 Now when running `truffle --network kovan migrate --reset`, this new synthetic asset will also be deployed.
