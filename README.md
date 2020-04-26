@@ -54,23 +54,26 @@ Run `npm run start` to start a local web server for client development. The serv
 There are a few automated tests written for the TIC. These are helpful to run to ensure there are no regressions introduced when working on the contract.
 
 ### Requirements for running the TIC tests
-- **Tests must be run on either the Kovan network or a fork of the Kovan network.**
-  - This is necessary as the tests depend on existing contracts for DAI, rDAI, and TokenizedDerivativeCreator. The rDAI address must also exist on the whitelist for the TokenizedDerivativeCreator.
+- **Tests must be run on a fork of the Kovan network.**
+  - Forking Kovan is necessary because the tests depend on deployed contracts for DAI, rDAI, and the ExpiringMultiPartyCreator. The rDAI address must also be on the ExpiringMultiPartyCreator whitelist.
   - Creating a fork of the Kovan network with Ganache is easy. For example, if using Infura as the Ethereum client, run `ganache-cli -f https://kovan.infura.io/v3/{Infura ID}`.
+  - To use the included Ganache script `./run-ganache.sh`, set the following environment variables:
+    - `ETH_WALLET_MNEMONIC` The 12 word seed phrase for the accounts used to test and deploy the SynFiat smart contracts.
+    - `ETH_KOVAN_ENDPOINT` The endpoint for the Ethereum client connected to Kovan. E.g. https://kovan.infura.io/v3/{Infura ID}
 
 - **Truffle must be configured to create at least 2 accounts for the network used to run the tests.**
   - For example, if using the HDWallet provider, the 4th argument specifying the number of accounts to make must be set to 2: `HDWalletProvider(mnemonic, kovanEndpoint, 0, 2)`.
 
-- **The 2 accounts used to run tests must be funded with ETH and DAI.**
+- **The 2 accounts used to run tests must be funded with ETH and DAI before the network is forked.**
   - To obtain Kovan ETH (KETH) use the [Kovan faucet](https://faucet.kovan.network).
   - To obtain DAI, either purchase some with KETH on [Oasis](https://oasis.app/trade/market/WETH/DAI) (make sure you set MetaMask to the Kovan network) or follow [these instructions](https://github.com/makerdao/developerguides/blob/master/mcd/mcd-cli/mcd-cli-guide-01/mcd-cli-guide-01.md) to set up a CDP and mint DAI.
-  - Remember, it is important that the DAI contract used is the same contract as the rDAI underlying that has been whitelisted by the TokenizedDerivativeCreator.
+  - Remember, it is important that the DAI contract is the same one that is used by the whitelisted rDAI contract.
   - You can find a list of all the Kovan DAI contract addresses that will work with the whitelisted rDAI contract [here](https://changelog.makerdao.com/releases/kovan/1.0.1/contracts.json).
 
 ### Running the TIC tests
 To run the TIC tests, simply use the following Truffle command:
 ```
-truffle --network kovan test
+truffle --network kovan-fork test
 ```
 
 ## Deployment
