@@ -143,14 +143,26 @@ const factory = new web3.eth.Contract(TICFactory.abi, TICFactory.networks[networ
 
 The factory is then used to retrieve the TIC for the synthetic asset you wish to interact with.
 ```
-const tic = await factory.methods.symbolToTIC("jEUR").call();
+import TIC from "./contracts/TIC.json";
+
+...
+const ticAddress = await factory.methods.symbolToTIC("jEUR").call();
+const tic = new web3.eth.Contract(TIC.abi, ticAddress);
 ```
 
-Then create the DAI contract instance. This is needed to approve the DAI transfers that will be made by the TIC.
+Create the DAI contract instance. This is needed to approve the DAI transfers that will be made by the TIC.
 ```
-const erc20Abi = [{ "constant": false, "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "approve", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }];
-const daiAddress = "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB";
-const dai = new web3.eth.Contract(erc20Abi, daiAddress);
+import IERC20 from "./contracts/IERC20.json";
+
+...
+const daiAddress = await tic.collateralToken();
+const dai = new web3.eth.Contract(IERC20.abi, daiAddress);
+```
+
+Create the synthetic token contract instance. This is the token minted by the TIC for the user.
+```
+const syntheticTokenAddress = await tic.methods.syntheticToken().call();
+const syntheticToken = new web3.eth.Contract(IERC20.abi, syntheticTokenAddress);
 ```
 
 Finally get the account addresses we will use to interact with the contracts.
@@ -159,113 +171,136 @@ const accounts = await web3.eth.getAccounts();
 ```
 
 ### Making a collateral deposit as a liquidity provider 
-In this case we will assume that `accounts[0]` is the liquidity provider.
+We will assume that `accounts[0]` is the liquidity provider.
 
 Set the amount of collateral to deposit.
 ```
-const collateral = web3.utils.toWei("10", "ether");
+const collateralAmount = web3.utils.toWei("10");
 ```
 
 Approve the transfer of DAI collateral.
 ```
-await dai.methods.approve(tic.address, collateral).send({ from: accounts[0] });
+await dai.methods.approve(tic.address, collateralAmount).send({ from: accounts[0] });
 ```
 
 Deposit the DAI collateral.
 ```
-await tic.methods.deposit(collateral).send({ from: accounts[0] });
+await tic.methods.deposit(collateralAmount).send({ from: accounts[0] });
 ```
 
 ### Minting jEUR as a user
+We will assume that `accounts[1]` is the user.
+
 Set the amount of collateral used to mint tokens.
 ```
-const collateral = web3.utils.toWei("10", "ether");
+const collateralAmount = web3.utils.toWei("10");
 ```
 
-Approve the transfer of DAI collateral.
+Set the number of tokens we will try to mint with the collateral.
 ```
-await dai.methods.approve(tic.address, collateral).send({ from: accounts[0] });
+const numTokens = web3.utils.toWei("100");
+```
+
+Calculate the fees for the user.
+```
+const fees = await tic.methods.calculateMintFee(collateralAmount).call();
+```
+
+Calculate the total amount of DAI the user will need to transfer (collateral plus fees).
+```
+const totalToTransfer = web3.utils.toBN(collateralAmount).add(web3.utils.toBN(fees));
+```
+
+Approve the transfer of DAI.
+```
+await dai.methods.approve(tic.address, totalToTransfer).send({ from: accounts[1] });
 ```
 
 Mint the jEUR tokens.
 ```
-await tic.methods.mint(collateral).send({ from: accounts[0] });
+await tic.methods.mint(collateralAmount, numTokens).send({ from: accounts[1] });
 ```
 
 ### Viewing jEUR balance
-Retrieve the TokenizedDerivative contract from the TIC.
-```
-const derivativeAddress = await tic.methods.derivative().call();
-const derivative = new web3.eth.Contract(erc20Abi, derivativeAddress);
-```
-
 View the jEUR balance.
 ```
-const jEurBalance = await derivative.methods.balanceOf(accounts[0]).call();
-console.log(web3.utils.fromWei(jEurBalance.toString(), "ether"));
+const jeurBalance = await syntheticToken.methods.balanceOf(accounts[1]).call();
+console.log(web3.utils.fromWei(jeurBalance.toString()));
 ```
 
 ### Transfering jEUR
-Retrieve the TokenizedDerivative contract from the TIC.
-```
-const derivativeAddress = await tic.methods.derivative().call();
-const derivative = new web3.eth.Contract(erc20Abi, derivativeAddress);
-```
-
 Set the amount of jEUR tokens to transfer. In this case we will transfer all the tokens owned by a user.
 ```
-const jEurToTransfer = await derivative.methods.balanceOf(accounts[0]).call();
+const jeurToTransfer = await syntheticToken.methods.balanceOf(accounts[1]).call();
 ```
 
-Transfer the jEUR tokens to `accounts[1]`.
+Transfer the jEUR tokens to `accounts[2]`.
 ```
-await derivative.methods.transfer(accounts[1], jEurToTransfer).send({ from: accounts[0] });
-```
-
-### Redeeming jEUR as a user
-Retrieve the TokenizedDerivative contract from the TIC.
-```
-const derivativeAddress = await tic.methods.derivative().call();
-const derivative = new web3.eth.Contract(erc20Abi, derivativeAddress);
+await derivative.methods.transfer(accounts[2], jeurToTransfer).send({ from: accounts[1] });
 ```
 
+### Redeeming jEUR at contract expiry as a user
 Set the amount of jEUR tokens to redeem. In this case we will redeem all the tokens owned by a user.
 ```
-const jEurBalance = await derivative.methods.balanceOf(accounts[0]).call();
+const jeurToTransfer = await syntheticToken.methods.balanceOf(accounts[1]).call();
 ```
 
 Approve the transfer of jEUR tokens.
 ```
-await derivative.methods.approve(tic.options.address, jEurBalance).send({ from: accounts[0] });
+await syntheticToken.methods.approve(tic.options.address, jeurBalance).send({ from: accounts[1] });
 ```
 
 Redeem the user's jEUR tokens.
 ```
-await derivative.methods.redeemTokens(jEurBalance).send({ from: accounts[0] });
-```
-
-### Checking collateral liquidity provider
-Check the total required collateral a liquidity provider must supply.
-```
-const requiredCollateral = await tic.methods.getProviderRequiredMargin().call();
-console.log(web3.utils.fromWei(requiredCollateral.toString(), "ether"));
-```
-
-Check the excess collateral a liquidity provider has supplied. This value will be negative if the liquidity provider must supply more collateral to meet the requirement.
-```
-const excessCollateral = await tic.methods.getProviderExcessMargin().call();
-console.log(web3.utils.fromWei(excessCollateral.toString(), "ether"));
+await tic.methods.settleExpired().send({ from: accounts[1] });
 ```
 
 ### Withdrawing collateral as a liquidity provider
-In this case we will assume that `accounts[0]` is the liquidity provider.
+We will assume that `accounts[0]` is the liquidity provider.
 
-Set the amount of collateral to withdraw. Note that a liquidity provider can only withdraw margin in excess of the amount required. In this case, all excess collateral will be withdrawn.
+Set the amount of collateral to withdraw. Note that if a LP tries to withdraw enough collateral to undercollateralize the contract, they will be at risk of liquidation.
 ```
-const excessCollateral = await tic.methods.getProviderExcessMargin().call();
+const excessCollateral = web3.utils.toWei("5");
+```
+
+Submit a withdraw request.
+```
+await tic.methods.withdrawRequest(excessCollateral).send({ from: accounts[0] });
+```
+
+If the request is not disputed during the withdrawal liveness period, the request can be fulfilled.
+```
+await tic.methods.withdrawPassedRequest({ from: accounts[0] });
 ```
 
 Withdraw the collateral to the liquidity provider's account.
 ```
 await tic.methods.withdraw(excessCollateral).send({ from: accounts[0] });
+```
+
+### Atomic swap between tokens as a user
+Set the amount of source tokens to swap.
+```
+const numTokens = web3.utils.toWei("10");
+```
+
+Set the amount of destination tokens to receive.
+```
+const destNumTokens = web3.utils.toWei("10");
+```
+
+Get the destination TIC you wish to swap tokens with.
+```
+const otherTICAddress = await factory.methods.symbolToTIC("jGBP");
+const otherTIC = new web3.eth.Contract(TIC.abi, otherTICAddress);
+```
+
+Approve the transfer of the source tokens.
+```
+await syntheticToken.methods.approve(tic.address, numTokens).send({ from: accounts[1] });
+```
+
+Perform the atomic swap of tokens.
+```
+await tic.exchange(otherTIC.address, numTokens, destNumTokens);
 ```
