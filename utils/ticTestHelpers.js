@@ -101,7 +101,7 @@ module.exports = {
     await tic.deposit(lpCollateral, { from: account });
   },
 
-  mintUserTokens: async (tic, collateralToken, account, collateralAmount, numTokens) => {
+  createMintRequest: async (tic, collateralToken, account, collateralAmount, numTokens) => {
     const userCollateral = web3Utils.toWei(collateralAmount);
     const mintFee = web3Utils.toBN(await tic.calculateMintFee(userCollateral));
 
@@ -109,7 +109,21 @@ module.exports = {
     await collateralToken.approve(tic.address, totalCollateral, { from: account });
 
     const numTokensWei = web3Utils.toWei(numTokens);
-    await tic.mint(userCollateral, numTokensWei, { from: account });
+    await tic.mintRequest(userCollateral, numTokensWei, { from: account });
+  },
+
+  approveMintRequests: async (tic, account) => {
+    const mintRequests = await tic.getMintRequests({ from: account });
+    await Promise.all(mintRequests.map(mintRequest => {
+      return tic.approveMint(mintRequest["mintID"], { from: account });
+    }));
+  },
+
+  rejectMintRequests: async (tic, account) => {
+    const mintRequests = await tic.getMintRequests({ from: account });
+    await Promise.all(mintRequests.map(mintRequest => {
+      return tic.rejectMint(mintRequest["mintID"], { from: account });
+    }));
   },
 
   expireAtPrice: async (derivative, mockOracle, price) => {

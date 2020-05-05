@@ -8,7 +8,9 @@ const {
   createDerivative,
   createTIC,
   depositLPCollateral,
-  mintUserTokens,
+  createMintRequest,
+  approveMintRequests,
+  rejectMintRequests,
   expireAtPrice,
   settleExpired,
   calculateTokenValue
@@ -46,17 +48,21 @@ contract("TIC", accounts => {
 
     const balance = await syntheticToken.balanceOf(accounts[0]);
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
-    await mintUserTokens(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
     const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
     assert.equal(newBalance - balance, web3.utils.toWei(numTokens));
   });
 
   it("should not mint tokens when there is insufficient collateral.", async () => {
+    const numTokens = "0.003";
+
     const balance = await syntheticToken.balanceOf(accounts[0]);
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0001");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
     await expectRevert.unspecified(
-      mintUserTokens(tic, collateralToken, accounts[0], "0.001", "0.001")
+      approveMintRequests(tic, accounts[0])
     );
     const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
@@ -68,13 +74,15 @@ contract("TIC", accounts => {
 
     const balance1 = await syntheticToken.balanceOf(accounts[0]);
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0006");
-    await mintUserTokens(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
     const newBalance1 = await syntheticToken.balanceOf(accounts[0]);
 
     assert.equal(newBalance1 - balance1, web3.utils.toWei(numTokens));
 
     const balance2 = await syntheticToken.balanceOf(accounts[1]);
-    await mintUserTokens(tic, collateralToken, accounts[1], "0.001", numTokens);
+    await createMintRequest(tic, collateralToken, accounts[1], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
     const newBalance2 = await syntheticToken.balanceOf(accounts[1]);
 
     assert.equal(newBalance2 - balance2, web3.utils.toWei(numTokens));
@@ -85,7 +93,8 @@ contract("TIC", accounts => {
 
     const numTokens = "0.001";
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
-    await mintUserTokens(tic, collateralToken, accounts[1], "0.001", numTokens);
+    await createMintRequest(tic, collateralToken, accounts[1], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
 
     const syntheticBalance = await syntheticToken.balanceOf(accounts[1]);
     const collateralBalance = await collateralToken.balanceOf(accounts[1]);
@@ -111,7 +120,8 @@ contract("TIC", accounts => {
     const lpCollateral = "0.0003";
     const numTokens = "0.001";
     await depositLPCollateral(tic, collateralToken, accounts[0], lpCollateral);
-    await mintUserTokens(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
 
     const syntheticBalance = await syntheticToken.balanceOf(accounts[0]);
     const collateralBalance = await collateralToken.balanceOf(accounts[0]);
@@ -136,7 +146,8 @@ contract("TIC", accounts => {
     const numTokens = "0.001";
 
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
-    await mintUserTokens(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
     const balance = await syntheticToken.balanceOf(accounts[0]);
 
     const blocktime = (await web3.eth.getBlock("latest"))["timestamp"];
