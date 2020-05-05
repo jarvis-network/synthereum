@@ -134,7 +134,12 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice Liquidity provider supplies margin to the TIC to collateralize user deposits
      * @param collateralAmount The amount of margin supplied
      */
-    function deposit(uint256 collateralAmount) external override onlyLiquidityProvider {
+    function deposit(uint256 collateralAmount)
+        external
+        override
+        nonReentrant
+        onlyLiquidityProvider
+    {
         ticStorage.deposit(FixedPoint.Unsigned(collateralAmount));
     }
 
@@ -146,7 +151,11 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param collateralAmount The amount of collateral to use from the source TIC
      * @param numTokens The number of new tokens to mint
      */
-    function exchangeMint(uint256 collateralAmount, uint256 numTokens) external override {
+    function exchangeMint(uint256 collateralAmount, uint256 numTokens)
+        external
+        override
+        nonReentrant
+    {
         ticStorage.exchangeMint(
             FixedPoint.Unsigned(collateralAmount),
             FixedPoint.Unsigned(numTokens)
