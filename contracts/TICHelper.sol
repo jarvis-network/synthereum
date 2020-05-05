@@ -6,6 +6,7 @@ import {TICInterface} from "./TICInterface.sol";
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {FixedPoint} from "./uma-contracts/common/implementation/FixedPoint.sol";
+import {HitchensUnorderedKeySetLib} from "./HitchensUnorderedKeySet.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
 import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
@@ -21,6 +22,7 @@ library TICHelper {
 
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
+    using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
     using TICHelper for TIC.Storage;
 
     //----------------------------------------
@@ -69,8 +71,11 @@ library TICHelper {
     }
 
     /**
-     * @notice User supplies collateral to the TIC and receives synthetic assets
-     * @notice Requires authorization to transfer the collateral tokens
+     * @notice Submit a request to mint tokens
+     * @notice The request needs to approved by the LP before tokens are created. This is
+     *         necessary to prevent users from abusing LPs by minting large amounts of tokens
+     *         with little collateral.
+     * @notice User must approve collateral transfer for the mint request to succeed
      * @param self Data type the library is attached to
      * @param collateralAmount The amount of collateral supplied
      * @param numTokens The number of tokens the user wants to mint
@@ -81,12 +86,39 @@ library TICHelper {
      *       low collateralization ratio if they are the derivative's first sponsor, mint tokens
      *       at that ratio through the TIC, forcing the TIC to take on an undercollateralized
      *       position, then liquidate the TIC.
+     * TODO: Make sure a user cannot mint a ton of tokens with little collateral and force the LP to provide all the extra.
      */
-    function mint(
+    function mintRequest(
         TIC.Storage storage self,
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
     ) public {
+        bytes32 mintID = keccak256(abi.encodePacked(
+            msg.sender,
+            collateralAmount.rawValue,
+            numTokens.rawValue,
+            now
+        ));
+
+        TICInterface.MintRequest memory mint = TICInterface.MintRequest(
+            mintID,
+            msg.sender,
+            collateralAmount,
+            numTokens
+        );
+
+        self.mintRequestSet.insert(mintID);
+        self.mintRequests[mintID] = mint;
+    }
+
+    /**
+     * @notice Approve a mint request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @notice User needs to have approved the transfer of collateral tokens
+     * @param self Data type the library is attached to
+     * @param mintID The ID of the mint request
+     */
+    function approveMint(TIC.Storage storage self, bytes32 mintID) public {
         FixedPoint.Unsigned memory globalCollateralization =
             self.getGlobalCollateralizationRatio();
 
@@ -96,26 +128,37 @@ library TICHelper {
                 ? globalCollateralization
                 : self.startingCollateralization;
 
+        require(self.mintRequestSet.exists(mintID), "Mint request does not exist");
+        TICInterface.MintRequest memory mint = self.mintRequests[mintID];
+
         // Check that LP collateral can support the tokens to be minted
         require(
-            self.checkCollateralizationRatio(targetCollateralization, collateralAmount, numTokens),
+            self.checkCollateralizationRatio(
+                targetCollateralization,
+                mint.collateralAmount,
+                mint.numTokens
+            ),
             "Insufficient collateral available from Liquidity Provider"
         );
 
+        // Remove mint request
+        self.mintRequestSet.remove(mintID);
+        delete self.mintRequests[mintID];
+
         // Calculate fees
-        FixedPoint.Unsigned memory feeTotal = collateralAmount.mul(self.fee.mintFee);
+        FixedPoint.Unsigned memory feeTotal = mint.collateralAmount.mul(self.fee.mintFee);
 
         // Pull user's collateral and mint fee into the TIC
-        self.pullUnderlying(collateralAmount.add(feeTotal));
+        self.pullUnderlying(mint.sender, mint.collateralAmount.add(feeTotal));
 
         // Convert user's collateral to an RToken
-        self.mintRTokens(collateralAmount);
+        self.mintRTokens(mint.collateralAmount);
 
         // Mint synthetic asset with margin from user and provider
-        self.mintSynTokens(numTokens.mul(targetCollateralization), numTokens);
+        self.mintSynTokens(mint.numTokens.mul(targetCollateralization), mint.numTokens);
 
         // Transfer synthetic asset to the user
-        self.transferSynTokens(msg.sender, numTokens);
+        self.transferSynTokens(mint.sender, mint.numTokens);
 
         // Distribute fees
         // TODO: Consider using the withdrawal pattern for fees
@@ -132,6 +175,18 @@ library TICHelper {
     }
 
     /**
+     * @notice Reject a mint request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @param self Data type the library is attached to
+     * @param mintID The ID of the mint request
+     */
+    function rejectMint(TIC.Storage storage self, bytes32 mintID) public {
+        self.mintRequestSet.remove(mintID);
+        delete self.mintRequests[mintID];
+    }
+
+
+    /**
      * @notice Liquidity provider supplies margin to the TIC to collateralize user deposits
      * @param self Data type the library is attached to
      * @param collateralAmount The amount of margin supplied
@@ -141,7 +196,7 @@ library TICHelper {
         FixedPoint.Unsigned memory collateralAmount
     ) public {
         // Pull LP's collateral into the TIC
-        self.pullUnderlying(collateralAmount);
+        self.pullUnderlying(msg.sender, collateralAmount);
 
         // Convert LP's collateral to an RToken
         self.mintRTokens(collateralAmount);
@@ -313,6 +368,26 @@ library TICHelper {
     }
 
     //----------------------------------------
+    // Public views
+    //----------------------------------------
+
+    function getMintRequests(TIC.Storage storage self)
+        public
+        view
+        returns (TICInterface.MintRequest[] memory)
+    {
+        TICInterface.MintRequest[] memory mintRequests = new TICInterface.MintRequest[](
+            self.mintRequestSet.count()
+        );
+
+        for (uint256 i = 0; i < self.mintRequestSet.count(); i++) {
+            mintRequests[i] = self.mintRequests[self.mintRequestSet.keyAtIndex(i)];
+        }
+
+        return mintRequests;
+    }
+
+    //----------------------------------------
     // Internal functions
     //----------------------------------------
 
@@ -345,14 +420,16 @@ library TICHelper {
     /**
      * @notice Pulls underlying tokens from the sender to store in the TIC
      * @param self Data type the library is attached to
+     * @param from Address to pull tokens from
      * @param numTokens The number of tokens to pull
      * @return `true` if the transfer succeeded, otherwise `false`
      */
     function pullUnderlying(
         TIC.Storage storage self,
+        address from,
         FixedPoint.Unsigned memory numTokens
     ) internal returns (bool) {
-        return self.rtoken.token().transferFrom(msg.sender, address(this), numTokens.rawValue);
+        return self.rtoken.token().transferFrom(from, address(this), numTokens.rawValue);
     }
 
     /**

@@ -21,11 +21,22 @@ interface TICInterface {
         uint32[] interestFeeProportions;
     }
 
+    struct MintRequest {
+        bytes32 mintID;
+        address sender;
+        FixedPoint.Unsigned collateralAmount;
+        FixedPoint.Unsigned numTokens;
+    }
+
     //----------------------------------------
     // External functions
     //----------------------------------------
 
-    function mint(uint256 collateralAmount, uint256 numTokens) external;
+    function mintRequest(uint256 collateralAmount, uint256 numTokens) external;
+
+    function approveMint(bytes32 mintID) external;
+
+    function rejectMint(bytes32 mintID) external;
 
     function deposit(uint256 collateralAmount) external;
 
@@ -50,4 +61,6 @@ interface TICInterface {
     function syntheticToken() external view returns (IERC20);
 
     function calculateMintFee(uint256 collateralAmount) external view returns (uint256);
+
+    function getMintRequests() external view returns (MintRequest[] memory);
 }

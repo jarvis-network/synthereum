@@ -6,6 +6,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {FixedPoint} from "./uma-contracts/common/implementation/FixedPoint.sol";
+import {HitchensUnorderedKeySetLib} from "./HitchensUnorderedKeySet.sol";
 import {TICHelper} from "./TICHelper.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
@@ -24,6 +25,7 @@ contract TIC is TICInterface, ReentrancyGuard {
 
     using SafeMath for uint256;
     using FixedPoint for FixedPoint.Unsigned;
+    using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
     using TICHelper for Storage;
 
     struct Storage {
@@ -36,6 +38,9 @@ contract TIC is TICInterface, ReentrancyGuard {
 
         // Used with individual proportions to scale values
         uint256 totalMintFeeProportions;
+
+        mapping(bytes32 => MintRequest) mintRequests;
+        HitchensUnorderedKeySetLib.Set mintRequestSet;
     }
 
     //----------------------------------------
@@ -86,13 +91,43 @@ contract TIC is TICInterface, ReentrancyGuard {
     //----------------------------------------
 
     /**
-     * @notice User supplies collateral to the TIC and receives synthetic assets
-     * @notice Requires authorization to transfer the collateral tokens
+     * @notice Submit a request to mint tokens
+     * @notice The request needs to approved by the LP before tokens are created. This is
+     *         necessary to prevent users from abusing LPs by minting large amounts of tokens
+     *         with little collateral.
+     * @notice User must approve collateral transfer for the mint request to succeed
      * @param collateralAmount The amount of collateral supplied
      * @param numTokens The number of tokens the user wants to mint
      */
-    function mint(uint256 collateralAmount, uint256 numTokens) external override {
-        ticStorage.mint(FixedPoint.Unsigned(collateralAmount), FixedPoint.Unsigned(numTokens));
+    function mintRequest(uint256 collateralAmount, uint256 numTokens)
+        external
+        override
+        nonReentrant
+    {
+        ticStorage.mintRequest(
+            FixedPoint.Unsigned(collateralAmount),
+            FixedPoint.Unsigned(numTokens)
+        );
+    }
+
+    /**
+     * @notice Approve a mint request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @notice User needs to have approved the transfer of collateral tokens
+     * @param mintID The ID of the mint request
+     */
+    function approveMint(bytes32 mintID) external override nonReentrant onlyLiquidityProvider {
+        ticStorage.approveMint(mintID);
+    }
+
+
+    /**
+     * @notice Reject a mint request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @param mintID The ID of the mint request
+     */
+    function rejectMint(bytes32 mintID) external override nonReentrant onlyLiquidityProvider {
+        ticStorage.rejectMint(mintID);
     }
 
     /**
@@ -203,5 +238,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function calculateMintFee(uint256 collateralAmount) external view override returns (uint256) {
         return FixedPoint.Unsigned(collateralAmount).mul(ticStorage.fee.mintFee).rawValue;
+    }
+
+    function getMintRequests() external view override returns (MintRequest[] memory) {
+        return ticStorage.getMintRequests();
     }
 }
