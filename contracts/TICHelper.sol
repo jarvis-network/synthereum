@@ -181,6 +181,7 @@ library TICHelper {
      * @param mintID The ID of the mint request
      */
     function rejectMint(TIC.Storage storage self, bytes32 mintID) public {
+        require(self.mintRequestSet.exists(mintID), "Mint request does not exist");
         self.mintRequestSet.remove(mintID);
         delete self.mintRequests[mintID];
     }
