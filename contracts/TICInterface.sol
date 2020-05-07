@@ -23,6 +23,7 @@ interface TICInterface {
 
     struct MintRequest {
         bytes32 mintID;
+        uint256 timestamp;
         address sender;
         FixedPoint.Unsigned collateralAmount;
         FixedPoint.Unsigned numTokens;

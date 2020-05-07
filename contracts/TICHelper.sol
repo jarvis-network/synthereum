@@ -102,6 +102,7 @@ library TICHelper {
 
         TICInterface.MintRequest memory mint = TICInterface.MintRequest(
             mintID,
+            now,
             msg.sender,
             collateralAmount,
             numTokens
