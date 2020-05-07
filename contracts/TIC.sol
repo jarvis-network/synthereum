@@ -41,6 +41,9 @@ contract TIC is TICInterface, ReentrancyGuard {
 
         mapping(bytes32 => MintRequest) mintRequests;
         HitchensUnorderedKeySetLib.Set mintRequestSet;
+
+        mapping(bytes32 => ExchangeRequest) exchangeRequests;
+        HitchensUnorderedKeySetLib.Set exchangeRequestSet;
     }
 
     //----------------------------------------
@@ -193,7 +196,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     }
 
     /**
-     * @notice Perform an atomic of tokens between this TIC and the destination TIC
+     * @notice Submit a request to perform an atomic of tokens between TICs
      * @dev The number of destination tokens needs to be calculated relative to the value of the
      *      source tokens and the destination's collateral ratio. If too many destination tokens
      *      are requested the transaction will fail.
@@ -201,16 +204,36 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param numTokens The number of source tokens to swap
      * @param destNumTokens The number of destination tokens the swap attempts to procure
      */
-    function exchange(TICInterface destTIC, uint256 numTokens, uint256 destNumTokens)
+    function exchangeRequest(TICInterface destTIC, uint256 numTokens, uint256 destNumTokens)
         external
         override
         nonReentrant
     {
-        ticStorage.exchange(
+        ticStorage.exchangeRequest(
             destTIC,
             FixedPoint.Unsigned(numTokens),
             FixedPoint.Unsigned(destNumTokens)
         );
+    }
+
+    /**
+     * @notice Approve an exchange request
+     * @notice This will typically be done with a keeper bot
+     * @notice User needs to have approved the transfer of synthetic tokens
+     * @param exchangeID The ID of the exchange request
+     */
+    function approveExchange(bytes32 exchangeID) external override nonReentrant {
+        ticStorage.approveExchange(exchangeID);
+    }
+
+
+    /**
+     * @notice Reject an exchange request
+     * @notice This will typically be done with a keeper bot
+     * @param exchangeID The ID of the exchange request
+     */
+    function rejectExchange(bytes32 exchangeID) external override nonReentrant {
+        ticStorage.rejectExchange(exchangeID);
     }
 
     //----------------------------------------
@@ -251,5 +274,13 @@ contract TIC is TICInterface, ReentrancyGuard {
 
     function getMintRequests() external view override returns (MintRequest[] memory) {
         return ticStorage.getMintRequests();
+    }
+
+    /**
+     * @notice Get all open exchange requests
+     * @return An array of exchange requests
+     */
+    function getExchangeRequests() external view override returns (ExchangeRequest[] memory) {
+        return ticStorage.getExchangeRequests();
     }
 }

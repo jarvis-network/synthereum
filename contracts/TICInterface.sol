@@ -29,6 +29,15 @@ interface TICInterface {
         FixedPoint.Unsigned numTokens;
     }
 
+    struct ExchangeRequest {
+        bytes32 exchangeID;
+        uint256 timestamp;
+        address sender;
+        TICInterface destTIC;
+        FixedPoint.Unsigned numTokens;
+        FixedPoint.Unsigned destNumTokens;
+    }
+
     //----------------------------------------
     // External functions
     //----------------------------------------
@@ -49,7 +58,15 @@ interface TICInterface {
 
     function settleExpired() external;
 
-    function exchange(TICInterface destTIC, uint256 numTokens, uint256 destNumTokens) external;
+    function exchangeRequest(
+        TICInterface destTIC,
+        uint256 numTokens,
+        uint256 destNumTokens
+    ) external;
+
+    function approveExchange(bytes32 exchangeID) external;
+
+    function rejectExchange(bytes32 exchangeID) external;
 
     //----------------------------------------
     // External views
@@ -64,4 +81,6 @@ interface TICInterface {
     function calculateMintFee(uint256 collateralAmount) external view returns (uint256);
 
     function getMintRequests() external view returns (MintRequest[] memory);
+
+    function getExchangeRequests() external view returns (ExchangeRequest[] memory);
 }

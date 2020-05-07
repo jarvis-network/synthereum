@@ -331,7 +331,7 @@ library TICHelper {
     }
 
     /**
-     * @notice Perform an atomic of tokens between this TIC and the destination TIC
+     * @notice Submit a request to perform an atomic of tokens between TICs
      * @dev The number of destination tokens needs to be calculated relative to the value of the
      *      source tokens and the destination's collateral ratio. If too many destination tokens
      *      are requested the transaction will fail.
@@ -340,33 +340,81 @@ library TICHelper {
      * @param numTokens The number of source tokens to swap
      * @param destNumTokens The number of destination tokens the swap attempts to procure
      */
-    function exchange(
+    function exchangeRequest(
         TIC.Storage storage self,
         TICInterface destTIC,
         FixedPoint.Unsigned memory numTokens,
         FixedPoint.Unsigned memory destNumTokens
     ) public {
+        bytes32 exchangeID = keccak256(abi.encodePacked(
+            msg.sender,
+            address(destTIC),
+            numTokens.rawValue,
+            destNumTokens.rawValue,
+            now
+        ));
+
+        TICInterface.ExchangeRequest memory exchange = TICInterface.ExchangeRequest(
+            exchangeID,
+            now,
+            msg.sender,
+            destTIC,
+            numTokens,
+            destNumTokens
+        );
+
+        self.exchangeRequestSet.insert(exchangeID);
+        self.exchangeRequests[exchangeID] = exchange;
+    }
+
+    /**
+     * @notice Approve an exchange request
+     * @notice This will typically be done with a keeper bot
+     * @notice User needs to have approved the transfer of synthetic tokens
+     * @param exchangeID The ID of the exchange request
+     */
+    function approveExchange(TIC.Storage storage self, bytes32 exchangeID) public {
+        require(self.exchangeRequestSet.exists(exchangeID), "Exchange request does not exist");
+        TICInterface.ExchangeRequest memory exchange = self.exchangeRequests[exchangeID];
+
+        self.exchangeRequestSet.remove(exchangeID);
+        delete self.exchangeRequests[exchangeID];
+
         uint256 prevBalance = self.rtoken.balanceOf(address(this));
 
         // Burn the source tokens to get collateral
         // TODO: This will be able to return the amount withdrawn after commit
         //       86d8ffcd694bbed40140dede179692e7036f2996
-        self.redeemForCollateral(numTokens);
+        self.redeemForCollateral(exchange.numTokens);
 
         FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
             self.rtoken.balanceOf(address(this)).sub(prevBalance)
         );
         require(amountWithdrawn.isGreaterThan(0), "No tokens were redeemed");
 
-        require(self.rtoken.approve(address(destTIC), amountWithdrawn.rawValue));
+        require(self.rtoken.approve(address(exchange.destTIC), amountWithdrawn.rawValue));
 
         // Mint the destination tokens with the withdrawn collateral
-        destTIC.exchangeMint(amountWithdrawn.rawValue, destNumTokens.rawValue);
+        exchange.destTIC.exchangeMint(amountWithdrawn.rawValue, exchange.destNumTokens.rawValue);
 
         // Transfer the new tokens to the user
         require(
-            destTIC.derivative().tokenCurrency().transfer(msg.sender, destNumTokens.rawValue)
+            exchange.destTIC.derivative().tokenCurrency().transfer(
+                msg.sender,
+                exchange.destNumTokens.rawValue
+            )
         );
+    }
+
+    /**
+     * @notice Reject an exchange request
+     * @notice This will typically be done with a keeper bot
+     * @param exchangeID The ID of the exchange request
+     */
+    function rejectExchange(TIC.Storage storage self, bytes32 exchangeID) public {
+        require(self.exchangeRequestSet.exists(exchangeID), "Exchange request does not exist");
+        self.exchangeRequestSet.remove(exchangeID);
+        delete self.exchangeRequests[exchangeID];
     }
 
     //----------------------------------------
@@ -387,6 +435,27 @@ library TICHelper {
         }
 
         return mintRequests;
+    }
+
+    /**
+     * @notice Get all open exchange requests
+     * @return An array of exchange requests
+     */
+    function getExchangeRequests(TIC.Storage storage self)
+        public
+        view
+        returns (TICInterface.ExchangeRequest[] memory)
+    {
+        TICInterface.ExchangeRequest[] memory exchangeRequests = new TICInterface.ExchangeRequest[](
+            self.exchangeRequestSet.count()
+        );
+
+        for (uint256 i = 0; i < self.exchangeRequestSet.count(); i++) {
+            exchangeRequests[i] = self.exchangeRequests[self.exchangeRequestSet.keyAtIndex(i)];
+        }
+
+        return exchangeRequests;
+
     }
 
     //----------------------------------------
