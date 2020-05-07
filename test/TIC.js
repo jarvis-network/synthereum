@@ -11,6 +11,9 @@ const {
   createMintRequest,
   approveMintRequests,
   rejectMintRequests,
+  createExchangeRequest,
+  approveExchangeRequests,
+  rejectExchangeRequests,
   expireAtPrice,
   settleExpired,
   calculateTokenValue
@@ -222,14 +225,123 @@ contract("TIC", accounts => {
     const otherSyntheticToken = await IERC20.at(syntheticTokenAddr);
     const otherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
 
-    const numTokensWei = web3.utils.toWei(numTokens);
-    await syntheticToken.approve(tic.address, numTokensWei, { from: accounts[0] });
-    await tic.exchange(otherTIC.address, numTokensWei, numTokensWei);
+    await createExchangeRequest(tic, syntheticToken, accounts[0], otherTIC, numTokens, numTokens);
+    await approveExchangeRequests(tic, accounts[0]);
 
     const newBalance = await syntheticToken.balanceOf(accounts[0]);
     const newOtherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
 
-    assert.equal(balance - newBalance, numTokensWei);
-    assert.equal(newOtherBalance - otherBalance, numTokensWei);
+    assert.equal(balance - newBalance, web3.utils.toWei(numTokens));
+    assert.equal(newOtherBalance - otherBalance, web3.utils.toWei(numTokens));
+  });
+
+  it("should not be able to approve a exchange request if it has been rejected.", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
+    const balance = await syntheticToken.balanceOf(accounts[0]);
+
+    const blocktime = (await web3.eth.getBlock("latest"))["timestamp"];
+    const otherDerivative = await createDerivative(networkId, finder.address, blocktime);
+    const otherTIC = await createTIC(otherDerivative.address, accounts[0], accounts[0]);
+    const syntheticTokenAddr = await otherTIC.syntheticToken();
+    const otherSyntheticToken = await IERC20.at(syntheticTokenAddr);
+    const otherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
+
+    await createExchangeRequest(tic, syntheticToken, accounts[0], otherTIC, numTokens, numTokens);
+    const exchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
+    await Promise.all(exchangeRequests.map(async exchangeRequest => {
+      await tic.rejectExchange(exchangeRequest["exchangeID"], { from: accounts[0] });
+      await expectRevert.unspecified(
+        tic.approveExchange(exchangeRequest["exchangeID"], { from: accounts[0] })
+      );
+    }));
+
+    const newBalance = await syntheticToken.balanceOf(accounts[0]);
+    const newOtherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
+
+    assert.equal(balance - newBalance, 0);
+    assert.equal(newOtherBalance - otherBalance, 0);
+  });
+
+  it("should not exchange tokens if a exchange request has already been approved.", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
+
+    const blocktime = (await web3.eth.getBlock("latest"))["timestamp"];
+    const otherDerivative = await createDerivative(networkId, finder.address, blocktime);
+    const otherTIC = await createTIC(otherDerivative.address, accounts[0], accounts[0]);
+    const syntheticTokenAddr = await otherTIC.syntheticToken();
+    const otherSyntheticToken = await IERC20.at(syntheticTokenAddr);
+
+    await createExchangeRequest(tic, syntheticToken, accounts[0], otherTIC, numTokens, numTokens);
+    const exchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
+    await Promise.all(exchangeRequests.map(async exchangeRequest => {
+      await tic.approveExchange(exchangeRequest["exchangeID"], { from: accounts[0] });
+    }));
+
+    const balance = await syntheticToken.balanceOf(accounts[0]);
+    const otherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
+
+    await Promise.all(exchangeRequests.map(async exchangeRequest => {
+      await expectRevert.unspecified(
+        tic.approveExchange(exchangeRequest["exchangeID"], { from: accounts[0] })
+      );
+    }));
+
+    const newBalance = await syntheticToken.balanceOf(accounts[0]);
+    const newOtherBalance = await otherSyntheticToken.balanceOf(accounts[0]);
+
+    assert.equal(balance - newBalance, 0);
+    assert.equal(newOtherBalance - otherBalance, 0);
+  });
+
+  it("should remove a exchange request after it has been approved.", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
+
+    const blocktime = (await web3.eth.getBlock("latest"))["timestamp"];
+    const otherDerivative = await createDerivative(networkId, finder.address, blocktime);
+    const otherTIC = await createTIC(otherDerivative.address, accounts[0], accounts[0]);
+    const syntheticTokenAddr = await otherTIC.syntheticToken();
+    const otherSyntheticToken = await IERC20.at(syntheticTokenAddr);
+
+    await createExchangeRequest(tic, syntheticToken, accounts[0], otherTIC, numTokens, numTokens);
+    const exchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
+    assert.isAbove(exchangeRequests.length, 0);
+
+    await approveExchangeRequests(tic, accounts[0]);
+    const newExchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
+    assert.equal(newExchangeRequests.length, 0);
+  });
+
+  it("should remove a exchange request after it has been rejected.", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    await approveMintRequests(tic, accounts[0]);
+
+    const blocktime = (await web3.eth.getBlock("latest"))["timestamp"];
+    const otherDerivative = await createDerivative(networkId, finder.address, blocktime);
+    const otherTIC = await createTIC(otherDerivative.address, accounts[0], accounts[0]);
+    const syntheticTokenAddr = await otherTIC.syntheticToken();
+    const otherSyntheticToken = await IERC20.at(syntheticTokenAddr);
+
+    await createExchangeRequest(tic, syntheticToken, accounts[0], otherTIC, numTokens, numTokens);
+    const exchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
+    assert.isAbove(exchangeRequests.length, 0);
+
+    await rejectExchangeRequests(tic, accounts[0]);
+    const newExchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
+    assert.equal(newExchangeRequests.length, 0);
   });
 });

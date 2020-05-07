@@ -126,6 +126,34 @@ module.exports = {
     }));
   },
 
+  createExchangeRequest: async (
+    tic,
+    syntheticToken,
+    account,
+    destTIC,
+    numTokens,
+    destNumTokens
+  ) => {
+    const numTokensWei = web3Utils.toWei(numTokens);
+    const destNumTokensWei = web3Utils.toWei(destNumTokens);
+    await syntheticToken.approve(tic.address, numTokensWei, { from: account });
+    await tic.exchangeRequest(destTIC.address, numTokensWei, destNumTokensWei, { from: account });
+  },
+
+  approveExchangeRequests: async (tic, account) => {
+    const exchangeRequests = await tic.getExchangeRequests({ from: account });
+    await Promise.all(exchangeRequests.map(exchangeRequest => {
+      return tic.approveExchange(exchangeRequest["exchangeID"], { from: account });
+    }));
+  },
+
+  rejectExchangeRequests: async (tic, account) => {
+    const exchangeRequests = await tic.getExchangeRequests({ from: account });
+    await Promise.all(exchangeRequests.map(exchangeRequest => {
+      return tic.rejectExchange(exchangeRequest["exchangeID"], { from: account });
+    }));
+  },
+
   expireAtPrice: async (derivative, mockOracle, price) => {
     await derivative.expire();
 
