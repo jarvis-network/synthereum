@@ -272,6 +272,10 @@ contract TIC is TICInterface, ReentrancyGuard {
         return FixedPoint.Unsigned(collateralAmount).mul(ticStorage.fee.mintFee).rawValue;
     }
 
+    /**
+     * @notice Get all open mint requests
+     * @return An array of mint requests
+     */
     function getMintRequests() external view override returns (MintRequest[] memory) {
         return ticStorage.getMintRequests();
     }

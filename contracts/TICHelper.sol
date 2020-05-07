@@ -421,6 +421,10 @@ library TICHelper {
     // Public views
     //----------------------------------------
 
+    /**
+     * @notice Get all open mint requests
+     * @return An array of mint requests
+     */
     function getMintRequests(TIC.Storage storage self)
         public
         view
