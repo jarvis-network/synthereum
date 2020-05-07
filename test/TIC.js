@@ -69,13 +69,19 @@ contract("TIC", accounts => {
     assert.equal(newBalance - balance, 0);
   });
 
-  it("should not mint tokens if a mint request has been rejected.", async () => {
+  it("should not be able to approve a mint request if it has been rejected.", async () => {
     const numTokens = "0.001";
 
     const balance = await syntheticToken.balanceOf(accounts[0]);
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
     await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
-    await rejectMintRequests(tic, accounts[0]);
+    const mintRequests = await tic.getMintRequests({ from: accounts[0] });
+    await Promise.all(mintRequests.map(async mintRequest => {
+      await tic.rejectMint(mintRequest["mintID"], { from: accounts[0] });
+      await expectRevert.unspecified(
+        tic.approveMint(mintRequest["mintID"], { from: accounts[0] })
+      );
+    }));
     const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
     assert.equal(newBalance - balance, 0);
@@ -86,13 +92,46 @@ contract("TIC", accounts => {
 
     await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
     await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
-    await approveMintRequests(tic, accounts[0]);
+    const mintRequests = await tic.getMintRequests({ from: accounts[0] });
+    await Promise.all(mintRequests.map(async mintRequest => {
+      await tic.approveMint(mintRequest["mintID"], { from: accounts[0] });
+    }));
     const balance = await syntheticToken.balanceOf(accounts[0]);
 
-    await approveMintRequests(tic, accounts[0]);
+    await Promise.all(mintRequests.map(async mintRequest => {
+      await expectRevert.unspecified(
+        tic.approveMint(mintRequest["mintID"], { from: accounts[0] })
+      );
+    }));
     const newBalance = await syntheticToken.balanceOf(accounts[0]);
 
     assert.equal(newBalance - balance, 0);
+  });
+
+  it("should remove a mint request after it has been approved.", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    const mintRequests = await tic.getMintRequests({ from: accounts[0] });
+    assert.isAbove(mintRequests.length, 0);
+
+    await approveMintRequests(tic, accounts[0]);
+    const newMintRequests = await tic.getMintRequests({ from: accounts[0] });
+    assert.equal(newMintRequests.length, 0);
+  });
+
+  it("should remove a mint request after it has been rejected.", async () => {
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], "0.001", numTokens);
+    const mintRequests = await tic.getMintRequests({ from: accounts[0] });
+    assert.isAbove(mintRequests.length, 0);
+
+    await rejectMintRequests(tic, accounts[0]);
+    const newMintRequests = await tic.getMintRequests({ from: accounts[0] });
+    assert.equal(newMintRequests.length, 0);
   });
 
   it("should mint tokens for multiple users when enough collateral is supplied.", async () => {
