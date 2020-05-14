@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import {FixedPoint} from "./uma-contracts/common/implementation/FixedPoint.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {IExpiringMultiParty} from "./IExpiringMultiParty.sol";
 
 /**
  * @title Token Issuer Contract Interface
@@ -72,7 +72,7 @@ interface TICInterface {
     // External views
     //----------------------------------------
 
-    function derivative() external view returns (ExpiringMultiParty);
+    function derivative() external view returns (IExpiringMultiParty);
 
     function collateralToken() external view returns (IERC20);
 

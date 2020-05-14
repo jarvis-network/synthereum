@@ -9,7 +9,7 @@ import {FixedPoint} from "./uma-contracts/common/implementation/FixedPoint.sol";
 import {HitchensUnorderedKeySetLib} from "./HitchensUnorderedKeySet.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
-import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {IExpiringMultiParty} from "./IExpiringMultiParty.sol";
 
 /**
  * @notice TIC implementation is stored here to reduce deployment costs
@@ -43,7 +43,7 @@ library TICHelper {
      */
     function initialize(
         TIC.Storage storage self,
-        ExpiringMultiParty _derivative,
+        IExpiringMultiParty _derivative,
         address _liquidityProvider,
         FixedPoint.Unsigned memory _startingCollateralization,
         TICInterface.Fee memory _fee

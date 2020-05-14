@@ -10,7 +10,7 @@ import {HitchensUnorderedKeySetLib} from "./HitchensUnorderedKeySet.sol";
 import {TICHelper} from "./TICHelper.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IRToken} from "./IRToken.sol";
-import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {IExpiringMultiParty} from "./IExpiringMultiParty.sol";
 
 /**
  * @title Token Issuer Contract
@@ -29,7 +29,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     using TICHelper for Storage;
 
     struct Storage {
-        ExpiringMultiParty derivative;
+        IExpiringMultiParty derivative;
         FixedPoint.Unsigned startingCollateralization;
         address liquidityProvider;
         IRToken rtoken;
@@ -67,7 +67,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param _fee The fee structure
      */
     constructor (
-        ExpiringMultiParty _derivative,
+        IExpiringMultiParty _derivative,
         address _liquidityProvider,
         uint256 _startingCollateralization,
         Fee memory _fee
@@ -244,7 +244,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice Get the derivative contract
      * @return The `ExpiringMultiParty` derivative contract
      */
-    function derivative() external view override returns (ExpiringMultiParty) {
+    function derivative() external view override returns (IExpiringMultiParty) {
         return ticStorage.derivative;
     }
 

@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {TIC} from "./TIC.sol";
-import {ExpiringMultiParty} from "./uma-contracts/financial-templates/implementation/ExpiringMultiParty.sol";
+import {IExpiringMultiParty} from "./IExpiringMultiParty.sol";
 import {ExpiringMultiPartyCreator} from "./uma-contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable, ReentrancyGuard {
@@ -53,7 +53,7 @@ contract TICFactory is Ownable, ReentrancyGuard {
 
         // Create the TIC
         symbolToTIC[params.syntheticSymbol] = new TIC(
-            ExpiringMultiParty(derivative),
+            IExpiringMultiParty(derivative),
             liquidityProvider,
             startingCollateralization,
             fee
