@@ -10,6 +10,7 @@ var TICFactory = artifacts.require("TICFactory");
 module.exports = function(deployer, network, accounts) {
   const protocolOwner = accounts[0]; // Account to pay protocol fees to
   const liquidityProvider = accounts[0]; // Whoever the liquidity provider should be
+  const validator = accounts[1]; // Whoever validates mint and exchange requests
 
   const networkId = config.networks[network.replace(/-fork$/, "")].network_id;
 
@@ -40,7 +41,13 @@ module.exports = function(deployer, network, accounts) {
     params.priceFeedIdentifier = web3Utils.toHex(assetParams.priceFeedIdentifier);
 
     const factory = await TICFactory.deployed();
-    const { receipt } = await factory.createTIC(params, liquidityProvider, startingCollateralization, fee);
+    const { receipt } = await factory.createTIC(
+      params,
+      liquidityProvider,
+      validator,
+      startingCollateralization,
+      fee
+    );
     console.log(`   > gas used: ${receipt.gasUsed}`);
     console.log("\n");
   }));

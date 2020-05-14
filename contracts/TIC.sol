@@ -32,6 +32,7 @@ contract TIC is TICInterface, ReentrancyGuard {
         IExpiringMultiParty derivative;
         FixedPoint.Unsigned startingCollateralization;
         address liquidityProvider;
+        address validator;
         IRToken rtoken;
         uint256 hatID;
         Fee fee;
@@ -57,24 +58,28 @@ contract TIC is TICInterface, ReentrancyGuard {
     //----------------------------------------
 
     /**
-     * @dev Margin currency must be a RToken
-     * @dev `_startingCollateralization should be greater than the expected asset price multiplied
+     * @notice The derivative's margin currency must be a RToken
+     * @notice The validator will generally be an address owned by the LP
+     * @notice `_startingCollateralization should be greater than the expected asset price multiplied
      *      by the collateral requirement. The degree to which it is greater should be based on
      *      the expected asset volatility.
      * @param _derivative The `ExpiringMultiParty`
      * @param _liquidityProvider The liquidity provider
+     * @param _validator The address that validates mint and exchange requests
      * @param _startingCollateralization Collateralization ratio to use before a global one is set
      * @param _fee The fee structure
      */
     constructor (
         IExpiringMultiParty _derivative,
         address _liquidityProvider,
+        address _validator,
         uint256 _startingCollateralization,
         Fee memory _fee
     ) public nonReentrant {
         ticStorage.initialize(
             _derivative,
             _liquidityProvider,
+            _validator,
             FixedPoint.Unsigned(_startingCollateralization),
             _fee
         );
@@ -86,6 +91,11 @@ contract TIC is TICInterface, ReentrancyGuard {
 
     modifier onlyLiquidityProvider() {
         require(msg.sender == ticStorage.liquidityProvider, 'Must be liquidity provider');
+        _;
+    }
+
+    modifier onlyValidator() {
+        require(msg.sender == ticStorage.validator, 'Must be validator');
         _;
     }
 
@@ -119,7 +129,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice User needs to have approved the transfer of collateral tokens
      * @param mintID The ID of the mint request
      */
-    function approveMint(bytes32 mintID) external override nonReentrant onlyLiquidityProvider {
+    function approveMint(bytes32 mintID) external override nonReentrant onlyValidator {
         ticStorage.approveMint(mintID);
     }
 
@@ -129,7 +139,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice This will typically be done with a keeper bot
      * @param mintID The ID of the mint request
      */
-    function rejectMint(bytes32 mintID) external override nonReentrant onlyLiquidityProvider {
+    function rejectMint(bytes32 mintID) external override nonReentrant onlyValidator {
         ticStorage.rejectMint(mintID);
     }
 
@@ -222,7 +232,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice User needs to have approved the transfer of synthetic tokens
      * @param exchangeID The ID of the exchange request
      */
-    function approveExchange(bytes32 exchangeID) external override nonReentrant {
+    function approveExchange(bytes32 exchangeID) external override onlyValidator nonReentrant {
         ticStorage.approveExchange(exchangeID);
     }
 
@@ -232,7 +242,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice This will typically be done with a keeper bot
      * @param exchangeID The ID of the exchange request
      */
-    function rejectExchange(bytes32 exchangeID) external override nonReentrant {
+    function rejectExchange(bytes32 exchangeID) external override onlyValidator nonReentrant {
         ticStorage.rejectExchange(exchangeID);
     }
 

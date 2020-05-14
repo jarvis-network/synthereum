@@ -33,12 +33,14 @@ contract TICFactory is Ownable, ReentrancyGuard {
      * @notice Creates a new TIC
      * @param params The parameters used to create the underlying derivative
      * @param liquidityProvider The liquidity provider
+     * @param validator The address that validates mint and exchange requests
      * @param startingCollateralization Collateralization ratio to use before a global one is set
      * @param fee The fee structure
      */
     function createTIC(
         ExpiringMultiPartyCreator.Params calldata params,
         address liquidityProvider,
+        address validator,
         uint256 startingCollateralization,
         TIC.Fee calldata fee
     )
@@ -55,6 +57,7 @@ contract TICFactory is Ownable, ReentrancyGuard {
         symbolToTIC[params.syntheticSymbol] = new TIC(
             IExpiringMultiParty(derivative),
             liquidityProvider,
+            validator,
             startingCollateralization,
             fee
         );

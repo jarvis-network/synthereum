@@ -31,13 +31,15 @@ library TICHelper {
 
     /**
      * @notice Initializes a fresh TIC
-     * @dev Margin currency must be a RToken
-     * @dev `_startingCollateralization should be greater than the expected asset price multiplied
+     * @notice The derivative's margin currency must be a RToken
+     * @notice The validator will generally be an address owned by the LP
+     * @notice `_startingCollateralization should be greater than the expected asset price multiplied
      *      by the collateral requirement. The degree to which it is greater should be based on
      *      the expected asset volatility.
      * @param self Data type the library is attached to
      * @param _derivative The `ExpiringMultiParty`
      * @param _liquidityProvider The liquidity provider
+     * @param _validator The address that validates mint and exchange requests
      * @param _startingCollateralization Collateralization ratio to use before a global one is set
      * @param _fee The fee structure
      */
@@ -45,11 +47,13 @@ library TICHelper {
         TIC.Storage storage self,
         IExpiringMultiParty _derivative,
         address _liquidityProvider,
+        address _validator,
         FixedPoint.Unsigned memory _startingCollateralization,
         TICInterface.Fee memory _fee
     ) public {
         self.derivative = _derivative;
         self.liquidityProvider = _liquidityProvider;
+        self.validator = _validator;
         self.startingCollateralization = _startingCollateralization;
         self.setFee(_fee);
 
