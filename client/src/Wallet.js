@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
 
+import { jarvisExchangeRate } from "./jarvisAPI.js";
+
 import TICFactory from "./contracts/TICFactory.json";
 import TIC from "./contracts/TIC.json";
+import ExpiringMultiParty from "./contracts/ExpiringMultiParty.json";
 import MCD_DAI from "./MCD_DAI.json";
 import IERC20 from "./contracts/IERC20.json";
 
@@ -21,6 +24,7 @@ const defaultAssets = [
   {
     "name": "Jarvis Synthetic Euro",
     "symbol": "jEUR",
+    "priceFeed": "EURUSD",
     "contract": null,
     "derivative": null,
     "price": "0",
@@ -28,6 +32,7 @@ const defaultAssets = [
   {
     "name": "Jarvis Synthetic Swiss Franc",
     "symbol": "jCHF",
+    "priceFeed": "CHFUSD",
     "contract": null,
     "derivative": null,
     "price": "0",
@@ -35,6 +40,7 @@ const defaultAssets = [
   {
     "name": "Jarvis Synthetic British Pound",
     "symbol": "jGBP",
+    "priceFeed": "GBPUSD",
     "contract": null,
     "derivative": null,
     "price": "0",
@@ -42,6 +48,7 @@ const defaultAssets = [
   {
     "name": "Jarvis Synthetic Gold",
     "symbol": "jXAU",
+    "priceFeed": "XAUUSD",
     "contract": null,
     "derivative": null,
     "price": "0",
@@ -89,15 +96,18 @@ export default function Wallet(props) {
         }));
       }).then(derivatives => {
         for (let i in newAssets) {
-          newAssets[i].derivative = new Contract(IERC20.abi, derivatives[i]);
+          newAssets[i].derivative = new Contract(ExpiringMultiParty.abi, derivatives[i]);
         }
 
-        return Promise.all(newAssets.map(asset => {
-          return asset.contract.methods.getTokenPrice().call();
-        }));
-      }).then(prices => {
+        setAssets(newAssets)
+      });
+
+
+      Promise.all(newAssets.map(asset => {
+        return jarvisExchangeRate(asset.priceFeed);
+      })).then(exchangeRates => {
         for (let i in newAssets) {
-          newAssets[i].price = prices[i];
+          newAssets[i].price = exchangeRates[i] ? exchangeRates[i] : 0;
         }
 
         setAssets(newAssets)

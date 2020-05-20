@@ -1,5 +1,4 @@
 import React from "react";
-import { useWeb3Context } from "web3-react";
 
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -22,10 +21,6 @@ const EtherscanIcon = withStyles(theme => ({
 }))(LaunchOutlined);
 
 export default function ExchangeRates(props) {
-  const context = useWeb3Context();
-
-  const { fromWei } = context.library.utils;
-
   return (
     <>
       <Typography variant="h6" gutterBottom>
@@ -62,7 +57,7 @@ export default function ExchangeRates(props) {
                     </Tooltip>
                   </TableCell>
                   <TableCell align="right">
-                    {Number(fromWei(asset.price, "ether")).toLocaleString()} DAI
+                    {asset.price.toLocaleString()} DAI
                   </TableCell>
                 </TableRow>
               ))
