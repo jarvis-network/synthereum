@@ -99,6 +99,14 @@ export default function Wallet(props) {
           newAssets[i].derivative = new Contract(ExpiringMultiParty.abi, derivatives[i]);
         }
 
+        return Promise.all(newAssets.map(asset => {
+          return asset.derivative.methods.tokenCurrency().call();
+        }));
+      }).then(syntheticTokens => {
+        for (let i in newAssets) {
+          newAssets[i].syntheticToken = new Contract(IERC20.abi, syntheticTokens[i]);
+        }
+
         setAssets(newAssets)
       });
 

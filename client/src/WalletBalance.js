@@ -21,8 +21,8 @@ export default function WalletBalance(props) {
   const { fromWei } = context.library.utils;
 
   useEffect(() => {
-    if (context.active && assets[token].derivative) {
-      assets[token].derivative.methods.balanceOf(context.account).call()
+    if (context.active && assets[token].syntheticToken) {
+      assets[token].syntheticToken.methods.balanceOf(context.account).call()
         .then(synBalance => setSynBalance(synBalance));
     }
   }, [context, context.active, assets, token, lastTx]);
