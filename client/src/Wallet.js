@@ -153,6 +153,7 @@ export default function Wallet(props) {
         />
 
       <OrderForm
+        className={classes.table}
         assets={assets}
         token={token}
         dai={dai}
