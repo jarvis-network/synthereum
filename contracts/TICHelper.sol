@@ -389,7 +389,7 @@ library TICHelper {
         // Burn the source tokens to get collateral
         // TODO: This will be able to return the amount withdrawn after commit
         //       86d8ffcd694bbed40140dede179692e7036f2996
-        self.redeemForCollateral(exchange.numTokens);
+        self.redeemForCollateral(exchange.sender, exchange.numTokens);
 
         FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
             self.rtoken.balanceOf(address(this)).sub(prevBalance)
@@ -567,16 +567,20 @@ library TICHelper {
      * TODO: `derivative.redeem` gets an `amountWithdrawn` return value in commit
      *       86d8ffcd694bbed40140dede179692e7036f2996
      */
-    function redeemForCollateral(TIC.Storage storage self, FixedPoint.Unsigned memory numTokens) internal {
+    function redeemForCollateral(
+        TIC.Storage storage self,
+        address tokenHolder,
+        FixedPoint.Unsigned memory numTokens
+    ) internal {
         require(numTokens.isGreaterThan(0));
 
         IERC20 tokenCurrency = self.derivative.tokenCurrency();
-        require(tokenCurrency.balanceOf(msg.sender) >= numTokens.rawValue);
+        require(tokenCurrency.balanceOf(tokenHolder) >= numTokens.rawValue);
 
         // Move synthetic tokens from the user to the TIC
         // - This is because derivative expects the tokens to come from the sponsor address
         require(
-            tokenCurrency.transferFrom(msg.sender, address(this), numTokens.rawValue),
+            tokenCurrency.transferFrom(tokenHolder, address(this), numTokens.rawValue),
             'Token transfer failed'
         );
 
