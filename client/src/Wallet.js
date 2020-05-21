@@ -70,6 +70,7 @@ export default function Wallet(props) {
 
   const [token, setToken] = useState(0);
   const [assets, setAssets] = useState(defaultAssets);
+  const [syntheticTokens, setSyntheticTokens] = useState([]);
   const [dai, setDai] = useState(null);
   // Used to refresh stale data after a transaction is made
   const [lastTx, setLastTx] = useState("");
@@ -99,15 +100,19 @@ export default function Wallet(props) {
           newAssets[i].derivative = new Contract(ExpiringMultiParty.abi, derivatives[i]);
         }
 
+        setAssets(newAssets)
+
         return Promise.all(newAssets.map(asset => {
           return asset.derivative.methods.tokenCurrency().call();
         }));
       }).then(syntheticTokens => {
+        let newSyntheticTokens = [];
+
         for (let i in newAssets) {
-          newAssets[i].syntheticToken = new Contract(IERC20.abi, syntheticTokens[i]);
+          newSyntheticTokens[i] = new Contract(IERC20.abi, syntheticTokens[i]);
         }
 
-        setAssets(newAssets)
+        setSyntheticTokens(newSyntheticTokens);
       });
 
 
@@ -147,6 +152,7 @@ export default function Wallet(props) {
         <WalletBalance
           className={classes.table}
           assets={assets}
+          syntheticTokens={syntheticTokens}
           token={token}
           dai={dai}
           lastTx={lastTx}

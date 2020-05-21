@@ -11,7 +11,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 
 export default function WalletBalance(props) {
-  const { className, assets, token, dai, lastTx } = props;
+  const { className, assets, syntheticTokens, token, dai, lastTx } = props;
 
   const context = useWeb3Context();
 
@@ -21,11 +21,13 @@ export default function WalletBalance(props) {
   const { fromWei } = context.library.utils;
 
   useEffect(() => {
-    if (context.active && assets[token].syntheticToken) {
-      assets[token].syntheticToken.methods.balanceOf(context.account).call()
-        .then(synBalance => setSynBalance(synBalance));
+    if (context.active && syntheticTokens[token]) {
+      syntheticTokens[token].methods.balanceOf(context.account).call()
+        .then(synBalance => {
+          setSynBalance(synBalance)
+        });
     }
-  }, [context, context.active, assets, token, lastTx]);
+  }, [context, context.active, syntheticTokens, token, lastTx]);
 
   useEffect(() => {
     if (context.active && dai) {
