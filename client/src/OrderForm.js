@@ -31,32 +31,46 @@ export default function OrderForm(props) {
   const [feeAmount, setFeeAmount] = useState("0");
   const [collateralAmount, setCollateralAmount] = useState("0");
 
-  const { fromWei, toWei } = context.library.utils;
+  const { fromWei, toWei, toBN } = context.library.utils;
 
   const onOrderAmountChange = event => {
-    setOrderAmount(event.target.value);
-    setCollateralAmount(event.target.value * assets[token].price);
-    assets[token].contract.methods.calculateMintFee(toWei(collateralAmount.toString())).call()
-      .then(response => {
-        setFeeAmount(response);
-      });
+    const { value } = event.target;
+    if (!isNaN(value)) {
+      const newCollateralAmount = value * assets[token].price;
+      setOrderAmount(value);
+      setCollateralAmount(newCollateralAmount);
+      assets[token].contract.methods.calculateMintFee(toWei(newCollateralAmount.toString())).call()
+        .then(response => {
+          setFeeAmount(response);
+        });
+    }
   };
 
-  const buyOrder = orderAmount => {
-    dai.methods.approve(assets[token].contract.options.address, orderAmount).send({
-      from: context.account
-    }).then(() => {
-      return assets[token].contract.methods.mint(orderAmount).send({
-        from: context.account
+  const buyOrder = (collateralAmount, orderAmountTKNbits) => {
+    assets[token].contract.methods.calculateMintFee(collateralAmount).call()
+      .then(mintFee => {
+        dai.methods.approve(
+          assets[token].contract.options.address,
+          toBN(collateralAmount).add(toBN(mintFee))
+        ).send({
+          from: context.account
+        }).then(() => {
+          return assets[token].contract.methods.mintRequest(
+            collateralAmount,
+            orderAmountTKNbits
+          ).send({
+            from: context.account
+          });
+        }).then(tx => {
+          setLoading(false);
+          setLastTx(tx.transactionHash);
+          setOrderAmount("");
+        }).catch(err => {
+          setLoading(false);
+          setOrderAmount("");
+          console.error(err);
+        });
       });
-    }).then(tx => {
-      setLoading(false);
-      setLastTx(tx.transactionHash);
-      setOrderAmount("");
-    }).catch(() => {
-      setLoading(false);
-      setOrderAmount("");
-    });
   };
 
   const sellOrder = orderAmount => {
@@ -76,20 +90,21 @@ export default function OrderForm(props) {
     }).catch(() => {
       setLoading(false);
       setOrderAmount("");
+      console.error(err);
     });
   };
 
   const placeOrder = () => {
     if (orderAmount > 0) {
-      const { toWei } = context.library.utils;
-      const orderAmountTKNbits = toWei(orderAmount, "ether");
+      const collateralAmountTKNbits = toWei(collateralAmount.toString());
+      const orderAmountTKNbits = toWei(orderAmount.toString());
 
       if (orderType === "buy") {
         setLoading(true);
-        buyOrder(orderAmountTKNbits);
+        buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === "sell") {
         setLoading(true);
-        sellOrder(orderAmountTKNbits);
+        sellOrder(collateralAmountTKNbits);
       }
     }
   };
