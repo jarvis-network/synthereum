@@ -132,6 +132,28 @@ module.exports = {
     }));
   },
 
+  createRedeemRequest: async (tic, syntheticToken, account, collateralAmount, numTokens) => {
+    const userCollateral = web3Utils.toWei(collateralAmount);
+    await syntheticToken.approve(tic.address, userCollateral, { from: account });
+
+    const numTokensWei = web3Utils.toWei(numTokens);
+    await tic.redeemRequest(userCollateral, numTokensWei, { from: account });
+  },
+
+  approveRedeemRequests: async (tic, account) => {
+    const redeemRequests = await tic.getRedeemRequests({ from: account });
+    await Promise.all(redeemRequests.map(redeemRequest => {
+      return tic.approveRedeem(redeemRequest["redeemID"], { from: account });
+    }));
+  },
+
+  rejectRedeemRequests: async (tic, account) => {
+    const redeemRequests = await tic.getRedeemRequests({ from: account });
+    await Promise.all(redeemRequests.map(redeemRequest => {
+      return tic.rejectRedeem(redeemRequest["redeemID"], { from: account });
+    }));
+  },
+
   createExchangeRequest: async (
     tic,
     syntheticToken,

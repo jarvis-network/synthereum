@@ -11,6 +11,9 @@ const {
   createMintRequest,
   approveMintRequests,
   rejectMintRequests,
+  createRedeemRequest,
+  approveRedeemRequests,
+  rejectRedeemRequests,
   createExchangeRequest,
   approveExchangeRequests,
   rejectExchangeRequests,
@@ -343,5 +346,114 @@ contract("TIC", accounts => {
     await rejectExchangeRequests(tic, accounts[0]);
     const newExchangeRequests = await tic.getExchangeRequests({ from: accounts[0] });
     assert.equal(newExchangeRequests.length, 0);
+  });
+
+  it("should let a user redeem tokens for collateral", async () => {
+    const collateralAmount = "0.001";
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], collateralAmount, numTokens);
+    await approveMintRequests(tic, accounts[0]);
+    const balance = await collateralToken.balanceOf(accounts[0]);
+    const synthBalance = await syntheticToken.balanceOf(accounts[0]);
+
+    await createRedeemRequest(tic, syntheticToken, accounts[0], collateralAmount, numTokens);
+    await approveRedeemRequests(tic, accounts[0]);
+    const newBalance = await collateralToken.balanceOf(accounts[0]);
+    const newSynthBalance = await syntheticToken.balanceOf(accounts[0]);
+
+    assert.equal(newBalance - balance, web3.utils.toWei(collateralAmount));
+    assert.equal(synthBalance - newSynthBalance, web3.utils.toWei(numTokens));
+  });
+
+  it("should not be able to approve a redeem request if it has been rejected.", async () => {
+    const collateralAmount = "0.001";
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], collateralAmount, numTokens);
+    await approveMintRequests(tic, accounts[0]);
+    const balance = await collateralToken.balanceOf(accounts[0]);
+    const synthBalance = await syntheticToken.balanceOf(accounts[0]);
+
+    await createRedeemRequest(tic, syntheticToken, accounts[0], collateralAmount, numTokens);
+    const redeemRequests = await tic.getRedeemRequests({ from: accounts[0] });
+    await Promise.all(redeemRequests.map(async redeemRequest => {
+      await tic.rejectRedeem(redeemRequest["redeemID"], { from: accounts[0] });
+      await expectRevert.unspecified(
+        tic.approveRedeem(redeemRequest["redeemID"], { from: accounts[0] })
+      );
+    }));
+
+    const newBalance = await collateralToken.balanceOf(accounts[0]);
+    const newSynthBalance = await syntheticToken.balanceOf(accounts[0]);
+
+    assert.equal(newBalance - balance, 0);
+    assert.equal(synthBalance - newSynthBalance, 0);
+  });
+
+  it("should not redeem tokens if a redeem request has already been approved.", async () => {
+    const collateralAmount = "0.001";
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], collateralAmount, numTokens);
+    await approveMintRequests(tic, accounts[0]);
+
+    await createRedeemRequest(tic, syntheticToken, accounts[0], collateralAmount, numTokens);
+    const redeemRequests = await tic.getRedeemRequests({ from: accounts[0] });
+    await Promise.all(redeemRequests.map(async redeemRequest => {
+      await tic.approveRedeem(redeemRequest["redeemID"], { from: accounts[0] })
+    }));
+
+    const balance = await collateralToken.balanceOf(accounts[0]);
+    const synthBalance = await syntheticToken.balanceOf(accounts[0]);
+
+    await Promise.all(redeemRequests.map(async redeemRequest => {
+      await expectRevert.unspecified(
+        tic.approveRedeem(redeemRequest["redeemID"], { from: accounts[0] })
+      );
+    }));
+
+    const newBalance = await collateralToken.balanceOf(accounts[0]);
+    const newSynthBalance = await syntheticToken.balanceOf(accounts[0]);
+
+    assert.equal(newBalance - balance, 0);
+    assert.equal(synthBalance - newSynthBalance, 0);
+  });
+
+  it("should remove a redeem request after it has been approved.", async () => {
+    const collateralAmount = "0.001";
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], collateralAmount, numTokens);
+    await approveMintRequests(tic, accounts[0]);
+
+    await createRedeemRequest(tic, syntheticToken, accounts[0], collateralAmount, numTokens);
+    const redeemRequests = await tic.getRedeemRequests({ from: accounts[0] });
+    assert.isAbove(redeemRequests.length, 0);
+
+    await approveRedeemRequests(tic, accounts[0]);
+    const newRedeemRequests = await tic.getRedeemRequests({ from: accounts[0] });
+    assert.equal(newRedeemRequests.length, 0);
+  });
+
+  it("should remove a exchange request after it has been rejected.", async () => {
+    const collateralAmount = "0.001";
+    const numTokens = "0.001";
+
+    await depositLPCollateral(tic, collateralToken, accounts[0], "0.0003");
+    await createMintRequest(tic, collateralToken, accounts[0], collateralAmount, numTokens);
+    await approveMintRequests(tic, accounts[0]);
+
+    await createRedeemRequest(tic, syntheticToken, accounts[0], collateralAmount, numTokens);
+    const redeemRequests = await tic.getRedeemRequests({ from: accounts[0] });
+    assert.isAbove(redeemRequests.length, 0);
+
+    await rejectRedeemRequests(tic, accounts[0]);
+    const newRedeemRequests = await tic.getRedeemRequests({ from: accounts[0] });
+    assert.equal(newRedeemRequests.length, 0);
   });
 });
