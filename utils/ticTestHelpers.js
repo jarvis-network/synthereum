@@ -92,7 +92,13 @@ module.exports = {
       "interestFeeProportions": [10, 90]
     };
 
-    return await TIC.new(derivativeAddress, liquidityProvider, startingCollateralization, fee);
+    return await TIC.new(
+      derivativeAddress,
+      liquidityProvider,
+      liquidityProvider,
+      startingCollateralization,
+      fee
+    );
   },
 
   depositLPCollateral: async (tic, collateralToken, account, collateralAmount) => {
