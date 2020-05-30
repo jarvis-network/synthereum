@@ -45,6 +45,9 @@ contract TIC is TICInterface, ReentrancyGuard {
 
         mapping(bytes32 => ExchangeRequest) exchangeRequests;
         HitchensUnorderedKeySetLib.Set exchangeRequestSet;
+
+        mapping(bytes32 => RedeemRequest) redeemRequests;
+        HitchensUnorderedKeySetLib.Set redeemRequestSet;
     }
 
     //----------------------------------------
@@ -197,6 +200,45 @@ contract TIC is TICInterface, ReentrancyGuard {
     }
 
     /**
+     * @notice Submit a request to redeem tokens
+     * @notice The request needs to approved by the LP before tokens are created. This is
+     *         necessary to prevent users from abusing LPs by redeeming large amounts of collateral
+     *         from a small number of tokens.
+     * @notice User must approve synthetic token transfer for the redeem request to succeed
+     * @param collateralAmount The amount of collateral to redeem tokens for
+     * @param numTokens The number of tokens to redeem
+     */
+    function redeemRequest(uint256 collateralAmount, uint256 numTokens)
+        external
+        override
+        nonReentrant
+    {
+        ticStorage.redeemRequest(
+            FixedPoint.Unsigned(collateralAmount),
+            FixedPoint.Unsigned(numTokens)
+        );
+    }
+
+    /**
+     * @notice Approve a redeem request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @notice User needs to have approved the transfer of synthetic tokens
+     * @param redeemID The ID of the redeem request
+     */
+    function approveRedeem(bytes32 redeemID) external override nonReentrant {
+        ticStorage.approveRedeem(redeemID);
+    }
+
+    /**
+     * @notice Reject a redeem request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @param redeemID The ID of the redeem request
+     */
+    function rejectRedeem(bytes32 redeemID) external override nonReentrant {
+        ticStorage.rejectRedeem(redeemID);
+    }
+
+    /**
      * @notice Redeem tokens after contract expiry
      * @notice After derivative expiry, an LP should use this instead of `withdrawRequest` to
      *         retrieve their collateral.
@@ -288,6 +330,14 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function getMintRequests() external view override returns (MintRequest[] memory) {
         return ticStorage.getMintRequests();
+    }
+
+    /**
+     * @notice Get all open redeem requests
+     * @return An array of redeem requests
+     */
+    function getRedeemRequests() external view override returns (RedeemRequest[] memory) {
+        return ticStorage.getRedeemRequests();
     }
 
     /**

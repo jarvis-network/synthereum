@@ -264,6 +264,95 @@ library TICHelper {
     }
 
     /**
+     * @notice Submit a request to redeem tokens
+     * @notice The request needs to approved by the LP before tokens are created. This is
+     *         necessary to prevent users from abusing LPs by redeeming large amounts of collateral
+     *         from a small number of tokens.
+     * @notice User must approve synthetic token transfer for the redeem request to succeed
+     * @param collateralAmount The amount of collateral to redeem tokens for
+     * @param numTokens The number of tokens to redeem
+     */
+    function redeemRequest(
+        TIC.Storage storage self,
+        FixedPoint.Unsigned memory collateralAmount,
+        FixedPoint.Unsigned memory numTokens
+    ) public {
+        bytes32 redeemID = keccak256(abi.encodePacked(
+            msg.sender,
+            collateralAmount.rawValue,
+            numTokens.rawValue,
+            now
+        ));
+
+        TICInterface.RedeemRequest memory redeem = TICInterface.RedeemRequest(
+            redeemID,
+            now,
+            msg.sender,
+            collateralAmount,
+            numTokens
+        );
+
+        self.redeemRequestSet.insert(redeemID);
+        self.redeemRequests[redeemID] = redeem;
+    }
+
+    /**
+     * @notice Approve a redeem request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @notice User needs to have approved the transfer of synthetic tokens
+     * @param redeemID The ID of the redeem request
+     */
+    function approveRedeem(TIC.Storage storage self, bytes32 redeemID) public {
+        require(self.redeemRequestSet.exists(redeemID), "Redeem request does not exist");
+        TICInterface.RedeemRequest memory redeem = self.redeemRequests[redeemID];
+
+        require(redeem.numTokens.isGreaterThan(0));
+
+        IERC20 tokenCurrency = self.derivative.tokenCurrency();
+        require(tokenCurrency.balanceOf(redeem.sender) >= redeem.numTokens.rawValue);
+
+        // Remove redeem request
+        self.redeemRequestSet.remove(redeemID);
+        delete self.redeemRequests[redeemID];
+
+        // Move synthetic tokens from the user to the TIC
+        // - This is because derivative expects the tokens to come from the sponsor address
+        require(
+            tokenCurrency.transferFrom(redeem.sender, address(this), redeem.numTokens.rawValue),
+            'Token transfer failed'
+        );
+
+        // Allow the derivative to transfer tokens from the TIC
+        require(
+            tokenCurrency.approve(address(self.derivative), redeem.numTokens.rawValue),
+            'Token approve failed'
+        );
+
+        uint256 prevBalance = self.rtoken.balanceOf(address(this));
+
+        // Redeem the synthetic tokens for RToken collateral
+        self.derivative.redeem(redeem.numTokens);
+
+        FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
+            self.rtoken.balanceOf(address(this)).sub(prevBalance)
+        );
+
+        require(amountWithdrawn.isGreaterThan(redeem.collateralAmount));
+        require(self.rtoken.redeemAndTransfer(redeem.sender, redeem.collateralAmount.rawValue));
+    }
+
+    /**
+     * @notice Reject a redeem request as an LP
+     * @notice This will typically be done with a keeper bot
+     * @param redeemID The ID of the redeem request
+     */
+    function rejectRedeem(TIC.Storage storage self, bytes32 redeemID) public {
+        require(self.redeemRequestSet.exists(redeemID), "Mint request does not exist");
+        self.redeemRequestSet.remove(redeemID);
+        delete self.redeemRequests[redeemID];
+    }
+
+    /**
      * @notice Redeem tokens after contract expiry
      * @notice After derivative expiry, an LP should use this instead of `withdrawRequest` to
      *         retrieve their collateral.
@@ -443,6 +532,26 @@ library TICHelper {
         }
 
         return mintRequests;
+    }
+
+    /**
+     * @notice Get all open mint requests
+     * @return An array of mint requests
+     */
+    function getRedeemRequests(TIC.Storage storage self)
+        public
+        view
+        returns (TICInterface.RedeemRequest[] memory)
+    {
+        TICInterface.RedeemRequest[] memory redeemRequests = new TICInterface.RedeemRequest[](
+            self.redeemRequestSet.count()
+        );
+
+        for (uint256 i = 0; i < self.redeemRequestSet.count(); i++) {
+            redeemRequests[i] = self.redeemRequests[self.redeemRequestSet.keyAtIndex(i)];
+        }
+
+        return redeemRequests;
     }
 
     /**
