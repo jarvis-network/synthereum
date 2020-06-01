@@ -163,6 +163,7 @@ export default function Wallet(props) {
         assets={assets}
         token={token}
         dai={dai}
+        syntheticTokens={syntheticTokens}
         setLoading={setLoading}
         setLastTx={setLastTx}
       />
