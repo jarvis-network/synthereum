@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function OrderForm(props) {
-  const { className, assets, token, dai, setLoading, setLastTx } = props;
+  const { className, assets, token, dai, syntheticTokens, setLoading, setLastTx } = props;
 
   const classes = useStyles();
 
@@ -73,21 +73,24 @@ export default function OrderForm(props) {
       });
   };
 
-  const sellOrder = orderAmount => {
-    assets[token].derivative.methods.approve(
+  const sellOrder = (collateralAmount, orderAmountTKNbits) => {
+    syntheticTokens[token].methods.approve(
       assets[token].contract.options.address,
-      orderAmount
+      orderAmountTKNbits
     ).send({
       from: context.account
     }).then(() => {
-      return assets[token].contract.methods.redeemTokens(orderAmount).send({
+      return assets[token].contract.methods.redeemRequest(
+        collateralAmount,
+        orderAmountTKNbits
+      ).send({
         from: context.account
       });
     }).then(tx => {
       setLoading(false);
       setLastTx(tx.transactionHash);
       setOrderAmount("");
-    }).catch(() => {
+    }).catch(err => {
       setLoading(false);
       setOrderAmount("");
       console.error(err);
@@ -104,7 +107,7 @@ export default function OrderForm(props) {
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === "sell") {
         setLoading(true);
-        sellOrder(collateralAmountTKNbits);
+        sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
       }
     }
   };
