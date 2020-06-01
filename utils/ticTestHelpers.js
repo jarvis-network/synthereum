@@ -81,7 +81,7 @@ module.exports = {
     return await ExpiringMultiParty.new(params);
   },
 
-  createTIC: async (derivativeAddress, protocolOwner, liquidityProvider) => {
+  createTIC: async (derivativeAddress, protocolOwner, liquidityProvider, validator) => {
     const { startingCollateralization } = assets[0];
 
     const fee = {
@@ -95,7 +95,7 @@ module.exports = {
     return await TIC.new(
       derivativeAddress,
       liquidityProvider,
-      liquidityProvider,
+      validator,
       startingCollateralization,
       fee
     );
