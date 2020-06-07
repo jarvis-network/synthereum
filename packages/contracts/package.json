@@ -1,13 +1,17 @@
 {
-  "name": "synfiat",
+  "name": "@jarvis/synthereum-contracts",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "yarn build:solidity",
+    "build:solidity": "truffle compile && mkdir -p dist/abi && cp ./build/contracts/*.json ./dist/abi/"
   },
   "author": "",
   "license": "ISC",
