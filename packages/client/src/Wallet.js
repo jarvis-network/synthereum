@@ -8,6 +8,7 @@ import TIC from "@jarvis/synthereum-contracts/dist/abi/TIC.json";
 import ExpiringMultiParty from "@jarvis/synthereum-contracts/dist/abi/ExpiringMultiParty.json";
 import MCD_DAI from "./MCD_DAI.json";
 import IERC20 from "@jarvis/synthereum-contracts/dist/abi/IERC20.json";
+import dependencies from '@jarvis/synthereum-contracts/contract-dependencies.json'
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -81,7 +82,7 @@ export default function Wallet(props) {
 
       const factory = new Contract(
         TICFactory.abi,
-        TICFactory.networks[context.networkId].address
+        dependencies[context.networkId].ticFactory
       );
 
       let newAssets = [...assets];

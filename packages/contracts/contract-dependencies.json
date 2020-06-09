@@ -1,10 +1,11 @@
 {
   "42": {
     "expiringMultiPartyCreator": "0x3ffefa0ecA0Aa7263D1B77402E86aCE7eDA51f32",
-    "tokenFactoryAddress": "0x294eE93cbA41Ba3A91a516D362d60311a71431f0",
+    "tokenFactoryAddress": "0x334cDccB89561A7996cba8a63E5183Bb6dC9784b",
     "identifierWhitelist": "0x985C80a21B9f3eeC125fa377f84c5d425039569c",
     "finderAddress": "0x324023B5f60d4C85cAa281CaE80455A2122F7a9f",
     "storeAddress": "0xD7023D664537ddC879a5D8D2d32dbe2810d379C9",
-    "collateralAddress": "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB"
+    "collateralAddress": "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB",
+    "ticFactory": "0x334cDccB89561A7996cba8a63E5183Bb6dC9784b"
   }
 }
