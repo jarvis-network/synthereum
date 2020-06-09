@@ -3,11 +3,11 @@ import { useWeb3Context } from "web3-react";
 
 import { jarvisExchangeRate } from "./jarvisAPI.js";
 
-import TICFactory from "./contracts/TICFactory.json";
-import TIC from "./contracts/TIC.json";
-import ExpiringMultiParty from "./contracts/ExpiringMultiParty.json";
+import TICFactory from "@jarvis/synthereum-contracts/dist/abi/TICFactory.json";
+import TIC from "@jarvis/synthereum-contracts/dist/abi/TIC.json";
+import ExpiringMultiParty from "@jarvis/synthereum-contracts/dist/abi/ExpiringMultiParty.json";
 import MCD_DAI from "./MCD_DAI.json";
-import IERC20 from "./contracts/IERC20.json";
+import IERC20 from "@jarvis/synthereum-contracts/dist/abi/IERC20.json";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";

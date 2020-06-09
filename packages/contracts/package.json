@@ -16,10 +16,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^3.0.0-beta.0",
+    "@openzeppelin/contracts": "3.0.0-beta.0",
     "@openzeppelin/test-helpers": "^0.5.4",
     "@truffle/hdwallet-provider": "^1.0.34",
     "chainlink": "^0.8.2",
+    "dotenv": "^8.2.0",
     "protocol": "github:UMAprotocol/protocol#8df987bee7aa90780b524c701c19db8b6d9d113b"
   },
   "devDependencies": {

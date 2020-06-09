@@ -1,5 +1,6 @@
 const path = require("path");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
+require('dotenv').config();
 
 const getEnv = env => {
   const value = process.env[env];
