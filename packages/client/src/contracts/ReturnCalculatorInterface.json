@@ -1,0 +1,530 @@
+{
+  "contractName": "ReturnCalculatorInterface",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "int256",
+          "name": "oldPrice",
+          "type": "int256"
+        },
+        {
+          "internalType": "int256",
+          "name": "newPrice",
+          "type": "int256"
+        }
+      ],
+      "name": "computeReturn",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "assetReturn",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "leverage",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "_leverage",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"int256\",\"name\":\"oldPrice\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"newPrice\",\"type\":\"int256\"}],\"name\":\"computeReturn\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"assetReturn\",\"type\":\"int256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"leverage\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"_leverage\",\"type\":\"int256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Different implementations can compute different return structures.\",\"methods\":{\"computeReturn(int256,int256)\":{\"details\":\"This can be implemented in many different ways, but a simple one would just be levering (or multiplying) the return by some fixed integer.\"},\"leverage()\":{\"details\":\"If there is no sensible leverage value for a return calculator, this method should return 1.\"}},\"title\":\"Computes the synthetic asset return based on the underlying asset's return.\"},\"userdoc\":{\"methods\":{\"computeReturn(int256,int256)\":{\"notice\":\"Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to `newPrice`.\"},\"leverage()\":{\"notice\":\"Gets the effective leverage for the return calculator.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol\":\"ReturnCalculatorInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":500},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol\":{\"keccak256\":\"0x30cd15c9c8892115c00a2dde3984516adfab633768b228bb4c98461686ec5f1d\",\"urls\":[\"bzz-raw://2268f067a5637d13734f0a5379e290c8a604cd3c9ff520318663219d89dd728c\",\"dweb:/ipfs/QmYdnZw4BEvHhm1CUqBNvW4ib3CCdBBAKgTMRbD4JRKndv\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.0;\n\n\n/**\n * @title Computes the synthetic asset return based on the underlying asset's return.\n * @dev Different implementations can compute different return structures.\n */\ninterface ReturnCalculatorInterface {\n    /**\n     * @notice Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to\n     * `newPrice`.\n     * @dev This can be implemented in many different ways, but a simple one would just be levering (or multiplying)\n     * the return by some fixed integer.\n     */\n    function computeReturn(int oldPrice, int newPrice) external view returns (int assetReturn);\n\n    /**\n     * @notice Gets the effective leverage for the return calculator.\n     * @dev If there is no sensible leverage value for a return calculator, this method should return 1.\n     */\n    function leverage() external view returns (int _leverage);\n}\n",
+  "sourcePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
+  "ast": {
+    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
+    "exportedSymbols": {
+      "ReturnCalculatorInterface": [
+        14644
+      ]
+    },
+    "id": 14645,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 14626,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:60"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 14627,
+          "nodeType": "StructuredDocumentation",
+          "src": "26:168:60",
+          "text": "@title Computes the synthetic asset return based on the underlying asset's return.\n@dev Different implementations can compute different return structures."
+        },
+        "fullyImplemented": false,
+        "id": 14644,
+        "linearizedBaseContracts": [
+          14644
+        ],
+        "name": "ReturnCalculatorInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 14628,
+              "nodeType": "StructuredDocumentation",
+              "src": "237:298:60",
+              "text": "@notice Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to\n`newPrice`.\n@dev This can be implemented in many different ways, but a simple one would just be levering (or multiplying)\nthe return by some fixed integer."
+            },
+            "functionSelector": "55e59682",
+            "id": 14637,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "computeReturn",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 14633,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14630,
+                  "name": "oldPrice",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14637,
+                  "src": "563:12:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14629,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "563:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 14632,
+                  "name": "newPrice",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14637,
+                  "src": "577:12:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14631,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "577:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "562:28:60"
+            },
+            "returnParameters": {
+              "id": 14636,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14635,
+                  "name": "assetReturn",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14637,
+                  "src": "614:15:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14634,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "614:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "613:17:60"
+            },
+            "scope": 14644,
+            "src": "540:91:60",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 14638,
+              "nodeType": "StructuredDocumentation",
+              "src": "637:186:60",
+              "text": "@notice Gets the effective leverage for the return calculator.\n@dev If there is no sensible leverage value for a return calculator, this method should return 1."
+            },
+            "functionSelector": "2c86d98e",
+            "id": 14643,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "leverage",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 14639,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "845:2:60"
+            },
+            "returnParameters": {
+              "id": 14642,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14641,
+                  "name": "_leverage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14643,
+                  "src": "871:13:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14640,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "871:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "870:15:60"
+            },
+            "scope": 14644,
+            "src": "828:58:60",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 14645,
+        "src": "195:693:60"
+      }
+    ],
+    "src": "0:889:60"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
+    "exportedSymbols": {
+      "ReturnCalculatorInterface": [
+        14644
+      ]
+    },
+    "id": 14645,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 14626,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:60"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 14627,
+          "nodeType": "StructuredDocumentation",
+          "src": "26:168:60",
+          "text": "@title Computes the synthetic asset return based on the underlying asset's return.\n@dev Different implementations can compute different return structures."
+        },
+        "fullyImplemented": false,
+        "id": 14644,
+        "linearizedBaseContracts": [
+          14644
+        ],
+        "name": "ReturnCalculatorInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 14628,
+              "nodeType": "StructuredDocumentation",
+              "src": "237:298:60",
+              "text": "@notice Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to\n`newPrice`.\n@dev This can be implemented in many different ways, but a simple one would just be levering (or multiplying)\nthe return by some fixed integer."
+            },
+            "functionSelector": "55e59682",
+            "id": 14637,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "computeReturn",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 14633,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14630,
+                  "name": "oldPrice",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14637,
+                  "src": "563:12:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14629,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "563:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 14632,
+                  "name": "newPrice",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14637,
+                  "src": "577:12:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14631,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "577:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "562:28:60"
+            },
+            "returnParameters": {
+              "id": 14636,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14635,
+                  "name": "assetReturn",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14637,
+                  "src": "614:15:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14634,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "614:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "613:17:60"
+            },
+            "scope": 14644,
+            "src": "540:91:60",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 14638,
+              "nodeType": "StructuredDocumentation",
+              "src": "637:186:60",
+              "text": "@notice Gets the effective leverage for the return calculator.\n@dev If there is no sensible leverage value for a return calculator, this method should return 1."
+            },
+            "functionSelector": "2c86d98e",
+            "id": 14643,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "leverage",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 14639,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "845:2:60"
+            },
+            "returnParameters": {
+              "id": 14642,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14641,
+                  "name": "_leverage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 14643,
+                  "src": "871:13:60",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 14640,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "871:3:60",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "870:15:60"
+            },
+            "scope": 14644,
+            "src": "828:58:60",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 14645,
+        "src": "195:693:60"
+      }
+    ],
+    "src": "0:889:60"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-06-01T04:24:41.893Z",
+  "devdoc": {
+    "details": "Different implementations can compute different return structures.",
+    "methods": {
+      "computeReturn(int256,int256)": {
+        "details": "This can be implemented in many different ways, but a simple one would just be levering (or multiplying) the return by some fixed integer."
+      },
+      "leverage()": {
+        "details": "If there is no sensible leverage value for a return calculator, this method should return 1."
+      }
+    },
+    "title": "Computes the synthetic asset return based on the underlying asset's return."
+  },
+  "userdoc": {
+    "methods": {
+      "computeReturn(int256,int256)": {
+        "notice": "Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to `newPrice`."
+      },
+      "leverage()": {
+        "notice": "Gets the effective leverage for the return calculator."
+      }
+    }
+  }
+}

@@ -1,0 +1,281 @@
+{
+  "contractName": "AdministrateeInterface",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "emergencyShutdown",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "remargin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"emergencyShutdown\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"remargin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"remargin()\":{\"details\":\"It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract.\"}},\"title\":\"Interface that all financial contracts expose to the admin.\"},\"userdoc\":{\"methods\":{\"emergencyShutdown()\":{\"notice\":\"Initiates the shutdown process, in case of an emergency.\"},\"remargin()\":{\"notice\":\"A core contract method called independently or as a part of other financial contract transactions.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol\":\"AdministrateeInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":500},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol\":{\"keccak256\":\"0xfa1232ab562e3c279e5665745804f4ba9e62758e34d63b71b65dc92bfdd7cac9\",\"urls\":[\"bzz-raw://cc16bafaf3b1ec0a8064946c09fb918db68beaf219d6d1a431beb1b3ef01ede5\",\"dweb:/ipfs/QmZg7BxqNE82CxVm1pYViL3abRRbJgGXp5iAjvVWefzdiJ\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.0;\n\n\n/**\n * @title Interface that all financial contracts expose to the admin.\n */\ninterface AdministrateeInterface {\n    /**\n     * @notice Initiates the shutdown process, in case of an emergency.\n     */\n    function emergencyShutdown() external;\n\n    /**\n     * @notice A core contract method called independently or as a part of other financial contract transactions.\n     * @dev It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract.\n     */\n    function remargin() external;\n}\n",
+  "sourcePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
+  "ast": {
+    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
+    "exportedSymbols": {
+      "AdministrateeInterface": [
+        13708
+      ]
+    },
+    "id": 13709,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 13698,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:49"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 13699,
+          "nodeType": "StructuredDocumentation",
+          "src": "26:77:49",
+          "text": "@title Interface that all financial contracts expose to the admin."
+        },
+        "fullyImplemented": false,
+        "id": 13708,
+        "linearizedBaseContracts": [
+          13708
+        ],
+        "name": "AdministrateeInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 13700,
+              "nodeType": "StructuredDocumentation",
+              "src": "143:83:49",
+              "text": "@notice Initiates the shutdown process, in case of an emergency."
+            },
+            "functionSelector": "3403c2fc",
+            "id": 13703,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emergencyShutdown",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 13701,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "257:2:49"
+            },
+            "returnParameters": {
+              "id": 13702,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "268:0:49"
+            },
+            "scope": 13708,
+            "src": "231:38:49",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 13704,
+              "nodeType": "StructuredDocumentation",
+              "src": "275:241:49",
+              "text": "@notice A core contract method called independently or as a part of other financial contract transactions.\n@dev It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract."
+            },
+            "functionSelector": "bda02e77",
+            "id": 13707,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "remargin",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 13705,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "538:2:49"
+            },
+            "returnParameters": {
+              "id": 13706,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "549:0:49"
+            },
+            "scope": 13708,
+            "src": "521:29:49",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 13709,
+        "src": "104:448:49"
+      }
+    ],
+    "src": "0:553:49"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
+    "exportedSymbols": {
+      "AdministrateeInterface": [
+        13708
+      ]
+    },
+    "id": 13709,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 13698,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:49"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 13699,
+          "nodeType": "StructuredDocumentation",
+          "src": "26:77:49",
+          "text": "@title Interface that all financial contracts expose to the admin."
+        },
+        "fullyImplemented": false,
+        "id": 13708,
+        "linearizedBaseContracts": [
+          13708
+        ],
+        "name": "AdministrateeInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 13700,
+              "nodeType": "StructuredDocumentation",
+              "src": "143:83:49",
+              "text": "@notice Initiates the shutdown process, in case of an emergency."
+            },
+            "functionSelector": "3403c2fc",
+            "id": 13703,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emergencyShutdown",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 13701,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "257:2:49"
+            },
+            "returnParameters": {
+              "id": 13702,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "268:0:49"
+            },
+            "scope": 13708,
+            "src": "231:38:49",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 13704,
+              "nodeType": "StructuredDocumentation",
+              "src": "275:241:49",
+              "text": "@notice A core contract method called independently or as a part of other financial contract transactions.\n@dev It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract."
+            },
+            "functionSelector": "bda02e77",
+            "id": 13707,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "remargin",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 13705,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "538:2:49"
+            },
+            "returnParameters": {
+              "id": 13706,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "549:0:49"
+            },
+            "scope": 13708,
+            "src": "521:29:49",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 13709,
+        "src": "104:448:49"
+      }
+    ],
+    "src": "0:553:49"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-06-01T04:24:41.882Z",
+  "devdoc": {
+    "methods": {
+      "remargin()": {
+        "details": "It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract."
+      }
+    },
+    "title": "Interface that all financial contracts expose to the admin."
+  },
+  "userdoc": {
+    "methods": {
+      "emergencyShutdown()": {
+        "notice": "Initiates the shutdown process, in case of an emergency."
+      },
+      "remargin()": {
+        "notice": "A core contract method called independently or as a part of other financial contract transactions."
+      }
+    }
+  }
+}
