@@ -493,7 +493,7 @@ library TICHelper {
         // Transfer the new tokens to the user
         require(
             exchange.destTIC.derivative().tokenCurrency().transfer(
-                msg.sender,
+                exchange.sender,
                 exchange.destNumTokens.rawValue
             )
         );
