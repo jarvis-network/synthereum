@@ -160,7 +160,7 @@ library TICHelper {
         self.mintRTokens(mint.collateralAmount);
 
         // Mint synthetic asset with margin from user and provider
-        self.mintSynTokens(mint.numTokens.mul(targetCollateralization), mint.numTokens);
+        self.mintSynTokens(mint.numTokens.mulCeil(targetCollateralization), mint.numTokens);
 
         // Transfer synthetic asset to the user
         self.transferSynTokens(mint.sender, mint.numTokens);
