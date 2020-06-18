@@ -37,7 +37,7 @@ const ActionButton = styled(Button)`
   text-transform: none;
   font-size: 18px;
   ${props =>
-    props.active
+    props.active === "true"
       ? `
     color: black;
   `
@@ -181,7 +181,7 @@ export default function OrderForm(props) {
       <form>
         <ButtonRow>
           <ActionButton
-            active={orderType === "buy"}
+            active={orderType === "buy" ? "true" : "false"}
             color="primary"
             margin="normal"
             onClick={() => setOrderType("buy")}
@@ -189,7 +189,7 @@ export default function OrderForm(props) {
             Buy
           </ActionButton>
           <ActionButton
-            active={orderType === "sell"}
+            active={orderType === "sell" ? "true" : "false"}
             color="secondary"
             margin="normal"
             onClick={() => setOrderType("sell")}
@@ -197,7 +197,7 @@ export default function OrderForm(props) {
             Sell
           </ActionButton>
           <ActionButton
-            active={orderType === "exchange"}
+            active={orderType === "exchange" ? "true" : "false"}
             color="secondary"
             margin="normal"
             onClick={() => alert("Exchange")}
