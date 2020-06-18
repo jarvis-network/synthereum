@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
 
+import { makeStyles } from "@material-ui/core/styles";
+
+
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -10,7 +13,23 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 
+import * as icons from "../src/assets/icons";
+
+const useStyles = makeStyles(theme => ({
+  TableCell: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  TokenIcon: {
+    marginRight: 10,
+    width: 24,
+    height: 24
+  }
+}));
+
 export default function WalletBalance({ className, assets, syntheticTokens, token, dai, lastTx }) {
+
+  const classes = useStyles();
 
   const context = useWeb3Context();
 
@@ -51,7 +70,10 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
             {
               assets.map((asset, index) => (
                 <TableRow key={index}>
-                  <TableCell>{asset.symbol}</TableCell>
+                  <TableCell className={classes.TableCell}>
+                    <img className={classes.TokenIcon} src={icons[asset.symbol]} />
+                    {asset.symbol}
+                  </TableCell>
                   <TableCell align="right">
                     {Number(fromWei(synBalance, "ether")).toLocaleString()}
                   </TableCell>
@@ -65,7 +87,10 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
             </TableCell>
           </TableRow> */}
             <TableRow>
-              <TableCell>DAI</TableCell>
+              <TableCell className={classes.TableCell}>
+                <img className={classes.TokenIcon} src={icons.DAI} width="20" />
+                DAI
+              </TableCell>
               <TableCell align="right">
                 {Number(fromWei(balance, "ether")).toLocaleString()}
               </TableCell>

@@ -6,6 +6,9 @@ import Web3Provider from 'web3-react';
 import { Connectors } from 'web3-react';
 import Web3 from 'web3';
 import './style.css';
+import { ThemeProvider } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core/styles';
+
 
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 
@@ -16,13 +19,25 @@ const Infura = new NetworkOnlyConnector({
 
 const connectors = { MetaMask, Infura };
 
+const theme = createMuiTheme({
+  overrides: {
+    MuiSelect: {
+      root: {
+        fontWeight: "bold"
+      }
+    },
+  },
+});
+
 ReactDOM.render(
   <Web3Provider
     connectors={connectors}
     libraryName='web3.js'
     web3Api={Web3}
   >
+  <ThemeProvider theme={theme}>
     <App />
+  </ThemeProvider>
   </Web3Provider>,
   document.getElementById('root')
 );

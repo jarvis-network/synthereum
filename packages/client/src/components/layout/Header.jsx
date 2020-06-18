@@ -21,10 +21,12 @@ const useStyles = makeStyles(theme => ({
     color: colors.black,
     fontFamily: "'Rubik', sans-serif"
   },
+  toolbar: {
+    padding: 0
+  },
   button: {
     color: colors.black,
     textDecoration: "none",
-
     marginLeft: 15
   }
 }));
@@ -36,9 +38,9 @@ const Header = () => {
     <div className={classes.root}>
       <AppBar position="static" className={classes.appBar}>
         <Container maxWidth="lg">
-          <Toolbar>
+          <Toolbar className={classes.toolbar}>
             <Typography variant="h6" className={classes.title}>
-              Jarvis Wallet
+              Synthereum Wallet
             </Typography>
             <NavLink to="/" className={classes.button} color="inherit">
               Order

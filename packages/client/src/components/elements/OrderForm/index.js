@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useWeb3Context } from "web3-react";
 import styled from "styled-components";
 
+import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
@@ -204,49 +205,54 @@ export default function OrderForm(props) {
             Exchange
           </ActionButton>
         </ButtonRow>
-
-        <TextField
-          label="Amount"
-          fullWidth
-          margin="normal"
-          value={orderAmount}
-          onChange={onOrderAmountChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <TokenPicker assets={assets} token={token} onChange={setToken} />
-              </InputAdornment>
-            )
-          }}
-        />
-
         
+        <Grid container justify="center">
+          <Grid item md={8}>
+            <TextField
+              label="Amount"
+              fullWidth
+              margin="normal"
+              value={orderAmount}
+              onChange={onOrderAmountChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <TokenPicker assets={assets} token={token} onChange={setToken} />
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item md={8}>
+            {orderAmount && (
+            <TableContainer component={Paper} className={className}>
+              <Table size="small">
+                <TableBody>
+                  <TableRow>
+                    <TableCell>Fee</TableCell>
+                    <TableCell align="right">
+                      {Number(fromWei(feeAmount)).toLocaleString()} DAI
+                    </TableCell>
+                  </TableRow>
 
-        {orderAmount && (
-          <TableContainer component={Paper} className={className}>
-            <Table size="small">
-              <TableBody>
-                <TableRow>
-                  <TableCell>Fee</TableCell>
-                  <TableCell align="right">
-                    {Number(fromWei(feeAmount)).toLocaleString()} DAI
-                  </TableCell>
-                </TableRow>
+                  <TableRow>
+                    <TableCell>Total</TableCell>
+                    <TableCell align="right">
+                      {collateralAmount.toLocaleString()} DAI
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
 
-                <TableRow>
-                  <TableCell>Total</TableCell>
-                  <TableCell align="right">
-                    {collateralAmount.toLocaleString()} DAI
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-
-        <OrderButton fullWidth margin="normal" onClick={placeOrder}>
-          Place Order
-        </OrderButton>
+          </Grid>
+          <Grid item md={8}>
+            <OrderButton fullWidth margin="normal" onClick={placeOrder}>
+              Place Order
+            </OrderButton>
+          </Grid>
+        </Grid>        
       </form>
     </StyledBox>
   );

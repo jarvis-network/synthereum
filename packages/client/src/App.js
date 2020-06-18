@@ -17,7 +17,7 @@ import {
 
 const useStyles = makeStyles(theme => ({
   app: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#efefef'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,

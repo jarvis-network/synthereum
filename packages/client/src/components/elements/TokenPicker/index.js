@@ -6,7 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 const TokenPicker = ({ assets, token, onChange }) => {
   return (
     <FormControl>
-        <Select value={token} onChange={event => onChange(event.target.value)}>
+        <Select disableUnderline={true} value={token} onChange={event => onChange(event.target.value)}>
           {assets.map((asset, i) => (
             <MenuItem key={asset.symbol} value={i}>
               {asset.symbol}
