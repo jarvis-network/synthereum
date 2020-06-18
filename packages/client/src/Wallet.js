@@ -3,58 +3,20 @@ import { useWeb3Context } from "web3-react";
 
 import { jarvisExchangeRate } from "./jarvisAPI.js";
 
-import TICFactory from "@jarvis/synthereum-contracts/dist/abi/TICFactory.json";
-import TIC from "@jarvis/synthereum-contracts/dist/abi/TIC.json";
-import ExpiringMultiParty from "@jarvis/synthereum-contracts/dist/abi/ExpiringMultiParty.json";
+import TICFactory from "./contracts/TICFactory.json";
+import TIC from "./contracts/TIC.json";
+import ExpiringMultiParty from "./contracts/ExpiringMultiParty.json";
 import MCD_DAI from "./MCD_DAI.json";
-import IERC20 from "@jarvis/synthereum-contracts/dist/abi/IERC20.json";
-import dependencies from '@jarvis/synthereum-contracts/contract-dependencies.json'
+import IERC20 from "./contracts/IERC20.json";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
 
 import ExchangeRates from "./ExchangeRates";
 import WalletBalance from "./WalletBalance";
-import OrderForm from "./OrderForm";
+import OrderForm from "./components/elements/OrderForm";
 
-const defaultAssets = [
-  {
-    "name": "Jarvis Synthetic Euro",
-    "symbol": "jEUR",
-    "priceFeed": "EURUSD",
-    "contract": null,
-    "derivative": null,
-    "price": "0",
-  },
-  {
-    "name": "Jarvis Synthetic Swiss Franc",
-    "symbol": "jCHF",
-    "priceFeed": "USDCHF",
-    "contract": null,
-    "derivative": null,
-    "price": "0",
-  },
-  {
-    "name": "Jarvis Synthetic British Pound",
-    "symbol": "jGBP",
-    "priceFeed": "GBPUSD",
-    "contract": null,
-    "derivative": null,
-    "price": "0",
-  },
-  {
-    "name": "Jarvis Synthetic Gold",
-    "symbol": "jXAU",
-    "priceFeed": "XAUUSD",
-    "contract": null,
-    "derivative": null,
-    "price": "0",
-  }
-];
+import defaultAssets from "./helpers/defaultAssets";
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -69,7 +31,7 @@ export default function Wallet(props) {
 
   const context = useWeb3Context();
 
-  const [token, setToken] = useState(0);
+  // const [token, setToken] = useState(0);
   const [assets, setAssets] = useState(defaultAssets);
   const [syntheticTokens, setSyntheticTokens] = useState([]);
   const [dai, setDai] = useState(null);
@@ -82,7 +44,7 @@ export default function Wallet(props) {
 
       const factory = new Contract(
         TICFactory.abi,
-        dependencies[context.networkId].ticFactory
+        TICFactory.networks[context.networkId].address
       );
 
       let newAssets = [...assets];
@@ -116,7 +78,7 @@ export default function Wallet(props) {
         setSyntheticTokens(newSyntheticTokens);
       });
 
-    
+
       Promise.all(newAssets.map(asset => {
         return jarvisExchangeRate(asset.priceFeed);
       })).then(exchangeRates => {
@@ -133,45 +95,31 @@ export default function Wallet(props) {
 
   return (
     <Grid container spacing={4} className={className}>
-      <Grid item xs={12}>
-        <FormControl>
-          <InputLabel>Token</InputLabel>
-          <Select
-            value={token}
-            onChange={event => setToken(event.target.value)}
-          >
-            {
-              assets.map((asset, i) => <MenuItem key={asset.symbol} value={i}>
-                {asset.name}
-              </MenuItem>)
-            }
-          </Select>
-        </FormControl>
-      </Grid>
 
       <Grid item md={6}>
         <WalletBalance
           className={classes.table}
           assets={assets}
           syntheticTokens={syntheticTokens}
-          token={token}
+          token={0} // FIX THIS
           dai={dai}
           lastTx={lastTx}
         />
-
-      <OrderForm
-        className={classes.table}
-        assets={assets}
-        token={token}
-        dai={dai}
-        syntheticTokens={syntheticTokens}
-        setLoading={setLoading}
-        setLastTx={setLastTx}
-      />
       </Grid>
 
       <Grid item md={6}>
-        <ExchangeRates className={classes.table} assets={assets} syntheticTokens={syntheticTokens} />
+      <OrderForm
+          className={classes.table}
+          assets={assets}
+          // token={token}
+          dai={dai}
+          syntheticTokens={syntheticTokens}
+          setLoading={setLoading}
+          setLastTx={setLastTx}
+        />
+
+        <ExchangeRates className={classes.table} assets={assets} />
+        
       </Grid>
     </Grid>
   );

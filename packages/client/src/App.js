@@ -9,17 +9,22 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import Wallet from './Wallet';
+import Header from './components/layout/Header';
 
 const useStyles = makeStyles(theme => ({
+  app: {
+    backgroundColor: '#ffffff',
+  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
   wallet: {
-    marginTop: theme.spacing(4),
+    // marginTop: theme.spacing(4)
   },
   fullscreen: {
     height: '100vh',
+    backgroundColor: '#f7fbfb',
   },
 }));
 
@@ -75,21 +80,22 @@ export default function App() {
     );
   } else {
     return (
-      <div className="App">
+      <div className={classes.app}>
+        <Header />
         <Backdrop className={classes.backdrop} open={loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <div>
             {(actualDay === 5 && actualHour > 21) ||
             actualDay === 6 ||
             (actualDay === 0 && actualHour < 22) ? (
               <Typography variant="h4" align="center" color="error">
-              Market is closed
+                Market is closed
               </Typography>
             ) : (
               <Typography variant="h4" align="center" color="primary">
-              Market is open
+                Market is open
               </Typography>
             )}
           </div>

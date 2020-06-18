@@ -10,8 +10,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 
-export default function WalletBalance(props) {
-  const { className, assets, syntheticTokens, token, dai, lastTx } = props;
+export default function WalletBalance({ className, assets, syntheticTokens, token, dai, lastTx }) {
 
   const context = useWeb3Context();
 
@@ -40,33 +39,37 @@ export default function WalletBalance(props) {
       <Typography variant="h6" gutterBottom>
         Wallet Balance
       </Typography>
-
       <TableContainer component={Paper} className={className}>
         <Table>
-
           <TableHead>
             <TableRow>
               <TableCell>Token</TableCell>
               <TableCell align="right">Amount</TableCell>
             </TableRow>
           </TableHead>
-
           <TableBody>
-
+            {
+              assets.map(asset => (
+                <TableRow>
+                  <TableCell>{asset.symbol}</TableCell>
+                  <TableCell align="right">
+                    {Number(fromWei(synBalance, "ether")).toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              ))
+            }
             <TableRow>
               <TableCell>{assets[token].symbol}</TableCell>
               <TableCell align="right">
                 {Number(fromWei(synBalance, "ether")).toLocaleString()}
               </TableCell>
             </TableRow>
-
             <TableRow>
               <TableCell>DAI</TableCell>
               <TableCell align="right">
                 {Number(fromWei(balance, "ether")).toLocaleString()}
               </TableCell>
             </TableRow>
-
           </TableBody>
         </Table>
       </TableContainer>

@@ -5,6 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import Web3Provider from 'web3-react';
 import { Connectors } from 'web3-react';
 import Web3 from 'web3';
+import './style.css';
 
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 
