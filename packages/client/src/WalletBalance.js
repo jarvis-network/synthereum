@@ -71,7 +71,7 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
               assets.map((asset, index) => (
                 <TableRow key={index}>
                   <TableCell className={classes.TableCell}>
-                    <img className={classes.TokenIcon} src={icons[asset.symbol]} />
+                    <img className={classes.TokenIcon} alt={asset.symbol} src={icons[asset.symbol]} />
                     {asset.symbol}
                   </TableCell>
                   <TableCell align="right">
@@ -88,7 +88,7 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
           </TableRow> */}
             <TableRow>
               <TableCell className={classes.TableCell}>
-                <img className={classes.TokenIcon} src={icons.DAI} width="20" />
+                <img className={classes.TokenIcon} alt="DAI" src={icons.DAI}/>
                 DAI
               </TableCell>
               <TableCell align="right">

@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   button: {
     color: colors.black,
     textDecoration: "none",
-    marginLeft: 15
+    marginLeft: theme.spacing(4)
   }
 }));
 
@@ -44,15 +44,6 @@ const Header = () => {
             </Typography>
             <NavLink to="/" className={classes.button} color="inherit">
               Order
-            </NavLink>
-            <NavLink to="/buy" className={classes.button} color="inherit">
-              Buy
-            </NavLink>
-            <NavLink to="/sell" className={classes.button} color="inherit">
-              Sell
-            </NavLink>
-            <NavLink to="/exchange" className={classes.button} color="inherit">
-              Exchange
             </NavLink>
             <NavLink to="/rates" className={classes.button} color="inherit">
               Rates

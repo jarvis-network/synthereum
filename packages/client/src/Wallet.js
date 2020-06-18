@@ -116,7 +116,7 @@ export default function Wallet(props) {
       <Grid item md={6}>
         <Switch>
           <Route path="/rates">
-          <ExchangeRates className={classes.table} assets={assets} />
+          <ExchangeRates className={classes.table} assets={assets} syntheticTokens={syntheticTokens} />
           </Route>
           <Route path="/transactions">
             <h3>Transactions</h3>
@@ -132,7 +132,7 @@ export default function Wallet(props) {
               setLastTx={setLastTx}
             />
           </Route>
-          
+
         </Switch>
       </Grid>
     </Grid>
