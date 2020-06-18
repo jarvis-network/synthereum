@@ -49,8 +49,8 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
           </TableHead>
           <TableBody>
             {
-              assets.map(asset => (
-                <TableRow>
+              assets.map((asset, index) => (
+                <TableRow key={index}>
                   <TableCell>{asset.symbol}</TableCell>
                   <TableCell align="right">
                     {Number(fromWei(synBalance, "ether")).toLocaleString()}
@@ -58,12 +58,12 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
                 </TableRow>
               ))
             }
-            <TableRow>
-              <TableCell>{assets[token].symbol}</TableCell>
-              <TableCell align="right">
-                {Number(fromWei(synBalance, "ether")).toLocaleString()}
-              </TableCell>
-            </TableRow>
+          {/* <TableRow>
+            <TableCell>{assets[token].symbol}</TableCell>
+            <TableCell align="right">
+              {Number(fromWei(synBalance, "ether")).toLocaleString()}
+            </TableCell>
+          </TableRow> */}
             <TableRow>
               <TableCell>DAI</TableCell>
               <TableCell align="right">

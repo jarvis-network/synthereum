@@ -11,6 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import Wallet from './Wallet';
 import Header from './components/layout/Header';
 
+import {
+  BrowserRouter as Router,
+} from "react-router-dom";
+
 const useStyles = makeStyles(theme => ({
   app: {
     backgroundColor: '#ffffff',
@@ -20,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     color: '#fff',
   },
   wallet: {
-    // marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4)
   },
   fullscreen: {
     height: '100vh',
@@ -81,10 +85,11 @@ export default function App() {
   } else {
     return (
       <div className={classes.app}>
-        <Header />
         <Backdrop className={classes.backdrop} open={loading}>
           <CircularProgress color="inherit" />
         </Backdrop>
+        <Router>
+        <Header />
         <Container maxWidth="lg">
           <div>
             {(actualDay === 5 && actualHour > 21) ||
@@ -101,6 +106,7 @@ export default function App() {
           </div>
           <Wallet className={classes.wallet} setLoading={setLoading} />
         </Container>
+        </Router>
       </div>
     );
   }

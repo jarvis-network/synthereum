@@ -18,6 +18,11 @@ import OrderForm from "./components/elements/OrderForm";
 
 import defaultAssets from "./helpers/defaultAssets";
 
+import {
+  Switch,
+  Route,
+} from "react-router-dom";
+
 const useStyles = makeStyles(theme => ({
   table: {
     marginBottom: theme.spacing(4),
@@ -91,12 +96,13 @@ export default function Wallet(props) {
 
       setDai(new Contract(IERC20.abi, MCD_DAI.networks[context.networkId].address));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active]);
 
   return (
-    <Grid container spacing={4} className={className}>
+    <Grid container spacing={4} className={className} justify="space-between">
 
-      <Grid item md={6}>
+      <Grid item md={4}>
         <WalletBalance
           className={classes.table}
           assets={assets}
@@ -108,18 +114,26 @@ export default function Wallet(props) {
       </Grid>
 
       <Grid item md={6}>
-      <OrderForm
-          className={classes.table}
-          assets={assets}
-          // token={token}
-          dai={dai}
-          syntheticTokens={syntheticTokens}
-          setLoading={setLoading}
-          setLastTx={setLastTx}
-        />
-
-        <ExchangeRates className={classes.table} assets={assets} />
-        
+        <Switch>
+          <Route path="/rates">
+          <ExchangeRates className={classes.table} assets={assets} />
+          </Route>
+          <Route path="/transactions">
+            <h3>Transactions</h3>
+          </Route>
+          <Route path="/">
+            <OrderForm
+              className={classes.table}
+              assets={assets}
+              // token={token}
+              dai={dai}
+              syntheticTokens={syntheticTokens}
+              setLoading={setLoading}
+              setLastTx={setLastTx}
+            />
+          </Route>
+          
+        </Switch>
       </Grid>
     </Grid>
   );
