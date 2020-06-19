@@ -11,8 +11,10 @@ import IERC20 from "../../../contracts/IERC20.json";
 
 import defaultAssets from "../../../helpers/defaultAssets";
 import {
+    NavLink,
     Switch,
     Route,
+    useLocation
   } from "react-router-dom";
 
 
@@ -50,6 +52,11 @@ import BarChart from "@material-ui/icons/BarChart";
 import useStyles from "./styles";
 
 export default function Menu({ setLoading }) {
+
+    const location = useLocation();
+    let currentPage = location.pathname;
+  
+
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -64,15 +71,19 @@ export default function Menu({ setLoading }) {
 
   const DashboardPages = [{
       title: 'Order',
+      link: '/',
       icon: <AccountBalance />
   },{
       title: 'Exchange',
+      link: '/exchange',
       icon: <SwapHoriz />
   },{
       title: 'Transactions',
+      link: '/transactions',
       icon: <Receipt />
   },{
     title: 'Insights',
+    link: '/insights',
     icon: <BarChart />
 }];
 
@@ -175,7 +186,7 @@ const context = useWeb3Context();
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-              Order
+              {(DashboardPages.find(page => page.link === currentPage) || {}).title || '404'}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -204,12 +215,14 @@ const context = useWeb3Context();
           <Divider />
           <List>
             {DashboardPages.map((page, index) => (
+                <NavLink to={page.link} className={classes.NavLink}>
               <ListItem button key={page}>
                 <ListItemIcon>
                   {page.icon}
                 </ListItemIcon>
                 <ListItemText primary={page.title} />
               </ListItem>
+              </NavLink>
             ))}
           </List>
           <Divider />
@@ -227,11 +240,14 @@ const context = useWeb3Context();
         <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
-          <Route path="/rates">
+          <Route path="/exchange">
           <ExchangeRates className={classes.table} assets={assets} />
           </Route>
           <Route path="/transactions">
             <h3>Transactions</h3>
+          </Route>
+          <Route path="/insights">
+            <h3>Insights</h3>
           </Route>
           <Route path="/">
             <OrderForm

@@ -67,6 +67,11 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     padding: theme.spacing(3),
     paddingLeft: 96
+  },
+  NavLink: {
+    textDecoration: 'none',
+    color: '#000000',
+    fontWeight: 'bold'
   }
 }));
 
