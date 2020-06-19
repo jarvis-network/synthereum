@@ -5,3 +5,11 @@ body {
     font-family: 'Rubik', sans-serif;
     background-color: #efefef;
 }
+
+.MuiDrawer-paperAnchorLeft {
+    left: auto;
+}
+
+.MuiDrawer-paper {
+    position: absolute !important;
+}

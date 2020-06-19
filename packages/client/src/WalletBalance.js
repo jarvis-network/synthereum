@@ -3,7 +3,10 @@ import { useWeb3Context } from "web3-react";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
+
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
 
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -17,6 +20,18 @@ import Typography from "@material-ui/core/Typography";
 import * as icons from "../src/assets/icons";
 
 const useStyles = makeStyles(theme => ({
+  AppBar: {
+    background: '#ffffff'
+  },
+  Logo: {
+    color: "#000000"
+  },
+  Paper: {
+    width: 520,
+    paddingTop: 0,
+    paddingLeft: 40,
+    paddingRight: 40
+  },
   TableCell: {
     display: 'flex',
     alignItems: 'center'
@@ -55,10 +70,19 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
   }, [context, context.active, dai, lastTx]);
 
   return (
-    <Paper>
-      <Typography variant="h6" gutterBottom>
-        Wallet Balance
-      </Typography>
+    <Grid>
+    <Grid item md={12}>
+    <AppBar position="static" className={classes.AppBar}>
+  <Toolbar>
+    <Typography  variant="h6" className={classes.Logo}>
+      Synthereum Wallet
+    </Typography>
+  </Toolbar>
+</AppBar>
+
+        </Grid>
+        <Grid item md={12}>
+    <Paper className={classes.Paper}>
       <TableContainer className={className}>
         <Table>
           <TableHead>
@@ -99,6 +123,14 @@ export default function WalletBalance({ className, assets, syntheticTokens, toke
           </TableBody>
         </Table>
       </TableContainer>
+      <h1>Hey</h1>
+      <h1>Hey</h1>
+      <h1>Hey</h1>
+      <h1>Hey</h1>
+      <h1>Hey</h1>
+      <h1>Hey</h1>
     </Paper>
+    </Grid>
+    </Grid>
   );
 }

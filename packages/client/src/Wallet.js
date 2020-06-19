@@ -101,19 +101,7 @@ export default function Wallet(props) {
 
   return (
     <Grid container spacing={4} className={className} justify="space-between">
-
-      <Grid item md={4}>
-        <WalletBalance
-          className={classes.table}
-          assets={assets}
-          syntheticTokens={syntheticTokens}
-          token={0} // FIX THIS
-          dai={dai}
-          lastTx={lastTx}
-        />
-      </Grid>
-
-      <Grid item md={6}>
+      <Grid item md={12}>
         <Switch>
           <Route path="/rates">
           <ExchangeRates className={classes.table} assets={assets} syntheticTokens={syntheticTokens} />

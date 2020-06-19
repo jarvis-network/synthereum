@@ -8,23 +8,20 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import Wallet from './Wallet';
-import Header from './components/layout/Header';
+import Menu from './components/layout/Menu';
 
-import {
-  BrowserRouter as Router,
-} from "react-router-dom";
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   app: {
-    backgroundColor: '#efefef'
+    backgroundColor: '#efefef',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
   wallet: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
   fullscreen: {
     height: '100vh',
@@ -89,23 +86,7 @@ export default function App() {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Router>
-        <Header />
-        <Container maxWidth="lg">
-          <div>
-            {(actualDay === 5 && actualHour > 21) ||
-            actualDay === 6 ||
-            (actualDay === 0 && actualHour < 22) ? (
-              <Typography variant="h4" align="center" color="error">
-                Market is closed
-              </Typography>
-            ) : (
-              <Typography variant="h4" align="center" color="primary">
-                Market is open
-              </Typography>
-            )}
-          </div>
-          <Wallet className={classes.wallet} setLoading={setLoading} />
-        </Container>
+          <Menu setLoading={setLoading} />
         </Router>
       </div>
     );
