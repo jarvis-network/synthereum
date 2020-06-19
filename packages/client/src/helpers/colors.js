@@ -6,7 +6,12 @@ const colors = {
     onix: '',
     black: '#232323',
     green: '#00ff00',
-    darkGreen: '#00b300'
+    darkGreen: '#00b300',
+
+
+    concrete: '#95a5a6',
+    silver: '#bdc3c7',
+    clouds: '#ecf0f1'
 };
 
 export default colors;

@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 
+import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -18,23 +19,40 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 
 import * as icons from "../../../assets/icons";
+import { borderBottom } from "@material-ui/system";
 
 const useStyles = makeStyles(theme => ({
   AppBar: {
-    background: "#ffffff"
+    background: "#bdc3c7"
   },
   Logo: {
-    color: "#000000"
+    color: "#000000",
+    fontFamily: "Rubik"
+  },
+  Toolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  Container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(2),
+    backgroundColor: '#ecf0f1'
   },
   Paper: {
     width: 520,
     paddingTop: 0,
     paddingLeft: 40,
-    paddingRight: 40
+    paddingRight: 40,
+    border: '1px solid #7f8c8d',
+    boxShadow: 'none',
+    background: 'transparent'
   },
   TableCell: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    fontSize: 18,
+    fontWeight: 400
   },
   TokenIcon: {
     marginRight: 10,
@@ -60,6 +78,8 @@ export default function WalletBalance({
 
   const { fromWei } = context.library.utils;
 
+  console.log(context);
+
   useEffect(() => {
     if (context.active && syntheticTokens[token]) {
       syntheticTokens[token].methods
@@ -84,14 +104,18 @@ export default function WalletBalance({
     <Grid>
       <Grid item md={12}>
         <AppBar position="static" className={classes.AppBar}>
-          <Toolbar>
+          <Toolbar className={classes.Toolbar}>
             <Typography variant="h6" className={classes.Logo}>
               Synthereum Wallet
+            </Typography>
+            <Typography variant="h6" className={classes.Logo}>
+              Address
             </Typography>
           </Toolbar>
         </AppBar>
       </Grid>
       <Grid item md={12}>
+      <Container className={classes.Container}>
         <Paper className={classes.Paper}>
           <TableContainer className={className}>
             <Table>
@@ -134,6 +158,7 @@ export default function WalletBalance({
             </Table>
           </TableContainer>
         </Paper>
+        </Container>
       </Grid>
     </Grid>
   );

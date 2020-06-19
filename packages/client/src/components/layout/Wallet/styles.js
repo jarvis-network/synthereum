@@ -4,11 +4,13 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex"
+    display: "flex",
+    height: '100vh'
   },
   menuContainer: {
     position: "relative",
-    width: "100%"
+    width: "100%",
+    background: '#ffffff'
   },
   drawer: {
     width: drawerWidth,

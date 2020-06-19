@@ -2,8 +2,9 @@
 
 body {
     margin: 0px;
-    font-family: 'Rubik', sans-serif;
-    background-color: #efefef;
+    /* font-family: 'Rubik', sans-serif; */
+    /* background-color: #efefef; */
+    background-color: '#ffffff'
 }
 
 .MuiDrawer-paperAnchorLeft {

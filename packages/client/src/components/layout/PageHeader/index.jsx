@@ -20,8 +20,7 @@ const PageHeader = ({ open, handleDrawerOpen }) => {
     let currentPage = location.pathname;
 
     const classes = useStyles();
-    
-
+  
     return (
 
         <AppBar
