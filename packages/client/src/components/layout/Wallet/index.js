@@ -10,70 +10,18 @@ import MCD_DAI from "../../../MCD_DAI.json";
 import IERC20 from "../../../contracts/IERC20.json";
 
 import defaultAssets from "../../../helpers/defaultAssets";
-import {
-    NavLink,
-    Switch,
-    Route,
-    useLocation
-  } from "react-router-dom";
 
-
-import ExchangeRates from "../../elements/ExchangeRates";
 import WalletBalance from "../../elements/WalletBalance";
-import OrderForm from "../../elements/OrderForm";
+import PageHeader from "../PageHeader";
+import Navigation from "../Navigation";
+import Pages from "../Pages";
 
-import clsx from "clsx";
-import { useTheme } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 // import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-
-import SwapHoriz from "@material-ui/icons/SwapHoriz";
-import AccountBalance from "@material-ui/icons/AccountBalance";
-import Receipt from "@material-ui/icons/Receipt";
-import BarChart from "@material-ui/icons/BarChart";
-
 import useStyles from "./styles";
-
-const DashboardPages = [{
-  title: 'Order',
-  link: '/',
-  icon: <AccountBalance />
-},{
-  title: 'Exchange',
-  link: '/exchange',
-  icon: <SwapHoriz />
-},{
-  title: 'Transactions',
-  link: '/transactions',
-  icon: <Receipt />
-},{
-title: 'Insights',
-link: '/insights',
-icon: <BarChart />
-}];
 
 export default function Wallet({ setLoading }) {
 
-    const location = useLocation();
-    let currentPage = location.pathname;
-  
-
   const classes = useStyles();
-  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -82,8 +30,7 @@ export default function Wallet({ setLoading }) {
 
   const handleDrawerClose = () => {
     setOpen(false);
-  };
-
+  }
 /** WALLET STUFF */
 
 const context = useWeb3Context();
@@ -159,106 +106,21 @@ const context = useWeb3Context();
           className={classes.table}
           assets={assets}
           syntheticTokens={syntheticTokens}
-          token={0} // FIX THIS
           dai={dai}
           lastTx={lastTx}
         />
       <div className={classes.menuContainer}>
-        <AppBar
-          position="absolute"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, {
-                [classes.hide]: open
-              })}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap>
-              {(DashboardPages.find(page => page.link === currentPage) || {}).title || '404'}
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          variant="permanent"
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open
-          })}
-          classes={{
-            paper: clsx({
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open
-            })
-          }}
-        >
-          <div className={classes.toolbar}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronRightIcon />
-              ) : (
-                <ChevronLeftIcon />
-              )}
-            </IconButton>
-          </div>
-          <Divider />
-          <List>
-            {DashboardPages.map((page, index) => (
-                <NavLink to={page.link} className={classes.NavLink}>
-              <ListItem button key={page}>
-                <ListItemIcon>
-                  {page.icon}
-                </ListItemIcon>
-                <ListItemText primary={page.title} />
-              </ListItem>
-              </NavLink>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["Settings","Help","Docs"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
+        <PageHeader open={open} handleDrawerOpen={handleDrawerOpen} />
+        <Navigation open={open} handleDrawerClose={handleDrawerClose} />
         <main className={classes.content}>
-            <div className={classes.toolbar} />
-            <Switch>
-          <Route path="/exchange">
-          <ExchangeRates className={classes.table} assets={assets} />
-          </Route>
-          <Route path="/transactions">
-            <h3>Transactions</h3>
-          </Route>
-          <Route path="/insights">
-            <h3>Insights</h3>
-          </Route>
-          <Route path="/">
-            <OrderForm
-              className={classes.table}
-              assets={assets}
-              // token={token}
-              dai={dai}
-              syntheticTokens={syntheticTokens}
-              setLoading={setLoading}
+        <div className={classes.toolbar} />
+            <Pages 
+              assets={assets} 
+              dai={dai} 
+              syntheticTokens={syntheticTokens} 
+              setLoading={setLoading} 
               setLastTx={setLastTx}
             />
-          </Route>
-          
-        </Switch>
         </main>
       </div>
     </div>

@@ -133,12 +133,6 @@ export default function WalletBalance({
               </TableBody>
             </Table>
           </TableContainer>
-          <h1>Hey</h1>
-          <h1>Hey</h1>
-          <h1>Hey</h1>
-          <h1>Hey</h1>
-          <h1>Hey</h1>
-          <h1>Hey</h1>
         </Paper>
       </Grid>
     </Grid>

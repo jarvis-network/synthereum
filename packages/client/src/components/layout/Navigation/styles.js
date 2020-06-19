@@ -3,13 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex"
-  },
-  menuContainer: {
-    position: "relative",
-    width: "100%"
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -40,10 +33,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar
-  },
-  content: {
-    flexGrow: 1,
-    paddingLeft: 96
   },
   NavLink: {
     textDecoration: 'none',

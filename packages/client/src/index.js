@@ -9,7 +9,6 @@ import './style.css';
 import { ThemeProvider } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 
-
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 
 const MetaMask = new InjectedConnector();
@@ -25,15 +24,7 @@ const theme = createMuiTheme({
       root: {
         fontWeight: "bold"
       }
-    },
-    // MuiPaper: {
-    //   root: {
-    //     backgroundColor: 'white',
-    //     padding: '20px',
-    //     boxShadow: 'rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px, rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px',
-    //     borderRadius: '20px'
-    //   }
-    // }
+    }
   },
 });
 
