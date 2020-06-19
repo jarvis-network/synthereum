@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useWeb3Context } from "web3-react";
-import styled from "styled-components";
+import { makeStyles } from "@material-ui/core/styles";
 
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -15,56 +15,42 @@ import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import TokenPicker from "../TokenPicker";
-import colors from "../../../helpers/colors";
 
-const StyledBox = styled(Box)`
-  background-color: white;
-  padding: 20px;
-  box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px,
-    rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px;
-  border-radius: 20px;
-`;
+const useStyles = makeStyles(theme => ({
+  Box: {
+    root: {
+      backgroundColor: '#ffffff',
+      padding: 20,
+      boxShadow: 'rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px, rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px',
+      borderRadius: 20
+    }
+  },
+  ButtonRow: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    width: '100%'
+  },
+  ActionButton: {
+    background: 'transparent',
+    width: '100%',
+    textTransform: 'none',
+    fontSize: 18,
+    color: '#000000',
 
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  width: 100%;
-`;
+  },
+  OrderButton: {
+    dropShadow: 'none',
+    backgroundColor: 'green',
+    color: 'black',
+    textTransform: 'uppercase',
+    fontSize: '1rem',
+    borderRadius: '3px',
+    padding: 10,
+    fontFamily: 'Rubik',
+    fontWeight: 500,
 
-const ActionButton = styled(Button)`
-  background: transparent;
-  width: 100%;
-  text-transform: none;
-  font-size: 18px;
-  ${props =>
-    props.active === "true"
-      ? `
-    color: black;
-  `
-      : `
-    color: #ccc;
-  `}
-  :hover {
-    color: #aaa;
-    background: transparent;
   }
-`;
-
-const OrderButton = styled(Button)`
-  drop-shadow: none;
-  background-color: ${colors.green};
-  color: black;
-  text-transform: uppercase;
-  font-size: 1rem;
-  border-radius: 3px;
-  padding: 1rem 3rem;
-  font-family: 'Rubik', sans-serif;
-  font-weight: 500;
-  :hover {
-    background-color: ${colors.darkGreen};
-  }
-`;
-
+}));
 
 export default function OrderForm(props) {
   const {
@@ -76,6 +62,8 @@ export default function OrderForm(props) {
     setLoading,
     setLastTx
   } = props;
+
+  const classes = useStyles();
 
   const context = useWeb3Context();
 
@@ -177,34 +165,34 @@ export default function OrderForm(props) {
   };
 
   return (
-    <StyledBox>
+    <Box className={classes.Box}>
       <form>
-        <ButtonRow>
-          <ActionButton
+        <div className={classes.ButtonRow}>
+          <Button className={classes.ActionButton}
             active={orderType === "buy" ? "true" : "false"}
             color="primary"
             margin="normal"
             onClick={() => setOrderType("buy")}
           >
             Buy
-          </ActionButton>
-          <ActionButton
+          </Button>
+          <Button className={classes.ActionButton}
             active={orderType === "sell" ? "true" : "false"}
             color="secondary"
             margin="normal"
             onClick={() => setOrderType("sell")}
           >
             Sell
-          </ActionButton>
-          <ActionButton
+          </Button>
+          <Button className={classes.ActionButton}
             active={orderType === "exchange" ? "true" : "false"}
             color="secondary"
             margin="normal"
             onClick={() => alert("Exchange")}
           >
             Exchange
-          </ActionButton>
-        </ButtonRow>
+          </Button>
+        </div>
         
         <Grid container justify="center">
           <Grid item md={8}>
@@ -248,12 +236,12 @@ export default function OrderForm(props) {
 
           </Grid>
           <Grid item md={8}>
-            <OrderButton fullWidth margin="normal" onClick={placeOrder}>
+            <Button className={classes.OrderButton} fullWidth margin="normal" onClick={placeOrder}>
               Place Order
-            </OrderButton>
+            </Button>
           </Grid>
         </Grid>        
       </form>
-    </StyledBox>
+    </Box>
   );
 }

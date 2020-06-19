@@ -18,12 +18,9 @@ import {
   } from "react-router-dom";
 
 
-  import ExchangeRates from "../../../ExchangeRates"
-// import ExchangeRates from "../../elements/ExchangeRates";
-import WalletBalance from "../../../WalletBalance";
+import ExchangeRates from "../../elements/ExchangeRates";
+import WalletBalance from "../../elements/WalletBalance";
 import OrderForm from "../../elements/OrderForm";
-
-
 
 import clsx from "clsx";
 import { useTheme } from "@material-ui/core/styles";
@@ -51,7 +48,25 @@ import BarChart from "@material-ui/icons/BarChart";
 
 import useStyles from "./styles";
 
-export default function Menu({ setLoading }) {
+const DashboardPages = [{
+  title: 'Order',
+  link: '/',
+  icon: <AccountBalance />
+},{
+  title: 'Exchange',
+  link: '/exchange',
+  icon: <SwapHoriz />
+},{
+  title: 'Transactions',
+  link: '/transactions',
+  icon: <Receipt />
+},{
+title: 'Insights',
+link: '/insights',
+icon: <BarChart />
+}];
+
+export default function Wallet({ setLoading }) {
 
     const location = useLocation();
     let currentPage = location.pathname;
@@ -68,24 +83,6 @@ export default function Menu({ setLoading }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const DashboardPages = [{
-      title: 'Order',
-      link: '/',
-      icon: <AccountBalance />
-  },{
-      title: 'Exchange',
-      link: '/exchange',
-      icon: <SwapHoriz />
-  },{
-      title: 'Transactions',
-      link: '/transactions',
-      icon: <Receipt />
-  },{
-    title: 'Insights',
-    link: '/insights',
-    icon: <BarChart />
-}];
 
 /** WALLET STUFF */
 

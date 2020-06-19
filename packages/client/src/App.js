@@ -8,7 +8,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import Menu from './components/layout/Menu';
+import Wallet from './components/layout/Wallet';
 
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -86,7 +86,7 @@ export default function App() {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Router>
-          <Menu setLoading={setLoading} />
+          <Wallet setLoading={setLoading} />
         </Router>
       </div>
     );
