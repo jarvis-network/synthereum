@@ -15,6 +15,7 @@ import WalletBalance from "../../elements/WalletBalance";
 import PageHeader from "../PageHeader";
 import Navigation from "../Navigation";
 import Pages from "../Pages";
+import WalletHeader from "../WalletHeader";
 
 import Grid from "@material-ui/core/Grid";
 // import CssBaseline from "@material-ui/core/CssBaseline";
@@ -105,6 +106,7 @@ const context = useWeb3Context();
     <div className={classes.root}>
     <Grid container>
       <Grid item md={5}>
+        <WalletHeader />
         <WalletBalance
           className={classes.table}
           assets={assets}

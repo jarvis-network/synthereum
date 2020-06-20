@@ -1,14 +1,19 @@
 import React from "react";
+import { useWeb3Context } from "web3-react";
+
 
 import Grid from "@material-ui/core/Grid";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 
+import useStyles from "./styles";
+
 const WalletHeader = ({}) => {
+    const classes = useStyles();
     const context = useWeb3Context();
   const { account } = context;
-  
+
   return (
     <Grid item md={12}>
       <AppBar position="static" className={classes.AppBar}>
