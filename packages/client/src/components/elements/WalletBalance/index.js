@@ -23,7 +23,6 @@ export default function WalletBalance({
   dai,
   lastTx
 }) {
-  
   const classes = useStyles();
 
   const context = useWeb3Context();
@@ -55,61 +54,50 @@ export default function WalletBalance({
 
   return (
     <Grid container className={classes.Grid}>
-
       <Grid item md={12}>
-      <Container className={classes.Container}>
-        <Paper className={classes.Paper}>
-          <TableContainer className={className}>
-            <Table>
-              <TableHead className={classes.TableHead}>
-                <TableRow>
-                  <TableCell>Token</TableCell>
-                  <TableCell align="right">Amount</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {assets.map((asset, index) => (
-                  <TableRow key={index} className={classes.TableRow}>
-                    <TableCell className={classes.TokenCell}>
+        <Container className={classes.Container}>
+          <Paper className={classes.Paper}>
+            <TableContainer className={className}>
+              <Table>
+                <TableHead className={classes.TableHead}>
+                  <TableRow>
+                    <TableCell>Token</TableCell>
+                    <TableCell align="right">Amount</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {assets.map((asset, index) => (
+                    <TableRow key={index} className={classes.TableRow}>
+                      <TableCell className={classes.TokenCell}>
+                        <img
+                          className={classes.TokenIcon}
+                          alt={asset.symbol}
+                          src={icons[asset.symbol]}
+                        />
+                        {asset.symbol}
+                      </TableCell>
+                      <TableCell align="right">
+                        {Number(fromWei(synBalance, "ether")).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell>
                       <img
                         className={classes.TokenIcon}
-                        alt={asset.symbol}
-                        src={icons[asset.symbol]}
+                        alt="DAI"
+                        src={icons.DAI}
                       />
-                      {asset.symbol}
+                      DAI
                     </TableCell>
                     <TableCell align="right">
-                      {Number(fromWei(synBalance, "ether")).toLocaleString()}
+                      {Number(fromWei(balance, "ether")).toLocaleString()}
                     </TableCell>
                   </TableRow>
-                ))}
-                <TableRow>
-                  <TableCell>
-                    <img
-                      className={classes.TokenIcon}
-                      alt="DAI"
-                      src={icons.DAI}
-                    />
-                    DAI
-                  </TableCell>
-                  <TableCell align="right">
-                    {Number(fromWei(balance, "ether")).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Container>
-          <Grid>
-            <Grid item md={6}>
-              Collateralization
-            </Grid>
-            <Grid item md={6}>
-              Liquidity
-            </Grid>
-          </Grid>
-          </Container>
-        </Paper>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
         </Container>
       </Grid>
     </Grid>
