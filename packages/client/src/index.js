@@ -24,7 +24,30 @@ const theme = createMuiTheme({
       root: {
         fontWeight: "bold"
       }
-    }
+    },
+    MuiTableRow: {
+      root: {
+        // '&:hover': {
+        //   backgroundColor: 'red'
+        // }
+        '&:last-of-type': {
+          borderBottom: 0,
+          border: 'none'
+        }
+      }
+    },
+    MuiTableCell: {
+      root: {
+        fontSize: 18,
+        border: 'none',
+        // display: 'flex',
+        // alignItems: 'center'
+      },
+      head: {
+        paddingLeft: 0,
+        paddingRight: 0
+      }
+    },
   },
 });
 

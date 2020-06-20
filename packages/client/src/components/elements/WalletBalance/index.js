@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
-
-import { makeStyles } from "@material-ui/core/styles";
-
 import Grid from "@material-ui/core/Grid";
-
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
@@ -16,50 +10,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Typography from "@material-ui/core/Typography";
 
 import * as icons from "../../../assets/icons";
-import { borderBottom } from "@material-ui/system";
 
-const useStyles = makeStyles(theme => ({
-  AppBar: {
-    background: "#bdc3c7"
-  },
-  Logo: {
-    color: "#000000",
-    fontFamily: "Rubik"
-  },
-  Toolbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  Container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(2),
-    backgroundColor: '#ecf0f1'
-  },
-  Paper: {
-    width: 520,
-    paddingTop: 0,
-    paddingLeft: 40,
-    paddingRight: 40,
-    border: '1px solid #7f8c8d',
-    boxShadow: 'none',
-    background: 'transparent'
-  },
-  TableCell: {
-    display: "flex",
-    alignItems: "center",
-    fontSize: 18,
-    fontWeight: 400
-  },
-  TokenIcon: {
-    marginRight: 10,
-    width: 24,
-    height: 24
-  }
-}));
+import useStyles from "./styles";
 
 export default function WalletBalance({
   className,
@@ -69,6 +23,7 @@ export default function WalletBalance({
   dai,
   lastTx
 }) {
+  
   const classes = useStyles();
 
   const context = useWeb3Context();
@@ -77,8 +32,6 @@ export default function WalletBalance({
   const [balance, setBalance] = useState("0");
 
   const { fromWei } = context.library.utils;
-
-  console.log(context);
 
   useEffect(() => {
     if (context.active && syntheticTokens[token]) {
@@ -101,25 +54,14 @@ export default function WalletBalance({
   }, [context, context.active, dai, lastTx]);
 
   return (
-    <Grid>
-      <Grid item md={12}>
-        <AppBar position="static" className={classes.AppBar}>
-          <Toolbar className={classes.Toolbar}>
-            <Typography variant="h6" className={classes.Logo}>
-              Synthereum Wallet
-            </Typography>
-            <Typography variant="h6" className={classes.Logo}>
-              Address
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </Grid>
+    <Grid container className={classes.Grid}>
+
       <Grid item md={12}>
       <Container className={classes.Container}>
         <Paper className={classes.Paper}>
           <TableContainer className={className}>
             <Table>
-              <TableHead>
+              <TableHead className={classes.TableHead}>
                 <TableRow>
                   <TableCell>Token</TableCell>
                   <TableCell align="right">Amount</TableCell>
@@ -127,8 +69,8 @@ export default function WalletBalance({
               </TableHead>
               <TableBody>
                 {assets.map((asset, index) => (
-                  <TableRow key={index}>
-                    <TableCell className={classes.TableCell}>
+                  <TableRow key={index} className={classes.TableRow}>
+                    <TableCell className={classes.TokenCell}>
                       <img
                         className={classes.TokenIcon}
                         alt={asset.symbol}
@@ -142,7 +84,7 @@ export default function WalletBalance({
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell className={classes.TableCell}>
+                  <TableCell>
                     <img
                       className={classes.TokenIcon}
                       alt="DAI"
@@ -157,6 +99,16 @@ export default function WalletBalance({
               </TableBody>
             </Table>
           </TableContainer>
+          <Container>
+          <Grid>
+            <Grid item md={6}>
+              Collateralization
+            </Grid>
+            <Grid item md={6}>
+              Liquidity
+            </Grid>
+          </Grid>
+          </Container>
         </Paper>
         </Container>
       </Grid>

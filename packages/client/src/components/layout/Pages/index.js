@@ -10,6 +10,7 @@ import OrderForm from "../../elements/OrderForm";
 const Pages = ({ assets, dai, syntheticTokens, setLoading, setLastTx }) => {
 
     return (
+        
         <Switch>
             <Route path="/exchange">
                 <ExchangeRates assets={assets} />

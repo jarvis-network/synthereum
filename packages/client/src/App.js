@@ -14,7 +14,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   app: {
-    backgroundColor: '#efefef',
+    backgroundColor: '#FBFBFF',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,

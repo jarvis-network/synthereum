@@ -5,12 +5,14 @@ const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
-    height: '100vh'
   },
   menuContainer: {
+    height: "100vh",
     position: "relative",
     width: "100%",
-    background: '#ffffff'
+    background: '#ffffff',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.12)'
+   //borderLeft: '1px solid #2541B2'
   },
   drawer: {
     width: drawerWidth,
@@ -45,7 +47,9 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    paddingLeft: 96
+    paddingTop: 24,
+    paddingLeft: 96,
+    paddingRight: 24
   },
   NavLink: {
     textDecoration: 'none',

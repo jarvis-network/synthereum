@@ -16,6 +16,7 @@ import PageHeader from "../PageHeader";
 import Navigation from "../Navigation";
 import Pages from "../Pages";
 
+import Grid from "@material-ui/core/Grid";
 // import CssBaseline from "@material-ui/core/CssBaseline";
 import useStyles from "./styles";
 
@@ -102,27 +103,35 @@ const context = useWeb3Context();
 
   return (
     <div className={classes.root}>
-      <WalletBalance
+    <Grid container>
+      <Grid item md={5}>
+        <WalletBalance
           className={classes.table}
           assets={assets}
           syntheticTokens={syntheticTokens}
           dai={dai}
           lastTx={lastTx}
         />
-      <div className={classes.menuContainer}>
-        <PageHeader open={open} handleDrawerOpen={handleDrawerOpen} />
-        <Navigation open={open} handleDrawerClose={handleDrawerClose} />
-        <main className={classes.content}>
-        <div className={classes.toolbar} />
-            <Pages 
-              assets={assets} 
-              dai={dai} 
-              syntheticTokens={syntheticTokens} 
-              setLoading={setLoading} 
-              setLastTx={setLastTx}
-            />
-        </main>
-      </div>
+      </Grid>
+      <Grid item md={7}>
+        <div className={classes.menuContainer}>
+          <PageHeader open={open} handleDrawerOpen={handleDrawerOpen} />
+          <Navigation open={open} handleDrawerClose={handleDrawerClose} />
+          <main className={classes.content}>
+          <div className={classes.toolbar} />
+              <Pages 
+                assets={assets} 
+                dai={dai} 
+                syntheticTokens={syntheticTokens} 
+                setLoading={setLoading} 
+                setLastTx={setLastTx}
+              />
+          </main>
+        </div>
+      </Grid>
+    </Grid>
+      
+      
     </div>
   );
 }

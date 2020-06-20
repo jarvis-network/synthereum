@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useWeb3Context } from "web3-react";
-import { makeStyles } from "@material-ui/core/styles";
 
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -16,41 +14,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 
 import TokenPicker from "../TokenPicker";
 
-const useStyles = makeStyles(theme => ({
-  Box: {
-    root: {
-      backgroundColor: '#ffffff',
-      padding: 20,
-      boxShadow: 'rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px, rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px',
-      borderRadius: 20
-    }
-  },
-  ButtonRow: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    width: '100%'
-  },
-  ActionButton: {
-    background: 'transparent',
-    width: '100%',
-    textTransform: 'none',
-    fontSize: 18,
-    color: '#000000',
-
-  },
-  OrderButton: {
-    dropShadow: 'none',
-    backgroundColor: 'green',
-    color: 'black',
-    textTransform: 'uppercase',
-    fontSize: '1rem',
-    borderRadius: '3px',
-    padding: 10,
-    fontFamily: 'Rubik',
-    fontWeight: 500,
-
-  }
-}));
+import useStyles from "./styles";
 
 export default function OrderForm(props) {
   const {
@@ -165,7 +129,7 @@ export default function OrderForm(props) {
   };
 
   return (
-    <Box className={classes.Box}>
+    <Paper className={classes.Paper}>
       <form>
         <div className={classes.ButtonRow}>
           <Button className={classes.ActionButton}
@@ -242,6 +206,6 @@ export default function OrderForm(props) {
           </Grid>
         </Grid>        
       </form>
-    </Box>
+    </Paper>
   );
 }
