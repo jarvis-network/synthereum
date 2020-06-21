@@ -1,0 +1,54 @@
+stages:
+  - build
+  - deploy
+
+image: 'node:lts-alpine'
+
+.only-default: &only-default
+  only:
+    - merge_requests
+    - priceless
+    - lerna-and-ci
+
+build:
+  <<: *only-default
+  stage: build
+  before_script:
+    - apk add git python3 make g++
+  variables:
+    CI: 'false'
+  script:
+    - yarn install
+    - yarn build
+  artifacts:
+    paths:
+      - packages/client/build
+
+.deploy-default: &deploy-default
+  stage: deploy
+  needs:
+    - job: build
+      artifacts: true
+  before_script:
+    - yarn global add netlify-cli
+
+deploy-preview-to-netlify:
+  <<: *deploy-default
+  only:
+    - merge_requests
+  script:
+    - netlify deploy --dir ./packages/client/build
+
+deploy-priceless-to-netlify:
+  <<: *deploy-default
+  only:
+    - priceless
+  script:
+    - netlify deploy --prod --dir ./packages/client/build
+
+deploy-lerna-and-ci-to-netlify:
+  <<: *deploy-default
+  only:
+    - lerna-and-ci
+  script:
+    - netlify deploy --prod --dir ./packages/client/build
