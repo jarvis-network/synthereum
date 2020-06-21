@@ -33,7 +33,7 @@ const defaultAssets = [
   {
     "name": "Jarvis Synthetic Swiss Franc",
     "symbol": "jCHF",
-    "priceFeed": "CHFUSD",
+    "priceFeed": "USDCHF",
     "contract": null,
     "derivative": null,
     "price": "0",
@@ -116,7 +116,7 @@ export default function Wallet(props) {
         setSyntheticTokens(newSyntheticTokens);
       });
 
-
+    
       Promise.all(newAssets.map(asset => {
         return jarvisExchangeRate(asset.priceFeed);
       })).then(exchangeRates => {
