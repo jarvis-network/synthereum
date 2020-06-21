@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { useWeb3Context } from "web3-react";
+import React, { useEffect, useState } from 'react';
+import { useWeb3Context } from 'web3-react';
 
-import { makeStyles } from "@material-ui/core/styles";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from '@material-ui/core/styles';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
-import Wallet from "./Wallet";
+import Wallet from './Wallet';
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(4),
   },
   fullscreen: {
-    height: "100vh",
+    height: '100vh',
   },
 }));
 
@@ -29,6 +29,12 @@ export default function App() {
   const context = useWeb3Context();
 
   const [loading, setLoading] = useState(true);
+
+  const actualDate = new Date();
+
+  const actualDay = actualDate.getUTCDay();
+
+  const actualHour = actualDate.getUTCHours();
 
   useEffect(() => {
     if (!context.active) {
@@ -49,7 +55,7 @@ export default function App() {
       </Backdrop>
     );
   } else if (context.error) {
-    return <div>Error</div>
+    return <div>Error</div>;
   } else if (context.networkId !== 42) {
     return (
       <div className="App">
@@ -74,6 +80,19 @@ export default function App() {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Container maxWidth="md">
+          <div>
+            {(actualDay === 5 && actualHour > 21) ||
+            actualDay === 6 ||
+            (actualDay === 0 && actualHour < 22) ? (
+              <Typography variant="h4" align="center" color="error">
+              Market is closed
+              </Typography>
+            ) : (
+              <Typography variant="h4" align="center" color="primary">
+              Market is open
+              </Typography>
+            )}
+          </div>
           <Wallet className={classes.wallet} setLoading={setLoading} />
         </Container>
       </div>
