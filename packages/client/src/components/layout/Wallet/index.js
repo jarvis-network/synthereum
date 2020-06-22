@@ -18,8 +18,8 @@ import Pages from "../Pages";
 import WalletHeader from "../WalletHeader";
 
 import Grid from "@material-ui/core/Grid";
-// import CssBaseline from "@material-ui/core/CssBaseline";
 import useStyles from "./styles";
+import Liquidity from "../../elements/Liquidity";
 
 export default function Wallet({ setLoading }) {
 
@@ -33,9 +33,8 @@ export default function Wallet({ setLoading }) {
   const handleDrawerClose = () => {
     setOpen(false);
   }
-/** WALLET STUFF */
 
-const context = useWeb3Context();
+  const context = useWeb3Context();
 
   // const [token, setToken] = useState(0);
   const [assets, setAssets] = useState(defaultAssets);
@@ -100,8 +99,6 @@ const context = useWeb3Context();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active]);
 
-/** WALLET STUFF ENDS */
-
   return (
     <div className={classes.root}>
     <Grid container>
@@ -114,6 +111,7 @@ const context = useWeb3Context();
           dai={dai}
           lastTx={lastTx}
         />
+        <Liquidity />
       </Grid>
       <Grid item md={7}>
         <div className={classes.menuContainer}>

@@ -9,13 +9,7 @@ const useStyles = makeStyles(theme => ({
       paddingBottom: theme.spacing(2)
     },
     Paper: {
-      backgroundColor: 'white',
-      paddingTop: 0,
-      paddingLeft: 20,
-      paddingRight: 20,
-      border: '1px solid #EBEBEB',
-      borderRadius: 4,
-      boxShadow: 'none'
+      ...theme.overrides.MuiPaper.panel
     },
     TableHead: {
       fontWeight: 500,

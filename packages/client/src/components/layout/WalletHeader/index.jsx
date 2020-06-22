@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 
 import useStyles from "./styles";
 
-const WalletHeader = ({}) => {
+const WalletHeader = () => {
   const classes = useStyles();
   const context = useWeb3Context();
   const { account } = context;
