@@ -19,15 +19,8 @@ const useStyles = makeStyles(theme => ({
       fontSize: 18,
       fontWeight: 400,
     },
-    TokenCell: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    TokenIcon: {
-      marginRight: 10,
-      width: 24,
-      height: 24
-    }
+    TokenCell: theme.TokenCell,
+    TokenIcon: theme.TokenIcon,
   }));
 
 export default useStyles;

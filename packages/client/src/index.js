@@ -6,9 +6,8 @@ import Web3Provider from 'web3-react';
 import { Connectors } from 'web3-react';
 import Web3 from 'web3';
 import { ThemeProvider } from '@material-ui/core';
-import { createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from "@material-ui/core/CssBaseline";
-
+import theme from "./theme";
 
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 
@@ -19,48 +18,7 @@ const Infura = new NetworkOnlyConnector({
 
 const connectors = { MetaMask, Infura };
 
-const theme = createMuiTheme({
-  overrides: {
-    MuiDrawer: {
-      paper: {
-        position: 'absolute'
-      },
-      paperAnchorLeft: {
-        left: 'auto'
-      }
-    },
-    MuiPaper: {
-      panel: {
-        backgroundColor: 'white',
-        paddingTop: 20,
-        paddingLeft: 40,
-        paddingRight: 40,
-        paddingBottom: 20,
-        border: '1px solid #EBEBEB',
-        borderRadius: 4,
-        boxShadow: 'none',
-        fontFamily: 'Roboto'
-      }
-    },
-    MuiTableCell: {
-      root: {
-        fontSize: 18,
-        border: 'none',
-        paddingLeft: 0,
-        paddingRight: 0,
-      },
-      head: {
-        paddingLeft: 0,
-        paddingRight: 0
-      }
-    },
-    MuiSelect: {
-      root: {
-        fontWeight: "bold"
-      }
-    }
-  },
-});
+
 
 ReactDOM.render(
   <Web3Provider

@@ -16,6 +16,7 @@ const DashboardPages = [
   {
     title: "Exchange",
     link: "/exchange",
+    pageTitle: "Exchange Rates",
     icon: <SwapHoriz />
   },
   {

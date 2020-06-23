@@ -10,15 +10,15 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 import { useLocation } from "react-router-dom";
 
-import { DashboardPages } from "../../../helpers/pages";
+import { DashboardPages, SupportPages } from "../../../helpers/pages";
 
 import useStyles from "./styles";
 
 const PageHeader = ({ open, handleDrawerOpen }) => {
 
     const location = useLocation();
-    let currentPage = location.pathname;
-
+    let currentPage = DashboardPages.concat(SupportPages).find(page => page.link === location.pathname) || {};
+    
     const classes = useStyles();
   
     return (
@@ -42,7 +42,7 @@ const PageHeader = ({ open, handleDrawerOpen }) => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-              {(DashboardPages.find(page => page.link === currentPage) || {}).title || '404'}
+              {currentPage.pageTitle || currentPage.title || '404'}
             </Typography>
           </Toolbar>
         </AppBar>
