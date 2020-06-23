@@ -1,32 +1,38 @@
 import { makeStyles } from "@material-ui/core/styles";
 
+const ActionButton = {
+  background: 'transparent',
+  width: '100%',
+  textTransform: 'uppercase',
+  fontSize: 22,
+  color: '#94B0DA',
+};
+
 const useStyles = makeStyles(theme => ({
+    TableRow: theme.overrides.TableRow,
     Paper: {
-      backgroundColor: 'white',
-      paddingTop: 20,
-      paddingLeft: 40,
-      paddingRight: 40,
-      paddingBottom: 20,
-      border: '1px solid #EBEBEB',
-      borderRadius: 4,
-      boxShadow: 'none'
+      ...theme.overrides.MuiPaper.panel,
+    },
+    FeeTable: {
+      ...theme.overrides.MuiPaper.panel,
+      paddingLeft: 20,
+      paddingRight: 20,
+      marginBottom: 20
     },
     ButtonRow: {
       display: 'flex',
       justifyContent: 'space-evenly',
-      width: '100%'
-    },
-    ActionButton: {
-      background: 'transparent',
       width: '100%',
-      textTransform: 'none',
-      fontSize: 18,
-      color: '#000000',
-  
+      borderBottom: '2px solid #03256c'
+    },
+    ActionButton,
+    ActionButtonActive: {
+      ...ActionButton,
+      color: '#03256C'
     },
     OrderButton: {
       dropShadow: 'none',
-      backgroundColor: '#94B0DA',
+      backgroundColor: '#2541B2',
       color: 'white',
       textTransform: 'uppercase',
       fontSize: '1rem',
@@ -34,6 +40,9 @@ const useStyles = makeStyles(theme => ({
       padding: 10,
       fontFamily: 'Rubik',
       fontWeight: 500,
+      '&:hover': {
+        backgroundColor: '#03256C'
+      }
     }
   }));
 

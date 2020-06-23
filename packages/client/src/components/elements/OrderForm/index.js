@@ -18,7 +18,6 @@ import useStyles from "./styles";
 
 export default function OrderForm(props) {
   const {
-    className,
     assets,
     // token,
     dai,
@@ -132,24 +131,24 @@ export default function OrderForm(props) {
     <Paper className={classes.Paper}>
       <form>
         <div className={classes.ButtonRow}>
-          <Button className={classes.ActionButton}
-            active={orderType === "buy" ? "true" : "false"}
+          <Button
+            className={orderType === "buy" ? classes.ActionButtonActive : classes.ActionButton}
             color="primary"
             margin="normal"
             onClick={() => setOrderType("buy")}
           >
             Buy
           </Button>
-          <Button className={classes.ActionButton}
-            active={orderType === "sell" ? "true" : "false"}
+          <Button
+            className={orderType === "sell" ? classes.ActionButtonActive : classes.ActionButton}
             color="secondary"
             margin="normal"
             onClick={() => setOrderType("sell")}
           >
             Sell
           </Button>
-          <Button className={classes.ActionButton}
-            active={orderType === "exchange" ? "true" : "false"}
+          <Button
+            className={orderType === "exchange" ? classes.ActionButtonActive : classes.ActionButton}
             color="secondary"
             margin="normal"
             onClick={() => alert("Exchange")}
@@ -161,6 +160,7 @@ export default function OrderForm(props) {
         <Grid container justify="center">
           <Grid item md={8}>
             <TextField
+              variant="outlined"
               label="Amount"
               fullWidth
               margin="normal"
@@ -177,10 +177,10 @@ export default function OrderForm(props) {
           </Grid>
           <Grid item md={8}>
             {orderAmount && (
-            <TableContainer component={Paper} className={className}>
+            <TableContainer component={Paper} className={classes.FeeTable}>
               <Table size="small">
                 <TableBody>
-                  <TableRow>
+                  <TableRow className={classes.TableRow}>
                     <TableCell>Fee</TableCell>
                     <TableCell align="right">
                       {Number(fromWei(feeAmount)).toLocaleString()} DAI

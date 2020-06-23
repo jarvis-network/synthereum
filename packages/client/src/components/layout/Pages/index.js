@@ -4,10 +4,14 @@ import {
     Route,
   } from "react-router-dom";
 
+  import Grid from "@material-ui/core/Grid";
+
+
 import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 
 const Pages = ({ assets, dai, syntheticTokens, setLoading, setLastTx }) => {
+    
 
     return (
         
@@ -31,13 +35,17 @@ const Pages = ({ assets, dai, syntheticTokens, setLoading, setLastTx }) => {
                 <h3>Documenation</h3>
             </Route>
             <Route path="/">
-                <OrderForm
-                  assets={assets}
-                  dai={dai}
-                  syntheticTokens={syntheticTokens}
-                  setLoading={setLoading}
-                  setLastTx={setLastTx}
-                />
+                <Grid container justify="center">
+                <Grid item md={10}>
+                    <OrderForm
+                    assets={assets}
+                    dai={dai}
+                    syntheticTokens={syntheticTokens}
+                    setLoading={setLoading}
+                    setLastTx={setLastTx}
+                    />
+                </Grid>
+                </Grid>
             </Route>
         </Switch>
     )

@@ -8,7 +8,8 @@ const theme = createMuiTheme({
     },
     TokenCell: {
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      fontWeight: 500
     },
     overrides: {
       MuiDrawer: {
@@ -32,12 +33,18 @@ const theme = createMuiTheme({
           fontFamily: 'Roboto'
         }
       },
+      MuiTableRow: {
+        root: {
+          borderBottom: '1px solid rgba(224, 224, 224, 1)'
+        }
+      },
       MuiTableCell: {
         root: {
           fontSize: 18,
           border: 'none',
           paddingLeft: 0,
           paddingRight: 0,
+          borderBottom: 'none'
         },
         head: {
           paddingLeft: 0,

@@ -16,7 +16,6 @@ import * as icons from "../../../assets/icons";
 import useStyles from "./styles";
 
 export default function WalletBalance({
-  className,
   assets,
   syntheticTokens,
   token,
@@ -57,7 +56,7 @@ export default function WalletBalance({
       <Grid item md={12}>
         <Container className={classes.Container}>
           <Paper className={classes.Paper}>
-            <TableContainer className={className}>
+            <TableContainer>
               <Table>
                 <TableHead className={classes.TableHead}>
                   <TableRow>
@@ -81,8 +80,8 @@ export default function WalletBalance({
                       </TableCell>
                     </TableRow>
                   ))}
-                  <TableRow>
-                    <TableCell>
+                  <TableRow className={classes.TableRow}>
+                    <TableCell className={classes.TokenCell}>
                       <img
                         className={classes.TokenIcon}
                         alt="DAI"
