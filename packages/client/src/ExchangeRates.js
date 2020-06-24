@@ -39,7 +39,7 @@ export default function ExchangeRates(props) {
           <TableBody>
 
             {
-              props.assets.map(asset => (
+              props.assets.map((asset, index) => (
                 <TableRow key={asset.symbol}>
                   <TableCell>
                     {asset.symbol}
@@ -48,7 +48,7 @@ export default function ExchangeRates(props) {
                       <Link
                         href={
                           asset.derivative &&
-                          `https://kovan.etherscan.io/token/${asset.derivative.options.address}`
+                          `https://kovan.etherscan.io/token/${props.syntheticTokens[index].options.address}`
                         }
                         target="_blank"
                       >

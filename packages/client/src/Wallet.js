@@ -171,7 +171,7 @@ export default function Wallet(props) {
       </Grid>
 
       <Grid item md={6}>
-        <ExchangeRates className={classes.table} assets={assets} />
+        <ExchangeRates className={classes.table} assets={assets} syntheticTokens={syntheticTokens} />
       </Grid>
     </Grid>
   );
