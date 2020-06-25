@@ -6,6 +6,10 @@ const ActionButton = {
   textTransform: 'uppercase',
   fontSize: 22,
   color: '#94B0DA',
+  '&:hover': {
+    backgroundColor: 'transparent',
+    color: '#2541B2'
+  }
 };
 
 const useStyles = makeStyles(theme => ({

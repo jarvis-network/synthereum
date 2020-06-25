@@ -53,8 +53,10 @@ const theme = createMuiTheme({
       },
       MuiSelect: {
         root: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center"
+        },
       }
     },
   });

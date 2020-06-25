@@ -153,7 +153,7 @@ export default function OrderForm(props) {
             margin="normal"
             onClick={() => alert("Exchange")}
           >
-            Exchange
+            Swap
           </Button>
         </div>
         
