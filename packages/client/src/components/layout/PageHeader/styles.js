@@ -4,6 +4,7 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   appBar: {
+    zIndex: 200,
     boxShadow: 'none',
     backgroundColor: '#2541B2',
     color:'white',
@@ -14,6 +15,7 @@ const useStyles = makeStyles(theme => ({
     })
   },
   appBarShift: {
+    zIndex: 200,
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {

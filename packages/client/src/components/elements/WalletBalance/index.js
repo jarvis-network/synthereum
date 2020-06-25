@@ -14,6 +14,7 @@ import TableRow from "@material-ui/core/TableRow";
 import * as icons from "../../../assets/icons";
 
 import useStyles from "./styles";
+import CollateralBar from "../CollateralBar";
 
 export default function WalletBalance({
   assets,
@@ -66,6 +67,7 @@ export default function WalletBalance({
                 </TableHead>
                 <TableBody>
                   {assets.map((asset, index) => (
+                    <React.Fragment>
                     <TableRow key={index} className={classes.TableRow}>
                       <TableCell className={classes.TokenCell}>
                         <img
@@ -79,7 +81,14 @@ export default function WalletBalance({
                         {Number(fromWei(synBalance, "ether")).toLocaleString()}
                       </TableCell>
                     </TableRow>
+                    <TableRow className={classes.TableRow}>
+                      <TableCell colSpan="2" className={classes.TableCellCollateral}>
+                        <CollateralBar />
+                      </TableCell>
+                    </TableRow>
+                    </React.Fragment>
                   ))}
+                  
                   <TableRow className={classes.TableRow}>
                     <TableCell className={classes.TokenCell}>
                       <img
@@ -93,6 +102,11 @@ export default function WalletBalance({
                       {Number(fromWei(balance, "ether")).toLocaleString()}
                     </TableCell>
                   </TableRow>
+                  <TableRow className={classes.TableRow}>
+                      <TableCell colSpan="2" className={classes.TableCellCollateral}>
+                        <CollateralBar />
+                      </TableCell>
+                    </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>

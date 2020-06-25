@@ -18,6 +18,10 @@ const useStyles = makeStyles(theme => ({
     TableRow: {
       fontSize: 18,
       fontWeight: 400,
+      borderBottom: 0
+    },
+    TableCellCollateral: {
+      paddingTop: 0
     },
     TokenCell: theme.TokenCell,
     TokenIcon: theme.TokenIcon,
