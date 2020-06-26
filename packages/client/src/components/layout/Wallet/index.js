@@ -102,19 +102,7 @@ export default function Wallet({ setLoading }) {
   return (
     <div className={classes.root}>
     <Grid container>
-      <Grid item md={5}>
-        <WalletHeader />
-        <WalletBalance
-          className={classes.table}
-          assets={assets}
-          syntheticTokens={syntheticTokens}
-          dai={dai}
-          lastTx={lastTx}
-        />
-        <Liquidity />
-      </Grid>
       <Grid item md={7}>
-        <div className={classes.menuContainer}>
           <PageHeader open={open} handleDrawerOpen={handleDrawerOpen} />
           <Navigation open={open} handleDrawerClose={handleDrawerClose} />
           <main className={classes.content}>
@@ -127,7 +115,17 @@ export default function Wallet({ setLoading }) {
               setLastTx={setLastTx}
             />
           </main>
-        </div>
+      </Grid>
+      <Grid item md={5}>
+        <WalletHeader />
+        <WalletBalance
+          className={classes.table}
+          assets={assets}
+          syntheticTokens={syntheticTokens}
+          dai={dai}
+          lastTx={lastTx}
+        />
+        <Liquidity />
       </Grid>
     </Grid>
       

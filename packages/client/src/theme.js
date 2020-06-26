@@ -12,17 +12,12 @@ const theme = createMuiTheme({
       fontWeight: 500
     },
     overrides: {
-      MuiAppBar: {
-        root: {
-          zIndex: 200
-        }
-      },
       MuiDrawer: {
         paper: {
-          position: 'absolute'
+          // position: 'absolute'
         },
         paperAnchorLeft: {
-          left: 'auto'
+          // left: 'auto'
         }
       },
       MuiPaper: {

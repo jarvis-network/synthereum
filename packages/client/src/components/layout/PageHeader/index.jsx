@@ -24,7 +24,7 @@ const PageHeader = ({ open, handleDrawerOpen }) => {
     return (
 
         <AppBar
-          position="absolute"
+          position="fixed"
           className={clsx(classes.appBar, {
             [classes.appBarShift]: open
           })}

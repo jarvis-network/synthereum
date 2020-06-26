@@ -6,14 +6,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
   },
-  menuContainer: {
-    height: "100vh",
-    position: "relative",
-    width: "100%",
-    background: '#ffffff',
-    borderLeft: '1px solid rgba(0, 0, 0, 0.12)'
-   //borderLeft: '1px solid #2541B2'
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
