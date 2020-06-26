@@ -25,14 +25,8 @@ const Pages = ({ assets, dai, syntheticTokens, setLoading, setLastTx }) => {
             <Route path="/insights">
                 <h3>Insights</h3>
             </Route>
-            <Route path="/settings">
-                <h3>Settings</h3>
-            </Route>
             <Route path="/help">
                 <h3>Help</h3>
-            </Route>
-            <Route path="/docs">
-                <h3>Documenation</h3>
             </Route>
             <Route path="/">
                 <Grid container justify="center">

@@ -18,7 +18,10 @@ const useStyles = makeStyles(theme => ({
     TableRow: {
       fontSize: 18,
       fontWeight: 400,
-      borderBottom: 0
+      borderBottom: 0,
+      '&:last-of-type': {
+        borderTop: '1px solid rgba(224, 224, 224, 1)'
+      }
     },
     TableCellCollateral: {
       paddingTop: 0

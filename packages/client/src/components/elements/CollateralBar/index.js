@@ -16,7 +16,7 @@ function CollateralBar({ value }) {
         <Typography variant="body2" color="textSecondary">Your Collateral: {`${Math.round(value * 100)}%`}</Typography>
       </Box>
       <Box minWidth={35}>
-        <Typography variant="body2" color="textSecondary">Pool Collateral: {`${Math.round((1 - value) * 100)}%`}</Typography>
+        <Typography variant="body2" color="textSecondary">LP Collateral: {`${Math.round((1 - value) * 100)}%`}</Typography>
       </Box>
       </Box>
       <Box width="100%" mr={1}>
@@ -27,7 +27,7 @@ function CollateralBar({ value }) {
 }
 
 CollateralBar.defaultProps = {
-    value: 0.25
+    value: 0
 };
 
 export default CollateralBar;

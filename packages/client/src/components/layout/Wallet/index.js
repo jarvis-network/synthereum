@@ -119,13 +119,13 @@ export default function Wallet({ setLoading }) {
           <Navigation open={open} handleDrawerClose={handleDrawerClose} />
           <main className={classes.content}>
           <div className={classes.toolbar} />
-              <Pages 
-                assets={assets} 
-                dai={dai} 
-                syntheticTokens={syntheticTokens} 
-                setLoading={setLoading} 
-                setLastTx={setLastTx}
-              />
+            <Pages 
+              assets={assets} 
+              dai={dai} 
+              syntheticTokens={syntheticTokens} 
+              setLoading={setLoading} 
+              setLastTx={setLastTx}
+            />
           </main>
         </div>
       </Grid>

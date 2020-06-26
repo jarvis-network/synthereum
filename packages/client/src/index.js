@@ -18,8 +18,6 @@ const Infura = new NetworkOnlyConnector({
 
 const connectors = { MetaMask, Infura };
 
-
-
 ReactDOM.render(
   <Web3Provider
     connectors={connectors}
