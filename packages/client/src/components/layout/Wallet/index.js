@@ -41,6 +41,10 @@ export default function Wallet({ setLoading }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleDrawerToggle = () => {
+    setOpen(!open);
+  }
   useEffect(() => {
     if (context.active) {
       const { library: { eth: { Contract } } } = context;
@@ -101,31 +105,18 @@ export default function Wallet({ setLoading }) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <Header open={open} handleDrawerOpen={handleDrawerOpen} />
-      <Navigation open={open} handleDrawerClose={handleDrawerClose} />
+      <Header open={open} handleDrawerToggle={handleDrawerToggle} />
+      <Navigation open={open} handleDrawerToggle={handleDrawerToggle} />
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid container>
-          <Grid item md={7}>
-            <Pages
-              assets={assets}
-              dai={dai}
-              syntheticTokens={syntheticTokens}
-              setLoading={setLoading}
-              setLastTx={setLastTx}
-            />
-          </Grid>
-          <Grid item md={5}>
-            <WalletBalance
-              className={classes.table}
-              assets={assets}
-              syntheticTokens={syntheticTokens}
-              dai={dai}
-              lastTx={lastTx}
-            />
-            <Liquidity />
-          </Grid>
-        </Grid>
+        <Pages
+          assets={assets}
+          dai={dai}
+          syntheticTokens={syntheticTokens}
+          setLoading={setLoading}
+          lastTx={lastTx}
+          setLastTx={setLastTx}
+        />
       </main>
     </div>
   );

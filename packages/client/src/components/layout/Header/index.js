@@ -14,7 +14,7 @@ import { useWeb3Context } from "web3-react";
 
 import useStyles from "./styles";
 
-const Header = ({ open, handleDrawerOpen }) => {
+const Header = ({ open, handleDrawerToggle }) => {
   const context = useWeb3Context();
   const { account } = context;
 
@@ -26,30 +26,21 @@ const Header = ({ open, handleDrawerOpen }) => {
     ) || {};
 
   return (
-    <AppBar
-      position="fixed"
-      className={clsx(classes.appBar, {
-        [classes.appBarShift]: open
-      })}
-    >
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: open
-          })}
-        >
-          <MenuIcon />
-        </IconButton>
-        <div className={classes.HeaderContent}>
+
+    <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            className={classes.menuButton}
+          >
+            <MenuIcon />
+          </IconButton>
+          <div className={classes.HeaderContent}>
           <Typography variant="h6" noWrap>
             {currentPage.pageTitle}
-          </Typography>
-          <Typography variant="h2" className={classes.Logo}>
-            Synthereum Wallet
           </Typography>
           <Box component="span" display="inline" className={classes.AddressSpan}>
             <Typography variant="h6" className={classes.Address}>
@@ -59,8 +50,8 @@ const Header = ({ open, handleDrawerOpen }) => {
             </Typography>
           </Box>
         </div>
-      </Toolbar>
-    </AppBar>
+        </Toolbar>
+      </AppBar>
   );
 };
 

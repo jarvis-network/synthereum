@@ -4,31 +4,17 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   appBar: {
-    backgroundColor: '#2541B2',
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+    backgroundColor: "#2541B2",
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
   },
   menuButton: {
-    marginRight: 36
-  },
-  hide: {
-    display: "none"
-  },
-  Logo: {
-    color: "#ffffff",
-    fontFamily: "Rubik",
-    fontSize: 22
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   AddressSpan: {
     backgroundColor: "#03256C",

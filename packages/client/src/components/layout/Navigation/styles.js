@@ -4,40 +4,38 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: theme.spacing(7) + 1,
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9) + 1,
+      width: drawerWidth,
+      flexShrink: 0,
     },
   },
+  
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
+  // necessary for content to be below app bar
   toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
+    alignItems: 'center',
+    display: 'flex',
+    paddingLeft: 16
+  },
+  drawerPaper: {
+    width: drawerWidth,
   },
   NavLink: {
     textDecoration: 'none',
     color: '#000000',
     fontWeight: 'bold'
+  },
+  Logo: {
+    color: "#03256C",
+    fontFamily: "Rubik",
+    fontSize: 22,
+    fontWeight: "bold"
   }
 }));
 
