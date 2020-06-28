@@ -1,17 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const ActionButton = {
-  background: 'transparent',
-  width: '100%',
-  textTransform: 'uppercase',
-  fontSize: 22,
-  color: '#94B0DA',
-  '&:hover': {
-    backgroundColor: 'transparent',
-    color: '#2541B2'
-  }
-};
-
 const useStyles = makeStyles(theme => ({
     TableRow: theme.overrides.TableRow,
     Paper: {
@@ -22,17 +10,6 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: 20,
       paddingRight: 20,
       marginBottom: 20
-    },
-    ButtonRow: {
-      display: 'flex',
-      justifyContent: 'space-evenly',
-      width: '100%',
-      borderBottom: '2px solid #03256c'
-    },
-    ActionButton,
-    ActionButtonActive: {
-      ...ActionButton,
-      color: '#03256C'
     },
     OrderButton: {
       dropShadow: 'none',

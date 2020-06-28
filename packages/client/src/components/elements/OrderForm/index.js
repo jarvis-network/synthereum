@@ -16,16 +16,8 @@ import TokenPicker from "../TokenPicker";
 
 import useStyles from "./styles";
 
-export default function OrderForm(props) {
-  const {
-    assets,
-    // token,
-    dai,
-    syntheticTokens,
-    setLoading,
-    setLastTx
-  } = props;
-
+export default function OrderForm({ assets, dai, syntheticTokens, setLoading, setLastTx }) {
+  
   const classes = useStyles();
 
   const context = useWeb3Context();
@@ -130,35 +122,10 @@ export default function OrderForm(props) {
   return (
     <Paper className={classes.Paper}>
       <form>
-        <div className={classes.ButtonRow}>
-          <Button
-            className={orderType === "buy" ? classes.ActionButtonActive : classes.ActionButton}
-            color="primary"
-            margin="normal"
-            onClick={() => setOrderType("buy")}
-          >
-            Buy
-          </Button>
-          <Button
-            className={orderType === "sell" ? classes.ActionButtonActive : classes.ActionButton}
-            color="secondary"
-            margin="normal"
-            onClick={() => setOrderType("sell")}
-          >
-            Sell
-          </Button>
-          <Button
-            className={orderType === "exchange" ? classes.ActionButtonActive : classes.ActionButton}
-            color="secondary"
-            margin="normal"
-            onClick={() => alert("Exchange")}
-          >
-            Swap
-          </Button>
-        </div>
-        
+
         <Grid container justify="center">
-          <Grid item md={8}>
+          <Grid item md={12}>
+            <label>Input Token</label>
             <TextField
               variant="outlined"
               label="Amount"
@@ -169,13 +136,17 @@ export default function OrderForm(props) {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <TokenPicker assets={assets} token={token} onChange={setToken} />
+                    <TokenPicker assets={assets.concat([{
+                      name: "DAI",
+                      symbol: "DAI"
+                    }])} token={token} onChange={setToken} />
                   </InputAdornment>
                 )
               }}
             />
           </Grid>
-          <Grid item md={8}>
+
+          <Grid item md={12}>
             {orderAmount && (
             <TableContainer component={Paper} className={classes.FeeTable}>
               <Table size="small">
@@ -199,7 +170,7 @@ export default function OrderForm(props) {
           )}
 
           </Grid>
-          <Grid item md={8}>
+          <Grid item md={12}>
             <Button className={classes.OrderButton} fullWidth margin="normal" onClick={placeOrder}>
               Place Order
             </Button>

@@ -7,7 +7,6 @@ import * as icons from "../../../assets/icons";
 
 import useStyles from "./styles";
 
-
 const TokenPicker = ({ assets, token, onChange }) => {
 
   const classes = useStyles();
