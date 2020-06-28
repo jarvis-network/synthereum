@@ -12,11 +12,13 @@ const DashboardPages = [{
   },
   {
     title: "Transactions",
+    pageTitle: "Transactions",
     link: "/transactions",
     icon: <Receipt />
   },
   {
     title: "Insights",
+    pageTitle: "Insights",
     link: "/insights",
     icon: <BarChart />
   }
@@ -24,6 +26,7 @@ const DashboardPages = [{
 
 const SupportPages = [{
   title: 'Help',
+  pageTitle: "Help",
   link: '/help',
   icon: <HelpOutline />
 }];

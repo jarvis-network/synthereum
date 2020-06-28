@@ -11,28 +11,20 @@ import IERC20 from "../../../contracts/IERC20.json";
 
 import defaultAssets from "../../../helpers/defaultAssets";
 
-import Grid from "@material-ui/core/Grid";
-
-import CssBaseline from "@material-ui/core/CssBaseline";
-
-import Header from "../Header";
+import WalletBalance from "../../elements/WalletBalance";
+import PageHeader from "../PageHeader";
 import Navigation from "../Navigation";
 import Pages from "../Pages";
-import WalletBalance from "../../elements/WalletBalance";
+import WalletHeader from "../WalletHeader";
+
+import Grid from "@material-ui/core/Grid";
+import useStyles from "./styles";
 import Liquidity from "../../elements/Liquidity";
 
-import useStyles from "./styles";
-
 export default function Wallet({ setLoading }) {
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const context = useWeb3Context();
-
-  const [assets, setAssets] = useState(defaultAssets);
-  const [syntheticTokens, setSyntheticTokens] = useState([]);
-  const [dai, setDai] = useState(null);
-  // Used to refresh stale data after a transaction is made
-  const [lastTx, setLastTx] = useState("");
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -40,7 +32,17 @@ export default function Wallet({ setLoading }) {
 
   const handleDrawerClose = () => {
     setOpen(false);
-  };
+  }
+
+  const context = useWeb3Context();
+
+  // const [token, setToken] = useState(0);
+  const [assets, setAssets] = useState(defaultAssets);
+  const [syntheticTokens, setSyntheticTokens] = useState([]);
+  const [dai, setDai] = useState(null);
+  // Used to refresh stale data after a transaction is made
+  const [lastTx, setLastTx] = useState("");
+
   useEffect(() => {
     if (context.active) {
       const { library: { eth: { Contract } } } = context;
@@ -97,36 +99,35 @@ export default function Wallet({ setLoading }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active]);
 
-
   return (
     <div className={classes.root}>
-      <CssBaseline />
-      <Header open={open} handleDrawerOpen={handleDrawerOpen} />
-      <Navigation open={open} handleDrawerClose={handleDrawerClose} />
-      <main className={classes.content}>
+    <Grid container>
+      <Grid item md={7}>
+        <PageHeader open={open} handleDrawerOpen={handleDrawerOpen} />
+        <Navigation open={open} handleDrawerClose={handleDrawerClose} />
+        <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid container>
-          <Grid item md={7}>
-            <Pages
-              assets={assets}
-              dai={dai}
-              syntheticTokens={syntheticTokens}
-              setLoading={setLoading}
-              setLastTx={setLastTx}
-            />
-          </Grid>
-          <Grid item md={5}>
-            <WalletBalance
-              className={classes.table}
-              assets={assets}
-              syntheticTokens={syntheticTokens}
-              dai={dai}
-              lastTx={lastTx}
-            />
-            <Liquidity />
-          </Grid>
-        </Grid>
-      </main>
+          <Pages 
+            assets={assets} 
+            dai={dai} 
+            syntheticTokens={syntheticTokens} 
+            setLoading={setLoading} 
+            setLastTx={setLastTx}
+          />
+        </main>
+      </Grid>
+      <Grid item md={5}>
+        <WalletHeader />
+        <WalletBalance
+          className={classes.table}
+          assets={assets}
+          syntheticTokens={syntheticTokens}
+          dai={dai}
+          lastTx={lastTx}
+        />
+        <Liquidity />
+      </Grid>
+    </Grid>
     </div>
   );
 }

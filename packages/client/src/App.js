@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import Wallet from './components/layout/Wallet';
+// import Wallet from "./Wallet";
 
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -87,6 +88,7 @@ export default function App() {
         </Backdrop>
         <Router>
           <Wallet setLoading={setLoading} />
+          {/* <Wallet /> */}
         </Router>
       </div>
     );

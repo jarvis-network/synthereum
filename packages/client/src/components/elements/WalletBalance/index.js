@@ -67,8 +67,8 @@ export default function WalletBalance({
                 </TableHead>
                 <TableBody>
                   {assets.map((asset, index) => (
-                    <React.Fragment>
-                      <TableRow key={index} className={classes.TableRow}>
+                    <React.Fragment key={index}>
+                      <TableRow className={classes.TableRow}>
                         <TableCell className={classes.TokenCell}>
                           <img
                             className={classes.TokenIcon}
