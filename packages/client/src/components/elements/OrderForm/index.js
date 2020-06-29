@@ -178,7 +178,8 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               margin="normal"
               value={orderAmount}
               onChange={onOrderAmountChange}
-              disabled={outputToken === SELECT_TOKEN}
+              // disabled={outputToken === SELECT_TOKEN}
+              disabled={true}
               InputProps={{
                 endAdornment: (
                   <TokenPicker assets={assets.concat([{
