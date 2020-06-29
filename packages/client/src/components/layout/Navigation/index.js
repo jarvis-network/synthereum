@@ -9,7 +9,6 @@ import Divider from "@material-ui/core/Divider";
 import useStyles from "./styles";
 import { useTheme } from '@material-ui/core/styles';
 
-
 import { DashboardPages, SupportPages } from "../../../helpers/pages";
 
 import NavItem from "./NavItem";

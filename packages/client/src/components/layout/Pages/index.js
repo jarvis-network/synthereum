@@ -2,12 +2,15 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 
 import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
 import Liquidity from "../../elements/Liquidity";
-import Candlestick from "../../elements/Candlestick";
+
+import useStyles from "./styles";
+import Insights from "./Insights";
 
 const Pages = ({
   assets,
@@ -17,6 +20,9 @@ const Pages = ({
   lastTx,
   setLastTx
 }) => {
+
+  const classes = useStyles();
+
   return (
     <Switch>
       <Route path="/exchange">
@@ -26,7 +32,7 @@ const Pages = ({
         <h3>Transactions</h3>
       </Route>
       <Route path="/insights">
-        <Candlestick />
+          <Insights />
       </Route>
       <Route path="/help">
         <h3>Help</h3>

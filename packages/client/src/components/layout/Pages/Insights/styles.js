@@ -1,7 +1,9 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
-    Paper: theme.overrides.MuiPaper.panel
+    Panel: {
+        padding: 20
+    }
 }));
 
 export default useStyles;
