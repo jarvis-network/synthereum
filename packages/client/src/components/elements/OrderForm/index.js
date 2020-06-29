@@ -24,6 +24,8 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const context = useWeb3Context();
 
+  console.log(context);
+
   const [token, setToken] = useState(0);
 
   const [inputToken, setInputToken] = useState(0);
@@ -41,6 +43,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   const onOrderAmountChange = event => {
     const { value } = event.target;
     if (!isNaN(value)) {
+      console.log(assets[token]);
       const newCollateralAmount = value * assets[token].price;
       setOrderAmount(value);
       setCollateralAmount(newCollateralAmount);
@@ -173,6 +176,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               margin="normal"
               value={orderAmount}
               onChange={onOrderAmountChange}
+              disabled={outputToken === SELECT_TOKEN}
               InputProps={{
                 endAdornment: (
                   <TokenPicker assets={assets.concat([{

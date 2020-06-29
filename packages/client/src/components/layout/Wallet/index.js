@@ -72,7 +72,6 @@ export default function Wallet({ setLoading }) {
         setSyntheticTokens(newSyntheticTokens);
       });
 
-
       Promise.all(newAssets.map(asset => {
         return jarvisExchangeRate(asset.priceFeed);
       })).then(exchangeRates => {
