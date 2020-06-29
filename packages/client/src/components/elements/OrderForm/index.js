@@ -26,8 +26,8 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const [token, setToken] = useState(0);
 
-  const [inputToken, setInputToken] = useState(0);
-  const [outputToken, setOutputToken] = useState(SELECT_TOKEN);
+  const [inputToken, setInputToken] = useState(assets.length);
+  const [outputToken, setOutputToken] = useState(0);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -152,7 +152,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label="Input Token"
+              label="From"
               placeholder="0.0"
               fullWidth
               margin="normal"
@@ -172,7 +172,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label="Output Token"
+              label="To (estimated)"
               placeholder="0.0"
               fullWidth
               margin="normal"

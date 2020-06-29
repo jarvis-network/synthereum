@@ -2,7 +2,6 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 
 import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
@@ -20,9 +19,6 @@ const Pages = ({
   lastTx,
   setLastTx
 }) => {
-
-  const classes = useStyles();
-
   return (
     <Switch>
       <Route path="/exchange">
@@ -38,7 +34,7 @@ const Pages = ({
         <h3>Help</h3>
       </Route>
       <Route path="/">
-        <Grid container>
+        <Grid container spacing={8}>
           <Grid item md={6}>
             <OrderForm
               assets={assets}
@@ -55,7 +51,6 @@ const Pages = ({
               dai={dai}
               lastTx={lastTx}
             />
-            <Liquidity />
           </Grid>
         </Grid>
       </Route>

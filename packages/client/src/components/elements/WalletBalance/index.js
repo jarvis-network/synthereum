@@ -53,65 +53,59 @@ export default function WalletBalance({
   }, [context, context.active, dai, lastTx]);
 
   return (
-    <Grid container className={classes.Grid}>
-      <Grid item md={12}>
-        <Container className={classes.Container}>
-          <Paper className={classes.Paper}>
-            <TableContainer>
-              <Table>
-                <TableHead className={classes.TableHead}>
-                  <TableRow>
-                    <TableCell>Token</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {assets.map((asset, index) => (
-                    <React.Fragment key={index}>
-                      <TableRow className={classes.TableRow}>
-                        <TableCell className={classes.TokenCell}>
-                          <img
-                            className={classes.TokenIcon}
-                            alt={asset.symbol}
-                            src={icons[asset.symbol]}
-                          />
-                          {asset.symbol}
-                        </TableCell>
-                        <TableCell align="right">
-                          {Number(
-                            fromWei(synBalance, "ether")
-                          ).toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className={classes.TableRow}>
-                        <TableCell
-                          colSpan="2"
-                          className={classes.TableCellCollateral}
-                        >
-                          <CollateralBar />
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  ))}
-                  <TableRow className={classes.TableRow}>
-                    <TableCell className={classes.TokenCell}>
-                      <img
-                        className={classes.TokenIcon}
-                        alt="DAI"
-                        src={icons.DAI}
-                      />
-                      DAI
-                    </TableCell>
-                    <TableCell align="right">
-                      {Number(fromWei(balance, "ether")).toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Container>
-      </Grid>
-    </Grid>
+    <Paper className={classes.Paper}>
+      <TableContainer>
+        <Table>
+          <TableHead className={classes.TableHead}>
+            <TableRow>
+              <TableCell>Token</TableCell>
+              <TableCell align="right">Amount</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {assets.map((asset, index) => (
+              <React.Fragment key={index}>
+                <TableRow className={classes.TableRow}>
+                  <TableCell className={classes.TokenCell}>
+                    <img
+                      className={classes.TokenIcon}
+                      alt={asset.symbol}
+                      src={icons[asset.symbol]}
+                    />
+                    {asset.symbol}
+                  </TableCell>
+                  <TableCell align="right">
+                    {Number(
+                      fromWei(synBalance, "ether")
+                    ).toLocaleString()}
+                  </TableCell>
+                </TableRow>
+                <TableRow className={classes.TableRow}>
+                  <TableCell
+                    colSpan="2"
+                    className={classes.TableCellCollateral}
+                  >
+                    <CollateralBar />
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            ))}
+            <TableRow className={classes.TableRow}>
+              <TableCell className={classes.TokenCell}>
+                <img
+                  className={classes.TokenIcon}
+                  alt="DAI"
+                  src={icons.DAI}
+                />
+                DAI
+              </TableCell>
+              <TableCell align="right">
+                {Number(fromWei(balance, "ether")).toLocaleString()}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 }
