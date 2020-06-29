@@ -57,7 +57,7 @@ export default function Wallet({ setLoading }) {
           newAssets[i].derivative = new Contract(ExpiringMultiParty.abi, derivatives[i]);
         }
 
-        setAssets(newAssets)
+        setAssets(newAssets);
 
         return Promise.all(newAssets.map(asset => {
           return asset.derivative.methods.tokenCurrency().call();

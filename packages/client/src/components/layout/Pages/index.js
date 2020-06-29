@@ -6,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
-import Liquidity from "../../elements/Liquidity";
 
 import useStyles from "./styles";
 import Insights from "./Insights";

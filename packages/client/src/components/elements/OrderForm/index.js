@@ -31,20 +31,35 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [orderAmount, setOrderAmount] = useState("");
+  const [inputAmount, setInputAmount] = useState("");
+  const [outputAmount, setOutputAmount] = useState("");
   const [feeAmount, setFeeAmount] = useState("0");
   const [collateralAmount, setCollateralAmount] = useState("0");
 
   const { fromWei, toWei, toBN } = context.library.utils;
 
-  const onOrderAmountChange = event => {
-    const { value } = event.target;
-    if (!isNaN(value)) {
-      console.log(assets[token]);
-      const newCollateralAmount = value * assets[token].price;
-      setOrderAmount(value);
+  const tokens = assets.concat([{
+    name: "DAI",
+    symbol: "DAI"
+  }]);
+
+  const getOrderType = () => {
+    if (inputToken === 4 && outputToken < 4) {
+      return "mint";
+    } else if (inputToken < 4 && outputToken === 4) {
+      return "redeem";
+    } else if (inputToken < 4 && outputToken < 4) {
+      return "exchange";
+    } else {
+      return null;
+    }
+  }
+
+  const calculateFees = value => {
+    if (getOrderType() === "mint") {
+      const newCollateralAmount = value * assets[outputToken].price;
       setCollateralAmount(newCollateralAmount);
-      assets[token].contract.methods
+      assets[outputToken].contract.methods
         .calculateMintFee(toWei(newCollateralAmount.toString()))
         .call()
         .then(response => {
@@ -53,21 +68,39 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
     }
   };
 
+  const onInputAmountChange = event => {
+    const { value } = event.target;
+
+    if (!isNaN(value)) {
+      setInputAmount(value);
+      calculateFees(value);
+    }
+  };
+
+  const onOutputAmountChange = event => {
+    const { value } = event.target;
+
+    if (!isNaN(value)) {
+      setOutputAmount(value);
+      calculateFees(value);
+    }
+  };
+
   const buyOrder = (collateralAmount, orderAmountTKNbits) => {
-    assets[token].contract.methods
+    assets[outputToken].contract.methods
       .calculateMintFee(collateralAmount)
       .call()
       .then(mintFee => {
         dai.methods
           .approve(
-            assets[token].contract.options.address,
+            assets[outputToken].contract.options.address,
             toBN(collateralAmount).add(toBN(mintFee))
           )
           .send({
             from: context.account
           })
           .then(() => {
-            return assets[token].contract.methods
+            return assets[outputToken].contract.methods
               .mintRequest(collateralAmount, orderAmountTKNbits)
               .send({
                 from: context.account
@@ -76,24 +109,26 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           .then(tx => {
             setLoading(false);
             setLastTx(tx.transactionHash);
-            setOrderAmount("");
+            setInputAmount("");
+            setOutputAmount("");
           })
           .catch(err => {
             setLoading(false);
-            setOrderAmount("");
+            setInputAmount("");
+            setOutputAmount("");
             console.error(err);
           });
       });
   };
 
   const sellOrder = (collateralAmount, orderAmountTKNbits) => {
-    syntheticTokens[token].methods
-      .approve(assets[token].contract.options.address, orderAmountTKNbits)
+    syntheticTokens[inputToken].methods
+      .approve(assets[inputToken].contract.options.address, orderAmountTKNbits)
       .send({
         from: context.account
       })
       .then(() => {
-        return assets[token].contract.methods
+        return assets[inputToken].contract.methods
           .redeemRequest(collateralAmount, orderAmountTKNbits)
           .send({
             from: context.account
@@ -102,11 +137,44 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       .then(tx => {
         setLoading(false);
         setLastTx(tx.transactionHash);
-        setOrderAmount("");
+        setInputAmount("");
+        setOutputAmount("");
       })
       .catch(err => {
         setLoading(false);
-        setOrderAmount("");
+        setInputAmount("");
+        setOutputAmount("");
+        console.error(err);
+      });
+  };
+
+  const exchangeOrder = (inputAmountTKNbits, outputAmountTKNbits) => {
+    syntheticTokens[inputToken].methods
+      .approve(assets[inputToken].contract.options.address, inputAmountTKNbits)
+      .send({
+        from: context.account
+      })
+      .then(() => {
+        return assets[inputToken].contract.methods
+          .exchangeRequest(
+            assets[outputToken].contract.options.address,
+            inputAmountTKNbits,
+            outputAmountTKNbits
+          )
+          .send({
+            from: context.account
+          });
+      })
+      .then(tx => {
+        setLoading(false);
+        setLastTx(tx.transactionHash);
+        setInputAmount("");
+        setOutputAmount("");
+      })
+      .catch(err => {
+        setLoading(false);
+        setInputAmount("");
+        setOutputAmount("");
         console.error(err);
       });
   };
@@ -117,29 +185,27 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
     if (outputToken === SELECT_TOKEN) return setErrorMessage("Please select a token.");
     if (inputToken === 4 && outputToken === 4) return setErrorMessage("Please pick a different token pair.");
 
-    let orderType = "";
-
-    if (inputToken === 4) {
-      orderType = "mint";
-      return window.alert("Mint.");
-    } else if (outputToken === 4) {
-      orderType = "redeemm";
-      return window.alert("Redeem.");
-    } else if (inputToken === outputToken) {
-      orderType = "exchange";
-      return window.alert("Exchange.");
-    }
-
-    if (orderAmount > 0) {
-      const collateralAmountTKNbits = toWei(collateralAmount.toString());
-      const orderAmountTKNbits = toWei(orderAmount.toString());
+    if (inputAmount > 0 || outputAmount > 0) {
+      const orderType = getOrderType();
 
       if (orderType === "mint") {
         setLoading(true);
+
+        const collateralAmountTKNbits = toWei(collateralAmount.toString());
+        const orderAmountTKNbits = toWei(outputAmount.toString());
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === "redeem") {
         setLoading(true);
+
+        const collateralAmountTKNbits = toWei(collateralAmount.toString());
+        const orderAmountTKNbits = toWei(inputAmount.toString());
         sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
+      } else if (orderType === "exchange") {
+        setLoading(true);
+
+        const inputAmountTKNbits = toWei(inputAmount.toString());
+        const outputAmountTKNbits = toWei(inputAmount.toString());
+        exchangeOrder(inputAmountTKNbits, outputAmountTKNbits);
       }
     }
   };
@@ -152,18 +218,16 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label="From"
+              label={getOrderType() === "mint" ? "From (estimated)" : "From"}
               placeholder="0.0"
               fullWidth
               margin="normal"
-              value={orderAmount}
-              onChange={onOrderAmountChange}
+              value={inputAmount}
+              onChange={onInputAmountChange}
+              disabled={getOrderType() === "mint"}
               InputProps={{
                 endAdornment: (
-                  <TokenPicker assets={assets.concat([{
-                    name: "DAI",
-                    symbol: "DAI"
-                  }])} token={inputToken} onChange={setInputToken} />
+                  <TokenPicker assets={tokens} token={inputToken} onChange={setInputToken} />
                 )
               }}
             />
@@ -172,41 +236,37 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label="To (estimated)"
+              label={getOrderType() === "mint" ? "To" : "To (estimated)"}
               placeholder="0.0"
               fullWidth
               margin="normal"
-              value={orderAmount}
-              onChange={onOrderAmountChange}
-              // disabled={outputToken === SELECT_TOKEN}
-              disabled={true}
+              value={outputAmount}
+              onChange={onOutputAmountChange}
+              disabled={getOrderType() !== "mint"}
               InputProps={{
                 endAdornment: (
-                  <TokenPicker assets={assets.concat([{
-                    name: "DAI",
-                    symbol: "DAI"
-                  }])} token={outputToken} onChange={setOutputToken} />
+                  <TokenPicker assets={tokens} token={outputToken} onChange={setOutputToken} />
                 )
               }}
             />
           </Grid>
 
           <Grid item md={12}>
-            {orderAmount && (
+            {outputAmount && getOrderType() === "mint" && (
             <TableContainer component={Paper} className={classes.FeeTable}>
               <Table size="small">
                 <TableBody>
                   <TableRow className={classes.TableRow}>
                     <TableCell>Fee</TableCell>
                     <TableCell align="right">
-                      {Number(fromWei(feeAmount)).toLocaleString()} {assets[inputToken].symbol}
+                      {Number(fromWei(feeAmount)).toLocaleString()} {tokens[inputToken].symbol}
                     </TableCell>
                   </TableRow>
 
                   <TableRow>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">
-                      {collateralAmount.toLocaleString()} {assets[inputToken].symbol}
+                      {collateralAmount.toLocaleString()} {tokens[inputToken].symbol}
                     </TableCell>
                   </TableRow>
                 </TableBody>
