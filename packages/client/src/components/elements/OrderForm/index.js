@@ -23,9 +23,6 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   const classes = useStyles();
 
   const context = useWeb3Context();
-
-  const [token, setToken] = useState(0);
-
   const [inputToken, setInputToken] = useState(assets.length);
   const [outputToken, setOutputToken] = useState(0);
 

@@ -7,7 +7,6 @@ import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
 
-import useStyles from "./styles";
 import Insights from "./Insights";
 
 const Pages = ({

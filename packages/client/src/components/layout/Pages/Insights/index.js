@@ -16,7 +16,7 @@ import LatestPrice from "../../../elements/LatestPrice";
 
 const slashPair = str => `${str.slice(0, 3)}/${str.slice(3,6)}`;
 
-const Insights = ({}) => {
+const Insights = () => {
 
   const [symbol, setSymbol] = useState(defaultAssets[0].priceFeed);
   const [days, setDays] = useState("30");

@@ -15,6 +15,7 @@ import useStyles from "./styles";
 
 const Header = ({ open, handleDrawerToggle }) => {
   const context = useWeb3Context();
+  console.log(context);
   const { account } = context;
 
   const classes = useStyles();
