@@ -24,8 +24,6 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const context = useWeb3Context();
 
-  console.log(context);
-
   const [token, setToken] = useState(0);
 
   const [inputToken, setInputToken] = useState(0);
@@ -33,7 +31,6 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [orderType, setOrderType] = useState("buy");
   const [orderAmount, setOrderAmount] = useState("");
   const [feeAmount, setFeeAmount] = useState("0");
   const [collateralAmount, setCollateralAmount] = useState("0");
@@ -120,11 +117,16 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
     if (outputToken === SELECT_TOKEN) return setErrorMessage("Please select a token.");
     if (inputToken === 4 && outputToken === 4) return setErrorMessage("Please pick a different token pair.");
 
+    let orderType = "";
+
     if (inputToken === 4) {
+      orderType = "mint";
       return window.alert("Mint.");
     } else if (outputToken === 4) {
+      orderType = "redeemm";
       return window.alert("Redeem.");
     } else if (inputToken === outputToken) {
+      orderType = "exchange";
       return window.alert("Exchange.");
     }
 
@@ -132,10 +134,10 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       const collateralAmountTKNbits = toWei(collateralAmount.toString());
       const orderAmountTKNbits = toWei(orderAmount.toString());
 
-      if (orderType === "buy") {
+      if (orderType === "mint") {
         setLoading(true);
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
-      } else if (orderType === "sell") {
+      } else if (orderType === "redeem") {
         setLoading(true);
         sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
       }

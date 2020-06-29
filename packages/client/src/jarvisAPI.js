@@ -1,12 +1,12 @@
+const protocol = 'https';
+const host = 'data.jarvis.exchange';
 
-export function jarvisExchangeRate(priceFeed) {
+export function jarvisExchangeRate(priceFeed, start = 60) {
   const now = Math.floor(Date.now() / 1000);
-  const protocol = 'https';
-  const host = 'data.jarvis.exchange';
   const params = {
     symbol: priceFeed,
     resolution: 1,
-    from: now - 60,
+    from: now - start,
     to: now,
   };
   const query = Object.keys(params)
