@@ -26,7 +26,6 @@ const Pages = ({
         <h3>Transactions</h3>
       </Route>
       <Route path="/insights">
-        <h3>Insights</h3>
         <Candlestick />
       </Route>
       <Route path="/help">
