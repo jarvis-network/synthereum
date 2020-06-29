@@ -142,25 +142,25 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"interfaceName\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementationAddress\",\"type\":\"address\"}],\"name\":\"InterfaceImplementationChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"interfaceName\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"implementationAddress\",\"type\":\"address\"}],\"name\":\"changeImplementationAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"interfaceName\",\"type\":\"bytes32\"}],\"name\":\"getImplementationAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"implementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"interfacesImplemented\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Examples of interfaces with implementations that Finder locates are the Oracle and Store interfaces.\",\"methods\":{\"changeImplementationAddress(bytes32,address)\":{\"params\":{\"implementationAddress\":\"address of the implementation contract.\",\"interfaceName\":\"bytes32 of the interface name that is either changed or registered.\"}},\"getImplementationAddress(bytes32)\":{\"params\":{\"interfaceName\":\"queried interface.\"},\"returns\":{\"implementationAddress\":\"address of the defined interface.\"}},\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"Provides addresses of the live contracts implementing certain interfaces.\"},\"userdoc\":{\"methods\":{\"changeImplementationAddress(bytes32,address)\":{\"notice\":\"Updates the address of the contract that implements `interfaceName`.\"},\"getImplementationAddress(bytes32)\":{\"notice\":\"Gets the address of the contract that implements the given `interfaceName`.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/implementation/Finder.sol\":\"Finder\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":500},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/implementation/Finder.sol\":{\"keccak256\":\"0x467cd47a4a91032ee2642dbca42106ffd2955299ce4d3df59eb3ab67b7a93fd9\",\"urls\":[\"bzz-raw://3aa9eceb4401a795df08018086fec7ea1989e326386b3afc8de38851dc02a276\",\"dweb:/ipfs/QmWg6ArfSQmUnxRnyYDE4ZPsvX9fcM7WQ9aSzXVh5vNjYF\"]},\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol\":{\"keccak256\":\"0x1b6484df2bc4fd0cc0386acdf65b8c85918b663480f5826a08a4145fee44fdf7\",\"urls\":[\"bzz-raw://134e18e6b0c7b55a58ef432f19dc9155ab3e887a02c6df55b4d45ee21576b481\",\"dweb:/ipfs/QmZRYxk4jzvcetpsKLgqQrVT6Rf4CNxBfaFADvyzp6Df1y\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x039ba4cb83f1b30a3c575283aebeab66035aa4a3d5c88e73a67dbfba3691ac23\",\"urls\":[\"bzz-raw://7e319b9647837e7b286b01ef90e1b2dc62aea6d17acc11145c822193b6454db1\",\"dweb:/ipfs/QmW5vUEeePdJfj3abT8XHcZKideyCpSuDnz65Vfp6yu62P\"]}},\"version\":1}",
-  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b6104de806100796000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c80638f32d59b1161005b5780638f32d59b146100dc578063aafd5e40146100f8578063cc48f4db14610115578063f2fde38b146101325761007d565b806331f9665e14610082578063715018a6146100b05780638da5cb5b146100b8575b600080fd5b6100ae6004803603604081101561009857600080fd5b50803590602001356001600160a01b0316610158565b005b6100ae61020a565b6100c06102ad565b604080516001600160a01b039092168252519081900360200190f35b6100e46102bc565b604080519115158252519081900360200190f35b6100c06004803603602081101561010e57600080fd5b50356102e0565b6100c06004803603602081101561012b57600080fd5b5035610339565b6100ae6004803603602081101561014857600080fd5b50356001600160a01b0316610354565b6101606102bc565b6101b1576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008281526001602052604080822080546001600160a01b0319166001600160a01b0385169081179091559051909184917fb29aa13e555039289e0513962835b00fcc6e4a265ae8f99e68e5b90d5406fe489190a35050565b6102126102bc565b610263576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b600080546001600160a01b03166102d16103b9565b6001600160a01b031614905090565b6000818152600160205260409020546001600160a01b0316806103345760405162461bcd60e51b81526004018080602001828103825260258152602001806104846025913960400191505060405180910390fd5b919050565b6001602052600090815260409020546001600160a01b031681565b61035c6102bc565b6103ad576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6103b6816103bd565b50565b3390565b6001600160a01b0381166104025760405162461bcd60e51b815260040180806020018281038252602681526020018061045e6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f20616464726573734e6f20696d706c656d656e746174696f6e20666f7220696e7465726661636520666f756e64a2646970667358221220499f90731460d97f72e97095d7233baa64aeece10800459109dd09c605c0797d64736f6c63430006040033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c80638f32d59b1161005b5780638f32d59b146100dc578063aafd5e40146100f8578063cc48f4db14610115578063f2fde38b146101325761007d565b806331f9665e14610082578063715018a6146100b05780638da5cb5b146100b8575b600080fd5b6100ae6004803603604081101561009857600080fd5b50803590602001356001600160a01b0316610158565b005b6100ae61020a565b6100c06102ad565b604080516001600160a01b039092168252519081900360200190f35b6100e46102bc565b604080519115158252519081900360200190f35b6100c06004803603602081101561010e57600080fd5b50356102e0565b6100c06004803603602081101561012b57600080fd5b5035610339565b6100ae6004803603602081101561014857600080fd5b50356001600160a01b0316610354565b6101606102bc565b6101b1576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008281526001602052604080822080546001600160a01b0319166001600160a01b0385169081179091559051909184917fb29aa13e555039289e0513962835b00fcc6e4a265ae8f99e68e5b90d5406fe489190a35050565b6102126102bc565b610263576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031690565b600080546001600160a01b03166102d16103b9565b6001600160a01b031614905090565b6000818152600160205260409020546001600160a01b0316806103345760405162461bcd60e51b81526004018080602001828103825260258152602001806104846025913960400191505060405180910390fd5b919050565b6001602052600090815260409020546001600160a01b031681565b61035c6102bc565b6103ad576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6103b6816103bd565b50565b3390565b6001600160a01b0381166104025760405162461bcd60e51b815260040180806020018281038252602681526020018061045e6026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f20616464726573734e6f20696d706c656d656e746174696f6e20666f7220696e7465726661636520666f756e64a2646970667358221220499f90731460d97f72e97095d7233baa64aeece10800459109dd09c605c0797d64736f6c63430006040033",
-  "sourceMap": "329:1532:36:-:0;;;698:17:69;718:12;-1:-1:-1;;;;;718:10:69;:12;:::i;:::-;740:6;:18;;-1:-1:-1;;;;;;740:18:69;-1:-1:-1;;;;;740:18:69;;;;;;;773:43;;740:18;;-1:-1:-1;740:18:69;773:43;;740:6;;773:43;664:159;329:1532:36;;735:104:63;822:10;735:104;:::o;329:1532:36:-;;;;;;;",
-  "deployedSourceMap": "329:1532:36:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;329:1532:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;942:280:36;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;942:280:36;;;;;;-1:-1:-1;;;;;942:280:36;;:::i;:::-;;1684:145:69;;;:::i;899:77::-;;;:::i;:::-;;;;-1:-1:-1;;;;;899:77:69;;;;;;;;;;;;;;1250:92;;;:::i;:::-;;;;;;;;;;;;;;;;;;1565:294:36;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1565:294:36;;:::i;379:56::-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;379:56:36;;:::i;1978:115:69:-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1978:115:69;-1:-1:-1;;;;;1978:115:69;;:::i;942:280:36:-;1103:9:69;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1071:36:36::1;::::0;;;:21:::1;:36;::::0;;;;;:60;;-1:-1:-1;;;;;;1071:60:36::1;-1:-1:-1::0;;;;;1071:60:36;::::1;::::0;;::::1;::::0;;;1147:68;;1071:60;;:36;;1147:68:::1;::::0;1071:36;1147:68:::1;942:280:::0;;:::o;1684:145:69:-;1103:9;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1790:1:::1;1774:6:::0;;1753:40:::1;::::0;-1:-1:-1;;;;;1774:6:69;;::::1;::::0;1753:40:::1;::::0;1790:1;;1753:40:::1;1820:1;1803:19:::0;;-1:-1:-1;;;;;;1803:19:69::1;::::0;;1684:145::o;899:77::-;937:7;963:6;-1:-1:-1;;;;;963:6:69;899:77;:::o;1250:92::-;1290:4;1329:6;;-1:-1:-1;;;;;1329:6:69;1313:12;:10;:12::i;:::-;-1:-1:-1;;;;;1313:22:69;;1306:29;;1250:92;:::o;1565:294:36:-;1654:29;1719:36;;;:21;:36;;;;;;-1:-1:-1;;;;;1719:36:36;1773:37;1765:87;;;;-1:-1:-1;;;1765:87:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1565:294;;;:::o;379:56::-;;;;;;;;;;;;-1:-1:-1;;;;;379:56:36;;:::o;1978:115:69:-;1103:9;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2058:28:::1;2077:8;2058:18;:28::i;:::-;1978:115:::0;:::o;735:104:63:-;822:10;735:104;:::o;2194:233:69:-;-1:-1:-1;;;;;2275:22:69;;2267:73;;;;-1:-1:-1;;;2267:73:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2376:6;;;2355:38;;-1:-1:-1;;;;;2355:38:69;;;;2376:6;;;2355:38;;;2403:6;:17;;-1:-1:-1;;;;;;2403:17:69;-1:-1:-1;;;;;2403:17:69;;;;;;;;;;2194:233::o",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"interfaceName\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementationAddress\",\"type\":\"address\"}],\"name\":\"InterfaceImplementationChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"interfaceName\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"implementationAddress\",\"type\":\"address\"}],\"name\":\"changeImplementationAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"interfaceName\",\"type\":\"bytes32\"}],\"name\":\"getImplementationAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"implementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"interfacesImplemented\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Examples of interfaces with implementations that Finder locates are the Oracle and Store interfaces.\",\"methods\":{\"changeImplementationAddress(bytes32,address)\":{\"params\":{\"implementationAddress\":\"address of the implementation contract.\",\"interfaceName\":\"bytes32 of the interface name that is either changed or registered.\"}},\"getImplementationAddress(bytes32)\":{\"params\":{\"interfaceName\":\"queried interface.\"},\"returns\":{\"implementationAddress\":\"address of the defined interface.\"}},\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"Provides addresses of the live contracts implementing certain interfaces.\"},\"userdoc\":{\"methods\":{\"changeImplementationAddress(bytes32,address)\":{\"notice\":\"Updates the address of the contract that implements `interfaceName`.\"},\"getImplementationAddress(bytes32)\":{\"notice\":\"Gets the address of the contract that implements the given `interfaceName`.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/implementation/Finder.sol\":\"Finder\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/implementation/Finder.sol\":{\"keccak256\":\"0x467cd47a4a91032ee2642dbca42106ffd2955299ce4d3df59eb3ab67b7a93fd9\",\"urls\":[\"bzz-raw://3aa9eceb4401a795df08018086fec7ea1989e326386b3afc8de38851dc02a276\",\"dweb:/ipfs/QmWg6ArfSQmUnxRnyYDE4ZPsvX9fcM7WQ9aSzXVh5vNjYF\"]},\"/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol\":{\"keccak256\":\"0x1b6484df2bc4fd0cc0386acdf65b8c85918b663480f5826a08a4145fee44fdf7\",\"urls\":[\"bzz-raw://134e18e6b0c7b55a58ef432f19dc9155ab3e887a02c6df55b4d45ee21576b481\",\"dweb:/ipfs/QmZRYxk4jzvcetpsKLgqQrVT6Rf4CNxBfaFADvyzp6Df1y\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x039ba4cb83f1b30a3c575283aebeab66035aa4a3d5c88e73a67dbfba3691ac23\",\"urls\":[\"bzz-raw://7e319b9647837e7b286b01ef90e1b2dc62aea6d17acc11145c822193b6454db1\",\"dweb:/ipfs/QmW5vUEeePdJfj3abT8XHcZKideyCpSuDnz65Vfp6yu62P\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b610651806100796000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c80638f32d59b1161005b5780638f32d59b146100f6578063aafd5e4014610112578063cc48f4db1461012f578063f2fde38b1461014c5761007d565b806331f9665e14610082578063715018a6146100bd5780638da5cb5b146100c5575b600080fd5b6100bb6004803603604081101561009857600080fd5b508035906020013573ffffffffffffffffffffffffffffffffffffffff1661017f565b005b6100bb610270565b6100cd610352565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6100fe61036e565b604080519115158252519081900360200190f35b6100cd6004803603602081101561012857600080fd5b50356103ac565b6100cd6004803603602081101561014557600080fd5b503561042c565b6100bb6004803603602081101561016257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610454565b61018761036e565b6101f257604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008281526001602052604080822080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff85169081179091559051909184917fb29aa13e555039289e0513962835b00fcc6e4a265ae8f99e68e5b90d5406fe489190a35050565b61027861036e565b6102e357604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b6000805473ffffffffffffffffffffffffffffffffffffffff166103906104d3565b73ffffffffffffffffffffffffffffffffffffffff1614905090565b60008181526001602052604090205473ffffffffffffffffffffffffffffffffffffffff1680610427576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260258152602001806105f76025913960400191505060405180910390fd5b919050565b60016020526000908152604090205473ffffffffffffffffffffffffffffffffffffffff1681565b61045c61036e565b6104c757604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6104d0816104d7565b50565b3390565b73ffffffffffffffffffffffffffffffffffffffff8116610543576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806105d16026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff9290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f20616464726573734e6f20696d706c656d656e746174696f6e20666f7220696e7465726661636520666f756e64a2646970667358221220dfc62efc2c7e03f5b9e3f0a7722b850b01abdbe77ebc4a4786dd21fbfdb9d2de64736f6c63430006040033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c80638f32d59b1161005b5780638f32d59b146100f6578063aafd5e4014610112578063cc48f4db1461012f578063f2fde38b1461014c5761007d565b806331f9665e14610082578063715018a6146100bd5780638da5cb5b146100c5575b600080fd5b6100bb6004803603604081101561009857600080fd5b508035906020013573ffffffffffffffffffffffffffffffffffffffff1661017f565b005b6100bb610270565b6100cd610352565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6100fe61036e565b604080519115158252519081900360200190f35b6100cd6004803603602081101561012857600080fd5b50356103ac565b6100cd6004803603602081101561014557600080fd5b503561042c565b6100bb6004803603602081101561016257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610454565b61018761036e565b6101f257604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008281526001602052604080822080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff85169081179091559051909184917fb29aa13e555039289e0513962835b00fcc6e4a265ae8f99e68e5b90d5406fe489190a35050565b61027861036e565b6102e357604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b6000805473ffffffffffffffffffffffffffffffffffffffff166103906104d3565b73ffffffffffffffffffffffffffffffffffffffff1614905090565b60008181526001602052604090205473ffffffffffffffffffffffffffffffffffffffff1680610427576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260258152602001806105f76025913960400191505060405180910390fd5b919050565b60016020526000908152604090205473ffffffffffffffffffffffffffffffffffffffff1681565b61045c61036e565b6104c757604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6104d0816104d7565b50565b3390565b73ffffffffffffffffffffffffffffffffffffffff8116610543576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806105d16026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff9290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f20616464726573734e6f20696d706c656d656e746174696f6e20666f7220696e7465726661636520666f756e64a2646970667358221220dfc62efc2c7e03f5b9e3f0a7722b850b01abdbe77ebc4a4786dd21fbfdb9d2de64736f6c63430006040033",
+  "sourceMap": "329:1532:36:-:0;;;698:17:76;718:12;-1:-1:-1;;;;;718:10:76;:12;:::i;:::-;740:6;:18;;-1:-1:-1;;;;;;740:18:76;-1:-1:-1;;;;;740:18:76;;;;;;;773:43;;740:18;;-1:-1:-1;740:18:76;773:43;;740:6;;773:43;664:159;329:1532:36;;735:104:70;822:10;735:104;:::o;329:1532:36:-;;;;;;;",
+  "deployedSourceMap": "329:1532:36:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;329:1532:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;942:280:36;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;942:280:36;;;;;;;;;:::i;:::-;;1684:145:76;;;:::i;899:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1250:92;;;:::i;:::-;;;;;;;;;;;;;;;;;;1565:294:36;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1565:294:36;;:::i;379:56::-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;379:56:36;;:::i;1978:115:76:-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1978:115:76;;;;:::i;942:280:36:-;1103:9:76;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1071:36:36::1;::::0;;;:21:::1;:36;::::0;;;;;:60;;;::::1;;::::0;::::1;::::0;;::::1;::::0;;;1147:68;;1071:60;;:36;;1147:68:::1;::::0;1071:36;1147:68:::1;942:280:::0;;:::o;1684:145:76:-;1103:9;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1790:1:::1;1774:6:::0;;1753:40:::1;::::0;::::1;1774:6:::0;;::::1;::::0;1753:40:::1;::::0;1790:1;;1753:40:::1;1820:1;1803:19:::0;;;::::1;::::0;;1684:145::o;899:77::-;937:7;963:6;;;899:77;:::o;1250:92::-;1290:4;1329:6;;;;1313:12;:10;:12::i;:::-;:22;;;1306:29;;1250:92;:::o;1565:294:36:-;1654:29;1719:36;;;:21;:36;;;;;;;;1773:37;1765:87;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1565:294;;;:::o;379:56::-;;;;;;;;;;;;;;;:::o;1978:115:76:-;1103:9;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2058:28:::1;2077:8;2058:18;:28::i;:::-;1978:115:::0;:::o;735:104:70:-;822:10;735:104;:::o;2194:233:76:-;2275:22;;;2267:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2376:6;;;2355:38;;;;;;;2376:6;;;2355:38;;;2403:6;:17;;;;;;;;;;;;;;;2194:233::o",
   "source": "pragma solidity ^0.6.0;\n\nimport \"@openzeppelin/contracts/ownership/Ownable.sol\";\n\nimport \"../interfaces/FinderInterface.sol\";\n\n\n/**\n * @title Provides addresses of the live contracts implementing certain interfaces.\n * @dev Examples of interfaces with implementations that Finder locates are the Oracle and Store interfaces.\n */\ncontract Finder is FinderInterface, Ownable {\n    mapping(bytes32 => address) public interfacesImplemented;\n\n    event InterfaceImplementationChanged(bytes32 indexed interfaceName, address indexed newImplementationAddress);\n\n    /**\n     * @notice Updates the address of the contract that implements `interfaceName`.\n     * @param interfaceName bytes32 of the interface name that is either changed or registered.\n     * @param implementationAddress address of the implementation contract.\n     */\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function changeImplementationAddress(bytes32 interfaceName, address implementationAddress) external override onlyOwner {\n        interfacesImplemented[interfaceName] = implementationAddress;\n\n        emit InterfaceImplementationChanged(interfaceName, implementationAddress);\n    }\n\n    /**\n     * @notice Gets the address of the contract that implements the given `interfaceName`.\n     * @param interfaceName queried interface.\n     * @return implementationAddress address of the defined interface.\n     */\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function getImplementationAddress(bytes32 interfaceName) external override view returns (address implementationAddress) {\n        implementationAddress = interfacesImplemented[interfaceName];\n        require(implementationAddress != address(0x0), \"No implementation for interface found\");\n    }\n}\n",
-  "sourcePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/implementation/Finder.sol",
+  "sourcePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/implementation/Finder.sol",
   "ast": {
-    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/implementation/Finder.sol",
+    "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/implementation/Finder.sol",
     "exportedSymbols": {
       "Finder": [
-        9984
+        10152
       ]
     },
-    "id": 9985,
+    "id": 10153,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9917,
+        "id": 10085,
         "literals": [
           "solidity",
           "^",
@@ -173,21 +173,21 @@
       {
         "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
         "file": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "id": 9918,
+        "id": 10086,
         "nodeType": "ImportDirective",
-        "scope": 9985,
-        "sourceUnit": 20100,
+        "scope": 10153,
+        "sourceUnit": 23704,
         "src": "25:55:36",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
+        "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
         "file": "../interfaces/FinderInterface.sol",
-        "id": 9919,
+        "id": 10087,
         "nodeType": "ImportDirective",
-        "scope": 9985,
-        "sourceUnit": 13729,
+        "scope": 10153,
+        "sourceUnit": 13897,
         "src": "82:43:36",
         "symbolAliases": [],
         "unitAlias": ""
@@ -199,17 +199,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 9921,
+              "id": 10089,
               "name": "FinderInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 13728,
+              "referencedDeclaration": 13896,
               "src": "348:15:36",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FinderInterface_$13728",
+                "typeIdentifier": "t_contract$_FinderInterface_$13896",
                 "typeString": "contract FinderInterface"
               }
             },
-            "id": 9922,
+            "id": 10090,
             "nodeType": "InheritanceSpecifier",
             "src": "348:15:36"
           },
@@ -217,40 +217,40 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 9923,
+              "id": 10091,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20099,
+              "referencedDeclaration": 23703,
               "src": "365:7:36",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$20099",
+                "typeIdentifier": "t_contract$_Ownable_$23703",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 9924,
+            "id": 10092,
             "nodeType": "InheritanceSpecifier",
             "src": "365:7:36"
           }
         ],
         "contractDependencies": [
-          13728,
-          19142,
-          20099
+          13896,
+          22746,
+          23703
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 9920,
+          "id": 10088,
           "nodeType": "StructuredDocumentation",
           "src": "128:200:36",
           "text": "@title Provides addresses of the live contracts implementing certain interfaces.\n@dev Examples of interfaces with implementations that Finder locates are the Oracle and Store interfaces."
         },
         "fullyImplemented": true,
-        "id": 9984,
+        "id": 10152,
         "linearizedBaseContracts": [
-          9984,
-          20099,
-          19142,
-          13728
+          10152,
+          23703,
+          22746,
+          13896
         ],
         "name": "Finder",
         "nodeType": "ContractDefinition",
@@ -258,11 +258,11 @@
           {
             "constant": false,
             "functionSelector": "cc48f4db",
-            "id": 9928,
+            "id": 10096,
             "name": "interfacesImplemented",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 9984,
+            "scope": 10152,
             "src": "379:56:36",
             "stateVariable": true,
             "storageLocation": "default",
@@ -271,9 +271,9 @@
               "typeString": "mapping(bytes32 => address)"
             },
             "typeName": {
-              "id": 9927,
+              "id": 10095,
               "keyType": {
-                "id": 9925,
+                "id": 10093,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
                 "src": "387:7:36",
@@ -289,7 +289,7 @@
                 "typeString": "mapping(bytes32 => address)"
               },
               "valueType": {
-                "id": 9926,
+                "id": 10094,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "398:7:36",
@@ -306,21 +306,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 9934,
+            "id": 10102,
             "name": "InterfaceImplementationChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 9933,
+              "id": 10101,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9930,
+                  "id": 10098,
                   "indexed": true,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9934,
+                  "scope": 10102,
                   "src": "479:29:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -329,7 +329,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9929,
+                    "id": 10097,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "479:7:36",
@@ -343,12 +343,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 9932,
+                  "id": 10100,
                   "indexed": true,
                   "name": "newImplementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9934,
+                  "scope": 10102,
                   "src": "510:40:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -357,7 +357,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9931,
+                    "id": 10099,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "510:7:36",
@@ -377,17 +377,17 @@
           },
           {
             "baseFunctions": [
-              13719
+              13887
             ],
             "body": {
-              "id": 9956,
+              "id": 10124,
               "nodeType": "Block",
               "src": "1061:161:36",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9949,
+                    "id": 10117,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -396,25 +396,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 9945,
+                        "id": 10113,
                         "name": "interfacesImplemented",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9928,
+                        "referencedDeclaration": 10096,
                         "src": "1071:21:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_bytes32_$_t_address_$",
                           "typeString": "mapping(bytes32 => address)"
                         }
                       },
-                      "id": 9947,
+                      "id": 10115,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9946,
+                        "id": 10114,
                         "name": "interfaceName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9937,
+                        "referencedDeclaration": 10105,
                         "src": "1093:13:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -436,11 +436,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 9948,
+                      "id": 10116,
                       "name": "implementationAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9939,
+                      "referencedDeclaration": 10107,
                       "src": "1110:21:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -453,7 +453,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 9950,
+                  "id": 10118,
                   "nodeType": "ExpressionStatement",
                   "src": "1071:60:36"
                 },
@@ -463,11 +463,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 9952,
+                        "id": 10120,
                         "name": "interfaceName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9937,
+                        "referencedDeclaration": 10105,
                         "src": "1178:13:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -476,11 +476,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9953,
+                        "id": 10121,
                         "name": "implementationAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9939,
+                        "referencedDeclaration": 10107,
                         "src": "1193:21:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -499,18 +499,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9951,
+                      "id": 10119,
                       "name": "InterfaceImplementationChanged",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9934,
+                      "referencedDeclaration": 10102,
                       "src": "1147:30:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_address_$returns$__$",
                         "typeString": "function (bytes32,address)"
                       }
                     },
-                    "id": 9954,
+                    "id": 10122,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -525,33 +525,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9955,
+                  "id": 10123,
                   "nodeType": "EmitStatement",
                   "src": "1142:73:36"
                 }
               ]
             },
             "documentation": {
-              "id": 9935,
+              "id": 10103,
               "nodeType": "StructuredDocumentation",
               "src": "558:267:36",
               "text": "@notice Updates the address of the contract that implements `interfaceName`.\n@param interfaceName bytes32 of the interface name that is either changed or registered.\n@param implementationAddress address of the implementation contract."
             },
             "functionSelector": "31f9665e",
-            "id": 9957,
+            "id": 10125,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 9943,
+                "id": 10111,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 9942,
+                  "id": 10110,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20025,
+                  "referencedDeclaration": 23629,
                   "src": "1051:9:36",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -565,22 +565,22 @@
             "name": "changeImplementationAddress",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 9941,
+              "id": 10109,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1042:8:36"
             },
             "parameters": {
-              "id": 9940,
+              "id": 10108,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9937,
+                  "id": 10105,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9957,
+                  "scope": 10125,
                   "src": "979:21:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -589,7 +589,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9936,
+                    "id": 10104,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "979:7:36",
@@ -603,11 +603,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 9939,
+                  "id": 10107,
                   "name": "implementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9957,
+                  "scope": 10125,
                   "src": "1002:29:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -616,7 +616,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9938,
+                    "id": 10106,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1002:7:36",
@@ -633,12 +633,12 @@
               "src": "978:54:36"
             },
             "returnParameters": {
-              "id": 9944,
+              "id": 10112,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1061:0:36"
             },
-            "scope": 9984,
+            "scope": 10152,
             "src": "942:280:36",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -646,28 +646,28 @@
           },
           {
             "baseFunctions": [
-              13727
+              13895
             ],
             "body": {
-              "id": 9982,
+              "id": 10150,
               "nodeType": "Block",
               "src": "1685:174:36",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9970,
+                    "id": 10138,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 9966,
+                      "id": 10134,
                       "name": "implementationAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9964,
+                      "referencedDeclaration": 10132,
                       "src": "1695:21:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -680,25 +680,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 9967,
+                        "id": 10135,
                         "name": "interfacesImplemented",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9928,
+                        "referencedDeclaration": 10096,
                         "src": "1719:21:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_bytes32_$_t_address_$",
                           "typeString": "mapping(bytes32 => address)"
                         }
                       },
-                      "id": 9969,
+                      "id": 10137,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9968,
+                        "id": 10136,
                         "name": "interfaceName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9960,
+                        "referencedDeclaration": 10128,
                         "src": "1741:13:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -722,7 +722,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 9971,
+                  "id": 10139,
                   "nodeType": "ExpressionStatement",
                   "src": "1695:60:36"
                 },
@@ -736,18 +736,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 9978,
+                        "id": 10146,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 9973,
+                          "id": 10141,
                           "name": "implementationAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 9964,
+                          "referencedDeclaration": 10132,
                           "src": "1773:21:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -762,7 +762,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "307830",
-                              "id": 9976,
+                              "id": 10144,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -785,7 +785,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 9975,
+                            "id": 10143,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -797,7 +797,7 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 9974,
+                              "id": 10142,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "1798:7:36",
@@ -807,7 +807,7 @@
                               }
                             }
                           },
-                          "id": 9977,
+                          "id": 10145,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -831,7 +831,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4e6f20696d706c656d656e746174696f6e20666f7220696e7465726661636520666f756e64",
-                        "id": 9979,
+                        "id": 10147,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -858,7 +858,7 @@
                           "typeString": "literal_string \"No implementation for interface found\""
                         }
                       ],
-                      "id": 9972,
+                      "id": 10140,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -872,7 +872,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 9980,
+                    "id": 10148,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -887,42 +887,42 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9981,
+                  "id": 10149,
                   "nodeType": "ExpressionStatement",
                   "src": "1765:87:36"
                 }
               ]
             },
             "documentation": {
-              "id": 9958,
+              "id": 10126,
               "nodeType": "StructuredDocumentation",
               "src": "1228:220:36",
               "text": "@notice Gets the address of the contract that implements the given `interfaceName`.\n@param interfaceName queried interface.\n@return implementationAddress address of the defined interface."
             },
             "functionSelector": "aafd5e40",
-            "id": 9983,
+            "id": 10151,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getImplementationAddress",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 9962,
+              "id": 10130,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1631:8:36"
             },
             "parameters": {
-              "id": 9961,
+              "id": 10129,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9960,
+                  "id": 10128,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9983,
+                  "scope": 10151,
                   "src": "1599:21:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -931,7 +931,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9959,
+                    "id": 10127,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1599:7:36",
@@ -947,16 +947,16 @@
               "src": "1598:23:36"
             },
             "returnParameters": {
-              "id": 9965,
+              "id": 10133,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9964,
+                  "id": 10132,
                   "name": "implementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9983,
+                  "scope": 10151,
                   "src": "1654:29:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -965,7 +965,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9963,
+                    "id": 10131,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1654:7:36",
@@ -981,31 +981,31 @@
               ],
               "src": "1653:31:36"
             },
-            "scope": 9984,
+            "scope": 10152,
             "src": "1565:294:36",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 9985,
+        "scope": 10153,
         "src": "329:1532:36"
       }
     ],
     "src": "0:1862:36"
   },
   "legacyAST": {
-    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/implementation/Finder.sol",
+    "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/implementation/Finder.sol",
     "exportedSymbols": {
       "Finder": [
-        9984
+        10152
       ]
     },
-    "id": 9985,
+    "id": 10153,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9917,
+        "id": 10085,
         "literals": [
           "solidity",
           "^",
@@ -1018,21 +1018,21 @@
       {
         "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
         "file": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "id": 9918,
+        "id": 10086,
         "nodeType": "ImportDirective",
-        "scope": 9985,
-        "sourceUnit": 20100,
+        "scope": 10153,
+        "sourceUnit": 23704,
         "src": "25:55:36",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
+        "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
         "file": "../interfaces/FinderInterface.sol",
-        "id": 9919,
+        "id": 10087,
         "nodeType": "ImportDirective",
-        "scope": 9985,
-        "sourceUnit": 13729,
+        "scope": 10153,
+        "sourceUnit": 13897,
         "src": "82:43:36",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1044,17 +1044,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 9921,
+              "id": 10089,
               "name": "FinderInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 13728,
+              "referencedDeclaration": 13896,
               "src": "348:15:36",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FinderInterface_$13728",
+                "typeIdentifier": "t_contract$_FinderInterface_$13896",
                 "typeString": "contract FinderInterface"
               }
             },
-            "id": 9922,
+            "id": 10090,
             "nodeType": "InheritanceSpecifier",
             "src": "348:15:36"
           },
@@ -1062,40 +1062,40 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 9923,
+              "id": 10091,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20099,
+              "referencedDeclaration": 23703,
               "src": "365:7:36",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$20099",
+                "typeIdentifier": "t_contract$_Ownable_$23703",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 9924,
+            "id": 10092,
             "nodeType": "InheritanceSpecifier",
             "src": "365:7:36"
           }
         ],
         "contractDependencies": [
-          13728,
-          19142,
-          20099
+          13896,
+          22746,
+          23703
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 9920,
+          "id": 10088,
           "nodeType": "StructuredDocumentation",
           "src": "128:200:36",
           "text": "@title Provides addresses of the live contracts implementing certain interfaces.\n@dev Examples of interfaces with implementations that Finder locates are the Oracle and Store interfaces."
         },
         "fullyImplemented": true,
-        "id": 9984,
+        "id": 10152,
         "linearizedBaseContracts": [
-          9984,
-          20099,
-          19142,
-          13728
+          10152,
+          23703,
+          22746,
+          13896
         ],
         "name": "Finder",
         "nodeType": "ContractDefinition",
@@ -1103,11 +1103,11 @@
           {
             "constant": false,
             "functionSelector": "cc48f4db",
-            "id": 9928,
+            "id": 10096,
             "name": "interfacesImplemented",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 9984,
+            "scope": 10152,
             "src": "379:56:36",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1116,9 +1116,9 @@
               "typeString": "mapping(bytes32 => address)"
             },
             "typeName": {
-              "id": 9927,
+              "id": 10095,
               "keyType": {
-                "id": 9925,
+                "id": 10093,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
                 "src": "387:7:36",
@@ -1134,7 +1134,7 @@
                 "typeString": "mapping(bytes32 => address)"
               },
               "valueType": {
-                "id": 9926,
+                "id": 10094,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "398:7:36",
@@ -1151,21 +1151,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 9934,
+            "id": 10102,
             "name": "InterfaceImplementationChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 9933,
+              "id": 10101,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9930,
+                  "id": 10098,
                   "indexed": true,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9934,
+                  "scope": 10102,
                   "src": "479:29:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1174,7 +1174,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9929,
+                    "id": 10097,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "479:7:36",
@@ -1188,12 +1188,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 9932,
+                  "id": 10100,
                   "indexed": true,
                   "name": "newImplementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9934,
+                  "scope": 10102,
                   "src": "510:40:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1202,7 +1202,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9931,
+                    "id": 10099,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "510:7:36",
@@ -1222,17 +1222,17 @@
           },
           {
             "baseFunctions": [
-              13719
+              13887
             ],
             "body": {
-              "id": 9956,
+              "id": 10124,
               "nodeType": "Block",
               "src": "1061:161:36",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9949,
+                    "id": 10117,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1241,25 +1241,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 9945,
+                        "id": 10113,
                         "name": "interfacesImplemented",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9928,
+                        "referencedDeclaration": 10096,
                         "src": "1071:21:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_bytes32_$_t_address_$",
                           "typeString": "mapping(bytes32 => address)"
                         }
                       },
-                      "id": 9947,
+                      "id": 10115,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9946,
+                        "id": 10114,
                         "name": "interfaceName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9937,
+                        "referencedDeclaration": 10105,
                         "src": "1093:13:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1281,11 +1281,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 9948,
+                      "id": 10116,
                       "name": "implementationAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9939,
+                      "referencedDeclaration": 10107,
                       "src": "1110:21:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1298,7 +1298,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 9950,
+                  "id": 10118,
                   "nodeType": "ExpressionStatement",
                   "src": "1071:60:36"
                 },
@@ -1308,11 +1308,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 9952,
+                        "id": 10120,
                         "name": "interfaceName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9937,
+                        "referencedDeclaration": 10105,
                         "src": "1178:13:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1321,11 +1321,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9953,
+                        "id": 10121,
                         "name": "implementationAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9939,
+                        "referencedDeclaration": 10107,
                         "src": "1193:21:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1344,18 +1344,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9951,
+                      "id": 10119,
                       "name": "InterfaceImplementationChanged",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9934,
+                      "referencedDeclaration": 10102,
                       "src": "1147:30:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_address_$returns$__$",
                         "typeString": "function (bytes32,address)"
                       }
                     },
-                    "id": 9954,
+                    "id": 10122,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1370,33 +1370,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9955,
+                  "id": 10123,
                   "nodeType": "EmitStatement",
                   "src": "1142:73:36"
                 }
               ]
             },
             "documentation": {
-              "id": 9935,
+              "id": 10103,
               "nodeType": "StructuredDocumentation",
               "src": "558:267:36",
               "text": "@notice Updates the address of the contract that implements `interfaceName`.\n@param interfaceName bytes32 of the interface name that is either changed or registered.\n@param implementationAddress address of the implementation contract."
             },
             "functionSelector": "31f9665e",
-            "id": 9957,
+            "id": 10125,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 9943,
+                "id": 10111,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 9942,
+                  "id": 10110,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20025,
+                  "referencedDeclaration": 23629,
                   "src": "1051:9:36",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1410,22 +1410,22 @@
             "name": "changeImplementationAddress",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 9941,
+              "id": 10109,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1042:8:36"
             },
             "parameters": {
-              "id": 9940,
+              "id": 10108,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9937,
+                  "id": 10105,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9957,
+                  "scope": 10125,
                   "src": "979:21:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1434,7 +1434,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9936,
+                    "id": 10104,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "979:7:36",
@@ -1448,11 +1448,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 9939,
+                  "id": 10107,
                   "name": "implementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9957,
+                  "scope": 10125,
                   "src": "1002:29:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1461,7 +1461,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9938,
+                    "id": 10106,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1002:7:36",
@@ -1478,12 +1478,12 @@
               "src": "978:54:36"
             },
             "returnParameters": {
-              "id": 9944,
+              "id": 10112,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1061:0:36"
             },
-            "scope": 9984,
+            "scope": 10152,
             "src": "942:280:36",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1491,28 +1491,28 @@
           },
           {
             "baseFunctions": [
-              13727
+              13895
             ],
             "body": {
-              "id": 9982,
+              "id": 10150,
               "nodeType": "Block",
               "src": "1685:174:36",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9970,
+                    "id": 10138,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 9966,
+                      "id": 10134,
                       "name": "implementationAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9964,
+                      "referencedDeclaration": 10132,
                       "src": "1695:21:36",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1525,25 +1525,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 9967,
+                        "id": 10135,
                         "name": "interfacesImplemented",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9928,
+                        "referencedDeclaration": 10096,
                         "src": "1719:21:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_bytes32_$_t_address_$",
                           "typeString": "mapping(bytes32 => address)"
                         }
                       },
-                      "id": 9969,
+                      "id": 10137,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9968,
+                        "id": 10136,
                         "name": "interfaceName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9960,
+                        "referencedDeclaration": 10128,
                         "src": "1741:13:36",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1567,7 +1567,7 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 9971,
+                  "id": 10139,
                   "nodeType": "ExpressionStatement",
                   "src": "1695:60:36"
                 },
@@ -1581,18 +1581,18 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 9978,
+                        "id": 10146,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 9973,
+                          "id": 10141,
                           "name": "implementationAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 9964,
+                          "referencedDeclaration": 10132,
                           "src": "1773:21:36",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1607,7 +1607,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "307830",
-                              "id": 9976,
+                              "id": 10144,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1630,7 +1630,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 9975,
+                            "id": 10143,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1642,7 +1642,7 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 9974,
+                              "id": 10142,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "1798:7:36",
@@ -1652,7 +1652,7 @@
                               }
                             }
                           },
-                          "id": 9977,
+                          "id": 10145,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1676,7 +1676,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4e6f20696d706c656d656e746174696f6e20666f7220696e7465726661636520666f756e64",
-                        "id": 9979,
+                        "id": 10147,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1703,7 +1703,7 @@
                           "typeString": "literal_string \"No implementation for interface found\""
                         }
                       ],
-                      "id": 9972,
+                      "id": 10140,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1717,7 +1717,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 9980,
+                    "id": 10148,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1732,42 +1732,42 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9981,
+                  "id": 10149,
                   "nodeType": "ExpressionStatement",
                   "src": "1765:87:36"
                 }
               ]
             },
             "documentation": {
-              "id": 9958,
+              "id": 10126,
               "nodeType": "StructuredDocumentation",
               "src": "1228:220:36",
               "text": "@notice Gets the address of the contract that implements the given `interfaceName`.\n@param interfaceName queried interface.\n@return implementationAddress address of the defined interface."
             },
             "functionSelector": "aafd5e40",
-            "id": 9983,
+            "id": 10151,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getImplementationAddress",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 9962,
+              "id": 10130,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1631:8:36"
             },
             "parameters": {
-              "id": 9961,
+              "id": 10129,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9960,
+                  "id": 10128,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9983,
+                  "scope": 10151,
                   "src": "1599:21:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1776,7 +1776,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9959,
+                    "id": 10127,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1599:7:36",
@@ -1792,16 +1792,16 @@
               "src": "1598:23:36"
             },
             "returnParameters": {
-              "id": 9965,
+              "id": 10133,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9964,
+                  "id": 10132,
                   "name": "implementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9983,
+                  "scope": 10151,
                   "src": "1654:29:36",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1810,7 +1810,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9963,
+                    "id": 10131,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1654:7:36",
@@ -1826,14 +1826,14 @@
               ],
               "src": "1653:31:36"
             },
-            "scope": 9984,
+            "scope": 10152,
             "src": "1565:294:36",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 9985,
+        "scope": 10153,
         "src": "329:1532:36"
       }
     ],
@@ -1845,7 +1845,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-01T04:24:41.840Z",
+  "updatedAt": "2020-06-29T17:18:31.442Z",
   "devdoc": {
     "details": "Examples of interfaces with implementations that Finder locates are the Oracle and Store interfaces.",
     "methods": {

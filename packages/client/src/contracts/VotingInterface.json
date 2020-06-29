@@ -222,25 +222,25 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"encryptedVote\",\"type\":\"bytes\"}],\"internalType\":\"struct VotingInterface.Commitment[]\",\"name\":\"commits\",\"type\":\"tuple[]\"}],\"name\":\"batchCommit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"int256\",\"name\":\"price\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"salt\",\"type\":\"int256\"}],\"internalType\":\"struct VotingInterface.Reveal[]\",\"name\":\"reveals\",\"type\":\"tuple[]\"}],\"name\":\"batchReveal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"commitVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getCurrentRoundId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPendingRequests\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"internalType\":\"struct VotingInterface.PendingRequest[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getVotePhase\",\"outputs\":[{\"internalType\":\"enum VotingInterface.Phase\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"voterAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"internalType\":\"struct VotingInterface.PendingRequest[]\",\"name\":\"toRetrieve\",\"type\":\"tuple[]\"}],\"name\":\"retrieveRewards\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"int256\",\"name\":\"price\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"salt\",\"type\":\"int256\"}],\"name\":\"revealVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"batchCommit((bytes32,uint256,bytes32,bytes)[])\":{\"details\":\"Using `encryptedVote` is optional. If included then commitment is stored on chain. Look at `project-root/common/Constants.js` for the tested maximum number of commitments that can fit in one transaction.\",\"params\":{\"commits\":\"struct to encapsulate an `identifier`, `time`, `hash` and optional `encryptedVote`.\"}},\"batchReveal((bytes32,uint256,int256,int256)[])\":{\"details\":\"For more information on reveals, review the comment for `revealVote`.\",\"params\":{\"reveals\":\"array of the Reveal struct which contains an identifier, time, price and salt.\"}},\"commitVote(bytes32,uint256,bytes32)\":{\"details\":\"`identifier`, `time` must correspond to a price request that's currently in the commit phase. Commits can be changed.\",\"params\":{\"hash\":\"keccak256 hash of the price you want to vote for and a `int salt`.\",\"identifier\":\"uniquely identifies the committed vote. EG BTC/USD price pair.\",\"time\":\"unix timestamp of the price is being voted on.\"}},\"retrieveRewards(address,uint256,(bytes32,uint256)[])\":{\"details\":\"Can only retrieve rewards if calling for a valid round and if the call is done within the timeout threshold (not expired).\",\"params\":{\"roundId\":\"the round from which voting rewards will be retrieved from.\",\"toRetrieve\":\"array of PendingRequests which rewards are retrieved from.\",\"voterAddress\":\"voter for which rewards will be retrieved. Does not have to be the caller.\"},\"returns\":{\"_0\":\"totalRewardToIssue total amount of rewards returned to the voter.\"}},\"revealVote(bytes32,uint256,int256,int256)\":{\"details\":\"The revealed `price` and `salt` must match the latest `hash` that `commitVote()` was called with. Only the committer can reveal their vote.\",\"params\":{\"identifier\":\"voted on in the commit phase. EG BTC/USD price pair.\",\"price\":\"voted on during the commit phase.\",\"salt\":\"value used to hide the commitment price during the commit phase.\",\"time\":\"specifies the unix timestamp of the price is being voted on.\"}}},\"title\":\"Interface that voters must use to Vote on price request resolutions.\"},\"userdoc\":{\"methods\":{\"batchCommit((bytes32,uint256,bytes32,bytes)[])\":{\"notice\":\"Submit a batch of commits in a single transaction.\"},\"batchReveal((bytes32,uint256,int256,int256)[])\":{\"notice\":\"Reveal multiple votes in a single transaction. Look at `project-root/common/Constants.js` for the tested maximum number of reveals. that can fit in one transaction.\"},\"commitVote(bytes32,uint256,bytes32)\":{\"notice\":\"Commit a vote for a price request for `identifier` at `time`.\"},\"getCurrentRoundId()\":{\"notice\":\"Returns the current round ID, as a function of the current time.\"},\"getPendingRequests()\":{\"notice\":\"Gets the queries that are being voted on this round.\"},\"getVotePhase()\":{\"notice\":\"Returns the current voting phase, as a function of the current time.\"},\"retrieveRewards(address,uint256,(bytes32,uint256)[])\":{\"notice\":\"Retrieves rewards owed for a set of resolved price requests.\"},\"revealVote(bytes32,uint256,int256,int256)\":{\"notice\":\"Reveal a previously committed vote for `identifier` at `time`.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":\"VotingInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":500},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xf93005a2285b10a0b7e7b53fef45c4921c5131edc80f6481848b670a37343275\",\"urls\":[\"bzz-raw://dd2db53bbd8b4c3312e274e392c3f0781c56e520f858ef77a04a075d18123625\",\"dweb:/ipfs/QmPxr5HSYVJKfzWnQpGVf4hg4kxMrCRTAw5isjkBmvsA5N\"]},\"/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":{\"keccak256\":\"0x3677a2cfd2a09d5ef89365d346102e2c4fa5c0e4f5bb1e7ed4ff112180431f09\",\"urls\":[\"bzz-raw://17cd3829cc517352517bbaab0957f3158a209345b78a4dea3f7e38a7a904d365\",\"dweb:/ipfs/QmfGzg1hHVpGQzswhHJJ5sakyiDjfC7vwtCqiKLus15vX3\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0xe4ed9d633e8e678e8ece3756e4002cc7989b72cd29a17ecdacdabf4fd48820a7\",\"urls\":[\"bzz-raw://03a55c81a7d4c93a1ca6d9b931830c1fde2799bfbbf5841321f67e7b056c36c2\",\"dweb:/ipfs/QmbcgdfB278NvzVZKjA7Jf1NjSeCCQ2277mJGL4UskyS56\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"encryptedVote\",\"type\":\"bytes\"}],\"internalType\":\"struct VotingInterface.Commitment[]\",\"name\":\"commits\",\"type\":\"tuple[]\"}],\"name\":\"batchCommit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"int256\",\"name\":\"price\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"salt\",\"type\":\"int256\"}],\"internalType\":\"struct VotingInterface.Reveal[]\",\"name\":\"reveals\",\"type\":\"tuple[]\"}],\"name\":\"batchReveal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"commitVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getCurrentRoundId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPendingRequests\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"internalType\":\"struct VotingInterface.PendingRequest[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getVotePhase\",\"outputs\":[{\"internalType\":\"enum VotingInterface.Phase\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"voterAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"internalType\":\"struct VotingInterface.PendingRequest[]\",\"name\":\"toRetrieve\",\"type\":\"tuple[]\"}],\"name\":\"retrieveRewards\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"int256\",\"name\":\"price\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"salt\",\"type\":\"int256\"}],\"name\":\"revealVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"batchCommit((bytes32,uint256,bytes32,bytes)[])\":{\"details\":\"Using `encryptedVote` is optional. If included then commitment is stored on chain. Look at `project-root/common/Constants.js` for the tested maximum number of commitments that can fit in one transaction.\",\"params\":{\"commits\":\"struct to encapsulate an `identifier`, `time`, `hash` and optional `encryptedVote`.\"}},\"batchReveal((bytes32,uint256,int256,int256)[])\":{\"details\":\"For more information on reveals, review the comment for `revealVote`.\",\"params\":{\"reveals\":\"array of the Reveal struct which contains an identifier, time, price and salt.\"}},\"commitVote(bytes32,uint256,bytes32)\":{\"details\":\"`identifier`, `time` must correspond to a price request that's currently in the commit phase. Commits can be changed.\",\"params\":{\"hash\":\"keccak256 hash of the price you want to vote for and a `int salt`.\",\"identifier\":\"uniquely identifies the committed vote. EG BTC/USD price pair.\",\"time\":\"unix timestamp of the price is being voted on.\"}},\"retrieveRewards(address,uint256,(bytes32,uint256)[])\":{\"details\":\"Can only retrieve rewards if calling for a valid round and if the call is done within the timeout threshold (not expired).\",\"params\":{\"roundId\":\"the round from which voting rewards will be retrieved from.\",\"toRetrieve\":\"array of PendingRequests which rewards are retrieved from.\",\"voterAddress\":\"voter for which rewards will be retrieved. Does not have to be the caller.\"},\"returns\":{\"_0\":\"totalRewardToIssue total amount of rewards returned to the voter.\"}},\"revealVote(bytes32,uint256,int256,int256)\":{\"details\":\"The revealed `price` and `salt` must match the latest `hash` that `commitVote()` was called with. Only the committer can reveal their vote.\",\"params\":{\"identifier\":\"voted on in the commit phase. EG BTC/USD price pair.\",\"price\":\"voted on during the commit phase.\",\"salt\":\"value used to hide the commitment price during the commit phase.\",\"time\":\"specifies the unix timestamp of the price is being voted on.\"}}},\"title\":\"Interface that voters must use to Vote on price request resolutions.\"},\"userdoc\":{\"methods\":{\"batchCommit((bytes32,uint256,bytes32,bytes)[])\":{\"notice\":\"Submit a batch of commits in a single transaction.\"},\"batchReveal((bytes32,uint256,int256,int256)[])\":{\"notice\":\"Reveal multiple votes in a single transaction. Look at `project-root/common/Constants.js` for the tested maximum number of reveals. that can fit in one transaction.\"},\"commitVote(bytes32,uint256,bytes32)\":{\"notice\":\"Commit a vote for a price request for `identifier` at `time`.\"},\"getCurrentRoundId()\":{\"notice\":\"Returns the current round ID, as a function of the current time.\"},\"getPendingRequests()\":{\"notice\":\"Gets the queries that are being voted on this round.\"},\"getVotePhase()\":{\"notice\":\"Returns the current voting phase, as a function of the current time.\"},\"retrieveRewards(address,uint256,(bytes32,uint256)[])\":{\"notice\":\"Retrieves rewards owed for a set of resolved price requests.\"},\"revealVote(bytes32,uint256,int256,int256)\":{\"notice\":\"Reveal a previously committed vote for `identifier` at `time`.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":\"VotingInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xf93005a2285b10a0b7e7b53fef45c4921c5131edc80f6481848b670a37343275\",\"urls\":[\"bzz-raw://dd2db53bbd8b4c3312e274e392c3f0781c56e520f858ef77a04a075d18123625\",\"dweb:/ipfs/QmPxr5HSYVJKfzWnQpGVf4hg4kxMrCRTAw5isjkBmvsA5N\"]},\"/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":{\"keccak256\":\"0x3677a2cfd2a09d5ef89365d346102e2c4fa5c0e4f5bb1e7ed4ff112180431f09\",\"urls\":[\"bzz-raw://17cd3829cc517352517bbaab0957f3158a209345b78a4dea3f7e38a7a904d365\",\"dweb:/ipfs/QmfGzg1hHVpGQzswhHJJ5sakyiDjfC7vwtCqiKLus15vX3\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0xe4ed9d633e8e678e8ece3756e4002cc7989b72cd29a17ecdacdabf4fd48820a7\",\"urls\":[\"bzz-raw://03a55c81a7d4c93a1ca6d9b931830c1fde2799bfbbf5841321f67e7b056c36c2\",\"dweb:/ipfs/QmbcgdfB278NvzVZKjA7Jf1NjSeCCQ2277mJGL4UskyS56\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\n\npragma experimental ABIEncoderV2;\n\nimport \"../../common/implementation/FixedPoint.sol\";\n\n\n/**\n * @title Interface that voters must use to Vote on price request resolutions.\n */\nabstract contract VotingInterface {\n    struct PendingRequest {\n        bytes32 identifier;\n        uint time;\n    }\n\n    // Captures the necessary data for making a commitment.\n    // Used as a parameter when making batch commitments.\n    // Not used as a data structure for storage.\n    struct Commitment {\n        bytes32 identifier;\n        uint time;\n        bytes32 hash;\n        bytes encryptedVote;\n    }\n\n    // Captures the necessary data for revealing a vote.\n    // Used as a parameter when making batch reveals.\n    // Not used as a data structure for storage.\n    struct Reveal {\n        bytes32 identifier;\n        uint time;\n        int price;\n        int salt;\n    }\n\n    // Note: the phases must be in order. Meaning the first enum value must be the first phase, etc.\n    // `NUM_PHASES_PLACEHOLDER` is to get the number of phases. It isn't an actual phase, and it should always be last.\n    enum Phase { Commit, Reveal, NUM_PHASES_PLACEHOLDER }\n\n    /**\n     * @notice Commit a vote for a price request for `identifier` at `time`.\n     * @dev `identifier`, `time` must correspond to a price request that's currently in the commit phase.\n     * Commits can be changed.\n     * @param identifier uniquely identifies the committed vote. EG BTC/USD price pair.\n     * @param time unix timestamp of the price is being voted on.\n     * @param hash keccak256 hash of the price you want to vote for and a `int salt`.\n     */\n    function commitVote(bytes32 identifier, uint time, bytes32 hash) external virtual;\n\n    /**\n     * @notice Submit a batch of commits in a single transaction.\n     * @dev Using `encryptedVote` is optional. If included then commitment is stored on chain.\n     * Look at `project-root/common/Constants.js` for the tested maximum number of\n     * commitments that can fit in one transaction.\n     * @param commits struct to encapsulate an `identifier`, `time`, `hash` and optional `encryptedVote`.\n     */\n    function batchCommit(Commitment[] calldata commits) external virtual;\n\n    /**\n     * @notice Reveal a previously committed vote for `identifier` at `time`.\n     * @dev The revealed `price` and `salt` must match the latest `hash` that `commitVote()` was called with.\n     * Only the committer can reveal their vote.\n     * @param identifier voted on in the commit phase. EG BTC/USD price pair.\n     * @param time specifies the unix timestamp of the price is being voted on.\n     * @param price voted on during the commit phase.\n     * @param salt value used to hide the commitment price during the commit phase.\n     */\n    function revealVote(bytes32 identifier, uint time, int price, int salt) external virtual;\n\n    /**\n     * @notice Reveal multiple votes in a single transaction.\n     * Look at `project-root/common/Constants.js` for the tested maximum number of reveals.\n     * that can fit in one transaction.\n     * @dev For more information on reveals, review the comment for `revealVote`.\n     * @param reveals array of the Reveal struct which contains an identifier, time, price and salt.\n     */\n    function batchReveal(Reveal[] calldata reveals) external virtual;\n\n    /**\n     * @notice Gets the queries that are being voted on this round.\n     * @return pendingRequests `PendingRequest` array containing identifiers\n     * and timestamps for all pending requests.\n     */\n    function getPendingRequests() external virtual view returns (PendingRequest[] memory);\n\n    /**\n     * @notice Returns the current voting phase, as a function of the current time.\n     * @return Phase to indicate the current phase. Either { Commit, Reveal, NUM_PHASES_PLACEHOLDER }.\n     */\n    function getVotePhase() external virtual view returns (Phase);\n\n    /**\n     * @notice Returns the current round ID, as a function of the current time.\n     * @return uint representing the unique round ID.\n     */\n    function getCurrentRoundId() external virtual view returns (uint);\n\n    /**\n     * @notice Retrieves rewards owed for a set of resolved price requests.\n     * @dev Can only retrieve rewards if calling for a valid round and if the\n     * call is done within the timeout threshold (not expired).\n     * @param voterAddress voter for which rewards will be retrieved. Does not have to be the caller.\n     * @param roundId the round from which voting rewards will be retrieved from.\n     * @param toRetrieve array of PendingRequests which rewards are retrieved from.\n     * @return totalRewardToIssue total amount of rewards returned to the voter.\n     */\n    function retrieveRewards(address voterAddress, uint roundId, PendingRequest[] memory toRetrieve)\n        public\n        virtual\n        returns (FixedPoint.Unsigned memory);\n}\n",
-  "sourcePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
+  "sourcePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
   "ast": {
-    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
+    "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
     "exportedSymbols": {
       "VotingInterface": [
-        13985
+        14153
       ]
     },
-    "id": 13986,
+    "id": 14154,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13886,
+        "id": 14054,
         "literals": [
           "solidity",
           "^",
@@ -251,7 +251,7 @@
         "src": "0:23:55"
       },
       {
-        "id": 13887,
+        "id": 14055,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -260,12 +260,12 @@
         "src": "25:33:55"
       },
       {
-        "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/common/implementation/FixedPoint.sol",
+        "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 13888,
+        "id": 14056,
         "nodeType": "ImportDirective",
-        "scope": 13986,
-        "sourceUnit": 3945,
+        "scope": 14154,
+        "sourceUnit": 4113,
         "src": "60:52:55",
         "symbolAliases": [],
         "unitAlias": ""
@@ -276,30 +276,30 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 13889,
+          "id": 14057,
           "nodeType": "StructuredDocumentation",
           "src": "115:86:55",
           "text": "@title Interface that voters must use to Vote on price request resolutions."
         },
         "fullyImplemented": false,
-        "id": 13985,
+        "id": 14153,
         "linearizedBaseContracts": [
-          13985
+          14153
         ],
         "name": "VotingInterface",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "VotingInterface.PendingRequest",
-            "id": 13894,
+            "id": 14062,
             "members": [
               {
                 "constant": false,
-                "id": 13891,
+                "id": 14059,
                 "name": "identifier",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13894,
+                "scope": 14062,
                 "src": "274:18:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -308,7 +308,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13890,
+                  "id": 14058,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "274:7:55",
@@ -322,11 +322,11 @@
               },
               {
                 "constant": false,
-                "id": 13893,
+                "id": 14061,
                 "name": "time",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13894,
+                "scope": 14062,
                 "src": "302:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -335,7 +335,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 13892,
+                  "id": 14060,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "302:4:55",
@@ -350,21 +350,21 @@
             ],
             "name": "PendingRequest",
             "nodeType": "StructDefinition",
-            "scope": 13985,
+            "scope": 14153,
             "src": "242:76:55",
             "visibility": "public"
           },
           {
             "canonicalName": "VotingInterface.Commitment",
-            "id": 13903,
+            "id": 14071,
             "members": [
               {
                 "constant": false,
-                "id": 13896,
+                "id": 14064,
                 "name": "identifier",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "519:18:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -373,7 +373,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13895,
+                  "id": 14063,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "519:7:55",
@@ -387,11 +387,11 @@
               },
               {
                 "constant": false,
-                "id": 13898,
+                "id": 14066,
                 "name": "time",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "547:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -400,7 +400,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 13897,
+                  "id": 14065,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "547:4:55",
@@ -414,11 +414,11 @@
               },
               {
                 "constant": false,
-                "id": 13900,
+                "id": 14068,
                 "name": "hash",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "566:12:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -427,7 +427,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13899,
+                  "id": 14067,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "566:7:55",
@@ -441,11 +441,11 @@
               },
               {
                 "constant": false,
-                "id": 13902,
+                "id": 14070,
                 "name": "encryptedVote",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "588:19:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -454,7 +454,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 13901,
+                  "id": 14069,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "588:5:55",
@@ -469,21 +469,21 @@
             ],
             "name": "Commitment",
             "nodeType": "StructDefinition",
-            "scope": 13985,
+            "scope": 14153,
             "src": "491:123:55",
             "visibility": "public"
           },
           {
             "canonicalName": "VotingInterface.Reveal",
-            "id": 13912,
+            "id": 14080,
             "members": [
               {
                 "constant": false,
-                "id": 13905,
+                "id": 14073,
                 "name": "identifier",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "804:18:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -492,7 +492,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13904,
+                  "id": 14072,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "804:7:55",
@@ -506,11 +506,11 @@
               },
               {
                 "constant": false,
-                "id": 13907,
+                "id": 14075,
                 "name": "time",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "832:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -519,7 +519,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 13906,
+                  "id": 14074,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "832:4:55",
@@ -533,11 +533,11 @@
               },
               {
                 "constant": false,
-                "id": 13909,
+                "id": 14077,
                 "name": "price",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "851:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -546,7 +546,7 @@
                   "typeString": "int256"
                 },
                 "typeName": {
-                  "id": 13908,
+                  "id": 14076,
                   "name": "int",
                   "nodeType": "ElementaryTypeName",
                   "src": "851:3:55",
@@ -560,11 +560,11 @@
               },
               {
                 "constant": false,
-                "id": 13911,
+                "id": 14079,
                 "name": "salt",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "870:8:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -573,7 +573,7 @@
                   "typeString": "int256"
                 },
                 "typeName": {
-                  "id": 13910,
+                  "id": 14078,
                   "name": "int",
                   "nodeType": "ElementaryTypeName",
                   "src": "870:3:55",
@@ -588,28 +588,28 @@
             ],
             "name": "Reveal",
             "nodeType": "StructDefinition",
-            "scope": 13985,
+            "scope": 14153,
             "src": "780:105:55",
             "visibility": "public"
           },
           {
             "canonicalName": "VotingInterface.Phase",
-            "id": 13916,
+            "id": 14084,
             "members": [
               {
-                "id": 13913,
+                "id": 14081,
                 "name": "Commit",
                 "nodeType": "EnumValue",
                 "src": "1125:6:55"
               },
               {
-                "id": 13914,
+                "id": 14082,
                 "name": "Reveal",
                 "nodeType": "EnumValue",
                 "src": "1133:6:55"
               },
               {
-                "id": 13915,
+                "id": 14083,
                 "name": "NUM_PHASES_PLACEHOLDER",
                 "nodeType": "EnumValue",
                 "src": "1141:22:55"
@@ -622,13 +622,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13917,
+              "id": 14085,
               "nodeType": "StructuredDocumentation",
               "src": "1171:465:55",
               "text": "@notice Commit a vote for a price request for `identifier` at `time`.\n@dev `identifier`, `time` must correspond to a price request that's currently in the commit phase.\nCommits can be changed.\n@param identifier uniquely identifies the committed vote. EG BTC/USD price pair.\n@param time unix timestamp of the price is being voted on.\n@param hash keccak256 hash of the price you want to vote for and a `int salt`."
             },
             "functionSelector": "d8651ad0",
-            "id": 13926,
+            "id": 14094,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -636,16 +636,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13924,
+              "id": 14092,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13919,
+                  "id": 14087,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13926,
+                  "scope": 14094,
                   "src": "1661:18:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -654,7 +654,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13918,
+                    "id": 14086,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1661:7:55",
@@ -668,11 +668,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13921,
+                  "id": 14089,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13926,
+                  "scope": 14094,
                   "src": "1681:9:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -681,7 +681,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13920,
+                    "id": 14088,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1681:4:55",
@@ -695,11 +695,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13923,
+                  "id": 14091,
                   "name": "hash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13926,
+                  "scope": 14094,
                   "src": "1692:12:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -708,7 +708,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13922,
+                    "id": 14090,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1692:7:55",
@@ -724,12 +724,12 @@
               "src": "1660:45:55"
             },
             "returnParameters": {
-              "id": 13925,
+              "id": 14093,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1722:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "1641:82:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -738,13 +738,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13927,
+              "id": 14095,
               "nodeType": "StructuredDocumentation",
               "src": "1729:413:55",
               "text": "@notice Submit a batch of commits in a single transaction.\n@dev Using `encryptedVote` is optional. If included then commitment is stored on chain.\nLook at `project-root/common/Constants.js` for the tested maximum number of\ncommitments that can fit in one transaction.\n@param commits struct to encapsulate an `identifier`, `time`, `hash` and optional `encryptedVote`."
             },
             "functionSelector": "70a0cf2c",
-            "id": 13933,
+            "id": 14101,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -752,42 +752,42 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13931,
+              "id": 14099,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13930,
+                  "id": 14098,
                   "name": "commits",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13933,
+                  "scope": 14101,
                   "src": "2168:29:55",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_Commitment_$13903_calldata_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_Commitment_$14071_calldata_$dyn_calldata_ptr",
                     "typeString": "struct VotingInterface.Commitment[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13928,
+                      "id": 14096,
                       "name": "Commitment",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13903,
+                      "referencedDeclaration": 14071,
                       "src": "2168:10:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Commitment_$13903_storage_ptr",
+                        "typeIdentifier": "t_struct$_Commitment_$14071_storage_ptr",
                         "typeString": "struct VotingInterface.Commitment"
                       }
                     },
-                    "id": 13929,
+                    "id": 14097,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2168:12:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_Commitment_$13903_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_Commitment_$14071_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.Commitment[]"
                     }
                   },
@@ -798,12 +798,12 @@
               "src": "2167:31:55"
             },
             "returnParameters": {
-              "id": 13932,
+              "id": 14100,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2215:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "2147:69:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -812,13 +812,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13934,
+              "id": 14102,
               "nodeType": "StructuredDocumentation",
               "src": "2222:544:55",
               "text": "@notice Reveal a previously committed vote for `identifier` at `time`.\n@dev The revealed `price` and `salt` must match the latest `hash` that `commitVote()` was called with.\nOnly the committer can reveal their vote.\n@param identifier voted on in the commit phase. EG BTC/USD price pair.\n@param time specifies the unix timestamp of the price is being voted on.\n@param price voted on during the commit phase.\n@param salt value used to hide the commitment price during the commit phase."
             },
             "functionSelector": "4c7a2603",
-            "id": 13945,
+            "id": 14113,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -826,16 +826,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13943,
+              "id": 14111,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13936,
+                  "id": 14104,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2791:18:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -844,7 +844,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13935,
+                    "id": 14103,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2791:7:55",
@@ -858,11 +858,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13938,
+                  "id": 14106,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2811:9:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -871,7 +871,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13937,
+                    "id": 14105,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "2811:4:55",
@@ -885,11 +885,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13940,
+                  "id": 14108,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2822:9:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -898,7 +898,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13939,
+                    "id": 14107,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "2822:3:55",
@@ -912,11 +912,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13942,
+                  "id": 14110,
                   "name": "salt",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2833:8:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -925,7 +925,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13941,
+                    "id": 14109,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "2833:3:55",
@@ -941,12 +941,12 @@
               "src": "2790:52:55"
             },
             "returnParameters": {
-              "id": 13944,
+              "id": 14112,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2859:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "2771:89:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -955,13 +955,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13946,
+              "id": 14114,
               "nodeType": "StructuredDocumentation",
               "src": "2866:388:55",
               "text": "@notice Reveal multiple votes in a single transaction.\nLook at `project-root/common/Constants.js` for the tested maximum number of reveals.\nthat can fit in one transaction.\n@dev For more information on reveals, review the comment for `revealVote`.\n@param reveals array of the Reveal struct which contains an identifier, time, price and salt."
             },
             "functionSelector": "6852eea0",
-            "id": 13952,
+            "id": 14120,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -969,42 +969,42 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13950,
+              "id": 14118,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13949,
+                  "id": 14117,
                   "name": "reveals",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13952,
+                  "scope": 14120,
                   "src": "3280:25:55",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_Reveal_$13912_calldata_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_Reveal_$14080_calldata_$dyn_calldata_ptr",
                     "typeString": "struct VotingInterface.Reveal[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13947,
+                      "id": 14115,
                       "name": "Reveal",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13912,
+                      "referencedDeclaration": 14080,
                       "src": "3280:6:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Reveal_$13912_storage_ptr",
+                        "typeIdentifier": "t_struct$_Reveal_$14080_storage_ptr",
                         "typeString": "struct VotingInterface.Reveal"
                       }
                     },
-                    "id": 13948,
+                    "id": 14116,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "3280:8:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_Reveal_$13912_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_Reveal_$14080_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.Reveal[]"
                     }
                   },
@@ -1015,12 +1015,12 @@
               "src": "3279:27:55"
             },
             "returnParameters": {
-              "id": 13951,
+              "id": 14119,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3323:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "3259:65:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -1029,13 +1029,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13953,
+              "id": 14121,
               "nodeType": "StructuredDocumentation",
               "src": "3330:204:55",
               "text": "@notice Gets the queries that are being voted on this round.\n@return pendingRequests `PendingRequest` array containing identifiers\nand timestamps for all pending requests."
             },
             "functionSelector": "80a1f712",
-            "id": 13959,
+            "id": 14127,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1043,48 +1043,48 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13954,
+              "id": 14122,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3566:2:55"
             },
             "returnParameters": {
-              "id": 13958,
+              "id": 14126,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13957,
+                  "id": 14125,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13959,
+                  "scope": 14127,
                   "src": "3600:23:55",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_memory_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_memory_$dyn_memory_ptr",
                     "typeString": "struct VotingInterface.PendingRequest[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13955,
+                      "id": 14123,
                       "name": "PendingRequest",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13894,
+                      "referencedDeclaration": 14062,
                       "src": "3600:14:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_PendingRequest_$13894_storage_ptr",
+                        "typeIdentifier": "t_struct$_PendingRequest_$14062_storage_ptr",
                         "typeString": "struct VotingInterface.PendingRequest"
                       }
                     },
-                    "id": 13956,
+                    "id": 14124,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "3600:16:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.PendingRequest[]"
                     }
                   },
@@ -1094,7 +1094,7 @@
               ],
               "src": "3599:25:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "3539:86:55",
             "stateMutability": "view",
             "virtual": true,
@@ -1103,13 +1103,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13960,
+              "id": 14128,
               "nodeType": "StructuredDocumentation",
               "src": "3631:198:55",
               "text": "@notice Returns the current voting phase, as a function of the current time.\n@return Phase to indicate the current phase. Either { Commit, Reveal, NUM_PHASES_PLACEHOLDER }."
             },
             "functionSelector": "74dd278c",
-            "id": 13965,
+            "id": 14133,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1117,38 +1117,38 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13961,
+              "id": 14129,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3855:2:55"
             },
             "returnParameters": {
-              "id": 13964,
+              "id": 14132,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13963,
+                  "id": 14131,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13965,
+                  "scope": 14133,
                   "src": "3889:5:55",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Phase_$13916",
+                    "typeIdentifier": "t_enum$_Phase_$14084",
                     "typeString": "enum VotingInterface.Phase"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13962,
+                    "id": 14130,
                     "name": "Phase",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13916,
+                    "referencedDeclaration": 14084,
                     "src": "3889:5:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$13916",
+                      "typeIdentifier": "t_enum$_Phase_$14084",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
@@ -1158,7 +1158,7 @@
               ],
               "src": "3888:7:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "3834:62:55",
             "stateMutability": "view",
             "virtual": true,
@@ -1167,13 +1167,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13966,
+              "id": 14134,
               "nodeType": "StructuredDocumentation",
               "src": "3902:145:55",
               "text": "@notice Returns the current round ID, as a function of the current time.\n@return uint representing the unique round ID."
             },
             "functionSelector": "5727e25d",
-            "id": 13971,
+            "id": 14139,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1181,22 +1181,22 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13967,
+              "id": 14135,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "4078:2:55"
             },
             "returnParameters": {
-              "id": 13970,
+              "id": 14138,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13969,
+                  "id": 14137,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13971,
+                  "scope": 14139,
                   "src": "4112:4:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1205,7 +1205,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13968,
+                    "id": 14136,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "4112:4:55",
@@ -1220,7 +1220,7 @@
               ],
               "src": "4111:6:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "4052:66:55",
             "stateMutability": "view",
             "virtual": true,
@@ -1229,13 +1229,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13972,
+              "id": 14140,
               "nodeType": "StructuredDocumentation",
               "src": "4124:578:55",
               "text": "@notice Retrieves rewards owed for a set of resolved price requests.\n@dev Can only retrieve rewards if calling for a valid round and if the\ncall is done within the timeout threshold (not expired).\n@param voterAddress voter for which rewards will be retrieved. Does not have to be the caller.\n@param roundId the round from which voting rewards will be retrieved from.\n@param toRetrieve array of PendingRequests which rewards are retrieved from.\n@return totalRewardToIssue total amount of rewards returned to the voter."
             },
             "functionSelector": "0d434e7e",
-            "id": 13984,
+            "id": 14152,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1243,16 +1243,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13980,
+              "id": 14148,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13974,
+                  "id": 14142,
                   "name": "voterAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4732:20:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1261,7 +1261,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 13973,
+                    "id": 14141,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "4732:7:55",
@@ -1276,11 +1276,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13976,
+                  "id": 14144,
                   "name": "roundId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4754:12:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1289,7 +1289,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13975,
+                    "id": 14143,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "4754:4:55",
@@ -1303,37 +1303,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 13979,
+                  "id": 14147,
                   "name": "toRetrieve",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4768:34:55",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_memory_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_memory_$dyn_memory_ptr",
                     "typeString": "struct VotingInterface.PendingRequest[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13977,
+                      "id": 14145,
                       "name": "PendingRequest",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13894,
+                      "referencedDeclaration": 14062,
                       "src": "4768:14:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_PendingRequest_$13894_storage_ptr",
+                        "typeIdentifier": "t_struct$_PendingRequest_$14062_storage_ptr",
                         "typeString": "struct VotingInterface.PendingRequest"
                       }
                     },
-                    "id": 13978,
+                    "id": 14146,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "4768:16:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.PendingRequest[]"
                     }
                   },
@@ -1344,32 +1344,32 @@
               "src": "4731:72:55"
             },
             "returnParameters": {
-              "id": 13983,
+              "id": 14151,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13982,
+                  "id": 14150,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4852:26:55",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3427_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13981,
+                    "id": 14149,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3259,
+                    "referencedDeclaration": 3427,
                     "src": "4852:19:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3427_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1379,31 +1379,31 @@
               ],
               "src": "4851:28:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "4707:173:55",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 13986,
+        "scope": 14154,
         "src": "202:4680:55"
       }
     ],
     "src": "0:4883:55"
   },
   "legacyAST": {
-    "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
+    "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
     "exportedSymbols": {
       "VotingInterface": [
-        13985
+        14153
       ]
     },
-    "id": 13986,
+    "id": 14154,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13886,
+        "id": 14054,
         "literals": [
           "solidity",
           "^",
@@ -1414,7 +1414,7 @@
         "src": "0:23:55"
       },
       {
-        "id": 13887,
+        "id": 14055,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -1423,12 +1423,12 @@
         "src": "25:33:55"
       },
       {
-        "absolutePath": "/home/opz/Projects/SynFiat/contracts/uma-contracts/common/implementation/FixedPoint.sol",
+        "absolutePath": "/home/opz/Projects/SynFiat-update/ui/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 13888,
+        "id": 14056,
         "nodeType": "ImportDirective",
-        "scope": 13986,
-        "sourceUnit": 3945,
+        "scope": 14154,
+        "sourceUnit": 4113,
         "src": "60:52:55",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1439,30 +1439,30 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 13889,
+          "id": 14057,
           "nodeType": "StructuredDocumentation",
           "src": "115:86:55",
           "text": "@title Interface that voters must use to Vote on price request resolutions."
         },
         "fullyImplemented": false,
-        "id": 13985,
+        "id": 14153,
         "linearizedBaseContracts": [
-          13985
+          14153
         ],
         "name": "VotingInterface",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "canonicalName": "VotingInterface.PendingRequest",
-            "id": 13894,
+            "id": 14062,
             "members": [
               {
                 "constant": false,
-                "id": 13891,
+                "id": 14059,
                 "name": "identifier",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13894,
+                "scope": 14062,
                 "src": "274:18:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1471,7 +1471,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13890,
+                  "id": 14058,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "274:7:55",
@@ -1485,11 +1485,11 @@
               },
               {
                 "constant": false,
-                "id": 13893,
+                "id": 14061,
                 "name": "time",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13894,
+                "scope": 14062,
                 "src": "302:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1498,7 +1498,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 13892,
+                  "id": 14060,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "302:4:55",
@@ -1513,21 +1513,21 @@
             ],
             "name": "PendingRequest",
             "nodeType": "StructDefinition",
-            "scope": 13985,
+            "scope": 14153,
             "src": "242:76:55",
             "visibility": "public"
           },
           {
             "canonicalName": "VotingInterface.Commitment",
-            "id": 13903,
+            "id": 14071,
             "members": [
               {
                 "constant": false,
-                "id": 13896,
+                "id": 14064,
                 "name": "identifier",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "519:18:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1536,7 +1536,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13895,
+                  "id": 14063,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "519:7:55",
@@ -1550,11 +1550,11 @@
               },
               {
                 "constant": false,
-                "id": 13898,
+                "id": 14066,
                 "name": "time",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "547:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1563,7 +1563,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 13897,
+                  "id": 14065,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "547:4:55",
@@ -1577,11 +1577,11 @@
               },
               {
                 "constant": false,
-                "id": 13900,
+                "id": 14068,
                 "name": "hash",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "566:12:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1590,7 +1590,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13899,
+                  "id": 14067,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "566:7:55",
@@ -1604,11 +1604,11 @@
               },
               {
                 "constant": false,
-                "id": 13902,
+                "id": 14070,
                 "name": "encryptedVote",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13903,
+                "scope": 14071,
                 "src": "588:19:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1617,7 +1617,7 @@
                   "typeString": "bytes"
                 },
                 "typeName": {
-                  "id": 13901,
+                  "id": 14069,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "588:5:55",
@@ -1632,21 +1632,21 @@
             ],
             "name": "Commitment",
             "nodeType": "StructDefinition",
-            "scope": 13985,
+            "scope": 14153,
             "src": "491:123:55",
             "visibility": "public"
           },
           {
             "canonicalName": "VotingInterface.Reveal",
-            "id": 13912,
+            "id": 14080,
             "members": [
               {
                 "constant": false,
-                "id": 13905,
+                "id": 14073,
                 "name": "identifier",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "804:18:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1655,7 +1655,7 @@
                   "typeString": "bytes32"
                 },
                 "typeName": {
-                  "id": 13904,
+                  "id": 14072,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "804:7:55",
@@ -1669,11 +1669,11 @@
               },
               {
                 "constant": false,
-                "id": 13907,
+                "id": 14075,
                 "name": "time",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "832:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1682,7 +1682,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 13906,
+                  "id": 14074,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
                   "src": "832:4:55",
@@ -1696,11 +1696,11 @@
               },
               {
                 "constant": false,
-                "id": 13909,
+                "id": 14077,
                 "name": "price",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "851:9:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1709,7 +1709,7 @@
                   "typeString": "int256"
                 },
                 "typeName": {
-                  "id": 13908,
+                  "id": 14076,
                   "name": "int",
                   "nodeType": "ElementaryTypeName",
                   "src": "851:3:55",
@@ -1723,11 +1723,11 @@
               },
               {
                 "constant": false,
-                "id": 13911,
+                "id": 14079,
                 "name": "salt",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13912,
+                "scope": 14080,
                 "src": "870:8:55",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -1736,7 +1736,7 @@
                   "typeString": "int256"
                 },
                 "typeName": {
-                  "id": 13910,
+                  "id": 14078,
                   "name": "int",
                   "nodeType": "ElementaryTypeName",
                   "src": "870:3:55",
@@ -1751,28 +1751,28 @@
             ],
             "name": "Reveal",
             "nodeType": "StructDefinition",
-            "scope": 13985,
+            "scope": 14153,
             "src": "780:105:55",
             "visibility": "public"
           },
           {
             "canonicalName": "VotingInterface.Phase",
-            "id": 13916,
+            "id": 14084,
             "members": [
               {
-                "id": 13913,
+                "id": 14081,
                 "name": "Commit",
                 "nodeType": "EnumValue",
                 "src": "1125:6:55"
               },
               {
-                "id": 13914,
+                "id": 14082,
                 "name": "Reveal",
                 "nodeType": "EnumValue",
                 "src": "1133:6:55"
               },
               {
-                "id": 13915,
+                "id": 14083,
                 "name": "NUM_PHASES_PLACEHOLDER",
                 "nodeType": "EnumValue",
                 "src": "1141:22:55"
@@ -1785,13 +1785,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13917,
+              "id": 14085,
               "nodeType": "StructuredDocumentation",
               "src": "1171:465:55",
               "text": "@notice Commit a vote for a price request for `identifier` at `time`.\n@dev `identifier`, `time` must correspond to a price request that's currently in the commit phase.\nCommits can be changed.\n@param identifier uniquely identifies the committed vote. EG BTC/USD price pair.\n@param time unix timestamp of the price is being voted on.\n@param hash keccak256 hash of the price you want to vote for and a `int salt`."
             },
             "functionSelector": "d8651ad0",
-            "id": 13926,
+            "id": 14094,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1799,16 +1799,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13924,
+              "id": 14092,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13919,
+                  "id": 14087,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13926,
+                  "scope": 14094,
                   "src": "1661:18:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1817,7 +1817,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13918,
+                    "id": 14086,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1661:7:55",
@@ -1831,11 +1831,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13921,
+                  "id": 14089,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13926,
+                  "scope": 14094,
                   "src": "1681:9:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1844,7 +1844,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13920,
+                    "id": 14088,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1681:4:55",
@@ -1858,11 +1858,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13923,
+                  "id": 14091,
                   "name": "hash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13926,
+                  "scope": 14094,
                   "src": "1692:12:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1871,7 +1871,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13922,
+                    "id": 14090,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1692:7:55",
@@ -1887,12 +1887,12 @@
               "src": "1660:45:55"
             },
             "returnParameters": {
-              "id": 13925,
+              "id": 14093,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1722:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "1641:82:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -1901,13 +1901,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13927,
+              "id": 14095,
               "nodeType": "StructuredDocumentation",
               "src": "1729:413:55",
               "text": "@notice Submit a batch of commits in a single transaction.\n@dev Using `encryptedVote` is optional. If included then commitment is stored on chain.\nLook at `project-root/common/Constants.js` for the tested maximum number of\ncommitments that can fit in one transaction.\n@param commits struct to encapsulate an `identifier`, `time`, `hash` and optional `encryptedVote`."
             },
             "functionSelector": "70a0cf2c",
-            "id": 13933,
+            "id": 14101,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1915,42 +1915,42 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13931,
+              "id": 14099,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13930,
+                  "id": 14098,
                   "name": "commits",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13933,
+                  "scope": 14101,
                   "src": "2168:29:55",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_Commitment_$13903_calldata_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_Commitment_$14071_calldata_$dyn_calldata_ptr",
                     "typeString": "struct VotingInterface.Commitment[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13928,
+                      "id": 14096,
                       "name": "Commitment",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13903,
+                      "referencedDeclaration": 14071,
                       "src": "2168:10:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Commitment_$13903_storage_ptr",
+                        "typeIdentifier": "t_struct$_Commitment_$14071_storage_ptr",
                         "typeString": "struct VotingInterface.Commitment"
                       }
                     },
-                    "id": 13929,
+                    "id": 14097,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2168:12:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_Commitment_$13903_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_Commitment_$14071_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.Commitment[]"
                     }
                   },
@@ -1961,12 +1961,12 @@
               "src": "2167:31:55"
             },
             "returnParameters": {
-              "id": 13932,
+              "id": 14100,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2215:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "2147:69:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -1975,13 +1975,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13934,
+              "id": 14102,
               "nodeType": "StructuredDocumentation",
               "src": "2222:544:55",
               "text": "@notice Reveal a previously committed vote for `identifier` at `time`.\n@dev The revealed `price` and `salt` must match the latest `hash` that `commitVote()` was called with.\nOnly the committer can reveal their vote.\n@param identifier voted on in the commit phase. EG BTC/USD price pair.\n@param time specifies the unix timestamp of the price is being voted on.\n@param price voted on during the commit phase.\n@param salt value used to hide the commitment price during the commit phase."
             },
             "functionSelector": "4c7a2603",
-            "id": 13945,
+            "id": 14113,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1989,16 +1989,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13943,
+              "id": 14111,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13936,
+                  "id": 14104,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2791:18:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2007,7 +2007,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13935,
+                    "id": 14103,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2791:7:55",
@@ -2021,11 +2021,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13938,
+                  "id": 14106,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2811:9:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2034,7 +2034,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13937,
+                    "id": 14105,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "2811:4:55",
@@ -2048,11 +2048,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13940,
+                  "id": 14108,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2822:9:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2061,7 +2061,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13939,
+                    "id": 14107,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "2822:3:55",
@@ -2075,11 +2075,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13942,
+                  "id": 14110,
                   "name": "salt",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13945,
+                  "scope": 14113,
                   "src": "2833:8:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2088,7 +2088,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13941,
+                    "id": 14109,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "2833:3:55",
@@ -2104,12 +2104,12 @@
               "src": "2790:52:55"
             },
             "returnParameters": {
-              "id": 13944,
+              "id": 14112,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2859:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "2771:89:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -2118,13 +2118,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13946,
+              "id": 14114,
               "nodeType": "StructuredDocumentation",
               "src": "2866:388:55",
               "text": "@notice Reveal multiple votes in a single transaction.\nLook at `project-root/common/Constants.js` for the tested maximum number of reveals.\nthat can fit in one transaction.\n@dev For more information on reveals, review the comment for `revealVote`.\n@param reveals array of the Reveal struct which contains an identifier, time, price and salt."
             },
             "functionSelector": "6852eea0",
-            "id": 13952,
+            "id": 14120,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -2132,42 +2132,42 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13950,
+              "id": 14118,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13949,
+                  "id": 14117,
                   "name": "reveals",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13952,
+                  "scope": 14120,
                   "src": "3280:25:55",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_Reveal_$13912_calldata_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_Reveal_$14080_calldata_$dyn_calldata_ptr",
                     "typeString": "struct VotingInterface.Reveal[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13947,
+                      "id": 14115,
                       "name": "Reveal",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13912,
+                      "referencedDeclaration": 14080,
                       "src": "3280:6:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Reveal_$13912_storage_ptr",
+                        "typeIdentifier": "t_struct$_Reveal_$14080_storage_ptr",
                         "typeString": "struct VotingInterface.Reveal"
                       }
                     },
-                    "id": 13948,
+                    "id": 14116,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "3280:8:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_Reveal_$13912_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_Reveal_$14080_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.Reveal[]"
                     }
                   },
@@ -2178,12 +2178,12 @@
               "src": "3279:27:55"
             },
             "returnParameters": {
-              "id": 13951,
+              "id": 14119,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3323:0:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "3259:65:55",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -2192,13 +2192,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13953,
+              "id": 14121,
               "nodeType": "StructuredDocumentation",
               "src": "3330:204:55",
               "text": "@notice Gets the queries that are being voted on this round.\n@return pendingRequests `PendingRequest` array containing identifiers\nand timestamps for all pending requests."
             },
             "functionSelector": "80a1f712",
-            "id": 13959,
+            "id": 14127,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -2206,48 +2206,48 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13954,
+              "id": 14122,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3566:2:55"
             },
             "returnParameters": {
-              "id": 13958,
+              "id": 14126,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13957,
+                  "id": 14125,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13959,
+                  "scope": 14127,
                   "src": "3600:23:55",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_memory_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_memory_$dyn_memory_ptr",
                     "typeString": "struct VotingInterface.PendingRequest[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13955,
+                      "id": 14123,
                       "name": "PendingRequest",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13894,
+                      "referencedDeclaration": 14062,
                       "src": "3600:14:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_PendingRequest_$13894_storage_ptr",
+                        "typeIdentifier": "t_struct$_PendingRequest_$14062_storage_ptr",
                         "typeString": "struct VotingInterface.PendingRequest"
                       }
                     },
-                    "id": 13956,
+                    "id": 14124,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "3600:16:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.PendingRequest[]"
                     }
                   },
@@ -2257,7 +2257,7 @@
               ],
               "src": "3599:25:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "3539:86:55",
             "stateMutability": "view",
             "virtual": true,
@@ -2266,13 +2266,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13960,
+              "id": 14128,
               "nodeType": "StructuredDocumentation",
               "src": "3631:198:55",
               "text": "@notice Returns the current voting phase, as a function of the current time.\n@return Phase to indicate the current phase. Either { Commit, Reveal, NUM_PHASES_PLACEHOLDER }."
             },
             "functionSelector": "74dd278c",
-            "id": 13965,
+            "id": 14133,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -2280,38 +2280,38 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13961,
+              "id": 14129,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "3855:2:55"
             },
             "returnParameters": {
-              "id": 13964,
+              "id": 14132,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13963,
+                  "id": 14131,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13965,
+                  "scope": 14133,
                   "src": "3889:5:55",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Phase_$13916",
+                    "typeIdentifier": "t_enum$_Phase_$14084",
                     "typeString": "enum VotingInterface.Phase"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13962,
+                    "id": 14130,
                     "name": "Phase",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13916,
+                    "referencedDeclaration": 14084,
                     "src": "3889:5:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$13916",
+                      "typeIdentifier": "t_enum$_Phase_$14084",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
@@ -2321,7 +2321,7 @@
               ],
               "src": "3888:7:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "3834:62:55",
             "stateMutability": "view",
             "virtual": true,
@@ -2330,13 +2330,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13966,
+              "id": 14134,
               "nodeType": "StructuredDocumentation",
               "src": "3902:145:55",
               "text": "@notice Returns the current round ID, as a function of the current time.\n@return uint representing the unique round ID."
             },
             "functionSelector": "5727e25d",
-            "id": 13971,
+            "id": 14139,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -2344,22 +2344,22 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13967,
+              "id": 14135,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "4078:2:55"
             },
             "returnParameters": {
-              "id": 13970,
+              "id": 14138,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13969,
+                  "id": 14137,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13971,
+                  "scope": 14139,
                   "src": "4112:4:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2368,7 +2368,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13968,
+                    "id": 14136,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "4112:4:55",
@@ -2383,7 +2383,7 @@
               ],
               "src": "4111:6:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "4052:66:55",
             "stateMutability": "view",
             "virtual": true,
@@ -2392,13 +2392,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13972,
+              "id": 14140,
               "nodeType": "StructuredDocumentation",
               "src": "4124:578:55",
               "text": "@notice Retrieves rewards owed for a set of resolved price requests.\n@dev Can only retrieve rewards if calling for a valid round and if the\ncall is done within the timeout threshold (not expired).\n@param voterAddress voter for which rewards will be retrieved. Does not have to be the caller.\n@param roundId the round from which voting rewards will be retrieved from.\n@param toRetrieve array of PendingRequests which rewards are retrieved from.\n@return totalRewardToIssue total amount of rewards returned to the voter."
             },
             "functionSelector": "0d434e7e",
-            "id": 13984,
+            "id": 14152,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -2406,16 +2406,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13980,
+              "id": 14148,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13974,
+                  "id": 14142,
                   "name": "voterAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4732:20:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2424,7 +2424,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 13973,
+                    "id": 14141,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "4732:7:55",
@@ -2439,11 +2439,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13976,
+                  "id": 14144,
                   "name": "roundId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4754:12:55",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2452,7 +2452,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13975,
+                    "id": 14143,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "4754:4:55",
@@ -2466,37 +2466,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 13979,
+                  "id": 14147,
                   "name": "toRetrieve",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4768:34:55",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_memory_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_memory_$dyn_memory_ptr",
                     "typeString": "struct VotingInterface.PendingRequest[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 13977,
+                      "id": 14145,
                       "name": "PendingRequest",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 13894,
+                      "referencedDeclaration": 14062,
                       "src": "4768:14:55",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_PendingRequest_$13894_storage_ptr",
+                        "typeIdentifier": "t_struct$_PendingRequest_$14062_storage_ptr",
                         "typeString": "struct VotingInterface.PendingRequest"
                       }
                     },
-                    "id": 13978,
+                    "id": 14146,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "4768:16:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$13894_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_PendingRequest_$14062_storage_$dyn_storage_ptr",
                       "typeString": "struct VotingInterface.PendingRequest[]"
                     }
                   },
@@ -2507,32 +2507,32 @@
               "src": "4731:72:55"
             },
             "returnParameters": {
-              "id": 13983,
+              "id": 14151,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13982,
+                  "id": 14150,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13984,
+                  "scope": 14152,
                   "src": "4852:26:55",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3427_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13981,
+                    "id": 14149,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3259,
+                    "referencedDeclaration": 3427,
                     "src": "4852:19:55",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3427_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -2542,14 +2542,14 @@
               ],
               "src": "4851:28:55"
             },
-            "scope": 13985,
+            "scope": 14153,
             "src": "4707:173:55",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 13986,
+        "scope": 14154,
         "src": "202:4680:55"
       }
     ],
@@ -2561,7 +2561,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-01T04:24:41.885Z",
+  "updatedAt": "2020-06-29T17:20:03.188Z",
   "devdoc": {
     "methods": {
       "batchCommit((bytes32,uint256,bytes32,bytes)[])": {
