@@ -13,6 +13,9 @@ import defaultAssets from "../../../../helpers/defaultAssets";
 import useStyles from "./styles";
 import LatestPrice from "../../../elements/LatestPrice";
 
+
+const slashPair = str => `${str.slice(0, 3)}/${str.slice(3,6)}`;
+
 const Insights = ({}) => {
 
   const [symbol, setSymbol] = useState(defaultAssets[0].priceFeed);
@@ -33,11 +36,13 @@ const Insights = ({}) => {
       getPrice();
   }, [symbol]);
 
+
+
   return (
     <Grid container spacing={4} justify="space-around">
       <Grid item md={8}>
         <Typography variant="h4" noWrap>
-          {symbol}
+          {slashPair(symbol)}
         </Typography>
       </Grid>
       <Grid item md={2}>
@@ -67,7 +72,7 @@ const Insights = ({}) => {
           >
             {defaultAssets.map(asset => (
               <MenuItem key={asset.priceFeed} value={asset.priceFeed}>
-                {asset.priceFeed}
+                {slashPair(asset.priceFeed)}
               </MenuItem>
             ))}
           </Select>

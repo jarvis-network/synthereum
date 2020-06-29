@@ -7,7 +7,7 @@ import HelpOutline from "@material-ui/icons/HelpOutline";
 const DashboardPages = [{
     title: "Exchange",
     link: "/",
-    pageTitle: "Order",
+    pageTitle: "Exchange",
     icon: <SwapHoriz />
   },
   {
