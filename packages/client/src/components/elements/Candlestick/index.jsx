@@ -39,7 +39,7 @@ const Candlestick = ({ symbol, days }) => {
         height={400}
         chartType="CandlestickChart"
         loader={<div>Loading Chart</div>}
-        data={[["day", "Opening", "High", "Low", "Closing"], ...data]}
+        data={[["day", "Low", "Opening", "Closing", "High"], ...data]}
         options={{
           legend: "none",
           chartArea: {
@@ -52,8 +52,10 @@ const Candlestick = ({ symbol, days }) => {
           },
           bar: { groupWidth: '100%' }, // Remove space between bars.
           candlestick: {
-            fallingColor: { strokeWidth: 0, fill: '#a52714' }, // red
-            risingColor: { strokeWidth: 0, fill: '#0f9d58' }   // green
+            fallingColor: { strokeWidth: 0, fill: '#9A031E' },
+            risingColor: { strokeWidth: 0, fill: '#31E981' }
+            // fallingColor: { strokeWidth: 0, fill: '#a52714' },
+            // risingColor: { strokeWidth: 0, fill: '#0f9d58' }
           }
         }}
         rootProps={{ "data-testid": "candlestick" }}

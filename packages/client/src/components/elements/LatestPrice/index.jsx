@@ -13,8 +13,8 @@ const LatestPrice = ({ price }) => {
         <Typography variant="h6" noWrap>
           Latest Price
         </Typography>
-        <Typography variant="h3" noWrap>
-          {price || "Closed"}
+        <Typography variant="h4" noWrap>
+          {price ? `$${price}` : "Closed"}
         </Typography>
       </Paper>
     )
