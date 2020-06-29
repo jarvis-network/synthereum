@@ -83,6 +83,7 @@ library TICHelper {
      * @param self Data type the library is attached to
      * @param collateralAmount The amount of collateral supplied
      * @param numTokens The number of tokens the user wants to mint
+     * @return The mint request ID
      * TODO: A sponsor could theoretically circumvent the TIC and mint tokens with an extremely
      *       high collateralization ratio at any point in time, preventing users from minting
      *       tokens with the available LP collateral.
@@ -96,7 +97,7 @@ library TICHelper {
         TIC.Storage storage self,
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
-    ) public {
+    ) public returns (bytes32) {
         bytes32 mintID = keccak256(abi.encodePacked(
             msg.sender,
             collateralAmount.rawValue,
@@ -114,6 +115,8 @@ library TICHelper {
 
         self.mintRequestSet.insert(mintID);
         self.mintRequests[mintID] = mint;
+
+        return mintID;
     }
 
     /**
@@ -271,12 +274,13 @@ library TICHelper {
      * @notice User must approve synthetic token transfer for the redeem request to succeed
      * @param collateralAmount The amount of collateral to redeem tokens for
      * @param numTokens The number of tokens to redeem
+     * @return The redeem request ID
      */
     function redeemRequest(
         TIC.Storage storage self,
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
-    ) public {
+    ) public returns (bytes32) {
         bytes32 redeemID = keccak256(abi.encodePacked(
             msg.sender,
             collateralAmount.rawValue,
@@ -294,6 +298,8 @@ library TICHelper {
 
         self.redeemRequestSet.insert(redeemID);
         self.redeemRequests[redeemID] = redeem;
+
+        return redeemID;
     }
 
     /**
@@ -432,13 +438,14 @@ library TICHelper {
      * @param destTIC The destination TIC
      * @param numTokens The number of source tokens to swap
      * @param destNumTokens The number of destination tokens the swap attempts to procure
+     * @return The exchange request ID
      */
     function exchangeRequest(
         TIC.Storage storage self,
         TICInterface destTIC,
         FixedPoint.Unsigned memory numTokens,
         FixedPoint.Unsigned memory destNumTokens
-    ) public {
+    ) public returns (bytes32) {
         bytes32 exchangeID = keccak256(abi.encodePacked(
             msg.sender,
             address(destTIC),
@@ -458,6 +465,8 @@ library TICHelper {
 
         self.exchangeRequestSet.insert(exchangeID);
         self.exchangeRequests[exchangeID] = exchange;
+
+        return exchangeID;
     }
 
     /**

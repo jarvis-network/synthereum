@@ -50,6 +50,37 @@ contract TIC is TICInterface, ReentrancyGuard {
         HitchensUnorderedKeySetLib.Set redeemRequestSet;
     }
 
+    event MintRequested(
+        bytes32 mintID,
+        uint256 timestamp,
+        address indexed sender,
+        uint256 collateralAmount,
+        uint256 numTokens
+    );
+    event MintApproved(bytes32 mintID, address indexed sender);
+    event MintRejected(bytes32 mintID, address indexed sender);
+
+    event ExchangeRequested(
+        bytes32 exchangeID,
+        uint256 timestamp,
+        address indexed sender,
+        address destTIC,
+        uint256 numTokens,
+        uint256 destNumTokens
+    );
+    event ExchangeApproved(bytes32 exchangeID, address indexed sender);
+    event ExchangeRejected(bytes32 exchangeID, address indexed sender);
+
+    event RedeemRequested(
+        bytes32 redeemID,
+        uint256 timestamp,
+        address indexed sender,
+        uint256 collateralAmount,
+        uint256 numTokens
+    );
+    event RedeemApproved(bytes32 redeemID, address indexed sender);
+    event RedeemRejected(bytes32 redeemID, address indexed sender);
+
     //----------------------------------------
     // State variables
     //----------------------------------------
@@ -120,10 +151,12 @@ contract TIC is TICInterface, ReentrancyGuard {
         override
         nonReentrant
     {
-        ticStorage.mintRequest(
+        bytes32 mintID = ticStorage.mintRequest(
             FixedPoint.Unsigned(collateralAmount),
             FixedPoint.Unsigned(numTokens)
         );
+
+        emit MintRequested(mintID, now, msg.sender, collateralAmount, numTokens);
     }
 
     /**
@@ -134,6 +167,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function approveMint(bytes32 mintID) external override nonReentrant onlyValidator {
         ticStorage.approveMint(mintID);
+
+        address sender = ticStorage.mintRequests[mintID].sender;
+        emit MintApproved(mintID, sender);
     }
 
 
@@ -144,6 +180,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function rejectMint(bytes32 mintID) external override nonReentrant onlyValidator {
         ticStorage.rejectMint(mintID);
+
+        address sender = ticStorage.mintRequests[mintID].sender;
+        emit MintRejected(mintID, sender);
     }
 
     /**
@@ -213,10 +252,12 @@ contract TIC is TICInterface, ReentrancyGuard {
         override
         nonReentrant
     {
-        ticStorage.redeemRequest(
+        bytes32 redeemID = ticStorage.redeemRequest(
             FixedPoint.Unsigned(collateralAmount),
             FixedPoint.Unsigned(numTokens)
         );
+
+        emit RedeemRequested(redeemID, now, msg.sender, collateralAmount, numTokens);
     }
 
     /**
@@ -227,6 +268,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function approveRedeem(bytes32 redeemID) external override nonReentrant {
         ticStorage.approveRedeem(redeemID);
+
+        address sender = ticStorage.redeemRequests[redeemID].sender;
+        emit RedeemApproved(redeemID, sender);
     }
 
     /**
@@ -236,6 +280,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function rejectRedeem(bytes32 redeemID) external override nonReentrant {
         ticStorage.rejectRedeem(redeemID);
+
+        address sender = ticStorage.redeemRequests[redeemID].sender;
+        emit RedeemRejected(redeemID, sender);
     }
 
     /**
@@ -261,10 +308,19 @@ contract TIC is TICInterface, ReentrancyGuard {
         override
         nonReentrant
     {
-        ticStorage.exchangeRequest(
+        bytes32 exchangeID = ticStorage.exchangeRequest(
             destTIC,
             FixedPoint.Unsigned(numTokens),
             FixedPoint.Unsigned(destNumTokens)
+        );
+
+        emit ExchangeRequested(
+            exchangeID,
+            now,
+            msg.sender,
+            address(destTIC),
+            numTokens,
+            destNumTokens
         );
     }
 
@@ -276,6 +332,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function approveExchange(bytes32 exchangeID) external override onlyValidator nonReentrant {
         ticStorage.approveExchange(exchangeID);
+
+        address sender = ticStorage.exchangeRequests[exchangeID].sender;
+        emit ExchangeApproved(exchangeID, sender);
     }
 
 
@@ -286,6 +345,9 @@ contract TIC is TICInterface, ReentrancyGuard {
      */
     function rejectExchange(bytes32 exchangeID) external override onlyValidator nonReentrant {
         ticStorage.rejectExchange(exchangeID);
+
+        address sender = ticStorage.exchangeRequests[exchangeID].sender;
+        emit ExchangeRejected(exchangeID, sender);
     }
 
     //----------------------------------------
