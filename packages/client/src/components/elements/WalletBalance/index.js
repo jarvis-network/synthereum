@@ -22,19 +22,24 @@ export default function WalletBalance({
 
   const context = useWeb3Context();
 
-  const [synBalance, setSynBalance] = useState("0");
+  const [synBalances, setSynBalances] = useState(Array(syntheticTokens.length).fill("0"));
   const [balance, setBalance] = useState("0");
 
   const { fromWei } = context.library.utils;
 
   useEffect(() => {
-    if (context.active && syntheticTokens[token]) {
-      syntheticTokens[token].methods
-        .balanceOf(context.account)
-        .call()
-        .then(synBalance => {
-          setSynBalance(synBalance);
-        });
+    if (context.active) {
+      syntheticTokens.map((token, i) => {
+        if (token) {
+          token.methods
+            .balanceOf(context.account)
+            .call()
+            .then(synBalance => {
+              synBalances[i] = synBalance;
+              setSynBalances(synBalances);
+            });
+        }
+      });
     }
   }, [context, context.active, syntheticTokens, token, lastTx]);
 
@@ -75,7 +80,7 @@ export default function WalletBalance({
             </Box>
           </Grid>
           <Grid item xs={6} align="right">
-            {Number(fromWei(synBalance, "ether")).toLocaleString()}
+            {Number(fromWei(synBalances[index] || "0", "ether")).toLocaleString()}
           </Grid>
           <Grid item xs={12}>
             <CollateralBar />
