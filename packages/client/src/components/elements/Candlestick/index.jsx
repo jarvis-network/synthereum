@@ -7,7 +7,10 @@ const Candlestick = ({ token }) => {
 
         try {
 
-            const data = await jarvisExchangeRate("EURUSD", 600);
+            const days = 30;
+            console.log(days * 60 * 60 * 24);
+            const start = days * 60 * 60 * 24;
+            const data = await jarvisExchangeRate("EURUSD", start);
             console.log(data);
 
         } catch(err) {
@@ -21,7 +24,9 @@ const Candlestick = ({ token }) => {
 
 
     return (
-        
+    <h1>Candlestickk</h1>   
     )
 
 };
+
+export default Candlestick;

@@ -7,6 +7,7 @@ import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
 import Liquidity from "../../elements/Liquidity";
+import Candlestick from "../../elements/Candlestick";
 
 const Pages = ({
   assets,
@@ -26,6 +27,7 @@ const Pages = ({
       </Route>
       <Route path="/insights">
         <h3>Insights</h3>
+        <Candlestick />
       </Route>
       <Route path="/help">
         <h3>Help</h3>

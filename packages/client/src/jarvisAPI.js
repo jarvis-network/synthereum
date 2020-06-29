@@ -2,6 +2,7 @@ const protocol = 'https';
 const host = 'data.jarvis.exchange';
 
 export function jarvisExchangeRate(priceFeed, start = 60) {
+  console.log("start", start);
   const now = Math.floor(Date.now() / 1000);
   const params = {
     symbol: priceFeed,

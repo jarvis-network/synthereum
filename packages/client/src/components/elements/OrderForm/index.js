@@ -198,14 +198,14 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
                   <TableRow className={classes.TableRow}>
                     <TableCell>Fee</TableCell>
                     <TableCell align="right">
-                      {Number(fromWei(feeAmount)).toLocaleString()} DAI
+                      {Number(fromWei(feeAmount)).toLocaleString()} {assets[inputToken].symbol}
                     </TableCell>
                   </TableRow>
 
                   <TableRow>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">
-                      {collateralAmount.toLocaleString()} DAI
+                      {collateralAmount.toLocaleString()} {assets[inputToken].symbol}
                     </TableCell>
                   </TableRow>
                 </TableBody>
