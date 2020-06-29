@@ -8,12 +8,20 @@ import Divider from "@material-ui/core/Divider";
 
 import useStyles from "./styles";
 import { useTheme } from '@material-ui/core/styles';
+import { useLocation } from "react-router-dom";
 
 import { DashboardPages, SupportPages } from "../../../helpers/pages";
 
 import NavItem from "./NavItem";
 
 const Navigation = ({ window, handleDrawerToggle }) => {
+  
+  const location = useLocation();
+  let currentPage =
+    DashboardPages.concat(SupportPages).find(
+      page => page.link === location.pathname
+    ) || {};
+
   const classes = useStyles();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -28,19 +36,18 @@ const Navigation = ({ window, handleDrawerToggle }) => {
       <Divider />
       <List>
       {DashboardPages.map(page => (
-          <NavItem key={page.title} page={page} />
+          <NavItem key={page.title} page={page} active={currentPage.title === page.title} />
         ))}
       </List>
       <Divider />
       <List>
       {SupportPages.map(page => (
-          <NavItem key={page.title} page={page} />
+          <NavItem key={page.title} page={page} active={currentPage.title === page.title} />
         ))}
       </List>
     </div>
   );
   const container = window !== undefined ? () => window().document.body : undefined;
-
 
   return (
     <nav className={classes.drawer}>

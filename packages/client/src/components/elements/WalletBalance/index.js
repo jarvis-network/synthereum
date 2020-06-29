@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
 
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import Typography from "@material-ui/core/Typography";
 
 import * as icons from "../../../assets/icons";
 
@@ -52,58 +49,51 @@ export default function WalletBalance({
 
   return (
     <Paper className={classes.Paper}>
-      <TableContainer>
-        <Table>
-          <TableHead className={classes.TableHead}>
-            <TableRow>
-              <TableCell>Token</TableCell>
-              <TableCell align="right">Amount</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {assets.map((asset, index) => (
-              <React.Fragment key={index}>
-                <TableRow className={classes.TableRow}>
-                  <TableCell className={classes.TokenCell}>
-                    <img
-                      className={classes.TokenIcon}
-                      alt={asset.symbol}
-                      src={icons[asset.symbol]}
-                    />
-                    {asset.symbol}
-                  </TableCell>
-                  <TableCell align="right">
-                    {Number(
-                      fromWei(synBalance, "ether")
-                    ).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-                <TableRow className={classes.TableRow}>
-                  <TableCell
-                    colSpan="2"
-                    className={classes.TableCellCollateral}
-                  >
-                    <CollateralBar />
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-            <TableRow className={classes.TableRow}>
-              <TableCell className={classes.TokenCell}>
-                <img
-                  className={classes.TokenIcon}
-                  alt="DAI"
-                  src={icons.DAI}
-                />
-                DAI
-              </TableCell>
-              <TableCell align="right">
-                {Number(fromWei(balance, "ether")).toLocaleString()}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Grid container>
+        <Grid item xs={6}>
+          <Typography variant="h6">Token</Typography>
+        </Grid>
+        <Grid item xs={6} align="right">
+          <Typography variant="h6">Balance</Typography>
+        </Grid>
+      </Grid>
+
+      {assets.map((asset, index) => (
+        <Grid container className={classes.SynthToken}>
+          <Grid item xs={6}>
+            <Box
+              className={classes.TokenCell}
+              display="flex"
+              alignItems="center"
+            >
+              <img
+                className={classes.TokenIcon}
+                alt={asset.symbol}
+                src={icons[asset.symbol]}
+              />
+              {asset.symbol}
+            </Box>
+          </Grid>
+          <Grid item xs={6} align="right">
+            {Number(fromWei(synBalance, "ether")).toLocaleString()}
+          </Grid>
+          <Grid item xs={12}>
+            <CollateralBar />
+          </Grid>
+        </Grid>
+      ))}
+
+      <Grid container className={classes.TokenInfo}>
+        <Grid item xs={6}>
+          <Box className={classes.TokenCell} display="flex" alignItems="center">
+            <img className={classes.TokenIcon} alt="DAI" src={icons.DAI} />
+            DAI
+          </Box>
+        </Grid>
+        <Grid item xs={6} align="right">
+          {Number(fromWei(balance, "ether")).toLocaleString()}
+        </Grid>
+      </Grid>
     </Paper>
   );
 }

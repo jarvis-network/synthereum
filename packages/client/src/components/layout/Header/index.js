@@ -39,7 +39,7 @@ const Header = ({ open, handleDrawerToggle }) => {
             <MenuIcon />
           </IconButton>
           <div className={classes.HeaderContent}>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" noWrap className={classes.PageTitle}>
             {currentPage.pageTitle}
           </Typography>
           <Box component="span" display="inline" className={classes.AddressSpan}>

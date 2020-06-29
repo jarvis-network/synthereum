@@ -6,7 +6,8 @@ const useStyles = makeStyles(theme => ({
         ...theme.TokenCell,
         padding: "10px 10px",
         margin: "0px 10px",
-        borderBottom: "1px solid rgba(224, 224, 224, 1)"
+        borderBottom: "1px solid rgba(224, 224, 224, 1)",
+        fontFamily: 'Hind Vadodara'
     },
     MuiSelect: theme.MuiSelect
   }));

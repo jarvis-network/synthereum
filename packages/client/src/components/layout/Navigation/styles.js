@@ -29,7 +29,10 @@ const useStyles = makeStyles(theme => ({
   NavLink: {
     textDecoration: 'none',
     color: '#000000',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+  },
+  ActiveItem: {
+    background: '#eee'
   },
   Logo: {
     color: "#03256C",

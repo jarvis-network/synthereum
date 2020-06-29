@@ -30,7 +30,19 @@ const theme = createMuiTheme({
           border: '1px solid #EBEBEB',
           borderRadius: 4,
           boxShadow: 'none',
-          fontFamily: 'Roboto'
+          fontFamily: 'Hind Vadodara'
+        }
+      },
+      MuiTypography: {
+        root: {
+          fontFamily: 'Hind Vadodara'
+        },
+        body1: {
+          fontFamily: 'Hind Vadodara',
+          fontWeight: '500'
+        },
+        body2: {
+          fontFamily: 'Hind Vadodara'
         }
       },
       MuiTableRow: {
@@ -44,7 +56,8 @@ const theme = createMuiTheme({
           border: 'none',
           paddingLeft: 0,
           paddingRight: 0,
-          borderBottom: 'none'
+          borderBottom: 'none',
+          fontFamily: 'Hind Vadodara'
         },
         head: {
           paddingLeft: 0,

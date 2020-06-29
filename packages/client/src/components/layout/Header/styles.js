@@ -33,6 +33,9 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'space-between'
+  },
+  PageTitle: {
+    fontFamily: 'Hind Vadodara',
   }
 }));
 

@@ -10,7 +10,7 @@ function CollateralBar({ value }) {
     const classes = useStyles();
 
     return (
-    <Box className={classes.CollateralBox}>
+    <Box className={classes.CollateralBox} marginTop={2}>
       <Box display="flex" justifyContent="space-between">
       <Box minWidth={35}>
         <Typography variant="body2" color="textSecondary">Your Collateral: {`${Math.round(value * 100)}%`}</Typography>
