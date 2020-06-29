@@ -10,11 +10,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import Alert from '@material-ui/lab/Alert';
 
 import TokenPicker from "../TokenPicker";
 
 import useStyles from "./styles";
+
+const SELECT_TOKEN = "select";
 
 export default function OrderForm({ assets, dai, syntheticTokens, setLoading, setLastTx }) {
   
@@ -23,6 +25,11 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   const context = useWeb3Context();
 
   const [token, setToken] = useState(0);
+
+  const [inputToken, setInputToken] = useState(0);
+  const [outputToken, setOutputToken] = useState(SELECT_TOKEN);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [orderType, setOrderType] = useState("buy");
   const [orderAmount, setOrderAmount] = useState("");
@@ -105,6 +112,19 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   };
 
   const placeOrder = () => {
+
+    console.log(inputToken, outputToken);
+    if (outputToken === SELECT_TOKEN) return setErrorMessage("Please select a token.");
+    if (inputToken === 4 && outputToken === 4) return setErrorMessage("Please pick a different token pair.");
+
+    if (inputToken === 4) {
+      return window.alert("Mint.");
+    } else if (outputToken === 4) {
+      return window.alert("Redeem.");
+    } else if (inputToken === outputToken) {
+      return window.alert("Exchange.");
+    }
+
     if (orderAmount > 0) {
       const collateralAmountTKNbits = toWei(collateralAmount.toString());
       const orderAmountTKNbits = toWei(orderAmount.toString());
@@ -124,23 +144,41 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       <form>
 
         <Grid container justify="center">
-          <Grid item md={12}>
-            <label>Input Token</label>
+          <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label="Amount"
+              label="Input Token"
+              placeholder="0.0"
               fullWidth
               margin="normal"
               value={orderAmount}
               onChange={onOrderAmountChange}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">
-                    <TokenPicker assets={assets.concat([{
-                      name: "DAI",
-                      symbol: "DAI"
-                    }])} token={token} onChange={setToken} />
-                  </InputAdornment>
+                  <TokenPicker assets={assets.concat([{
+                    name: "DAI",
+                    symbol: "DAI"
+                  }])} token={inputToken} onChange={setInputToken} />
+                )
+              }}
+            />
+          </Grid>
+
+          <Grid item md={12} className={classes.FormGroup}>
+            <TextField
+              variant="outlined"
+              label="Output Token"
+              placeholder="0.0"
+              fullWidth
+              margin="normal"
+              value={orderAmount}
+              onChange={onOrderAmountChange}
+              InputProps={{
+                endAdornment: (
+                  <TokenPicker assets={assets.concat([{
+                    name: "DAI",
+                    symbol: "DAI"
+                  }])} token={outputToken} onChange={setOutputToken} />
                 )
               }}
             />
@@ -174,6 +212,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
             <Button className={classes.OrderButton} fullWidth margin="normal" onClick={placeOrder}>
               Place Order
             </Button>
+            { errorMessage && (<Alert severity="error" className={classes.ErrorAlert}>{errorMessage}</Alert>)}
           </Grid>
         </Grid>        
       </form>

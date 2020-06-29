@@ -11,16 +11,11 @@ import IERC20 from "../../../contracts/IERC20.json";
 
 import defaultAssets from "../../../helpers/defaultAssets";
 
-import Grid from "@material-ui/core/Grid";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import Header from "../Header";
 import Navigation from "../Navigation";
 import Pages from "../Pages";
-import WalletBalance from "../../elements/WalletBalance";
-import Liquidity from "../../elements/Liquidity";
-
 import useStyles from "./styles";
 
 export default function Wallet({ setLoading }) {
@@ -33,14 +28,6 @@ export default function Wallet({ setLoading }) {
   const [dai, setDai] = useState(null);
   // Used to refresh stale data after a transaction is made
   const [lastTx, setLastTx] = useState("");
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   const handleDrawerToggle = () => {
     setOpen(!open);
