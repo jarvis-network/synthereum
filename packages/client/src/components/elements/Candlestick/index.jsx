@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Chart } from "react-google-charts";
-import { jarvisExchangeRate } from "../../../jarvisAPI.js";
+import { jarvisPriceHistory } from "../../../jarvisAPI.js";
 
 const Candlestick = () => {
   const [symbol, setSymbol] = useState("EURUSD");
@@ -11,7 +11,7 @@ const Candlestick = () => {
   async function getHistory() {
     try {
       const start = days * 60 * 60 * 24;
-      const response = await jarvisExchangeRate(symbol, start);
+      const response = await jarvisPriceHistory(symbol, start);
       let dataToSet = response.t.map((day, index) => [
         moment(day * 1000).format("M/D"),
         response.o[index],
