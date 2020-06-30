@@ -8,6 +8,7 @@ import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
 
 import Insights from "./Insights";
+import TransactionTable from "../../elements/TransactionTable";
 
 const Pages = ({
   assets,
@@ -23,7 +24,7 @@ const Pages = ({
         <ExchangeRates assets={assets} />
       </Route>
       <Route path="/transactions">
-        <h3>Transactions</h3>
+        <TransactionTable assets={assets} />
       </Route>
       <Route path="/insights">
           <Insights />

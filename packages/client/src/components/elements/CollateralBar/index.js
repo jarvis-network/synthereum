@@ -5,7 +5,7 @@ import Box from '@material-ui/core/Box';
 
 import useStyles from "./styles";
 
-function CollateralBar({ value }) {
+function CollateralBar({ value, total }) {
 
     const classes = useStyles();
 
@@ -13,21 +13,22 @@ function CollateralBar({ value }) {
     <Box className={classes.CollateralBox} marginTop={2}>
       <Box display="flex" justifyContent="space-between">
       <Box minWidth={35}>
-        <Typography variant="body2" color="textSecondary">Your Collateral: {`${Math.round(value * 100)}%`}</Typography>
+        <Typography variant="body2" color="textSecondary">Your Collateral: {value}/{total}</Typography>
       </Box>
       <Box minWidth={35}>
-        <Typography variant="body2" color="textSecondary">LP Collateral: {`${Math.round((1 - value) * 100)}%`}</Typography>
+        <Typography variant="body2" color="textSecondary">LP Collateral: {total-value}/{total}</Typography>
       </Box>
       </Box>
       <Box width="100%" mr={1}>
-        <LinearProgress variant="determinate" value={value * 100} />
+        <LinearProgress variant="determinate" value={value/total * 100} />
       </Box>
     </Box>
   );
 }
 
 CollateralBar.defaultProps = {
-    value: 0
+  value: 100,
+  total: 110
 };
 
 export default CollateralBar;

@@ -10,8 +10,7 @@ import useStyles from "./styles";
 const NavItem = ({ page, active }) => {
 
     const classes = useStyles();
-    console.log(active);
-
+    
     return (
         <NavLink key={page.title} to={page.link} className={classes.NavLink}>
             <ListItem button key={page} className={active ? classes.ActiveItem : undefined}>

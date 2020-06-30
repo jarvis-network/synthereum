@@ -35,6 +35,7 @@ const Candlestick = ({ symbol, days }) => {
 
   useEffect(() => {
     getHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [days, symbol]);
 
   const Loader = () => (

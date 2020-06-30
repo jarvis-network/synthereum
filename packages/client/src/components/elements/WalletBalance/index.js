@@ -64,7 +64,7 @@ export default function WalletBalance({
       </Grid>
 
       {assets.map((asset, index) => (
-        <Grid container className={classes.SynthToken}>
+        <Grid container key={index} className={classes.SynthToken}>
           <Grid item xs={6}>
             <Box
               className={classes.TokenCell}
