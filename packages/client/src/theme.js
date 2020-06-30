@@ -64,10 +64,6 @@ const theme = createMuiTheme({
           border: 'none',
           borderBottom: 'none',
           fontFamily: 'Hind Vadodara'
-        },
-        head: {
-          paddingLeft: 0,
-          paddingRight: 0
         }
       },
       MuiSelect: {

@@ -215,7 +215,6 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              
               label={getOrderType() === "mint" ? "From (estimated)" : "From"}
               placeholder="0.0"
               fullWidth
@@ -257,7 +256,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
           <Grid item md={12}>
             {outputAmount && getOrderType() === "mint" && (
-            <TableContainer component={Paper} className={classes.FeeTable}>
+            <TableContainer>
               <Table size="small">
                 <TableBody>
                   <TableRow className={classes.TableRow}>
