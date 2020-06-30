@@ -1,6 +1,11 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
+    palette: {
+      background: {
+        default: "#f4f6f8"
+      }
+    },
     TokenIcon: {
       marginRight: 10,
       width: 24,

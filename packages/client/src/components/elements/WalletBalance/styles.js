@@ -11,7 +11,9 @@ const TokenInfo = {
 const useStyles = makeStyles(theme => ({
     Paper: {
       ...theme.overrides.MuiPaper.panel,
-      fontFamily: 'Hind Vadodara'
+      fontFamily: 'Hind Vadodara',
+      paddingLeft: 0,
+      paddingRight: 0
     },
     TokenInfo,
     SynthToken: {
