@@ -67,18 +67,14 @@ export default function WalletBalance({
 
   return (
     <Card className={classes.Paper}>
-      <Typography variant="h5">
-          Wallet Details
-        </Typography>
-      <CardContent pl={0}>
+      <CardHeader title="Wallet Details" className={classes.CardHeader} />
+      <CardContent className={classes.CardContent}>
         <Table>
           <TableBody>
             {assets.map((asset, index) => (
               <TableRow>
-                <TableCell style={{
-                  verticalAlign:'center'
-                }}>
-                <img
+                <TableCell className={classes.TokenIconCell}>
+                  <img
                     alt={asset.symbol}
                     width="56"
                     height="56"
@@ -86,85 +82,42 @@ export default function WalletBalance({
                   />
                 </TableCell>
                 <TableCell>
-                  <Typography variant="h6" display="block">{asset.symbol}</Typography>
+                  <Typography variant="h6" display="block">
+                    {asset.symbol}
+                  </Typography>
                   <Typography variant="body2">{asset.name}</Typography>
                 </TableCell>
                 <TableCell>
-                  {Number(
-                    fromWei(synBalances[index] || "0", "ether")
-                  ).toLocaleString()}
+                  <Typography className={classes.BalanceCell}>
+                    {Number(
+                      fromWei(synBalances[index] || "0", "ether")
+                    ).toLocaleString()}
+                  </Typography>
                 </TableCell>
-                <TableCell>
+                {/* <TableCell align="right">
+                  <Typography variant="body1" display="block">100/110</Typography>
+                  <Typography variant="body2">Your Collateral</Typography>
+                </TableCell> */}
+                <TableCell align="right">
                   <CollateralBar />
                 </TableCell>
               </TableRow>
             ))}
             <TableRow>
-              <TableCell className={classes.TokenCell}>
-              <img className={classes.TokenIcon} alt="DAI" src={icons.DAI} />
-                DAI
-              </TableCell>
               <TableCell>
-              {Number(fromWei(balance, "ether")).toLocaleString()}
+                <img alt="DAI" width="56" height="56" src={icons.DAI} />
               </TableCell>
+              <TableCell className={classes.TokenCell}>DAI</TableCell>
               <TableCell>
-                <CollateralBar />
+                <Typography className={classes.BalanceCell}>
+                  {Number(fromWei(balance, "ether")).toLocaleString()}
+                </Typography>
               </TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </CardContent>
     </Card>
   );
-
-  // return (
-  //   <Paper className={classes.Paper}>
-  //     <Grid container>
-  //       <Grid item xs={6}>
-  //         <Typography variant="h6">Token</Typography>
-  //       </Grid>
-  //       <Grid item xs={6} align="right">
-  //         <Typography variant="h6">Balance</Typography>
-  //       </Grid>
-  //     </Grid>
-
-  //     {assets.map((asset, index) => (
-  //       <Grid container key={index} className={classes.SynthToken}>
-  //         <Grid item xs={6}>
-  //           <Box
-  //             className={classes.TokenCell}
-  //             display="flex"
-  //             alignItems="center"
-  //           >
-  //             <img
-  //               className={classes.TokenIcon}
-  //               alt={asset.symbol}
-  //               src={icons[asset.symbol]}
-  //             />
-  //             {asset.symbol}
-  //           </Box>
-  //         </Grid>
-  //         <Grid item xs={6} align="right">
-  //           {Number(
-  //             fromWei(synBalances[index] || "0", "ether")
-  //           ).toLocaleString()}
-  //         </Grid>
-  //         <Grid item xs={12}>
-  //           <CollateralBar />
-  //         </Grid>
-  //       </Grid>
-  //     ))}
-
-  //     <Grid container className={classes.TokenInfo}>
-  //       <Grid item xs={6}>
-  //         <Box className={classes.TokenCell} display="flex" alignItems="center">
-            
-  //         </Box>
-  //       </Grid>
-  //       <Grid item xs={6} align="right">
-          
-  //       </Grid>
-  //     </Grid>
-  //   </Paper>
-  // );
 }

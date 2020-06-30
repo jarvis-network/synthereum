@@ -14,7 +14,7 @@ function CollateralBar({ value, total }) {
 
     return (
       <Box position="relative" display="inline-flex">
-      <CircularProgress size={56} variant="static" value={value / total * 100} />
+      <CircularProgress size={56} thickness={4} variant="static" value={value / total * 100} />
       <Box
         top={0}
         left={0}

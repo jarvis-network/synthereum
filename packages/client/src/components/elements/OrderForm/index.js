@@ -215,6 +215,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
+              
               label={getOrderType() === "mint" ? "From (estimated)" : "From"}
               placeholder="0.0"
               fullWidth
@@ -222,6 +223,9 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               value={inputAmount}
               onChange={onInputAmountChange}
               disabled={getOrderType() === "mint"}
+              InputLabelProps={{
+                shrink: true,
+              }}
               InputProps={{
                 endAdornment: (
                   <TokenPicker assets={tokens} token={inputToken} onChange={setInputToken} />
@@ -240,6 +244,9 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               value={outputAmount}
               onChange={onOutputAmountChange}
               disabled={getOrderType() !== "mint"}
+              InputLabelProps={{
+                shrink: true,
+              }}
               InputProps={{
                 endAdornment: (
                   <TokenPicker assets={tokens} token={outputToken} onChange={setOutputToken} />

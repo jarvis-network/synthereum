@@ -4,6 +4,9 @@ const theme = createMuiTheme({
     palette: {
       background: {
         default: "#f4f6f8"
+      },
+      primary: {
+        main: "#03256C"
       }
     },
     TokenIcon: {
@@ -59,8 +62,6 @@ const theme = createMuiTheme({
         root: {
           fontSize: 18,
           border: 'none',
-          paddingLeft: 0,
-          paddingRight: 0,
           borderBottom: 'none',
           fontFamily: 'Hind Vadodara'
         },
