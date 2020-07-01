@@ -1,11 +1,10 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-
 const AssetCell = {
   display: 'flex',
   alignItems: 'center',
   '& img': {
-    marginLeft: 8
+    marginRight: 8
   }
 };
 

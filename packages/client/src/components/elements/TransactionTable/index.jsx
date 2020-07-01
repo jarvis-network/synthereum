@@ -17,6 +17,25 @@ import { useWeb3Context } from "web3-react";
 import * as icons from "../../../assets/icons";
 import Loader from "../Loader";
 
+const TOKEN_INDEX = 0;
+
+const getStatus = (ev, approvedEvents, rejectedEvents) => {
+  
+  let status = "pending";
+  if (approvedEvents.find(e => e.returnValues.mintId === ev.returnValues.mintId)) {
+    status = "approved";
+  }
+  if (rejectedEvents.find(e => e.returnValues.mintId === ev.returnValues.mintId)) {
+    status = "rejected";
+  }
+
+  return {
+    ...ev,
+    status
+  };
+
+};
+
 const TransactionTable = ({ assets }) => {
   const classes = useStyles();
   const context = useWeb3Context();
@@ -27,60 +46,74 @@ const TransactionTable = ({ assets }) => {
   // TODO: should only render component once contracts are ready
   const contractsReady = assets[0].contract ? true : false;
 
-  async function getEvents() {
-    // TODO: subtract 1,000,000 from web3.eth.getBlockNumber(), set floor to 0
-    const params = {
-      filter: { sender: context.account },
-      fromBlock: 0,
-      toBlock: "latest"
-    };
-
+  async function listEvents(eventNames) {
     try {
-      const response = await Promise.all(
-        assets.map(a => a.contract.getPastEvents("allEvents", params))
-      );
-      console.log(response);
-      const assetEvents = response.map((events, index) => {
-        return events.map(ev => {
-          if (ev.event.indexOf("Mint") > -1) {
-            ev.toAsset = assets[index].symbol;
-            ev.fromAsset = "DAI";
-          } else if (ev.event.indexOf("Redeem") > -1) {
-            ev.toAsset = "DAI";
-            ev.fromAsset = assets[index].symbol;
-          } else if (ev.event.indexOf("Exchange") > -1) {
-            ev.fromAsset = assets[index].symbol;
-            /// TODO: toAsset using address
-          }
-          let status = "";
-          if (ev.event === "MintRequested") {
-            status = "pending";
-            const approved = events.find(e => (e.returnValues.mintID === ev.returnValues.mintID && e.event === "MintApproved"));
-            if (approved) {
-              status = "approved";
-            }
-            const rejected = events.find(e => (e.returnValues.mintId === ev.returnValues.mintId && e.event === "MintRejected"));
-            if (rejected) {
-              status = "rejected";
-            }
-          } else if (ev.event === "RedeemRequested") {
-            status = "pending";
-            const approved = events.find(e => (e.returnValues.mintId === ev.returnValues.mintId && e.event === "RedeemApproved"));
-            if (approved) {
-              status = "approved";
-            }
-            const rejected = events.find(e => (e.returnValues.mintId === ev.returnValues.mintId && e.event === "RedeemRejected"));
-            if (rejected) {
-              status = "rejected";
-            }
-          }
-          ev.status = status;
-          return ev;
-        });
+
+      let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(eventNames.map(eventName => assets[TOKEN_INDEX].contract.getPastEvents(eventName, {
+        filter: { sender: context.account },
+        fromBlock: 0, // TODO: subtract 1,000,000 from web3.eth.getBlockNumber(), set floor to 0
+        toBlock: "latest"
+      })));
+
+      console.log(requestedEvents);
+      console.log(approvedEvents);
+      console.log(rejectedEvents);
+
+      requestedEvents = requestedEvents.map(ev => getStatus(ev, approvedEvents, rejectedEvents));
+
+      let toAsset, fromAsset;
+
+      if (eventNames[0] === "MintRequested") {
+        toAsset = assets[TOKEN_INDEX].symbol;
+        fromAsset = "DAI";
+      } else if (eventNames[0] === "RedeemRequested") {
+        toAsset = "DAI";
+        fromAsset = assets[TOKEN_INDEX].symbol;
+      } else if (eventNames[0] === "ExchangeRequested") {
+        fromAsset = assets[TOKEN_INDEX].symbol;
+        /// TODO: toAsset using address
+      }
+
+      return requestedEvents.map(ev => {
+        return {
+          ...ev,
+          toAsset,
+          fromAsset
+        };
       });
-      const allEvents = [].concat.apply([], assetEvents);
-      console.log(allEvents);
-      setEvents(allEvents.reverse());
+
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function getEvents() {
+  
+    try {
+
+      let mintEvents = await listEvents([
+        "MintRequested",
+        "MintApproved",
+        "MintRejected"
+      ]);
+
+      let redeemEvents = await listEvents([
+        "RedeemRequested",
+        "RedeemApproved",
+        "RedeemRejected"
+      ]);
+
+      let exchangeEvents = await listEvents([
+        "ExchangeRequested",
+        "ExchangeApproved",
+        "ExchangeRejected"
+      ]);
+
+      console.log(mintEvents);
+      console.log(redeemEvents);
+      console.log(exchangeEvents);
+      
+      setEvents(mintEvents.concat(redeemEvents).concat(exchangeEvents));
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -92,8 +125,6 @@ const TransactionTable = ({ assets }) => {
       getEvents();
     }
   }, [contractsReady]);
-
-  console.log(events[0]);
 
   return (
     <Paper className={classes.Paper}>
@@ -107,7 +138,7 @@ const TransactionTable = ({ assets }) => {
               <TableCell>Timestamp</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell align="right">Status</TableCell>
             </TableRow>
           </TableHead>
 
@@ -128,6 +159,12 @@ const TransactionTable = ({ assets }) => {
                         ev.event === "RedeemRequested" ? (
                         <TableCell className={classes.InputAmount}>
                             <Box component="div" className={classes.AssetCell}>
+                            <img
+                                alt={ev.fromAsset}
+                                width="28"
+                                height="28"
+                                src={icons[ev.fromAsset]}
+                            />
                             {`-${fromWei(
                                 ev.returnValues[
                                 ev.event === "RedeemRequested"
@@ -135,12 +172,7 @@ const TransactionTable = ({ assets }) => {
                                     : "collateralAmount"
                                 ]
                             )}`}
-                            <img
-                                alt={ev.fromAsset}
-                                width="28"
-                                height="28"
-                                src={icons[ev.fromAsset]}
-                            />
+                            
                             </Box>
                         </TableCell>
                         ) : (
@@ -150,6 +182,12 @@ const TransactionTable = ({ assets }) => {
                         ev.event === "RedeemRequested" ? (
                         <TableCell className={classes.OutputAmount}>
                             <Box component="div" className={classes.AssetCell}>
+                            <img
+                                alt={ev.toAsset}
+                                width="28"
+                                height="28"
+                                src={icons[ev.toAsset]}
+                            />
                             {`+${fromWei(
                                 ev.returnValues[
                                 ev.event === "RedeemRequested"
@@ -157,18 +195,13 @@ const TransactionTable = ({ assets }) => {
                                     : "numTokens"
                                 ]
                             )}`}
-                            <img
-                                alt={ev.toAsset}
-                                width="28"
-                                height="28"
-                                src={icons[ev.toAsset]}
-                            />
+                            
                             </Box>
                         </TableCell>
                         ) : (
                         <TableCell></TableCell>
                         )}
-                        <TableCell>
+                        <TableCell align="right">
                           { ev.status && (<StatusLabel status={ev.status || "pending"} />)}
                         </TableCell>
                     </TableRow>
