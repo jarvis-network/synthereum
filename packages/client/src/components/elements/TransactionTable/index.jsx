@@ -11,6 +11,7 @@ import {
   TableFooter,
   Typography
 } from "@material-ui/core";
+import StatusLabel from "./StatusLabel";
 import useStyles from "./styles";
 import { useWeb3Context } from "web3-react";
 import * as icons from "../../../assets/icons";
@@ -38,6 +39,7 @@ const TransactionTable = ({ assets }) => {
       const response = await Promise.all(
         assets.map(a => a.contract.getPastEvents("allEvents", params))
       );
+      console.log(response);
       const assetEvents = response.map((events, index) => {
         return events.map(ev => {
           if (ev.event.indexOf("Mint") > -1) {
@@ -48,7 +50,31 @@ const TransactionTable = ({ assets }) => {
             ev.fromAsset = assets[index].symbol;
           } else if (ev.event.indexOf("Exchange") > -1) {
             ev.fromAsset = assets[index].symbol;
+            /// TODO: toAsset using address
           }
+          let status = "";
+          if (ev.event === "MintRequested") {
+            status = "pending";
+            const approved = events.find(e => (e.returnValues.mintID === ev.returnValues.mintID && e.event === "MintApproved"));
+            if (approved) {
+              status = "approved";
+            }
+            const rejected = events.find(e => (e.returnValues.mintId === ev.returnValues.mintId && e.event === "MintRejected"));
+            if (rejected) {
+              status = "rejected";
+            }
+          } else if (ev.event === "RedeemRequested") {
+            status = "pending";
+            const approved = events.find(e => (e.returnValues.mintId === ev.returnValues.mintId && e.event === "RedeemApproved"));
+            if (approved) {
+              status = "approved";
+            }
+            const rejected = events.find(e => (e.returnValues.mintId === ev.returnValues.mintId && e.event === "RedeemRejected"));
+            if (rejected) {
+              status = "rejected";
+            }
+          }
+          ev.status = status;
           return ev;
         });
       });
@@ -77,12 +103,11 @@ const TransactionTable = ({ assets }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              {/* <TableCell>Type</TableCell> */}
-              <TableCell>Name</TableCell>
+              <TableCell>Transaction</TableCell>
               <TableCell>Timestamp</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
 
@@ -91,11 +116,9 @@ const TransactionTable = ({ assets }) => {
                 <TableBody>
                     {events.map((ev, index) => (
                     <TableRow key={index}>
-                        <TableCell>{ev.id}</TableCell>
-                        {/* <TableCell>
-                                            {ev.event.replace("Requested","").replace("Approved","").replace("Rejected","")}
-                                        </TableCell> */}
-                        <TableCell>{ev.event}</TableCell>
+                        <TableCell>
+                            {ev.event.replace("Requested","").replace("Approved","").replace("Rejected","")}
+                        </TableCell>
                         <TableCell>
                         {moment(parseInt(ev.returnValues.timestamp) * 1000).format(
                             "M/D/YY h:ma"
@@ -145,6 +168,9 @@ const TransactionTable = ({ assets }) => {
                         ) : (
                         <TableCell></TableCell>
                         )}
+                        <TableCell>
+                          { ev.status && (<StatusLabel status={ev.status || "pending"} />)}
+                        </TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
