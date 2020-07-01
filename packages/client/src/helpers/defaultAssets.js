@@ -6,6 +6,8 @@ const defaultAssets = [
       "contract": null,
       "derivative": null,
       "price": "0",
+      "collateral": "0",
+      "totalTokens": "0"
     },
     {
       "name": "Jarvis Synthetic Swiss Franc",
@@ -14,6 +16,8 @@ const defaultAssets = [
       "contract": null,
       "derivative": null,
       "price": "0",
+      "collateral": "0",
+      "totalTokens": "0"
     },
     {
       "name": "Jarvis Synthetic British Pound",
@@ -22,6 +26,8 @@ const defaultAssets = [
       "contract": null,
       "derivative": null,
       "price": "0",
+      "collateral": "0",
+      "totalTokens": "0"
     },
     {
       "name": "Jarvis Synthetic Gold",
@@ -30,6 +36,8 @@ const defaultAssets = [
       "contract": null,
       "derivative": null,
       "price": "0",
+      "collateral": "0",
+      "totalTokens": "0"
     }
 ];
 

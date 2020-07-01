@@ -57,6 +57,28 @@ export default function Wallet({ setLoading }) {
           newAssets[i].derivative = new Contract(ExpiringMultiParty.abi, derivatives[i]);
         }
 
+        Promise.all(assets.map((asset, i) => {
+          asset.derivative
+            .methods
+            .getCollateral(asset.contract.options.address)
+            .call()
+            .then(collateral => {
+              newAssets[i].collateral = collateral["rawValue"];
+              setAssets(newAssets);
+            });
+        }));
+
+        Promise.all(assets.map((asset, i) => {
+          asset.derivative
+            .methods
+            .positions(asset.contract.options.address)
+            .call()
+            .then(result => {
+              newAssets[i].totalTokens = result["tokensOutstanding"]["rawValue"];
+              setAssets(newAssets);
+            });
+        }));
+
         setAssets(newAssets);
 
         return Promise.all(newAssets.map(asset => {

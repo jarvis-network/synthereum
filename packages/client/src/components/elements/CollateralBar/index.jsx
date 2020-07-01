@@ -15,6 +15,8 @@ const Progress = React.forwardRef(function Progress(props, ref) {
 function CollateralBar({ value, total }) {
   const classes = useStyles();
 
+  const progress = (value / (total != 0 ? total : 1)) * 100;
+
   return (
     <Box position="relative" display="inline-flex">
       <Tooltip title="LP Collateral">
@@ -31,7 +33,7 @@ function CollateralBar({ value, total }) {
           size={56}
           thickness={4}
           variant="static"
-          value={(value / total) * 100}
+          value={progress}
           className={classes.top}
         />
       </Tooltip>
@@ -49,7 +51,7 @@ function CollateralBar({ value, total }) {
           variant="caption"
           component="div"
           color="textSecondary"
-        >{`${Math.round((value / total) * 100)}%`}</Typography>
+        >{`${Math.round(progress)}%`}</Typography>
       </Box>
     </Box>
   );

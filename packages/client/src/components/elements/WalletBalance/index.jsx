@@ -82,7 +82,8 @@ export default function WalletBalance({
         <Table>
           <TableBody>
             {assets.map((asset, index) => {
-              const value = Math.floor(Math.random() * 100) + 1;
+              const value = asset.price * fromWei(asset.totalTokens.toString());
+              const total = fromWei(asset.collateral.toString());
               return (
                 <TableRow key={index}>
                   <TableCell className={classes.TokenIconCell}>
@@ -100,7 +101,7 @@ export default function WalletBalance({
                     <Typography variant="body2">{asset.name}</Typography>
                   </TableCell>
                   <TableCell>
-                    <CollateralBar value={value} />
+                    <CollateralBar value={value} total={total} />
                   </TableCell>
                   <TableCell
                     align="right"
