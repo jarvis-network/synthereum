@@ -9,7 +9,7 @@ import ExpiringMultiParty from "../../../contracts/ExpiringMultiParty.json";
 import MCD_DAI from "../../../MCD_DAI.json";
 import IERC20 from "../../../contracts/IERC20.json";
 
-import defaultAssets from "../../../helpers/defaultAssets";
+import defaultAssets from "../../../helpers/defaultAssets.js";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 

@@ -32,6 +32,25 @@ const useStyles = makeStyles(theme => ({
     },
     TokenCell: theme.TokenCell,
     TokenIcon: theme.TokenIcon,
+    LegendList: {
+      listStyle: 'none'
+    },
+    LegendItem: {
+      float: 'left',
+      display: 'flex',
+      alignItems: 'center',
+      marginRight: 10,
+      '&:last-child div': {
+        backgroundColor: theme.palette.grey[theme.palette.type === "light" ? 200 : 700]
+      }
+    },
+    LegendCircle: {
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: '50%',
+      width: 10,
+      height: 10,
+      marginRight: 4
+    }
   }));
 
 export default useStyles;

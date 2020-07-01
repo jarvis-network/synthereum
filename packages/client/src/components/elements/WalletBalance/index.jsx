@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
 
 import {
+  Box,
   Card,
   CardHeader,
   CardContent,
@@ -16,6 +17,8 @@ import * as icons from "../../../assets/icons";
 
 import useStyles from "./styles";
 import CollateralBar from "../CollateralBar";
+
+
 
 export default function WalletBalance({
   assets,
@@ -34,6 +37,18 @@ export default function WalletBalance({
   const [balance, setBalance] = useState("0");
 
   const { fromWei } = context.library.utils;
+
+  const Legend = ({ }) => (
+    <Box component="ul" className={classes.LegendList}>
+      <li className={classes.LegendItem}>
+        <Box component="div" className={classes.LegendCircle} /> User Collateral
+      </li>
+      <li className={classes.LegendItem}>
+        <Box component="div" className={classes.LegendCircle} />
+        LP Collateral
+      </li>
+    </Box>
+  )
 
   useEffect(() => {
     if (context.active) {
@@ -62,7 +77,7 @@ export default function WalletBalance({
 
   return (
     <Card className={classes.Paper}>
-      <CardHeader title="Wallet Details" className={classes.CardHeader} />
+      <CardHeader title="Wallet Details" className={classes.CardHeader} action={(<Legend />)} />
       <CardContent className={classes.CardContent}>
         <Table>
           <TableBody>
@@ -84,37 +99,33 @@ export default function WalletBalance({
                     </Typography>
                     <Typography variant="body2">{asset.name}</Typography>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body1" display="block">{value}/110</Typography>
-                    <Typography variant="body2">Your Collateral</Typography>
-                  </TableCell>
                   <TableCell>
                     <CollateralBar value={value} />
                   </TableCell>
-                  <TableCell align="right" style={{
-                    borderLeft: '1px solid rgba(224, 224, 224, 1)'
-                  }}>
+                  <TableCell
+                    align="right"
+                    style={{
+                      borderLeft: "1px solid rgba(224, 224, 224, 1)"
+                    }}
+                  >
                     <Typography className={classes.BalanceCell}>
-                      {Number(
-                        fromWei(synBalances[index] || "0", "ether")
-                      ).toFixed(3).toLocaleString()}
+                      {Number(fromWei(synBalances[index] || "0", "ether"))
+                        .toFixed(3)
+                        .toLocaleString()}
                     </Typography>
                   </TableCell>
                 </TableRow>
-              )
+              );
             })}
             <TableRow>
               <TableCell>
                 <img alt="DAI" width="56" height="56" src={icons.DAI} />
               </TableCell>
-              <TableCell>
-              <Typography variant="h6" display="block">
-                DAI
-              </Typography>
+              <TableCell colSpan="2">
+                <Typography variant="h6" display="block">
+                  DAI
+                </Typography>
               </TableCell>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-
               <TableCell align="right">
                 <Typography className={classes.BalanceCell}>
                   {Number(fromWei(balance, "ether")).toLocaleString()}
