@@ -18,8 +18,6 @@ import * as icons from "../../../assets/icons";
 import useStyles from "./styles";
 import CollateralBar from "../CollateralBar";
 
-
-
 export default function WalletBalance({
   assets,
   syntheticTokens,
@@ -48,11 +46,32 @@ export default function WalletBalance({
         LP Collateral
       </li>
     </Box>
-  )
+  );
+
+  
+
+  useEffect(() => {
+
+    async function setSubscriptions() {
+      try {
+  
+        // TODO: add params/filter
+        const subscription = context.library.eth.subscribe("MintApproved");
+        console.log(subscription);
+  
+      } catch(err) {
+        console.error(err);
+      }
+    }
+
+
+    setSubscriptions();
+    
+  }, [context.library.eth]);
 
   useEffect(() => {
     if (context.active) {
-      syntheticTokens.map((token, i) => {
+      syntheticTokens.forEach((token, i) => {
         if (token) {
           token.methods
             .balanceOf(context.account)
@@ -64,6 +83,7 @@ export default function WalletBalance({
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active, syntheticTokens, token, lastTx]);
 
   useEffect(() => {
@@ -77,7 +97,11 @@ export default function WalletBalance({
 
   return (
     <Card className={classes.Paper}>
-      <CardHeader title="Wallet Details" className={classes.CardHeader} action={(<Legend />)} />
+      <CardHeader
+        title="Wallet Details"
+        className={classes.CardHeader}
+        action={<Legend />}
+      />
       <CardContent className={classes.CardContent}>
         <Table>
           <TableBody>

@@ -53,6 +53,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
         networkId: context.networkId
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active]);
 
   const getOrderType = () => {

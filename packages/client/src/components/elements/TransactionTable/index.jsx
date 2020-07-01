@@ -8,7 +8,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  TableFooter,
   Typography
 } from "@material-ui/core";
 import StatusLabel from "./StatusLabel";
@@ -48,9 +47,13 @@ const TransactionTable = ({ assets, token }) => {
   async function listEvents(eventNames, idField) {
     try {
 
+      const blockNumber = await context.library.eth.getBlockNumber();
+      console.log(blockNumber, "blockNumber");
+
       let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(eventNames.map(eventName => assets[token].contract.getPastEvents(eventName, {
         filter: { sender: context.account },
-        fromBlock: 0, // TODO: subtract 1,000,000 from web3.eth.getBlockNumber(), set floor to 0
+        fromBlock: 0,
+        // fromBlock: blockNumber - 1000000, // TODO
         toBlock: "latest"
       })));
 
@@ -115,9 +118,9 @@ const TransactionTable = ({ assets, token }) => {
 
   useEffect(() => {
     if (contractsReady) {
-      console.log("GET EVENTS");
       getEvents();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractsReady, token]);
 
   return (

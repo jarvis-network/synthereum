@@ -24,7 +24,7 @@ const Navigation = ({ window, handleDrawerToggle }) => {
 
   const classes = useStyles();
   const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen] = React.useState(false);
 
   const drawer = (
     <div>
