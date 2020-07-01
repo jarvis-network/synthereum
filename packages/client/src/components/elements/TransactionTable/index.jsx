@@ -159,13 +159,13 @@ const TransactionTable = ({ assets, token }) => {
                                 height="28"
                                 src={icons[ev.fromAsset]}
                             />
-                            {`-${fromWei(
+                            {`-${Number(fromWei(
                                 ev.returnValues[
                                 ev.event === "RedeemRequested"
                                     ? "numTokens"
                                     : "collateralAmount"
                                 ]
-                            )}`}
+                            )).toLocaleString()}`}
                             
                             </Box>
                         </TableCell>
@@ -182,13 +182,13 @@ const TransactionTable = ({ assets, token }) => {
                                 height="28"
                                 src={icons[ev.toAsset]}
                             />
-                            {`+${fromWei(
+                            {`+${Number(fromWei(
                                 ev.returnValues[
                                 ev.event === "RedeemRequested"
                                     ? "collateralAmount"
                                     : "numTokens"
                                 ]
-                            )}`}
+                            )).toLocaleString()}`}
                             
                             </Box>
                         </TableCell>
