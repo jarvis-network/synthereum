@@ -38,7 +38,7 @@ export default function WalletBalance({
 
   const { fromWei } = context.library.utils;
 
-  const Legend = ({ }) => (
+  const Legend = () => (
     <Box component="ul" className={classes.LegendList}>
       <li className={classes.LegendItem}>
         <Box component="div" className={classes.LegendCircle} /> User Collateral

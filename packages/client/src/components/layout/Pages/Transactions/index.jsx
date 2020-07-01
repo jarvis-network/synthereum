@@ -22,7 +22,7 @@ const Transactions = ({ assets }) => {
             onChange={ev => setToken(ev.target.value)}
           >
             {assets.map((asset, index) => (
-              <MenuItem value={index}>{asset.symbol}</MenuItem>
+              <MenuItem key={asset.symbol} value={index}>{asset.symbol}</MenuItem>
             ))}
           </Select>
         </FormControl>

@@ -47,7 +47,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   useEffect(() => {
     if (!notify) {
       setNotify(Notify({
-        dappId: REACT_APP_NOTIFY_API,
+        dappId: process.env.REACT_APP_NOTIFY_API,
         system: "ethereum",
         networkId: context.networkId
       }));
