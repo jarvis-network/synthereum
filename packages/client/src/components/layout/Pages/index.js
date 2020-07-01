@@ -34,7 +34,7 @@ const Pages = ({
       </Route>
       <Route path="/">
         <Grid container spacing={8}>
-          <Grid item md={6}>
+          <Grid item md={5}>
             <OrderForm
               assets={assets}
               dai={dai}
@@ -43,7 +43,7 @@ const Pages = ({
               setLastTx={setLastTx}
             />
           </Grid>
-          <Grid item md={6}>
+          <Grid item md={7}>
             <WalletBalance
               assets={assets}
               syntheticTokens={syntheticTokens}

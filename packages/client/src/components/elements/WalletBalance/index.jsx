@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
 
-import Divider from "@material-ui/core/Divider";
 import {
   Card,
   CardHeader,
@@ -67,38 +66,43 @@ export default function WalletBalance({
       <CardContent className={classes.CardContent}>
         <Table>
           <TableBody>
-            {assets.map((asset, index) => (
-              <TableRow>
-                <TableCell className={classes.TokenIconCell}>
-                  <img
-                    alt={asset.symbol}
-                    width="56"
-                    height="56"
-                    src={icons[asset.symbol]}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="h6" display="block">
-                    {asset.symbol}
-                  </Typography>
-                  <Typography variant="body2">{asset.name}</Typography>
-                </TableCell>
-                <TableCell>
-                  <CollateralBar value={Math.floor(Math.random() * 100) + 1} />
-                </TableCell>
-                <TableCell align="right">
-                  <Typography className={classes.BalanceCell}>
-                    {Number(
-                      fromWei(synBalances[index] || "0", "ether")
-                    ).toFixed(3).toLocaleString()}
-                  </Typography>
-                </TableCell>
-                {/* <TableCell align="right">
-                  <Typography variant="body1" display="block">100/110</Typography>
-                  <Typography variant="body2">Your Collateral</Typography>
-                </TableCell> */}
-              </TableRow>
-            ))}
+            {assets.map((asset, index) => {
+              const value = Math.floor(Math.random() * 100) + 1;
+              return (
+                <TableRow key={index}>
+                  <TableCell className={classes.TokenIconCell}>
+                    <img
+                      alt={asset.symbol}
+                      width="56"
+                      height="56"
+                      src={icons[asset.symbol]}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="h6" display="block">
+                      {asset.symbol}
+                    </Typography>
+                    <Typography variant="body2">{asset.name}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body1" display="block">{value}/110</Typography>
+                    <Typography variant="body2">Your Collateral</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <CollateralBar value={value} />
+                  </TableCell>
+                  <TableCell align="right" style={{
+                    borderLeft: '1px solid rgba(224, 224, 224, 1)'
+                  }}>
+                    <Typography className={classes.BalanceCell}>
+                      {Number(
+                        fromWei(synBalances[index] || "0", "ether")
+                      ).toFixed(3).toLocaleString()}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
             <TableRow>
               <TableCell>
                 <img alt="DAI" width="56" height="56" src={icons.DAI} />

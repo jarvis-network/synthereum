@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Chart } from "react-google-charts";
 import Paper from "@material-ui/core/Paper";
-import Box from "@material-ui/core/Box";
-import CircularProgress from '@material-ui/core/CircularProgress';
 import useStyles from "./styles";
 import { jarvisPriceHistory } from "../../../jarvisAPI.js";
+import Loader from "../Loader";
 
 const Candlestick = ({ symbol, days }) => {
   const classes = useStyles();
@@ -37,12 +36,6 @@ const Candlestick = ({ symbol, days }) => {
     getHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [days, symbol]);
-
-  const Loader = () => (
-    <Box justifyContent="center">
-      <CircularProgress />
-    </Box>
-  )
 
   return (
     <Paper className={classes.Paper}>

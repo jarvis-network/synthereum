@@ -1,5 +1,14 @@
 import { makeStyles } from "@material-ui/core/styles";
 
+
+const AssetCell = {
+  display: 'flex',
+  alignItems: 'center',
+  '& img': {
+    marginLeft: 8
+  }
+};
+
 const useStyles = makeStyles(theme => ({
     Paper: {
       ...theme.overrides.MuiPaper.panel,
@@ -10,7 +19,8 @@ const useStyles = makeStyles(theme => ({
     },
     OutputAmount: {
       color: 'green'
-    }
+    },
+    AssetCell
   }));
 
 export default useStyles;

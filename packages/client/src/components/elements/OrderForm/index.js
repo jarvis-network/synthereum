@@ -178,7 +178,6 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const placeOrder = () => {
 
-    console.log(inputToken, outputToken);
     if (outputToken === SELECT_TOKEN) return setErrorMessage("Please select a token.");
     if (inputToken === 4 && outputToken === 4) return setErrorMessage("Please pick a different token pair.");
 

@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
       },
     },
     BalanceCell: {
-      fontSize: '28px',
       fontSize: 28
     },
     TokenIconCell: {
