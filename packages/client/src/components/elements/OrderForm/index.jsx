@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useWeb3Context } from "web3-react";
+
+import Notify from "bnc-notify";
 
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -33,12 +35,24 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   const [feeAmount, setFeeAmount] = useState("0");
   const [collateralAmount, setCollateralAmount] = useState("0");
 
+  const [notify, setNotify] = useState(null);
+
   const { fromWei, toWei, toBN } = context.library.utils;
 
   const tokens = assets.concat([{
     name: "DAI",
     symbol: "DAI"
   }]);
+
+  useEffect(() => {
+    if (!notify) {
+      setNotify(Notify({
+        dappId: REACT_APP_NOTIFY_API,
+        system: "ethereum",
+        networkId: context.networkId
+      }));
+    }
+  }, [context, context.active]);
 
   const getOrderType = () => {
     if (inputToken === 4 && outputToken < 4) {
@@ -96,11 +110,17 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           .send({
             from: context.account
           })
+          .on("transactionHash", hash => {
+            notify.hash(hash);
+          })
           .then(() => {
             return assets[outputToken].contract.methods
               .mintRequest(collateralAmount, orderAmountTKNbits)
               .send({
                 from: context.account
+              })
+              .on("transactionHash", hash => {
+                notify.hash(hash);
               });
           })
           .then(tx => {
@@ -124,11 +144,17 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       .send({
         from: context.account
       })
+      .on("transactionHash", hash => {
+        notify.hash(hash);
+      })
       .then(() => {
         return assets[inputToken].contract.methods
           .redeemRequest(collateralAmount, orderAmountTKNbits)
           .send({
             from: context.account
+          })
+          .on("transactionHash", hash => {
+            notify.hash(hash);
           });
       })
       .then(tx => {
@@ -151,6 +177,9 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       .send({
         from: context.account
       })
+      .on("transactionHash", hash => {
+        notify.hash(hash);
+      })
       .then(() => {
         return assets[inputToken].contract.methods
           .exchangeRequest(
@@ -160,6 +189,9 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           )
           .send({
             from: context.account
+          })
+          .on("transactionHash", hash => {
+            notify.hash(hash);
           });
       })
       .then(tx => {
