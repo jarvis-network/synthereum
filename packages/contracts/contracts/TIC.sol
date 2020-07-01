@@ -166,9 +166,10 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param mintID The ID of the mint request
      */
     function approveMint(bytes32 mintID) external override nonReentrant onlyValidator {
+        address sender = ticStorage.mintRequests[mintID].sender;
+
         ticStorage.approveMint(mintID);
 
-        address sender = ticStorage.mintRequests[mintID].sender;
         emit MintApproved(mintID, sender);
     }
 
@@ -179,9 +180,10 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param mintID The ID of the mint request
      */
     function rejectMint(bytes32 mintID) external override nonReentrant onlyValidator {
+        address sender = ticStorage.mintRequests[mintID].sender;
+
         ticStorage.rejectMint(mintID);
 
-        address sender = ticStorage.mintRequests[mintID].sender;
         emit MintRejected(mintID, sender);
     }
 
@@ -267,9 +269,10 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param redeemID The ID of the redeem request
      */
     function approveRedeem(bytes32 redeemID) external override nonReentrant {
+        address sender = ticStorage.redeemRequests[redeemID].sender;
+
         ticStorage.approveRedeem(redeemID);
 
-        address sender = ticStorage.redeemRequests[redeemID].sender;
         emit RedeemApproved(redeemID, sender);
     }
 
@@ -279,9 +282,10 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param redeemID The ID of the redeem request
      */
     function rejectRedeem(bytes32 redeemID) external override nonReentrant {
+        address sender = ticStorage.redeemRequests[redeemID].sender;
+
         ticStorage.rejectRedeem(redeemID);
 
-        address sender = ticStorage.redeemRequests[redeemID].sender;
         emit RedeemRejected(redeemID, sender);
     }
 
@@ -331,9 +335,10 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param exchangeID The ID of the exchange request
      */
     function approveExchange(bytes32 exchangeID) external override onlyValidator nonReentrant {
+        address sender = ticStorage.exchangeRequests[exchangeID].sender;
+
         ticStorage.approveExchange(exchangeID);
 
-        address sender = ticStorage.exchangeRequests[exchangeID].sender;
         emit ExchangeApproved(exchangeID, sender);
     }
 
@@ -344,9 +349,10 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @param exchangeID The ID of the exchange request
      */
     function rejectExchange(bytes32 exchangeID) external override onlyValidator nonReentrant {
+        address sender = ticStorage.exchangeRequests[exchangeID].sender;
+
         ticStorage.rejectExchange(exchangeID);
 
-        address sender = ticStorage.exchangeRequests[exchangeID].sender;
         emit ExchangeRejected(exchangeID, sender);
     }
 
