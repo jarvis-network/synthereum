@@ -17,15 +17,14 @@ import { useWeb3Context } from "web3-react";
 import * as icons from "../../../assets/icons";
 import Loader from "../Loader";
 
-const TOKEN_INDEX = 0;
 
 const getStatus = (ev, approvedEvents, rejectedEvents) => {
   
   let status = "pending";
-  if (approvedEvents.find(e => e.returnValues.mintId === ev.returnValues.mintId)) {
+  if (approvedEvents.find(e => e.returnValues.mintID === ev.returnValues.mintID)) {
     status = "approved";
   }
-  if (rejectedEvents.find(e => e.returnValues.mintId === ev.returnValues.mintId)) {
+  if (rejectedEvents.find(e => e.returnValues.mintID === ev.returnValues.mintID)) {
     status = "rejected";
   }
 
@@ -36,7 +35,7 @@ const getStatus = (ev, approvedEvents, rejectedEvents) => {
 
 };
 
-const TransactionTable = ({ assets }) => {
+const TransactionTable = ({ assets, token }) => {
   const classes = useStyles();
   const context = useWeb3Context();
   const { fromWei } = context.library.utils;
@@ -49,28 +48,24 @@ const TransactionTable = ({ assets }) => {
   async function listEvents(eventNames) {
     try {
 
-      let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(eventNames.map(eventName => assets[TOKEN_INDEX].contract.getPastEvents(eventName, {
+      let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(eventNames.map(eventName => assets[token].contract.getPastEvents(eventName, {
         filter: { sender: context.account },
         fromBlock: 0, // TODO: subtract 1,000,000 from web3.eth.getBlockNumber(), set floor to 0
         toBlock: "latest"
       })));
-
-      console.log(requestedEvents);
-      console.log(approvedEvents);
-      console.log(rejectedEvents);
 
       requestedEvents = requestedEvents.map(ev => getStatus(ev, approvedEvents, rejectedEvents));
 
       let toAsset, fromAsset;
 
       if (eventNames[0] === "MintRequested") {
-        toAsset = assets[TOKEN_INDEX].symbol;
+        toAsset = assets[token].symbol;
         fromAsset = "DAI";
       } else if (eventNames[0] === "RedeemRequested") {
         toAsset = "DAI";
-        fromAsset = assets[TOKEN_INDEX].symbol;
+        fromAsset = assets[token].symbol;
       } else if (eventNames[0] === "ExchangeRequested") {
-        fromAsset = assets[TOKEN_INDEX].symbol;
+        fromAsset = assets[token].symbol;
         /// TODO: toAsset using address
       }
 
@@ -91,6 +86,8 @@ const TransactionTable = ({ assets }) => {
   
     try {
 
+      setLoading(true);
+
       let mintEvents = await listEvents([
         "MintRequested",
         "MintApproved",
@@ -108,12 +105,8 @@ const TransactionTable = ({ assets }) => {
         "ExchangeApproved",
         "ExchangeRejected"
       ]);
-
-      console.log(mintEvents);
-      console.log(redeemEvents);
-      console.log(exchangeEvents);
       
-      setEvents(mintEvents.concat(redeemEvents).concat(exchangeEvents));
+      setEvents(mintEvents.concat(redeemEvents).concat(exchangeEvents).sort((a, b) => b.returnValues.timestamp - a.returnValues.timestamp));
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -122,9 +115,10 @@ const TransactionTable = ({ assets }) => {
 
   useEffect(() => {
     if (contractsReady) {
+      console.log("GET EVENTS");
       getEvents();
     }
-  }, [contractsReady]);
+  }, [contractsReady, token]);
 
   return (
     <Paper className={classes.Paper}>
