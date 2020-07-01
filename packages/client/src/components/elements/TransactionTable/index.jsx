@@ -54,7 +54,7 @@ const TransactionTable = ({ assets }) => {
       });
       const allEvents = [].concat.apply([], assetEvents);
       console.log(allEvents);
-      // setEvents(allEvents);
+      setEvents(allEvents);
       setLoading(false);
     } catch (err) {
       console.error(err);

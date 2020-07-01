@@ -113,6 +113,7 @@ export default function WalletBalance({
               </Typography>
               </TableCell>
               <TableCell></TableCell>
+              <TableCell></TableCell>
 
               <TableCell align="right">
                 <Typography className={classes.BalanceCell}>
