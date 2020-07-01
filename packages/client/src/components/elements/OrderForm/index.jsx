@@ -41,7 +41,8 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const tokens = assets.concat([{
     name: "DAI",
-    symbol: "DAI"
+    symbol: "DAI",
+    price: 1
   }]);
 
   useEffect(() => {
@@ -84,16 +85,24 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
     if (!isNaN(value)) {
       setInputAmount(value);
-      calculateFees(value);
     }
   };
+
+  useEffect(() => {
+    if (inputAmount > 0 && tokens[outputToken] && tokens[inputToken]) {
+      const tokenAmount = (inputAmount * tokens[inputToken].price) / tokens[outputToken].price;
+      setOutputAmount(tokenAmount.toFixed(3));
+      if (inputToken === assets.length) {
+        calculateFees(tokenAmount);
+      }
+    }
+  }, [inputAmount, inputToken, outputToken]);
 
   const onOutputAmountChange = event => {
     const { value } = event.target;
 
     if (!isNaN(value)) {
       setOutputAmount(value);
-      calculateFees(value);
     }
   };
 
@@ -246,13 +255,12 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label={getOrderType() === "mint" ? "From (estimated)" : "From"}
+              label={"From"}
               placeholder="0.0"
               fullWidth
               margin="normal"
               value={inputAmount}
               onChange={onInputAmountChange}
-              disabled={getOrderType() === "mint"}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -267,13 +275,13 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label={getOrderType() === "mint" ? "To" : "To (estimated)"}
+              label={"To (estimated)"}
               placeholder="0.0"
               fullWidth
               margin="normal"
               value={outputAmount}
               onChange={onOutputAmountChange}
-              disabled={getOrderType() !== "mint"}
+              disabled={true}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -300,7 +308,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
                   <TableRow>
                     <TableCell>Total</TableCell>
                     <TableCell align="right">
-                      {collateralAmount.toLocaleString()} {tokens[inputToken].symbol}
+                      {(collateralAmount + Number(fromWei(feeAmount))).toLocaleString()} {tokens[inputToken].symbol}
                     </TableCell>
                   </TableRow>
                 </TableBody>
