@@ -18,13 +18,13 @@ import * as icons from "../../../assets/icons";
 import Loader from "../Loader";
 
 
-const getStatus = (ev, approvedEvents, rejectedEvents) => {
+const getStatus = (ev, approvedEvents, rejectedEvents, idField) => {
   
   let status = "pending";
-  if (approvedEvents.find(e => e.returnValues.mintID === ev.returnValues.mintID)) {
+  if (approvedEvents.find(e => e.returnValues[idField] === ev.returnValues[idField])) {
     status = "approved";
   }
-  if (rejectedEvents.find(e => e.returnValues.mintID === ev.returnValues.mintID)) {
+  if (rejectedEvents.find(e => e.returnValues[idField] === ev.returnValues[idField])) {
     status = "rejected";
   }
 
@@ -45,7 +45,7 @@ const TransactionTable = ({ assets, token }) => {
   // TODO: should only render component once contracts are ready
   const contractsReady = assets[0].contract ? true : false;
 
-  async function listEvents(eventNames) {
+  async function listEvents(eventNames, idField) {
     try {
 
       let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(eventNames.map(eventName => assets[token].contract.getPastEvents(eventName, {
@@ -54,7 +54,7 @@ const TransactionTable = ({ assets, token }) => {
         toBlock: "latest"
       })));
 
-      requestedEvents = requestedEvents.map(ev => getStatus(ev, approvedEvents, rejectedEvents));
+      requestedEvents = requestedEvents.map(ev => getStatus(ev, approvedEvents, rejectedEvents, idField));
 
       let toAsset, fromAsset;
 
@@ -92,19 +92,19 @@ const TransactionTable = ({ assets, token }) => {
         "MintRequested",
         "MintApproved",
         "MintRejected"
-      ]);
+      ], "mintID");
 
       let redeemEvents = await listEvents([
         "RedeemRequested",
         "RedeemApproved",
         "RedeemRejected"
-      ]);
+      ], "redeemID");
 
       let exchangeEvents = await listEvents([
         "ExchangeRequested",
         "ExchangeApproved",
         "ExchangeRejected"
-      ]);
+      ], "exchangeID");
       
       setEvents(mintEvents.concat(redeemEvents).concat(exchangeEvents).sort((a, b) => b.returnValues.timestamp - a.returnValues.timestamp));
       setLoading(false);
