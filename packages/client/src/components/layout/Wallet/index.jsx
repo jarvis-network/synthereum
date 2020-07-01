@@ -58,15 +58,16 @@ export default function Wallet({ setLoading }) {
         }
 
         Promise.all(assets.map((asset, i) => {
-          asset.derivative
+          return asset.derivative
             .methods
             .getCollateral(asset.contract.options.address)
             .call()
             .then(collateral => {
               newAssets[i].collateral = collateral["rawValue"];
-              setAssets(newAssets);
             });
-        }));
+        })).then(() => {
+          setAssets(newAssets);
+        });
 
         Promise.all(assets.map((asset, i) => {
           asset.derivative
@@ -75,9 +76,10 @@ export default function Wallet({ setLoading }) {
             .call()
             .then(result => {
               newAssets[i].totalTokens = result["tokensOutstanding"]["rawValue"];
-              setAssets(newAssets);
             });
-        }));
+        })).then(() => {
+          setAssets(newAssets);
+        });
 
         setAssets(newAssets);
 
