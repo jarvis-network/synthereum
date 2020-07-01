@@ -80,7 +80,7 @@ const TransactionTable = ({ assets }) => {
       });
       const allEvents = [].concat.apply([], assetEvents);
       console.log(allEvents);
-      setEvents(allEvents);
+      setEvents(allEvents.reverse());
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -121,7 +121,7 @@ const TransactionTable = ({ assets }) => {
                         </TableCell>
                         <TableCell>
                         {moment(parseInt(ev.returnValues.timestamp) * 1000).format(
-                            "M/D/YY h:ma"
+                            "M/D/YY h:mma"
                         )}
                         </TableCell>
                         {ev.event === "MintRequested" ||
