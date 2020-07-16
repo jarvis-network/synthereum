@@ -7,6 +7,7 @@ import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
 
+
 import Insights from "./Insights";
 import Transactions from "./Transactions";
 
@@ -20,8 +21,9 @@ const Pages = ({
 }) => {
   return (
     <Switch>
-      <Route path="/exchange">
-        <ExchangeRates assets={assets} />
+      
+      <Route path="/exchangerates">
+        <ExchangeRates assets={assets} syntheticTokens = {syntheticTokens} />
       </Route>
       <Route path="/transactions">
         <Transactions assets={assets} />
@@ -32,7 +34,7 @@ const Pages = ({
       <Route path="/help">
         <h3>Help</h3>
       </Route>
-      <Route path="/">
+      <Route path="/exchange">
         <Grid container spacing={8}>
           <Grid item md={5}>
             <OrderForm
