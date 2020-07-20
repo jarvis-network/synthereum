@@ -30,7 +30,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [inputAmount, setInputAmount] = useState("");
+  const [inputAmount, setInputAmount] = useState(0);
   const [outputAmount, setOutputAmount] = useState(0);
   const [feeAmount, setFeeAmount] = useState("0");
   const [collateralAmount, setCollateralAmount] = useState("0");
@@ -73,7 +73,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       const newCollateralAmount = value * assets[outputToken].price;
       setCollateralAmount(newCollateralAmount);
       assets[outputToken].contract.methods
-        .calculateMintFee(toWei(newCollateralAmount.toString()))
+        .calculateMintFee(toWei(newCollateralAmount.toFixed(18)))
         .call()
         .then(response => {
           setFeeAmount(response);
@@ -136,12 +136,12 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           .then(tx => {
             setLoading(false);
             setLastTx(tx.transactionHash);
-            setInputAmount("");
+            setInputAmount(0);
             setOutputAmount(0);
           })
           .catch(err => {
             setLoading(false);
-            setInputAmount("");
+            setInputAmount(0);
             setOutputAmount(0);
             console.error(err);
           });
@@ -170,13 +170,13 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       .then(tx => {
         setLoading(false);
         setLastTx(tx.transactionHash);
-        setInputAmount("");
-        setOutputAmount("");
+        setInputAmount(0);
+        setOutputAmount(0);
       })
       .catch(err => {
         setLoading(false);
-        setInputAmount("");
-        setOutputAmount("");
+        setInputAmount(0);
+        setOutputAmount(0);
         console.error(err);
       });
   };
@@ -207,13 +207,13 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       .then(tx => {
         setLoading(false);
         setLastTx(tx.transactionHash);
-        setInputAmount("");
-        setOutputAmount("");
+        setInputAmount(0);
+        setOutputAmount(0);
       })
       .catch(err => {
         setLoading(false);
-        setInputAmount("");
-        setOutputAmount("");
+        setInputAmount(0);
+        setOutputAmount(0);
         console.error(err);
       });
   };
@@ -229,20 +229,20 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
       if (orderType === "mint") {
         setLoading(true);
 
-        const collateralAmountTKNbits = toWei(collateralAmount.toString());
-        const orderAmountTKNbits = toWei(outputAmount.toString());
+        const collateralAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
+        const orderAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === "redeem") {
         setLoading(true);
 
-        const collateralAmountTKNbits = toWei(collateralAmount.toString());
-        const orderAmountTKNbits = toWei(inputAmount.toString());
+        const collateralAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
+        const orderAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
         sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === "exchange") {
         setLoading(true);
 
-        const inputAmountTKNbits = toWei(inputAmount.toString());
-        const outputAmountTKNbits = toWei(inputAmount.toString());
+        const inputAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
+        const outputAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
         exchangeOrder(inputAmountTKNbits, outputAmountTKNbits);
       }
     }
