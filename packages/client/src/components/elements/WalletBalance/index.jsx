@@ -71,16 +71,14 @@ export default function WalletBalance({
 
   useEffect(() => {
     if (context.active) {
-      syntheticTokens.forEach((token, i) => {
+      Promise.all(syntheticTokens.map((token, i) => {
         if (token) {
-          token.methods
-            .balanceOf(context.account)
-            .call()
-            .then(synBalance => {
-              synBalances[i] = synBalance;
-              setSynBalances(synBalances);
-            });
+          return token.methods.balanceOf(context.account).call();
+        } else {
+          return null;
         }
+      })).then(synBalances => {
+        setSynBalances(synBalances);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
