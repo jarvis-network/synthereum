@@ -31,7 +31,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   const [errorMessage, setErrorMessage] = useState("");
 
   const [inputAmount, setInputAmount] = useState("");
-  const [outputAmount, setOutputAmount] = useState("");
+  const [outputAmount, setOutputAmount] = useState(0);
   const [feeAmount, setFeeAmount] = useState("0");
   const [collateralAmount, setCollateralAmount] = useState("0");
 
@@ -92,7 +92,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   useEffect(() => {
     if (inputAmount > 0 && tokens[outputToken] && tokens[inputToken]) {
       const tokenAmount = (inputAmount * tokens[inputToken].price) / tokens[outputToken].price;
-      setOutputAmount(tokenAmount.toFixed(3));
+      setOutputAmount(tokenAmount);
       if (inputToken === assets.length) {
         calculateFees(tokenAmount);
       }
@@ -137,12 +137,12 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
             setLoading(false);
             setLastTx(tx.transactionHash);
             setInputAmount("");
-            setOutputAmount("");
+            setOutputAmount(0);
           })
           .catch(err => {
             setLoading(false);
             setInputAmount("");
-            setOutputAmount("");
+            setOutputAmount(0);
             console.error(err);
           });
       });
@@ -280,7 +280,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               placeholder="0.0"
               fullWidth
               margin="normal"
-              value={outputAmount}
+              value={outputAmount.toFixed(3)}
               onChange={onOutputAmountChange}
               disabled={true}
               InputLabelProps={{
@@ -295,7 +295,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           </Grid>
 
           <Grid item md={12}>
-            {outputAmount && getOrderType() === "mint" && (
+            {outputAmount > 0 && getOrderType() === "mint" && (
             <TableContainer>
               <Table size="small">
                 <TableBody>
