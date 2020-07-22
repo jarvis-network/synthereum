@@ -1,0 +1,282 @@
+{
+  "contractName": "Uniswap",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint112",
+          "name": "reserve0",
+          "type": "uint112"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint112",
+          "name": "reserve1",
+          "type": "uint112"
+        }
+      ],
+      "name": "Sync",
+      "type": "event"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint112\",\"name\":\"reserve0\",\"type\":\"uint112\"},{\"indexed\":false,\"internalType\":\"uint112\",\"name\":\"reserve1\",\"type\":\"uint112\"}],\"name\":\"Sync\",\"type\":\"event\"}],\"devdoc\":{\"details\":\"This only contains the methods/events that we use in our contracts or offchain infrastructure.\",\"methods\":{},\"title\":\"Interface for Uniswap v2.\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/interfaces/Uniswap.sol\":\"Uniswap\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/interfaces/Uniswap.sol\":{\"keccak256\":\"0x5ed9c25eb6c4b5c874aaea73f010d419f9f39e11ebb4d993129ef3edeea4ad20\",\"urls\":[\"bzz-raw://96011a003a13800eaefb0a6f8630effa5db53b224bbfc52ff9ca286d9156f02a\",\"dweb:/ipfs/QmZJhHhQxFhkuX7GgXi5DzNSJZtTVz9nBSuVgVQFfc2jCr\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.0;\n\n\n/**\n * @title Interface for Uniswap v2.\n * @dev This only contains the methods/events that we use in our contracts or offchain infrastructure.\n */\nabstract contract Uniswap {\n    // Called after every swap showing the new uniswap \"price\" for this token pair.\n    event Sync(uint112 reserve0, uint112 reserve1);\n}\n",
+  "sourcePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/interfaces/Uniswap.sol",
+  "ast": {
+    "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/interfaces/Uniswap.sol",
+    "exportedSymbols": {
+      "Uniswap": [
+        4897
+      ]
+    },
+    "id": 4898,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4889,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:17"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 4890,
+          "nodeType": "StructuredDocumentation",
+          "src": "26:146:17",
+          "text": "@title Interface for Uniswap v2.\n@dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
+        },
+        "fullyImplemented": true,
+        "id": 4897,
+        "linearizedBaseContracts": [
+          4897
+        ],
+        "name": "Uniswap",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 4896,
+            "name": "Sync",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 4895,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4892,
+                  "indexed": false,
+                  "name": "reserve0",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4896,
+                  "src": "300:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint112",
+                    "typeString": "uint112"
+                  },
+                  "typeName": {
+                    "id": 4891,
+                    "name": "uint112",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "300:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4894,
+                  "indexed": false,
+                  "name": "reserve1",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4896,
+                  "src": "318:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint112",
+                    "typeString": "uint112"
+                  },
+                  "typeName": {
+                    "id": 4893,
+                    "name": "uint112",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "318:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "299:36:17"
+            },
+            "src": "289:47:17"
+          }
+        ],
+        "scope": 4898,
+        "src": "173:165:17"
+      }
+    ],
+    "src": "0:339:17"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/interfaces/Uniswap.sol",
+    "exportedSymbols": {
+      "Uniswap": [
+        4897
+      ]
+    },
+    "id": 4898,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4889,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:17"
+      },
+      {
+        "abstract": true,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 4890,
+          "nodeType": "StructuredDocumentation",
+          "src": "26:146:17",
+          "text": "@title Interface for Uniswap v2.\n@dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
+        },
+        "fullyImplemented": true,
+        "id": 4897,
+        "linearizedBaseContracts": [
+          4897
+        ],
+        "name": "Uniswap",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 4896,
+            "name": "Sync",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 4895,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4892,
+                  "indexed": false,
+                  "name": "reserve0",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4896,
+                  "src": "300:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint112",
+                    "typeString": "uint112"
+                  },
+                  "typeName": {
+                    "id": 4891,
+                    "name": "uint112",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "300:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 4894,
+                  "indexed": false,
+                  "name": "reserve1",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 4896,
+                  "src": "318:16:17",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint112",
+                    "typeString": "uint112"
+                  },
+                  "typeName": {
+                    "id": 4893,
+                    "name": "uint112",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "318:7:17",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint112",
+                      "typeString": "uint112"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "299:36:17"
+            },
+            "src": "289:47:17"
+          }
+        ],
+        "scope": 4898,
+        "src": "173:165:17"
+      }
+    ],
+    "src": "0:339:17"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-07-20T06:15:50.058Z",
+  "devdoc": {
+    "details": "This only contains the methods/events that we use in our contracts or offchain infrastructure.",
+    "methods": {},
+    "title": "Interface for Uniswap v2."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

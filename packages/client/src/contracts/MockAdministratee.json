@@ -1,0 +1,635 @@
+{
+  "contractName": "MockAdministratee",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "timesEmergencyShutdown",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "timesRemargined",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "remargin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "emergencyShutdown",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"emergencyShutdown\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"remargin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"timesEmergencyShutdown\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"timesRemargined\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/implementation/test/MockAdministratee.sol\":\"MockAdministratee\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/implementation/test/MockAdministratee.sol\":{\"keccak256\":\"0x80ec7b653d7acecd8714a36311c5ad3b67172372e722c6d0e04708ba4fad7234\",\"urls\":[\"bzz-raw://7db0e99a188a1d8bd6da8be4c6646517e415213e1721ccd576927e8e6b8063fd\",\"dweb:/ipfs/QmV4xPU4g6fVGSKwvVhKVaEiuCBCYxrTtbX92a4u9HSNoB\"]},\"/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol\":{\"keccak256\":\"0xfa1232ab562e3c279e5665745804f4ba9e62758e34d63b71b65dc92bfdd7cac9\",\"urls\":[\"bzz-raw://cc16bafaf3b1ec0a8064946c09fb918db68beaf219d6d1a431beb1b3ef01ede5\",\"dweb:/ipfs/QmZg7BxqNE82CxVm1pYViL3abRRbJgGXp5iAjvVWefzdiJ\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060ce8061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060465760003560e01c80633403c2fc14604b5780635d21f153146053578063bda02e7714606b578063bea002bc146071575b600080fd5b60516077565b005b60596081565b60408051918252519081900360200190f35b60516087565b60596092565b6001805481019055565b60015481565b600080546001019055565b6000548156fea26469706673582212202e97717cfd33bd6f32fe392b61b265600b8e59840a1ecef97e7e5341e48c7d3b64736f6c63430006040033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060465760003560e01c80633403c2fc14604b5780635d21f153146053578063bda02e7714606b578063bea002bc146071575b600080fd5b60516077565b005b60596081565b60408051918252519081900360200190f35b60516087565b60596092565b6001805481019055565b60015481565b600080546001019055565b6000548156fea26469706673582212202e97717cfd33bd6f32fe392b61b265600b8e59840a1ecef97e7e5341e48c7d3b64736f6c63430006040033",
+  "sourceMap": "175:525:46:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;175:525:46;;;;;;;",
+  "deployedSourceMap": "175:525:46:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;175:525:46;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;610:88:46;;;:::i;:::-;;267:34;;;:::i;:::-;;;;;;;;;;;;;;;;420:72;;;:::i;234:27::-;;;:::i;610:88::-;667:22;:24;;;;;;610:88::o;267:34::-;;;;:::o;420:72::-;468:15;:17;;;;;;420:72::o;234:27::-;;;;:::o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"../../interfaces/AdministrateeInterface.sol\";\n\n\n// A mock implementation of AdministrateeInterface, taking the place of a financial contract.\ncontract MockAdministratee is AdministrateeInterface {\n    uint public timesRemargined;\n    uint public timesEmergencyShutdown;\n\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function remargin() external override {\n        timesRemargined++;\n    }\n\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function emergencyShutdown() external override {\n        timesEmergencyShutdown++;\n    }\n}\n",
+  "sourcePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/implementation/test/MockAdministratee.sol",
+  "ast": {
+    "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/implementation/test/MockAdministratee.sol",
+    "exportedSymbols": {
+      "MockAdministratee": [
+        13765
+      ]
+    },
+    "id": 13766,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 13741,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:46"
+      },
+      {
+        "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
+        "file": "../../interfaces/AdministrateeInterface.sol",
+        "id": 13742,
+        "nodeType": "ImportDirective",
+        "scope": 13766,
+        "sourceUnit": 13907,
+        "src": "25:53:46",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 13743,
+              "name": "AdministrateeInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 13906,
+              "src": "205:22:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_AdministrateeInterface_$13906",
+                "typeString": "contract AdministrateeInterface"
+              }
+            },
+            "id": 13744,
+            "nodeType": "InheritanceSpecifier",
+            "src": "205:22:46"
+          }
+        ],
+        "contractDependencies": [
+          13906
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 13765,
+        "linearizedBaseContracts": [
+          13765,
+          13906
+        ],
+        "name": "MockAdministratee",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "bea002bc",
+            "id": 13746,
+            "name": "timesRemargined",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 13765,
+            "src": "234:27:46",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 13745,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "234:4:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "5d21f153",
+            "id": 13748,
+            "name": "timesEmergencyShutdown",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 13765,
+            "src": "267:34:46",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 13747,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "267:4:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "baseFunctions": [
+              13905
+            ],
+            "body": {
+              "id": 13755,
+              "nodeType": "Block",
+              "src": "458:34:46",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 13753,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "UnaryOperation",
+                    "operator": "++",
+                    "prefix": false,
+                    "src": "468:17:46",
+                    "subExpression": {
+                      "argumentTypes": null,
+                      "id": 13752,
+                      "name": "timesRemargined",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 13746,
+                      "src": "468:15:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 13754,
+                  "nodeType": "ExpressionStatement",
+                  "src": "468:17:46"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "bda02e77",
+            "id": 13756,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "remargin",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 13750,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "449:8:46"
+            },
+            "parameters": {
+              "id": 13749,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "437:2:46"
+            },
+            "returnParameters": {
+              "id": 13751,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "458:0:46"
+            },
+            "scope": 13765,
+            "src": "420:72:46",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "baseFunctions": [
+              13901
+            ],
+            "body": {
+              "id": 13763,
+              "nodeType": "Block",
+              "src": "657:41:46",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 13761,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "UnaryOperation",
+                    "operator": "++",
+                    "prefix": false,
+                    "src": "667:24:46",
+                    "subExpression": {
+                      "argumentTypes": null,
+                      "id": 13760,
+                      "name": "timesEmergencyShutdown",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 13748,
+                      "src": "667:22:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 13762,
+                  "nodeType": "ExpressionStatement",
+                  "src": "667:24:46"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "3403c2fc",
+            "id": 13764,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emergencyShutdown",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 13758,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "648:8:46"
+            },
+            "parameters": {
+              "id": 13757,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "636:2:46"
+            },
+            "returnParameters": {
+              "id": 13759,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "657:0:46"
+            },
+            "scope": 13765,
+            "src": "610:88:46",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 13766,
+        "src": "175:525:46"
+      }
+    ],
+    "src": "0:701:46"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/implementation/test/MockAdministratee.sol",
+    "exportedSymbols": {
+      "MockAdministratee": [
+        13765
+      ]
+    },
+    "id": 13766,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 13741,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:46"
+      },
+      {
+        "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
+        "file": "../../interfaces/AdministrateeInterface.sol",
+        "id": 13742,
+        "nodeType": "ImportDirective",
+        "scope": 13766,
+        "sourceUnit": 13907,
+        "src": "25:53:46",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 13743,
+              "name": "AdministrateeInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 13906,
+              "src": "205:22:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_AdministrateeInterface_$13906",
+                "typeString": "contract AdministrateeInterface"
+              }
+            },
+            "id": 13744,
+            "nodeType": "InheritanceSpecifier",
+            "src": "205:22:46"
+          }
+        ],
+        "contractDependencies": [
+          13906
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 13765,
+        "linearizedBaseContracts": [
+          13765,
+          13906
+        ],
+        "name": "MockAdministratee",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "bea002bc",
+            "id": 13746,
+            "name": "timesRemargined",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 13765,
+            "src": "234:27:46",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 13745,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "234:4:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "5d21f153",
+            "id": 13748,
+            "name": "timesEmergencyShutdown",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 13765,
+            "src": "267:34:46",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 13747,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "267:4:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "baseFunctions": [
+              13905
+            ],
+            "body": {
+              "id": 13755,
+              "nodeType": "Block",
+              "src": "458:34:46",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 13753,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "UnaryOperation",
+                    "operator": "++",
+                    "prefix": false,
+                    "src": "468:17:46",
+                    "subExpression": {
+                      "argumentTypes": null,
+                      "id": 13752,
+                      "name": "timesRemargined",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 13746,
+                      "src": "468:15:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 13754,
+                  "nodeType": "ExpressionStatement",
+                  "src": "468:17:46"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "bda02e77",
+            "id": 13756,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "remargin",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 13750,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "449:8:46"
+            },
+            "parameters": {
+              "id": 13749,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "437:2:46"
+            },
+            "returnParameters": {
+              "id": 13751,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "458:0:46"
+            },
+            "scope": 13765,
+            "src": "420:72:46",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "baseFunctions": [
+              13901
+            ],
+            "body": {
+              "id": 13763,
+              "nodeType": "Block",
+              "src": "657:41:46",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 13761,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "UnaryOperation",
+                    "operator": "++",
+                    "prefix": false,
+                    "src": "667:24:46",
+                    "subExpression": {
+                      "argumentTypes": null,
+                      "id": 13760,
+                      "name": "timesEmergencyShutdown",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 13748,
+                      "src": "667:22:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 13762,
+                  "nodeType": "ExpressionStatement",
+                  "src": "667:24:46"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "3403c2fc",
+            "id": 13764,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "emergencyShutdown",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 13758,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "648:8:46"
+            },
+            "parameters": {
+              "id": 13757,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "636:2:46"
+            },
+            "returnParameters": {
+              "id": 13759,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "657:0:46"
+            },
+            "scope": 13765,
+            "src": "610:88:46",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 13766,
+        "src": "175:525:46"
+      }
+    ],
+    "src": "0:701:46"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-07-20T06:15:50.133Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

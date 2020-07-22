@@ -1,0 +1,4766 @@
+{
+  "contractName": "TICInterface",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numTokens",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "mintID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "approveMint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "mintID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "rejectMint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numTokens",
+          "type": "uint256"
+        }
+      ],
+      "name": "exchangeMint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawPassedRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numTokens",
+          "type": "uint256"
+        }
+      ],
+      "name": "redeemRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "redeemID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "approveRedeem",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "redeemID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "rejectRedeem",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "settleExpired",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract TICInterface",
+          "name": "destTIC",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numTokens",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "destNumTokens",
+          "type": "uint256"
+        }
+      ],
+      "name": "exchangeRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "exchangeID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "approveExchange",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "exchangeID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "rejectExchange",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "derivative",
+      "outputs": [
+        {
+          "internalType": "contract IExpiringMultiParty",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "collateralToken",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "syntheticToken",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "collateralAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "calculateMintFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMintRequests",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "mintID",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "rawValue",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FixedPoint.Unsigned",
+              "name": "collateralAmount",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "rawValue",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FixedPoint.Unsigned",
+              "name": "numTokens",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct TICInterface.MintRequest[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getRedeemRequests",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "redeemID",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "rawValue",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FixedPoint.Unsigned",
+              "name": "collateralAmount",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "rawValue",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FixedPoint.Unsigned",
+              "name": "numTokens",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct TICInterface.RedeemRequest[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getExchangeRequests",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "exchangeID",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "contract TICInterface",
+              "name": "destTIC",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "rawValue",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FixedPoint.Unsigned",
+              "name": "numTokens",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "rawValue",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FixedPoint.Unsigned",
+              "name": "destNumTokens",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct TICInterface.ExchangeRequest[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"exchangeID\",\"type\":\"bytes32\"}],\"name\":\"approveExchange\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"mintID\",\"type\":\"bytes32\"}],\"name\":\"approveMint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"redeemID\",\"type\":\"bytes32\"}],\"name\":\"approveRedeem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralAmount\",\"type\":\"uint256\"}],\"name\":\"calculateMintFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"collateralToken\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralAmount\",\"type\":\"uint256\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"derivative\",\"outputs\":[{\"internalType\":\"contract IExpiringMultiParty\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numTokens\",\"type\":\"uint256\"}],\"name\":\"exchangeMint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract TICInterface\",\"name\":\"destTIC\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"numTokens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"destNumTokens\",\"type\":\"uint256\"}],\"name\":\"exchangeRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getExchangeRequests\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"exchangeID\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"contract TICInterface\",\"name\":\"destTIC\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"destNumTokens\",\"type\":\"tuple\"}],\"internalType\":\"struct TICInterface.ExchangeRequest[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getMintRequests\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"mintID\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"collateralAmount\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"}],\"internalType\":\"struct TICInterface.MintRequest[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getRedeemRequests\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"redeemID\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"collateralAmount\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"}],\"internalType\":\"struct TICInterface.RedeemRequest[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numTokens\",\"type\":\"uint256\"}],\"name\":\"mintRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numTokens\",\"type\":\"uint256\"}],\"name\":\"redeemRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"exchangeID\",\"type\":\"bytes32\"}],\"name\":\"rejectExchange\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"mintID\",\"type\":\"bytes32\"}],\"name\":\"rejectMint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"redeemID\",\"type\":\"bytes32\"}],\"name\":\"rejectRedeem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleExpired\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"syntheticToken\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawPassedRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"collateralAmount\",\"type\":\"uint256\"}],\"name\":\"withdrawRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"title\":\"Token Issuer Contract Interface\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/opz/Projects/SynFiat-update/gitlab/contracts/TICInterface.sol\":\"TICInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/opz/Projects/SynFiat-update/gitlab/contracts/IExpiringMultiParty.sol\":{\"keccak256\":\"0x6d34dd097ae64c134be221194a860dc811a482a463b8648a03cd805ce0c5086b\",\"urls\":[\"bzz-raw://6b93fbc3ebbba428112b3735a47e1e35cbd1b5334b1bf8dbe4b4d3ccdf41952b\",\"dweb:/ipfs/QmXG3QyYgwsD9DTf1VZb1UUqssoZa1MoJ9jRcrL6aKsQCg\"]},\"/home/opz/Projects/SynFiat-update/gitlab/contracts/TICInterface.sol\":{\"keccak256\":\"0xb62a67123d222e1757daef22dc7e3f2b1a8e01901d1816f214c8667866981dc5\",\"urls\":[\"bzz-raw://229d47f43f20f5501d9096e34ce0ab36bdefa350ba1448df551231521eb80747\",\"dweb:/ipfs/QmNyBY9Yy8NFCAvBd2JhdwdJocjj3y75LUAd4sGCtUdyWY\"]},\"/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xf93005a2285b10a0b7e7b53fef45c4921c5131edc80f6481848b670a37343275\",\"urls\":[\"bzz-raw://dd2db53bbd8b4c3312e274e392c3f0781c56e520f858ef77a04a075d18123625\",\"dweb:/ipfs/QmPxr5HSYVJKfzWnQpGVf4hg4kxMrCRTAw5isjkBmvsA5N\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0xe4ed9d633e8e678e8ece3756e4002cc7989b72cd29a17ecdacdabf4fd48820a7\",\"urls\":[\"bzz-raw://03a55c81a7d4c93a1ca6d9b931830c1fde2799bfbbf5841321f67e7b056c36c2\",\"dweb:/ipfs/QmbcgdfB278NvzVZKjA7Jf1NjSeCCQ2277mJGL4UskyS56\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x708ae901e214e044a5c922748462157b9be162b3620aa56d7c0e7258f66aee1d\",\"urls\":[\"bzz-raw://c287ed9989e5f16114553a30f4ba3794be657f90598f101f7b92ce5859f46978\",\"dweb:/ipfs/QmeFeDCzfhhBTaY9NE9wREmrBRETvn4k3mo2FejqskVMtg\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport {FixedPoint} from \"./uma-contracts/common/implementation/FixedPoint.sol\";\nimport {IERC20} from \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport {IExpiringMultiParty} from \"./IExpiringMultiParty.sol\";\n\n/**\n * @title Token Issuer Contract Interface\n */\ninterface TICInterface {\n    // Describe fee structure\n    struct Fee {\n        // Fees charged when a user mints tokens\n        FixedPoint.Unsigned mintFee;\n        address[] mintFeeRecipients;\n        uint32[] mintFeeProportions;\n\n        // Fees taken from the interest accrued by collateral\n        address[] interestFeeRecipients;\n        uint32[] interestFeeProportions;\n    }\n\n    struct MintRequest {\n        bytes32 mintID;\n        uint256 timestamp;\n        address sender;\n        FixedPoint.Unsigned collateralAmount;\n        FixedPoint.Unsigned numTokens;\n    }\n\n    struct ExchangeRequest {\n        bytes32 exchangeID;\n        uint256 timestamp;\n        address sender;\n        TICInterface destTIC;\n        FixedPoint.Unsigned numTokens;\n        FixedPoint.Unsigned destNumTokens;\n    }\n\n    struct RedeemRequest {\n        bytes32 redeemID;\n        uint256 timestamp;\n        address sender;\n        FixedPoint.Unsigned collateralAmount;\n        FixedPoint.Unsigned numTokens;\n    }\n\n    //----------------------------------------\n    // External functions\n    //----------------------------------------\n\n    function mintRequest(uint256 collateralAmount, uint256 numTokens) external;\n\n    function approveMint(bytes32 mintID) external;\n\n    function rejectMint(bytes32 mintID) external;\n\n    function deposit(uint256 collateralAmount) external;\n\n    function exchangeMint(uint256 collateralAmount, uint256 numTokens) external;\n\n    function withdrawRequest(uint256 collateralAmount) external;\n\n    function withdrawPassedRequest() external;\n\n    function redeemRequest(uint256 collateralAmount, uint256 numTokens) external;\n\n    function approveRedeem(bytes32 redeemID) external;\n\n    function rejectRedeem(bytes32 redeemID) external;\n\n    function settleExpired() external;\n\n    function exchangeRequest(\n        TICInterface destTIC,\n        uint256 numTokens,\n        uint256 destNumTokens\n    ) external;\n\n    function approveExchange(bytes32 exchangeID) external;\n\n    function rejectExchange(bytes32 exchangeID) external;\n\n    //----------------------------------------\n    // External views\n    //----------------------------------------\n\n    function derivative() external view returns (IExpiringMultiParty);\n\n    function collateralToken() external view returns (IERC20);\n\n    function syntheticToken() external view returns (IERC20);\n\n    function calculateMintFee(uint256 collateralAmount) external view returns (uint256);\n\n    function getMintRequests() external view returns (MintRequest[] memory);\n\n    function getRedeemRequests() external view returns (RedeemRequest[] memory);\n\n    function getExchangeRequests() external view returns (ExchangeRequest[] memory);\n}\n",
+  "sourcePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/TICInterface.sol",
+  "ast": {
+    "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/TICInterface.sol",
+    "exportedSymbols": {
+      "TICInterface": [
+        3066
+      ]
+    },
+    "id": 3067,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2891,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:7"
+      },
+      {
+        "id": 2892,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:7"
+      },
+      {
+        "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/implementation/FixedPoint.sol",
+        "file": "./uma-contracts/common/implementation/FixedPoint.sol",
+        "id": 2894,
+        "nodeType": "ImportDirective",
+        "scope": 3067,
+        "sourceUnit": 4143,
+        "src": "59:80:7",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 2893,
+              "name": "FixedPoint",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "67:10:7",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "id": 2896,
+        "nodeType": "ImportDirective",
+        "scope": 3067,
+        "sourceUnit": 20907,
+        "src": "140:70:7",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 2895,
+              "name": "IERC20",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "148:6:7",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/IExpiringMultiParty.sol",
+        "file": "./IExpiringMultiParty.sol",
+        "id": 2898,
+        "nodeType": "ImportDirective",
+        "scope": 3067,
+        "sourceUnit": 334,
+        "src": "211:62:7",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 2897,
+              "name": "IExpiringMultiParty",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "219:19:7",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 2899,
+          "nodeType": "StructuredDocumentation",
+          "src": "275:49:7",
+          "text": "@title Token Issuer Contract Interface"
+        },
+        "fullyImplemented": false,
+        "id": 3066,
+        "linearizedBaseContracts": [
+          3066
+        ],
+        "name": "TICInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "TICInterface.Fee",
+            "id": 2914,
+            "members": [
+              {
+                "constant": false,
+                "id": 2901,
+                "name": "mintFee",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "454:27:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2900,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "454:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2904,
+                "name": "mintFeeRecipients",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "491:27:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                  "typeString": "address[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2902,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "491:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 2903,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "491:9:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                    "typeString": "address[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2907,
+                "name": "mintFeeProportions",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "528:27:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                  "typeString": "uint32[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2905,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "528:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "id": 2906,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "528:8:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                    "typeString": "uint32[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2910,
+                "name": "interestFeeRecipients",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "628:31:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                  "typeString": "address[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2908,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "628:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 2909,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "628:9:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                    "typeString": "address[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2913,
+                "name": "interestFeeProportions",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "669:31:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                  "typeString": "uint32[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2911,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "669:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "id": 2912,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "669:8:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                    "typeString": "uint32[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Fee",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "384:323:7",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "TICInterface.MintRequest",
+            "id": 2925,
+            "members": [
+              {
+                "constant": false,
+                "id": 2916,
+                "name": "mintID",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "742:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 2915,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "742:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2918,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "766:17:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2917,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "766:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2920,
+                "name": "sender",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "793:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 2919,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "793:7:7",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2922,
+                "name": "collateralAmount",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "817:36:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2921,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "817:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2924,
+                "name": "numTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "863:29:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2923,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "863:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "MintRequest",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "713:186:7",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "TICInterface.ExchangeRequest",
+            "id": 2938,
+            "members": [
+              {
+                "constant": false,
+                "id": 2927,
+                "name": "exchangeID",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "938:18:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 2926,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "938:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2929,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "966:17:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2928,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "966:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2931,
+                "name": "sender",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "993:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 2930,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "993:7:7",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2933,
+                "name": "destTIC",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "1017:20:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_contract$_TICInterface_$3066",
+                  "typeString": "contract TICInterface"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2932,
+                  "name": "TICInterface",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3066,
+                  "src": "1017:12:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_TICInterface_$3066",
+                    "typeString": "contract TICInterface"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2935,
+                "name": "numTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "1047:29:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2934,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1047:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2937,
+                "name": "destNumTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "1086:33:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2936,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1086:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "ExchangeRequest",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "905:221:7",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "TICInterface.RedeemRequest",
+            "id": 2949,
+            "members": [
+              {
+                "constant": false,
+                "id": 2940,
+                "name": "redeemID",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1163:16:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 2939,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1163:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2942,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1189:17:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2941,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1189:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2944,
+                "name": "sender",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1216:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 2943,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1216:7:7",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2946,
+                "name": "collateralAmount",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1240:36:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2945,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1240:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2948,
+                "name": "numTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1286:29:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2947,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1286:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "RedeemRequest",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "1132:190:7",
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "8be76e01",
+            "id": 2956,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mintRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2954,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2951,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2956,
+                  "src": "1470:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2950,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1470:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2953,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2956,
+                  "src": "1496:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2952,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1496:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1469:45:7"
+            },
+            "returnParameters": {
+              "id": 2955,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1523:0:7"
+            },
+            "scope": 3066,
+            "src": "1449:75:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "b72d8ce9",
+            "id": 2961,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approveMint",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2959,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2958,
+                  "name": "mintID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2961,
+                  "src": "1551:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2957,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1551:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1550:16:7"
+            },
+            "returnParameters": {
+              "id": 2960,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1575:0:7"
+            },
+            "scope": 3066,
+            "src": "1530:46:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "998fccc5",
+            "id": 2966,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rejectMint",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2964,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2963,
+                  "name": "mintID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2966,
+                  "src": "1602:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2962,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1602:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1601:16:7"
+            },
+            "returnParameters": {
+              "id": 2965,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1626:0:7"
+            },
+            "scope": 3066,
+            "src": "1582:45:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "b6b55f25",
+            "id": 2971,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "deposit",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2969,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2968,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2971,
+                  "src": "1650:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2967,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1650:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1649:26:7"
+            },
+            "returnParameters": {
+              "id": 2970,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1684:0:7"
+            },
+            "scope": 3066,
+            "src": "1633:52:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "cca3595a",
+            "id": 2978,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "exchangeMint",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2976,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2973,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2978,
+                  "src": "1713:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2972,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1713:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2975,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2978,
+                  "src": "1739:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2974,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1739:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1712:45:7"
+            },
+            "returnParameters": {
+              "id": 2977,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1766:0:7"
+            },
+            "scope": 3066,
+            "src": "1691:76:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "74899a7e",
+            "id": 2983,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2981,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2980,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2983,
+                  "src": "1798:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2979,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1798:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1797:26:7"
+            },
+            "returnParameters": {
+              "id": 2982,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1832:0:7"
+            },
+            "scope": 3066,
+            "src": "1773:60:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "33a46ca2",
+            "id": 2986,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawPassedRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2984,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1869:2:7"
+            },
+            "returnParameters": {
+              "id": 2985,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1880:0:7"
+            },
+            "scope": 3066,
+            "src": "1839:42:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "7c3970f2",
+            "id": 2993,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "redeemRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2991,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2988,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2993,
+                  "src": "1910:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2987,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1910:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2990,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2993,
+                  "src": "1936:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2989,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1936:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1909:45:7"
+            },
+            "returnParameters": {
+              "id": 2992,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1963:0:7"
+            },
+            "scope": 3066,
+            "src": "1887:77:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "50539aa8",
+            "id": 2998,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approveRedeem",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2996,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2995,
+                  "name": "redeemID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2998,
+                  "src": "1993:16:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2994,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1993:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1992:18:7"
+            },
+            "returnParameters": {
+              "id": 2997,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2019:0:7"
+            },
+            "scope": 3066,
+            "src": "1970:50:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "53c34f02",
+            "id": 3003,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rejectRedeem",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3001,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3000,
+                  "name": "redeemID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3003,
+                  "src": "2048:16:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2999,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2048:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2047:18:7"
+            },
+            "returnParameters": {
+              "id": 3002,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2074:0:7"
+            },
+            "scope": 3066,
+            "src": "2026:49:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "fcccedc7",
+            "id": 3006,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "settleExpired",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3004,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2103:2:7"
+            },
+            "returnParameters": {
+              "id": 3005,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2114:0:7"
+            },
+            "scope": 3066,
+            "src": "2081:34:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "f5ac2abe",
+            "id": 3015,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "exchangeRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3013,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3008,
+                  "name": "destTIC",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3015,
+                  "src": "2155:20:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_TICInterface_$3066",
+                    "typeString": "contract TICInterface"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3007,
+                    "name": "TICInterface",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3066,
+                    "src": "2155:12:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TICInterface_$3066",
+                      "typeString": "contract TICInterface"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3010,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3015,
+                  "src": "2185:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3009,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2185:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3012,
+                  "name": "destNumTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3015,
+                  "src": "2212:21:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3011,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2212:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2145:94:7"
+            },
+            "returnParameters": {
+              "id": 3014,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2248:0:7"
+            },
+            "scope": 3066,
+            "src": "2121:128:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "36a99ebd",
+            "id": 3020,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approveExchange",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3018,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3017,
+                  "name": "exchangeID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3020,
+                  "src": "2280:18:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3016,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2280:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2279:20:7"
+            },
+            "returnParameters": {
+              "id": 3019,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2308:0:7"
+            },
+            "scope": 3066,
+            "src": "2255:54:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "7242b9fc",
+            "id": 3025,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rejectExchange",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3023,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3022,
+                  "name": "exchangeID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3025,
+                  "src": "2339:18:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3021,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2339:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2338:20:7"
+            },
+            "returnParameters": {
+              "id": 3024,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2367:0:7"
+            },
+            "scope": 3066,
+            "src": "2315:53:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "1985a89f",
+            "id": 3030,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "derivative",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3026,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2510:2:7"
+            },
+            "returnParameters": {
+              "id": 3029,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3028,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3030,
+                  "src": "2536:19:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IExpiringMultiParty_$333",
+                    "typeString": "contract IExpiringMultiParty"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3027,
+                    "name": "IExpiringMultiParty",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 333,
+                    "src": "2536:19:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IExpiringMultiParty_$333",
+                      "typeString": "contract IExpiringMultiParty"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2535:21:7"
+            },
+            "scope": 3066,
+            "src": "2491:66:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "b2016bd4",
+            "id": 3035,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "collateralToken",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3031,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2587:2:7"
+            },
+            "returnParameters": {
+              "id": 3034,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3033,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3035,
+                  "src": "2613:6:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$20906",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3032,
+                    "name": "IERC20",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 20906,
+                    "src": "2613:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$20906",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2612:8:7"
+            },
+            "scope": 3066,
+            "src": "2563:58:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "8230ecd6",
+            "id": 3040,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "syntheticToken",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3036,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2650:2:7"
+            },
+            "returnParameters": {
+              "id": 3039,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3038,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3040,
+                  "src": "2676:6:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$20906",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3037,
+                    "name": "IERC20",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 20906,
+                    "src": "2676:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$20906",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2675:8:7"
+            },
+            "scope": 3066,
+            "src": "2627:57:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "5c095e54",
+            "id": 3047,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calculateMintFee",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3043,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3042,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3047,
+                  "src": "2716:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3041,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2716:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2715:26:7"
+            },
+            "returnParameters": {
+              "id": 3046,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3045,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3047,
+                  "src": "2765:7:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3044,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2765:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2764:9:7"
+            },
+            "scope": 3066,
+            "src": "2690:84:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "eb9ce163",
+            "id": 3053,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getMintRequests",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3048,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2804:2:7"
+            },
+            "returnParameters": {
+              "id": 3052,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3051,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3053,
+                  "src": "2830:20:7",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_MintRequest_$2925_memory_$dyn_memory_ptr",
+                    "typeString": "struct TICInterface.MintRequest[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "contractScope": null,
+                      "id": 3049,
+                      "name": "MintRequest",
+                      "nodeType": "UserDefinedTypeName",
+                      "referencedDeclaration": 2925,
+                      "src": "2830:11:7",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_MintRequest_$2925_storage_ptr",
+                        "typeString": "struct TICInterface.MintRequest"
+                      }
+                    },
+                    "id": 3050,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2830:13:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_MintRequest_$2925_storage_$dyn_storage_ptr",
+                      "typeString": "struct TICInterface.MintRequest[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2829:22:7"
+            },
+            "scope": 3066,
+            "src": "2780:72:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "0e3e7ba7",
+            "id": 3059,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getRedeemRequests",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3054,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2884:2:7"
+            },
+            "returnParameters": {
+              "id": 3058,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3057,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3059,
+                  "src": "2910:22:7",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_RedeemRequest_$2949_memory_$dyn_memory_ptr",
+                    "typeString": "struct TICInterface.RedeemRequest[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "contractScope": null,
+                      "id": 3055,
+                      "name": "RedeemRequest",
+                      "nodeType": "UserDefinedTypeName",
+                      "referencedDeclaration": 2949,
+                      "src": "2910:13:7",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_RedeemRequest_$2949_storage_ptr",
+                        "typeString": "struct TICInterface.RedeemRequest"
+                      }
+                    },
+                    "id": 3056,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2910:15:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_RedeemRequest_$2949_storage_$dyn_storage_ptr",
+                      "typeString": "struct TICInterface.RedeemRequest[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2909:24:7"
+            },
+            "scope": 3066,
+            "src": "2858:76:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "139d006c",
+            "id": 3065,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getExchangeRequests",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3060,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2968:2:7"
+            },
+            "returnParameters": {
+              "id": 3064,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3063,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3065,
+                  "src": "2994:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_ExchangeRequest_$2938_memory_$dyn_memory_ptr",
+                    "typeString": "struct TICInterface.ExchangeRequest[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "contractScope": null,
+                      "id": 3061,
+                      "name": "ExchangeRequest",
+                      "nodeType": "UserDefinedTypeName",
+                      "referencedDeclaration": 2938,
+                      "src": "2994:15:7",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_ExchangeRequest_$2938_storage_ptr",
+                        "typeString": "struct TICInterface.ExchangeRequest"
+                      }
+                    },
+                    "id": 3062,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2994:17:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_ExchangeRequest_$2938_storage_$dyn_storage_ptr",
+                      "typeString": "struct TICInterface.ExchangeRequest[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2993:26:7"
+            },
+            "scope": 3066,
+            "src": "2940:80:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3067,
+        "src": "325:2697:7"
+      }
+    ],
+    "src": "0:3023:7"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/TICInterface.sol",
+    "exportedSymbols": {
+      "TICInterface": [
+        3066
+      ]
+    },
+    "id": 3067,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2891,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:7"
+      },
+      {
+        "id": 2892,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:7"
+      },
+      {
+        "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/uma-contracts/common/implementation/FixedPoint.sol",
+        "file": "./uma-contracts/common/implementation/FixedPoint.sol",
+        "id": 2894,
+        "nodeType": "ImportDirective",
+        "scope": 3067,
+        "sourceUnit": 4143,
+        "src": "59:80:7",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 2893,
+              "name": "FixedPoint",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "67:10:7",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "id": 2896,
+        "nodeType": "ImportDirective",
+        "scope": 3067,
+        "sourceUnit": 20907,
+        "src": "140:70:7",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 2895,
+              "name": "IERC20",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "148:6:7",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/opz/Projects/SynFiat-update/gitlab/contracts/IExpiringMultiParty.sol",
+        "file": "./IExpiringMultiParty.sol",
+        "id": 2898,
+        "nodeType": "ImportDirective",
+        "scope": 3067,
+        "sourceUnit": 334,
+        "src": "211:62:7",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "argumentTypes": null,
+              "id": 2897,
+              "name": "IExpiringMultiParty",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": null,
+              "src": "219:19:7",
+              "typeDescriptions": {
+                "typeIdentifier": null,
+                "typeString": null
+              }
+            },
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 2899,
+          "nodeType": "StructuredDocumentation",
+          "src": "275:49:7",
+          "text": "@title Token Issuer Contract Interface"
+        },
+        "fullyImplemented": false,
+        "id": 3066,
+        "linearizedBaseContracts": [
+          3066
+        ],
+        "name": "TICInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "TICInterface.Fee",
+            "id": 2914,
+            "members": [
+              {
+                "constant": false,
+                "id": 2901,
+                "name": "mintFee",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "454:27:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2900,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "454:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2904,
+                "name": "mintFeeRecipients",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "491:27:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                  "typeString": "address[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2902,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "491:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 2903,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "491:9:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                    "typeString": "address[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2907,
+                "name": "mintFeeProportions",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "528:27:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                  "typeString": "uint32[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2905,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "528:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "id": 2906,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "528:8:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                    "typeString": "uint32[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2910,
+                "name": "interestFeeRecipients",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "628:31:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                  "typeString": "address[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2908,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "628:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 2909,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "628:9:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                    "typeString": "address[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2913,
+                "name": "interestFeeProportions",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2914,
+                "src": "669:31:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                  "typeString": "uint32[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 2911,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "669:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "id": 2912,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "669:8:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint32_$dyn_storage_ptr",
+                    "typeString": "uint32[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Fee",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "384:323:7",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "TICInterface.MintRequest",
+            "id": 2925,
+            "members": [
+              {
+                "constant": false,
+                "id": 2916,
+                "name": "mintID",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "742:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 2915,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "742:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2918,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "766:17:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2917,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "766:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2920,
+                "name": "sender",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "793:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 2919,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "793:7:7",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2922,
+                "name": "collateralAmount",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "817:36:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2921,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "817:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2924,
+                "name": "numTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2925,
+                "src": "863:29:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2923,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "863:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "MintRequest",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "713:186:7",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "TICInterface.ExchangeRequest",
+            "id": 2938,
+            "members": [
+              {
+                "constant": false,
+                "id": 2927,
+                "name": "exchangeID",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "938:18:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 2926,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "938:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2929,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "966:17:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2928,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "966:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2931,
+                "name": "sender",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "993:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 2930,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "993:7:7",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2933,
+                "name": "destTIC",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "1017:20:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_contract$_TICInterface_$3066",
+                  "typeString": "contract TICInterface"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2932,
+                  "name": "TICInterface",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3066,
+                  "src": "1017:12:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_TICInterface_$3066",
+                    "typeString": "contract TICInterface"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2935,
+                "name": "numTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "1047:29:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2934,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1047:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2937,
+                "name": "destNumTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2938,
+                "src": "1086:33:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2936,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1086:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "ExchangeRequest",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "905:221:7",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "TICInterface.RedeemRequest",
+            "id": 2949,
+            "members": [
+              {
+                "constant": false,
+                "id": 2940,
+                "name": "redeemID",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1163:16:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 2939,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1163:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2942,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1189:17:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2941,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1189:7:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2944,
+                "name": "sender",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1216:14:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 2943,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1216:7:7",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2946,
+                "name": "collateralAmount",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1240:36:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2945,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1240:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2948,
+                "name": "numTokens",
+                "nodeType": "VariableDeclaration",
+                "overrides": null,
+                "scope": 2949,
+                "src": "1286:29:7",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                  "typeString": "struct FixedPoint.Unsigned"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 2947,
+                  "name": "FixedPoint.Unsigned",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 3457,
+                  "src": "1286:19:7",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3457_storage_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "RedeemRequest",
+            "nodeType": "StructDefinition",
+            "scope": 3066,
+            "src": "1132:190:7",
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "8be76e01",
+            "id": 2956,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mintRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2954,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2951,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2956,
+                  "src": "1470:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2950,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1470:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2953,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2956,
+                  "src": "1496:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2952,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1496:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1469:45:7"
+            },
+            "returnParameters": {
+              "id": 2955,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1523:0:7"
+            },
+            "scope": 3066,
+            "src": "1449:75:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "b72d8ce9",
+            "id": 2961,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approveMint",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2959,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2958,
+                  "name": "mintID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2961,
+                  "src": "1551:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2957,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1551:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1550:16:7"
+            },
+            "returnParameters": {
+              "id": 2960,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1575:0:7"
+            },
+            "scope": 3066,
+            "src": "1530:46:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "998fccc5",
+            "id": 2966,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rejectMint",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2964,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2963,
+                  "name": "mintID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2966,
+                  "src": "1602:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2962,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1602:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1601:16:7"
+            },
+            "returnParameters": {
+              "id": 2965,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1626:0:7"
+            },
+            "scope": 3066,
+            "src": "1582:45:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "b6b55f25",
+            "id": 2971,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "deposit",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2969,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2968,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2971,
+                  "src": "1650:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2967,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1650:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1649:26:7"
+            },
+            "returnParameters": {
+              "id": 2970,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1684:0:7"
+            },
+            "scope": 3066,
+            "src": "1633:52:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "cca3595a",
+            "id": 2978,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "exchangeMint",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2976,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2973,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2978,
+                  "src": "1713:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2972,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1713:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2975,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2978,
+                  "src": "1739:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2974,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1739:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1712:45:7"
+            },
+            "returnParameters": {
+              "id": 2977,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1766:0:7"
+            },
+            "scope": 3066,
+            "src": "1691:76:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "74899a7e",
+            "id": 2983,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2981,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2980,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2983,
+                  "src": "1798:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2979,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1798:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1797:26:7"
+            },
+            "returnParameters": {
+              "id": 2982,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1832:0:7"
+            },
+            "scope": 3066,
+            "src": "1773:60:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "33a46ca2",
+            "id": 2986,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawPassedRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2984,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1869:2:7"
+            },
+            "returnParameters": {
+              "id": 2985,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1880:0:7"
+            },
+            "scope": 3066,
+            "src": "1839:42:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "7c3970f2",
+            "id": 2993,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "redeemRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2991,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2988,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2993,
+                  "src": "1910:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2987,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1910:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2990,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2993,
+                  "src": "1936:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2989,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1936:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1909:45:7"
+            },
+            "returnParameters": {
+              "id": 2992,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1963:0:7"
+            },
+            "scope": 3066,
+            "src": "1887:77:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "50539aa8",
+            "id": 2998,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approveRedeem",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 2996,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2995,
+                  "name": "redeemID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 2998,
+                  "src": "1993:16:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2994,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1993:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1992:18:7"
+            },
+            "returnParameters": {
+              "id": 2997,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2019:0:7"
+            },
+            "scope": 3066,
+            "src": "1970:50:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "53c34f02",
+            "id": 3003,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rejectRedeem",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3001,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3000,
+                  "name": "redeemID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3003,
+                  "src": "2048:16:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2999,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2048:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2047:18:7"
+            },
+            "returnParameters": {
+              "id": 3002,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2074:0:7"
+            },
+            "scope": 3066,
+            "src": "2026:49:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "fcccedc7",
+            "id": 3006,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "settleExpired",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3004,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2103:2:7"
+            },
+            "returnParameters": {
+              "id": 3005,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2114:0:7"
+            },
+            "scope": 3066,
+            "src": "2081:34:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "f5ac2abe",
+            "id": 3015,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "exchangeRequest",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3013,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3008,
+                  "name": "destTIC",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3015,
+                  "src": "2155:20:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_TICInterface_$3066",
+                    "typeString": "contract TICInterface"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3007,
+                    "name": "TICInterface",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3066,
+                    "src": "2155:12:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TICInterface_$3066",
+                      "typeString": "contract TICInterface"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3010,
+                  "name": "numTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3015,
+                  "src": "2185:17:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3009,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2185:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3012,
+                  "name": "destNumTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3015,
+                  "src": "2212:21:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3011,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2212:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2145:94:7"
+            },
+            "returnParameters": {
+              "id": 3014,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2248:0:7"
+            },
+            "scope": 3066,
+            "src": "2121:128:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "36a99ebd",
+            "id": 3020,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "approveExchange",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3018,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3017,
+                  "name": "exchangeID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3020,
+                  "src": "2280:18:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3016,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2280:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2279:20:7"
+            },
+            "returnParameters": {
+              "id": 3019,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2308:0:7"
+            },
+            "scope": 3066,
+            "src": "2255:54:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "7242b9fc",
+            "id": 3025,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rejectExchange",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3023,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3022,
+                  "name": "exchangeID",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3025,
+                  "src": "2339:18:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3021,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2339:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2338:20:7"
+            },
+            "returnParameters": {
+              "id": 3024,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2367:0:7"
+            },
+            "scope": 3066,
+            "src": "2315:53:7",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "1985a89f",
+            "id": 3030,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "derivative",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3026,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2510:2:7"
+            },
+            "returnParameters": {
+              "id": 3029,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3028,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3030,
+                  "src": "2536:19:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IExpiringMultiParty_$333",
+                    "typeString": "contract IExpiringMultiParty"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3027,
+                    "name": "IExpiringMultiParty",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 333,
+                    "src": "2536:19:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IExpiringMultiParty_$333",
+                      "typeString": "contract IExpiringMultiParty"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2535:21:7"
+            },
+            "scope": 3066,
+            "src": "2491:66:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "b2016bd4",
+            "id": 3035,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "collateralToken",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3031,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2587:2:7"
+            },
+            "returnParameters": {
+              "id": 3034,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3033,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3035,
+                  "src": "2613:6:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$20906",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3032,
+                    "name": "IERC20",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 20906,
+                    "src": "2613:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$20906",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2612:8:7"
+            },
+            "scope": 3066,
+            "src": "2563:58:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "8230ecd6",
+            "id": 3040,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "syntheticToken",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3036,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2650:2:7"
+            },
+            "returnParameters": {
+              "id": 3039,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3038,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3040,
+                  "src": "2676:6:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$20906",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 3037,
+                    "name": "IERC20",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 20906,
+                    "src": "2676:6:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$20906",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2675:8:7"
+            },
+            "scope": 3066,
+            "src": "2627:57:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "5c095e54",
+            "id": 3047,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calculateMintFee",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3043,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3042,
+                  "name": "collateralAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3047,
+                  "src": "2716:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3041,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2716:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2715:26:7"
+            },
+            "returnParameters": {
+              "id": 3046,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3045,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3047,
+                  "src": "2765:7:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3044,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2765:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2764:9:7"
+            },
+            "scope": 3066,
+            "src": "2690:84:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "eb9ce163",
+            "id": 3053,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getMintRequests",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3048,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2804:2:7"
+            },
+            "returnParameters": {
+              "id": 3052,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3051,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3053,
+                  "src": "2830:20:7",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_MintRequest_$2925_memory_$dyn_memory_ptr",
+                    "typeString": "struct TICInterface.MintRequest[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "contractScope": null,
+                      "id": 3049,
+                      "name": "MintRequest",
+                      "nodeType": "UserDefinedTypeName",
+                      "referencedDeclaration": 2925,
+                      "src": "2830:11:7",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_MintRequest_$2925_storage_ptr",
+                        "typeString": "struct TICInterface.MintRequest"
+                      }
+                    },
+                    "id": 3050,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2830:13:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_MintRequest_$2925_storage_$dyn_storage_ptr",
+                      "typeString": "struct TICInterface.MintRequest[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2829:22:7"
+            },
+            "scope": 3066,
+            "src": "2780:72:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "0e3e7ba7",
+            "id": 3059,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getRedeemRequests",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3054,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2884:2:7"
+            },
+            "returnParameters": {
+              "id": 3058,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3057,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3059,
+                  "src": "2910:22:7",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_RedeemRequest_$2949_memory_$dyn_memory_ptr",
+                    "typeString": "struct TICInterface.RedeemRequest[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "contractScope": null,
+                      "id": 3055,
+                      "name": "RedeemRequest",
+                      "nodeType": "UserDefinedTypeName",
+                      "referencedDeclaration": 2949,
+                      "src": "2910:13:7",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_RedeemRequest_$2949_storage_ptr",
+                        "typeString": "struct TICInterface.RedeemRequest"
+                      }
+                    },
+                    "id": 3056,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2910:15:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_RedeemRequest_$2949_storage_$dyn_storage_ptr",
+                      "typeString": "struct TICInterface.RedeemRequest[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2909:24:7"
+            },
+            "scope": 3066,
+            "src": "2858:76:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "139d006c",
+            "id": 3065,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getExchangeRequests",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 3060,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2968:2:7"
+            },
+            "returnParameters": {
+              "id": 3064,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3063,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 3065,
+                  "src": "2994:24:7",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_ExchangeRequest_$2938_memory_$dyn_memory_ptr",
+                    "typeString": "struct TICInterface.ExchangeRequest[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "contractScope": null,
+                      "id": 3061,
+                      "name": "ExchangeRequest",
+                      "nodeType": "UserDefinedTypeName",
+                      "referencedDeclaration": 2938,
+                      "src": "2994:15:7",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_ExchangeRequest_$2938_storage_ptr",
+                        "typeString": "struct TICInterface.ExchangeRequest"
+                      }
+                    },
+                    "id": 3062,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2994:17:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_ExchangeRequest_$2938_storage_$dyn_storage_ptr",
+                      "typeString": "struct TICInterface.ExchangeRequest[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2993:26:7"
+            },
+            "scope": 3066,
+            "src": "2940:80:7",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3067,
+        "src": "325:2697:7"
+      }
+    ],
+    "src": "0:3023:7"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-07-20T06:15:50.035Z",
+  "devdoc": {
+    "methods": {},
+    "title": "Token Issuer Contract Interface"
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
