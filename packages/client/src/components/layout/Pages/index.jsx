@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import ExchangeRates from "../../elements/ExchangeRates";
 import OrderForm from "../../elements/OrderForm";
 import WalletBalance from "../../elements/WalletBalance";
-
+import Faucet from "../../elements/Faucet";
 
 import Insights from "./Insights";
 import Transactions from "./Transactions";
@@ -54,6 +54,9 @@ const Pages = ({
             />
           </Grid>
         </Grid>
+      </Route>
+      <Route path="/">
+      <Faucet />
       </Route>
     </Switch>
   );
