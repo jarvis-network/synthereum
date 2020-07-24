@@ -26,5 +26,12 @@
     "priceFeedIdentifier": "XAU/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
     "startingCollateralization": "2000000000000000000000"
+  },
+  {
+    "syntheticName": "Jarvis Synthetic S&P500",
+    "syntheticSymbol": "jSPX",
+    "priceFeedIdentifier": "SPX/USD",
+    "collateralRequirement": { "rawValue": "1100000000000000000" },
+    "startingCollateralization": "3700000000000000000000"
   }
 ]
