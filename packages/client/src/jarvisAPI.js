@@ -18,7 +18,6 @@ export function jarvisExchangeRate(priceFeed, start = 60) {
   const url = `${protocol}://${host}/jarvis/prices/history?${buildQuery(
     params,
   )}`;
-
   return fetch(url)
     .then(response => response.json())
     .then(data => {
@@ -42,7 +41,7 @@ export function jarvisPriceHistory(priceFeed, start = 60) {
   return fetch(url)
     .then(response => response.json())
     .then(data => {
-      let { o, h, l, c } = data;
+      let { o, h, l, c, t } = data;
       if (priceFeed === 'USDCHF') {
         const invert = array => array.map(x => 1 / x);
         o = invert(o);
@@ -50,6 +49,6 @@ export function jarvisPriceHistory(priceFeed, start = 60) {
         l = invert(l);
         c = invert(c);
       }
-      return { o, h, l, c };
+      return { o, h, l, c, t };
     });
 }

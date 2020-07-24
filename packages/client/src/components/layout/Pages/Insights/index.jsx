@@ -18,14 +18,18 @@ const slashPair = str => `${str.slice(0, 3)}/${str.slice(3,6)}`;
 
 const Insights = () => {
 
-  const [symbol, setSymbol] = useState(defaultAssets[0].priceFeed);
+  const [symbol, setSymbol] = useState(defaultAssets[0].uiFeed);
   const [days, setDays] = useState("30");
   const [price, setPrice] = useState(0);
   const classes = useStyles();
 
   async function getPrice() {
     try {
-      const response = await jarvisExchangeRate(symbol);
+      let symbolFeed = symbol;
+      if (symbolFeed === 'CHFUSD') {
+        symbolFeed = 'USDCHF'
+      }
+      const response = await jarvisExchangeRate(symbolFeed);
       setPrice(response);
     } catch (err) {
       console.error(err);
@@ -72,8 +76,8 @@ const Insights = () => {
             onChange={ev => setSymbol(ev.target.value)}
           >
             {defaultAssets.map(asset => (
-              <MenuItem key={asset.priceFeed} value={asset.priceFeed}>
-                {slashPair(asset.priceFeed)}
+              <MenuItem key={asset.uiFeed} value={asset.uiFeed}>
+                {slashPair(asset.uiFeed)}
               </MenuItem>
             ))}
           </Select>
