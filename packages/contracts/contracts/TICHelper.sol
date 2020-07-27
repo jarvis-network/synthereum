@@ -224,11 +224,30 @@ library TICHelper {
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
     ) public {
+        FixedPoint.Unsigned memory globalCollateralization =
+            self.getGlobalCollateralizationRatio();
+
+        // Target the starting collateralization ratio if there is no global ratio
+        FixedPoint.Unsigned memory targetCollateralization =
+            globalCollateralization.isGreaterThan(0)
+                ? globalCollateralization
+                : self.startingCollateralization;
+
+        // Check that LP collateral can support the tokens to be minted
+        require(
+            self.checkCollateralizationRatio(
+                targetCollateralization,
+                mint.collateralAmount,
+                mint.numTokens
+            ),
+            "Insufficient collateral available from Liquidity Provider"
+        );
+
         // Pull RToken collateral from calling TIC contract
         require(self.pullRTokens(collateralAmount));
 
         // Mint new tokens with the collateral
-        self.mintSynTokens(collateralAmount, numTokens);
+        self.mintSynTokens(numTokens.mulCeil(targetCollateralization), numTokens);
 
         // Transfer new tokens back to the calling TIC where they will be sent to the user
         self.transferSynTokens(msg.sender, numTokens);
