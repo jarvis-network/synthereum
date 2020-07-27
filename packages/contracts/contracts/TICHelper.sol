@@ -237,8 +237,8 @@ library TICHelper {
         require(
             self.checkCollateralizationRatio(
                 targetCollateralization,
-                mint.collateralAmount,
-                mint.numTokens
+                collateralAmount,
+                numTokens
             ),
             "Insufficient collateral available from Liquidity Provider"
         );
