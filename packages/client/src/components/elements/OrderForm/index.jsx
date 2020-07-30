@@ -18,6 +18,8 @@ import TokenPicker from '../TokenPicker';
 
 import useStyles from './styles';
 
+import { toFixedNumber } from '../../../helpers/utils.js';
+
 const SELECT_TOKEN = 'select';
 
 export default function OrderForm({
@@ -294,7 +296,7 @@ export default function OrderForm({
               placeholder="0.0"
               fullWidth
               margin="normal"
-              value={outputAmount.toFixed(3)}
+              value={outputAmount.toFixed(5)}
               onChange={onOutputAmountChange}
               disabled={true}
               InputLabelProps={{
@@ -320,7 +322,7 @@ export default function OrderForm({
                     <TableRow className={classes.TableRow}>
                       <TableCell>Fee</TableCell>
                       <TableCell align="right">
-                        {Number(fromWei(feeAmount)).toLocaleString()}{' '}
+                        {toFixedNumber(fromWei(feeAmount), 5)}{' '}
                         {tokens[inputToken].symbol}
                       </TableCell>
                     </TableRow>
@@ -328,9 +330,10 @@ export default function OrderForm({
                     <TableRow>
                       <TableCell>Total</TableCell>
                       <TableCell align="right">
-                        {(
-                          collateralAmount + Number(fromWei(feeAmount))
-                        ).toLocaleString()}{' '}
+                        {toFixedNumber(
+                          (collateralAmount + +fromWei(feeAmount)).toString(),
+                          5,
+                        )}{' '}
                         {tokens[inputToken].symbol}
                       </TableCell>
                     </TableRow>
