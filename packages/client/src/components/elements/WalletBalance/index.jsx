@@ -17,6 +17,7 @@ import * as icons from '../../../assets/icons';
 
 import useStyles from './styles';
 import CollateralBar from '../CollateralBar';
+import { toFixedNumber } from '../../../helpers/utils.js';
 
 export default function WalletBalance({
   assets,
@@ -127,9 +128,10 @@ export default function WalletBalance({
                     }}
                   >
                     <Typography className={classes.BalanceCell}>
-                      {Number(fromWei(synBalances[index] || '0', 'ether'))
-                        .toFixed(3)
-                        .toLocaleString()}
+                      {toFixedNumber(
+                        fromWei(synBalances[index] || '0', 'ether'),
+                        5,
+                      )}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -146,7 +148,7 @@ export default function WalletBalance({
               </TableCell>
               <TableCell align="right">
                 <Typography className={classes.BalanceCell}>
-                  {Number(fromWei(balance, 'ether')).toLocaleString()}
+                  {toFixedNumber(fromWei(balance, 'ether'), 5)}
                 </Typography>
               </TableCell>
             </TableRow>
