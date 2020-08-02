@@ -43,17 +43,39 @@ const defaultAssets = [
     collateral: '0',
     totalTokens: '0',
   },
-  /*{
-    name: "Jarvis Synthetic S&P500",
-    symbol: "jSPX",
-    priceFeed: "SPXUSD",
-    uiFeed: "SPXUSD",
+  {
+    name: 'Jarvis Synthetic S&P500',
+    symbol: 'jSPX',
+    priceFeed: 'SPXUSD',
+    uiFeed: 'SPXUSD',
     contract: null,
     derivative: null,
-    price: "0",
-    collateral: "0",
-    totalTokens: "0",
-  },*/
+    price: '0',
+    collateral: '0',
+    totalTokens: '0',
+  },
+  {
+    name: 'Jarvis Synthetic Crude Oil',
+    symbol: 'jXTI',
+    priceFeed: 'XTIUSD',
+    uiFeed: 'XTIUSD',
+    contract: null,
+    derivative: null,
+    price: '0',
+    collateral: '0',
+    totalTokens: '0',
+  },
+  {
+    name: 'Jarvis Synthetic Silver',
+    symbol: 'jXAG',
+    priceFeed: 'XAGUSD',
+    uiFeed: 'XAGUSD',
+    contract: null,
+    derivative: null,
+    price: '0',
+    collateral: '0',
+    totalTokens: '0',
+  },
 ];
 
 export default defaultAssets;
