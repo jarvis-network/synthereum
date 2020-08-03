@@ -68,11 +68,12 @@ export default function OrderForm({
   }, [context, context.active]);
 
   const getOrderType = () => {
-    if (inputToken === 4 && outputToken < 4) {
+    const daiIndex = assets.length;
+    if (inputToken === daiIndex && outputToken < daiIndex) {
       return 'mint';
-    } else if (inputToken < 4 && outputToken === 4) {
+    } else if (inputToken < daiIndex && outputToken === daiIndex) {
       return 'redeem';
-    } else if (inputToken < 4 && outputToken < 4) {
+    } else if (inputToken < daiIndex && outputToken < daiIndex) {
       return 'exchange';
     } else {
       return null;
