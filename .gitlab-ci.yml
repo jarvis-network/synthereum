@@ -7,9 +7,8 @@ image: 'node:lts-alpine'
 .only-default: &only-default
   only:
     - merge_requests
-    - priceless
-    - lerna-and-ci
-    - feature/new-updates-rebased
+    - dev
+    - production
 
 build:
   <<: *only-default
@@ -37,20 +36,13 @@ deploy-preview-to-netlify:
   <<: *deploy-default
   only:
     - merge_requests
-    - feature/new-updates-rebased
+    - dev
   script:
     - netlify deploy --dir ./packages/client/build
 
-deploy-priceless-to-netlify:
+deploy-production-to-netlify:
   <<: *deploy-default
   only:
-    - priceless
-  script:
-    - netlify deploy --prod --dir ./packages/client/build
-
-deploy-lerna-and-ci-to-netlify:
-  <<: *deploy-default
-  only:
-    - lerna-and-ci
+    - production
   script:
     - netlify deploy --prod --dir ./packages/client/build
