@@ -1,6 +1,6 @@
 {
   "name": "@jarvis/synthereum",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Synthereum is Jarvis Network's synthetic asset protocol",
   "repository": "https://gitlab.com/jarvis-network/smart-contracts/synthereum",
   "author": "opz <will.shahda@gmail.com>",
