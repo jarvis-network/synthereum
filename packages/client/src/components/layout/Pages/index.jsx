@@ -1,15 +1,15 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
-import Grid from "@material-ui/core/Grid";
+import Grid from '@material-ui/core/Grid';
 
-import ExchangeRates from "../../elements/ExchangeRates";
-import OrderForm from "../../elements/OrderForm";
-import WalletBalance from "../../elements/WalletBalance";
-import Faucet from "../../elements/Faucet";
+import ExchangeRates from '../../elements/ExchangeRates';
+import OrderForm from '../../elements/OrderForm';
+import WalletBalance from '../../elements/WalletBalance';
+import Faucet from '../../elements/Faucet';
 
-import Insights from "./Insights";
-import Transactions from "./Transactions";
+import Insights from './Insights';
+import Transactions from './Transactions';
 
 const Pages = ({
   assets,
@@ -17,19 +17,18 @@ const Pages = ({
   syntheticTokens,
   setLoading,
   lastTx,
-  setLastTx
+  setLastTx,
 }) => {
   return (
     <Switch>
-      
       <Route path="/exchangerates">
-        <ExchangeRates assets={assets} syntheticTokens = {syntheticTokens} />
+        <ExchangeRates assets={assets} syntheticTokens={syntheticTokens} />
       </Route>
       <Route path="/transactions">
         <Transactions assets={assets} />
       </Route>
       <Route path="/insights">
-          <Insights />
+        <Insights />
       </Route>
       <Route path="/help">
         <h3>Help</h3>
@@ -56,7 +55,7 @@ const Pages = ({
         </Grid>
       </Route>
       <Route path="/">
-      <Faucet />
+        <Faucet />
       </Route>
     </Switch>
   );

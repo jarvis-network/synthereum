@@ -1,75 +1,84 @@
-import React, { useEffect, useState } from "react";
-import { useWeb3Context } from "web3-react";
+import React, { useEffect, useState } from 'react';
+import { useWeb3Context } from 'web3-react';
 
-import Notify from "bnc-notify";
+import Notify from 'bnc-notify';
 
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableRow from "@material-ui/core/TableRow";
-import TextField from "@material-ui/core/TextField";
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableRow from '@material-ui/core/TableRow';
+import TextField from '@material-ui/core/TextField';
 import Alert from '@material-ui/lab/Alert';
 
-import TokenPicker from "../TokenPicker";
+import TokenPicker from '../TokenPicker';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 
-const SELECT_TOKEN = "select";
+const SELECT_TOKEN = 'select';
 
-export default function OrderForm({ assets, dai, syntheticTokens, setLoading, setLastTx }) {
-  
+export default function OrderForm({
+  assets,
+  dai,
+  syntheticTokens,
+  setLoading,
+  setLastTx,
+}) {
   const classes = useStyles();
 
   const context = useWeb3Context();
   const [inputToken, setInputToken] = useState(assets.length);
   const [outputToken, setOutputToken] = useState(0);
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [inputAmount, setInputAmount] = useState(0);
   const [outputAmount, setOutputAmount] = useState(0);
-  const [feeAmount, setFeeAmount] = useState("0");
-  const [collateralAmount, setCollateralAmount] = useState("0");
+  const [feeAmount, setFeeAmount] = useState('0');
+  const [collateralAmount, setCollateralAmount] = useState('0');
 
   const [notify, setNotify] = useState(null);
 
   const { fromWei, toWei, toBN } = context.library.utils;
 
-  const tokens = assets.concat([{
-    name: "DAI",
-    symbol: "DAI",
-    price: 1
-  }]);
+  const tokens = assets.concat([
+    {
+      name: 'DAI',
+      symbol: 'DAI',
+      price: 1,
+    },
+  ]);
 
   useEffect(() => {
     if (!notify) {
-      setNotify(Notify({
-        dappId: process.env.REACT_APP_NOTIFY_API,
-        system: "ethereum",
-        networkId: context.networkId
-      }));
+      setNotify(
+        Notify({
+          dappId: process.env.REACT_APP_NOTIFY_API,
+          system: 'ethereum',
+          networkId: context.networkId,
+        }),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active]);
 
   const getOrderType = () => {
     if (inputToken === 4 && outputToken < 4) {
-      return "mint";
+      return 'mint';
     } else if (inputToken < 4 && outputToken === 4) {
-      return "redeem";
+      return 'redeem';
     } else if (inputToken < 4 && outputToken < 4) {
-      return "exchange";
+      return 'exchange';
     } else {
       return null;
     }
-  }
+  };
 
   const calculateFees = value => {
-    if (getOrderType() === "mint") {
+    if (getOrderType() === 'mint') {
       const newCollateralAmount = value * assets[outputToken].price;
       setCollateralAmount(newCollateralAmount);
       assets[outputToken].contract.methods
@@ -91,7 +100,8 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
 
   useEffect(() => {
     if (inputAmount > 0 && tokens[outputToken] && tokens[inputToken]) {
-      const tokenAmount = (inputAmount * tokens[inputToken].price) / tokens[outputToken].price;
+      const tokenAmount =
+        (inputAmount * tokens[inputToken].price) / tokens[outputToken].price;
       setOutputAmount(tokenAmount);
       if (inputToken === assets.length) {
         calculateFees(tokenAmount);
@@ -115,21 +125,21 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
         dai.methods
           .approve(
             assets[outputToken].contract.options.address,
-            toBN(collateralAmount).add(toBN(mintFee))
+            toBN(collateralAmount).add(toBN(mintFee)),
           )
           .send({
-            from: context.account
+            from: context.account,
           })
-          .on("transactionHash", hash => {
+          .on('transactionHash', hash => {
             notify.hash(hash);
           })
           .then(() => {
             return assets[outputToken].contract.methods
               .mintRequest(collateralAmount, orderAmountTKNbits)
               .send({
-                from: context.account
+                from: context.account,
               })
-              .on("transactionHash", hash => {
+              .on('transactionHash', hash => {
                 notify.hash(hash);
               });
           })
@@ -152,18 +162,18 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
     syntheticTokens[inputToken].methods
       .approve(assets[inputToken].contract.options.address, orderAmountTKNbits)
       .send({
-        from: context.account
+        from: context.account,
       })
-      .on("transactionHash", hash => {
+      .on('transactionHash', hash => {
         notify.hash(hash);
       })
       .then(() => {
         return assets[inputToken].contract.methods
           .redeemRequest(collateralAmount, orderAmountTKNbits)
           .send({
-            from: context.account
+            from: context.account,
           })
-          .on("transactionHash", hash => {
+          .on('transactionHash', hash => {
             notify.hash(hash);
           });
       })
@@ -185,9 +195,9 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
     syntheticTokens[inputToken].methods
       .approve(assets[inputToken].contract.options.address, inputAmountTKNbits)
       .send({
-        from: context.account
+        from: context.account,
       })
-      .on("transactionHash", hash => {
+      .on('transactionHash', hash => {
         notify.hash(hash);
       })
       .then(() => {
@@ -195,12 +205,12 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           .exchangeRequest(
             assets[outputToken].contract.options.address,
             inputAmountTKNbits,
-            outputAmountTKNbits
+            outputAmountTKNbits,
           )
           .send({
-            from: context.account
+            from: context.account,
           })
-          .on("transactionHash", hash => {
+          .on('transactionHash', hash => {
             notify.hash(hash);
           });
       })
@@ -219,26 +229,27 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   };
 
   const placeOrder = () => {
-
-    if (outputToken === SELECT_TOKEN) return setErrorMessage("Please select a token.");
-    if (inputToken === 4 && outputToken === 4) return setErrorMessage("Please pick a different token pair.");
+    if (outputToken === SELECT_TOKEN)
+      return setErrorMessage('Please select a token.');
+    if (inputToken === 4 && outputToken === 4)
+      return setErrorMessage('Please pick a different token pair.');
 
     if (inputAmount > 0 || outputAmount > 0) {
       const orderType = getOrderType();
 
-      if (orderType === "mint") {
+      if (orderType === 'mint') {
         setLoading(true);
 
         const collateralAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
         const orderAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
-      } else if (orderType === "redeem") {
+      } else if (orderType === 'redeem') {
         setLoading(true);
 
         const collateralAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
         const orderAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
         sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
-      } else if (orderType === "exchange") {
+      } else if (orderType === 'exchange') {
         setLoading(true);
 
         const inputAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
@@ -251,12 +262,11 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
   return (
     <Paper className={classes.Paper}>
       <form>
-
         <Grid container justify="center">
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label={"From"}
+              label={'From'}
               placeholder="0.0"
               fullWidth
               margin="normal"
@@ -267,8 +277,12 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               }}
               InputProps={{
                 endAdornment: (
-                  <TokenPicker assets={tokens} token={inputToken} onChange={setInputToken} />
-                )
+                  <TokenPicker
+                    assets={tokens}
+                    token={inputToken}
+                    onChange={setInputToken}
+                  />
+                ),
               }}
             />
           </Grid>
@@ -276,7 +290,7 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
           <Grid item md={12} className={classes.FormGroup}>
             <TextField
               variant="outlined"
-              label={"To (estimated)"}
+              label={'To (estimated)'}
               placeholder="0.0"
               fullWidth
               margin="normal"
@@ -288,43 +302,59 @@ export default function OrderForm({ assets, dai, syntheticTokens, setLoading, se
               }}
               InputProps={{
                 endAdornment: (
-                  <TokenPicker assets={tokens} token={outputToken} onChange={setOutputToken} />
-                )
+                  <TokenPicker
+                    assets={tokens}
+                    token={outputToken}
+                    onChange={setOutputToken}
+                  />
+                ),
               }}
             />
           </Grid>
 
           <Grid item md={12}>
-            {outputAmount > 0 && getOrderType() === "mint" && (
-            <TableContainer>
-              <Table size="small">
-                <TableBody>
-                  <TableRow className={classes.TableRow}>
-                    <TableCell>Fee</TableCell>
-                    <TableCell align="right">
-                      {Number(fromWei(feeAmount)).toLocaleString()} {tokens[inputToken].symbol}
-                    </TableCell>
-                  </TableRow>
+            {outputAmount > 0 && getOrderType() === 'mint' && (
+              <TableContainer>
+                <Table size="small">
+                  <TableBody>
+                    <TableRow className={classes.TableRow}>
+                      <TableCell>Fee</TableCell>
+                      <TableCell align="right">
+                        {Number(fromWei(feeAmount)).toLocaleString()}{' '}
+                        {tokens[inputToken].symbol}
+                      </TableCell>
+                    </TableRow>
 
-                  <TableRow>
-                    <TableCell>Total</TableCell>
-                    <TableCell align="right">
-                      {(collateralAmount + Number(fromWei(feeAmount))).toLocaleString()} {tokens[inputToken].symbol}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-
+                    <TableRow>
+                      <TableCell>Total</TableCell>
+                      <TableCell align="right">
+                        {(
+                          collateralAmount + Number(fromWei(feeAmount))
+                        ).toLocaleString()}{' '}
+                        {tokens[inputToken].symbol}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </Grid>
           <Grid item md={12}>
-            <Button className={classes.OrderButton} fullWidth margin="normal" onClick={placeOrder}>
+            <Button
+              className={classes.OrderButton}
+              fullWidth
+              margin="normal"
+              onClick={placeOrder}
+            >
               Place Order
             </Button>
-            { errorMessage && (<Alert severity="error" className={classes.ErrorAlert}>{errorMessage}</Alert>)}
+            {errorMessage && (
+              <Alert severity="error" className={classes.ErrorAlert}>
+                {errorMessage}
+              </Alert>
+            )}
           </Grid>
-        </Grid>        
+        </Grid>
       </form>
     </Paper>
   );

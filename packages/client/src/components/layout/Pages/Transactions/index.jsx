@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import React, { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
-import TransactionTable from "../../../elements/TransactionTable";
+import TransactionTable from '../../../elements/TransactionTable';
 
 const Transactions = ({ assets }) => {
   const [token, setToken] = useState(0);
@@ -22,7 +22,9 @@ const Transactions = ({ assets }) => {
             onChange={ev => setToken(ev.target.value)}
           >
             {assets.map((asset, index) => (
-              <MenuItem key={asset.symbol} value={index}>{asset.symbol}</MenuItem>
+              <MenuItem key={asset.symbol} value={index}>
+                {asset.symbol}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

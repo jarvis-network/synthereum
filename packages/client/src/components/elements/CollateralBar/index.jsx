@@ -1,11 +1,11 @@
-import React from "react";
-import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Tooltip from "@material-ui/core/Tooltip";
+import React from 'react';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import Box from "@material-ui/core/Box";
+import Box from '@material-ui/core/Box';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 
 const Progress = React.forwardRef(function Progress(props, ref) {
   //  Spread the props to the underlying DOM element.
@@ -58,7 +58,7 @@ function CollateralBar({ value, total }) {
 }
 
 CollateralBar.defaultProps = {
-  total: 110
+  total: 110,
 };
 
 export default CollateralBar;

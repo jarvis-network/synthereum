@@ -1,11 +1,11 @@
-import React from "react";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import * as icons from "../../../assets/icons";
+import React from 'react';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import * as icons from '../../../assets/icons';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 
 const TokenPicker = ({ assets, token, onChange }) => {
   const classes = useStyles();

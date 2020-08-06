@@ -1,5 +1,5 @@
-const path = require("path");
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const path = require('path');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 require('dotenv').config();
 
 const getEnv = env => {
@@ -22,37 +22,37 @@ module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
   mocha: {
-    useColors: false
+    useColors: false,
   },
   networks: {
     kovan: {
-      provider: function() {
+      provider: function () {
         // Create 2 addresses for testing purposes
         return new HDWalletProvider(mnemonic, kovanEndpoint, 0, 2);
       },
       network_id: 42,
       gas: 8000000,
-      gasPrice: 3000000000
+      gasPrice: 3000000000,
     },
-    "kovan-fork": {
-      provider: function() {
+    'kovan-fork': {
+      provider: function () {
         // Create 2 addresses for testing purposes
-        return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/", 0, 2);
+        return new HDWalletProvider(mnemonic, 'http://127.0.0.1:8545/', 0, 2);
       },
       network_id: 42,
       gas: 8000000,
-      gasPrice: 3000000000
+      gasPrice: 3000000000,
     },
   },
   compilers: {
     solc: {
-      version: "0.6.4",
+      version: '0.6.4',
       settings: {
         optimizer: {
           enabled: true,
-          runs: 999999
-        }
-      }
-    }
-  }
+          runs: 999999,
+        },
+      },
+    },
+  },
 };

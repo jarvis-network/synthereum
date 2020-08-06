@@ -1,8 +1,8 @@
-import React from "react";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 
 const LatestPrice = ({ price }) => {
   const classes = useStyles();
@@ -13,7 +13,7 @@ const LatestPrice = ({ price }) => {
         Latest Price
       </Typography>
       <Typography variant="h4" noWrap>
-        {price ? `$${price}` : "Closed"}
+        {price ? `$${price}` : 'Closed'}
       </Typography>
     </Paper>
   );

@@ -1,25 +1,24 @@
-import React from "react";
+import React from 'react';
 
 import Hidden from '@material-ui/core/Hidden';
-import Drawer from "@material-ui/core/Drawer";
-import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
+import Drawer from '@material-ui/core/Drawer';
+import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
 
-import useStyles from "./styles";
+import useStyles from './styles';
 import { useTheme } from '@material-ui/core/styles';
-import { useLocation } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
-import { DashboardPages, SupportPages } from "../../../helpers/pages";
+import { DashboardPages, SupportPages } from '../../../helpers/pages';
 
-import NavItem from "./NavItem";
+import NavItem from './NavItem';
 
 const Navigation = ({ window, handleDrawerToggle }) => {
-  
   const location = useLocation();
   let currentPage =
     DashboardPages.concat(SupportPages).find(
-      page => page.link === location.pathname
+      page => page.link === location.pathname,
     ) || {};
 
   const classes = useStyles();
@@ -35,19 +34,28 @@ const Navigation = ({ window, handleDrawerToggle }) => {
       </div>
       <Divider />
       <List>
-      {DashboardPages.map(page => (
-          <NavItem key={page.title} page={page} active={currentPage.title === page.title} />
+        {DashboardPages.map(page => (
+          <NavItem
+            key={page.title}
+            page={page}
+            active={currentPage.title === page.title}
+          />
         ))}
       </List>
       <Divider />
       <List>
-      {SupportPages.map(page => (
-          <NavItem key={page.title} page={page} active={currentPage.title === page.title} />
+        {SupportPages.map(page => (
+          <NavItem
+            key={page.title}
+            page={page}
+            active={currentPage.title === page.title}
+          />
         ))}
       </List>
     </div>
   );
-  const container = window !== undefined ? () => window().document.body : undefined;
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
 
   return (
     <nav className={classes.drawer}>

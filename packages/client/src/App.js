@@ -85,17 +85,15 @@ export default function App() {
         <Router>
           <Wallet setLoading={setLoading} />
         </Router>
-         <div>
-            {(actualDay === 5 && actualHour > 22) ||
-            actualDay === 6 ||
-            (actualDay === 0 && actualHour < 22) ? (
-              <Typography variant="h4" align="center" color="error">
+        <div>
+          {(actualDay === 5 && actualHour > 22) ||
+          actualDay === 6 ||
+          (actualDay === 0 && actualHour < 22) ? (
+            <Typography variant="h4" align="center" color="error">
               Market is closed
-              </Typography>
-            ) : (
-              null
-            )}
-          </div>
+            </Typography>
+          ) : null}
+        </div>
       </div>
     );
   }

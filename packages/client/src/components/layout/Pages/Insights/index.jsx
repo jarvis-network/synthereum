@@ -1,25 +1,23 @@
-import React, { useState, useEffect } from "react";
-import Candlestick from "../../../elements/Candlestick";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
+import React, { useState, useEffect } from 'react';
+import Candlestick from '../../../elements/Candlestick';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
 
-import { jarvisExchangeRate } from "../../../../jarvisAPI";
-import defaultAssets from "../../../../helpers/defaultAssets";
+import { jarvisExchangeRate } from '../../../../jarvisAPI';
+import defaultAssets from '../../../../helpers/defaultAssets';
 
-import useStyles from "./styles";
-import LatestPrice from "../../../elements/LatestPrice";
+import useStyles from './styles';
+import LatestPrice from '../../../elements/LatestPrice';
 
-
-const slashPair = str => `${str.slice(0, 3)}/${str.slice(3,6)}`;
+const slashPair = str => `${str.slice(0, 3)}/${str.slice(3, 6)}`;
 
 const Insights = () => {
-
   const [symbol, setSymbol] = useState(defaultAssets[0].uiFeed);
-  const [days, setDays] = useState("30");
+  const [days, setDays] = useState('30');
   const [price, setPrice] = useState(0);
   const classes = useStyles();
 
@@ -27,7 +25,7 @@ const Insights = () => {
     try {
       let symbolFeed = symbol;
       if (symbolFeed === 'CHFUSD') {
-        symbolFeed = 'USDCHF'
+        symbolFeed = 'USDCHF';
       }
       const response = await jarvisExchangeRate(symbolFeed);
       setPrice(response);
@@ -37,11 +35,9 @@ const Insights = () => {
   }
 
   useEffect(() => {
-      getPrice();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    getPrice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol]);
-
-
 
   return (
     <Grid container spacing={4} justify="space-around">

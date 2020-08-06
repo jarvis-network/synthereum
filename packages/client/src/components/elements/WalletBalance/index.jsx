@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useWeb3Context } from "web3-react";
+import React, { useEffect, useState } from 'react';
+import { useWeb3Context } from 'web3-react';
 
 import {
   Box,
@@ -9,30 +9,30 @@ import {
   Table,
   TableRow,
   TableBody,
-  TableCell
-} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+  TableCell,
+} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
-import * as icons from "../../../assets/icons";
+import * as icons from '../../../assets/icons';
 
-import useStyles from "./styles";
-import CollateralBar from "../CollateralBar";
+import useStyles from './styles';
+import CollateralBar from '../CollateralBar';
 
 export default function WalletBalance({
   assets,
   syntheticTokens,
   token,
   dai,
-  lastTx
+  lastTx,
 }) {
   const classes = useStyles();
 
   const context = useWeb3Context();
 
   const [synBalances, setSynBalances] = useState(
-    Array(syntheticTokens.length).fill("0")
+    Array(syntheticTokens.length).fill('0'),
   );
-  const [balance, setBalance] = useState("0");
+  const [balance, setBalance] = useState('0');
 
   const { fromWei } = context.library.utils;
 
@@ -48,36 +48,31 @@ export default function WalletBalance({
     </Box>
   );
 
-  
-
   useEffect(() => {
-
     async function setSubscriptions() {
       try {
-  
         // TODO: add params/filter
-        const subscription = context.library.eth.subscribe("MintApproved");
+        const subscription = context.library.eth.subscribe('MintApproved');
         console.log(subscription);
-  
-      } catch(err) {
+      } catch (err) {
         console.error(err);
       }
     }
 
-
     setSubscriptions();
-    
   }, [context.library.eth]);
 
   useEffect(() => {
     if (context.active) {
-      Promise.all(syntheticTokens.map((token, i) => {
-        if (token) {
-          return token.methods.balanceOf(context.account).call();
-        } else {
-          return null;
-        }
-      })).then(synBalances => {
+      Promise.all(
+        syntheticTokens.map((token, i) => {
+          if (token) {
+            return token.methods.balanceOf(context.account).call();
+          } else {
+            return null;
+          }
+        }),
+      ).then(synBalances => {
         setSynBalances(synBalances);
       });
     }
@@ -128,11 +123,11 @@ export default function WalletBalance({
                   <TableCell
                     align="right"
                     style={{
-                      borderLeft: "1px solid rgba(224, 224, 224, 1)"
+                      borderLeft: '1px solid rgba(224, 224, 224, 1)',
                     }}
                   >
                     <Typography className={classes.BalanceCell}>
-                      {Number(fromWei(synBalances[index] || "0", "ether"))
+                      {Number(fromWei(synBalances[index] || '0', 'ether'))
                         .toFixed(3)
                         .toLocaleString()}
                     </Typography>
@@ -151,7 +146,7 @@ export default function WalletBalance({
               </TableCell>
               <TableCell align="right">
                 <Typography className={classes.BalanceCell}>
-                  {Number(fromWei(balance, "ether")).toLocaleString()}
+                  {Number(fromWei(balance, 'ether')).toLocaleString()}
                 </Typography>
               </TableCell>
             </TableRow>

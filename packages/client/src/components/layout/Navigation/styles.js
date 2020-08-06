@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
 
@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
       flexShrink: 0,
     },
   },
-  
+
   menuButton: {
     marginRight: theme.spacing(2),
     [theme.breakpoints.up('sm')]: {
@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     ...theme.mixins.toolbar,
     alignItems: 'center',
     display: 'flex',
-    paddingLeft: 16
+    paddingLeft: 16,
   },
   drawerPaper: {
     width: drawerWidth,
@@ -32,14 +32,14 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'bold',
   },
   ActiveItem: {
-    background: '#eee'
+    background: '#eee',
   },
   Logo: {
-    color: "#03256C",
-    fontFamily: "Rubik",
+    color: '#03256C',
+    fontFamily: 'Rubik',
     fontSize: 22,
-    fontWeight: "bold"
-  }
+    fontWeight: 'bold',
+  },
 }));
 
 export default useStyles;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import moment from "moment";
+import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 import {
   Box,
   Paper,
@@ -8,30 +8,35 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Typography
-} from "@material-ui/core";
-import StatusLabel from "./StatusLabel";
-import useStyles from "./styles";
-import { useWeb3Context } from "web3-react";
-import * as icons from "../../../assets/icons";
-import Loader from "../Loader";
-
+  Typography,
+} from '@material-ui/core';
+import StatusLabel from './StatusLabel';
+import useStyles from './styles';
+import { useWeb3Context } from 'web3-react';
+import * as icons from '../../../assets/icons';
+import Loader from '../Loader';
 
 const getStatus = (ev, approvedEvents, rejectedEvents, idField) => {
-  
-  let status = "pending";
-  if (approvedEvents.find(e => e.returnValues[idField] === ev.returnValues[idField])) {
-    status = "approved";
+  let status = 'pending';
+  if (
+    approvedEvents.find(
+      e => e.returnValues[idField] === ev.returnValues[idField],
+    )
+  ) {
+    status = 'approved';
   }
-  if (rejectedEvents.find(e => e.returnValues[idField] === ev.returnValues[idField])) {
-    status = "rejected";
+  if (
+    rejectedEvents.find(
+      e => e.returnValues[idField] === ev.returnValues[idField],
+    )
+  ) {
+    status = 'rejected';
   }
 
   return {
     ...ev,
-    status
+    status,
   };
-
 };
 
 const TransactionTable = ({ assets, token }) => {
@@ -46,28 +51,33 @@ const TransactionTable = ({ assets, token }) => {
 
   async function listEvents(eventNames, idField) {
     try {
-
       const blockNumber = await context.library.eth.getBlockNumber();
-      console.log(blockNumber, "blockNumber");
+      console.log(blockNumber, 'blockNumber');
 
-      let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(eventNames.map(eventName => assets[token].contract.getPastEvents(eventName, {
-        filter: { sender: context.account },
-        fromBlock: 0,
-        // fromBlock: blockNumber - 1000000, // TODO
-        toBlock: "latest"
-      })));
+      let [requestedEvents, approvedEvents, rejectedEvents] = await Promise.all(
+        eventNames.map(eventName =>
+          assets[token].contract.getPastEvents(eventName, {
+            filter: { sender: context.account },
+            fromBlock: 0,
+            // fromBlock: blockNumber - 1000000, // TODO
+            toBlock: 'latest',
+          }),
+        ),
+      );
 
-      requestedEvents = requestedEvents.map(ev => getStatus(ev, approvedEvents, rejectedEvents, idField));
+      requestedEvents = requestedEvents.map(ev =>
+        getStatus(ev, approvedEvents, rejectedEvents, idField),
+      );
 
       let toAsset, fromAsset;
 
-      if (eventNames[0] === "MintRequested") {
+      if (eventNames[0] === 'MintRequested') {
         toAsset = assets[token].symbol;
-        fromAsset = "DAI";
-      } else if (eventNames[0] === "RedeemRequested") {
-        toAsset = "DAI";
+        fromAsset = 'DAI';
+      } else if (eventNames[0] === 'RedeemRequested') {
+        toAsset = 'DAI';
         fromAsset = assets[token].symbol;
-      } else if (eventNames[0] === "ExchangeRequested") {
+      } else if (eventNames[0] === 'ExchangeRequested') {
         fromAsset = assets[token].symbol;
         /// TODO: toAsset using address
       }
@@ -76,40 +86,39 @@ const TransactionTable = ({ assets, token }) => {
         return {
           ...ev,
           toAsset,
-          fromAsset
+          fromAsset,
         };
       });
-
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
   }
 
   async function getEvents() {
-  
     try {
-
       setLoading(true);
 
-      let mintEvents = await listEvents([
-        "MintRequested",
-        "MintApproved",
-        "MintRejected"
-      ], "mintID");
+      let mintEvents = await listEvents(
+        ['MintRequested', 'MintApproved', 'MintRejected'],
+        'mintID',
+      );
 
-      let redeemEvents = await listEvents([
-        "RedeemRequested",
-        "RedeemApproved",
-        "RedeemRejected"
-      ], "redeemID");
+      let redeemEvents = await listEvents(
+        ['RedeemRequested', 'RedeemApproved', 'RedeemRejected'],
+        'redeemID',
+      );
 
-      let exchangeEvents = await listEvents([
-        "ExchangeRequested",
-        "ExchangeApproved",
-        "ExchangeRejected"
-      ], "exchangeID");
-      
-      setEvents(mintEvents.concat(redeemEvents).concat(exchangeEvents).sort((a, b) => b.returnValues.timestamp - a.returnValues.timestamp));
+      let exchangeEvents = await listEvents(
+        ['ExchangeRequested', 'ExchangeApproved', 'ExchangeRejected'],
+        'exchangeID',
+      );
+
+      setEvents(
+        mintEvents
+          .concat(redeemEvents)
+          .concat(exchangeEvents)
+          .sort((a, b) => b.returnValues.timestamp - a.returnValues.timestamp),
+      );
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -139,82 +148,89 @@ const TransactionTable = ({ assets, token }) => {
             </TableRow>
           </TableHead>
 
-          {
-              events.length > 0 ? (
-                <TableBody>
-                    {events.map((ev, index) => (
-                    <TableRow key={index}>
-                        <TableCell>
-                            {ev.event.replace("Requested","").replace("Approved","").replace("Rejected","")}
-                        </TableCell>
-                        <TableCell>
-                        {moment(parseInt(ev.returnValues.timestamp) * 1000).format(
-                            "M/D/YY h:mma"
-                        )}
-                        </TableCell>
-                        {ev.event === "MintRequested" ||
-                        ev.event === "RedeemRequested" ? (
-                        <TableCell className={classes.InputAmount}>
-                            <Box component="div" className={classes.AssetCell}>
-                            <img
-                                alt={ev.fromAsset}
-                                width="28"
-                                height="28"
-                                src={icons[ev.fromAsset]}
-                            />
-                            {`-${Number(fromWei(
-                                ev.returnValues[
-                                ev.event === "RedeemRequested"
-                                    ? "numTokens"
-                                    : "collateralAmount"
-                                ]
-                            )).toLocaleString()}`}
-                            
-                            </Box>
-                        </TableCell>
-                        ) : (
-                        <TableCell></TableCell>
-                        )}
-                        {ev.event === "MintRequested" ||
-                        ev.event === "RedeemRequested" ? (
-                        <TableCell className={classes.OutputAmount}>
-                            <Box component="div" className={classes.AssetCell}>
-                            <img
-                                alt={ev.toAsset}
-                                width="28"
-                                height="28"
-                                src={icons[ev.toAsset]}
-                            />
-                            {`+${Number(fromWei(
-                                ev.returnValues[
-                                ev.event === "RedeemRequested"
-                                    ? "collateralAmount"
-                                    : "numTokens"
-                                ]
-                            )).toLocaleString()}`}
-                            
-                            </Box>
-                        </TableCell>
-                        ) : (
-                        <TableCell></TableCell>
-                        )}
-                        <TableCell align="right">
-                          { ev.status && (<StatusLabel status={ev.status || "pending"} />)}
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
-              ) : (
-                <TableBody>
-                    <TableRow>
-                        <TableCell colSpan="5" align="center">
-                            <Typography variant="h6">No transactions to display.</Typography>
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-              )
-          }
-          
+          {events.length > 0 ? (
+            <TableBody>
+              {events.map((ev, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    {ev.event
+                      .replace('Requested', '')
+                      .replace('Approved', '')
+                      .replace('Rejected', '')}
+                  </TableCell>
+                  <TableCell>
+                    {moment(parseInt(ev.returnValues.timestamp) * 1000).format(
+                      'M/D/YY h:mma',
+                    )}
+                  </TableCell>
+                  {ev.event === 'MintRequested' ||
+                  ev.event === 'RedeemRequested' ? (
+                    <TableCell className={classes.InputAmount}>
+                      <Box component="div" className={classes.AssetCell}>
+                        <img
+                          alt={ev.fromAsset}
+                          width="28"
+                          height="28"
+                          src={icons[ev.fromAsset]}
+                        />
+                        {`-${Number(
+                          fromWei(
+                            ev.returnValues[
+                              ev.event === 'RedeemRequested'
+                                ? 'numTokens'
+                                : 'collateralAmount'
+                            ],
+                          ),
+                        ).toLocaleString()}`}
+                      </Box>
+                    </TableCell>
+                  ) : (
+                    <TableCell></TableCell>
+                  )}
+                  {ev.event === 'MintRequested' ||
+                  ev.event === 'RedeemRequested' ? (
+                    <TableCell className={classes.OutputAmount}>
+                      <Box component="div" className={classes.AssetCell}>
+                        <img
+                          alt={ev.toAsset}
+                          width="28"
+                          height="28"
+                          src={icons[ev.toAsset]}
+                        />
+                        {`+${Number(
+                          fromWei(
+                            ev.returnValues[
+                              ev.event === 'RedeemRequested'
+                                ? 'collateralAmount'
+                                : 'numTokens'
+                            ],
+                          ),
+                        ).toLocaleString()}`}
+                      </Box>
+                    </TableCell>
+                  ) : (
+                    <TableCell></TableCell>
+                  )}
+                  <TableCell align="right">
+                    {ev.status && (
+                      <StatusLabel status={ev.status || 'pending'} />
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan="5" align="center">
+                  <Typography variant="h6">
+                    No transactions to display.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          )}
+
           {/* <TableFooter>
             <TableRow>
               <TableCell colSpan="6" align="center">
