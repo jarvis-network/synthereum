@@ -268,7 +268,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice User needs to have approved the transfer of synthetic tokens
      * @param redeemID The ID of the redeem request
      */
-    function approveRedeem(bytes32 redeemID) external override nonReentrant {
+    function approveRedeem(bytes32 redeemID) external override nonReentrant onlyValidator {
         address sender = ticStorage.redeemRequests[redeemID].sender;
 
         ticStorage.approveRedeem(redeemID);
@@ -281,7 +281,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice This will typically be done with a keeper bot
      * @param redeemID The ID of the redeem request
      */
-    function rejectRedeem(bytes32 redeemID) external override nonReentrant {
+    function rejectRedeem(bytes32 redeemID) external override nonReentrant onlyValidator {
         address sender = ticStorage.redeemRequests[redeemID].sender;
 
         ticStorage.rejectRedeem(redeemID);
