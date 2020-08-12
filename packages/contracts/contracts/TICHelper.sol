@@ -211,6 +211,19 @@ library TICHelper {
         self.mintRTokens(collateralAmount);
     }
 
+     /**
+     * @notice Liquidity provider withdraw margin from the TIC
+     * @param self Data type the library is attached to
+     * @param collateralAmount The amount of margin to withdraw
+     */
+    function withdraw(
+        TIC.Storage storage self,
+        FixedPoint.Unsigned memory collateralAmount
+    ) public {
+        // Redeem the RToken collateral for the underlying and transfer to the user
+       require(self.rtoken.redeemAndTransfer(msg.sender, collateralAmount.rawValue));
+    }
+
     /**
      * @notice Called by a source TIC's `exchange` function to mint destination tokens
      * @dev This function could be called by any account to mint tokens, however they will lose
@@ -655,7 +668,7 @@ library TICHelper {
      * @param numTokens The number of tokens to mint
      */
     function mintSynTokens(
-        TIC.Storage storage self, 
+        TIC.Storage storage self,
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens
     ) internal {
@@ -767,7 +780,7 @@ library TICHelper {
      * @return `true` if there is sufficient collateral
      */
     function checkCollateralizationRatio(
-        TIC.Storage storage self, 
+        TIC.Storage storage self,
         FixedPoint.Unsigned memory globalCollateralization,
         FixedPoint.Unsigned memory collateralAmount,
         FixedPoint.Unsigned memory numTokens

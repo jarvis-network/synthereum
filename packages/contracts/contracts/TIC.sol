@@ -201,6 +201,19 @@ contract TIC is TICInterface, ReentrancyGuard {
     }
 
     /**
+     * @notice Liquidity provider withdraw margin from the TIC
+     * @param collateralAmount The amount of margin to withdraw
+     */
+    function withdraw(uint256 collateralAmount)
+        external
+        override
+        nonReentrant
+        onlyLiquidityProvider
+    {
+        ticStorage.withdraw(FixedPoint.Unsigned(collateralAmount));
+    }
+
+    /**
      * TODO: Potentially restrict this function to only TICs registered on a whitelist
      * @notice Called by a source TIC's `exchange` function to mint destination tokens
      * @dev This function could be called by any account to mint tokens, however they will lose
