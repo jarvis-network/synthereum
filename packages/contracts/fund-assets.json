@@ -1,0 +1,30 @@
+[
+    {
+        "syntheticSymbol": "jEUR",
+        "amount": "1000000000000000000"
+    },
+    {
+        "syntheticSymbol": "jGBP",
+        "amount": "1000000000000000000"
+    },
+    {
+        "syntheticSymbol": "jCHF",
+        "amount": "1000000000000000000"
+    },
+    {
+        "syntheticSymbol": "jXAU",
+        "amount": "1000000000000000000"
+    },
+    {
+        "syntheticSymbol": "jSPX",
+        "amount": "1000000000000000000"
+    },
+    {
+        "syntheticSymbol": "jXTI",
+        "amount": "1000000000000000000"
+    },
+    {
+        "syntheticSymbol": "jXAG",
+        "amount": "1000000000000000000"
+    }
+]
