@@ -50,14 +50,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
     "exportedSymbols": {
       "ReturnCalculatorInterface": [
-        14644
+        14942
       ]
     },
-    "id": 14645,
+    "id": 14943,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14626,
+        "id": 14924,
         "literals": [
           "solidity",
           "^",
@@ -73,15 +73,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 14627,
+          "id": 14925,
           "nodeType": "StructuredDocumentation",
           "src": "26:168:60",
           "text": "@title Computes the synthetic asset return based on the underlying asset's return.\n@dev Different implementations can compute different return structures."
         },
         "fullyImplemented": false,
-        "id": 14644,
+        "id": 14942,
         "linearizedBaseContracts": [
-          14644
+          14942
         ],
         "name": "ReturnCalculatorInterface",
         "nodeType": "ContractDefinition",
@@ -89,13 +89,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14628,
+              "id": 14926,
               "nodeType": "StructuredDocumentation",
               "src": "237:298:60",
               "text": "@notice Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to\n`newPrice`.\n@dev This can be implemented in many different ways, but a simple one would just be levering (or multiplying)\nthe return by some fixed integer."
             },
             "functionSelector": "55e59682",
-            "id": 14637,
+            "id": 14935,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -103,16 +103,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14633,
+              "id": 14931,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14630,
+                  "id": 14928,
                   "name": "oldPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14637,
+                  "scope": 14935,
                   "src": "563:12:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -121,7 +121,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14629,
+                    "id": 14927,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "563:3:60",
@@ -135,11 +135,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 14632,
+                  "id": 14930,
                   "name": "newPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14637,
+                  "scope": 14935,
                   "src": "577:12:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -148,7 +148,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14631,
+                    "id": 14929,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:3:60",
@@ -164,16 +164,16 @@
               "src": "562:28:60"
             },
             "returnParameters": {
-              "id": 14636,
+              "id": 14934,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14635,
+                  "id": 14933,
                   "name": "assetReturn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14637,
+                  "scope": 14935,
                   "src": "614:15:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -182,7 +182,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14634,
+                    "id": 14932,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "614:3:60",
@@ -197,7 +197,7 @@
               ],
               "src": "613:17:60"
             },
-            "scope": 14644,
+            "scope": 14942,
             "src": "540:91:60",
             "stateMutability": "view",
             "virtual": false,
@@ -206,13 +206,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14638,
+              "id": 14936,
               "nodeType": "StructuredDocumentation",
               "src": "637:186:60",
               "text": "@notice Gets the effective leverage for the return calculator.\n@dev If there is no sensible leverage value for a return calculator, this method should return 1."
             },
             "functionSelector": "2c86d98e",
-            "id": 14643,
+            "id": 14941,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -220,22 +220,22 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14639,
+              "id": 14937,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "845:2:60"
             },
             "returnParameters": {
-              "id": 14642,
+              "id": 14940,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14641,
+                  "id": 14939,
                   "name": "_leverage",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14643,
+                  "scope": 14941,
                   "src": "871:13:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -244,7 +244,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14640,
+                    "id": 14938,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "871:3:60",
@@ -259,14 +259,14 @@
               ],
               "src": "870:15:60"
             },
-            "scope": 14644,
+            "scope": 14942,
             "src": "828:58:60",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 14645,
+        "scope": 14943,
         "src": "195:693:60"
       }
     ],
@@ -276,14 +276,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
     "exportedSymbols": {
       "ReturnCalculatorInterface": [
-        14644
+        14942
       ]
     },
-    "id": 14645,
+    "id": 14943,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14626,
+        "id": 14924,
         "literals": [
           "solidity",
           "^",
@@ -299,15 +299,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 14627,
+          "id": 14925,
           "nodeType": "StructuredDocumentation",
           "src": "26:168:60",
           "text": "@title Computes the synthetic asset return based on the underlying asset's return.\n@dev Different implementations can compute different return structures."
         },
         "fullyImplemented": false,
-        "id": 14644,
+        "id": 14942,
         "linearizedBaseContracts": [
-          14644
+          14942
         ],
         "name": "ReturnCalculatorInterface",
         "nodeType": "ContractDefinition",
@@ -315,13 +315,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14628,
+              "id": 14926,
               "nodeType": "StructuredDocumentation",
               "src": "237:298:60",
               "text": "@notice Computes the synthetic asset return when the underlying asset price changes from `oldPrice` to\n`newPrice`.\n@dev This can be implemented in many different ways, but a simple one would just be levering (or multiplying)\nthe return by some fixed integer."
             },
             "functionSelector": "55e59682",
-            "id": 14637,
+            "id": 14935,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -329,16 +329,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14633,
+              "id": 14931,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14630,
+                  "id": 14928,
                   "name": "oldPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14637,
+                  "scope": 14935,
                   "src": "563:12:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -347,7 +347,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14629,
+                    "id": 14927,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "563:3:60",
@@ -361,11 +361,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 14632,
+                  "id": 14930,
                   "name": "newPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14637,
+                  "scope": 14935,
                   "src": "577:12:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -374,7 +374,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14631,
+                    "id": 14929,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:3:60",
@@ -390,16 +390,16 @@
               "src": "562:28:60"
             },
             "returnParameters": {
-              "id": 14636,
+              "id": 14934,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14635,
+                  "id": 14933,
                   "name": "assetReturn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14637,
+                  "scope": 14935,
                   "src": "614:15:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -408,7 +408,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14634,
+                    "id": 14932,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "614:3:60",
@@ -423,7 +423,7 @@
               ],
               "src": "613:17:60"
             },
-            "scope": 14644,
+            "scope": 14942,
             "src": "540:91:60",
             "stateMutability": "view",
             "virtual": false,
@@ -432,13 +432,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14638,
+              "id": 14936,
               "nodeType": "StructuredDocumentation",
               "src": "637:186:60",
               "text": "@notice Gets the effective leverage for the return calculator.\n@dev If there is no sensible leverage value for a return calculator, this method should return 1."
             },
             "functionSelector": "2c86d98e",
-            "id": 14643,
+            "id": 14941,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -446,22 +446,22 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14639,
+              "id": 14937,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "845:2:60"
             },
             "returnParameters": {
-              "id": 14642,
+              "id": 14940,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14641,
+                  "id": 14939,
                   "name": "_leverage",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14643,
+                  "scope": 14941,
                   "src": "871:13:60",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -470,7 +470,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14640,
+                    "id": 14938,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "871:3:60",
@@ -485,14 +485,14 @@
               ],
               "src": "870:15:60"
             },
-            "scope": 14644,
+            "scope": 14942,
             "src": "828:58:60",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 14645,
+        "scope": 14943,
         "src": "195:693:60"
       }
     ],
@@ -504,7 +504,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.730Z",
+  "updatedAt": "2020-08-14T09:32:05.687Z",
   "devdoc": {
     "details": "Different implementations can compute different return structures.",
     "methods": {

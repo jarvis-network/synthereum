@@ -541,14 +541,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/implementation/SyntheticToken.sol",
     "exportedSymbols": {
       "SyntheticToken": [
-        9113
+        9411
       ]
     },
-    "id": 9114,
+    "id": 9412,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8973,
+        "id": 9271,
         "literals": [
           "solidity",
           "^",
@@ -561,10 +561,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol",
         "file": "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol",
-        "id": 8974,
+        "id": 9272,
         "nodeType": "ImportDirective",
-        "scope": 9114,
-        "sourceUnit": 20631,
+        "scope": 9412,
+        "sourceUnit": 20929,
         "src": "24:63:28",
         "symbolAliases": [],
         "unitAlias": ""
@@ -572,10 +572,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/ExpandedERC20.sol",
         "file": "../../common/implementation/ExpandedERC20.sol",
-        "id": 8975,
+        "id": 9273,
         "nodeType": "ImportDirective",
-        "scope": 9114,
-        "sourceUnit": 3245,
+        "scope": 9412,
+        "sourceUnit": 3543,
         "src": "88:55:28",
         "symbolAliases": [],
         "unitAlias": ""
@@ -587,17 +587,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8977,
+              "id": 9275,
               "name": "ExpandedERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3244,
+              "referencedDeclaration": 3542,
               "src": "357:13:28",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ExpandedERC20_$3244",
+                "typeIdentifier": "t_contract$_ExpandedERC20_$3542",
                 "typeString": "contract ExpandedERC20"
               }
             },
-            "id": 8978,
+            "id": 9276,
             "nodeType": "InheritanceSpecifier",
             "src": "357:13:28"
           },
@@ -605,66 +605,66 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8979,
+              "id": 9277,
               "name": "ERC20Detailed",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20630,
+              "referencedDeclaration": 20928,
               "src": "372:13:28",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Detailed_$20630",
+                "typeIdentifier": "t_contract$_ERC20Detailed_$20928",
                 "typeString": "contract ERC20Detailed"
               }
             },
-            "id": 8980,
+            "id": 9278,
             "nodeType": "InheritanceSpecifier",
             "src": "372:13:28"
           }
         ],
         "contractDependencies": [
-          3244,
-          4468,
-          4689,
-          19142,
-          20567,
-          20630,
-          20708
+          3542,
+          4766,
+          4987,
+          19440,
+          20865,
+          20928,
+          21006
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 8976,
+          "id": 9274,
           "nodeType": "StructuredDocumentation",
           "src": "146:182:28",
           "text": "@title Burnable and mintable ERC20.\n@dev The contract deployer will initially be the only minter and burner as well as the owner  who\nis capable of adding new roles."
         },
         "fullyImplemented": true,
-        "id": 9113,
+        "id": 9411,
         "linearizedBaseContracts": [
-          9113,
-          20630,
-          3244,
-          4468,
-          20567,
-          4689,
-          20708,
-          19142
+          9411,
+          20928,
+          3542,
+          4766,
+          20865,
+          4987,
+          21006,
+          19440
         ],
         "name": "SyntheticToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 8995,
+              "id": 9293,
               "nodeType": "Block",
               "src": "843:2:28",
               "statements": []
             },
             "documentation": {
-              "id": 8981,
+              "id": 9279,
               "nodeType": "StructuredDocumentation",
               "src": "392:281:28",
               "text": "@notice Constructs the SyntheticToken.\n@param tokenName The name which describes the new token.\n@param tokenSymbol The ticker abbreviation of the name. Ideally < 5 chars.\n@param tokenDecimals The number of decimals to define token precision."
             },
-            "id": 8996,
+            "id": 9294,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -672,11 +672,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 8990,
+                    "id": 9288,
                     "name": "tokenName",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 8983,
+                    "referencedDeclaration": 9281,
                     "src": "800:9:28",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
@@ -685,11 +685,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 8991,
+                    "id": 9289,
                     "name": "tokenSymbol",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 8985,
+                    "referencedDeclaration": 9283,
                     "src": "811:11:28",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
@@ -698,11 +698,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 8992,
+                    "id": 9290,
                     "name": "tokenDecimals",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 8987,
+                    "referencedDeclaration": 9285,
                     "src": "824:13:28",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint8",
@@ -710,17 +710,17 @@
                     }
                   }
                 ],
-                "id": 8993,
+                "id": 9291,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 8989,
+                  "id": 9287,
                   "name": "ERC20Detailed",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20630,
+                  "referencedDeclaration": 20928,
                   "src": "786:13:28",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$20630_$",
+                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$20928_$",
                     "typeString": "type(contract ERC20Detailed)"
                   }
                 },
@@ -732,16 +732,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8988,
+              "id": 9286,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8983,
+                  "id": 9281,
                   "name": "tokenName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8996,
+                  "scope": 9294,
                   "src": "690:23:28",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -750,7 +750,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 8982,
+                    "id": 9280,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "690:6:28",
@@ -764,11 +764,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 8985,
+                  "id": 9283,
                   "name": "tokenSymbol",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8996,
+                  "scope": 9294,
                   "src": "715:25:28",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -777,7 +777,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 8984,
+                    "id": 9282,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "715:6:28",
@@ -791,11 +791,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 8987,
+                  "id": 9285,
                   "name": "tokenDecimals",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8996,
+                  "scope": 9294,
                   "src": "742:19:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -804,7 +804,7 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 8986,
+                    "id": 9284,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
                     "src": "742:5:28",
@@ -820,12 +820,12 @@
               "src": "689:73:28"
             },
             "returnParameters": {
-              "id": 8994,
+              "id": 9292,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "843:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "678:167:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -833,7 +833,7 @@
           },
           {
             "body": {
-              "id": 9011,
+              "id": 9309,
               "nodeType": "Block",
               "src": "1073:55:28",
               "statements": [
@@ -848,18 +848,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9005,
+                              "id": 9303,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1098:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9006,
+                            "id": 9304,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -869,7 +869,7 @@
                             "referencedDeclaration": null,
                             "src": "1098:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -877,11 +877,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9004,
+                          "id": 9302,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -893,7 +893,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9003,
+                            "id": 9301,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1093:4:28",
@@ -903,7 +903,7 @@
                             }
                           }
                         },
-                        "id": 9007,
+                        "id": 9305,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -920,11 +920,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9008,
+                        "id": 9306,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 8999,
+                        "referencedDeclaration": 9297,
                         "src": "1113:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -943,18 +943,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9002,
+                      "id": 9300,
                       "name": "addMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4303,
+                      "referencedDeclaration": 4601,
                       "src": "1083:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9009,
+                    "id": 9307,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -969,20 +969,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9010,
+                  "id": 9308,
                   "nodeType": "ExpressionStatement",
                   "src": "1083:38:28"
                 }
               ]
             },
             "documentation": {
-              "id": 8997,
+              "id": 9295,
               "nodeType": "StructuredDocumentation",
               "src": "851:172:28",
               "text": "@notice Add Minter role to account.\n@dev The caller must have the Owner role.\n@param account The address to which the Minter role is added."
             },
             "functionSelector": "983b2d56",
-            "id": 9012,
+            "id": 9310,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -990,16 +990,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9000,
+              "id": 9298,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8999,
+                  "id": 9297,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9012,
+                  "scope": 9310,
                   "src": "1047:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1008,7 +1008,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8998,
+                    "id": 9296,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1047:7:28",
@@ -1025,12 +1025,12 @@
               "src": "1046:17:28"
             },
             "returnParameters": {
-              "id": 9001,
+              "id": 9299,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1073:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1028:100:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1038,7 +1038,7 @@
           },
           {
             "body": {
-              "id": 9027,
+              "id": 9325,
               "nodeType": "Block",
               "src": "1368:58:28",
               "statements": [
@@ -1053,18 +1053,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9021,
+                              "id": 9319,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1396:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9022,
+                            "id": 9320,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1074,7 +1074,7 @@
                             "referencedDeclaration": null,
                             "src": "1396:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -1082,11 +1082,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9020,
+                          "id": 9318,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1098,7 +1098,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9019,
+                            "id": 9317,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1391:4:28",
@@ -1108,7 +1108,7 @@
                             }
                           }
                         },
-                        "id": 9023,
+                        "id": 9321,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1125,11 +1125,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9024,
+                        "id": 9322,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9015,
+                        "referencedDeclaration": 9313,
                         "src": "1411:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1148,18 +1148,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9018,
+                      "id": 9316,
                       "name": "removeMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4326,
+                      "referencedDeclaration": 4624,
                       "src": "1378:12:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9025,
+                    "id": 9323,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1174,20 +1174,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9026,
+                  "id": 9324,
                   "nodeType": "ExpressionStatement",
                   "src": "1378:41:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9013,
+              "id": 9311,
               "nodeType": "StructuredDocumentation",
               "src": "1134:181:28",
               "text": "@notice Remove Minter role from account.\n@dev The caller must have the Owner role.\n@param account The address from which the Minter role is removed."
             },
             "functionSelector": "3092afd5",
-            "id": 9028,
+            "id": 9326,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1195,16 +1195,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9016,
+              "id": 9314,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9015,
+                  "id": 9313,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9028,
+                  "scope": 9326,
                   "src": "1342:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1213,7 +1213,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9014,
+                    "id": 9312,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1342:7:28",
@@ -1230,12 +1230,12 @@
               "src": "1341:17:28"
             },
             "returnParameters": {
-              "id": 9017,
+              "id": 9315,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1368:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1320:106:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1243,7 +1243,7 @@
           },
           {
             "body": {
-              "id": 9043,
+              "id": 9341,
               "nodeType": "Block",
               "src": "1654:55:28",
               "statements": [
@@ -1258,18 +1258,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9037,
+                              "id": 9335,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1679:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9038,
+                            "id": 9336,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1279,7 +1279,7 @@
                             "referencedDeclaration": null,
                             "src": "1679:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -1287,11 +1287,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9036,
+                          "id": 9334,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1303,7 +1303,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9035,
+                            "id": 9333,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1674:4:28",
@@ -1313,7 +1313,7 @@
                             }
                           }
                         },
-                        "id": 9039,
+                        "id": 9337,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1330,11 +1330,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9040,
+                        "id": 9338,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9031,
+                        "referencedDeclaration": 9329,
                         "src": "1694:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1353,18 +1353,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9034,
+                      "id": 9332,
                       "name": "addMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4303,
+                      "referencedDeclaration": 4601,
                       "src": "1664:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9041,
+                    "id": 9339,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1379,20 +1379,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9042,
+                  "id": 9340,
                   "nodeType": "ExpressionStatement",
                   "src": "1664:38:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9029,
+              "id": 9327,
               "nodeType": "StructuredDocumentation",
               "src": "1432:172:28",
               "text": "@notice Add Burner role to account.\n@dev The caller must have the Owner role.\n@param account The address to which the Burner role is added."
             },
             "functionSelector": "f44637ba",
-            "id": 9044,
+            "id": 9342,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1400,16 +1400,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9032,
+              "id": 9330,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9031,
+                  "id": 9329,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9044,
+                  "scope": 9342,
                   "src": "1628:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1418,7 +1418,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9030,
+                    "id": 9328,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1628:7:28",
@@ -1435,12 +1435,12 @@
               "src": "1627:17:28"
             },
             "returnParameters": {
-              "id": 9033,
+              "id": 9331,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1654:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1609:100:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1448,7 +1448,7 @@
           },
           {
             "body": {
-              "id": 9059,
+              "id": 9357,
               "nodeType": "Block",
               "src": "1950:58:28",
               "statements": [
@@ -1463,18 +1463,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9053,
+                              "id": 9351,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1978:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9054,
+                            "id": 9352,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1484,7 +1484,7 @@
                             "referencedDeclaration": null,
                             "src": "1978:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -1492,11 +1492,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9052,
+                          "id": 9350,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1508,7 +1508,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9051,
+                            "id": 9349,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1973:4:28",
@@ -1518,7 +1518,7 @@
                             }
                           }
                         },
-                        "id": 9055,
+                        "id": 9353,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1535,11 +1535,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9056,
+                        "id": 9354,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9047,
+                        "referencedDeclaration": 9345,
                         "src": "1993:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1558,18 +1558,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9050,
+                      "id": 9348,
                       "name": "removeMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4326,
+                      "referencedDeclaration": 4624,
                       "src": "1960:12:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9057,
+                    "id": 9355,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1584,20 +1584,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9058,
+                  "id": 9356,
                   "nodeType": "ExpressionStatement",
                   "src": "1960:41:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9045,
+              "id": 9343,
               "nodeType": "StructuredDocumentation",
               "src": "1715:182:28",
               "text": "@notice Removes Burner role from account.\n@dev The caller must have the Owner role.\n@param account The address from which the Burner role is removed."
             },
             "functionSelector": "02846858",
-            "id": 9060,
+            "id": 9358,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1605,16 +1605,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9048,
+              "id": 9346,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9047,
+                  "id": 9345,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9060,
+                  "scope": 9358,
                   "src": "1924:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1623,7 +1623,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9046,
+                    "id": 9344,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1924:7:28",
@@ -1640,12 +1640,12 @@
               "src": "1923:17:28"
             },
             "returnParameters": {
-              "id": 9049,
+              "id": 9347,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1950:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1902:106:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1653,7 +1653,7 @@
           },
           {
             "body": {
-              "id": 9075,
+              "id": 9373,
               "nodeType": "Block",
               "src": "2225:56:28",
               "statements": [
@@ -1668,18 +1668,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9069,
+                              "id": 9367,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "2252:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9070,
+                            "id": 9368,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1689,7 +1689,7 @@
                             "referencedDeclaration": null,
                             "src": "2252:11:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -1697,11 +1697,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9068,
+                          "id": 9366,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1713,7 +1713,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9067,
+                            "id": 9365,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "2247:4:28",
@@ -1723,7 +1723,7 @@
                             }
                           }
                         },
-                        "id": 9071,
+                        "id": 9369,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1740,11 +1740,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9072,
+                        "id": 9370,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9063,
+                        "referencedDeclaration": 9361,
                         "src": "2266:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1763,18 +1763,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9066,
+                      "id": 9364,
                       "name": "resetMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4261,
+                      "referencedDeclaration": 4559,
                       "src": "2235:11:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9073,
+                    "id": 9371,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1789,20 +1789,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9074,
+                  "id": 9372,
                   "nodeType": "ExpressionStatement",
                   "src": "2235:39:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9061,
+              "id": 9359,
               "nodeType": "StructuredDocumentation",
               "src": "2014:160:28",
               "text": "@notice Reset Owner role to account.\n@dev The caller must have the Owner role.\n@param account The new holder of the Owner role."
             },
             "functionSelector": "73cc802a",
-            "id": 9076,
+            "id": 9374,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1810,16 +1810,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9064,
+              "id": 9362,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9063,
+                  "id": 9361,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9076,
+                  "scope": 9374,
                   "src": "2199:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1828,7 +1828,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9062,
+                    "id": 9360,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2199:7:28",
@@ -1845,12 +1845,12 @@
               "src": "2198:17:28"
             },
             "returnParameters": {
-              "id": 9065,
+              "id": 9363,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2225:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "2179:102:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1858,7 +1858,7 @@
           },
           {
             "body": {
-              "id": 9093,
+              "id": 9391,
               "nodeType": "Block",
               "src": "2563:62:28",
               "statements": [
@@ -1873,18 +1873,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9087,
+                              "id": 9385,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "2595:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9088,
+                            "id": 9386,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1894,7 +1894,7 @@
                             "referencedDeclaration": null,
                             "src": "2595:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -1902,11 +1902,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9086,
+                          "id": 9384,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1918,7 +1918,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9085,
+                            "id": 9383,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "2590:4:28",
@@ -1928,7 +1928,7 @@
                             }
                           }
                         },
-                        "id": 9089,
+                        "id": 9387,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1945,11 +1945,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9090,
+                        "id": 9388,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9079,
+                        "referencedDeclaration": 9377,
                         "src": "2610:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1968,18 +1968,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9084,
+                      "id": 9382,
                       "name": "holdsRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4238,
+                      "referencedDeclaration": 4536,
                       "src": "2580:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_uint256_$_t_address_$returns$_t_bool_$",
                         "typeString": "function (uint256,address) view returns (bool)"
                       }
                     },
-                    "id": 9091,
+                    "id": 9389,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1994,21 +1994,21 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 9083,
-                  "id": 9092,
+                  "functionReturnParameters": 9381,
+                  "id": 9390,
                   "nodeType": "Return",
                   "src": "2573:45:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9077,
+              "id": 9375,
               "nodeType": "StructuredDocumentation",
               "src": "2287:209:28",
               "text": "@notice Checks if a given account holds the Minter role.\n@param account The address which is checked for the Minter role.\n@return bool True if the provided account is a Minter."
             },
             "functionSelector": "aa271e1a",
-            "id": 9094,
+            "id": 9392,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2016,16 +2016,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9080,
+              "id": 9378,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9079,
+                  "id": 9377,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9094,
+                  "scope": 9392,
                   "src": "2519:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2034,7 +2034,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9078,
+                    "id": 9376,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2519:7:28",
@@ -2051,16 +2051,16 @@
               "src": "2518:17:28"
             },
             "returnParameters": {
-              "id": 9083,
+              "id": 9381,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9082,
+                  "id": 9380,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9094,
+                  "scope": 9392,
                   "src": "2557:4:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2069,7 +2069,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 9081,
+                    "id": 9379,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2557:4:28",
@@ -2084,7 +2084,7 @@
               ],
               "src": "2556:6:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "2501:124:28",
             "stateMutability": "view",
             "virtual": false,
@@ -2092,7 +2092,7 @@
           },
           {
             "body": {
-              "id": 9111,
+              "id": 9409,
               "nodeType": "Block",
               "src": "2907:62:28",
               "statements": [
@@ -2107,18 +2107,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9105,
+                              "id": 9403,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "2939:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9106,
+                            "id": 9404,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2128,7 +2128,7 @@
                             "referencedDeclaration": null,
                             "src": "2939:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -2136,11 +2136,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9104,
+                          "id": 9402,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2152,7 +2152,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9103,
+                            "id": 9401,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "2934:4:28",
@@ -2162,7 +2162,7 @@
                             }
                           }
                         },
-                        "id": 9107,
+                        "id": 9405,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2179,11 +2179,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9108,
+                        "id": 9406,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9097,
+                        "referencedDeclaration": 9395,
                         "src": "2954:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2202,18 +2202,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9102,
+                      "id": 9400,
                       "name": "holdsRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4238,
+                      "referencedDeclaration": 4536,
                       "src": "2924:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_uint256_$_t_address_$returns$_t_bool_$",
                         "typeString": "function (uint256,address) view returns (bool)"
                       }
                     },
-                    "id": 9109,
+                    "id": 9407,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2228,21 +2228,21 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 9101,
-                  "id": 9110,
+                  "functionReturnParameters": 9399,
+                  "id": 9408,
                   "nodeType": "Return",
                   "src": "2917:45:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9095,
+              "id": 9393,
               "nodeType": "StructuredDocumentation",
               "src": "2631:209:28",
               "text": "@notice Checks if a given account holds the Burner role.\n@param account The address which is checked for the Burner role.\n@return bool True if the provided account is a Burner."
             },
             "functionSelector": "4334614a",
-            "id": 9112,
+            "id": 9410,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2250,16 +2250,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9098,
+              "id": 9396,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9097,
+                  "id": 9395,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9112,
+                  "scope": 9410,
                   "src": "2863:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2268,7 +2268,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9096,
+                    "id": 9394,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2863:7:28",
@@ -2285,16 +2285,16 @@
               "src": "2862:17:28"
             },
             "returnParameters": {
-              "id": 9101,
+              "id": 9399,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9100,
+                  "id": 9398,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9112,
+                  "scope": 9410,
                   "src": "2901:4:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2303,7 +2303,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 9099,
+                    "id": 9397,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2901:4:28",
@@ -2318,14 +2318,14 @@
               ],
               "src": "2900:6:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "2845:124:28",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 9114,
+        "scope": 9412,
         "src": "330:2641:28"
       }
     ],
@@ -2335,14 +2335,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/implementation/SyntheticToken.sol",
     "exportedSymbols": {
       "SyntheticToken": [
-        9113
+        9411
       ]
     },
-    "id": 9114,
+    "id": 9412,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8973,
+        "id": 9271,
         "literals": [
           "solidity",
           "^",
@@ -2355,10 +2355,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol",
         "file": "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol",
-        "id": 8974,
+        "id": 9272,
         "nodeType": "ImportDirective",
-        "scope": 9114,
-        "sourceUnit": 20631,
+        "scope": 9412,
+        "sourceUnit": 20929,
         "src": "24:63:28",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2366,10 +2366,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/ExpandedERC20.sol",
         "file": "../../common/implementation/ExpandedERC20.sol",
-        "id": 8975,
+        "id": 9273,
         "nodeType": "ImportDirective",
-        "scope": 9114,
-        "sourceUnit": 3245,
+        "scope": 9412,
+        "sourceUnit": 3543,
         "src": "88:55:28",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2381,17 +2381,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8977,
+              "id": 9275,
               "name": "ExpandedERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3244,
+              "referencedDeclaration": 3542,
               "src": "357:13:28",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ExpandedERC20_$3244",
+                "typeIdentifier": "t_contract$_ExpandedERC20_$3542",
                 "typeString": "contract ExpandedERC20"
               }
             },
-            "id": 8978,
+            "id": 9276,
             "nodeType": "InheritanceSpecifier",
             "src": "357:13:28"
           },
@@ -2399,66 +2399,66 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 8979,
+              "id": 9277,
               "name": "ERC20Detailed",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20630,
+              "referencedDeclaration": 20928,
               "src": "372:13:28",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Detailed_$20630",
+                "typeIdentifier": "t_contract$_ERC20Detailed_$20928",
                 "typeString": "contract ERC20Detailed"
               }
             },
-            "id": 8980,
+            "id": 9278,
             "nodeType": "InheritanceSpecifier",
             "src": "372:13:28"
           }
         ],
         "contractDependencies": [
-          3244,
-          4468,
-          4689,
-          19142,
-          20567,
-          20630,
-          20708
+          3542,
+          4766,
+          4987,
+          19440,
+          20865,
+          20928,
+          21006
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 8976,
+          "id": 9274,
           "nodeType": "StructuredDocumentation",
           "src": "146:182:28",
           "text": "@title Burnable and mintable ERC20.\n@dev The contract deployer will initially be the only minter and burner as well as the owner  who\nis capable of adding new roles."
         },
         "fullyImplemented": true,
-        "id": 9113,
+        "id": 9411,
         "linearizedBaseContracts": [
-          9113,
-          20630,
-          3244,
-          4468,
-          20567,
-          4689,
-          20708,
-          19142
+          9411,
+          20928,
+          3542,
+          4766,
+          20865,
+          4987,
+          21006,
+          19440
         ],
         "name": "SyntheticToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 8995,
+              "id": 9293,
               "nodeType": "Block",
               "src": "843:2:28",
               "statements": []
             },
             "documentation": {
-              "id": 8981,
+              "id": 9279,
               "nodeType": "StructuredDocumentation",
               "src": "392:281:28",
               "text": "@notice Constructs the SyntheticToken.\n@param tokenName The name which describes the new token.\n@param tokenSymbol The ticker abbreviation of the name. Ideally < 5 chars.\n@param tokenDecimals The number of decimals to define token precision."
             },
-            "id": 8996,
+            "id": 9294,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -2466,11 +2466,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 8990,
+                    "id": 9288,
                     "name": "tokenName",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 8983,
+                    "referencedDeclaration": 9281,
                     "src": "800:9:28",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
@@ -2479,11 +2479,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 8991,
+                    "id": 9289,
                     "name": "tokenSymbol",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 8985,
+                    "referencedDeclaration": 9283,
                     "src": "811:11:28",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
@@ -2492,11 +2492,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 8992,
+                    "id": 9290,
                     "name": "tokenDecimals",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 8987,
+                    "referencedDeclaration": 9285,
                     "src": "824:13:28",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint8",
@@ -2504,17 +2504,17 @@
                     }
                   }
                 ],
-                "id": 8993,
+                "id": 9291,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 8989,
+                  "id": 9287,
                   "name": "ERC20Detailed",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20630,
+                  "referencedDeclaration": 20928,
                   "src": "786:13:28",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$20630_$",
+                    "typeIdentifier": "t_type$_t_contract$_ERC20Detailed_$20928_$",
                     "typeString": "type(contract ERC20Detailed)"
                   }
                 },
@@ -2526,16 +2526,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 8988,
+              "id": 9286,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8983,
+                  "id": 9281,
                   "name": "tokenName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8996,
+                  "scope": 9294,
                   "src": "690:23:28",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2544,7 +2544,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 8982,
+                    "id": 9280,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "690:6:28",
@@ -2558,11 +2558,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 8985,
+                  "id": 9283,
                   "name": "tokenSymbol",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8996,
+                  "scope": 9294,
                   "src": "715:25:28",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2571,7 +2571,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 8984,
+                    "id": 9282,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "715:6:28",
@@ -2585,11 +2585,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 8987,
+                  "id": 9285,
                   "name": "tokenDecimals",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 8996,
+                  "scope": 9294,
                   "src": "742:19:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2598,7 +2598,7 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 8986,
+                    "id": 9284,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
                     "src": "742:5:28",
@@ -2614,12 +2614,12 @@
               "src": "689:73:28"
             },
             "returnParameters": {
-              "id": 8994,
+              "id": 9292,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "843:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "678:167:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2627,7 +2627,7 @@
           },
           {
             "body": {
-              "id": 9011,
+              "id": 9309,
               "nodeType": "Block",
               "src": "1073:55:28",
               "statements": [
@@ -2642,18 +2642,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9005,
+                              "id": 9303,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1098:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9006,
+                            "id": 9304,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2663,7 +2663,7 @@
                             "referencedDeclaration": null,
                             "src": "1098:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -2671,11 +2671,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9004,
+                          "id": 9302,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2687,7 +2687,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9003,
+                            "id": 9301,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1093:4:28",
@@ -2697,7 +2697,7 @@
                             }
                           }
                         },
-                        "id": 9007,
+                        "id": 9305,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2714,11 +2714,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9008,
+                        "id": 9306,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 8999,
+                        "referencedDeclaration": 9297,
                         "src": "1113:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2737,18 +2737,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9002,
+                      "id": 9300,
                       "name": "addMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4303,
+                      "referencedDeclaration": 4601,
                       "src": "1083:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9009,
+                    "id": 9307,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2763,20 +2763,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9010,
+                  "id": 9308,
                   "nodeType": "ExpressionStatement",
                   "src": "1083:38:28"
                 }
               ]
             },
             "documentation": {
-              "id": 8997,
+              "id": 9295,
               "nodeType": "StructuredDocumentation",
               "src": "851:172:28",
               "text": "@notice Add Minter role to account.\n@dev The caller must have the Owner role.\n@param account The address to which the Minter role is added."
             },
             "functionSelector": "983b2d56",
-            "id": 9012,
+            "id": 9310,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2784,16 +2784,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9000,
+              "id": 9298,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8999,
+                  "id": 9297,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9012,
+                  "scope": 9310,
                   "src": "1047:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2802,7 +2802,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8998,
+                    "id": 9296,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1047:7:28",
@@ -2819,12 +2819,12 @@
               "src": "1046:17:28"
             },
             "returnParameters": {
-              "id": 9001,
+              "id": 9299,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1073:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1028:100:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2832,7 +2832,7 @@
           },
           {
             "body": {
-              "id": 9027,
+              "id": 9325,
               "nodeType": "Block",
               "src": "1368:58:28",
               "statements": [
@@ -2847,18 +2847,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9021,
+                              "id": 9319,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1396:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9022,
+                            "id": 9320,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2868,7 +2868,7 @@
                             "referencedDeclaration": null,
                             "src": "1396:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -2876,11 +2876,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9020,
+                          "id": 9318,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2892,7 +2892,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9019,
+                            "id": 9317,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1391:4:28",
@@ -2902,7 +2902,7 @@
                             }
                           }
                         },
-                        "id": 9023,
+                        "id": 9321,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2919,11 +2919,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9024,
+                        "id": 9322,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9015,
+                        "referencedDeclaration": 9313,
                         "src": "1411:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2942,18 +2942,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9018,
+                      "id": 9316,
                       "name": "removeMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4326,
+                      "referencedDeclaration": 4624,
                       "src": "1378:12:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9025,
+                    "id": 9323,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2968,20 +2968,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9026,
+                  "id": 9324,
                   "nodeType": "ExpressionStatement",
                   "src": "1378:41:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9013,
+              "id": 9311,
               "nodeType": "StructuredDocumentation",
               "src": "1134:181:28",
               "text": "@notice Remove Minter role from account.\n@dev The caller must have the Owner role.\n@param account The address from which the Minter role is removed."
             },
             "functionSelector": "3092afd5",
-            "id": 9028,
+            "id": 9326,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2989,16 +2989,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9016,
+              "id": 9314,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9015,
+                  "id": 9313,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9028,
+                  "scope": 9326,
                   "src": "1342:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3007,7 +3007,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9014,
+                    "id": 9312,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1342:7:28",
@@ -3024,12 +3024,12 @@
               "src": "1341:17:28"
             },
             "returnParameters": {
-              "id": 9017,
+              "id": 9315,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1368:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1320:106:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3037,7 +3037,7 @@
           },
           {
             "body": {
-              "id": 9043,
+              "id": 9341,
               "nodeType": "Block",
               "src": "1654:55:28",
               "statements": [
@@ -3052,18 +3052,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9037,
+                              "id": 9335,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1679:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9038,
+                            "id": 9336,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3073,7 +3073,7 @@
                             "referencedDeclaration": null,
                             "src": "1679:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -3081,11 +3081,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9036,
+                          "id": 9334,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3097,7 +3097,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9035,
+                            "id": 9333,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1674:4:28",
@@ -3107,7 +3107,7 @@
                             }
                           }
                         },
-                        "id": 9039,
+                        "id": 9337,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3124,11 +3124,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9040,
+                        "id": 9338,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9031,
+                        "referencedDeclaration": 9329,
                         "src": "1694:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3147,18 +3147,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9034,
+                      "id": 9332,
                       "name": "addMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4303,
+                      "referencedDeclaration": 4601,
                       "src": "1664:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9041,
+                    "id": 9339,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3173,20 +3173,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9042,
+                  "id": 9340,
                   "nodeType": "ExpressionStatement",
                   "src": "1664:38:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9029,
+              "id": 9327,
               "nodeType": "StructuredDocumentation",
               "src": "1432:172:28",
               "text": "@notice Add Burner role to account.\n@dev The caller must have the Owner role.\n@param account The address to which the Burner role is added."
             },
             "functionSelector": "f44637ba",
-            "id": 9044,
+            "id": 9342,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3194,16 +3194,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9032,
+              "id": 9330,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9031,
+                  "id": 9329,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9044,
+                  "scope": 9342,
                   "src": "1628:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3212,7 +3212,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9030,
+                    "id": 9328,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1628:7:28",
@@ -3229,12 +3229,12 @@
               "src": "1627:17:28"
             },
             "returnParameters": {
-              "id": 9033,
+              "id": 9331,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1654:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1609:100:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3242,7 +3242,7 @@
           },
           {
             "body": {
-              "id": 9059,
+              "id": 9357,
               "nodeType": "Block",
               "src": "1950:58:28",
               "statements": [
@@ -3257,18 +3257,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9053,
+                              "id": 9351,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "1978:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9054,
+                            "id": 9352,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3278,7 +3278,7 @@
                             "referencedDeclaration": null,
                             "src": "1978:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -3286,11 +3286,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9052,
+                          "id": 9350,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3302,7 +3302,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9051,
+                            "id": 9349,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "1973:4:28",
@@ -3312,7 +3312,7 @@
                             }
                           }
                         },
-                        "id": 9055,
+                        "id": 9353,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3329,11 +3329,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9056,
+                        "id": 9354,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9047,
+                        "referencedDeclaration": 9345,
                         "src": "1993:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3352,18 +3352,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9050,
+                      "id": 9348,
                       "name": "removeMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4326,
+                      "referencedDeclaration": 4624,
                       "src": "1960:12:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9057,
+                    "id": 9355,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3378,20 +3378,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9058,
+                  "id": 9356,
                   "nodeType": "ExpressionStatement",
                   "src": "1960:41:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9045,
+              "id": 9343,
               "nodeType": "StructuredDocumentation",
               "src": "1715:182:28",
               "text": "@notice Removes Burner role from account.\n@dev The caller must have the Owner role.\n@param account The address from which the Burner role is removed."
             },
             "functionSelector": "02846858",
-            "id": 9060,
+            "id": 9358,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3399,16 +3399,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9048,
+              "id": 9346,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9047,
+                  "id": 9345,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9060,
+                  "scope": 9358,
                   "src": "1924:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3417,7 +3417,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9046,
+                    "id": 9344,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1924:7:28",
@@ -3434,12 +3434,12 @@
               "src": "1923:17:28"
             },
             "returnParameters": {
-              "id": 9049,
+              "id": 9347,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1950:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "1902:106:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3447,7 +3447,7 @@
           },
           {
             "body": {
-              "id": 9075,
+              "id": 9373,
               "nodeType": "Block",
               "src": "2225:56:28",
               "statements": [
@@ -3462,18 +3462,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9069,
+                              "id": 9367,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "2252:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9070,
+                            "id": 9368,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3483,7 +3483,7 @@
                             "referencedDeclaration": null,
                             "src": "2252:11:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -3491,11 +3491,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9068,
+                          "id": 9366,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3507,7 +3507,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9067,
+                            "id": 9365,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "2247:4:28",
@@ -3517,7 +3517,7 @@
                             }
                           }
                         },
-                        "id": 9071,
+                        "id": 9369,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3534,11 +3534,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9072,
+                        "id": 9370,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9063,
+                        "referencedDeclaration": 9361,
                         "src": "2266:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3557,18 +3557,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9066,
+                      "id": 9364,
                       "name": "resetMember",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4261,
+                      "referencedDeclaration": 4559,
                       "src": "2235:11:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,address)"
                       }
                     },
-                    "id": 9073,
+                    "id": 9371,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3583,20 +3583,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9074,
+                  "id": 9372,
                   "nodeType": "ExpressionStatement",
                   "src": "2235:39:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9061,
+              "id": 9359,
               "nodeType": "StructuredDocumentation",
               "src": "2014:160:28",
               "text": "@notice Reset Owner role to account.\n@dev The caller must have the Owner role.\n@param account The new holder of the Owner role."
             },
             "functionSelector": "73cc802a",
-            "id": 9076,
+            "id": 9374,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3604,16 +3604,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9064,
+              "id": 9362,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9063,
+                  "id": 9361,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9076,
+                  "scope": 9374,
                   "src": "2199:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3622,7 +3622,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9062,
+                    "id": 9360,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2199:7:28",
@@ -3639,12 +3639,12 @@
               "src": "2198:17:28"
             },
             "returnParameters": {
-              "id": 9065,
+              "id": 9363,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2225:0:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "2179:102:28",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3652,7 +3652,7 @@
           },
           {
             "body": {
-              "id": 9093,
+              "id": 9391,
               "nodeType": "Block",
               "src": "2563:62:28",
               "statements": [
@@ -3667,18 +3667,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9087,
+                              "id": 9385,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "2595:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9088,
+                            "id": 9386,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3688,7 +3688,7 @@
                             "referencedDeclaration": null,
                             "src": "2595:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -3696,11 +3696,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9086,
+                          "id": 9384,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3712,7 +3712,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9085,
+                            "id": 9383,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "2590:4:28",
@@ -3722,7 +3722,7 @@
                             }
                           }
                         },
-                        "id": 9089,
+                        "id": 9387,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3739,11 +3739,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9090,
+                        "id": 9388,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9079,
+                        "referencedDeclaration": 9377,
                         "src": "2610:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3762,18 +3762,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9084,
+                      "id": 9382,
                       "name": "holdsRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4238,
+                      "referencedDeclaration": 4536,
                       "src": "2580:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_uint256_$_t_address_$returns$_t_bool_$",
                         "typeString": "function (uint256,address) view returns (bool)"
                       }
                     },
-                    "id": 9091,
+                    "id": 9389,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3788,21 +3788,21 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 9083,
-                  "id": 9092,
+                  "functionReturnParameters": 9381,
+                  "id": 9390,
                   "nodeType": "Return",
                   "src": "2573:45:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9077,
+              "id": 9375,
               "nodeType": "StructuredDocumentation",
               "src": "2287:209:28",
               "text": "@notice Checks if a given account holds the Minter role.\n@param account The address which is checked for the Minter role.\n@return bool True if the provided account is a Minter."
             },
             "functionSelector": "aa271e1a",
-            "id": 9094,
+            "id": 9392,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3810,16 +3810,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9080,
+              "id": 9378,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9079,
+                  "id": 9377,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9094,
+                  "scope": 9392,
                   "src": "2519:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3828,7 +3828,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9078,
+                    "id": 9376,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2519:7:28",
@@ -3845,16 +3845,16 @@
               "src": "2518:17:28"
             },
             "returnParameters": {
-              "id": 9083,
+              "id": 9381,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9082,
+                  "id": 9380,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9094,
+                  "scope": 9392,
                   "src": "2557:4:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3863,7 +3863,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 9081,
+                    "id": 9379,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2557:4:28",
@@ -3878,7 +3878,7 @@
               ],
               "src": "2556:6:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "2501:124:28",
             "stateMutability": "view",
             "virtual": false,
@@ -3886,7 +3886,7 @@
           },
           {
             "body": {
-              "id": 9111,
+              "id": 9409,
               "nodeType": "Block",
               "src": "2907:62:28",
               "statements": [
@@ -3901,18 +3901,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 9105,
+                              "id": 9403,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3141,
+                              "referencedDeclaration": 3439,
                               "src": "2939:5:28",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$3141_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$3439_$",
                                 "typeString": "type(enum ExpandedERC20.Roles)"
                               }
                             },
-                            "id": 9106,
+                            "id": 9404,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3922,7 +3922,7 @@
                             "referencedDeclaration": null,
                             "src": "2939:12:28",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           }
@@ -3930,11 +3930,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$3141",
+                              "typeIdentifier": "t_enum$_Roles_$3439",
                               "typeString": "enum ExpandedERC20.Roles"
                             }
                           ],
-                          "id": 9104,
+                          "id": 9402,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3946,7 +3946,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 9103,
+                            "id": 9401,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "2934:4:28",
@@ -3956,7 +3956,7 @@
                             }
                           }
                         },
-                        "id": 9107,
+                        "id": 9405,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3973,11 +3973,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 9108,
+                        "id": 9406,
                         "name": "account",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9097,
+                        "referencedDeclaration": 9395,
                         "src": "2954:7:28",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3996,18 +3996,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 9102,
+                      "id": 9400,
                       "name": "holdsRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4238,
+                      "referencedDeclaration": 4536,
                       "src": "2924:9:28",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$_t_uint256_$_t_address_$returns$_t_bool_$",
                         "typeString": "function (uint256,address) view returns (bool)"
                       }
                     },
-                    "id": 9109,
+                    "id": 9407,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4022,21 +4022,21 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 9101,
-                  "id": 9110,
+                  "functionReturnParameters": 9399,
+                  "id": 9408,
                   "nodeType": "Return",
                   "src": "2917:45:28"
                 }
               ]
             },
             "documentation": {
-              "id": 9095,
+              "id": 9393,
               "nodeType": "StructuredDocumentation",
               "src": "2631:209:28",
               "text": "@notice Checks if a given account holds the Burner role.\n@param account The address which is checked for the Burner role.\n@return bool True if the provided account is a Burner."
             },
             "functionSelector": "4334614a",
-            "id": 9112,
+            "id": 9410,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -4044,16 +4044,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9098,
+              "id": 9396,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9097,
+                  "id": 9395,
                   "name": "account",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9112,
+                  "scope": 9410,
                   "src": "2863:15:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4062,7 +4062,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9096,
+                    "id": 9394,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2863:7:28",
@@ -4079,16 +4079,16 @@
               "src": "2862:17:28"
             },
             "returnParameters": {
-              "id": 9101,
+              "id": 9399,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9100,
+                  "id": 9398,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9112,
+                  "scope": 9410,
                   "src": "2901:4:28",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4097,7 +4097,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 9099,
+                    "id": 9397,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2901:4:28",
@@ -4112,14 +4112,14 @@
               ],
               "src": "2900:6:28"
             },
-            "scope": 9113,
+            "scope": 9411,
             "src": "2845:124:28",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 9114,
+        "scope": 9412,
         "src": "330:2641:28"
       }
     ],
@@ -4131,7 +4131,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.460Z",
+  "updatedAt": "2020-08-14T09:32:05.589Z",
   "devdoc": {
     "details": "The contract deployer will initially be the only minter and burner as well as the owner  who is capable of adding new roles.",
     "methods": {

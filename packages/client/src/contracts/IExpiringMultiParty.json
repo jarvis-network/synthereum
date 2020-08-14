@@ -203,7 +203,7 @@
         "id": 285,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 4177,
+        "sourceUnit": 4243,
         "src": "59:80:1",
         "symbolAliases": [
           {
@@ -231,7 +231,7 @@
         "id": 287,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 20941,
+        "sourceUnit": 21007,
         "src": "140:70:1",
         "symbolAliases": [
           {
@@ -274,10 +274,10 @@
               "id": 288,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4176,
+              "referencedDeclaration": 4242,
               "src": "253:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FixedPoint_$4176",
+                "typeIdentifier": "t_contract$_FixedPoint_$4242",
                 "typeString": "library FixedPoint"
               }
             },
@@ -288,10 +288,10 @@
               "id": 289,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3491,
+              "referencedDeclaration": 3557,
               "src": "268:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             }
@@ -308,7 +308,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3491_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -316,10 +316,10 @@
               "id": 291,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3491,
+              "referencedDeclaration": 3557,
               "src": "294:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -338,7 +338,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$20940",
+              "typeIdentifier": "t_contract$_IERC20_$21006",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -346,10 +346,10 @@
               "id": 293,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20940,
+              "referencedDeclaration": 21006,
               "src": "349:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$20940",
+                "typeIdentifier": "t_contract$_IERC20_$21006",
                 "typeString": "contract IERC20"
               }
             },
@@ -368,7 +368,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3491_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -376,10 +376,10 @@
               "id": 295,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3491,
+              "referencedDeclaration": 3557,
               "src": "382:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -398,7 +398,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$20940",
+              "typeIdentifier": "t_contract$_IERC20_$21006",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -406,10 +406,10 @@
               "id": 297,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20940,
+              "referencedDeclaration": 21006,
               "src": "427:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$20940",
+                "typeIdentifier": "t_contract$_IERC20_$21006",
                 "typeString": "contract IERC20"
               }
             },
@@ -447,7 +447,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -455,10 +455,10 @@
                     "id": 299,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "493:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -545,7 +545,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -553,10 +553,10 @@
                     "id": 309,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "617:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -574,7 +574,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -582,10 +582,10 @@
                     "id": 311,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "662:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -638,7 +638,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -646,10 +646,10 @@
                     "id": 317,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "731:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -742,7 +742,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -750,10 +750,10 @@
                     "id": 328,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "882:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -812,7 +812,7 @@
         "id": 285,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 4177,
+        "sourceUnit": 4243,
         "src": "59:80:1",
         "symbolAliases": [
           {
@@ -840,7 +840,7 @@
         "id": 287,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 20941,
+        "sourceUnit": 21007,
         "src": "140:70:1",
         "symbolAliases": [
           {
@@ -883,10 +883,10 @@
               "id": 288,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4176,
+              "referencedDeclaration": 4242,
               "src": "253:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FixedPoint_$4176",
+                "typeIdentifier": "t_contract$_FixedPoint_$4242",
                 "typeString": "library FixedPoint"
               }
             },
@@ -897,10 +897,10 @@
               "id": 289,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3491,
+              "referencedDeclaration": 3557,
               "src": "268:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             }
@@ -917,7 +917,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3491_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -925,10 +925,10 @@
               "id": 291,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3491,
+              "referencedDeclaration": 3557,
               "src": "294:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -947,7 +947,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$20940",
+              "typeIdentifier": "t_contract$_IERC20_$21006",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -955,10 +955,10 @@
               "id": 293,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20940,
+              "referencedDeclaration": 21006,
               "src": "349:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$20940",
+                "typeIdentifier": "t_contract$_IERC20_$21006",
                 "typeString": "contract IERC20"
               }
             },
@@ -977,7 +977,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3491_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -985,10 +985,10 @@
               "id": 295,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3491,
+              "referencedDeclaration": 3557,
               "src": "382:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -1007,7 +1007,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$20940",
+              "typeIdentifier": "t_contract$_IERC20_$21006",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -1015,10 +1015,10 @@
               "id": 297,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20940,
+              "referencedDeclaration": 21006,
               "src": "427:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$20940",
+                "typeIdentifier": "t_contract$_IERC20_$21006",
                 "typeString": "contract IERC20"
               }
             },
@@ -1056,7 +1056,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1064,10 +1064,10 @@
                     "id": 299,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "493:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1154,7 +1154,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1162,10 +1162,10 @@
                     "id": 309,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "617:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1183,7 +1183,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1191,10 +1191,10 @@
                     "id": 311,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "662:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1247,7 +1247,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1255,10 +1255,10 @@
                     "id": 317,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "731:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1351,7 +1351,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3491_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1359,10 +1359,10 @@
                     "id": 328,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3491,
+                    "referencedDeclaration": 3557,
                     "src": "882:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3491_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1391,7 +1391,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-07-27T14:07:44.042Z",
+  "updatedAt": "2020-08-14T09:32:05.357Z",
   "devdoc": {
     "methods": {}
   },

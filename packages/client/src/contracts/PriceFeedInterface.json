@@ -81,14 +81,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/PriceFeedInterface.sol",
     "exportedSymbols": {
       "PriceFeedInterface": [
-        14624
+        14922
       ]
     },
-    "id": 14625,
+    "id": 14923,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14595,
+        "id": 14893,
         "literals": [
           "solidity",
           "^",
@@ -104,15 +104,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 14596,
+          "id": 14894,
           "nodeType": "StructuredDocumentation",
           "src": "26:77:59",
           "text": "@title This interface allows contracts to query unverified prices."
         },
         "fullyImplemented": false,
-        "id": 14624,
+        "id": 14922,
         "linearizedBaseContracts": [
-          14624
+          14922
         ],
         "name": "PriceFeedInterface",
         "nodeType": "ContractDefinition",
@@ -120,26 +120,26 @@
           {
             "anonymous": false,
             "documentation": {
-              "id": 14597,
+              "id": 14895,
               "nodeType": "StructuredDocumentation",
               "src": "139:68:59",
               "text": "@notice An event fired when a price is published."
             },
-            "id": 14605,
+            "id": 14903,
             "name": "PriceUpdated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 14604,
+              "id": 14902,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14599,
+                  "id": 14897,
                   "indexed": true,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14605,
+                  "scope": 14903,
                   "src": "231:26:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -148,7 +148,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14598,
+                    "id": 14896,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "231:7:59",
@@ -162,12 +162,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 14601,
+                  "id": 14899,
                   "indexed": true,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14605,
+                  "scope": 14903,
                   "src": "259:17:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -176,7 +176,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 14600,
+                    "id": 14898,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "259:4:59",
@@ -190,12 +190,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 14603,
+                  "id": 14901,
                   "indexed": false,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14605,
+                  "scope": 14903,
                   "src": "278:9:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -204,7 +204,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14602,
+                    "id": 14900,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "278:3:59",
@@ -224,13 +224,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14606,
+              "id": 14904,
               "nodeType": "StructuredDocumentation",
               "src": "295:92:59",
               "text": "@notice Whether this PriceFeeds provides prices for the given identifier."
             },
             "functionSelector": "90978d1b",
-            "id": 14613,
+            "id": 14911,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -238,16 +238,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14609,
+              "id": 14907,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14608,
+                  "id": 14906,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14613,
+                  "scope": 14911,
                   "src": "423:18:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -256,7 +256,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14607,
+                    "id": 14905,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "423:7:59",
@@ -272,16 +272,16 @@
               "src": "422:20:59"
             },
             "returnParameters": {
-              "id": 14612,
+              "id": 14910,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14611,
+                  "id": 14909,
                   "name": "isSupported",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14613,
+                  "scope": 14911,
                   "src": "466:16:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -290,7 +290,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 14610,
+                    "id": 14908,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "466:4:59",
@@ -305,7 +305,7 @@
               ],
               "src": "465:18:59"
             },
-            "scope": 14624,
+            "scope": 14922,
             "src": "392:92:59",
             "stateMutability": "view",
             "virtual": false,
@@ -314,13 +314,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14614,
+              "id": 14912,
               "nodeType": "StructuredDocumentation",
               "src": "490:168:59",
               "text": "@notice Gets the latest time-price pair at which a price was published.\n@dev Will revert if no prices have been published for this identifier."
             },
             "functionSelector": "4eec7c2b",
-            "id": 14623,
+            "id": 14921,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -328,16 +328,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14617,
+              "id": 14915,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14616,
+                  "id": 14914,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14623,
+                  "scope": 14921,
                   "src": "684:18:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -346,7 +346,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14615,
+                    "id": 14913,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "684:7:59",
@@ -362,16 +362,16 @@
               "src": "683:20:59"
             },
             "returnParameters": {
-              "id": 14622,
+              "id": 14920,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14619,
+                  "id": 14917,
                   "name": "publishTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14623,
+                  "scope": 14921,
                   "src": "727:16:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -380,7 +380,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 14618,
+                    "id": 14916,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "727:4:59",
@@ -394,11 +394,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 14621,
+                  "id": 14919,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14623,
+                  "scope": 14921,
                   "src": "745:9:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -407,7 +407,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14620,
+                    "id": 14918,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "745:3:59",
@@ -422,14 +422,14 @@
               ],
               "src": "726:29:59"
             },
-            "scope": 14624,
+            "scope": 14922,
             "src": "663:93:59",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 14625,
+        "scope": 14923,
         "src": "104:654:59"
       }
     ],
@@ -439,14 +439,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/PriceFeedInterface.sol",
     "exportedSymbols": {
       "PriceFeedInterface": [
-        14624
+        14922
       ]
     },
-    "id": 14625,
+    "id": 14923,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14595,
+        "id": 14893,
         "literals": [
           "solidity",
           "^",
@@ -462,15 +462,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 14596,
+          "id": 14894,
           "nodeType": "StructuredDocumentation",
           "src": "26:77:59",
           "text": "@title This interface allows contracts to query unverified prices."
         },
         "fullyImplemented": false,
-        "id": 14624,
+        "id": 14922,
         "linearizedBaseContracts": [
-          14624
+          14922
         ],
         "name": "PriceFeedInterface",
         "nodeType": "ContractDefinition",
@@ -478,26 +478,26 @@
           {
             "anonymous": false,
             "documentation": {
-              "id": 14597,
+              "id": 14895,
               "nodeType": "StructuredDocumentation",
               "src": "139:68:59",
               "text": "@notice An event fired when a price is published."
             },
-            "id": 14605,
+            "id": 14903,
             "name": "PriceUpdated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 14604,
+              "id": 14902,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14599,
+                  "id": 14897,
                   "indexed": true,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14605,
+                  "scope": 14903,
                   "src": "231:26:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -506,7 +506,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14598,
+                    "id": 14896,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "231:7:59",
@@ -520,12 +520,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 14601,
+                  "id": 14899,
                   "indexed": true,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14605,
+                  "scope": 14903,
                   "src": "259:17:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -534,7 +534,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 14600,
+                    "id": 14898,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "259:4:59",
@@ -548,12 +548,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 14603,
+                  "id": 14901,
                   "indexed": false,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14605,
+                  "scope": 14903,
                   "src": "278:9:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -562,7 +562,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14602,
+                    "id": 14900,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "278:3:59",
@@ -582,13 +582,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14606,
+              "id": 14904,
               "nodeType": "StructuredDocumentation",
               "src": "295:92:59",
               "text": "@notice Whether this PriceFeeds provides prices for the given identifier."
             },
             "functionSelector": "90978d1b",
-            "id": 14613,
+            "id": 14911,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -596,16 +596,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14609,
+              "id": 14907,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14608,
+                  "id": 14906,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14613,
+                  "scope": 14911,
                   "src": "423:18:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -614,7 +614,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14607,
+                    "id": 14905,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "423:7:59",
@@ -630,16 +630,16 @@
               "src": "422:20:59"
             },
             "returnParameters": {
-              "id": 14612,
+              "id": 14910,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14611,
+                  "id": 14909,
                   "name": "isSupported",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14613,
+                  "scope": 14911,
                   "src": "466:16:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -648,7 +648,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 14610,
+                    "id": 14908,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "466:4:59",
@@ -663,7 +663,7 @@
               ],
               "src": "465:18:59"
             },
-            "scope": 14624,
+            "scope": 14922,
             "src": "392:92:59",
             "stateMutability": "view",
             "virtual": false,
@@ -672,13 +672,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 14614,
+              "id": 14912,
               "nodeType": "StructuredDocumentation",
               "src": "490:168:59",
               "text": "@notice Gets the latest time-price pair at which a price was published.\n@dev Will revert if no prices have been published for this identifier."
             },
             "functionSelector": "4eec7c2b",
-            "id": 14623,
+            "id": 14921,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -686,16 +686,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14617,
+              "id": 14915,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14616,
+                  "id": 14914,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14623,
+                  "scope": 14921,
                   "src": "684:18:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -704,7 +704,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 14615,
+                    "id": 14913,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "684:7:59",
@@ -720,16 +720,16 @@
               "src": "683:20:59"
             },
             "returnParameters": {
-              "id": 14622,
+              "id": 14920,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14619,
+                  "id": 14917,
                   "name": "publishTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14623,
+                  "scope": 14921,
                   "src": "727:16:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -738,7 +738,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 14618,
+                    "id": 14916,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "727:4:59",
@@ -752,11 +752,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 14621,
+                  "id": 14919,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14623,
+                  "scope": 14921,
                   "src": "745:9:59",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -765,7 +765,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14620,
+                    "id": 14918,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "745:3:59",
@@ -780,14 +780,14 @@
               ],
               "src": "726:29:59"
             },
-            "scope": 14624,
+            "scope": 14922,
             "src": "663:93:59",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 14625,
+        "scope": 14923,
         "src": "104:654:59"
       }
     ],
@@ -799,7 +799,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.728Z",
+  "updatedAt": "2020-08-14T09:32:05.686Z",
   "devdoc": {
     "methods": {
       "latestPrice(bytes32)": {
