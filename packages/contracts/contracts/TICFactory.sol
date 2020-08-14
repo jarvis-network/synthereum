@@ -52,7 +52,8 @@ contract TICFactory is Ownable, ReentrancyGuard {
         // TODO: `ExpiringMultiPartyCreator` past commit b6dc123e11d7253cdbe0fcc40b7ab4a992c4e56d
         //       requires `minSponsorTokens` param.
         address derivative = derivativeCreator.createExpiringMultiParty(params);
-
+        //Require TIC does not exist
+        require(address(symbolToTIC[params.syntheticSymbol]) == address(0), 'TIC already exists');
         // Create the TIC
         symbolToTIC[params.syntheticSymbol] = new TIC(
             IExpiringMultiParty(derivative),
