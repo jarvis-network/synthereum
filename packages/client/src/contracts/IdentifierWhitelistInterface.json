@@ -58,14 +58,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol",
     "exportedSymbols": {
       "IdentifierWhitelistInterface": [
-        13753
+        14051
       ]
     },
-    "id": 13754,
+    "id": 14052,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13730,
+        "id": 14028,
         "literals": [
           "solidity",
           "^",
@@ -76,7 +76,7 @@
         "src": "0:23:51"
       },
       {
-        "id": 13731,
+        "id": 14029,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -90,15 +90,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 13732,
+          "id": 14030,
           "nodeType": "StructuredDocumentation",
           "src": "61:107:51",
           "text": "@title Interface for whitelists of supported identifiers that the oracle can provide prices for."
         },
         "fullyImplemented": false,
-        "id": 13753,
+        "id": 14051,
         "linearizedBaseContracts": [
-          13753
+          14051
         ],
         "name": "IdentifierWhitelistInterface",
         "nodeType": "ContractDefinition",
@@ -106,13 +106,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13733,
+              "id": 14031,
               "nodeType": "StructuredDocumentation",
               "src": "214:245:51",
               "text": "@notice Adds the provided identifier as a supported identifier.\n@dev Price requests using this identifier will be succeed after this call.\n@param identifier bytes32 encoding of the string identifier. Eg: BTC/USD."
             },
             "functionSelector": "10a7e201",
-            "id": 13738,
+            "id": 14036,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -120,16 +120,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13736,
+              "id": 14034,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13735,
+                  "id": 14033,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13738,
+                  "scope": 14036,
                   "src": "496:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -138,7 +138,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13734,
+                    "id": 14032,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:7:51",
@@ -154,12 +154,12 @@
               "src": "495:20:51"
             },
             "returnParameters": {
-              "id": 13737,
+              "id": 14035,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "524:0:51"
             },
-            "scope": 13753,
+            "scope": 14051,
             "src": "464:61:51",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -168,13 +168,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13739,
+              "id": 14037,
               "nodeType": "StructuredDocumentation",
               "src": "531:239:51",
               "text": "@notice Removes the identifier from the whitelist.\n@dev Price requests using this identifier will no longer succeed after this call.\n@param identifier bytes32 encoding of the string identifier. Eg: BTC/USD."
             },
             "functionSelector": "8e0d3ca7",
-            "id": 13744,
+            "id": 14042,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -182,16 +182,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13742,
+              "id": 14040,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13741,
+                  "id": 14039,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13744,
+                  "scope": 14042,
                   "src": "810:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -200,7 +200,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13740,
+                    "id": 14038,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "810:7:51",
@@ -216,12 +216,12 @@
               "src": "809:20:51"
             },
             "returnParameters": {
-              "id": 13743,
+              "id": 14041,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "838:0:51"
             },
-            "scope": 13753,
+            "scope": 14051,
             "src": "775:64:51",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -230,13 +230,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13745,
+              "id": 14043,
               "nodeType": "StructuredDocumentation",
               "src": "845:218:51",
               "text": "@notice Checks whether an identifier is on the whitelist.\n@param identifier bytes32 encoding of the string identifier. Eg: BTC/USD.\n@return bool if the identifier is supported (or not)."
             },
             "functionSelector": "90978d1b",
-            "id": 13752,
+            "id": 14050,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -244,16 +244,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13748,
+              "id": 14046,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13747,
+                  "id": 14045,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13752,
+                  "scope": 14050,
                   "src": "1099:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -262,7 +262,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13746,
+                    "id": 14044,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1099:7:51",
@@ -278,16 +278,16 @@
               "src": "1098:20:51"
             },
             "returnParameters": {
-              "id": 13751,
+              "id": 14049,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13750,
+                  "id": 14048,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13752,
+                  "scope": 14050,
                   "src": "1142:4:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -296,7 +296,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13749,
+                    "id": 14047,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1142:4:51",
@@ -311,14 +311,14 @@
               ],
               "src": "1141:6:51"
             },
-            "scope": 13753,
+            "scope": 14051,
             "src": "1068:80:51",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 13754,
+        "scope": 14052,
         "src": "169:981:51"
       }
     ],
@@ -328,14 +328,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol",
     "exportedSymbols": {
       "IdentifierWhitelistInterface": [
-        13753
+        14051
       ]
     },
-    "id": 13754,
+    "id": 14052,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13730,
+        "id": 14028,
         "literals": [
           "solidity",
           "^",
@@ -346,7 +346,7 @@
         "src": "0:23:51"
       },
       {
-        "id": 13731,
+        "id": 14029,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -360,15 +360,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 13732,
+          "id": 14030,
           "nodeType": "StructuredDocumentation",
           "src": "61:107:51",
           "text": "@title Interface for whitelists of supported identifiers that the oracle can provide prices for."
         },
         "fullyImplemented": false,
-        "id": 13753,
+        "id": 14051,
         "linearizedBaseContracts": [
-          13753
+          14051
         ],
         "name": "IdentifierWhitelistInterface",
         "nodeType": "ContractDefinition",
@@ -376,13 +376,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13733,
+              "id": 14031,
               "nodeType": "StructuredDocumentation",
               "src": "214:245:51",
               "text": "@notice Adds the provided identifier as a supported identifier.\n@dev Price requests using this identifier will be succeed after this call.\n@param identifier bytes32 encoding of the string identifier. Eg: BTC/USD."
             },
             "functionSelector": "10a7e201",
-            "id": 13738,
+            "id": 14036,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -390,16 +390,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13736,
+              "id": 14034,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13735,
+                  "id": 14033,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13738,
+                  "scope": 14036,
                   "src": "496:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -408,7 +408,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13734,
+                    "id": 14032,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "496:7:51",
@@ -424,12 +424,12 @@
               "src": "495:20:51"
             },
             "returnParameters": {
-              "id": 13737,
+              "id": 14035,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "524:0:51"
             },
-            "scope": 13753,
+            "scope": 14051,
             "src": "464:61:51",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -438,13 +438,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13739,
+              "id": 14037,
               "nodeType": "StructuredDocumentation",
               "src": "531:239:51",
               "text": "@notice Removes the identifier from the whitelist.\n@dev Price requests using this identifier will no longer succeed after this call.\n@param identifier bytes32 encoding of the string identifier. Eg: BTC/USD."
             },
             "functionSelector": "8e0d3ca7",
-            "id": 13744,
+            "id": 14042,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -452,16 +452,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13742,
+              "id": 14040,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13741,
+                  "id": 14039,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13744,
+                  "scope": 14042,
                   "src": "810:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -470,7 +470,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13740,
+                    "id": 14038,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "810:7:51",
@@ -486,12 +486,12 @@
               "src": "809:20:51"
             },
             "returnParameters": {
-              "id": 13743,
+              "id": 14041,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "838:0:51"
             },
-            "scope": 13753,
+            "scope": 14051,
             "src": "775:64:51",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -500,13 +500,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13745,
+              "id": 14043,
               "nodeType": "StructuredDocumentation",
               "src": "845:218:51",
               "text": "@notice Checks whether an identifier is on the whitelist.\n@param identifier bytes32 encoding of the string identifier. Eg: BTC/USD.\n@return bool if the identifier is supported (or not)."
             },
             "functionSelector": "90978d1b",
-            "id": 13752,
+            "id": 14050,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -514,16 +514,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13748,
+              "id": 14046,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13747,
+                  "id": 14045,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13752,
+                  "scope": 14050,
                   "src": "1099:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -532,7 +532,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13746,
+                    "id": 14044,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1099:7:51",
@@ -548,16 +548,16 @@
               "src": "1098:20:51"
             },
             "returnParameters": {
-              "id": 13751,
+              "id": 14049,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13750,
+                  "id": 14048,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13752,
+                  "scope": 14050,
                   "src": "1142:4:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -566,7 +566,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13749,
+                    "id": 14047,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1142:4:51",
@@ -581,14 +581,14 @@
               ],
               "src": "1141:6:51"
             },
-            "scope": 13753,
+            "scope": 14051,
             "src": "1068:80:51",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 13754,
+        "scope": 14052,
         "src": "169:981:51"
       }
     ],
@@ -600,7 +600,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.699Z",
+  "updatedAt": "2020-08-14T09:32:05.670Z",
   "devdoc": {
     "methods": {
       "addSupportedIdentifier(bytes32)": {

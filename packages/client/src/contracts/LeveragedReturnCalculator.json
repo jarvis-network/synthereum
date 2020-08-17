@@ -189,14 +189,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/LeveragedReturnCalculator.sol",
     "exportedSymbols": {
       "LeveragedReturnCalculator": [
-        14389
+        14687
       ]
     },
-    "id": 14390,
+    "id": 14688,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14261,
+        "id": 14559,
         "literals": [
           "solidity",
           "^",
@@ -209,10 +209,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
         "file": "./ReturnCalculatorInterface.sol",
-        "id": 14262,
+        "id": 14560,
         "nodeType": "ImportDirective",
-        "scope": 14390,
-        "sourceUnit": 14645,
+        "scope": 14688,
+        "sourceUnit": 14943,
         "src": "25:41:57",
         "symbolAliases": [],
         "unitAlias": ""
@@ -220,10 +220,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol",
         "file": "../common/implementation/Withdrawable.sol",
-        "id": 14263,
+        "id": 14561,
         "nodeType": "ImportDirective",
-        "scope": 14390,
-        "sourceUnit": 4667,
+        "scope": 14688,
+        "sourceUnit": 4965,
         "src": "67:51:57",
         "symbolAliases": [],
         "unitAlias": ""
@@ -231,10 +231,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/drafts/SignedSafeMath.sol",
         "file": "@openzeppelin/contracts/drafts/SignedSafeMath.sol",
-        "id": 14264,
+        "id": 14562,
         "nodeType": "ImportDirective",
-        "scope": 14390,
-        "sourceUnit": 19701,
+        "scope": 14688,
+        "sourceUnit": 19999,
         "src": "119:59:57",
         "symbolAliases": [],
         "unitAlias": ""
@@ -246,17 +246,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 14266,
+              "id": 14564,
               "name": "ReturnCalculatorInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 14644,
+              "referencedDeclaration": 14942,
               "src": "287:25:57",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ReturnCalculatorInterface_$14644",
+                "typeIdentifier": "t_contract$_ReturnCalculatorInterface_$14942",
                 "typeString": "contract ReturnCalculatorInterface"
               }
             },
-            "id": 14267,
+            "id": 14565,
             "nodeType": "InheritanceSpecifier",
             "src": "287:25:57"
           },
@@ -264,62 +264,62 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 14268,
+              "id": 14566,
               "name": "Withdrawable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4666,
+              "referencedDeclaration": 4964,
               "src": "314:12:57",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Withdrawable_$4666",
+                "typeIdentifier": "t_contract$_Withdrawable_$4964",
                 "typeString": "contract Withdrawable"
               }
             },
-            "id": 14269,
+            "id": 14567,
             "nodeType": "InheritanceSpecifier",
             "src": "314:12:57"
           }
         ],
         "contractDependencies": [
-          4468,
-          4666,
-          14644
+          4766,
+          4964,
+          14942
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 14265,
+          "id": 14563,
           "nodeType": "StructuredDocumentation",
           "src": "181:67:57",
           "text": "@title Computes return values based on a fixed leverage."
         },
         "fullyImplemented": true,
-        "id": 14389,
+        "id": 14687,
         "linearizedBaseContracts": [
-          14389,
-          4666,
-          4468,
-          14644
+          14687,
+          4964,
+          4766,
+          14942
         ],
         "name": "LeveragedReturnCalculator",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 14272,
+            "id": 14570,
             "libraryName": {
               "contractScope": null,
-              "id": 14270,
+              "id": 14568,
               "name": "SignedSafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19700,
+              "referencedDeclaration": 19998,
               "src": "339:14:57",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SignedSafeMath_$19700",
+                "typeIdentifier": "t_contract$_SignedSafeMath_$19998",
                 "typeString": "library SignedSafeMath"
               }
             },
             "nodeType": "UsingForDirective",
             "src": "333:29:57",
             "typeName": {
-              "id": 14271,
+              "id": 14569,
               "name": "int",
               "nodeType": "ElementaryTypeName",
               "src": "358:3:57",
@@ -331,11 +331,11 @@
           },
           {
             "constant": false,
-            "id": 14274,
+            "id": 14572,
             "name": "leverageMultiplier",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 14389,
+            "scope": 14687,
             "src": "573:31:57",
             "stateVariable": true,
             "storageLocation": "default",
@@ -344,7 +344,7 @@
               "typeString": "int256"
             },
             "typeName": {
-              "id": 14273,
+              "id": 14571,
               "name": "int",
               "nodeType": "ElementaryTypeName",
               "src": "573:3:57",
@@ -358,11 +358,11 @@
           },
           {
             "constant": true,
-            "id": 14279,
+            "id": 14577,
             "name": "FP_SCALING_FACTOR",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 14389,
+            "scope": 14687,
             "src": "610:47:57",
             "stateVariable": true,
             "storageLocation": "default",
@@ -371,7 +371,7 @@
               "typeString": "int256"
             },
             "typeName": {
-              "id": 14275,
+              "id": 14573,
               "name": "int",
               "nodeType": "ElementaryTypeName",
               "src": "610:3:57",
@@ -386,7 +386,7 @@
                 "typeIdentifier": "t_rational_1000000000000000000_by_1",
                 "typeString": "int_const 1000000000000000000"
               },
-              "id": 14278,
+              "id": 14576,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -394,7 +394,7 @@
               "leftExpression": {
                 "argumentTypes": null,
                 "hexValue": "3130",
-                "id": 14276,
+                "id": 14574,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -414,7 +414,7 @@
               "rightExpression": {
                 "argumentTypes": null,
                 "hexValue": "3138",
-                "id": 14277,
+                "id": 14575,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -439,16 +439,16 @@
           },
           {
             "canonicalName": "LeveragedReturnCalculator.Roles",
-            "id": 14282,
+            "id": 14580,
             "members": [
               {
-                "id": 14280,
+                "id": 14578,
                 "name": "Governance",
                 "nodeType": "EnumValue",
                 "src": "677:10:57"
               },
               {
-                "id": 14281,
+                "id": 14579,
                 "name": "Withdraw",
                 "nodeType": "EnumValue",
                 "src": "689:8:57"
@@ -460,7 +460,7 @@
           },
           {
             "body": {
-              "id": 14327,
+              "id": 14625,
               "nodeType": "Block",
               "src": "749:276:57",
               "statements": [
@@ -474,18 +474,18 @@
                           "typeIdentifier": "t_int256",
                           "typeString": "int256"
                         },
-                        "id": 14290,
+                        "id": 14588,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 14288,
+                          "id": 14586,
                           "name": "_leverageMultiplier",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 14284,
+                          "referencedDeclaration": 14582,
                           "src": "767:19:57",
                           "typeDescriptions": {
                             "typeIdentifier": "t_int256",
@@ -497,7 +497,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 14289,
+                          "id": 14587,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -526,7 +526,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 14287,
+                      "id": 14585,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -540,7 +540,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 14291,
+                    "id": 14589,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -555,25 +555,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 14292,
+                  "id": 14590,
                   "nodeType": "ExpressionStatement",
                   "src": "759:33:57"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 14295,
+                    "id": 14593,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 14293,
+                      "id": 14591,
                       "name": "leverageMultiplier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14274,
+                      "referencedDeclaration": 14572,
                       "src": "802:18:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -584,11 +584,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 14294,
+                      "id": 14592,
                       "name": "_leverageMultiplier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14284,
+                      "referencedDeclaration": 14582,
                       "src": "823:19:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -601,7 +601,7 @@
                       "typeString": "int256"
                     }
                   },
-                  "id": 14296,
+                  "id": 14594,
                   "nodeType": "ExpressionStatement",
                   "src": "802:40:57"
                 },
@@ -616,18 +616,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14300,
+                              "id": 14598,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "878:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14301,
+                            "id": 14599,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -637,7 +637,7 @@
                             "referencedDeclaration": null,
                             "src": "878:16:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -645,11 +645,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14299,
+                          "id": 14597,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -661,7 +661,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14298,
+                            "id": 14596,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "873:4:57",
@@ -671,7 +671,7 @@
                             }
                           }
                         },
-                        "id": 14302,
+                        "id": 14600,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -693,18 +693,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14305,
+                              "id": 14603,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "902:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14306,
+                            "id": 14604,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -714,7 +714,7 @@
                             "referencedDeclaration": null,
                             "src": "902:16:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -722,11 +722,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14304,
+                          "id": 14602,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -738,7 +738,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14303,
+                            "id": 14601,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "897:4:57",
@@ -748,7 +748,7 @@
                             }
                           }
                         },
-                        "id": 14307,
+                        "id": 14605,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -767,7 +767,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 14308,
+                          "id": 14606,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -778,7 +778,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 14309,
+                        "id": 14607,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -808,18 +808,18 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 14297,
+                      "id": 14595,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4467,
+                      "referencedDeclaration": 4765,
                       "src": "852:20:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 14310,
+                    "id": 14608,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -834,7 +834,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 14311,
+                  "id": 14609,
                   "nodeType": "ExpressionStatement",
                   "src": "852:80:57"
                 },
@@ -849,18 +849,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14315,
+                              "id": 14613,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "966:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14316,
+                            "id": 14614,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -870,7 +870,7 @@
                             "referencedDeclaration": null,
                             "src": "966:14:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -878,11 +878,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14314,
+                          "id": 14612,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -894,7 +894,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14313,
+                            "id": 14611,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "961:4:57",
@@ -904,7 +904,7 @@
                             }
                           }
                         },
-                        "id": 14317,
+                        "id": 14615,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -926,18 +926,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14320,
+                              "id": 14618,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "988:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14321,
+                            "id": 14619,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -947,7 +947,7 @@
                             "referencedDeclaration": null,
                             "src": "988:16:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -955,11 +955,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14319,
+                          "id": 14617,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -971,7 +971,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14318,
+                            "id": 14616,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "983:4:57",
@@ -981,7 +981,7 @@
                             }
                           }
                         },
-                        "id": 14322,
+                        "id": 14620,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1000,7 +1000,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 14323,
+                          "id": 14621,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1011,7 +1011,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 14324,
+                        "id": 14622,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1041,18 +1041,18 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 14312,
+                      "id": 14610,
                       "name": "createWithdrawRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4654,
+                      "referencedDeclaration": 4952,
                       "src": "942:18:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 14325,
+                    "id": 14623,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1067,14 +1067,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 14326,
+                  "id": 14624,
                   "nodeType": "ExpressionStatement",
                   "src": "942:76:57"
                 }
               ]
             },
             "documentation": null,
-            "id": 14328,
+            "id": 14626,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -1082,16 +1082,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14285,
+              "id": 14583,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14284,
+                  "id": 14582,
                   "name": "_leverageMultiplier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14328,
+                  "scope": 14626,
                   "src": "717:23:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1100,7 +1100,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14283,
+                    "id": 14581,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "717:3:57",
@@ -1116,12 +1116,12 @@
               "src": "716:25:57"
             },
             "returnParameters": {
-              "id": 14286,
+              "id": 14584,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "749:0:57"
             },
-            "scope": 14389,
+            "scope": 14687,
             "src": "705:320:57",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1129,10 +1129,10 @@
           },
           {
             "baseFunctions": [
-              14637
+              14935
             ],
             "body": {
-              "id": 14378,
+              "id": 14676,
               "nodeType": "Block",
               "src": "1243:757:57",
               "statements": [
@@ -1143,18 +1143,18 @@
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     },
-                    "id": 14340,
+                    "id": 14638,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "argumentTypes": null,
-                      "id": 14338,
+                      "id": 14636,
                       "name": "oldPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14330,
+                      "referencedDeclaration": 14628,
                       "src": "1257:8:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -1166,7 +1166,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 14339,
+                      "id": 14637,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1188,11 +1188,11 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 14344,
+                  "id": 14642,
                   "nodeType": "IfStatement",
                   "src": "1253:141:57",
                   "trueBody": {
-                    "id": 14343,
+                    "id": 14641,
                     "nodeType": "Block",
                     "src": "1272:122:57",
                     "statements": [
@@ -1200,7 +1200,7 @@
                         "expression": {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 14341,
+                          "id": 14639,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1215,8 +1215,8 @@
                           },
                           "value": "0"
                         },
-                        "functionReturnParameters": 14337,
-                        "id": 14342,
+                        "functionReturnParameters": 14635,
+                        "id": 14640,
                         "nodeType": "Return",
                         "src": "1375:8:57"
                       }
@@ -1225,16 +1225,16 @@
                 },
                 {
                   "assignments": [
-                    14346
+                    14644
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 14346,
+                      "id": 14644,
                       "name": "underlyingAssetReturn",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 14378,
+                      "scope": 14676,
                       "src": "1483:25:57",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -1243,7 +1243,7 @@
                         "typeString": "int256"
                       },
                       "typeName": {
-                        "id": 14345,
+                        "id": 14643,
                         "name": "int",
                         "nodeType": "ElementaryTypeName",
                         "src": "1483:3:57",
@@ -1256,17 +1256,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 14354,
+                  "id": 14652,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 14352,
+                        "id": 14650,
                         "name": "oldPrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 14330,
+                        "referencedDeclaration": 14628,
                         "src": "1547:8:57",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -1286,11 +1286,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 14349,
+                            "id": 14647,
                             "name": "FP_SCALING_FACTOR",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14279,
+                            "referencedDeclaration": 14577,
                             "src": "1524:17:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -1307,32 +1307,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 14347,
+                            "id": 14645,
                             "name": "newPrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14332,
+                            "referencedDeclaration": 14630,
                             "src": "1511:8:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
                               "typeString": "int256"
                             }
                           },
-                          "id": 14348,
+                          "id": 14646,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "mul",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 19579,
+                          "referencedDeclaration": 19877,
                           "src": "1511:12:57",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                             "typeString": "function (int256,int256) pure returns (int256)"
                           }
                         },
-                        "id": 14350,
+                        "id": 14648,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1347,21 +1347,21 @@
                           "typeString": "int256"
                         }
                       },
-                      "id": 14351,
+                      "id": 14649,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "div",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 19619,
+                      "referencedDeclaration": 19917,
                       "src": "1511:35:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                         "typeString": "function (int256,int256) pure returns (int256)"
                       }
                     },
-                    "id": 14353,
+                    "id": 14651,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1382,18 +1382,18 @@
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 14363,
+                    "id": 14661,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 14355,
+                      "id": 14653,
                       "name": "assetReturn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14336,
+                      "referencedDeclaration": 14634,
                       "src": "1681:11:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -1407,11 +1407,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 14361,
+                          "id": 14659,
                           "name": "leverageMultiplier",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 14274,
+                          "referencedDeclaration": 14572,
                           "src": "1744:18:57",
                           "typeDescriptions": {
                             "typeIdentifier": "t_int256",
@@ -1431,11 +1431,11 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 14358,
+                              "id": 14656,
                               "name": "FP_SCALING_FACTOR",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14279,
+                              "referencedDeclaration": 14577,
                               "src": "1721:17:57",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_int256",
@@ -1452,32 +1452,32 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14356,
+                              "id": 14654,
                               "name": "underlyingAssetReturn",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14346,
+                              "referencedDeclaration": 14644,
                               "src": "1695:21:57",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_int256",
                                 "typeString": "int256"
                               }
                             },
-                            "id": 14357,
+                            "id": 14655,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "sub",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 19659,
+                            "referencedDeclaration": 19957,
                             "src": "1695:25:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                               "typeString": "function (int256,int256) pure returns (int256)"
                             }
                           },
-                          "id": 14359,
+                          "id": 14657,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1492,21 +1492,21 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 14360,
+                        "id": 14658,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "mul",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 19579,
+                        "referencedDeclaration": 19877,
                         "src": "1695:48:57",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                           "typeString": "function (int256,int256) pure returns (int256)"
                         }
                       },
-                      "id": 14362,
+                      "id": 14660,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1527,7 +1527,7 @@
                       "typeString": "int256"
                     }
                   },
-                  "id": 14364,
+                  "id": 14662,
                   "nodeType": "ExpressionStatement",
                   "src": "1681:82:57"
                 },
@@ -1538,18 +1538,18 @@
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     },
-                    "id": 14367,
+                    "id": 14665,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "argumentTypes": null,
-                      "id": 14365,
+                      "id": 14663,
                       "name": "oldPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14330,
+                      "referencedDeclaration": 14628,
                       "src": "1922:8:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -1561,7 +1561,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 14366,
+                      "id": 14664,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1583,29 +1583,29 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 14377,
+                  "id": 14675,
                   "nodeType": "IfStatement",
                   "src": "1918:76:57",
                   "trueBody": {
-                    "id": 14376,
+                    "id": 14674,
                     "nodeType": "Block",
                     "src": "1936:58:57",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 14374,
+                          "id": 14672,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 14368,
+                            "id": 14666,
                             "name": "assetReturn",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14336,
+                            "referencedDeclaration": 14634,
                             "src": "1950:11:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -1619,7 +1619,7 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 14372,
+                                "id": 14670,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -1631,7 +1631,7 @@
                                 "subExpression": {
                                   "argumentTypes": null,
                                   "hexValue": "31",
-                                  "id": 14371,
+                                  "id": 14669,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": true,
@@ -1661,32 +1661,32 @@
                               ],
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 14369,
+                                "id": 14667,
                                 "name": "assetReturn",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 14336,
+                                "referencedDeclaration": 14634,
                                 "src": "1964:11:57",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_int256",
                                   "typeString": "int256"
                                 }
                               },
-                              "id": 14370,
+                              "id": 14668,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "mul",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 19579,
+                              "referencedDeclaration": 19877,
                               "src": "1964:15:57",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                                 "typeString": "function (int256,int256) pure returns (int256)"
                               }
                             },
-                            "id": 14373,
+                            "id": 14671,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1707,7 +1707,7 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 14375,
+                        "id": 14673,
                         "nodeType": "ExpressionStatement",
                         "src": "1950:33:57"
                       }
@@ -1718,29 +1718,29 @@
             },
             "documentation": null,
             "functionSelector": "55e59682",
-            "id": 14379,
+            "id": 14677,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "computeReturn",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 14334,
+              "id": 14632,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1203:8:57"
             },
             "parameters": {
-              "id": 14333,
+              "id": 14631,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14330,
+                  "id": 14628,
                   "name": "oldPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14379,
+                  "scope": 14677,
                   "src": "1166:12:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1749,7 +1749,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14329,
+                    "id": 14627,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1166:3:57",
@@ -1763,11 +1763,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 14332,
+                  "id": 14630,
                   "name": "newPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14379,
+                  "scope": 14677,
                   "src": "1180:12:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1776,7 +1776,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14331,
+                    "id": 14629,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1180:3:57",
@@ -1792,16 +1792,16 @@
               "src": "1165:28:57"
             },
             "returnParameters": {
-              "id": 14337,
+              "id": 14635,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14336,
+                  "id": 14634,
                   "name": "assetReturn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14379,
+                  "scope": 14677,
                   "src": "1226:15:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1810,7 +1810,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14335,
+                    "id": 14633,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1226:3:57",
@@ -1825,7 +1825,7 @@
               ],
               "src": "1225:17:57"
             },
-            "scope": 14389,
+            "scope": 14687,
             "src": "1143:857:57",
             "stateMutability": "view",
             "virtual": false,
@@ -1833,29 +1833,29 @@
           },
           {
             "baseFunctions": [
-              14643
+              14941
             ],
             "body": {
-              "id": 14387,
+              "id": 14685,
               "nodeType": "Block",
               "src": "2185:42:57",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 14385,
+                    "id": 14683,
                     "name": "leverageMultiplier",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 14274,
+                    "referencedDeclaration": 14572,
                     "src": "2202:18:57",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     }
                   },
-                  "functionReturnParameters": 14384,
-                  "id": 14386,
+                  "functionReturnParameters": 14682,
+                  "id": 14684,
                   "nodeType": "Return",
                   "src": "2195:25:57"
                 }
@@ -1863,35 +1863,35 @@
             },
             "documentation": null,
             "functionSelector": "2c86d98e",
-            "id": 14388,
+            "id": 14686,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "leverage",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 14381,
+              "id": 14679,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "2147:8:57"
             },
             "parameters": {
-              "id": 14380,
+              "id": 14678,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2135:2:57"
             },
             "returnParameters": {
-              "id": 14384,
+              "id": 14682,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14383,
+                  "id": 14681,
                   "name": "_leverage",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14388,
+                  "scope": 14686,
                   "src": "2170:13:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1900,7 +1900,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14382,
+                    "id": 14680,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "2170:3:57",
@@ -1915,14 +1915,14 @@
               ],
               "src": "2169:15:57"
             },
-            "scope": 14389,
+            "scope": 14687,
             "src": "2118:109:57",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 14390,
+        "scope": 14688,
         "src": "249:1980:57"
       }
     ],
@@ -1932,14 +1932,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/LeveragedReturnCalculator.sol",
     "exportedSymbols": {
       "LeveragedReturnCalculator": [
-        14389
+        14687
       ]
     },
-    "id": 14390,
+    "id": 14688,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 14261,
+        "id": 14559,
         "literals": [
           "solidity",
           "^",
@@ -1952,10 +1952,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/tokenized-derivative/ReturnCalculatorInterface.sol",
         "file": "./ReturnCalculatorInterface.sol",
-        "id": 14262,
+        "id": 14560,
         "nodeType": "ImportDirective",
-        "scope": 14390,
-        "sourceUnit": 14645,
+        "scope": 14688,
+        "sourceUnit": 14943,
         "src": "25:41:57",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1963,10 +1963,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol",
         "file": "../common/implementation/Withdrawable.sol",
-        "id": 14263,
+        "id": 14561,
         "nodeType": "ImportDirective",
-        "scope": 14390,
-        "sourceUnit": 4667,
+        "scope": 14688,
+        "sourceUnit": 4965,
         "src": "67:51:57",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1974,10 +1974,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/drafts/SignedSafeMath.sol",
         "file": "@openzeppelin/contracts/drafts/SignedSafeMath.sol",
-        "id": 14264,
+        "id": 14562,
         "nodeType": "ImportDirective",
-        "scope": 14390,
-        "sourceUnit": 19701,
+        "scope": 14688,
+        "sourceUnit": 19999,
         "src": "119:59:57",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1989,17 +1989,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 14266,
+              "id": 14564,
               "name": "ReturnCalculatorInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 14644,
+              "referencedDeclaration": 14942,
               "src": "287:25:57",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ReturnCalculatorInterface_$14644",
+                "typeIdentifier": "t_contract$_ReturnCalculatorInterface_$14942",
                 "typeString": "contract ReturnCalculatorInterface"
               }
             },
-            "id": 14267,
+            "id": 14565,
             "nodeType": "InheritanceSpecifier",
             "src": "287:25:57"
           },
@@ -2007,62 +2007,62 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 14268,
+              "id": 14566,
               "name": "Withdrawable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4666,
+              "referencedDeclaration": 4964,
               "src": "314:12:57",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Withdrawable_$4666",
+                "typeIdentifier": "t_contract$_Withdrawable_$4964",
                 "typeString": "contract Withdrawable"
               }
             },
-            "id": 14269,
+            "id": 14567,
             "nodeType": "InheritanceSpecifier",
             "src": "314:12:57"
           }
         ],
         "contractDependencies": [
-          4468,
-          4666,
-          14644
+          4766,
+          4964,
+          14942
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 14265,
+          "id": 14563,
           "nodeType": "StructuredDocumentation",
           "src": "181:67:57",
           "text": "@title Computes return values based on a fixed leverage."
         },
         "fullyImplemented": true,
-        "id": 14389,
+        "id": 14687,
         "linearizedBaseContracts": [
-          14389,
-          4666,
-          4468,
-          14644
+          14687,
+          4964,
+          4766,
+          14942
         ],
         "name": "LeveragedReturnCalculator",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 14272,
+            "id": 14570,
             "libraryName": {
               "contractScope": null,
-              "id": 14270,
+              "id": 14568,
               "name": "SignedSafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19700,
+              "referencedDeclaration": 19998,
               "src": "339:14:57",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SignedSafeMath_$19700",
+                "typeIdentifier": "t_contract$_SignedSafeMath_$19998",
                 "typeString": "library SignedSafeMath"
               }
             },
             "nodeType": "UsingForDirective",
             "src": "333:29:57",
             "typeName": {
-              "id": 14271,
+              "id": 14569,
               "name": "int",
               "nodeType": "ElementaryTypeName",
               "src": "358:3:57",
@@ -2074,11 +2074,11 @@
           },
           {
             "constant": false,
-            "id": 14274,
+            "id": 14572,
             "name": "leverageMultiplier",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 14389,
+            "scope": 14687,
             "src": "573:31:57",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2087,7 +2087,7 @@
               "typeString": "int256"
             },
             "typeName": {
-              "id": 14273,
+              "id": 14571,
               "name": "int",
               "nodeType": "ElementaryTypeName",
               "src": "573:3:57",
@@ -2101,11 +2101,11 @@
           },
           {
             "constant": true,
-            "id": 14279,
+            "id": 14577,
             "name": "FP_SCALING_FACTOR",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 14389,
+            "scope": 14687,
             "src": "610:47:57",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2114,7 +2114,7 @@
               "typeString": "int256"
             },
             "typeName": {
-              "id": 14275,
+              "id": 14573,
               "name": "int",
               "nodeType": "ElementaryTypeName",
               "src": "610:3:57",
@@ -2129,7 +2129,7 @@
                 "typeIdentifier": "t_rational_1000000000000000000_by_1",
                 "typeString": "int_const 1000000000000000000"
               },
-              "id": 14278,
+              "id": 14576,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -2137,7 +2137,7 @@
               "leftExpression": {
                 "argumentTypes": null,
                 "hexValue": "3130",
-                "id": 14276,
+                "id": 14574,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -2157,7 +2157,7 @@
               "rightExpression": {
                 "argumentTypes": null,
                 "hexValue": "3138",
-                "id": 14277,
+                "id": 14575,
                 "isConstant": false,
                 "isLValue": false,
                 "isPure": true,
@@ -2182,16 +2182,16 @@
           },
           {
             "canonicalName": "LeveragedReturnCalculator.Roles",
-            "id": 14282,
+            "id": 14580,
             "members": [
               {
-                "id": 14280,
+                "id": 14578,
                 "name": "Governance",
                 "nodeType": "EnumValue",
                 "src": "677:10:57"
               },
               {
-                "id": 14281,
+                "id": 14579,
                 "name": "Withdraw",
                 "nodeType": "EnumValue",
                 "src": "689:8:57"
@@ -2203,7 +2203,7 @@
           },
           {
             "body": {
-              "id": 14327,
+              "id": 14625,
               "nodeType": "Block",
               "src": "749:276:57",
               "statements": [
@@ -2217,18 +2217,18 @@
                           "typeIdentifier": "t_int256",
                           "typeString": "int256"
                         },
-                        "id": 14290,
+                        "id": 14588,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 14288,
+                          "id": 14586,
                           "name": "_leverageMultiplier",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 14284,
+                          "referencedDeclaration": 14582,
                           "src": "767:19:57",
                           "typeDescriptions": {
                             "typeIdentifier": "t_int256",
@@ -2240,7 +2240,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 14289,
+                          "id": 14587,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2269,7 +2269,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 14287,
+                      "id": 14585,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -2283,7 +2283,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 14291,
+                    "id": 14589,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2298,25 +2298,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 14292,
+                  "id": 14590,
                   "nodeType": "ExpressionStatement",
                   "src": "759:33:57"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 14295,
+                    "id": 14593,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 14293,
+                      "id": 14591,
                       "name": "leverageMultiplier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14274,
+                      "referencedDeclaration": 14572,
                       "src": "802:18:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -2327,11 +2327,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 14294,
+                      "id": 14592,
                       "name": "_leverageMultiplier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14284,
+                      "referencedDeclaration": 14582,
                       "src": "823:19:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -2344,7 +2344,7 @@
                       "typeString": "int256"
                     }
                   },
-                  "id": 14296,
+                  "id": 14594,
                   "nodeType": "ExpressionStatement",
                   "src": "802:40:57"
                 },
@@ -2359,18 +2359,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14300,
+                              "id": 14598,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "878:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14301,
+                            "id": 14599,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2380,7 +2380,7 @@
                             "referencedDeclaration": null,
                             "src": "878:16:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -2388,11 +2388,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14299,
+                          "id": 14597,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2404,7 +2404,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14298,
+                            "id": 14596,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "873:4:57",
@@ -2414,7 +2414,7 @@
                             }
                           }
                         },
-                        "id": 14302,
+                        "id": 14600,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2436,18 +2436,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14305,
+                              "id": 14603,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "902:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14306,
+                            "id": 14604,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2457,7 +2457,7 @@
                             "referencedDeclaration": null,
                             "src": "902:16:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -2465,11 +2465,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14304,
+                          "id": 14602,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2481,7 +2481,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14303,
+                            "id": 14601,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "897:4:57",
@@ -2491,7 +2491,7 @@
                             }
                           }
                         },
-                        "id": 14307,
+                        "id": 14605,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2510,7 +2510,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 14308,
+                          "id": 14606,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -2521,7 +2521,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 14309,
+                        "id": 14607,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2551,18 +2551,18 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 14297,
+                      "id": 14595,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4467,
+                      "referencedDeclaration": 4765,
                       "src": "852:20:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 14310,
+                    "id": 14608,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2577,7 +2577,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 14311,
+                  "id": 14609,
                   "nodeType": "ExpressionStatement",
                   "src": "852:80:57"
                 },
@@ -2592,18 +2592,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14315,
+                              "id": 14613,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "966:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14316,
+                            "id": 14614,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2613,7 +2613,7 @@
                             "referencedDeclaration": null,
                             "src": "966:14:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -2621,11 +2621,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14314,
+                          "id": 14612,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2637,7 +2637,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14313,
+                            "id": 14611,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "961:4:57",
@@ -2647,7 +2647,7 @@
                             }
                           }
                         },
-                        "id": 14317,
+                        "id": 14615,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2669,18 +2669,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14320,
+                              "id": 14618,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14282,
+                              "referencedDeclaration": 14580,
                               "src": "988:5:57",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$14282_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$14580_$",
                                 "typeString": "type(enum LeveragedReturnCalculator.Roles)"
                               }
                             },
-                            "id": 14321,
+                            "id": 14619,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2690,7 +2690,7 @@
                             "referencedDeclaration": null,
                             "src": "988:16:57",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           }
@@ -2698,11 +2698,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$14282",
+                              "typeIdentifier": "t_enum$_Roles_$14580",
                               "typeString": "enum LeveragedReturnCalculator.Roles"
                             }
                           ],
-                          "id": 14319,
+                          "id": 14617,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2714,7 +2714,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 14318,
+                            "id": 14616,
                             "name": "uint",
                             "nodeType": "ElementaryTypeName",
                             "src": "983:4:57",
@@ -2724,7 +2724,7 @@
                             }
                           }
                         },
-                        "id": 14322,
+                        "id": 14620,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2743,7 +2743,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 14323,
+                          "id": 14621,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -2754,7 +2754,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 14324,
+                        "id": 14622,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2784,18 +2784,18 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 14312,
+                      "id": 14610,
                       "name": "createWithdrawRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4654,
+                      "referencedDeclaration": 4952,
                       "src": "942:18:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 14325,
+                    "id": 14623,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2810,14 +2810,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 14326,
+                  "id": 14624,
                   "nodeType": "ExpressionStatement",
                   "src": "942:76:57"
                 }
               ]
             },
             "documentation": null,
-            "id": 14328,
+            "id": 14626,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -2825,16 +2825,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 14285,
+              "id": 14583,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14284,
+                  "id": 14582,
                   "name": "_leverageMultiplier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14328,
+                  "scope": 14626,
                   "src": "717:23:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2843,7 +2843,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14283,
+                    "id": 14581,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "717:3:57",
@@ -2859,12 +2859,12 @@
               "src": "716:25:57"
             },
             "returnParameters": {
-              "id": 14286,
+              "id": 14584,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "749:0:57"
             },
-            "scope": 14389,
+            "scope": 14687,
             "src": "705:320:57",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2872,10 +2872,10 @@
           },
           {
             "baseFunctions": [
-              14637
+              14935
             ],
             "body": {
-              "id": 14378,
+              "id": 14676,
               "nodeType": "Block",
               "src": "1243:757:57",
               "statements": [
@@ -2886,18 +2886,18 @@
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     },
-                    "id": 14340,
+                    "id": 14638,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "argumentTypes": null,
-                      "id": 14338,
+                      "id": 14636,
                       "name": "oldPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14330,
+                      "referencedDeclaration": 14628,
                       "src": "1257:8:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -2909,7 +2909,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 14339,
+                      "id": 14637,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -2931,11 +2931,11 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 14344,
+                  "id": 14642,
                   "nodeType": "IfStatement",
                   "src": "1253:141:57",
                   "trueBody": {
-                    "id": 14343,
+                    "id": 14641,
                     "nodeType": "Block",
                     "src": "1272:122:57",
                     "statements": [
@@ -2943,7 +2943,7 @@
                         "expression": {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 14341,
+                          "id": 14639,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2958,8 +2958,8 @@
                           },
                           "value": "0"
                         },
-                        "functionReturnParameters": 14337,
-                        "id": 14342,
+                        "functionReturnParameters": 14635,
+                        "id": 14640,
                         "nodeType": "Return",
                         "src": "1375:8:57"
                       }
@@ -2968,16 +2968,16 @@
                 },
                 {
                   "assignments": [
-                    14346
+                    14644
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 14346,
+                      "id": 14644,
                       "name": "underlyingAssetReturn",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 14378,
+                      "scope": 14676,
                       "src": "1483:25:57",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -2986,7 +2986,7 @@
                         "typeString": "int256"
                       },
                       "typeName": {
-                        "id": 14345,
+                        "id": 14643,
                         "name": "int",
                         "nodeType": "ElementaryTypeName",
                         "src": "1483:3:57",
@@ -2999,17 +2999,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 14354,
+                  "id": 14652,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 14352,
+                        "id": 14650,
                         "name": "oldPrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 14330,
+                        "referencedDeclaration": 14628,
                         "src": "1547:8:57",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -3029,11 +3029,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 14349,
+                            "id": 14647,
                             "name": "FP_SCALING_FACTOR",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14279,
+                            "referencedDeclaration": 14577,
                             "src": "1524:17:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -3050,32 +3050,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 14347,
+                            "id": 14645,
                             "name": "newPrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14332,
+                            "referencedDeclaration": 14630,
                             "src": "1511:8:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
                               "typeString": "int256"
                             }
                           },
-                          "id": 14348,
+                          "id": 14646,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "mul",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 19579,
+                          "referencedDeclaration": 19877,
                           "src": "1511:12:57",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                             "typeString": "function (int256,int256) pure returns (int256)"
                           }
                         },
-                        "id": 14350,
+                        "id": 14648,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -3090,21 +3090,21 @@
                           "typeString": "int256"
                         }
                       },
-                      "id": 14351,
+                      "id": 14649,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "div",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 19619,
+                      "referencedDeclaration": 19917,
                       "src": "1511:35:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                         "typeString": "function (int256,int256) pure returns (int256)"
                       }
                     },
-                    "id": 14353,
+                    "id": 14651,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3125,18 +3125,18 @@
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 14363,
+                    "id": 14661,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 14355,
+                      "id": 14653,
                       "name": "assetReturn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14336,
+                      "referencedDeclaration": 14634,
                       "src": "1681:11:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -3150,11 +3150,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 14361,
+                          "id": 14659,
                           "name": "leverageMultiplier",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 14274,
+                          "referencedDeclaration": 14572,
                           "src": "1744:18:57",
                           "typeDescriptions": {
                             "typeIdentifier": "t_int256",
@@ -3174,11 +3174,11 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 14358,
+                              "id": 14656,
                               "name": "FP_SCALING_FACTOR",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14279,
+                              "referencedDeclaration": 14577,
                               "src": "1721:17:57",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_int256",
@@ -3195,32 +3195,32 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 14356,
+                              "id": 14654,
                               "name": "underlyingAssetReturn",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 14346,
+                              "referencedDeclaration": 14644,
                               "src": "1695:21:57",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_int256",
                                 "typeString": "int256"
                               }
                             },
-                            "id": 14357,
+                            "id": 14655,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "sub",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 19659,
+                            "referencedDeclaration": 19957,
                             "src": "1695:25:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                               "typeString": "function (int256,int256) pure returns (int256)"
                             }
                           },
-                          "id": 14359,
+                          "id": 14657,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -3235,21 +3235,21 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 14360,
+                        "id": 14658,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "mul",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 19579,
+                        "referencedDeclaration": 19877,
                         "src": "1695:48:57",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                           "typeString": "function (int256,int256) pure returns (int256)"
                         }
                       },
-                      "id": 14362,
+                      "id": 14660,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3270,7 +3270,7 @@
                       "typeString": "int256"
                     }
                   },
-                  "id": 14364,
+                  "id": 14662,
                   "nodeType": "ExpressionStatement",
                   "src": "1681:82:57"
                 },
@@ -3281,18 +3281,18 @@
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     },
-                    "id": 14367,
+                    "id": 14665,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "argumentTypes": null,
-                      "id": 14365,
+                      "id": 14663,
                       "name": "oldPrice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14330,
+                      "referencedDeclaration": 14628,
                       "src": "1922:8:57",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -3304,7 +3304,7 @@
                     "rightExpression": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 14366,
+                      "id": 14664,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -3326,29 +3326,29 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 14377,
+                  "id": 14675,
                   "nodeType": "IfStatement",
                   "src": "1918:76:57",
                   "trueBody": {
-                    "id": 14376,
+                    "id": 14674,
                     "nodeType": "Block",
                     "src": "1936:58:57",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 14374,
+                          "id": 14672,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 14368,
+                            "id": 14666,
                             "name": "assetReturn",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 14336,
+                            "referencedDeclaration": 14634,
                             "src": "1950:11:57",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -3362,7 +3362,7 @@
                             "arguments": [
                               {
                                 "argumentTypes": null,
-                                "id": 14372,
+                                "id": 14670,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -3374,7 +3374,7 @@
                                 "subExpression": {
                                   "argumentTypes": null,
                                   "hexValue": "31",
-                                  "id": 14371,
+                                  "id": 14669,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": true,
@@ -3404,32 +3404,32 @@
                               ],
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 14369,
+                                "id": 14667,
                                 "name": "assetReturn",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 14336,
+                                "referencedDeclaration": 14634,
                                 "src": "1964:11:57",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_int256",
                                   "typeString": "int256"
                                 }
                               },
-                              "id": 14370,
+                              "id": 14668,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "mul",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 19579,
+                              "referencedDeclaration": 19877,
                               "src": "1964:15:57",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_pure$_t_int256_$_t_int256_$returns$_t_int256_$bound_to$_t_int256_$",
                                 "typeString": "function (int256,int256) pure returns (int256)"
                               }
                             },
-                            "id": 14373,
+                            "id": 14671,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -3450,7 +3450,7 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 14375,
+                        "id": 14673,
                         "nodeType": "ExpressionStatement",
                         "src": "1950:33:57"
                       }
@@ -3461,29 +3461,29 @@
             },
             "documentation": null,
             "functionSelector": "55e59682",
-            "id": 14379,
+            "id": 14677,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "computeReturn",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 14334,
+              "id": 14632,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1203:8:57"
             },
             "parameters": {
-              "id": 14333,
+              "id": 14631,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14330,
+                  "id": 14628,
                   "name": "oldPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14379,
+                  "scope": 14677,
                   "src": "1166:12:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3492,7 +3492,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14329,
+                    "id": 14627,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1166:3:57",
@@ -3506,11 +3506,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 14332,
+                  "id": 14630,
                   "name": "newPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14379,
+                  "scope": 14677,
                   "src": "1180:12:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3519,7 +3519,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14331,
+                    "id": 14629,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1180:3:57",
@@ -3535,16 +3535,16 @@
               "src": "1165:28:57"
             },
             "returnParameters": {
-              "id": 14337,
+              "id": 14635,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14336,
+                  "id": 14634,
                   "name": "assetReturn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14379,
+                  "scope": 14677,
                   "src": "1226:15:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3553,7 +3553,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14335,
+                    "id": 14633,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1226:3:57",
@@ -3568,7 +3568,7 @@
               ],
               "src": "1225:17:57"
             },
-            "scope": 14389,
+            "scope": 14687,
             "src": "1143:857:57",
             "stateMutability": "view",
             "virtual": false,
@@ -3576,29 +3576,29 @@
           },
           {
             "baseFunctions": [
-              14643
+              14941
             ],
             "body": {
-              "id": 14387,
+              "id": 14685,
               "nodeType": "Block",
               "src": "2185:42:57",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 14385,
+                    "id": 14683,
                     "name": "leverageMultiplier",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 14274,
+                    "referencedDeclaration": 14572,
                     "src": "2202:18:57",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     }
                   },
-                  "functionReturnParameters": 14384,
-                  "id": 14386,
+                  "functionReturnParameters": 14682,
+                  "id": 14684,
                   "nodeType": "Return",
                   "src": "2195:25:57"
                 }
@@ -3606,35 +3606,35 @@
             },
             "documentation": null,
             "functionSelector": "2c86d98e",
-            "id": 14388,
+            "id": 14686,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "leverage",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 14381,
+              "id": 14679,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "2147:8:57"
             },
             "parameters": {
-              "id": 14380,
+              "id": 14678,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2135:2:57"
             },
             "returnParameters": {
-              "id": 14384,
+              "id": 14682,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 14383,
+                  "id": 14681,
                   "name": "_leverage",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 14388,
+                  "scope": 14686,
                   "src": "2170:13:57",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3643,7 +3643,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 14382,
+                    "id": 14680,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "2170:3:57",
@@ -3658,14 +3658,14 @@
               ],
               "src": "2169:15:57"
             },
-            "scope": 14389,
+            "scope": 14687,
             "src": "2118:109:57",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 14390,
+        "scope": 14688,
         "src": "249:1980:57"
       }
     ],
@@ -3677,7 +3677,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.718Z",
+  "updatedAt": "2020-08-14T09:32:05.680Z",
   "devdoc": {
     "methods": {
       "addMember(uint256,address)": {

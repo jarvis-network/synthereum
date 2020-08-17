@@ -81,14 +81,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol",
     "exportedSymbols": {
       "TestableTest": [
-        5416
+        5714
       ]
     },
-    "id": 5417,
+    "id": 5715,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5390,
+        "id": 5688,
         "literals": [
           "solidity",
           "^",
@@ -101,10 +101,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol",
         "file": "../implementation/Testable.sol",
-        "id": 5391,
+        "id": 5689,
         "nodeType": "ImportDirective",
-        "scope": 5417,
-        "sourceUnit": 4531,
+        "scope": 5715,
+        "sourceUnit": 4829,
         "src": "25:40:20",
         "symbolAliases": [],
         "unitAlias": ""
@@ -116,44 +116,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5392,
+              "id": 5690,
               "name": "Testable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4530,
+              "referencedDeclaration": 4828,
               "src": "178:8:20",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Testable_$4530",
+                "typeIdentifier": "t_contract$_Testable_$4828",
                 "typeString": "contract Testable"
               }
             },
-            "id": 5393,
+            "id": 5691,
             "nodeType": "InheritanceSpecifier",
             "src": "178:8:20"
           }
         ],
         "contractDependencies": [
-          4530
+          4828
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5416,
+        "id": 5714,
         "linearizedBaseContracts": [
-          5416,
-          4530
+          5714,
+          4828
         ],
         "name": "TestableTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 5401,
+              "id": 5699,
               "nodeType": "Block",
               "src": "293:2:20",
               "statements": []
             },
             "documentation": null,
-            "id": 5402,
+            "id": 5700,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -161,11 +161,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5398,
+                    "id": 5696,
                     "name": "_isTest",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5395,
+                    "referencedDeclaration": 5693,
                     "src": "284:7:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
@@ -173,17 +173,17 @@
                     }
                   }
                 ],
-                "id": 5399,
+                "id": 5697,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5397,
+                  "id": 5695,
                   "name": "Testable",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4530,
+                  "referencedDeclaration": 4828,
                   "src": "275:8:20",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Testable_$4530_$",
+                    "typeIdentifier": "t_type$_t_contract$_Testable_$4828_$",
                     "typeString": "type(contract Testable)"
                   }
                 },
@@ -195,16 +195,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5396,
+              "id": 5694,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5395,
+                  "id": 5693,
                   "name": "_isTest",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5402,
+                  "scope": 5700,
                   "src": "254:12:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -213,7 +213,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5394,
+                    "id": 5692,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "254:4:20",
@@ -229,12 +229,12 @@
               "src": "253:14:20"
             },
             "returnParameters": {
-              "id": 5400,
+              "id": 5698,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "293:0:20"
             },
-            "scope": 5416,
+            "scope": 5714,
             "src": "242:53:20",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -242,7 +242,7 @@
           },
           {
             "body": {
-              "id": 5414,
+              "id": 5712,
               "nodeType": "Block",
               "src": "398:101:20",
               "statements": [
@@ -255,18 +255,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 5409,
+                          "id": 5707,
                           "name": "getCurrentTime",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4529,
+                          "referencedDeclaration": 4827,
                           "src": "470:14:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_uint256_$",
                             "typeString": "function () view returns (uint256)"
                           }
                         },
-                        "id": 5410,
+                        "id": 5708,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -283,7 +283,7 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5411,
+                        "id": 5709,
                         "name": "now",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -295,7 +295,7 @@
                         }
                       }
                     ],
-                    "id": 5412,
+                    "id": 5710,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -308,8 +308,8 @@
                       "typeString": "tuple(uint256,uint256)"
                     }
                   },
-                  "functionReturnParameters": 5408,
-                  "id": 5413,
+                  "functionReturnParameters": 5706,
+                  "id": 5711,
                   "nodeType": "Return",
                   "src": "462:30:20"
                 }
@@ -317,7 +317,7 @@
             },
             "documentation": null,
             "functionSelector": "dc6ff7bd",
-            "id": 5415,
+            "id": 5713,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -325,22 +325,22 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5403,
+              "id": 5701,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "337:2:20"
             },
             "returnParameters": {
-              "id": 5408,
+              "id": 5706,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5405,
+                  "id": 5703,
                   "name": "testableTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5415,
+                  "scope": 5713,
                   "src": "363:17:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -349,7 +349,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5404,
+                    "id": 5702,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "363:4:20",
@@ -363,11 +363,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5407,
+                  "id": 5705,
                   "name": "blockTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5415,
+                  "scope": 5713,
                   "src": "382:14:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -376,7 +376,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5406,
+                    "id": 5704,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "382:4:20",
@@ -391,14 +391,14 @@
               ],
               "src": "362:35:20"
             },
-            "scope": 5416,
+            "scope": 5714,
             "src": "301:198:20",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 5417,
+        "scope": 5715,
         "src": "153:348:20"
       }
     ],
@@ -408,14 +408,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol",
     "exportedSymbols": {
       "TestableTest": [
-        5416
+        5714
       ]
     },
-    "id": 5417,
+    "id": 5715,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5390,
+        "id": 5688,
         "literals": [
           "solidity",
           "^",
@@ -428,10 +428,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol",
         "file": "../implementation/Testable.sol",
-        "id": 5391,
+        "id": 5689,
         "nodeType": "ImportDirective",
-        "scope": 5417,
-        "sourceUnit": 4531,
+        "scope": 5715,
+        "sourceUnit": 4829,
         "src": "25:40:20",
         "symbolAliases": [],
         "unitAlias": ""
@@ -443,44 +443,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5392,
+              "id": 5690,
               "name": "Testable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4530,
+              "referencedDeclaration": 4828,
               "src": "178:8:20",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Testable_$4530",
+                "typeIdentifier": "t_contract$_Testable_$4828",
                 "typeString": "contract Testable"
               }
             },
-            "id": 5393,
+            "id": 5691,
             "nodeType": "InheritanceSpecifier",
             "src": "178:8:20"
           }
         ],
         "contractDependencies": [
-          4530
+          4828
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5416,
+        "id": 5714,
         "linearizedBaseContracts": [
-          5416,
-          4530
+          5714,
+          4828
         ],
         "name": "TestableTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 5401,
+              "id": 5699,
               "nodeType": "Block",
               "src": "293:2:20",
               "statements": []
             },
             "documentation": null,
-            "id": 5402,
+            "id": 5700,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -488,11 +488,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5398,
+                    "id": 5696,
                     "name": "_isTest",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5395,
+                    "referencedDeclaration": 5693,
                     "src": "284:7:20",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
@@ -500,17 +500,17 @@
                     }
                   }
                 ],
-                "id": 5399,
+                "id": 5697,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5397,
+                  "id": 5695,
                   "name": "Testable",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4530,
+                  "referencedDeclaration": 4828,
                   "src": "275:8:20",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Testable_$4530_$",
+                    "typeIdentifier": "t_type$_t_contract$_Testable_$4828_$",
                     "typeString": "type(contract Testable)"
                   }
                 },
@@ -522,16 +522,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5396,
+              "id": 5694,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5395,
+                  "id": 5693,
                   "name": "_isTest",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5402,
+                  "scope": 5700,
                   "src": "254:12:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -540,7 +540,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5394,
+                    "id": 5692,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "254:4:20",
@@ -556,12 +556,12 @@
               "src": "253:14:20"
             },
             "returnParameters": {
-              "id": 5400,
+              "id": 5698,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "293:0:20"
             },
-            "scope": 5416,
+            "scope": 5714,
             "src": "242:53:20",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -569,7 +569,7 @@
           },
           {
             "body": {
-              "id": 5414,
+              "id": 5712,
               "nodeType": "Block",
               "src": "398:101:20",
               "statements": [
@@ -582,18 +582,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 5409,
+                          "id": 5707,
                           "name": "getCurrentTime",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4529,
+                          "referencedDeclaration": 4827,
                           "src": "470:14:20",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_uint256_$",
                             "typeString": "function () view returns (uint256)"
                           }
                         },
-                        "id": 5410,
+                        "id": 5708,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -610,7 +610,7 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5411,
+                        "id": 5709,
                         "name": "now",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -622,7 +622,7 @@
                         }
                       }
                     ],
-                    "id": 5412,
+                    "id": 5710,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -635,8 +635,8 @@
                       "typeString": "tuple(uint256,uint256)"
                     }
                   },
-                  "functionReturnParameters": 5408,
-                  "id": 5413,
+                  "functionReturnParameters": 5706,
+                  "id": 5711,
                   "nodeType": "Return",
                   "src": "462:30:20"
                 }
@@ -644,7 +644,7 @@
             },
             "documentation": null,
             "functionSelector": "dc6ff7bd",
-            "id": 5415,
+            "id": 5713,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -652,22 +652,22 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5403,
+              "id": 5701,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "337:2:20"
             },
             "returnParameters": {
-              "id": 5408,
+              "id": 5706,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5405,
+                  "id": 5703,
                   "name": "testableTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5415,
+                  "scope": 5713,
                   "src": "363:17:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -676,7 +676,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5404,
+                    "id": 5702,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "363:4:20",
@@ -690,11 +690,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5407,
+                  "id": 5705,
                   "name": "blockTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5415,
+                  "scope": 5713,
                   "src": "382:14:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -703,7 +703,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5406,
+                    "id": 5704,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "382:4:20",
@@ -718,14 +718,14 @@
               ],
               "src": "362:35:20"
             },
-            "scope": 5416,
+            "scope": 5714,
             "src": "301:198:20",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 5417,
+        "scope": 5715,
         "src": "153:348:20"
       }
     ],
@@ -737,7 +737,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.284Z",
+  "updatedAt": "2020-08-14T09:32:05.514Z",
   "devdoc": {
     "methods": {
       "setCurrentTime(uint256)": {

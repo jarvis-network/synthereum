@@ -68,14 +68,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/EncryptedStore.sol",
     "exportedSymbols": {
       "EncryptedStore": [
-        9867
+        10165
       ]
     },
-    "id": 9868,
+    "id": 10166,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9809,
+        "id": 10107,
         "literals": [
           "solidity",
           "^",
@@ -91,26 +91,26 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 9810,
+          "id": 10108,
           "nodeType": "StructuredDocumentation",
           "src": "26:437:34",
           "text": "@title Contract for storing keyed encrypted messages via the EVM.\n@dev This contract uses topic hashes as keys and can store a single arbitrary encrypted message per topic at any\ngiven time. Technically, topic hashes and messages do not need to be encrypted, but because\nanyone can read stored messages, this contract is designed to store encrypted messages.\nOnly one message per topic is stored at any given time."
         },
         "fullyImplemented": true,
-        "id": 9867,
+        "id": 10165,
         "linearizedBaseContracts": [
-          9867
+          10165
         ],
         "name": "EncryptedStore",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 9816,
+            "id": 10114,
             "name": "stores",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 9867,
+            "scope": 10165,
             "src": "664:60:34",
             "stateVariable": true,
             "storageLocation": "default",
@@ -119,9 +119,9 @@
               "typeString": "mapping(address => mapping(bytes32 => bytes))"
             },
             "typeName": {
-              "id": 9815,
+              "id": 10113,
               "keyType": {
-                "id": 9811,
+                "id": 10109,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "672:7:34",
@@ -137,9 +137,9 @@
                 "typeString": "mapping(address => mapping(bytes32 => bytes))"
               },
               "valueType": {
-                "id": 9814,
+                "id": 10112,
                 "keyType": {
-                  "id": 9812,
+                  "id": 10110,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "691:7:34",
@@ -155,7 +155,7 @@
                   "typeString": "mapping(bytes32 => bytes)"
                 },
                 "valueType": {
-                  "id": 9813,
+                  "id": 10111,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "702:5:34",
@@ -171,7 +171,7 @@
           },
           {
             "body": {
-              "id": 9832,
+              "id": 10130,
               "nodeType": "Block",
               "src": "1217:47:34",
               "statements": [
@@ -182,25 +182,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 9826,
+                        "id": 10124,
                         "name": "stores",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9816,
+                        "referencedDeclaration": 10114,
                         "src": "1234:6:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_bytes32_$_t_bytes_storage_$_$",
                           "typeString": "mapping(address => mapping(bytes32 => bytes storage ref))"
                         }
                       },
-                      "id": 9828,
+                      "id": 10126,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9827,
+                        "id": 10125,
                         "name": "user",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9819,
+                        "referencedDeclaration": 10117,
                         "src": "1241:4:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -218,14 +218,14 @@
                         "typeString": "mapping(bytes32 => bytes storage ref)"
                       }
                     },
-                    "id": 9830,
+                    "id": 10128,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 9829,
+                      "id": 10127,
                       "name": "topicHash",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9821,
+                      "referencedDeclaration": 10119,
                       "src": "1247:9:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -243,21 +243,21 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "functionReturnParameters": 9825,
-                  "id": 9831,
+                  "functionReturnParameters": 10123,
+                  "id": 10129,
                   "nodeType": "Return",
                   "src": "1227:30:34"
                 }
               ]
             },
             "documentation": {
-              "id": 9817,
+              "id": 10115,
               "nodeType": "StructuredDocumentation",
               "src": "731:391:34",
               "text": "@notice Gets the current stored message corresponding to `user` and `topicHash`.\n@dev To decrypt messages (this requires access to the owner's private keys), use the decryptMessage()\nfunction in common/Crypto.js.\n@param user address that stored this message.\n@param topicHash hash of the \"subject\" of the message.\n@return stored message."
             },
             "functionSelector": "ef74e0ac",
-            "id": 9833,
+            "id": 10131,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -265,16 +265,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9822,
+              "id": 10120,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9819,
+                  "id": 10117,
                   "name": "user",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9833,
+                  "scope": 10131,
                   "src": "1147:12:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -283,7 +283,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9818,
+                    "id": 10116,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1147:7:34",
@@ -298,11 +298,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 9821,
+                  "id": 10119,
                   "name": "topicHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9833,
+                  "scope": 10131,
                   "src": "1161:17:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -311,7 +311,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9820,
+                    "id": 10118,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1161:7:34",
@@ -327,16 +327,16 @@
               "src": "1146:33:34"
             },
             "returnParameters": {
-              "id": 9825,
+              "id": 10123,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9824,
+                  "id": 10122,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9833,
+                  "scope": 10131,
                   "src": "1203:12:34",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -345,7 +345,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 9823,
+                    "id": 10121,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1203:5:34",
@@ -360,7 +360,7 @@
               ],
               "src": "1202:14:34"
             },
-            "scope": 9867,
+            "scope": 10165,
             "src": "1127:137:34",
             "stateMutability": "view",
             "virtual": false,
@@ -368,14 +368,14 @@
           },
           {
             "body": {
-              "id": 9850,
+              "id": 10148,
               "nodeType": "Block",
               "src": "1731:56:34",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9848,
+                    "id": 10146,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -386,23 +386,23 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 9841,
+                          "id": 10139,
                           "name": "stores",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 9816,
+                          "referencedDeclaration": 10114,
                           "src": "1741:6:34",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_bytes32_$_t_bytes_storage_$_$",
                             "typeString": "mapping(address => mapping(bytes32 => bytes storage ref))"
                           }
                         },
-                        "id": 9845,
+                        "id": 10143,
                         "indexExpression": {
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 9842,
+                            "id": 10140,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -413,7 +413,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 9843,
+                          "id": 10141,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -438,14 +438,14 @@
                           "typeString": "mapping(bytes32 => bytes storage ref)"
                         }
                       },
-                      "id": 9846,
+                      "id": 10144,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9844,
+                        "id": 10142,
                         "name": "topicHash",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9836,
+                        "referencedDeclaration": 10134,
                         "src": "1760:9:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -467,11 +467,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 9847,
+                      "id": 10145,
                       "name": "message",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9838,
+                      "referencedDeclaration": 10136,
                       "src": "1773:7:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -484,20 +484,20 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 9849,
+                  "id": 10147,
                   "nodeType": "ExpressionStatement",
                   "src": "1741:39:34"
                 }
               ]
             },
             "documentation": {
-              "id": 9834,
+              "id": 10132,
               "nodeType": "StructuredDocumentation",
               "src": "1270:386:34",
               "text": "@notice Stores a `message` categorized by a particular `topicHash`. This will overwrite the\nprevious messages sent by this caller with this `topicHash`.\n@dev To construct an encrypted message, use the encryptMessage() in common/Crypto.js.\n@param topicHash hash of the \"subject\" or \"topic\" of the message.\n@param message the stored message."
             },
             "functionSelector": "09aa37ba",
-            "id": 9851,
+            "id": 10149,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -505,16 +505,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9839,
+              "id": 10137,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9836,
+                  "id": 10134,
                   "name": "topicHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9851,
+                  "scope": 10149,
                   "src": "1683:17:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -523,7 +523,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9835,
+                    "id": 10133,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1683:7:34",
@@ -537,11 +537,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 9838,
+                  "id": 10136,
                   "name": "message",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9851,
+                  "scope": 10149,
                   "src": "1702:20:34",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -550,7 +550,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 9837,
+                    "id": 10135,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1702:5:34",
@@ -566,12 +566,12 @@
               "src": "1682:41:34"
             },
             "returnParameters": {
-              "id": 9840,
+              "id": 10138,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1731:0:34"
             },
-            "scope": 9867,
+            "scope": 10165,
             "src": "1661:126:34",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -579,14 +579,14 @@
           },
           {
             "body": {
-              "id": 9865,
+              "id": 10163,
               "nodeType": "Block",
               "src": "2012:53:34",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9863,
+                    "id": 10161,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -601,23 +601,23 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 9857,
+                          "id": 10155,
                           "name": "stores",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 9816,
+                          "referencedDeclaration": 10114,
                           "src": "2029:6:34",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_bytes32_$_t_bytes_storage_$_$",
                             "typeString": "mapping(address => mapping(bytes32 => bytes storage ref))"
                           }
                         },
-                        "id": 9860,
+                        "id": 10158,
                         "indexExpression": {
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 9858,
+                            "id": 10156,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -628,7 +628,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 9859,
+                          "id": 10157,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -653,14 +653,14 @@
                           "typeString": "mapping(bytes32 => bytes storage ref)"
                         }
                       },
-                      "id": 9862,
+                      "id": 10160,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9861,
+                        "id": 10159,
                         "name": "topicHash",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9854,
+                        "referencedDeclaration": 10152,
                         "src": "2048:9:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -683,20 +683,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9864,
+                  "id": 10162,
                   "nodeType": "ExpressionStatement",
                   "src": "2022:36:34"
                 }
               ]
             },
             "documentation": {
-              "id": 9852,
+              "id": 10150,
               "nodeType": "StructuredDocumentation",
               "src": "1793:165:34",
               "text": "@notice Removes a stored message categorized by a particular `topicHash`.\n@param topicHash hash of the \"subject\" or \"topic\" of the message."
             },
             "functionSelector": "40dd4b22",
-            "id": 9866,
+            "id": 10164,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -704,16 +704,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9855,
+              "id": 10153,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9854,
+                  "id": 10152,
                   "name": "topicHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9866,
+                  "scope": 10164,
                   "src": "1986:17:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -722,7 +722,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9853,
+                    "id": 10151,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1986:7:34",
@@ -738,19 +738,19 @@
               "src": "1985:19:34"
             },
             "returnParameters": {
-              "id": 9856,
+              "id": 10154,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2012:0:34"
             },
-            "scope": 9867,
+            "scope": 10165,
             "src": "1963:102:34",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 9868,
+        "scope": 10166,
         "src": "464:1603:34"
       }
     ],
@@ -760,14 +760,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/EncryptedStore.sol",
     "exportedSymbols": {
       "EncryptedStore": [
-        9867
+        10165
       ]
     },
-    "id": 9868,
+    "id": 10166,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9809,
+        "id": 10107,
         "literals": [
           "solidity",
           "^",
@@ -783,26 +783,26 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 9810,
+          "id": 10108,
           "nodeType": "StructuredDocumentation",
           "src": "26:437:34",
           "text": "@title Contract for storing keyed encrypted messages via the EVM.\n@dev This contract uses topic hashes as keys and can store a single arbitrary encrypted message per topic at any\ngiven time. Technically, topic hashes and messages do not need to be encrypted, but because\nanyone can read stored messages, this contract is designed to store encrypted messages.\nOnly one message per topic is stored at any given time."
         },
         "fullyImplemented": true,
-        "id": 9867,
+        "id": 10165,
         "linearizedBaseContracts": [
-          9867
+          10165
         ],
         "name": "EncryptedStore",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 9816,
+            "id": 10114,
             "name": "stores",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 9867,
+            "scope": 10165,
             "src": "664:60:34",
             "stateVariable": true,
             "storageLocation": "default",
@@ -811,9 +811,9 @@
               "typeString": "mapping(address => mapping(bytes32 => bytes))"
             },
             "typeName": {
-              "id": 9815,
+              "id": 10113,
               "keyType": {
-                "id": 9811,
+                "id": 10109,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "672:7:34",
@@ -829,9 +829,9 @@
                 "typeString": "mapping(address => mapping(bytes32 => bytes))"
               },
               "valueType": {
-                "id": 9814,
+                "id": 10112,
                 "keyType": {
-                  "id": 9812,
+                  "id": 10110,
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "691:7:34",
@@ -847,7 +847,7 @@
                   "typeString": "mapping(bytes32 => bytes)"
                 },
                 "valueType": {
-                  "id": 9813,
+                  "id": 10111,
                   "name": "bytes",
                   "nodeType": "ElementaryTypeName",
                   "src": "702:5:34",
@@ -863,7 +863,7 @@
           },
           {
             "body": {
-              "id": 9832,
+              "id": 10130,
               "nodeType": "Block",
               "src": "1217:47:34",
               "statements": [
@@ -874,25 +874,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 9826,
+                        "id": 10124,
                         "name": "stores",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9816,
+                        "referencedDeclaration": 10114,
                         "src": "1234:6:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_bytes32_$_t_bytes_storage_$_$",
                           "typeString": "mapping(address => mapping(bytes32 => bytes storage ref))"
                         }
                       },
-                      "id": 9828,
+                      "id": 10126,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9827,
+                        "id": 10125,
                         "name": "user",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9819,
+                        "referencedDeclaration": 10117,
                         "src": "1241:4:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -910,14 +910,14 @@
                         "typeString": "mapping(bytes32 => bytes storage ref)"
                       }
                     },
-                    "id": 9830,
+                    "id": 10128,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 9829,
+                      "id": 10127,
                       "name": "topicHash",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9821,
+                      "referencedDeclaration": 10119,
                       "src": "1247:9:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -935,21 +935,21 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "functionReturnParameters": 9825,
-                  "id": 9831,
+                  "functionReturnParameters": 10123,
+                  "id": 10129,
                   "nodeType": "Return",
                   "src": "1227:30:34"
                 }
               ]
             },
             "documentation": {
-              "id": 9817,
+              "id": 10115,
               "nodeType": "StructuredDocumentation",
               "src": "731:391:34",
               "text": "@notice Gets the current stored message corresponding to `user` and `topicHash`.\n@dev To decrypt messages (this requires access to the owner's private keys), use the decryptMessage()\nfunction in common/Crypto.js.\n@param user address that stored this message.\n@param topicHash hash of the \"subject\" of the message.\n@return stored message."
             },
             "functionSelector": "ef74e0ac",
-            "id": 9833,
+            "id": 10131,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -957,16 +957,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9822,
+              "id": 10120,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9819,
+                  "id": 10117,
                   "name": "user",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9833,
+                  "scope": 10131,
                   "src": "1147:12:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -975,7 +975,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9818,
+                    "id": 10116,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1147:7:34",
@@ -990,11 +990,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 9821,
+                  "id": 10119,
                   "name": "topicHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9833,
+                  "scope": 10131,
                   "src": "1161:17:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1003,7 +1003,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9820,
+                    "id": 10118,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1161:7:34",
@@ -1019,16 +1019,16 @@
               "src": "1146:33:34"
             },
             "returnParameters": {
-              "id": 9825,
+              "id": 10123,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9824,
+                  "id": 10122,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9833,
+                  "scope": 10131,
                   "src": "1203:12:34",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1037,7 +1037,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 9823,
+                    "id": 10121,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1203:5:34",
@@ -1052,7 +1052,7 @@
               ],
               "src": "1202:14:34"
             },
-            "scope": 9867,
+            "scope": 10165,
             "src": "1127:137:34",
             "stateMutability": "view",
             "virtual": false,
@@ -1060,14 +1060,14 @@
           },
           {
             "body": {
-              "id": 9850,
+              "id": 10148,
               "nodeType": "Block",
               "src": "1731:56:34",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9848,
+                    "id": 10146,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1078,23 +1078,23 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 9841,
+                          "id": 10139,
                           "name": "stores",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 9816,
+                          "referencedDeclaration": 10114,
                           "src": "1741:6:34",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_bytes32_$_t_bytes_storage_$_$",
                             "typeString": "mapping(address => mapping(bytes32 => bytes storage ref))"
                           }
                         },
-                        "id": 9845,
+                        "id": 10143,
                         "indexExpression": {
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 9842,
+                            "id": 10140,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -1105,7 +1105,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 9843,
+                          "id": 10141,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1130,14 +1130,14 @@
                           "typeString": "mapping(bytes32 => bytes storage ref)"
                         }
                       },
-                      "id": 9846,
+                      "id": 10144,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9844,
+                        "id": 10142,
                         "name": "topicHash",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9836,
+                        "referencedDeclaration": 10134,
                         "src": "1760:9:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1159,11 +1159,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 9847,
+                      "id": 10145,
                       "name": "message",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9838,
+                      "referencedDeclaration": 10136,
                       "src": "1773:7:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_memory_ptr",
@@ -1176,20 +1176,20 @@
                       "typeString": "bytes storage ref"
                     }
                   },
-                  "id": 9849,
+                  "id": 10147,
                   "nodeType": "ExpressionStatement",
                   "src": "1741:39:34"
                 }
               ]
             },
             "documentation": {
-              "id": 9834,
+              "id": 10132,
               "nodeType": "StructuredDocumentation",
               "src": "1270:386:34",
               "text": "@notice Stores a `message` categorized by a particular `topicHash`. This will overwrite the\nprevious messages sent by this caller with this `topicHash`.\n@dev To construct an encrypted message, use the encryptMessage() in common/Crypto.js.\n@param topicHash hash of the \"subject\" or \"topic\" of the message.\n@param message the stored message."
             },
             "functionSelector": "09aa37ba",
-            "id": 9851,
+            "id": 10149,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1197,16 +1197,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9839,
+              "id": 10137,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9836,
+                  "id": 10134,
                   "name": "topicHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9851,
+                  "scope": 10149,
                   "src": "1683:17:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1215,7 +1215,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9835,
+                    "id": 10133,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1683:7:34",
@@ -1229,11 +1229,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 9838,
+                  "id": 10136,
                   "name": "message",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9851,
+                  "scope": 10149,
                   "src": "1702:20:34",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1242,7 +1242,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 9837,
+                    "id": 10135,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1702:5:34",
@@ -1258,12 +1258,12 @@
               "src": "1682:41:34"
             },
             "returnParameters": {
-              "id": 9840,
+              "id": 10138,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1731:0:34"
             },
-            "scope": 9867,
+            "scope": 10165,
             "src": "1661:126:34",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1271,14 +1271,14 @@
           },
           {
             "body": {
-              "id": 9865,
+              "id": 10163,
               "nodeType": "Block",
               "src": "2012:53:34",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 9863,
+                    "id": 10161,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1293,23 +1293,23 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 9857,
+                          "id": 10155,
                           "name": "stores",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 9816,
+                          "referencedDeclaration": 10114,
                           "src": "2029:6:34",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_bytes32_$_t_bytes_storage_$_$",
                             "typeString": "mapping(address => mapping(bytes32 => bytes storage ref))"
                           }
                         },
-                        "id": 9860,
+                        "id": 10158,
                         "indexExpression": {
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 9858,
+                            "id": 10156,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -1320,7 +1320,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 9859,
+                          "id": 10157,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1345,14 +1345,14 @@
                           "typeString": "mapping(bytes32 => bytes storage ref)"
                         }
                       },
-                      "id": 9862,
+                      "id": 10160,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 9861,
+                        "id": 10159,
                         "name": "topicHash",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 9854,
+                        "referencedDeclaration": 10152,
                         "src": "2048:9:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1375,20 +1375,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 9864,
+                  "id": 10162,
                   "nodeType": "ExpressionStatement",
                   "src": "2022:36:34"
                 }
               ]
             },
             "documentation": {
-              "id": 9852,
+              "id": 10150,
               "nodeType": "StructuredDocumentation",
               "src": "1793:165:34",
               "text": "@notice Removes a stored message categorized by a particular `topicHash`.\n@param topicHash hash of the \"subject\" or \"topic\" of the message."
             },
             "functionSelector": "40dd4b22",
-            "id": 9866,
+            "id": 10164,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1396,16 +1396,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 9855,
+              "id": 10153,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9854,
+                  "id": 10152,
                   "name": "topicHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 9866,
+                  "scope": 10164,
                   "src": "1986:17:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1414,7 +1414,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 9853,
+                    "id": 10151,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1986:7:34",
@@ -1430,19 +1430,19 @@
               "src": "1985:19:34"
             },
             "returnParameters": {
-              "id": 9856,
+              "id": 10154,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2012:0:34"
             },
-            "scope": 9867,
+            "scope": 10165,
             "src": "1963:102:34",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 9868,
+        "scope": 10166,
         "src": "464:1603:34"
       }
     ],
@@ -1454,7 +1454,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.536Z",
+  "updatedAt": "2020-08-14T09:32:05.607Z",
   "devdoc": {
     "details": "This contract uses topic hashes as keys and can store a single arbitrary encrypted message per topic at any given time. Technically, topic hashes and messages do not need to be encrypted, but because anyone can read stored messages, this contract is designed to store encrypted messages. Only one message per topic is stored at any given time.",
     "methods": {

@@ -88,14 +88,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol",
     "exportedSymbols": {
       "VoteTimingTest": [
-        13696
+        13994
       ]
     },
-    "id": 13697,
+    "id": 13995,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13640,
+        "id": 13938,
         "literals": [
           "solidity",
           "^",
@@ -108,10 +108,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
         "file": "../../interfaces/VotingInterface.sol",
-        "id": 13641,
+        "id": 13939,
         "nodeType": "ImportDirective",
-        "scope": 13697,
-        "sourceUnit": 13986,
+        "scope": 13995,
+        "sourceUnit": 14284,
         "src": "25:46:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -119,10 +119,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol",
         "file": "../VoteTiming.sol",
-        "id": 13642,
+        "id": 13940,
         "nodeType": "ImportDirective",
-        "scope": 13697,
-        "sourceUnit": 11702,
+        "scope": 13995,
+        "sourceUnit": 12000,
         "src": "72:27:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -134,24 +134,24 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 13696,
+        "id": 13994,
         "linearizedBaseContracts": [
-          13696
+          13994
         ],
         "name": "VoteTimingTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 13645,
+            "id": 13943,
             "libraryName": {
               "contractScope": null,
-              "id": 13643,
+              "id": 13941,
               "name": "VoteTiming",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11701,
+              "referencedDeclaration": 11999,
               "src": "192:10:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_VoteTiming_$11701",
+                "typeIdentifier": "t_contract$_VoteTiming_$11999",
                 "typeString": "library VoteTiming"
               }
             },
@@ -159,13 +159,13 @@
             "src": "186:37:48",
             "typeName": {
               "contractScope": null,
-              "id": 13644,
+              "id": 13942,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11596,
+              "referencedDeclaration": 11894,
               "src": "207:15:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11596_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             }
@@ -173,27 +173,27 @@
           {
             "constant": false,
             "functionSelector": "71b7db53",
-            "id": 13647,
+            "id": 13945,
             "name": "voteTiming",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 13696,
+            "scope": 13994,
             "src": "229:33:48",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Data_$11596_storage",
+              "typeIdentifier": "t_struct$_Data_$11894_storage",
               "typeString": "struct VoteTiming.Data"
             },
             "typeName": {
               "contractScope": null,
-              "id": 13646,
+              "id": 13944,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11596,
+              "referencedDeclaration": 11894,
               "src": "229:15:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11596_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             },
@@ -202,7 +202,7 @@
           },
           {
             "body": {
-              "id": 13656,
+              "id": 13954,
               "nodeType": "Block",
               "src": "306:38:48",
               "statements": [
@@ -212,11 +212,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13653,
+                        "id": 13951,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13649,
+                        "referencedDeclaration": 13947,
                         "src": "325:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -231,18 +231,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 13652,
+                      "id": 13950,
                       "name": "wrapInit",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13695,
+                      "referencedDeclaration": 13993,
                       "src": "316:8:48",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$returns$__$",
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 13654,
+                    "id": 13952,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -257,14 +257,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13655,
+                  "id": 13953,
                   "nodeType": "ExpressionStatement",
                   "src": "316:21:48"
                 }
               ]
             },
             "documentation": null,
-            "id": 13657,
+            "id": 13955,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -272,16 +272,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13650,
+              "id": 13948,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13649,
+                  "id": 13947,
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13657,
+                  "scope": 13955,
                   "src": "281:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -290,7 +290,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13648,
+                    "id": 13946,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "281:4:48",
@@ -306,12 +306,12 @@
               "src": "280:18:48"
             },
             "returnParameters": {
-              "id": 13651,
+              "id": 13949,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "306:0:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "269:75:48",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -319,7 +319,7 @@
           },
           {
             "body": {
-              "id": 13669,
+              "id": 13967,
               "nodeType": "Block",
               "src": "432:69:48",
               "statements": [
@@ -329,11 +329,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13666,
+                        "id": 13964,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13659,
+                        "referencedDeclaration": 13957,
                         "src": "482:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -350,32 +350,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13664,
+                        "id": 13962,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13647,
+                        "referencedDeclaration": 13945,
                         "src": "449:10:48",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11596_storage",
+                          "typeIdentifier": "t_struct$_Data_$11894_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13665,
+                      "id": 13963,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentRoundId",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11640,
+                      "referencedDeclaration": 11938,
                       "src": "449:32:48",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11596_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$11596_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (uint256)"
                       }
                     },
-                    "id": 13667,
+                    "id": 13965,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -390,8 +390,8 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 13663,
-                  "id": 13668,
+                  "functionReturnParameters": 13961,
+                  "id": 13966,
                   "nodeType": "Return",
                   "src": "442:52:48"
                 }
@@ -399,7 +399,7 @@
             },
             "documentation": null,
             "functionSelector": "29e4b013",
-            "id": 13670,
+            "id": 13968,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -407,16 +407,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13660,
+              "id": 13958,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13659,
+                  "id": 13957,
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13670,
+                  "scope": 13968,
                   "src": "385:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -425,7 +425,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13658,
+                    "id": 13956,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "385:4:48",
@@ -441,16 +441,16 @@
               "src": "384:18:48"
             },
             "returnParameters": {
-              "id": 13663,
+              "id": 13961,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13662,
+                  "id": 13960,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13670,
+                  "scope": 13968,
                   "src": "426:4:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -459,7 +459,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13661,
+                    "id": 13959,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "426:4:48",
@@ -474,7 +474,7 @@
               ],
               "src": "425:6:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "350:151:48",
             "stateMutability": "view",
             "virtual": false,
@@ -482,7 +482,7 @@
           },
           {
             "body": {
-              "id": 13682,
+              "id": 13980,
               "nodeType": "Block",
               "src": "604:67:48",
               "statements": [
@@ -492,11 +492,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13679,
+                        "id": 13977,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13672,
+                        "referencedDeclaration": 13970,
                         "src": "652:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -513,32 +513,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13677,
+                        "id": 13975,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13647,
+                        "referencedDeclaration": 13945,
                         "src": "621:10:48",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11596_storage",
+                          "typeIdentifier": "t_struct$_Data_$11894_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13678,
+                      "id": 13976,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentPhase",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11700,
+                      "referencedDeclaration": 11998,
                       "src": "621:30:48",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11596_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$13916_$bound_to$_t_struct$_Data_$11596_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$14214_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (enum VotingInterface.Phase)"
                       }
                     },
-                    "id": 13680,
+                    "id": 13978,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -549,12 +549,12 @@
                     "src": "621:43:48",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$13916",
+                      "typeIdentifier": "t_enum$_Phase_$14214",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
-                  "functionReturnParameters": 13676,
-                  "id": 13681,
+                  "functionReturnParameters": 13974,
+                  "id": 13979,
                   "nodeType": "Return",
                   "src": "614:50:48"
                 }
@@ -562,7 +562,7 @@
             },
             "documentation": null,
             "functionSelector": "d9336ea4",
-            "id": 13683,
+            "id": 13981,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -570,16 +570,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13673,
+              "id": 13971,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13672,
+                  "id": 13970,
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13683,
+                  "scope": 13981,
                   "src": "540:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -588,7 +588,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13671,
+                    "id": 13969,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "540:4:48",
@@ -604,32 +604,32 @@
               "src": "539:18:48"
             },
             "returnParameters": {
-              "id": 13676,
+              "id": 13974,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13675,
+                  "id": 13973,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13683,
+                  "scope": 13981,
                   "src": "581:21:48",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Phase_$13916",
+                    "typeIdentifier": "t_enum$_Phase_$14214",
                     "typeString": "enum VotingInterface.Phase"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13674,
+                    "id": 13972,
                     "name": "VotingInterface.Phase",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13916,
+                    "referencedDeclaration": 14214,
                     "src": "581:21:48",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$13916",
+                      "typeIdentifier": "t_enum$_Phase_$14214",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
@@ -639,7 +639,7 @@
               ],
               "src": "580:23:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "507:164:48",
             "stateMutability": "view",
             "virtual": false,
@@ -647,7 +647,7 @@
           },
           {
             "body": {
-              "id": 13694,
+              "id": 13992,
               "nodeType": "Block",
               "src": "720:45:48",
               "statements": [
@@ -657,11 +657,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13691,
+                        "id": 13989,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13685,
+                        "referencedDeclaration": 13983,
                         "src": "746:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -678,32 +678,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13688,
+                        "id": 13986,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13647,
+                        "referencedDeclaration": 13945,
                         "src": "730:10:48",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11596_storage",
+                          "typeIdentifier": "t_struct$_Data_$11894_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13690,
+                      "id": 13988,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "init",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11611,
+                      "referencedDeclaration": 11909,
                       "src": "730:15:48",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$11596_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$11596_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256)"
                       }
                     },
-                    "id": 13692,
+                    "id": 13990,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -718,7 +718,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13693,
+                  "id": 13991,
                   "nodeType": "ExpressionStatement",
                   "src": "730:28:48"
                 }
@@ -726,7 +726,7 @@
             },
             "documentation": null,
             "functionSelector": "44d8ce9a",
-            "id": 13695,
+            "id": 13993,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -734,16 +734,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13686,
+              "id": 13984,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13685,
+                  "id": 13983,
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13695,
+                  "scope": 13993,
                   "src": "695:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -752,7 +752,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13684,
+                    "id": 13982,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "695:4:48",
@@ -768,19 +768,19 @@
               "src": "694:18:48"
             },
             "returnParameters": {
-              "id": 13687,
+              "id": 13985,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "720:0:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "677:88:48",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 13697,
+        "scope": 13995,
         "src": "156:611:48"
       }
     ],
@@ -790,14 +790,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol",
     "exportedSymbols": {
       "VoteTimingTest": [
-        13696
+        13994
       ]
     },
-    "id": 13697,
+    "id": 13995,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13640,
+        "id": 13938,
         "literals": [
           "solidity",
           "^",
@@ -810,10 +810,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
         "file": "../../interfaces/VotingInterface.sol",
-        "id": 13641,
+        "id": 13939,
         "nodeType": "ImportDirective",
-        "scope": 13697,
-        "sourceUnit": 13986,
+        "scope": 13995,
+        "sourceUnit": 14284,
         "src": "25:46:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -821,10 +821,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol",
         "file": "../VoteTiming.sol",
-        "id": 13642,
+        "id": 13940,
         "nodeType": "ImportDirective",
-        "scope": 13697,
-        "sourceUnit": 11702,
+        "scope": 13995,
+        "sourceUnit": 12000,
         "src": "72:27:48",
         "symbolAliases": [],
         "unitAlias": ""
@@ -836,24 +836,24 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 13696,
+        "id": 13994,
         "linearizedBaseContracts": [
-          13696
+          13994
         ],
         "name": "VoteTimingTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 13645,
+            "id": 13943,
             "libraryName": {
               "contractScope": null,
-              "id": 13643,
+              "id": 13941,
               "name": "VoteTiming",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11701,
+              "referencedDeclaration": 11999,
               "src": "192:10:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_VoteTiming_$11701",
+                "typeIdentifier": "t_contract$_VoteTiming_$11999",
                 "typeString": "library VoteTiming"
               }
             },
@@ -861,13 +861,13 @@
             "src": "186:37:48",
             "typeName": {
               "contractScope": null,
-              "id": 13644,
+              "id": 13942,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11596,
+              "referencedDeclaration": 11894,
               "src": "207:15:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11596_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             }
@@ -875,27 +875,27 @@
           {
             "constant": false,
             "functionSelector": "71b7db53",
-            "id": 13647,
+            "id": 13945,
             "name": "voteTiming",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 13696,
+            "scope": 13994,
             "src": "229:33:48",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Data_$11596_storage",
+              "typeIdentifier": "t_struct$_Data_$11894_storage",
               "typeString": "struct VoteTiming.Data"
             },
             "typeName": {
               "contractScope": null,
-              "id": 13646,
+              "id": 13944,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11596,
+              "referencedDeclaration": 11894,
               "src": "229:15:48",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11596_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             },
@@ -904,7 +904,7 @@
           },
           {
             "body": {
-              "id": 13656,
+              "id": 13954,
               "nodeType": "Block",
               "src": "306:38:48",
               "statements": [
@@ -914,11 +914,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13653,
+                        "id": 13951,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13649,
+                        "referencedDeclaration": 13947,
                         "src": "325:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -933,18 +933,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 13652,
+                      "id": 13950,
                       "name": "wrapInit",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13695,
+                      "referencedDeclaration": 13993,
                       "src": "316:8:48",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$returns$__$",
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 13654,
+                    "id": 13952,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -959,14 +959,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13655,
+                  "id": 13953,
                   "nodeType": "ExpressionStatement",
                   "src": "316:21:48"
                 }
               ]
             },
             "documentation": null,
-            "id": 13657,
+            "id": 13955,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -974,16 +974,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13650,
+              "id": 13948,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13649,
+                  "id": 13947,
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13657,
+                  "scope": 13955,
                   "src": "281:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -992,7 +992,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13648,
+                    "id": 13946,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "281:4:48",
@@ -1008,12 +1008,12 @@
               "src": "280:18:48"
             },
             "returnParameters": {
-              "id": 13651,
+              "id": 13949,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "306:0:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "269:75:48",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1021,7 +1021,7 @@
           },
           {
             "body": {
-              "id": 13669,
+              "id": 13967,
               "nodeType": "Block",
               "src": "432:69:48",
               "statements": [
@@ -1031,11 +1031,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13666,
+                        "id": 13964,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13659,
+                        "referencedDeclaration": 13957,
                         "src": "482:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1052,32 +1052,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13664,
+                        "id": 13962,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13647,
+                        "referencedDeclaration": 13945,
                         "src": "449:10:48",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11596_storage",
+                          "typeIdentifier": "t_struct$_Data_$11894_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13665,
+                      "id": 13963,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentRoundId",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11640,
+                      "referencedDeclaration": 11938,
                       "src": "449:32:48",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11596_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$11596_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (uint256)"
                       }
                     },
-                    "id": 13667,
+                    "id": 13965,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1092,8 +1092,8 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 13663,
-                  "id": 13668,
+                  "functionReturnParameters": 13961,
+                  "id": 13966,
                   "nodeType": "Return",
                   "src": "442:52:48"
                 }
@@ -1101,7 +1101,7 @@
             },
             "documentation": null,
             "functionSelector": "29e4b013",
-            "id": 13670,
+            "id": 13968,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1109,16 +1109,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13660,
+              "id": 13958,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13659,
+                  "id": 13957,
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13670,
+                  "scope": 13968,
                   "src": "385:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1127,7 +1127,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13658,
+                    "id": 13956,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "385:4:48",
@@ -1143,16 +1143,16 @@
               "src": "384:18:48"
             },
             "returnParameters": {
-              "id": 13663,
+              "id": 13961,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13662,
+                  "id": 13960,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13670,
+                  "scope": 13968,
                   "src": "426:4:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1161,7 +1161,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13661,
+                    "id": 13959,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "426:4:48",
@@ -1176,7 +1176,7 @@
               ],
               "src": "425:6:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "350:151:48",
             "stateMutability": "view",
             "virtual": false,
@@ -1184,7 +1184,7 @@
           },
           {
             "body": {
-              "id": 13682,
+              "id": 13980,
               "nodeType": "Block",
               "src": "604:67:48",
               "statements": [
@@ -1194,11 +1194,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13679,
+                        "id": 13977,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13672,
+                        "referencedDeclaration": 13970,
                         "src": "652:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1215,32 +1215,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13677,
+                        "id": 13975,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13647,
+                        "referencedDeclaration": 13945,
                         "src": "621:10:48",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11596_storage",
+                          "typeIdentifier": "t_struct$_Data_$11894_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13678,
+                      "id": 13976,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentPhase",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11700,
+                      "referencedDeclaration": 11998,
                       "src": "621:30:48",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11596_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$13916_$bound_to$_t_struct$_Data_$11596_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$14214_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (enum VotingInterface.Phase)"
                       }
                     },
-                    "id": 13680,
+                    "id": 13978,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1251,12 +1251,12 @@
                     "src": "621:43:48",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$13916",
+                      "typeIdentifier": "t_enum$_Phase_$14214",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
-                  "functionReturnParameters": 13676,
-                  "id": 13681,
+                  "functionReturnParameters": 13974,
+                  "id": 13979,
                   "nodeType": "Return",
                   "src": "614:50:48"
                 }
@@ -1264,7 +1264,7 @@
             },
             "documentation": null,
             "functionSelector": "d9336ea4",
-            "id": 13683,
+            "id": 13981,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1272,16 +1272,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13673,
+              "id": 13971,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13672,
+                  "id": 13970,
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13683,
+                  "scope": 13981,
                   "src": "540:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1290,7 +1290,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13671,
+                    "id": 13969,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "540:4:48",
@@ -1306,32 +1306,32 @@
               "src": "539:18:48"
             },
             "returnParameters": {
-              "id": 13676,
+              "id": 13974,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13675,
+                  "id": 13973,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13683,
+                  "scope": 13981,
                   "src": "581:21:48",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Phase_$13916",
+                    "typeIdentifier": "t_enum$_Phase_$14214",
                     "typeString": "enum VotingInterface.Phase"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13674,
+                    "id": 13972,
                     "name": "VotingInterface.Phase",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13916,
+                    "referencedDeclaration": 14214,
                     "src": "581:21:48",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$13916",
+                      "typeIdentifier": "t_enum$_Phase_$14214",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
@@ -1341,7 +1341,7 @@
               ],
               "src": "580:23:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "507:164:48",
             "stateMutability": "view",
             "virtual": false,
@@ -1349,7 +1349,7 @@
           },
           {
             "body": {
-              "id": 13694,
+              "id": 13992,
               "nodeType": "Block",
               "src": "720:45:48",
               "statements": [
@@ -1359,11 +1359,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13691,
+                        "id": 13989,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13685,
+                        "referencedDeclaration": 13983,
                         "src": "746:11:48",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1380,32 +1380,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13688,
+                        "id": 13986,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13647,
+                        "referencedDeclaration": 13945,
                         "src": "730:10:48",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11596_storage",
+                          "typeIdentifier": "t_struct$_Data_$11894_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13690,
+                      "id": 13988,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "init",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11611,
+                      "referencedDeclaration": 11909,
                       "src": "730:15:48",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$11596_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$11596_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256)"
                       }
                     },
-                    "id": 13692,
+                    "id": 13990,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1420,7 +1420,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13693,
+                  "id": 13991,
                   "nodeType": "ExpressionStatement",
                   "src": "730:28:48"
                 }
@@ -1428,7 +1428,7 @@
             },
             "documentation": null,
             "functionSelector": "44d8ce9a",
-            "id": 13695,
+            "id": 13993,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1436,16 +1436,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13686,
+              "id": 13984,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13685,
+                  "id": 13983,
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13695,
+                  "scope": 13993,
                   "src": "695:16:48",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1454,7 +1454,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13684,
+                    "id": 13982,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "695:4:48",
@@ -1470,19 +1470,19 @@
               "src": "694:18:48"
             },
             "returnParameters": {
-              "id": 13687,
+              "id": 13985,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "720:0:48"
             },
-            "scope": 13696,
+            "scope": 13994,
             "src": "677:88:48",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 13697,
+        "scope": 13995,
         "src": "156:611:48"
       }
     ],
@@ -1494,7 +1494,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.687Z",
+  "updatedAt": "2020-08-14T09:32:05.668Z",
   "devdoc": {
     "methods": {}
   },

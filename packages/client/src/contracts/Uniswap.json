@@ -32,14 +32,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/Uniswap.sol",
     "exportedSymbols": {
       "Uniswap": [
-        4699
+        4997
       ]
     },
-    "id": 4700,
+    "id": 4998,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4691,
+        "id": 4989,
         "literals": [
           "solidity",
           "^",
@@ -55,15 +55,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 4692,
+          "id": 4990,
           "nodeType": "StructuredDocumentation",
           "src": "26:146:17",
           "text": "@title Interface for Uniswap v2.\n@dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
         },
         "fullyImplemented": true,
-        "id": 4699,
+        "id": 4997,
         "linearizedBaseContracts": [
-          4699
+          4997
         ],
         "name": "Uniswap",
         "nodeType": "ContractDefinition",
@@ -71,21 +71,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 4698,
+            "id": 4996,
             "name": "Sync",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4697,
+              "id": 4995,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4694,
+                  "id": 4992,
                   "indexed": false,
                   "name": "reserve0",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4698,
+                  "scope": 4996,
                   "src": "300:16:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -94,7 +94,7 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4693,
+                    "id": 4991,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
                     "src": "300:7:17",
@@ -108,12 +108,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4696,
+                  "id": 4994,
                   "indexed": false,
                   "name": "reserve1",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4698,
+                  "scope": 4996,
                   "src": "318:16:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -122,7 +122,7 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4695,
+                    "id": 4993,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
                     "src": "318:7:17",
@@ -140,7 +140,7 @@
             "src": "289:47:17"
           }
         ],
-        "scope": 4700,
+        "scope": 4998,
         "src": "173:165:17"
       }
     ],
@@ -150,14 +150,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/Uniswap.sol",
     "exportedSymbols": {
       "Uniswap": [
-        4699
+        4997
       ]
     },
-    "id": 4700,
+    "id": 4998,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4691,
+        "id": 4989,
         "literals": [
           "solidity",
           "^",
@@ -173,15 +173,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 4692,
+          "id": 4990,
           "nodeType": "StructuredDocumentation",
           "src": "26:146:17",
           "text": "@title Interface for Uniswap v2.\n@dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
         },
         "fullyImplemented": true,
-        "id": 4699,
+        "id": 4997,
         "linearizedBaseContracts": [
-          4699
+          4997
         ],
         "name": "Uniswap",
         "nodeType": "ContractDefinition",
@@ -189,21 +189,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 4698,
+            "id": 4996,
             "name": "Sync",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4697,
+              "id": 4995,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4694,
+                  "id": 4992,
                   "indexed": false,
                   "name": "reserve0",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4698,
+                  "scope": 4996,
                   "src": "300:16:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -212,7 +212,7 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4693,
+                    "id": 4991,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
                     "src": "300:7:17",
@@ -226,12 +226,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4696,
+                  "id": 4994,
                   "indexed": false,
                   "name": "reserve1",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4698,
+                  "scope": 4996,
                   "src": "318:16:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -240,7 +240,7 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4695,
+                    "id": 4993,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
                     "src": "318:7:17",
@@ -258,7 +258,7 @@
             "src": "289:47:17"
           }
         ],
-        "scope": 4700,
+        "scope": 4998,
         "src": "173:165:17"
       }
     ],
@@ -270,7 +270,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.254Z",
+  "updatedAt": "2020-08-14T09:32:05.498Z",
   "devdoc": {
     "details": "This only contains the methods/events that we use in our contracts or offchain infrastructure.",
     "methods": {},

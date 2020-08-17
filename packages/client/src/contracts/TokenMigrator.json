@@ -125,14 +125,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/TokenMigrator.sol",
     "exportedSymbols": {
       "TokenMigrator": [
-        11585
+        11883
       ]
     },
-    "id": 11586,
+    "id": 11884,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11463,
+        "id": 11761,
         "literals": [
           "solidity",
           "^",
@@ -143,7 +143,7 @@
         "src": "0:23:42"
       },
       {
-        "id": 11464,
+        "id": 11762,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -154,10 +154,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 11465,
+        "id": 11763,
         "nodeType": "ImportDirective",
-        "scope": 11586,
-        "sourceUnit": 3945,
+        "scope": 11884,
+        "sourceUnit": 4243,
         "src": "60:52:42",
         "symbolAliases": [],
         "unitAlias": ""
@@ -165,10 +165,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol",
         "file": "../../common/interfaces/ExpandedIERC20.sol",
-        "id": 11466,
+        "id": 11764,
         "nodeType": "ImportDirective",
-        "scope": 11586,
-        "sourceUnit": 4690,
+        "scope": 11884,
+        "sourceUnit": 4988,
         "src": "113:52:42",
         "symbolAliases": [],
         "unitAlias": ""
@@ -176,10 +176,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/drafts/ERC20Snapshot.sol",
         "file": "@openzeppelin/contracts/drafts/ERC20Snapshot.sol",
-        "id": 11467,
+        "id": 11765,
         "nodeType": "ImportDirective",
-        "scope": 11586,
-        "sourceUnit": 19522,
+        "scope": 11884,
+        "sourceUnit": 19820,
         "src": "166:58:42",
         "symbolAliases": [],
         "unitAlias": ""
@@ -190,30 +190,30 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 11468,
+          "id": 11766,
           "nodeType": "StructuredDocumentation",
           "src": "227:122:42",
           "text": "@title Migration contract for VotingTokens.\n@dev Handles migrating token holders from one token to the next."
         },
         "fullyImplemented": true,
-        "id": 11585,
+        "id": 11883,
         "linearizedBaseContracts": [
-          11585
+          11883
         ],
         "name": "TokenMigrator",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 11471,
+            "id": 11769,
             "libraryName": {
               "contractScope": null,
-              "id": 11469,
+              "id": 11767,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3944,
+              "referencedDeclaration": 4242,
               "src": "385:10:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FixedPoint_$3944",
+                "typeIdentifier": "t_contract$_FixedPoint_$4242",
                 "typeString": "library FixedPoint"
               }
             },
@@ -221,13 +221,13 @@
             "src": "379:41:42",
             "typeName": {
               "contractScope": null,
-              "id": 11470,
+              "id": 11768,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3259,
+              "referencedDeclaration": 3557,
               "src": "400:19:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             }
@@ -235,27 +235,27 @@
           {
             "constant": false,
             "functionSelector": "b31c710a",
-            "id": 11473,
+            "id": 11771,
             "name": "oldToken",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "566:29:42",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+              "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
               "typeString": "contract ERC20Snapshot"
             },
             "typeName": {
               "contractScope": null,
-              "id": 11472,
+              "id": 11770,
               "name": "ERC20Snapshot",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19521,
+              "referencedDeclaration": 19819,
               "src": "566:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                 "typeString": "contract ERC20Snapshot"
               }
             },
@@ -265,27 +265,27 @@
           {
             "constant": false,
             "functionSelector": "c42bd05a",
-            "id": 11475,
+            "id": 11773,
             "name": "newToken",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "601:30:42",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+              "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
               "typeString": "contract ExpandedIERC20"
             },
             "typeName": {
               "contractScope": null,
-              "id": 11474,
+              "id": 11772,
               "name": "ExpandedIERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4689,
+              "referencedDeclaration": 4987,
               "src": "601:14:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                 "typeString": "contract ExpandedIERC20"
               }
             },
@@ -295,11 +295,11 @@
           {
             "constant": false,
             "functionSelector": "2ddc79b7",
-            "id": 11477,
+            "id": 11775,
             "name": "snapshotId",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "638:22:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -308,7 +308,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 11476,
+              "id": 11774,
               "name": "uint",
               "nodeType": "ElementaryTypeName",
               "src": "638:4:42",
@@ -323,27 +323,27 @@
           {
             "constant": false,
             "functionSelector": "2c4e722e",
-            "id": 11479,
+            "id": 11777,
             "name": "rate",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "666:31:42",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
               "contractScope": null,
-              "id": 11478,
+              "id": 11776,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3259,
+              "referencedDeclaration": 3557,
               "src": "666:19:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -353,11 +353,11 @@
           {
             "constant": false,
             "functionSelector": "d7625c88",
-            "id": 11483,
+            "id": 11781,
             "name": "hasMigrated",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "704:43:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -366,9 +366,9 @@
               "typeString": "mapping(address => bool)"
             },
             "typeName": {
-              "id": 11482,
+              "id": 11780,
               "keyType": {
-                "id": 11480,
+                "id": 11778,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "712:7:42",
@@ -384,7 +384,7 @@
                 "typeString": "mapping(address => bool)"
               },
               "valueType": {
-                "id": 11481,
+                "id": 11779,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
                 "src": "723:4:42",
@@ -399,7 +399,7 @@
           },
           {
             "body": {
-              "id": 11522,
+              "id": 11820,
               "nodeType": "Block",
               "src": "1214:347:42",
               "statements": [
@@ -413,7 +413,7 @@
                           {
                             "argumentTypes": null,
                             "hexValue": "30",
-                            "id": 11496,
+                            "id": 11794,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -438,32 +438,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11494,
+                            "id": 11792,
                             "name": "_rate",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11486,
+                            "referencedDeclaration": 11784,
                             "src": "1376:5:42",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                              "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                               "typeString": "struct FixedPoint.Unsigned memory"
                             }
                           },
-                          "id": 11495,
+                          "id": 11793,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "isGreaterThan",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3347,
+                          "referencedDeclaration": 3645,
                           "src": "1376:19:42",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3259_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3259_memory_ptr_$",
+                            "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3557_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3557_memory_ptr_$",
                             "typeString": "function (struct FixedPoint.Unsigned memory,uint256) pure returns (bool)"
                           }
                         },
-                        "id": 11497,
+                        "id": 11795,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -486,7 +486,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 11493,
+                      "id": 11791,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -500,7 +500,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 11498,
+                    "id": 11796,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -515,28 +515,28 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11499,
+                  "id": 11797,
                   "nodeType": "ExpressionStatement",
                   "src": "1368:31:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11502,
+                    "id": 11800,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11500,
+                      "id": 11798,
                       "name": "rate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11479,
+                      "referencedDeclaration": 11777,
                       "src": "1409:4:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                         "typeString": "struct FixedPoint.Unsigned storage ref"
                       }
                     },
@@ -544,45 +544,45 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 11501,
+                      "id": 11799,
                       "name": "_rate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11486,
+                      "referencedDeclaration": 11784,
                       "src": "1416:5:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                         "typeString": "struct FixedPoint.Unsigned memory"
                       }
                     },
                     "src": "1409:12:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "id": 11503,
+                  "id": 11801,
                   "nodeType": "ExpressionStatement",
                   "src": "1409:12:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11508,
+                    "id": 11806,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11504,
+                      "id": 11802,
                       "name": "newToken",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11475,
+                      "referencedDeclaration": 11773,
                       "src": "1431:8:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                         "typeString": "contract ExpandedIERC20"
                       }
                     },
@@ -593,11 +593,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 11506,
+                          "id": 11804,
                           "name": "_newToken",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11490,
+                          "referencedDeclaration": 11788,
                           "src": "1457:9:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -612,18 +612,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 11505,
+                        "id": 11803,
                         "name": "ExpandedIERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4689,
+                        "referencedDeclaration": 4987,
                         "src": "1442:14:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ExpandedIERC20_$4689_$",
+                          "typeIdentifier": "t_type$_t_contract$_ExpandedIERC20_$4987_$",
                           "typeString": "type(contract ExpandedIERC20)"
                         }
                       },
-                      "id": 11507,
+                      "id": 11805,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -634,38 +634,38 @@
                       "src": "1442:25:42",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                         "typeString": "contract ExpandedIERC20"
                       }
                     },
                     "src": "1431:36:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                      "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                       "typeString": "contract ExpandedIERC20"
                     }
                   },
-                  "id": 11509,
+                  "id": 11807,
                   "nodeType": "ExpressionStatement",
                   "src": "1431:36:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11514,
+                    "id": 11812,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11510,
+                      "id": 11808,
                       "name": "oldToken",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11473,
+                      "referencedDeclaration": 11771,
                       "src": "1477:8:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                         "typeString": "contract ERC20Snapshot"
                       }
                     },
@@ -676,11 +676,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 11512,
+                          "id": 11810,
                           "name": "_oldToken",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11488,
+                          "referencedDeclaration": 11786,
                           "src": "1502:9:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -695,18 +695,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 11511,
+                        "id": 11809,
                         "name": "ERC20Snapshot",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 19521,
+                        "referencedDeclaration": 19819,
                         "src": "1488:13:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ERC20Snapshot_$19521_$",
+                          "typeIdentifier": "t_type$_t_contract$_ERC20Snapshot_$19819_$",
                           "typeString": "type(contract ERC20Snapshot)"
                         }
                       },
-                      "id": 11513,
+                      "id": 11811,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -717,35 +717,35 @@
                       "src": "1488:24:42",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                         "typeString": "contract ERC20Snapshot"
                       }
                     },
                     "src": "1477:35:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                      "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                       "typeString": "contract ERC20Snapshot"
                     }
                   },
-                  "id": 11515,
+                  "id": 11813,
                   "nodeType": "ExpressionStatement",
                   "src": "1477:35:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11520,
+                    "id": 11818,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11516,
+                      "id": 11814,
                       "name": "snapshotId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11477,
+                      "referencedDeclaration": 11775,
                       "src": "1522:10:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -761,32 +761,32 @@
                         "argumentTypes": [],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 11517,
+                          "id": 11815,
                           "name": "oldToken",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11473,
+                          "referencedDeclaration": 11771,
                           "src": "1535:8:42",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                            "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                             "typeString": "contract ERC20Snapshot"
                           }
                         },
-                        "id": 11518,
+                        "id": 11816,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "snapshot",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 19253,
+                        "referencedDeclaration": 19551,
                         "src": "1535:17:42",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_nonpayable$__$returns$_t_uint256_$",
                           "typeString": "function () external returns (uint256)"
                         }
                       },
-                      "id": 11519,
+                      "id": 11817,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -807,19 +807,19 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 11521,
+                  "id": 11819,
                   "nodeType": "ExpressionStatement",
                   "src": "1522:32:42"
                 }
               ]
             },
             "documentation": {
-              "id": 11484,
+              "id": 11782,
               "nodeType": "StructuredDocumentation",
               "src": "754:364:42",
               "text": "@notice Construct the TokenMigrator contract.\n@dev This function triggers the snapshot upon which all migrations will be based.\n@param _rate the number of old tokens it takes to generate one new token.\n@param _oldToken address of the token being migrated from.\n@param _newToken address of the token being migrated to."
             },
-            "id": 11523,
+            "id": 11821,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -827,32 +827,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11491,
+              "id": 11789,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11486,
+                  "id": 11784,
                   "name": "_rate",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11523,
+                  "scope": 11821,
                   "src": "1135:32:42",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 11485,
+                    "id": 11783,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3259,
+                    "referencedDeclaration": 3557,
                     "src": "1135:19:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -861,11 +861,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 11488,
+                  "id": 11786,
                   "name": "_oldToken",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11523,
+                  "scope": 11821,
                   "src": "1169:17:42",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -874,7 +874,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11487,
+                    "id": 11785,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1169:7:42",
@@ -889,11 +889,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 11490,
+                  "id": 11788,
                   "name": "_newToken",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11523,
+                  "scope": 11821,
                   "src": "1188:17:42",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -902,7 +902,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11489,
+                    "id": 11787,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1188:7:42",
@@ -919,12 +919,12 @@
               "src": "1134:72:42"
             },
             "returnParameters": {
-              "id": 11492,
+              "id": 11790,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1214:0:42"
             },
-            "scope": 11585,
+            "scope": 11883,
             "src": "1123:438:42",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -932,7 +932,7 @@
           },
           {
             "body": {
-              "id": 11583,
+              "id": 11881,
               "nodeType": "Block",
               "src": "1974:463:42",
               "statements": [
@@ -942,7 +942,7 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11533,
+                        "id": 11831,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -955,25 +955,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 11530,
+                            "id": 11828,
                             "name": "hasMigrated",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11483,
+                            "referencedDeclaration": 11781,
                             "src": "1993:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                               "typeString": "mapping(address => bool)"
                             }
                           },
-                          "id": 11532,
+                          "id": 11830,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 11531,
+                            "id": 11829,
                             "name": "tokenHolder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11526,
+                            "referencedDeclaration": 11824,
                             "src": "2005:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -999,7 +999,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "416c7265616479206d6967726174656420746f6b656e73",
-                        "id": 11534,
+                        "id": 11832,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1026,7 +1026,7 @@
                           "typeString": "literal_string \"Already migrated tokens\""
                         }
                       ],
-                      "id": 11529,
+                      "id": 11827,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1040,7 +1040,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 11535,
+                    "id": 11833,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1055,14 +1055,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11536,
+                  "id": 11834,
                   "nodeType": "ExpressionStatement",
                   "src": "1984:61:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11541,
+                    "id": 11839,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1071,25 +1071,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 11537,
+                        "id": 11835,
                         "name": "hasMigrated",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11483,
+                        "referencedDeclaration": 11781,
                         "src": "2055:11:42",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                           "typeString": "mapping(address => bool)"
                         }
                       },
-                      "id": 11539,
+                      "id": 11837,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 11538,
+                        "id": 11836,
                         "name": "tokenHolder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11526,
+                        "referencedDeclaration": 11824,
                         "src": "2067:11:42",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1112,7 +1112,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "74727565",
-                      "id": 11540,
+                      "id": 11838,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1133,38 +1133,38 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 11542,
+                  "id": 11840,
                   "nodeType": "ExpressionStatement",
                   "src": "2055:31:42"
                 },
                 {
                   "assignments": [
-                    11546
+                    11844
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11546,
+                      "id": 11844,
                       "name": "oldBalance",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11583,
+                      "scope": 11881,
                       "src": "2097:37:42",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                         "typeString": "struct FixedPoint.Unsigned"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11545,
+                        "id": 11843,
                         "name": "FixedPoint.Unsigned",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 3259,
+                        "referencedDeclaration": 3557,
                         "src": "2097:19:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                           "typeString": "struct FixedPoint.Unsigned"
                         }
                       },
@@ -1172,7 +1172,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11555,
+                  "id": 11853,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -1181,11 +1181,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 11551,
+                            "id": 11849,
                             "name": "tokenHolder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11526,
+                            "referencedDeclaration": 11824,
                             "src": "2178:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1194,11 +1194,11 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 11552,
+                            "id": 11850,
                             "name": "snapshotId",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11477,
+                            "referencedDeclaration": 11775,
                             "src": "2191:10:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1219,32 +1219,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11549,
+                            "id": 11847,
                             "name": "oldToken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11473,
+                            "referencedDeclaration": 11771,
                             "src": "2157:8:42",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                              "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                               "typeString": "contract ERC20Snapshot"
                             }
                           },
-                          "id": 11550,
+                          "id": 11848,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "balanceOfAt",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 19281,
+                          "referencedDeclaration": 19579,
                           "src": "2157:20:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_address_$_t_uint256_$returns$_t_uint256_$",
                             "typeString": "function (address,uint256) view external returns (uint256)"
                           }
                         },
-                        "id": 11553,
+                        "id": 11851,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1269,32 +1269,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 11547,
+                        "id": 11845,
                         "name": "FixedPoint",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3944,
+                        "referencedDeclaration": 4242,
                         "src": "2137:10:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_FixedPoint_$3944_$",
+                          "typeIdentifier": "t_type$_t_contract$_FixedPoint_$4242_$",
                           "typeString": "type(library FixedPoint)"
                         }
                       },
-                      "id": 11548,
+                      "id": 11846,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "Unsigned",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3259,
+                      "referencedDeclaration": 3557,
                       "src": "2137:19:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_struct$_Unsigned_$3259_storage_ptr_$",
+                        "typeIdentifier": "t_type$_t_struct$_Unsigned_$3557_storage_ptr_$",
                         "typeString": "type(struct FixedPoint.Unsigned storage pointer)"
                       }
                     },
-                    "id": 11554,
+                    "id": 11852,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1305,7 +1305,7 @@
                     "src": "2137:66:42",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_memory",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_memory",
                       "typeString": "struct FixedPoint.Unsigned memory"
                     }
                   },
@@ -1315,7 +1315,7 @@
                 {
                   "condition": {
                     "argumentTypes": null,
-                    "id": 11560,
+                    "id": 11858,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1330,7 +1330,7 @@
                         {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 11558,
+                          "id": 11856,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1355,32 +1355,32 @@
                         ],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 11556,
+                          "id": 11854,
                           "name": "oldBalance",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11546,
+                          "referencedDeclaration": 11844,
                           "src": "2219:10:42",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                            "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                             "typeString": "struct FixedPoint.Unsigned memory"
                           }
                         },
-                        "id": 11557,
+                        "id": 11855,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "isGreaterThan",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 3347,
+                        "referencedDeclaration": 3645,
                         "src": "2219:24:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3259_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3259_memory_ptr_$",
+                          "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3557_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3557_memory_ptr_$",
                           "typeString": "function (struct FixedPoint.Unsigned memory,uint256) pure returns (bool)"
                         }
                       },
-                      "id": 11559,
+                      "id": 11857,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1401,18 +1401,18 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 11563,
+                  "id": 11861,
                   "nodeType": "IfStatement",
                   "src": "2214:65:42",
                   "trueBody": {
-                    "id": 11562,
+                    "id": 11860,
                     "nodeType": "Block",
                     "src": "2248:31:42",
                     "statements": [
                       {
                         "expression": null,
-                        "functionReturnParameters": 11528,
-                        "id": 11561,
+                        "functionReturnParameters": 11826,
+                        "id": 11859,
                         "nodeType": "Return",
                         "src": "2262:7:42"
                       }
@@ -1421,32 +1421,32 @@
                 },
                 {
                   "assignments": [
-                    11567
+                    11865
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11567,
+                      "id": 11865,
                       "name": "newBalance",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11583,
+                      "scope": 11881,
                       "src": "2289:37:42",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                         "typeString": "struct FixedPoint.Unsigned"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11566,
+                        "id": 11864,
                         "name": "FixedPoint.Unsigned",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 3259,
+                        "referencedDeclaration": 3557,
                         "src": "2289:19:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                           "typeString": "struct FixedPoint.Unsigned"
                         }
                       },
@@ -1454,20 +1454,20 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11572,
+                  "id": 11870,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11570,
+                        "id": 11868,
                         "name": "rate",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11479,
+                        "referencedDeclaration": 11777,
                         "src": "2344:4:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                           "typeString": "struct FixedPoint.Unsigned storage ref"
                         }
                       }
@@ -1475,38 +1475,38 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                           "typeString": "struct FixedPoint.Unsigned storage ref"
                         }
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 11568,
+                        "id": 11866,
                         "name": "oldBalance",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11546,
+                        "referencedDeclaration": 11844,
                         "src": "2329:10:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                           "typeString": "struct FixedPoint.Unsigned memory"
                         }
                       },
-                      "id": 11569,
+                      "id": 11867,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "div",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3797,
+                      "referencedDeclaration": 4095,
                       "src": "2329:14:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3259_memory_ptr_$_t_struct$_Unsigned_$3259_memory_ptr_$returns$_t_struct$_Unsigned_$3259_memory_ptr_$bound_to$_t_struct$_Unsigned_$3259_memory_ptr_$",
+                        "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3557_memory_ptr_$_t_struct$_Unsigned_$3557_memory_ptr_$returns$_t_struct$_Unsigned_$3557_memory_ptr_$bound_to$_t_struct$_Unsigned_$3557_memory_ptr_$",
                         "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                       }
                     },
-                    "id": 11571,
+                    "id": 11869,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1517,7 +1517,7 @@
                     "src": "2329:20:42",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                       "typeString": "struct FixedPoint.Unsigned memory"
                     }
                   },
@@ -1533,11 +1533,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 11576,
+                            "id": 11874,
                             "name": "tokenHolder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11526,
+                            "referencedDeclaration": 11824,
                             "src": "2381:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1548,25 +1548,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 11577,
+                              "id": 11875,
                               "name": "newBalance",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11567,
+                              "referencedDeclaration": 11865,
                               "src": "2394:10:42",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                                "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                                 "typeString": "struct FixedPoint.Unsigned memory"
                               }
                             },
-                            "id": 11578,
+                            "id": 11876,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "rawValue",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3258,
+                            "referencedDeclaration": 3556,
                             "src": "2394:19:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1587,32 +1587,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11574,
+                            "id": 11872,
                             "name": "newToken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11475,
+                            "referencedDeclaration": 11773,
                             "src": "2367:8:42",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                              "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                               "typeString": "contract ExpandedIERC20"
                             }
                           },
-                          "id": 11575,
+                          "id": 11873,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "mint",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4688,
+                          "referencedDeclaration": 4986,
                           "src": "2367:13:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
                             "typeString": "function (address,uint256) external returns (bool)"
                           }
                         },
-                        "id": 11579,
+                        "id": 11877,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1630,7 +1630,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4d696e74206661696c6564",
-                        "id": 11580,
+                        "id": 11878,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1657,7 +1657,7 @@
                           "typeString": "literal_string \"Mint failed\""
                         }
                       ],
-                      "id": 11573,
+                      "id": 11871,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1671,7 +1671,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 11581,
+                    "id": 11879,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1686,20 +1686,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11582,
+                  "id": 11880,
                   "nodeType": "ExpressionStatement",
                   "src": "2359:71:42"
                 }
               ]
             },
             "documentation": {
-              "id": 11524,
+              "id": 11822,
               "nodeType": "StructuredDocumentation",
               "src": "1567:349:42",
               "text": "@notice Migrates the tokenHolder's old tokens to new tokens.\n@dev This function can only be called once per `tokenHolder`. Anyone can call this method\non behalf of any other token holder since there is no disadvantage to receiving the tokens earlier.\n@param tokenHolder address of the token holder to migrate."
             },
             "functionSelector": "c1684711",
-            "id": 11584,
+            "id": 11882,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1707,16 +1707,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11527,
+              "id": 11825,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11526,
+                  "id": 11824,
                   "name": "tokenHolder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11584,
+                  "scope": 11882,
                   "src": "1944:19:42",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1725,7 +1725,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11525,
+                    "id": 11823,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1944:7:42",
@@ -1742,19 +1742,19 @@
               "src": "1943:21:42"
             },
             "returnParameters": {
-              "id": 11528,
+              "id": 11826,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1974:0:42"
             },
-            "scope": 11585,
+            "scope": 11883,
             "src": "1921:516:42",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 11586,
+        "scope": 11884,
         "src": "350:2089:42"
       }
     ],
@@ -1764,14 +1764,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/TokenMigrator.sol",
     "exportedSymbols": {
       "TokenMigrator": [
-        11585
+        11883
       ]
     },
-    "id": 11586,
+    "id": 11884,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11463,
+        "id": 11761,
         "literals": [
           "solidity",
           "^",
@@ -1782,7 +1782,7 @@
         "src": "0:23:42"
       },
       {
-        "id": 11464,
+        "id": 11762,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -1793,10 +1793,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 11465,
+        "id": 11763,
         "nodeType": "ImportDirective",
-        "scope": 11586,
-        "sourceUnit": 3945,
+        "scope": 11884,
+        "sourceUnit": 4243,
         "src": "60:52:42",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1804,10 +1804,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol",
         "file": "../../common/interfaces/ExpandedIERC20.sol",
-        "id": 11466,
+        "id": 11764,
         "nodeType": "ImportDirective",
-        "scope": 11586,
-        "sourceUnit": 4690,
+        "scope": 11884,
+        "sourceUnit": 4988,
         "src": "113:52:42",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1815,10 +1815,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/drafts/ERC20Snapshot.sol",
         "file": "@openzeppelin/contracts/drafts/ERC20Snapshot.sol",
-        "id": 11467,
+        "id": 11765,
         "nodeType": "ImportDirective",
-        "scope": 11586,
-        "sourceUnit": 19522,
+        "scope": 11884,
+        "sourceUnit": 19820,
         "src": "166:58:42",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1829,30 +1829,30 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 11468,
+          "id": 11766,
           "nodeType": "StructuredDocumentation",
           "src": "227:122:42",
           "text": "@title Migration contract for VotingTokens.\n@dev Handles migrating token holders from one token to the next."
         },
         "fullyImplemented": true,
-        "id": 11585,
+        "id": 11883,
         "linearizedBaseContracts": [
-          11585
+          11883
         ],
         "name": "TokenMigrator",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 11471,
+            "id": 11769,
             "libraryName": {
               "contractScope": null,
-              "id": 11469,
+              "id": 11767,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3944,
+              "referencedDeclaration": 4242,
               "src": "385:10:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FixedPoint_$3944",
+                "typeIdentifier": "t_contract$_FixedPoint_$4242",
                 "typeString": "library FixedPoint"
               }
             },
@@ -1860,13 +1860,13 @@
             "src": "379:41:42",
             "typeName": {
               "contractScope": null,
-              "id": 11470,
+              "id": 11768,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3259,
+              "referencedDeclaration": 3557,
               "src": "400:19:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             }
@@ -1874,27 +1874,27 @@
           {
             "constant": false,
             "functionSelector": "b31c710a",
-            "id": 11473,
+            "id": 11771,
             "name": "oldToken",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "566:29:42",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+              "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
               "typeString": "contract ERC20Snapshot"
             },
             "typeName": {
               "contractScope": null,
-              "id": 11472,
+              "id": 11770,
               "name": "ERC20Snapshot",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 19521,
+              "referencedDeclaration": 19819,
               "src": "566:13:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                 "typeString": "contract ERC20Snapshot"
               }
             },
@@ -1904,27 +1904,27 @@
           {
             "constant": false,
             "functionSelector": "c42bd05a",
-            "id": 11475,
+            "id": 11773,
             "name": "newToken",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "601:30:42",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+              "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
               "typeString": "contract ExpandedIERC20"
             },
             "typeName": {
               "contractScope": null,
-              "id": 11474,
+              "id": 11772,
               "name": "ExpandedIERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4689,
+              "referencedDeclaration": 4987,
               "src": "601:14:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                 "typeString": "contract ExpandedIERC20"
               }
             },
@@ -1934,11 +1934,11 @@
           {
             "constant": false,
             "functionSelector": "2ddc79b7",
-            "id": 11477,
+            "id": 11775,
             "name": "snapshotId",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "638:22:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1947,7 +1947,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 11476,
+              "id": 11774,
               "name": "uint",
               "nodeType": "ElementaryTypeName",
               "src": "638:4:42",
@@ -1962,27 +1962,27 @@
           {
             "constant": false,
             "functionSelector": "2c4e722e",
-            "id": 11479,
+            "id": 11777,
             "name": "rate",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "666:31:42",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
               "contractScope": null,
-              "id": 11478,
+              "id": 11776,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3259,
+              "referencedDeclaration": 3557,
               "src": "666:19:42",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -1992,11 +1992,11 @@
           {
             "constant": false,
             "functionSelector": "d7625c88",
-            "id": 11483,
+            "id": 11781,
             "name": "hasMigrated",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11585,
+            "scope": 11883,
             "src": "704:43:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2005,9 +2005,9 @@
               "typeString": "mapping(address => bool)"
             },
             "typeName": {
-              "id": 11482,
+              "id": 11780,
               "keyType": {
-                "id": 11480,
+                "id": 11778,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "712:7:42",
@@ -2023,7 +2023,7 @@
                 "typeString": "mapping(address => bool)"
               },
               "valueType": {
-                "id": 11481,
+                "id": 11779,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
                 "src": "723:4:42",
@@ -2038,7 +2038,7 @@
           },
           {
             "body": {
-              "id": 11522,
+              "id": 11820,
               "nodeType": "Block",
               "src": "1214:347:42",
               "statements": [
@@ -2052,7 +2052,7 @@
                           {
                             "argumentTypes": null,
                             "hexValue": "30",
-                            "id": 11496,
+                            "id": 11794,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -2077,32 +2077,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11494,
+                            "id": 11792,
                             "name": "_rate",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11486,
+                            "referencedDeclaration": 11784,
                             "src": "1376:5:42",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                              "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                               "typeString": "struct FixedPoint.Unsigned memory"
                             }
                           },
-                          "id": 11495,
+                          "id": 11793,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "isGreaterThan",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3347,
+                          "referencedDeclaration": 3645,
                           "src": "1376:19:42",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3259_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3259_memory_ptr_$",
+                            "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3557_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3557_memory_ptr_$",
                             "typeString": "function (struct FixedPoint.Unsigned memory,uint256) pure returns (bool)"
                           }
                         },
-                        "id": 11497,
+                        "id": 11795,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2125,7 +2125,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 11493,
+                      "id": 11791,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -2139,7 +2139,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 11498,
+                    "id": 11796,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2154,28 +2154,28 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11499,
+                  "id": 11797,
                   "nodeType": "ExpressionStatement",
                   "src": "1368:31:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11502,
+                    "id": 11800,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11500,
+                      "id": 11798,
                       "name": "rate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11479,
+                      "referencedDeclaration": 11777,
                       "src": "1409:4:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                         "typeString": "struct FixedPoint.Unsigned storage ref"
                       }
                     },
@@ -2183,45 +2183,45 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 11501,
+                      "id": 11799,
                       "name": "_rate",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11486,
+                      "referencedDeclaration": 11784,
                       "src": "1416:5:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                         "typeString": "struct FixedPoint.Unsigned memory"
                       }
                     },
                     "src": "1409:12:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "id": 11503,
+                  "id": 11801,
                   "nodeType": "ExpressionStatement",
                   "src": "1409:12:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11508,
+                    "id": 11806,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11504,
+                      "id": 11802,
                       "name": "newToken",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11475,
+                      "referencedDeclaration": 11773,
                       "src": "1431:8:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                         "typeString": "contract ExpandedIERC20"
                       }
                     },
@@ -2232,11 +2232,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 11506,
+                          "id": 11804,
                           "name": "_newToken",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11490,
+                          "referencedDeclaration": 11788,
                           "src": "1457:9:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2251,18 +2251,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 11505,
+                        "id": 11803,
                         "name": "ExpandedIERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4689,
+                        "referencedDeclaration": 4987,
                         "src": "1442:14:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ExpandedIERC20_$4689_$",
+                          "typeIdentifier": "t_type$_t_contract$_ExpandedIERC20_$4987_$",
                           "typeString": "type(contract ExpandedIERC20)"
                         }
                       },
-                      "id": 11507,
+                      "id": 11805,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2273,38 +2273,38 @@
                       "src": "1442:25:42",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                        "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                         "typeString": "contract ExpandedIERC20"
                       }
                     },
                     "src": "1431:36:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                      "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                       "typeString": "contract ExpandedIERC20"
                     }
                   },
-                  "id": 11509,
+                  "id": 11807,
                   "nodeType": "ExpressionStatement",
                   "src": "1431:36:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11514,
+                    "id": 11812,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11510,
+                      "id": 11808,
                       "name": "oldToken",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11473,
+                      "referencedDeclaration": 11771,
                       "src": "1477:8:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                         "typeString": "contract ERC20Snapshot"
                       }
                     },
@@ -2315,11 +2315,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 11512,
+                          "id": 11810,
                           "name": "_oldToken",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11488,
+                          "referencedDeclaration": 11786,
                           "src": "1502:9:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2334,18 +2334,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 11511,
+                        "id": 11809,
                         "name": "ERC20Snapshot",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 19521,
+                        "referencedDeclaration": 19819,
                         "src": "1488:13:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ERC20Snapshot_$19521_$",
+                          "typeIdentifier": "t_type$_t_contract$_ERC20Snapshot_$19819_$",
                           "typeString": "type(contract ERC20Snapshot)"
                         }
                       },
-                      "id": 11513,
+                      "id": 11811,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2356,35 +2356,35 @@
                       "src": "1488:24:42",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                        "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                         "typeString": "contract ERC20Snapshot"
                       }
                     },
                     "src": "1477:35:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                      "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                       "typeString": "contract ERC20Snapshot"
                     }
                   },
-                  "id": 11515,
+                  "id": 11813,
                   "nodeType": "ExpressionStatement",
                   "src": "1477:35:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11520,
+                    "id": 11818,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11516,
+                      "id": 11814,
                       "name": "snapshotId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11477,
+                      "referencedDeclaration": 11775,
                       "src": "1522:10:42",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2400,32 +2400,32 @@
                         "argumentTypes": [],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 11517,
+                          "id": 11815,
                           "name": "oldToken",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11473,
+                          "referencedDeclaration": 11771,
                           "src": "1535:8:42",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                            "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                             "typeString": "contract ERC20Snapshot"
                           }
                         },
-                        "id": 11518,
+                        "id": 11816,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "snapshot",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 19253,
+                        "referencedDeclaration": 19551,
                         "src": "1535:17:42",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_nonpayable$__$returns$_t_uint256_$",
                           "typeString": "function () external returns (uint256)"
                         }
                       },
-                      "id": 11519,
+                      "id": 11817,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2446,19 +2446,19 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 11521,
+                  "id": 11819,
                   "nodeType": "ExpressionStatement",
                   "src": "1522:32:42"
                 }
               ]
             },
             "documentation": {
-              "id": 11484,
+              "id": 11782,
               "nodeType": "StructuredDocumentation",
               "src": "754:364:42",
               "text": "@notice Construct the TokenMigrator contract.\n@dev This function triggers the snapshot upon which all migrations will be based.\n@param _rate the number of old tokens it takes to generate one new token.\n@param _oldToken address of the token being migrated from.\n@param _newToken address of the token being migrated to."
             },
-            "id": 11523,
+            "id": 11821,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -2466,32 +2466,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11491,
+              "id": 11789,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11486,
+                  "id": 11784,
                   "name": "_rate",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11523,
+                  "scope": 11821,
                   "src": "1135:32:42",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 11485,
+                    "id": 11783,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3259,
+                    "referencedDeclaration": 3557,
                     "src": "1135:19:42",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -2500,11 +2500,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 11488,
+                  "id": 11786,
                   "name": "_oldToken",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11523,
+                  "scope": 11821,
                   "src": "1169:17:42",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2513,7 +2513,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11487,
+                    "id": 11785,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1169:7:42",
@@ -2528,11 +2528,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 11490,
+                  "id": 11788,
                   "name": "_newToken",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11523,
+                  "scope": 11821,
                   "src": "1188:17:42",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2541,7 +2541,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11489,
+                    "id": 11787,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1188:7:42",
@@ -2558,12 +2558,12 @@
               "src": "1134:72:42"
             },
             "returnParameters": {
-              "id": 11492,
+              "id": 11790,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1214:0:42"
             },
-            "scope": 11585,
+            "scope": 11883,
             "src": "1123:438:42",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2571,7 +2571,7 @@
           },
           {
             "body": {
-              "id": 11583,
+              "id": 11881,
               "nodeType": "Block",
               "src": "1974:463:42",
               "statements": [
@@ -2581,7 +2581,7 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11533,
+                        "id": 11831,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2594,25 +2594,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 11530,
+                            "id": 11828,
                             "name": "hasMigrated",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11483,
+                            "referencedDeclaration": 11781,
                             "src": "1993:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                               "typeString": "mapping(address => bool)"
                             }
                           },
-                          "id": 11532,
+                          "id": 11830,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 11531,
+                            "id": 11829,
                             "name": "tokenHolder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11526,
+                            "referencedDeclaration": 11824,
                             "src": "2005:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -2638,7 +2638,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "416c7265616479206d6967726174656420746f6b656e73",
-                        "id": 11534,
+                        "id": 11832,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2665,7 +2665,7 @@
                           "typeString": "literal_string \"Already migrated tokens\""
                         }
                       ],
-                      "id": 11529,
+                      "id": 11827,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -2679,7 +2679,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 11535,
+                    "id": 11833,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2694,14 +2694,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11536,
+                  "id": 11834,
                   "nodeType": "ExpressionStatement",
                   "src": "1984:61:42"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11541,
+                    "id": 11839,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2710,25 +2710,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 11537,
+                        "id": 11835,
                         "name": "hasMigrated",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11483,
+                        "referencedDeclaration": 11781,
                         "src": "2055:11:42",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
                           "typeString": "mapping(address => bool)"
                         }
                       },
-                      "id": 11539,
+                      "id": 11837,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 11538,
+                        "id": 11836,
                         "name": "tokenHolder",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11526,
+                        "referencedDeclaration": 11824,
                         "src": "2067:11:42",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2751,7 +2751,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "74727565",
-                      "id": 11540,
+                      "id": 11838,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -2772,38 +2772,38 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 11542,
+                  "id": 11840,
                   "nodeType": "ExpressionStatement",
                   "src": "2055:31:42"
                 },
                 {
                   "assignments": [
-                    11546
+                    11844
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11546,
+                      "id": 11844,
                       "name": "oldBalance",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11583,
+                      "scope": 11881,
                       "src": "2097:37:42",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                         "typeString": "struct FixedPoint.Unsigned"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11545,
+                        "id": 11843,
                         "name": "FixedPoint.Unsigned",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 3259,
+                        "referencedDeclaration": 3557,
                         "src": "2097:19:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                           "typeString": "struct FixedPoint.Unsigned"
                         }
                       },
@@ -2811,7 +2811,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11555,
+                  "id": 11853,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -2820,11 +2820,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 11551,
+                            "id": 11849,
                             "name": "tokenHolder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11526,
+                            "referencedDeclaration": 11824,
                             "src": "2178:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -2833,11 +2833,11 @@
                           },
                           {
                             "argumentTypes": null,
-                            "id": 11552,
+                            "id": 11850,
                             "name": "snapshotId",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11477,
+                            "referencedDeclaration": 11775,
                             "src": "2191:10:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -2858,32 +2858,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11549,
+                            "id": 11847,
                             "name": "oldToken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11473,
+                            "referencedDeclaration": 11771,
                             "src": "2157:8:42",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ERC20Snapshot_$19521",
+                              "typeIdentifier": "t_contract$_ERC20Snapshot_$19819",
                               "typeString": "contract ERC20Snapshot"
                             }
                           },
-                          "id": 11550,
+                          "id": 11848,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "balanceOfAt",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 19281,
+                          "referencedDeclaration": 19579,
                           "src": "2157:20:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_address_$_t_uint256_$returns$_t_uint256_$",
                             "typeString": "function (address,uint256) view external returns (uint256)"
                           }
                         },
-                        "id": 11553,
+                        "id": 11851,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2908,32 +2908,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 11547,
+                        "id": 11845,
                         "name": "FixedPoint",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3944,
+                        "referencedDeclaration": 4242,
                         "src": "2137:10:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_FixedPoint_$3944_$",
+                          "typeIdentifier": "t_type$_t_contract$_FixedPoint_$4242_$",
                           "typeString": "type(library FixedPoint)"
                         }
                       },
-                      "id": 11548,
+                      "id": 11846,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "Unsigned",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3259,
+                      "referencedDeclaration": 3557,
                       "src": "2137:19:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_struct$_Unsigned_$3259_storage_ptr_$",
+                        "typeIdentifier": "t_type$_t_struct$_Unsigned_$3557_storage_ptr_$",
                         "typeString": "type(struct FixedPoint.Unsigned storage pointer)"
                       }
                     },
-                    "id": 11554,
+                    "id": 11852,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2944,7 +2944,7 @@
                     "src": "2137:66:42",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_memory",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_memory",
                       "typeString": "struct FixedPoint.Unsigned memory"
                     }
                   },
@@ -2954,7 +2954,7 @@
                 {
                   "condition": {
                     "argumentTypes": null,
-                    "id": 11560,
+                    "id": 11858,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2969,7 +2969,7 @@
                         {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 11558,
+                          "id": 11856,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -2994,32 +2994,32 @@
                         ],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 11556,
+                          "id": 11854,
                           "name": "oldBalance",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 11546,
+                          "referencedDeclaration": 11844,
                           "src": "2219:10:42",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                            "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                             "typeString": "struct FixedPoint.Unsigned memory"
                           }
                         },
-                        "id": 11557,
+                        "id": 11855,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "isGreaterThan",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 3347,
+                        "referencedDeclaration": 3645,
                         "src": "2219:24:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3259_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3259_memory_ptr_$",
+                          "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3557_memory_ptr_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Unsigned_$3557_memory_ptr_$",
                           "typeString": "function (struct FixedPoint.Unsigned memory,uint256) pure returns (bool)"
                         }
                       },
-                      "id": 11559,
+                      "id": 11857,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3040,18 +3040,18 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 11563,
+                  "id": 11861,
                   "nodeType": "IfStatement",
                   "src": "2214:65:42",
                   "trueBody": {
-                    "id": 11562,
+                    "id": 11860,
                     "nodeType": "Block",
                     "src": "2248:31:42",
                     "statements": [
                       {
                         "expression": null,
-                        "functionReturnParameters": 11528,
-                        "id": 11561,
+                        "functionReturnParameters": 11826,
+                        "id": 11859,
                         "nodeType": "Return",
                         "src": "2262:7:42"
                       }
@@ -3060,32 +3060,32 @@
                 },
                 {
                   "assignments": [
-                    11567
+                    11865
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11567,
+                      "id": 11865,
                       "name": "newBalance",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11583,
+                      "scope": 11881,
                       "src": "2289:37:42",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                        "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                         "typeString": "struct FixedPoint.Unsigned"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11566,
+                        "id": 11864,
                         "name": "FixedPoint.Unsigned",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 3259,
+                        "referencedDeclaration": 3557,
                         "src": "2289:19:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage_ptr",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage_ptr",
                           "typeString": "struct FixedPoint.Unsigned"
                         }
                       },
@@ -3093,20 +3093,20 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11572,
+                  "id": 11870,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11570,
+                        "id": 11868,
                         "name": "rate",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11479,
+                        "referencedDeclaration": 11777,
                         "src": "2344:4:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                           "typeString": "struct FixedPoint.Unsigned storage ref"
                         }
                       }
@@ -3114,38 +3114,38 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_storage",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_storage",
                           "typeString": "struct FixedPoint.Unsigned storage ref"
                         }
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 11568,
+                        "id": 11866,
                         "name": "oldBalance",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11546,
+                        "referencedDeclaration": 11844,
                         "src": "2329:10:42",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                          "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                           "typeString": "struct FixedPoint.Unsigned memory"
                         }
                       },
-                      "id": 11569,
+                      "id": 11867,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "div",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 3797,
+                      "referencedDeclaration": 4095,
                       "src": "2329:14:42",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3259_memory_ptr_$_t_struct$_Unsigned_$3259_memory_ptr_$returns$_t_struct$_Unsigned_$3259_memory_ptr_$bound_to$_t_struct$_Unsigned_$3259_memory_ptr_$",
+                        "typeIdentifier": "t_function_internal_pure$_t_struct$_Unsigned_$3557_memory_ptr_$_t_struct$_Unsigned_$3557_memory_ptr_$returns$_t_struct$_Unsigned_$3557_memory_ptr_$bound_to$_t_struct$_Unsigned_$3557_memory_ptr_$",
                         "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                       }
                     },
-                    "id": 11571,
+                    "id": 11869,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3156,7 +3156,7 @@
                     "src": "2329:20:42",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                       "typeString": "struct FixedPoint.Unsigned memory"
                     }
                   },
@@ -3172,11 +3172,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 11576,
+                            "id": 11874,
                             "name": "tokenHolder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11526,
+                            "referencedDeclaration": 11824,
                             "src": "2381:11:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -3187,25 +3187,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 11577,
+                              "id": 11875,
                               "name": "newBalance",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11567,
+                              "referencedDeclaration": 11865,
                               "src": "2394:10:42",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Unsigned_$3259_memory_ptr",
+                                "typeIdentifier": "t_struct$_Unsigned_$3557_memory_ptr",
                                 "typeString": "struct FixedPoint.Unsigned memory"
                               }
                             },
-                            "id": 11578,
+                            "id": 11876,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "rawValue",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3258,
+                            "referencedDeclaration": 3556,
                             "src": "2394:19:42",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -3226,32 +3226,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11574,
+                            "id": 11872,
                             "name": "newToken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11475,
+                            "referencedDeclaration": 11773,
                             "src": "2367:8:42",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_ExpandedIERC20_$4689",
+                              "typeIdentifier": "t_contract$_ExpandedIERC20_$4987",
                               "typeString": "contract ExpandedIERC20"
                             }
                           },
-                          "id": 11575,
+                          "id": 11873,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "mint",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 4688,
+                          "referencedDeclaration": 4986,
                           "src": "2367:13:42",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
                             "typeString": "function (address,uint256) external returns (bool)"
                           }
                         },
-                        "id": 11579,
+                        "id": 11877,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -3269,7 +3269,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4d696e74206661696c6564",
-                        "id": 11580,
+                        "id": 11878,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3296,7 +3296,7 @@
                           "typeString": "literal_string \"Mint failed\""
                         }
                       ],
-                      "id": 11573,
+                      "id": 11871,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -3310,7 +3310,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 11581,
+                    "id": 11879,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3325,20 +3325,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11582,
+                  "id": 11880,
                   "nodeType": "ExpressionStatement",
                   "src": "2359:71:42"
                 }
               ]
             },
             "documentation": {
-              "id": 11524,
+              "id": 11822,
               "nodeType": "StructuredDocumentation",
               "src": "1567:349:42",
               "text": "@notice Migrates the tokenHolder's old tokens to new tokens.\n@dev This function can only be called once per `tokenHolder`. Anyone can call this method\non behalf of any other token holder since there is no disadvantage to receiving the tokens earlier.\n@param tokenHolder address of the token holder to migrate."
             },
             "functionSelector": "c1684711",
-            "id": 11584,
+            "id": 11882,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3346,16 +3346,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11527,
+              "id": 11825,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11526,
+                  "id": 11824,
                   "name": "tokenHolder",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11584,
+                  "scope": 11882,
                   "src": "1944:19:42",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3364,7 +3364,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11525,
+                    "id": 11823,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1944:7:42",
@@ -3381,19 +3381,19 @@
               "src": "1943:21:42"
             },
             "returnParameters": {
-              "id": 11528,
+              "id": 11826,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1974:0:42"
             },
-            "scope": 11585,
+            "scope": 11883,
             "src": "1921:516:42",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 11586,
+        "scope": 11884,
         "src": "350:2089:42"
       }
     ],
@@ -3405,7 +3405,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.616Z",
+  "updatedAt": "2020-08-14T09:32:05.634Z",
   "devdoc": {
     "details": "Handles migrating token holders from one token to the next.",
     "methods": {

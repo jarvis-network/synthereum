@@ -201,6 +201,19 @@ contract TIC is TICInterface, ReentrancyGuard {
     }
 
     /**
+     * @notice Liquidity provider withdraw margin from the TIC
+     * @param collateralAmount The amount of margin to withdraw
+     */
+    function withdraw(uint256 collateralAmount)
+        external
+        override
+        nonReentrant
+        onlyLiquidityProvider
+    {
+        ticStorage.withdraw(FixedPoint.Unsigned(collateralAmount));
+    }
+
+    /**
      * TODO: Potentially restrict this function to only TICs registered on a whitelist
      * @notice Called by a source TIC's `exchange` function to mint destination tokens
      * @dev This function could be called by any account to mint tokens, however they will lose
@@ -268,7 +281,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice User needs to have approved the transfer of synthetic tokens
      * @param redeemID The ID of the redeem request
      */
-    function approveRedeem(bytes32 redeemID) external override nonReentrant {
+    function approveRedeem(bytes32 redeemID) external override nonReentrant onlyValidator {
         address sender = ticStorage.redeemRequests[redeemID].sender;
 
         ticStorage.approveRedeem(redeemID);
@@ -281,7 +294,7 @@ contract TIC is TICInterface, ReentrancyGuard {
      * @notice This will typically be done with a keeper bot
      * @param redeemID The ID of the redeem request
      */
-    function rejectRedeem(bytes32 redeemID) external override nonReentrant {
+    function rejectRedeem(bytes32 redeemID) external override nonReentrant onlyValidator {
         address sender = ticStorage.redeemRequests[redeemID].sender;
 
         ticStorage.rejectRedeem(redeemID);

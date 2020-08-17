@@ -4,7 +4,6 @@ const config = require('../truffle-config.js');
 const contracts = require('../contract-dependencies.json');
 const assets = require('../add-synthetic-assets.json');
 const TICConfig = require('../tic-config.json');
-const FactoryConfig = require('../factory.json');
 
 var TICFactory = artifacts.require('TICFactory');
 
@@ -45,7 +44,7 @@ module.exports = function (deployer, network, accounts) {
         assetParams.priceFeedIdentifier,
       );
 
-      const factory = await TICFactory.at(FactoryConfig['factoryAddress']);
+      const factory = await TICFactory.at(contracts[networkId]['ticFactory']);
       const { receipt } = await factory.createTIC(
         params,
         liquidityProvider,

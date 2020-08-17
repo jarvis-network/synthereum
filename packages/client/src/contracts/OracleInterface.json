@@ -79,14 +79,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/OracleInterface.sol",
     "exportedSymbols": {
       "OracleInterface": [
-        13785
+        14083
       ]
     },
-    "id": 13786,
+    "id": 14084,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13755,
+        "id": 14053,
         "literals": [
           "solidity",
           "^",
@@ -102,15 +102,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 13756,
+          "id": 14054,
           "nodeType": "StructuredDocumentation",
           "src": "26:175:52",
           "text": "@title Financial contract facing Oracle interface.\n@dev Interface used by financial contracts to interact with the Oracle. Voters will use a different interface."
         },
         "fullyImplemented": false,
-        "id": 13785,
+        "id": 14083,
         "linearizedBaseContracts": [
-          13785
+          14083
         ],
         "name": "OracleInterface",
         "nodeType": "ContractDefinition",
@@ -118,13 +118,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13757,
+              "id": 14055,
               "nodeType": "StructuredDocumentation",
               "src": "234:376:52",
               "text": "@notice Enqueues a request (if a request isn't already present) for the given `identifier`, `time` pair.\n@dev Time must be in the past and the identifier must be supported.\n@param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.\n@param time unix timestamp of for the price request."
             },
             "functionSelector": "68ad8ae3",
-            "id": 13764,
+            "id": 14062,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -132,16 +132,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13762,
+              "id": 14060,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13759,
+                  "id": 14057,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13764,
+                  "scope": 14062,
                   "src": "637:18:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -150,7 +150,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13758,
+                    "id": 14056,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "637:7:52",
@@ -164,11 +164,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13761,
+                  "id": 14059,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13764,
+                  "scope": 14062,
                   "src": "657:9:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -177,7 +177,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13760,
+                    "id": 14058,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "657:4:52",
@@ -193,12 +193,12 @@
               "src": "636:31:52"
             },
             "returnParameters": {
-              "id": 13763,
+              "id": 14061,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "676:0:52"
             },
-            "scope": 13785,
+            "scope": 14083,
             "src": "615:62:52",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -207,13 +207,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13765,
+              "id": 14063,
               "nodeType": "StructuredDocumentation",
               "src": "683:434:52",
               "text": "@notice Whether the price for `identifier` and `time` is available.\n@dev Time must be in the past and the identifier must be supported.\n@param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.\n@param time unix timestamp of for the price request.\n@return bool if the DVM has resolved to a price for the given identifier and timestamp."
             },
             "functionSelector": "a03e881a",
-            "id": 13774,
+            "id": 14072,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -221,16 +221,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13770,
+              "id": 14068,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13767,
+                  "id": 14065,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13774,
+                  "scope": 14072,
                   "src": "1140:18:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -239,7 +239,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13766,
+                    "id": 14064,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1140:7:52",
@@ -253,11 +253,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13769,
+                  "id": 14067,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13774,
+                  "scope": 14072,
                   "src": "1160:9:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -266,7 +266,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13768,
+                    "id": 14066,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1160:4:52",
@@ -282,16 +282,16 @@
               "src": "1139:31:52"
             },
             "returnParameters": {
-              "id": 13773,
+              "id": 14071,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13772,
+                  "id": 14070,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13774,
+                  "scope": 14072,
                   "src": "1194:4:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -300,7 +300,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13771,
+                    "id": 14069,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1194:4:52",
@@ -315,7 +315,7 @@
               ],
               "src": "1193:6:52"
             },
-            "scope": 13785,
+            "scope": 14083,
             "src": "1122:78:52",
             "stateMutability": "view",
             "virtual": false,
@@ -324,13 +324,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13775,
+              "id": 14073,
               "nodeType": "StructuredDocumentation",
               "src": "1206:447:52",
               "text": "@notice Gets the price for `identifier` and `time` if it has already been requested and resolved.\n@dev If the price is not available, the method reverts.\n@param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.\n@param time unix timestamp of for the price request.\n@return int representing the resolved price for the given identifer and timestamp."
             },
             "functionSelector": "c9280f06",
-            "id": 13784,
+            "id": 14082,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -338,16 +338,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13780,
+              "id": 14078,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13777,
+                  "id": 14075,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13784,
+                  "scope": 14082,
                   "src": "1676:18:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -356,7 +356,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13776,
+                    "id": 14074,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1676:7:52",
@@ -370,11 +370,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13779,
+                  "id": 14077,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13784,
+                  "scope": 14082,
                   "src": "1696:9:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -383,7 +383,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13778,
+                    "id": 14076,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1696:4:52",
@@ -399,16 +399,16 @@
               "src": "1675:31:52"
             },
             "returnParameters": {
-              "id": 13783,
+              "id": 14081,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13782,
+                  "id": 14080,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13784,
+                  "scope": 14082,
                   "src": "1730:3:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -417,7 +417,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13781,
+                    "id": 14079,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1730:3:52",
@@ -432,14 +432,14 @@
               ],
               "src": "1729:5:52"
             },
-            "scope": 13785,
+            "scope": 14083,
             "src": "1658:77:52",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 13786,
+        "scope": 14084,
         "src": "202:1535:52"
       }
     ],
@@ -449,14 +449,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/OracleInterface.sol",
     "exportedSymbols": {
       "OracleInterface": [
-        13785
+        14083
       ]
     },
-    "id": 13786,
+    "id": 14084,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13755,
+        "id": 14053,
         "literals": [
           "solidity",
           "^",
@@ -472,15 +472,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 13756,
+          "id": 14054,
           "nodeType": "StructuredDocumentation",
           "src": "26:175:52",
           "text": "@title Financial contract facing Oracle interface.\n@dev Interface used by financial contracts to interact with the Oracle. Voters will use a different interface."
         },
         "fullyImplemented": false,
-        "id": 13785,
+        "id": 14083,
         "linearizedBaseContracts": [
-          13785
+          14083
         ],
         "name": "OracleInterface",
         "nodeType": "ContractDefinition",
@@ -488,13 +488,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13757,
+              "id": 14055,
               "nodeType": "StructuredDocumentation",
               "src": "234:376:52",
               "text": "@notice Enqueues a request (if a request isn't already present) for the given `identifier`, `time` pair.\n@dev Time must be in the past and the identifier must be supported.\n@param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.\n@param time unix timestamp of for the price request."
             },
             "functionSelector": "68ad8ae3",
-            "id": 13764,
+            "id": 14062,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -502,16 +502,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13762,
+              "id": 14060,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13759,
+                  "id": 14057,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13764,
+                  "scope": 14062,
                   "src": "637:18:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -520,7 +520,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13758,
+                    "id": 14056,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "637:7:52",
@@ -534,11 +534,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13761,
+                  "id": 14059,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13764,
+                  "scope": 14062,
                   "src": "657:9:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -547,7 +547,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13760,
+                    "id": 14058,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "657:4:52",
@@ -563,12 +563,12 @@
               "src": "636:31:52"
             },
             "returnParameters": {
-              "id": 13763,
+              "id": 14061,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "676:0:52"
             },
-            "scope": 13785,
+            "scope": 14083,
             "src": "615:62:52",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -577,13 +577,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13765,
+              "id": 14063,
               "nodeType": "StructuredDocumentation",
               "src": "683:434:52",
               "text": "@notice Whether the price for `identifier` and `time` is available.\n@dev Time must be in the past and the identifier must be supported.\n@param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.\n@param time unix timestamp of for the price request.\n@return bool if the DVM has resolved to a price for the given identifier and timestamp."
             },
             "functionSelector": "a03e881a",
-            "id": 13774,
+            "id": 14072,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -591,16 +591,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13770,
+              "id": 14068,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13767,
+                  "id": 14065,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13774,
+                  "scope": 14072,
                   "src": "1140:18:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -609,7 +609,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13766,
+                    "id": 14064,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1140:7:52",
@@ -623,11 +623,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13769,
+                  "id": 14067,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13774,
+                  "scope": 14072,
                   "src": "1160:9:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -636,7 +636,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13768,
+                    "id": 14066,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1160:4:52",
@@ -652,16 +652,16 @@
               "src": "1139:31:52"
             },
             "returnParameters": {
-              "id": 13773,
+              "id": 14071,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13772,
+                  "id": 14070,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13774,
+                  "scope": 14072,
                   "src": "1194:4:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -670,7 +670,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13771,
+                    "id": 14069,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1194:4:52",
@@ -685,7 +685,7 @@
               ],
               "src": "1193:6:52"
             },
-            "scope": 13785,
+            "scope": 14083,
             "src": "1122:78:52",
             "stateMutability": "view",
             "virtual": false,
@@ -694,13 +694,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 13775,
+              "id": 14073,
               "nodeType": "StructuredDocumentation",
               "src": "1206:447:52",
               "text": "@notice Gets the price for `identifier` and `time` if it has already been requested and resolved.\n@dev If the price is not available, the method reverts.\n@param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.\n@param time unix timestamp of for the price request.\n@return int representing the resolved price for the given identifer and timestamp."
             },
             "functionSelector": "c9280f06",
-            "id": 13784,
+            "id": 14082,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -708,16 +708,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13780,
+              "id": 14078,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13777,
+                  "id": 14075,
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13784,
+                  "scope": 14082,
                   "src": "1676:18:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -726,7 +726,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13776,
+                    "id": 14074,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1676:7:52",
@@ -740,11 +740,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13779,
+                  "id": 14077,
                   "name": "time",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13784,
+                  "scope": 14082,
                   "src": "1696:9:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -753,7 +753,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13778,
+                    "id": 14076,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1696:4:52",
@@ -769,16 +769,16 @@
               "src": "1675:31:52"
             },
             "returnParameters": {
-              "id": 13783,
+              "id": 14081,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13782,
+                  "id": 14080,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13784,
+                  "scope": 14082,
                   "src": "1730:3:52",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -787,7 +787,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13781,
+                    "id": 14079,
                     "name": "int",
                     "nodeType": "ElementaryTypeName",
                     "src": "1730:3:52",
@@ -802,14 +802,14 @@
               ],
               "src": "1729:5:52"
             },
-            "scope": 13785,
+            "scope": 14083,
             "src": "1658:77:52",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 13786,
+        "scope": 14084,
         "src": "202:1535:52"
       }
     ],
@@ -821,7 +821,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-19T21:38:31.701Z",
+  "updatedAt": "2020-08-14T09:32:05.671Z",
   "devdoc": {
     "details": "Interface used by financial contracts to interact with the Oracle. Voters will use a different interface.",
     "methods": {
