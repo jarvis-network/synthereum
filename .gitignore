@@ -9,3 +9,6 @@ yarn-error.log*
 
 # environment variables
 .env
+
+dist
+build

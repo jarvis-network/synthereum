@@ -12,8 +12,10 @@
     "build": "yarn build:client",
     "build:client": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client' build",
     "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-contracts' build",
+    "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis/balance-notify' build",
     "start:client": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client' start",
-    "start:bot": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up"
+    "start:bot": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
+    "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis/balance-notify' start"
   },
   "workspaces": [
     "packages/*"
