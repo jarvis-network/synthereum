@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "install": "lerna bootstrap -- --ignore-optional",
+    "postinstall": "patch-package",
     "format": "prettier --write '*/**/*.{js,jsx,ts,tsx}'",
     "build": "yarn build:client",
     "build:client": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client' build",
@@ -22,6 +23,8 @@
   ],
   "devDependencies": {
     "lerna": "^3.22.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0"
   }
 }

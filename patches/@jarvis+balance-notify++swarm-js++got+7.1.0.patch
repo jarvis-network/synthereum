@@ -1,0 +1,13 @@
+diff --git a/node_modules/@jarvis/balance-notify/node_modules/swarm-js/node_modules/got/index.js b/node_modules/@jarvis/balance-notify/node_modules/swarm-js/node_modules/got/index.js
+index 4c5090a..b607a88 100644
+--- a/node_modules/@jarvis/balance-notify/node_modules/swarm-js/node_modules/got/index.js
++++ b/node_modules/@jarvis/balance-notify/node_modules/swarm-js/node_modules/got/index.js
+@@ -19,7 +19,7 @@ const isURL = require('isurl');
+ const isPlainObj = require('is-plain-obj');
+ const PCancelable = require('p-cancelable');
+ const pTimeout = require('p-timeout');
+-const pkg = require('./package');
++const pkg = { name: 'got', version: '7.1.0' };
+ 
+ const getMethodRedirectCodes = new Set([300, 301, 302, 303, 304, 305, 307, 308]);
+ const allMethodRedirectCodes = new Set([300, 303, 307, 308]);
