@@ -12,3 +12,6 @@ yarn-error.log*
 
 dist
 build
+
+azure-functions-core-tools
+local.settings.json
