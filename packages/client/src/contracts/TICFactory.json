@@ -2775,14 +2775,14 @@
         }
       },
       "links": {
-        "TICHelper": "0xCA390600aA01605e536c0d28DCE813D8CAc5dbe6"
+        "TICHelper": "0x2c15576D899C7eDfEDc6B683782322254eF4db3F"
       },
-      "address": "0x90AA5C4C0905d75831B3e2812E95C1827b10117e",
-      "transactionHash": "0xc59b9ca544d449427118f11e38e0b5424c829c83ae82d433085d25e0acdba18a"
+      "address": "0x04650F13C7a8C876dE0689D95c403FF3aa58e20C",
+      "transactionHash": "0xa70774c57781b478e110c77f48f77c48a1641acdb173bb15b4a8bc35ff417d77"
     }
   },
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T16:05:37.976Z",
+  "schemaVersion": "3.2.3",
+  "updatedAt": "2020-09-02T09:29:49.927Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {

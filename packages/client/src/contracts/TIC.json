@@ -18598,12 +18598,12 @@
         }
       },
       "links": {
-        "TICHelper": "0xCA390600aA01605e536c0d28DCE813D8CAc5dbe6"
+        "TICHelper": "0x2c15576D899C7eDfEDc6B683782322254eF4db3F"
       }
     }
   },
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T16:04:49.358Z",
+  "schemaVersion": "3.2.3",
+  "updatedAt": "2020-09-02T09:28:59.840Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent     to the `ExpiringMultiParty` contract.",
