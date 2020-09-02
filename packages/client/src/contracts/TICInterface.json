@@ -4881,8 +4881,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T15:25:16.490Z",
+  "schemaVersion": "3.2.3",
+  "updatedAt": "2020-08-31T12:02:45.994Z",
   "devdoc": {
     "methods": {},
     "title": "Token Issuer Contract Interface"

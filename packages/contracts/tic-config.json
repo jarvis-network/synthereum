@@ -1,5 +1,5 @@
 {
-  "expirationTimestamp": 1598918400,
+  "expirationTimestamp": 1625097600,
   "disputeBondPct": { "rawValue": "1500000000000000000" },
   "sponsorDisputeRewardPct": { "rawValue": "500000000000000000" },
   "disputerDisputeRewardPct": { "rawValue": "400000000000000000" }
