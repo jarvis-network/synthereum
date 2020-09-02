@@ -1,0 +1,15 @@
+.idea
+*.iml
+
+__pycache__
+.cache
+.coverage
+.pytest_cache
+
+.DS_Store
+
+logs/*.json.log
+tests/config/keys/UnlimitedChain/address_book.json
+
+docs/_doc
+_virtualenv
