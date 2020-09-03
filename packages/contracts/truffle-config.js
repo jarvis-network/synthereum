@@ -18,9 +18,14 @@ const mnemonic = getEnv(mnemonicEnv);
 const kovanEnv = 'ETH_KOVAN_ENDPOINT';
 const kovanEndpoint = getEnv(kovanEnv);
 
+const etherscanApiKeyEnv = 'ETHERSCAN_APY_KEY';
+const etherscanApiKey = getEnv(etherscanApiKeyEnv);
+
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
+  plugins: ['truffle-plugin-verify'],
+  api_keys: {
+    etherscan: etherscanApiKey,
+  },
   mocha: {
     useColors: false,
   },
