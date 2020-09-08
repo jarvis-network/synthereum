@@ -1,8 +1,7 @@
 stages:
   - build
   - deploy
-
-image: 'node:lts-alpine'
+  - delete
 
 .only-default: &only-default
   only:
@@ -10,8 +9,9 @@ image: 'node:lts-alpine'
     - dev
     - production
 
-build:
+build_frontend:
   <<: *only-default
+  image: 'node:lts-alpine'
   stage: build
   before_script:
     - apk add git python3 make g++
@@ -30,16 +30,40 @@ build:
     paths:
       - packages/client/build
 
-.deploy-default: &deploy-default
+.acr_path:
+  - &acr_path_script |
+    case "$CI_COMMIT_REF_SLUG" in
+      master) ACR_IMAGE_TAG='master';;
+      develop) ACR_IMAGE_TAG='develop';;
+      *) ACR_IMAGE_TAG="unmerged-$CI_COMMIT_REF_SLUG";;
+    esac
+    ACR_IMAGE_FULL_NAME="${ACR_URL}/${CI_PROJECT_PATH}:${ACR_IMAGE_TAG}"
+
+build_keeper_bot:
+  <<: *only-default
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - docker info
+    - echo "$ACR_CI_PASSWORD" | docker login -u "$ACR_CI_USER" --password-stdin $ACR_URL
+    - *acr_path_script
+  script:
+    - docker build --pull -t "$ACR_IMAGE_FULL_NAME" ./packages/keeper-bot
+    - docker push "$ACR_IMAGE_FULL_NAME"
+
+.deploy-frontend-default: &deploy-frontend-default
+  image: 'node:lts-alpine'
   stage: deploy
   needs:
-    - job: build
+    - job: build_frontend
       artifacts: true
   before_script:
     - yarn global add netlify-cli
 
 deploy-preview-to-netlify:
-  <<: *deploy-default
+  <<: *deploy-frontend-default
   only:
     - merge_requests
     - dev
@@ -47,8 +71,73 @@ deploy-preview-to-netlify:
     - netlify deploy --dir ./packages/client/build
 
 deploy-production-to-netlify:
-  <<: *deploy-default
+  <<: *deploy-frontend-default
   only:
     - production
   script:
     - netlify deploy --prod --dir ./packages/client/build
+
+.deploy-keeper-bot-default: &deploy-keeper-bot-default
+  image: azuresdk/azure-cli-python
+  stage: deploy
+  needs:
+    - job: build_keeper_bot
+      artifacts: true
+  script:
+    - *acr_path_script
+    - CONTAINER_INSTANCE_NAME="${CI_PROJECT_NAME}-${ACR_IMAGE_TAG}"
+    - |
+      az login --service-principal \
+      -u $CONTAINER_INSTANCE_CI_USER \
+      --password $CONTAINER_INSTANCE_CI_PASSWORD \
+      --tenant $CONTAINER_INSTANCE_CI_TENANT_ID
+    - az container delete -g $CONTAINER_INSTANCE_RESOURCE_GROUP -n $CONTAINER_INSTANCE_NAME -y
+    - |
+      az container create \
+      --resource-group $CONTAINER_INSTANCE_RESOURCE_GROUP \
+      --name $CONTAINER_INSTANCE_NAME \
+      --image $ACR_IMAGE_FULL_NAME \
+      --registry-username $ACR_CI_USER \
+      --registry-password $ACR_CI_PASSWORD \
+      --environment-variables ETH_FROM=$CI_ETH_FROM RPC_HOST=$CI_RPC_HOST FREQUENCY=$CI_FREQUENCY \
+      --secrets key_store="$CI_KEY_STORE" password="$CI_PASSWORD" \
+      --secrets-mount-path="$CI_SECRETS_PATH" \
+      --command-line "$CI_DOCKER_COMMAND_INPUT" \
+      --restart-policy OnFailure \
+      --cpu 1 --memory 0.5
+
+.delete-keeper-bot-default: &delete-keeper-bot-default
+  image: azuresdk/azure-cli-python
+  stage: delete
+  needs:
+    - job: build_keeper_bot
+      artifacts: true
+  script:
+    - *acr_path_script
+    - CONTAINER_INSTANCE_NAME="${CI_PROJECT_NAME}-${ACR_IMAGE_TAG}"
+    - echo TENANT ${CONTAINER_INSTANCE_CI_TENANT_ID}
+    - |
+      az login --service-principal \
+        -u $CONTAINER_INSTANCE_CI_USER \
+        --password $CONTAINER_INSTANCE_CI_PASSWORD \
+        --tenant $CONTAINER_INSTANCE_CI_TENANT_ID
+
+    - az container delete -g $CONTAINER_INSTANCE_RESOURCE_GROUP -n $CONTAINER_INSTANCE_NAME -y
+
+deploy-azure-stage:
+  <<: *deploy-keeper-bot-default
+  when: manual
+  only:
+    - merge_requests
+    - dev
+
+deploy-azure-production:
+  <<: *deploy-keeper-bot-default
+  when: on_success
+  only:
+    - production
+
+delete-azure:
+  <<: *only-default
+  <<: *delete-keeper-bot-default
+  when: manual
