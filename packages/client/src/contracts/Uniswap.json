@@ -32,14 +32,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/Uniswap.sol",
     "exportedSymbols": {
       "Uniswap": [
-        4997
+        5264
       ]
     },
-    "id": 4998,
+    "id": 5265,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4989,
+        "id": 5256,
         "literals": [
           "solidity",
           "^",
@@ -47,7 +47,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:17"
+        "src": "0:23:21"
       },
       {
         "abstract": true,
@@ -55,15 +55,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 4990,
+          "id": 5257,
           "nodeType": "StructuredDocumentation",
-          "src": "26:146:17",
+          "src": "26:146:21",
           "text": "@title Interface for Uniswap v2.\n@dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
         },
         "fullyImplemented": true,
-        "id": 4997,
+        "id": 5264,
         "linearizedBaseContracts": [
-          4997
+          5264
         ],
         "name": "Uniswap",
         "nodeType": "ContractDefinition",
@@ -71,22 +71,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 4996,
+            "id": 5263,
             "name": "Sync",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4995,
+              "id": 5262,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4992,
+                  "id": 5259,
                   "indexed": false,
                   "name": "reserve0",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4996,
-                  "src": "300:16:17",
+                  "scope": 5263,
+                  "src": "300:16:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -94,10 +94,10 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4991,
+                    "id": 5258,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
-                    "src": "300:7:17",
+                    "src": "300:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint112",
                       "typeString": "uint112"
@@ -108,13 +108,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4994,
+                  "id": 5261,
                   "indexed": false,
                   "name": "reserve1",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4996,
-                  "src": "318:16:17",
+                  "scope": 5263,
+                  "src": "318:16:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -122,10 +122,10 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4993,
+                    "id": 5260,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
-                    "src": "318:7:17",
+                    "src": "318:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint112",
                       "typeString": "uint112"
@@ -135,29 +135,29 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "299:36:17"
+              "src": "299:36:21"
             },
-            "src": "289:47:17"
+            "src": "289:47:21"
           }
         ],
-        "scope": 4998,
-        "src": "173:165:17"
+        "scope": 5265,
+        "src": "173:165:21"
       }
     ],
-    "src": "0:339:17"
+    "src": "0:339:21"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/Uniswap.sol",
     "exportedSymbols": {
       "Uniswap": [
-        4997
+        5264
       ]
     },
-    "id": 4998,
+    "id": 5265,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4989,
+        "id": 5256,
         "literals": [
           "solidity",
           "^",
@@ -165,7 +165,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:17"
+        "src": "0:23:21"
       },
       {
         "abstract": true,
@@ -173,15 +173,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 4990,
+          "id": 5257,
           "nodeType": "StructuredDocumentation",
-          "src": "26:146:17",
+          "src": "26:146:21",
           "text": "@title Interface for Uniswap v2.\n@dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
         },
         "fullyImplemented": true,
-        "id": 4997,
+        "id": 5264,
         "linearizedBaseContracts": [
-          4997
+          5264
         ],
         "name": "Uniswap",
         "nodeType": "ContractDefinition",
@@ -189,22 +189,22 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 4996,
+            "id": 5263,
             "name": "Sync",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 4995,
+              "id": 5262,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4992,
+                  "id": 5259,
                   "indexed": false,
                   "name": "reserve0",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4996,
-                  "src": "300:16:17",
+                  "scope": 5263,
+                  "src": "300:16:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -212,10 +212,10 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4991,
+                    "id": 5258,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
-                    "src": "300:7:17",
+                    "src": "300:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint112",
                       "typeString": "uint112"
@@ -226,13 +226,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 4994,
+                  "id": 5261,
                   "indexed": false,
                   "name": "reserve1",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4996,
-                  "src": "318:16:17",
+                  "scope": 5263,
+                  "src": "318:16:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -240,10 +240,10 @@
                     "typeString": "uint112"
                   },
                   "typeName": {
-                    "id": 4993,
+                    "id": 5260,
                     "name": "uint112",
                     "nodeType": "ElementaryTypeName",
-                    "src": "318:7:17",
+                    "src": "318:7:21",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint112",
                       "typeString": "uint112"
@@ -253,16 +253,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "299:36:17"
+              "src": "299:36:21"
             },
-            "src": "289:47:17"
+            "src": "289:47:21"
           }
         ],
-        "scope": 4998,
-        "src": "173:165:17"
+        "scope": 5265,
+        "src": "173:165:21"
       }
     ],
-    "src": "0:339:17"
+    "src": "0:339:21"
   },
   "compiler": {
     "name": "solc",
@@ -270,7 +270,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.498Z",
+  "updatedAt": "2020-09-17T18:56:01.818Z",
   "devdoc": {
     "details": "This only contains the methods/events that we use in our contracts or offchain infrastructure.",
     "methods": {},

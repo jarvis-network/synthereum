@@ -7147,8 +7147,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.333Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-16T20:28:52.869Z",
   "devdoc": {
     "methods": {}
   },

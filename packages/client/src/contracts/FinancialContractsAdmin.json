@@ -22,19 +22,6 @@
     },
     {
       "inputs": [],
-      "name": "isOwner",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "owner",
       "outputs": [
         {
@@ -93,25 +80,25 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"financialContract\",\"type\":\"address\"}],\"name\":\"callEmergencyShutdown\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"financialContract\",\"type\":\"address\"}],\"name\":\"callRemargin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Allows appropriately permissioned admin roles to interact with financial contracts.\",\"methods\":{\"callEmergencyShutdown(address)\":{\"params\":{\"financialContract\":\"address of the FinancialContract to be shut down.\"}},\"callRemargin(address)\":{\"params\":{\"financialContract\":\"address of the FinancialContract to be remargined.\"}},\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"Admin for financial contracts in the UMA system.\"},\"userdoc\":{\"methods\":{\"callEmergencyShutdown(address)\":{\"notice\":\"Calls emergency shutdown on the provided financial contract.\"},\"callRemargin(address)\":{\"notice\":\"Calls remargin on the provided financial contract.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol\":\"FinancialContractsAdmin\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol\":{\"keccak256\":\"0xeb357e3f5f1a73e8fefb3d31aa5f35184da4e6c64954488d6b17a156e63c2c2a\",\"urls\":[\"bzz-raw://09b30231efa7a8ab6cf2845af6570cf208f8878bac25578683369e63b1f18b62\",\"dweb:/ipfs/QmTc9zK9CqU9YvhsVrmpPhWjxoicEp21MvLhgeCEgDBtx2\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol\":{\"keccak256\":\"0xfa1232ab562e3c279e5665745804f4ba9e62758e34d63b71b65dc92bfdd7cac9\",\"urls\":[\"bzz-raw://cc16bafaf3b1ec0a8064946c09fb918db68beaf219d6d1a431beb1b3ef01ede5\",\"dweb:/ipfs/QmZg7BxqNE82CxVm1pYViL3abRRbJgGXp5iAjvVWefzdiJ\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x039ba4cb83f1b30a3c575283aebeab66035aa4a3d5c88e73a67dbfba3691ac23\",\"urls\":[\"bzz-raw://7e319b9647837e7b286b01ef90e1b2dc62aea6d17acc11145c822193b6454db1\",\"dweb:/ipfs/QmW5vUEeePdJfj3abT8XHcZKideyCpSuDnz65Vfp6yu62P\"]}},\"version\":1}",
-  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b610617806100796000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c80638da5cb5b116100505780638da5cb5b146100e75780638f32d59b14610118578063f2fde38b1461013457610072565b80630caf412114610077578063547e1c40146100ac578063715018a6146100df575b600080fd5b6100aa6004803603602081101561008d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610167565b005b6100aa600480360360208110156100c257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610243565b6100aa610303565b6100ef6103e5565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b610120610401565b604080519115158252519081900360200190f35b6100aa6004803603602081101561014a57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661043f565b61016f610401565b6101da57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff16633403c2fc6040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561022757600080fd5b505af115801561023b573d6000803e3d6000fd5b505050505050565b61024b610401565b6102b657604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff1663bda02e776040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561022757600080fd5b61030b610401565b61037657604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b6000805473ffffffffffffffffffffffffffffffffffffffff166104236104be565b73ffffffffffffffffffffffffffffffffffffffff1614905090565b610447610401565b6104b257604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6104bb816104c2565b50565b3390565b73ffffffffffffffffffffffffffffffffffffffff811661052e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806105bc6026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff9290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220c33e760f9b4709307a4fe761ad0b09562c45f3ee531104a185970cc3716f81e364736f6c63430006040033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c80638da5cb5b116100505780638da5cb5b146100e75780638f32d59b14610118578063f2fde38b1461013457610072565b80630caf412114610077578063547e1c40146100ac578063715018a6146100df575b600080fd5b6100aa6004803603602081101561008d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610167565b005b6100aa600480360360208110156100c257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610243565b6100aa610303565b6100ef6103e5565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b610120610401565b604080519115158252519081900360200190f35b6100aa6004803603602081101561014a57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661043f565b61016f610401565b6101da57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff16633403c2fc6040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561022757600080fd5b505af115801561023b573d6000803e3d6000fd5b505050505050565b61024b610401565b6102b657604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff1663bda02e776040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561022757600080fd5b61030b610401565b61037657604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b6000805473ffffffffffffffffffffffffffffffffffffffff166104236104be565b73ffffffffffffffffffffffffffffffffffffffff1614905090565b610447610401565b6104b257604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6104bb816104c2565b50565b3390565b73ffffffffffffffffffffffffffffffffffffffff811661052e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806105bc6026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff9290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a2646970667358221220c33e760f9b4709307a4fe761ad0b09562c45f3ee531104a185970cc3716f81e364736f6c63430006040033",
-  "sourceMap": "293:813:35:-:0;;;698:17:69;718:12;-1:-1:-1;;;;;718:10:69;:12;:::i;:::-;740:6;:18;;-1:-1:-1;;;;;;740:18:69;-1:-1:-1;;;;;740:18:69;;;;;;;773:43;;740:18;;-1:-1:-1;740:18:69;773:43;;740:6;;773:43;664:159;293:813:35;;735:104:63;822:10;735:104;:::o;293:813:35:-;;;;;;;",
-  "deployedSourceMap": "293:813:35:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;293:813:35;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;517:217:35;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;517:217:35;;;;:::i;:::-;;905:199;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;905:199:35;;;;:::i;1684:145:69:-;;;:::i;899:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1250:92;;;:::i;:::-;;;;;;;;;;;;;;;;;;1978:115;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1978:115:69;;;;:::i;517:217:35:-;1103:9:69;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;604:36:35::1;666:17;604:80;;694:13;:31;;;:33;;;;;;;;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24::::0;17:12:::1;2:2;694:33:35;;;;8:9:-1;5:2;;;45:16;42:1;39::::0;24:38:::1;77:16;74:1;67:27;5:2;694:33:35;;;;1159:1:69;517:217:35::0;:::o;905:199::-;1103:9:69;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;983:36:35::1;1045:17;983:80;;1073:13;:22;;;:24;;;;;;;;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24::::0;17:12:::1;1684:145:69::0;1103:9;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1790:1:::1;1774:6:::0;;1753:40:::1;::::0;::::1;1774:6:::0;;::::1;::::0;1753:40:::1;::::0;1790:1;;1753:40:::1;1820:1;1803:19:::0;;;::::1;::::0;;1684:145::o;899:77::-;937:7;963:6;;;899:77;:::o;1250:92::-;1290:4;1329:6;;;;1313:12;:10;:12::i;:::-;:22;;;1306:29;;1250:92;:::o;1978:115::-;1103:9;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2058:28:::1;2077:8;2058:18;:28::i;:::-;1978:115:::0;:::o;735:104:63:-;822:10;735:104;:::o;2194:233:69:-;2275:22;;;2267:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2376:6;;;2355:38;;;;;;;2376:6;;;2355:38;;;2403:6;:17;;;;;;;;;;;;;;;2194:233::o",
-  "source": "pragma solidity ^0.6.0;\n\nimport \"../interfaces/AdministrateeInterface.sol\";\nimport \"@openzeppelin/contracts/ownership/Ownable.sol\";\n\n\n/**\n * @title Admin for financial contracts in the UMA system.\n * @dev Allows appropriately permissioned admin roles to interact with financial contracts.\n */\ncontract FinancialContractsAdmin is Ownable {\n    /**\n     * @notice Calls emergency shutdown on the provided financial contract.\n     * @param financialContract address of the FinancialContract to be shut down.\n     */\n    function callEmergencyShutdown(address financialContract) external onlyOwner {\n        AdministrateeInterface administratee = AdministrateeInterface(financialContract);\n        administratee.emergencyShutdown();\n    }\n\n    /**\n     * @notice Calls remargin on the provided financial contract.\n     * @param financialContract address of the FinancialContract to be remargined.\n     */\n    function callRemargin(address financialContract) external onlyOwner {\n        AdministrateeInterface administratee = AdministrateeInterface(financialContract);\n        administratee.remargin();\n    }\n}\n",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"financialContract\",\"type\":\"address\"}],\"name\":\"callEmergencyShutdown\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"financialContract\",\"type\":\"address\"}],\"name\":\"callRemargin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Allows appropriately permissioned admin roles to interact with financial contracts.\",\"methods\":{\"callEmergencyShutdown(address)\":{\"params\":{\"financialContract\":\"address of the FinancialContract to be shut down.\"}},\"callRemargin(address)\":{\"params\":{\"financialContract\":\"address of the FinancialContract to be remargined.\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"Admin for financial contracts in the UMA system.\"},\"userdoc\":{\"methods\":{\"callEmergencyShutdown(address)\":{\"notice\":\"Calls emergency shutdown on the provided financial contract.\"},\"callRemargin(address)\":{\"notice\":\"Calls remargin on the provided financial contract.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol\":\"FinancialContractsAdmin\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol\":{\"keccak256\":\"0xd1c0d8b4e1c96685a1a014d0d13fcc9ab8f92dfeb040bf86abf448c67cbc011e\",\"urls\":[\"bzz-raw://3e0284c96d28d8a61260e4f8770ce7ba269341eca0bdb5439b8b68abd5d6c34a\",\"dweb:/ipfs/QmNnTpHmBFS6Tec8QPz99b1GThbjT4tDM4khhsQrDcwNuj\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol\":{\"keccak256\":\"0xfa1232ab562e3c279e5665745804f4ba9e62758e34d63b71b65dc92bfdd7cac9\",\"urls\":[\"bzz-raw://cc16bafaf3b1ec0a8064946c09fb918db68beaf219d6d1a431beb1b3ef01ede5\",\"dweb:/ipfs/QmZg7BxqNE82CxVm1pYViL3abRRbJgGXp5iAjvVWefzdiJ\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b61061e806100796000396000f3fe608060405234801561001057600080fd5b50600436106100675760003560e01c8063715018a611610050578063715018a6146100d45780638da5cb5b146100dc578063f2fde38b1461010d57610067565b80630caf41211461006c578063547e1c40146100a1575b600080fd5b61009f6004803603602081101561008257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610140565b005b61009f600480360360208110156100b757600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661023a565b61009f610318565b6100e4610418565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61009f6004803603602081101561012357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610434565b6101486105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146101d157604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff16633403c2fc6040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561021e57600080fd5b505af1158015610232573d6000803e3d6000fd5b505050505050565b6102426105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146102cb57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff1663bda02e776040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561021e57600080fd5b6103206105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146103a957604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b61043c6105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146104c557604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b73ffffffffffffffffffffffffffffffffffffffff8116610531576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806105c36026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a26469706673582212206d4dff8fb252e94f50254996ee88d62f0c3e1201a5a8e1b71ef9ae97ee209eb464736f6c63430006040033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100675760003560e01c8063715018a611610050578063715018a6146100d45780638da5cb5b146100dc578063f2fde38b1461010d57610067565b80630caf41211461006c578063547e1c40146100a1575b600080fd5b61009f6004803603602081101561008257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610140565b005b61009f600480360360208110156100b757600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661023a565b61009f610318565b6100e4610418565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61009f6004803603602081101561012357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610434565b6101486105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146101d157604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff16633403c2fc6040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561021e57600080fd5b505af1158015610232573d6000803e3d6000fd5b505050505050565b6102426105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146102cb57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008190508073ffffffffffffffffffffffffffffffffffffffff1663bda02e776040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561021e57600080fd5b6103206105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146103a957604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b61043c6105be565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146104c557604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b73ffffffffffffffffffffffffffffffffffffffff8116610531576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806105c36026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a26469706673582212206d4dff8fb252e94f50254996ee88d62f0c3e1201a5a8e1b71ef9ae97ee209eb464736f6c63430006040033",
+  "sourceMap": "290:813:46:-:0;;;832:17:72;852:12;-1:-1:-1;;;;;852:10:72;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:72;-1:-1:-1;;;;;874:18:72;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:72;907:43;;874:6;;907:43;798:159;290:813:46;;735:104:71;822:10;735:104;:::o;290:813:46:-;;;;;;;",
+  "deployedSourceMap": "290:813:46:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;290:813:46;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;514:217:46;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;514:217:46;;;;:::i;:::-;;902:199;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;902:199:46;;;;:::i;1656:145:72:-;;;:::i;1033:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1950:240;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1950:240:72;;;;:::i;514:217:46:-;1247:12:72;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;601:36:46::1;663:17;601:80;;691:13;:31;;;:33;;;;;;;;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24::::0;17:12:::1;2:2;691:33:46;;;;8:9:-1;5:2;;;45:16;42:1;39::::0;24:38:::1;77:16;74:1;67:27;5:2;691:33:46;;;;1306:1:72;514:217:46::0;:::o;902:199::-;1247:12:72;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;980:36:46::1;1042:17;980:80;;1070:13;:22;;;:24;;;;;;;;;;;;;;;;;;;;;;;5:9:-1;2:2;;;27:1;24::::0;17:12:::1;1656:145:72::0;1247:12;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;::::1;1746:6:::0;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;;::::1;::::0;;1656:145::o;1033:77::-;1071:7;1097:6;;;1033:77;:::o;1950:240::-;1247:12;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2038:22:::1;::::0;::::1;2030:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2139:6;::::0;;2118:38:::1;::::0;::::1;::::0;;::::1;::::0;2139:6;::::1;::::0;2118:38:::1;::::0;::::1;2166:6;:17:::0;;;::::1;;::::0;;;::::1;::::0;;;::::1;::::0;;1950:240::o;735:104:71:-;822:10;735:104;:::o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"../interfaces/AdministrateeInterface.sol\";\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\n\n\n/**\n * @title Admin for financial contracts in the UMA system.\n * @dev Allows appropriately permissioned admin roles to interact with financial contracts.\n */\ncontract FinancialContractsAdmin is Ownable {\n    /**\n     * @notice Calls emergency shutdown on the provided financial contract.\n     * @param financialContract address of the FinancialContract to be shut down.\n     */\n    function callEmergencyShutdown(address financialContract) external onlyOwner {\n        AdministrateeInterface administratee = AdministrateeInterface(financialContract);\n        administratee.emergencyShutdown();\n    }\n\n    /**\n     * @notice Calls remargin on the provided financial contract.\n     * @param financialContract address of the FinancialContract to be remargined.\n     */\n    function callRemargin(address financialContract) external onlyOwner {\n        AdministrateeInterface administratee = AdministrateeInterface(financialContract);\n        administratee.remargin();\n    }\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol",
   "ast": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol",
     "exportedSymbols": {
       "FinancialContractsAdmin": [
-        10213
+        12201
       ]
     },
-    "id": 10214,
+    "id": 12202,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10167,
+        "id": 12155,
         "literals": [
           "solidity",
           "^",
@@ -119,27 +106,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:35"
+        "src": "0:23:46"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
         "file": "../interfaces/AdministrateeInterface.sol",
-        "id": 10168,
+        "id": 12156,
         "nodeType": "ImportDirective",
-        "scope": 10214,
-        "sourceUnit": 14007,
-        "src": "25:50:35",
+        "scope": 12202,
+        "sourceUnit": 16329,
+        "src": "25:50:46",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "id": 10169,
+        "absolutePath": "@openzeppelin/contracts/access/Ownable.sol",
+        "file": "@openzeppelin/contracts/access/Ownable.sol",
+        "id": 12157,
         "nodeType": "ImportDirective",
-        "scope": 10214,
-        "sourceUnit": 20398,
-        "src": "76:55:35",
+        "scope": 12202,
+        "sourceUnit": 17202,
+        "src": "76:52:46",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -150,76 +137,76 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10171,
+              "id": 12159,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20397,
-              "src": "329:7:35",
+              "referencedDeclaration": 17201,
+              "src": "326:7:46",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$20397",
+                "typeIdentifier": "t_contract$_Ownable_$17201",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 10172,
+            "id": 12160,
             "nodeType": "InheritanceSpecifier",
-            "src": "329:7:35"
+            "src": "326:7:46"
           }
         ],
         "contractDependencies": [
-          19440,
-          20397
+          17092,
+          17201
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10170,
+          "id": 12158,
           "nodeType": "StructuredDocumentation",
-          "src": "134:158:35",
+          "src": "131:158:46",
           "text": "@title Admin for financial contracts in the UMA system.\n@dev Allows appropriately permissioned admin roles to interact with financial contracts."
         },
         "fullyImplemented": true,
-        "id": 10213,
+        "id": 12201,
         "linearizedBaseContracts": [
-          10213,
-          20397,
-          19440
+          12201,
+          17201,
+          17092
         ],
         "name": "FinancialContractsAdmin",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10191,
+              "id": 12179,
               "nodeType": "Block",
-              "src": "594:140:35",
+              "src": "591:140:46",
               "statements": [
                 {
                   "assignments": [
-                    10181
+                    12169
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 10181,
+                      "id": 12169,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 10191,
-                      "src": "604:36:35",
+                      "scope": 12179,
+                      "src": "601:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 10180,
+                        "id": 12168,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 14006,
-                        "src": "604:22:35",
+                        "referencedDeclaration": 16328,
+                        "src": "601:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -227,18 +214,18 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 10185,
+                  "id": 12173,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10183,
+                        "id": 12171,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10175,
-                        "src": "666:17:35",
+                        "referencedDeclaration": 12163,
+                        "src": "663:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -252,18 +239,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10182,
+                      "id": 12170,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14006,
-                      "src": "643:22:35",
+                      "referencedDeclaration": 16328,
+                      "src": "640:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$14006_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 10184,
+                    "id": 12172,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -271,15 +258,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "643:41:35",
+                    "src": "640:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "604:80:35"
+                  "src": "601:80:46"
                 },
                 {
                   "expression": {
@@ -289,32 +276,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 10186,
+                        "id": 12174,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10181,
-                        "src": "694:13:35",
+                        "referencedDeclaration": 12169,
+                        "src": "691:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 10188,
+                      "id": 12176,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "emergencyShutdown",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 14001,
-                      "src": "694:31:35",
+                      "referencedDeclaration": 16323,
+                      "src": "691:31:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 10189,
+                    "id": 12177,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -322,65 +309,65 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "694:33:35",
+                    "src": "691:33:46",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10190,
+                  "id": 12178,
                   "nodeType": "ExpressionStatement",
-                  "src": "694:33:35"
+                  "src": "691:33:46"
                 }
               ]
             },
             "documentation": {
-              "id": 10173,
+              "id": 12161,
               "nodeType": "StructuredDocumentation",
-              "src": "343:169:35",
+              "src": "340:169:46",
               "text": "@notice Calls emergency shutdown on the provided financial contract.\n@param financialContract address of the FinancialContract to be shut down."
             },
             "functionSelector": "0caf4121",
-            "id": 10192,
+            "id": 12180,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10178,
+                "id": 12166,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10177,
+                  "id": 12165,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "584:9:35",
+                  "referencedDeclaration": 17150,
+                  "src": "581:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "584:9:35"
+                "src": "581:9:46"
               }
             ],
             "name": "callEmergencyShutdown",
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10176,
+              "id": 12164,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10175,
+                  "id": 12163,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10192,
-                  "src": "548:25:35",
+                  "scope": 12180,
+                  "src": "545:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -388,10 +375,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10174,
+                    "id": 12162,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "548:7:35",
+                    "src": "545:7:46",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -402,54 +389,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "547:27:35"
+              "src": "544:27:46"
             },
             "returnParameters": {
-              "id": 10179,
+              "id": 12167,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "594:0:35"
+              "src": "591:0:46"
             },
-            "scope": 10213,
-            "src": "517:217:35",
+            "scope": 12201,
+            "src": "514:217:46",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 10211,
+              "id": 12199,
               "nodeType": "Block",
-              "src": "973:131:35",
+              "src": "970:131:46",
               "statements": [
                 {
                   "assignments": [
-                    10201
+                    12189
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 10201,
+                      "id": 12189,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 10211,
-                      "src": "983:36:35",
+                      "scope": 12199,
+                      "src": "980:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 10200,
+                        "id": 12188,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 14006,
-                        "src": "983:22:35",
+                        "referencedDeclaration": 16328,
+                        "src": "980:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -457,18 +444,18 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 10205,
+                  "id": 12193,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10203,
+                        "id": 12191,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10195,
-                        "src": "1045:17:35",
+                        "referencedDeclaration": 12183,
+                        "src": "1042:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -482,18 +469,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10202,
+                      "id": 12190,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14006,
-                      "src": "1022:22:35",
+                      "referencedDeclaration": 16328,
+                      "src": "1019:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$14006_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 10204,
+                    "id": 12192,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -501,15 +488,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1022:41:35",
+                    "src": "1019:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "983:80:35"
+                  "src": "980:80:46"
                 },
                 {
                   "expression": {
@@ -519,32 +506,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 10206,
+                        "id": 12194,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10201,
-                        "src": "1073:13:35",
+                        "referencedDeclaration": 12189,
+                        "src": "1070:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 10208,
+                      "id": 12196,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "remargin",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 14005,
-                      "src": "1073:22:35",
+                      "referencedDeclaration": 16327,
+                      "src": "1070:22:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 10209,
+                    "id": 12197,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -552,65 +539,65 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1073:24:35",
+                    "src": "1070:24:46",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10210,
+                  "id": 12198,
                   "nodeType": "ExpressionStatement",
-                  "src": "1073:24:35"
+                  "src": "1070:24:46"
                 }
               ]
             },
             "documentation": {
-              "id": 10193,
+              "id": 12181,
               "nodeType": "StructuredDocumentation",
-              "src": "740:160:35",
+              "src": "737:160:46",
               "text": "@notice Calls remargin on the provided financial contract.\n@param financialContract address of the FinancialContract to be remargined."
             },
             "functionSelector": "547e1c40",
-            "id": 10212,
+            "id": 12200,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10198,
+                "id": 12186,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10197,
+                  "id": 12185,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "963:9:35",
+                  "referencedDeclaration": 17150,
+                  "src": "960:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "963:9:35"
+                "src": "960:9:46"
               }
             ],
             "name": "callRemargin",
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10196,
+              "id": 12184,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10195,
+                  "id": 12183,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10212,
-                  "src": "927:25:35",
+                  "scope": 12200,
+                  "src": "924:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -618,10 +605,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10194,
+                    "id": 12182,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "927:7:35",
+                    "src": "924:7:46",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -632,39 +619,39 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "926:27:35"
+              "src": "923:27:46"
             },
             "returnParameters": {
-              "id": 10199,
+              "id": 12187,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "973:0:35"
+              "src": "970:0:46"
             },
-            "scope": 10213,
-            "src": "905:199:35",
+            "scope": 12201,
+            "src": "902:199:46",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 10214,
-        "src": "293:813:35"
+        "scope": 12202,
+        "src": "290:813:46"
       }
     ],
-    "src": "0:1107:35"
+    "src": "0:1104:46"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol",
     "exportedSymbols": {
       "FinancialContractsAdmin": [
-        10213
+        12201
       ]
     },
-    "id": 10214,
+    "id": 12202,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10167,
+        "id": 12155,
         "literals": [
           "solidity",
           "^",
@@ -672,27 +659,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:35"
+        "src": "0:23:46"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
         "file": "../interfaces/AdministrateeInterface.sol",
-        "id": 10168,
+        "id": 12156,
         "nodeType": "ImportDirective",
-        "scope": 10214,
-        "sourceUnit": 14007,
-        "src": "25:50:35",
+        "scope": 12202,
+        "sourceUnit": 16329,
+        "src": "25:50:46",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "id": 10169,
+        "absolutePath": "@openzeppelin/contracts/access/Ownable.sol",
+        "file": "@openzeppelin/contracts/access/Ownable.sol",
+        "id": 12157,
         "nodeType": "ImportDirective",
-        "scope": 10214,
-        "sourceUnit": 20398,
-        "src": "76:55:35",
+        "scope": 12202,
+        "sourceUnit": 17202,
+        "src": "76:52:46",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -703,76 +690,76 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10171,
+              "id": 12159,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20397,
-              "src": "329:7:35",
+              "referencedDeclaration": 17201,
+              "src": "326:7:46",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$20397",
+                "typeIdentifier": "t_contract$_Ownable_$17201",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 10172,
+            "id": 12160,
             "nodeType": "InheritanceSpecifier",
-            "src": "329:7:35"
+            "src": "326:7:46"
           }
         ],
         "contractDependencies": [
-          19440,
-          20397
+          17092,
+          17201
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10170,
+          "id": 12158,
           "nodeType": "StructuredDocumentation",
-          "src": "134:158:35",
+          "src": "131:158:46",
           "text": "@title Admin for financial contracts in the UMA system.\n@dev Allows appropriately permissioned admin roles to interact with financial contracts."
         },
         "fullyImplemented": true,
-        "id": 10213,
+        "id": 12201,
         "linearizedBaseContracts": [
-          10213,
-          20397,
-          19440
+          12201,
+          17201,
+          17092
         ],
         "name": "FinancialContractsAdmin",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10191,
+              "id": 12179,
               "nodeType": "Block",
-              "src": "594:140:35",
+              "src": "591:140:46",
               "statements": [
                 {
                   "assignments": [
-                    10181
+                    12169
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 10181,
+                      "id": 12169,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 10191,
-                      "src": "604:36:35",
+                      "scope": 12179,
+                      "src": "601:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 10180,
+                        "id": 12168,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 14006,
-                        "src": "604:22:35",
+                        "referencedDeclaration": 16328,
+                        "src": "601:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -780,18 +767,18 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 10185,
+                  "id": 12173,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10183,
+                        "id": 12171,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10175,
-                        "src": "666:17:35",
+                        "referencedDeclaration": 12163,
+                        "src": "663:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -805,18 +792,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10182,
+                      "id": 12170,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14006,
-                      "src": "643:22:35",
+                      "referencedDeclaration": 16328,
+                      "src": "640:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$14006_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 10184,
+                    "id": 12172,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -824,15 +811,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "643:41:35",
+                    "src": "640:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "604:80:35"
+                  "src": "601:80:46"
                 },
                 {
                   "expression": {
@@ -842,32 +829,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 10186,
+                        "id": 12174,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10181,
-                        "src": "694:13:35",
+                        "referencedDeclaration": 12169,
+                        "src": "691:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 10188,
+                      "id": 12176,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "emergencyShutdown",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 14001,
-                      "src": "694:31:35",
+                      "referencedDeclaration": 16323,
+                      "src": "691:31:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 10189,
+                    "id": 12177,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -875,65 +862,65 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "694:33:35",
+                    "src": "691:33:46",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10190,
+                  "id": 12178,
                   "nodeType": "ExpressionStatement",
-                  "src": "694:33:35"
+                  "src": "691:33:46"
                 }
               ]
             },
             "documentation": {
-              "id": 10173,
+              "id": 12161,
               "nodeType": "StructuredDocumentation",
-              "src": "343:169:35",
+              "src": "340:169:46",
               "text": "@notice Calls emergency shutdown on the provided financial contract.\n@param financialContract address of the FinancialContract to be shut down."
             },
             "functionSelector": "0caf4121",
-            "id": 10192,
+            "id": 12180,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10178,
+                "id": 12166,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10177,
+                  "id": 12165,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "584:9:35",
+                  "referencedDeclaration": 17150,
+                  "src": "581:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "584:9:35"
+                "src": "581:9:46"
               }
             ],
             "name": "callEmergencyShutdown",
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10176,
+              "id": 12164,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10175,
+                  "id": 12163,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10192,
-                  "src": "548:25:35",
+                  "scope": 12180,
+                  "src": "545:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -941,10 +928,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10174,
+                    "id": 12162,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "548:7:35",
+                    "src": "545:7:46",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -955,54 +942,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "547:27:35"
+              "src": "544:27:46"
             },
             "returnParameters": {
-              "id": 10179,
+              "id": 12167,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "594:0:35"
+              "src": "591:0:46"
             },
-            "scope": 10213,
-            "src": "517:217:35",
+            "scope": 12201,
+            "src": "514:217:46",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 10211,
+              "id": 12199,
               "nodeType": "Block",
-              "src": "973:131:35",
+              "src": "970:131:46",
               "statements": [
                 {
                   "assignments": [
-                    10201
+                    12189
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 10201,
+                      "id": 12189,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 10211,
-                      "src": "983:36:35",
+                      "scope": 12199,
+                      "src": "980:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 10200,
+                        "id": 12188,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 14006,
-                        "src": "983:22:35",
+                        "referencedDeclaration": 16328,
+                        "src": "980:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -1010,18 +997,18 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 10205,
+                  "id": 12193,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10203,
+                        "id": 12191,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10195,
-                        "src": "1045:17:35",
+                        "referencedDeclaration": 12183,
+                        "src": "1042:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -1035,18 +1022,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10202,
+                      "id": 12190,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 14006,
-                      "src": "1022:22:35",
+                      "referencedDeclaration": 16328,
+                      "src": "1019:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$14006_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 10204,
+                    "id": 12192,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1054,15 +1041,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1022:41:35",
+                    "src": "1019:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "983:80:35"
+                  "src": "980:80:46"
                 },
                 {
                   "expression": {
@@ -1072,32 +1059,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 10206,
+                        "id": 12194,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10201,
-                        "src": "1073:13:35",
+                        "referencedDeclaration": 12189,
+                        "src": "1070:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$14006",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 10208,
+                      "id": 12196,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "remargin",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 14005,
-                      "src": "1073:22:35",
+                      "referencedDeclaration": 16327,
+                      "src": "1070:22:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 10209,
+                    "id": 12197,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1105,65 +1092,65 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "1073:24:35",
+                    "src": "1070:24:46",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10210,
+                  "id": 12198,
                   "nodeType": "ExpressionStatement",
-                  "src": "1073:24:35"
+                  "src": "1070:24:46"
                 }
               ]
             },
             "documentation": {
-              "id": 10193,
+              "id": 12181,
               "nodeType": "StructuredDocumentation",
-              "src": "740:160:35",
+              "src": "737:160:46",
               "text": "@notice Calls remargin on the provided financial contract.\n@param financialContract address of the FinancialContract to be remargined."
             },
             "functionSelector": "547e1c40",
-            "id": 10212,
+            "id": 12200,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10198,
+                "id": 12186,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10197,
+                  "id": 12185,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "963:9:35",
+                  "referencedDeclaration": 17150,
+                  "src": "960:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "963:9:35"
+                "src": "960:9:46"
               }
             ],
             "name": "callRemargin",
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10196,
+              "id": 12184,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10195,
+                  "id": 12183,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10212,
-                  "src": "927:25:35",
+                  "scope": 12200,
+                  "src": "924:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1171,10 +1158,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10194,
+                    "id": 12182,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "927:7:35",
+                    "src": "924:7:46",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1185,26 +1172,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "926:27:35"
+              "src": "923:27:46"
             },
             "returnParameters": {
-              "id": 10199,
+              "id": 12187,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "973:0:35"
+              "src": "970:0:46"
             },
-            "scope": 10213,
-            "src": "905:199:35",
+            "scope": 12201,
+            "src": "902:199:46",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 10214,
-        "src": "293:813:35"
+        "scope": 12202,
+        "src": "290:813:46"
       }
     ],
-    "src": "0:1107:35"
+    "src": "0:1104:46"
   },
   "compiler": {
     "name": "solc",
@@ -1212,7 +1199,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.608Z",
+  "updatedAt": "2020-09-17T18:56:02.116Z",
   "devdoc": {
     "details": "Allows appropriately permissioned admin roles to interact with financial contracts.",
     "methods": {
@@ -1225,9 +1212,6 @@
         "params": {
           "financialContract": "address of the FinancialContract to be remargined."
         }
-      },
-      "isOwner()": {
-        "details": "Returns true if the caller is the current owner."
       },
       "owner()": {
         "details": "Returns the address of the current owner."
