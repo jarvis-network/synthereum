@@ -1,10 +1,10 @@
 {
   "42": {
-    "expiringMultiPartyCreator": "0x3ffefa0ecA0Aa7263D1B77402E86aCE7eDA51f32",
-    "tokenFactoryAddress": "0x334cDccB89561A7996cba8a63E5183Bb6dC9784b",
-    "identifierWhitelist": "0x985C80a21B9f3eeC125fa377f84c5d425039569c",
-    "finderAddress": "0x324023B5f60d4C85cAa281CaE80455A2122F7a9f",
-    "storeAddress": "0xD7023D664537ddC879a5D8D2d32dbe2810d379C9",
+    "expiringMultiPartyCreator": "0x8f6e999530787492c62CfA5A8C937A4Be5886A13",
+    "tokenFactoryAddress": "0xe7e87f89e3d15617261fd52188ca64803165f8af ",
+    "identifierWhitelist": "0xeF9c374b7976941fCAf5e501eaB531E430463fC6",
+    "finderAddress": "0xeD0169a88d267063184b0853BaAAAe66c3c154B2",
+    "storeAddress": "0x41AF40Eb92Bec4dD8DA77103597838b3dBBD3B6f",
     "collateralAddress": "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB",
     "ticFactory": "0x04650F13C7a8C876dE0689D95c403FF3aa58e20C"
   }
