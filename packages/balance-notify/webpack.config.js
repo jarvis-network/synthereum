@@ -4,7 +4,8 @@ module.exports = {
   target: 'node',
   mode: 'development',
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    enforceExtension: false
   },
   optimization: {
     minimize: false,
