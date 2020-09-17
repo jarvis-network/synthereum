@@ -36,7 +36,7 @@ module.exports = {
         return new HDWalletProvider(mnemonic, kovanEndpoint, 0, 2);
       },
       network_id: 42,
-      gas: 8000000,
+      gas: 10000000,
       gasPrice: 3000000000,
     },
     'kovan-fork': {
@@ -45,7 +45,7 @@ module.exports = {
         return new HDWalletProvider(mnemonic, 'http://127.0.0.1:8545/', 0, 2);
       },
       network_id: 42,
-      gas: 8000000,
+      gas: 10000000,
       gasPrice: 3000000000,
     },
   },
