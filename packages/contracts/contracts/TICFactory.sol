@@ -1,11 +1,12 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
+
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {TIC} from "./TIC.sol";
 import {IExpiringMultiParty} from "./IExpiringMultiParty.sol";
-import {ExpiringMultiPartyCreator} from "./uma-contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
+import {ExpiringMultiPartyCreator} from "./uma-contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
 
 contract TICFactory is Ownable, ReentrancyGuard {
     //----------------------------------------
