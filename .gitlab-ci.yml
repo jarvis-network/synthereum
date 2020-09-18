@@ -33,8 +33,8 @@ build_frontend:
 .acr_path:
   - &acr_path_script |
     case "$CI_COMMIT_REF_SLUG" in
-      master) ACR_IMAGE_TAG='master';;
-      develop) ACR_IMAGE_TAG='develop';;
+      production) ACR_IMAGE_TAG='production';;
+      dev) ACR_IMAGE_TAG='dev';;
       *) ACR_IMAGE_TAG="unmerged-$CI_COMMIT_REF_SLUG";;
     esac
     ACR_IMAGE_FULL_NAME="${ACR_URL}/${CI_PROJECT_PATH}:${ACR_IMAGE_TAG}"
