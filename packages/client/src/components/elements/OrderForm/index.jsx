@@ -81,11 +81,14 @@ export default function OrderForm({
   };
 
   const calculateFees = value => {
-    if (getOrderType() === 'mint') {
-      const newCollateralAmount = value * assets[outputToken].price;
-      setCollateralAmount(newCollateralAmount);
-      assets[outputToken].contract.methods
-        .calculateMintFee(toWei(newCollateralAmount.toFixed(18)))
+    const newCollateralAmount = value * tokens[outputToken].price;
+    setCollateralAmount(newCollateralAmount);
+    const token = tokens[inputToken].contract
+      ? tokens[inputToken]
+      : tokens[outputToken];
+    if (token.contract) {
+      token.contract.methods
+        .calculateFee(toWei(newCollateralAmount.toString()))
         .call()
         .then(response => {
           setFeeAmount(response);
@@ -95,7 +98,6 @@ export default function OrderForm({
 
   const onInputAmountChange = event => {
     const { value } = event.target;
-
     if (!isNaN(value)) {
       setInputAmount(value);
     }
@@ -106,15 +108,12 @@ export default function OrderForm({
       const tokenAmount =
         (inputAmount * tokens[inputToken].price) / tokens[outputToken].price;
       setOutputAmount(tokenAmount);
-      if (inputToken === assets.length) {
-        calculateFees(tokenAmount);
-      }
+      calculateFees(tokenAmount);
     }
   }, [inputAmount, inputToken, outputToken]);
 
   const onOutputAmountChange = event => {
     const { value } = event.target;
-
     if (!isNaN(value)) {
       setOutputAmount(value);
     }
@@ -122,7 +121,7 @@ export default function OrderForm({
 
   const buyOrder = (collateralAmount, orderAmountTKNbits) => {
     assets[outputToken].contract.methods
-      .calculateMintFee(collateralAmount)
+      .calculateFee(collateralAmount)
       .call()
       .then(mintFee => {
         dai.methods
@@ -194,7 +193,11 @@ export default function OrderForm({
       });
   };
 
-  const exchangeOrder = (inputAmountTKNbits, outputAmountTKNbits) => {
+  const exchangeOrder = (
+    inputAmountTKNbits,
+    collateralAmountTKNbits,
+    outputAmountTKNbits,
+  ) => {
     syntheticTokens[inputToken].methods
       .approve(assets[inputToken].contract.options.address, inputAmountTKNbits)
       .send({
@@ -208,6 +211,7 @@ export default function OrderForm({
           .exchangeRequest(
             assets[outputToken].contract.options.address,
             inputAmountTKNbits,
+            collateralAmountTKNbits,
             outputAmountTKNbits,
           )
           .send({
@@ -243,21 +247,28 @@ export default function OrderForm({
       if (orderType === 'mint') {
         setLoading(true);
 
-        const collateralAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
-        const orderAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
+        const collateralAmountTKNbits = toWei(Number(inputAmount).toString());
+
+        const orderAmountTKNbits = toWei(Number(outputAmount).toString());
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === 'redeem') {
         setLoading(true);
 
-        const collateralAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
-        const orderAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
+        const collateralAmountTKNbits = toWei(Number(outputAmount).toString());
+        const orderAmountTKNbits = toWei(Number(inputAmount).toString());
         sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === 'exchange') {
         setLoading(true);
-
-        const inputAmountTKNbits = toWei(Number(inputAmount).toFixed(18));
-        const outputAmountTKNbits = toWei(Number(outputAmount).toFixed(18));
-        exchangeOrder(inputAmountTKNbits, outputAmountTKNbits);
+        const inputAmountTKNbits = toWei(Number(inputAmount).toString());
+        const collateralAmountTKNbits = toWei(
+          Number(collateralAmount).toString(),
+        );
+        const outputAmountTKNbits = toWei(Number(outputAmount).toString());
+        exchangeOrder(
+          inputAmountTKNbits,
+          collateralAmountTKNbits,
+          outputAmountTKNbits,
+        );
       }
     }
   };
@@ -316,7 +327,7 @@ export default function OrderForm({
           </Grid>
 
           <Grid item md={12}>
-            {outputAmount > 0 && getOrderType() === 'mint' && (
+            {outputAmount > 0 && (
               <TableContainer>
                 <Table size="small">
                   <TableBody>
@@ -324,18 +335,7 @@ export default function OrderForm({
                       <TableCell>Fee</TableCell>
                       <TableCell align="right">
                         {toFixedNumber(fromWei(feeAmount), 5)}{' '}
-                        {tokens[inputToken].symbol}
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell>Total</TableCell>
-                      <TableCell align="right">
-                        {toFixedNumber(
-                          (collateralAmount + +fromWei(feeAmount)).toString(),
-                          5,
-                        )}{' '}
-                        {tokens[inputToken].symbol}
+                        {'DAI'}
                       </TableCell>
                     </TableRow>
                   </TableBody>
