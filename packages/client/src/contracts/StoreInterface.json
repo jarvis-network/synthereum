@@ -126,14 +126,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/StoreInterface.sol",
     "exportedSymbols": {
       "StoreInterface": [
-        16506
+        16525
       ]
     },
-    "id": 16507,
+    "id": 16526,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16467,
+        "id": 16486,
         "literals": [
           "solidity",
           "^",
@@ -144,7 +144,7 @@
         "src": "0:23:67"
       },
       {
-        "id": 16468,
+        "id": 16487,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -155,10 +155,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 16469,
+        "id": 16488,
         "nodeType": "ImportDirective",
-        "scope": 16507,
-        "sourceUnit": 18487,
+        "scope": 16526,
+        "sourceUnit": 18506,
         "src": "59:56:67",
         "symbolAliases": [],
         "unitAlias": ""
@@ -166,9 +166,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 16470,
+        "id": 16489,
         "nodeType": "ImportDirective",
-        "scope": 16507,
+        "scope": 16526,
         "sourceUnit": 4271,
         "src": "116:52:67",
         "symbolAliases": [],
@@ -180,15 +180,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16471,
+          "id": 16490,
           "nodeType": "StructuredDocumentation",
           "src": "171:107:67",
           "text": "@title Interface that allows financial contracts to pay oracle fees for their use of the system."
         },
         "fullyImplemented": false,
-        "id": 16506,
+        "id": 16525,
         "linearizedBaseContracts": [
-          16506
+          16525
         ],
         "name": "StoreInterface",
         "nodeType": "ContractDefinition",
@@ -196,13 +196,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16472,
+              "id": 16491,
               "nodeType": "StructuredDocumentation",
               "src": "310:130:67",
               "text": "@notice Pays Oracle fees in ETH to the store.\n@dev To be used by contracts whose margin currency is ETH."
             },
             "functionSelector": "cd3a9b24",
-            "id": 16475,
+            "id": 16494,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -210,18 +210,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16473,
+              "id": 16492,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "467:2:67"
             },
             "returnParameters": {
-              "id": 16474,
+              "id": 16493,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "486:0:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "445:42:67",
             "stateMutability": "payable",
             "virtual": false,
@@ -230,13 +230,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16476,
+              "id": 16495,
               "nodeType": "StructuredDocumentation",
               "src": "493:351:67",
               "text": "@notice Pays oracle fees in the margin currency, erc20Address, to the store.\n@dev To be used if the margin currency is an ERC20 token rather than ETH.\n@param erc20Address address of the ERC20 token used to pay the fee.\n@param amount number of tokens to transfer. An approval for at least this amount must exist."
             },
             "functionSelector": "8659d232",
-            "id": 16483,
+            "id": 16502,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -244,16 +244,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16481,
+              "id": 16500,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16478,
+                  "id": 16497,
                   "name": "erc20Address",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16502,
                   "src": "877:20:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -262,7 +262,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16477,
+                    "id": 16496,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "877:7:67",
@@ -277,11 +277,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16480,
+                  "id": 16499,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16502,
                   "src": "899:35:67",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -291,7 +291,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16479,
+                    "id": 16498,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -308,12 +308,12 @@
               "src": "876:59:67"
             },
             "returnParameters": {
-              "id": 16482,
+              "id": 16501,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "944:0:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "849:96:67",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -322,13 +322,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16484,
+              "id": 16503,
               "nodeType": "StructuredDocumentation",
               "src": "951:597:67",
               "text": "@notice Computes the regular oracle fees that a contract should pay for a period.\n@param startTime defines the beginning time from which the fee is paid.\n@param endTime end time until which the fee is paid.\n@param pfc \"profit from corruption\", or the maximum amount of margin currency that a\ntoken sponsor could extract from the contract through corrupting the price feed in their favor.\n@return regularFee amount owed for the duration from start to end time for the given pfc.\n@return latePenalty for paying the fee after the deadline."
             },
             "functionSelector": "74201feb",
-            "id": 16497,
+            "id": 16516,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -336,16 +336,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16491,
+              "id": 16510,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16486,
+                  "id": 16505,
                   "name": "startTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1589:17:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -354,7 +354,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 16485,
+                    "id": 16504,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1589:7:67",
@@ -368,11 +368,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16488,
+                  "id": 16507,
                   "name": "endTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1616:15:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -381,7 +381,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 16487,
+                    "id": 16506,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1616:7:67",
@@ -395,11 +395,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16490,
+                  "id": 16509,
                   "name": "pfc",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1641:32:67",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -409,7 +409,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16489,
+                    "id": 16508,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -426,16 +426,16 @@
               "src": "1579:100:67"
             },
             "returnParameters": {
-              "id": 16496,
+              "id": 16515,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16493,
+                  "id": 16512,
                   "name": "regularFee",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1703:37:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -445,7 +445,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16492,
+                    "id": 16511,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -460,11 +460,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16495,
+                  "id": 16514,
                   "name": "latePenalty",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1742:38:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -474,7 +474,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16494,
+                    "id": 16513,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -490,7 +490,7 @@
               ],
               "src": "1702:79:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "1553:229:67",
             "stateMutability": "view",
             "virtual": false,
@@ -499,13 +499,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16498,
+              "id": 16517,
               "nodeType": "StructuredDocumentation",
               "src": "1788:191:67",
               "text": "@notice Computes the final oracle fees that a contract should pay at settlement.\n@param currency token used to pay the final fee.\n@return finalFee amount due."
             },
             "functionSelector": "5b97aadd",
-            "id": 16505,
+            "id": 16524,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -513,16 +513,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16501,
+              "id": 16520,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16500,
+                  "id": 16519,
                   "name": "currency",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16505,
+                  "scope": 16524,
                   "src": "2009:16:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -531,7 +531,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16499,
+                    "id": 16518,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2009:7:67",
@@ -548,16 +548,16 @@
               "src": "2008:18:67"
             },
             "returnParameters": {
-              "id": 16504,
+              "id": 16523,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16503,
+                  "id": 16522,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16505,
+                  "scope": 16524,
                   "src": "2050:26:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -567,7 +567,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16502,
+                    "id": 16521,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -583,14 +583,14 @@
               ],
               "src": "2049:28:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "1984:94:67",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16507,
+        "scope": 16526,
         "src": "279:1801:67"
       }
     ],
@@ -600,14 +600,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/StoreInterface.sol",
     "exportedSymbols": {
       "StoreInterface": [
-        16506
+        16525
       ]
     },
-    "id": 16507,
+    "id": 16526,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16467,
+        "id": 16486,
         "literals": [
           "solidity",
           "^",
@@ -618,7 +618,7 @@
         "src": "0:23:67"
       },
       {
-        "id": 16468,
+        "id": 16487,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -629,10 +629,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 16469,
+        "id": 16488,
         "nodeType": "ImportDirective",
-        "scope": 16507,
-        "sourceUnit": 18487,
+        "scope": 16526,
+        "sourceUnit": 18506,
         "src": "59:56:67",
         "symbolAliases": [],
         "unitAlias": ""
@@ -640,9 +640,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 16470,
+        "id": 16489,
         "nodeType": "ImportDirective",
-        "scope": 16507,
+        "scope": 16526,
         "sourceUnit": 4271,
         "src": "116:52:67",
         "symbolAliases": [],
@@ -654,15 +654,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16471,
+          "id": 16490,
           "nodeType": "StructuredDocumentation",
           "src": "171:107:67",
           "text": "@title Interface that allows financial contracts to pay oracle fees for their use of the system."
         },
         "fullyImplemented": false,
-        "id": 16506,
+        "id": 16525,
         "linearizedBaseContracts": [
-          16506
+          16525
         ],
         "name": "StoreInterface",
         "nodeType": "ContractDefinition",
@@ -670,13 +670,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16472,
+              "id": 16491,
               "nodeType": "StructuredDocumentation",
               "src": "310:130:67",
               "text": "@notice Pays Oracle fees in ETH to the store.\n@dev To be used by contracts whose margin currency is ETH."
             },
             "functionSelector": "cd3a9b24",
-            "id": 16475,
+            "id": 16494,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -684,18 +684,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16473,
+              "id": 16492,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "467:2:67"
             },
             "returnParameters": {
-              "id": 16474,
+              "id": 16493,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "486:0:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "445:42:67",
             "stateMutability": "payable",
             "virtual": false,
@@ -704,13 +704,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16476,
+              "id": 16495,
               "nodeType": "StructuredDocumentation",
               "src": "493:351:67",
               "text": "@notice Pays oracle fees in the margin currency, erc20Address, to the store.\n@dev To be used if the margin currency is an ERC20 token rather than ETH.\n@param erc20Address address of the ERC20 token used to pay the fee.\n@param amount number of tokens to transfer. An approval for at least this amount must exist."
             },
             "functionSelector": "8659d232",
-            "id": 16483,
+            "id": 16502,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -718,16 +718,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16481,
+              "id": 16500,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16478,
+                  "id": 16497,
                   "name": "erc20Address",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16502,
                   "src": "877:20:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -736,7 +736,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16477,
+                    "id": 16496,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "877:7:67",
@@ -751,11 +751,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16480,
+                  "id": 16499,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16502,
                   "src": "899:35:67",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -765,7 +765,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16479,
+                    "id": 16498,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -782,12 +782,12 @@
               "src": "876:59:67"
             },
             "returnParameters": {
-              "id": 16482,
+              "id": 16501,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "944:0:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "849:96:67",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -796,13 +796,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16484,
+              "id": 16503,
               "nodeType": "StructuredDocumentation",
               "src": "951:597:67",
               "text": "@notice Computes the regular oracle fees that a contract should pay for a period.\n@param startTime defines the beginning time from which the fee is paid.\n@param endTime end time until which the fee is paid.\n@param pfc \"profit from corruption\", or the maximum amount of margin currency that a\ntoken sponsor could extract from the contract through corrupting the price feed in their favor.\n@return regularFee amount owed for the duration from start to end time for the given pfc.\n@return latePenalty for paying the fee after the deadline."
             },
             "functionSelector": "74201feb",
-            "id": 16497,
+            "id": 16516,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -810,16 +810,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16491,
+              "id": 16510,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16486,
+                  "id": 16505,
                   "name": "startTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1589:17:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -828,7 +828,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 16485,
+                    "id": 16504,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1589:7:67",
@@ -842,11 +842,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16488,
+                  "id": 16507,
                   "name": "endTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1616:15:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -855,7 +855,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 16487,
+                    "id": 16506,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1616:7:67",
@@ -869,11 +869,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16490,
+                  "id": 16509,
                   "name": "pfc",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1641:32:67",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -883,7 +883,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16489,
+                    "id": 16508,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -900,16 +900,16 @@
               "src": "1579:100:67"
             },
             "returnParameters": {
-              "id": 16496,
+              "id": 16515,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16493,
+                  "id": 16512,
                   "name": "regularFee",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1703:37:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -919,7 +919,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16492,
+                    "id": 16511,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -934,11 +934,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16495,
+                  "id": 16514,
                   "name": "latePenalty",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16497,
+                  "scope": 16516,
                   "src": "1742:38:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -948,7 +948,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16494,
+                    "id": 16513,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -964,7 +964,7 @@
               ],
               "src": "1702:79:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "1553:229:67",
             "stateMutability": "view",
             "virtual": false,
@@ -973,13 +973,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16498,
+              "id": 16517,
               "nodeType": "StructuredDocumentation",
               "src": "1788:191:67",
               "text": "@notice Computes the final oracle fees that a contract should pay at settlement.\n@param currency token used to pay the final fee.\n@return finalFee amount due."
             },
             "functionSelector": "5b97aadd",
-            "id": 16505,
+            "id": 16524,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -987,16 +987,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16501,
+              "id": 16520,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16500,
+                  "id": 16519,
                   "name": "currency",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16505,
+                  "scope": 16524,
                   "src": "2009:16:67",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1005,7 +1005,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16499,
+                    "id": 16518,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2009:7:67",
@@ -1022,16 +1022,16 @@
               "src": "2008:18:67"
             },
             "returnParameters": {
-              "id": 16504,
+              "id": 16523,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16503,
+                  "id": 16522,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16505,
+                  "scope": 16524,
                   "src": "2050:26:67",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1041,7 +1041,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 16502,
+                    "id": 16521,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -1057,14 +1057,14 @@
               ],
               "src": "2049:28:67"
             },
-            "scope": 16506,
+            "scope": 16525,
             "src": "1984:94:67",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16507,
+        "scope": 16526,
         "src": "279:1801:67"
       }
     ],
@@ -1075,8 +1075,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:02.286Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.930Z",
   "devdoc": {
     "methods": {
       "computeFinalFee(address)": {

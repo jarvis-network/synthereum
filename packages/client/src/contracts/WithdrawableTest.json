@@ -254,14 +254,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/WithdrawableTest.sol",
     "exportedSymbols": {
       "WithdrawableTest": [
-        6510
+        6524
       ]
     },
-    "id": 6511,
+    "id": 6525,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6448,
+        "id": 6462,
         "literals": [
           "solidity",
           "^",
@@ -274,9 +274,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol",
         "file": "../implementation/Withdrawable.sol",
-        "id": 6449,
+        "id": 6463,
         "nodeType": "ImportDirective",
-        "scope": 6511,
+        "scope": 6525,
         "sourceUnit": 5180,
         "src": "25:44:31",
         "symbolAliases": [],
@@ -289,7 +289,7 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6450,
+              "id": 6464,
               "name": "Withdrawable",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 5179,
@@ -299,7 +299,7 @@
                 "typeString": "contract Withdrawable"
               }
             },
-            "id": 6451,
+            "id": 6465,
             "nodeType": "InheritanceSpecifier",
             "src": "194:12:31"
           }
@@ -311,9 +311,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6510,
+        "id": 6524,
         "linearizedBaseContracts": [
-          6510,
+          6524,
           5179,
           4939
         ],
@@ -322,16 +322,16 @@
         "nodes": [
           {
             "canonicalName": "WithdrawableTest.Roles",
-            "id": 6454,
+            "id": 6468,
             "members": [
               {
-                "id": 6452,
+                "id": 6466,
                 "name": "Governance",
                 "nodeType": "EnumValue",
                 "src": "226:10:31"
               },
               {
-                "id": 6453,
+                "id": 6467,
                 "name": "Withdraw",
                 "nodeType": "EnumValue",
                 "src": "238:8:31"
@@ -343,7 +343,7 @@
           },
           {
             "body": {
-              "id": 6487,
+              "id": 6501,
               "nodeType": "Block",
               "src": "324:196:31",
               "statements": [
@@ -358,18 +358,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6460,
+                              "id": 6474,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "363:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6461,
+                            "id": 6475,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -379,7 +379,7 @@
                             "referencedDeclaration": null,
                             "src": "363:16:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -387,11 +387,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6459,
+                          "id": 6473,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -403,7 +403,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6458,
+                            "id": 6472,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "355:7:31",
@@ -413,7 +413,7 @@
                             }
                           }
                         },
-                        "id": 6462,
+                        "id": 6476,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -435,18 +435,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6465,
+                              "id": 6479,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "390:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6466,
+                            "id": 6480,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -456,7 +456,7 @@
                             "referencedDeclaration": null,
                             "src": "390:16:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -464,11 +464,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6464,
+                          "id": 6478,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -480,7 +480,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6463,
+                            "id": 6477,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "382:7:31",
@@ -490,7 +490,7 @@
                             }
                           }
                         },
-                        "id": 6467,
+                        "id": 6481,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -509,7 +509,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 6468,
+                          "id": 6482,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -520,7 +520,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 6469,
+                        "id": 6483,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -550,7 +550,7 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 6457,
+                      "id": 6471,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -561,7 +561,7 @@
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 6470,
+                    "id": 6484,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -576,7 +576,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6471,
+                  "id": 6485,
                   "nodeType": "ExpressionStatement",
                   "src": "334:86:31"
                 },
@@ -591,18 +591,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6475,
+                              "id": 6489,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "458:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6476,
+                            "id": 6490,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -612,7 +612,7 @@
                             "referencedDeclaration": null,
                             "src": "458:14:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -620,11 +620,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6474,
+                          "id": 6488,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -636,7 +636,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6473,
+                            "id": 6487,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "450:7:31",
@@ -646,7 +646,7 @@
                             }
                           }
                         },
-                        "id": 6477,
+                        "id": 6491,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -668,18 +668,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6480,
+                              "id": 6494,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "483:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6481,
+                            "id": 6495,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -689,7 +689,7 @@
                             "referencedDeclaration": null,
                             "src": "483:16:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -697,11 +697,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6479,
+                          "id": 6493,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -713,7 +713,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6478,
+                            "id": 6492,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "475:7:31",
@@ -723,7 +723,7 @@
                             }
                           }
                         },
-                        "id": 6482,
+                        "id": 6496,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -742,7 +742,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 6483,
+                          "id": 6497,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -753,7 +753,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 6484,
+                        "id": 6498,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -783,7 +783,7 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 6472,
+                      "id": 6486,
                       "name": "_createWithdrawRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -794,7 +794,7 @@
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 6485,
+                    "id": 6499,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -809,14 +809,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6486,
+                  "id": 6500,
                   "nodeType": "ExpressionStatement",
                   "src": "430:83:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 6488,
+            "id": 6502,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -824,18 +824,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6455,
+              "id": 6469,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "314:2:31"
             },
             "returnParameters": {
-              "id": 6456,
+              "id": 6470,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "324:0:31"
             },
-            "scope": 6510,
+            "scope": 6524,
             "src": "303:217:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -843,7 +843,7 @@
           },
           {
             "body": {
-              "id": 6498,
+              "id": 6512,
               "nodeType": "Block",
               "src": "558:39:31",
               "statements": [
@@ -857,7 +857,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 6495,
+                        "id": 6509,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -866,7 +866,7 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 6492,
+                            "id": 6506,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -877,7 +877,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 6493,
+                          "id": 6507,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -896,7 +896,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 6494,
+                          "id": 6508,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -925,7 +925,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 6491,
+                      "id": 6505,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -939,7 +939,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 6496,
+                    "id": 6510,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -954,7 +954,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6497,
+                  "id": 6511,
                   "nodeType": "ExpressionStatement",
                   "src": "568:22:31"
                 }
@@ -962,7 +962,7 @@
             },
             "documentation": null,
             "functionSelector": "1b9265b8",
-            "id": 6499,
+            "id": 6513,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -970,18 +970,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6489,
+              "id": 6503,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "538:2:31"
             },
             "returnParameters": {
-              "id": 6490,
+              "id": 6504,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "558:0:31"
             },
-            "scope": 6510,
+            "scope": 6524,
             "src": "526:71:31",
             "stateMutability": "payable",
             "virtual": false,
@@ -989,7 +989,7 @@
           },
           {
             "body": {
-              "id": 6508,
+              "id": 6522,
               "nodeType": "Block",
               "src": "662:44:31",
               "statements": [
@@ -999,11 +999,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6505,
+                        "id": 6519,
                         "name": "setRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6501,
+                        "referencedDeclaration": 6515,
                         "src": "689:9:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1018,7 +1018,7 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 6504,
+                      "id": 6518,
                       "name": "_setWithdrawRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1029,7 +1029,7 @@
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 6506,
+                    "id": 6520,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1044,7 +1044,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6507,
+                  "id": 6521,
                   "nodeType": "ExpressionStatement",
                   "src": "672:27:31"
                 }
@@ -1052,7 +1052,7 @@
             },
             "documentation": null,
             "functionSelector": "6b85f1b0",
-            "id": 6509,
+            "id": 6523,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1060,16 +1060,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6502,
+              "id": 6516,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6501,
+                  "id": 6515,
                   "name": "setRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6509,
+                  "scope": 6523,
                   "src": "636:17:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1078,7 +1078,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6500,
+                    "id": 6514,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "636:7:31",
@@ -1094,19 +1094,19 @@
               "src": "635:19:31"
             },
             "returnParameters": {
-              "id": 6503,
+              "id": 6517,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "662:0:31"
             },
-            "scope": 6510,
+            "scope": 6524,
             "src": "603:103:31",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 6511,
+        "scope": 6525,
         "src": "165:543:31"
       }
     ],
@@ -1116,14 +1116,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/WithdrawableTest.sol",
     "exportedSymbols": {
       "WithdrawableTest": [
-        6510
+        6524
       ]
     },
-    "id": 6511,
+    "id": 6525,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6448,
+        "id": 6462,
         "literals": [
           "solidity",
           "^",
@@ -1136,9 +1136,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol",
         "file": "../implementation/Withdrawable.sol",
-        "id": 6449,
+        "id": 6463,
         "nodeType": "ImportDirective",
-        "scope": 6511,
+        "scope": 6525,
         "sourceUnit": 5180,
         "src": "25:44:31",
         "symbolAliases": [],
@@ -1151,7 +1151,7 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 6450,
+              "id": 6464,
               "name": "Withdrawable",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 5179,
@@ -1161,7 +1161,7 @@
                 "typeString": "contract Withdrawable"
               }
             },
-            "id": 6451,
+            "id": 6465,
             "nodeType": "InheritanceSpecifier",
             "src": "194:12:31"
           }
@@ -1173,9 +1173,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6510,
+        "id": 6524,
         "linearizedBaseContracts": [
-          6510,
+          6524,
           5179,
           4939
         ],
@@ -1184,16 +1184,16 @@
         "nodes": [
           {
             "canonicalName": "WithdrawableTest.Roles",
-            "id": 6454,
+            "id": 6468,
             "members": [
               {
-                "id": 6452,
+                "id": 6466,
                 "name": "Governance",
                 "nodeType": "EnumValue",
                 "src": "226:10:31"
               },
               {
-                "id": 6453,
+                "id": 6467,
                 "name": "Withdraw",
                 "nodeType": "EnumValue",
                 "src": "238:8:31"
@@ -1205,7 +1205,7 @@
           },
           {
             "body": {
-              "id": 6487,
+              "id": 6501,
               "nodeType": "Block",
               "src": "324:196:31",
               "statements": [
@@ -1220,18 +1220,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6460,
+                              "id": 6474,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "363:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6461,
+                            "id": 6475,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1241,7 +1241,7 @@
                             "referencedDeclaration": null,
                             "src": "363:16:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -1249,11 +1249,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6459,
+                          "id": 6473,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1265,7 +1265,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6458,
+                            "id": 6472,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "355:7:31",
@@ -1275,7 +1275,7 @@
                             }
                           }
                         },
-                        "id": 6462,
+                        "id": 6476,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1297,18 +1297,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6465,
+                              "id": 6479,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "390:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6466,
+                            "id": 6480,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1318,7 +1318,7 @@
                             "referencedDeclaration": null,
                             "src": "390:16:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -1326,11 +1326,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6464,
+                          "id": 6478,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1342,7 +1342,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6463,
+                            "id": 6477,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "382:7:31",
@@ -1352,7 +1352,7 @@
                             }
                           }
                         },
-                        "id": 6467,
+                        "id": 6481,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1371,7 +1371,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 6468,
+                          "id": 6482,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1382,7 +1382,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 6469,
+                        "id": 6483,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1412,7 +1412,7 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 6457,
+                      "id": 6471,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1423,7 +1423,7 @@
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 6470,
+                    "id": 6484,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1438,7 +1438,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6471,
+                  "id": 6485,
                   "nodeType": "ExpressionStatement",
                   "src": "334:86:31"
                 },
@@ -1453,18 +1453,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6475,
+                              "id": 6489,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "458:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6476,
+                            "id": 6490,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1474,7 +1474,7 @@
                             "referencedDeclaration": null,
                             "src": "458:14:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -1482,11 +1482,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6474,
+                          "id": 6488,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1498,7 +1498,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6473,
+                            "id": 6487,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "450:7:31",
@@ -1508,7 +1508,7 @@
                             }
                           }
                         },
-                        "id": 6477,
+                        "id": 6491,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1530,18 +1530,18 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 6480,
+                              "id": 6494,
                               "name": "Roles",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 6454,
+                              "referencedDeclaration": 6468,
                               "src": "483:5:31",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_enum$_Roles_$6454_$",
+                                "typeIdentifier": "t_type$_t_enum$_Roles_$6468_$",
                                 "typeString": "type(enum WithdrawableTest.Roles)"
                               }
                             },
-                            "id": 6481,
+                            "id": 6495,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1551,7 +1551,7 @@
                             "referencedDeclaration": null,
                             "src": "483:16:31",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           }
@@ -1559,11 +1559,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_enum$_Roles_$6454",
+                              "typeIdentifier": "t_enum$_Roles_$6468",
                               "typeString": "enum WithdrawableTest.Roles"
                             }
                           ],
-                          "id": 6479,
+                          "id": 6493,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1575,7 +1575,7 @@
                             "typeString": "type(uint256)"
                           },
                           "typeName": {
-                            "id": 6478,
+                            "id": 6492,
                             "name": "uint256",
                             "nodeType": "ElementaryTypeName",
                             "src": "475:7:31",
@@ -1585,7 +1585,7 @@
                             }
                           }
                         },
-                        "id": 6482,
+                        "id": 6496,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1604,7 +1604,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 6483,
+                          "id": 6497,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1615,7 +1615,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 6484,
+                        "id": 6498,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1645,7 +1645,7 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "id": 6472,
+                      "id": 6486,
                       "name": "_createWithdrawRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1656,7 +1656,7 @@
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 6485,
+                    "id": 6499,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1671,14 +1671,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6486,
+                  "id": 6500,
                   "nodeType": "ExpressionStatement",
                   "src": "430:83:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 6488,
+            "id": 6502,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -1686,18 +1686,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6455,
+              "id": 6469,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "314:2:31"
             },
             "returnParameters": {
-              "id": 6456,
+              "id": 6470,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "324:0:31"
             },
-            "scope": 6510,
+            "scope": 6524,
             "src": "303:217:31",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1705,7 +1705,7 @@
           },
           {
             "body": {
-              "id": 6498,
+              "id": 6512,
               "nodeType": "Block",
               "src": "558:39:31",
               "statements": [
@@ -1719,7 +1719,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 6495,
+                        "id": 6509,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1728,7 +1728,7 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 6492,
+                            "id": 6506,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -1739,7 +1739,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 6493,
+                          "id": 6507,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1758,7 +1758,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "30",
-                          "id": 6494,
+                          "id": 6508,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1787,7 +1787,7 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 6491,
+                      "id": 6505,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1801,7 +1801,7 @@
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 6496,
+                    "id": 6510,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1816,7 +1816,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6497,
+                  "id": 6511,
                   "nodeType": "ExpressionStatement",
                   "src": "568:22:31"
                 }
@@ -1824,7 +1824,7 @@
             },
             "documentation": null,
             "functionSelector": "1b9265b8",
-            "id": 6499,
+            "id": 6513,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1832,18 +1832,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6489,
+              "id": 6503,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "538:2:31"
             },
             "returnParameters": {
-              "id": 6490,
+              "id": 6504,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "558:0:31"
             },
-            "scope": 6510,
+            "scope": 6524,
             "src": "526:71:31",
             "stateMutability": "payable",
             "virtual": false,
@@ -1851,7 +1851,7 @@
           },
           {
             "body": {
-              "id": 6508,
+              "id": 6522,
               "nodeType": "Block",
               "src": "662:44:31",
               "statements": [
@@ -1861,11 +1861,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6505,
+                        "id": 6519,
                         "name": "setRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6501,
+                        "referencedDeclaration": 6515,
                         "src": "689:9:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1880,7 +1880,7 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 6504,
+                      "id": 6518,
                       "name": "_setWithdrawRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1891,7 +1891,7 @@
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 6506,
+                    "id": 6520,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1906,7 +1906,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6507,
+                  "id": 6521,
                   "nodeType": "ExpressionStatement",
                   "src": "672:27:31"
                 }
@@ -1914,7 +1914,7 @@
             },
             "documentation": null,
             "functionSelector": "6b85f1b0",
-            "id": 6509,
+            "id": 6523,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1922,16 +1922,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6502,
+              "id": 6516,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6501,
+                  "id": 6515,
                   "name": "setRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6509,
+                  "scope": 6523,
                   "src": "636:17:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1940,7 +1940,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6500,
+                    "id": 6514,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "636:7:31",
@@ -1956,19 +1956,19 @@
               "src": "635:19:31"
             },
             "returnParameters": {
-              "id": 6503,
+              "id": 6517,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "662:0:31"
             },
-            "scope": 6510,
+            "scope": 6524,
             "src": "603:103:31",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 6511,
+        "scope": 6525,
         "src": "165:543:31"
       }
     ],
@@ -1979,8 +1979,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.899Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.694Z",
   "devdoc": {
     "methods": {
       "addMember(uint256,address)": {

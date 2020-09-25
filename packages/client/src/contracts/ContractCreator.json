@@ -24,14 +24,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/ContractCreator.sol",
     "exportedSymbols": {
       "ContractCreator": [
-        11823
+        11842
       ]
     },
-    "id": 11824,
+    "id": 11843,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11743,
+        "id": 11762,
         "literals": [
           "solidity",
           "^",
@@ -44,10 +44,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
         "file": "../interfaces/FinderInterface.sol",
-        "id": 11744,
+        "id": 11763,
         "nodeType": "ImportDirective",
-        "scope": 11824,
-        "sourceUnit": 16349,
+        "scope": 11843,
+        "sourceUnit": 16368,
         "src": "25:43:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -55,9 +55,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/AddressWhitelist.sol",
         "file": "../../common/implementation/AddressWhitelist.sol",
-        "id": 11745,
+        "id": 11764,
         "nodeType": "ImportDirective",
-        "scope": 11824,
+        "scope": 11843,
         "sourceUnit": 3435,
         "src": "69:58:43",
         "symbolAliases": [],
@@ -66,10 +66,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Registry.sol",
         "file": "./Registry.sol",
-        "id": 11746,
+        "id": 11765,
         "nodeType": "ImportDirective",
-        "scope": 11824,
-        "sourceUnit": 13373,
+        "scope": 11843,
+        "sourceUnit": 13392,
         "src": "128:24:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -77,10 +77,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
         "file": "./Constants.sol",
-        "id": 11747,
+        "id": 11766,
         "nodeType": "ImportDirective",
-        "scope": 11824,
-        "sourceUnit": 11742,
+        "scope": 11843,
+        "sourceUnit": 11761,
         "src": "153:25:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -91,26 +91,26 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 11748,
+          "id": 11767,
           "nodeType": "StructuredDocumentation",
           "src": "181:67:43",
           "text": "@title Base contract for all financial contract creators"
         },
         "fullyImplemented": true,
-        "id": 11823,
+        "id": 11842,
         "linearizedBaseContracts": [
-          11823
+          11842
         ],
         "name": "ContractCreator",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 11750,
+            "id": 11769,
             "name": "finderAddress",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11823,
+            "scope": 11842,
             "src": "289:30:43",
             "stateVariable": true,
             "storageLocation": "default",
@@ -119,7 +119,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 11749,
+              "id": 11768,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "289:7:43",
@@ -134,25 +134,25 @@
           },
           {
             "body": {
-              "id": 11759,
+              "id": 11778,
               "nodeType": "Block",
               "src": "369:47:43",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11757,
+                    "id": 11776,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11755,
+                      "id": 11774,
                       "name": "finderAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11750,
+                      "referencedDeclaration": 11769,
                       "src": "379:13:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -163,11 +163,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 11756,
+                      "id": 11775,
                       "name": "_finderAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11752,
+                      "referencedDeclaration": 11771,
                       "src": "395:14:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -180,14 +180,14 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 11758,
+                  "id": 11777,
                   "nodeType": "ExpressionStatement",
                   "src": "379:30:43"
                 }
               ]
             },
             "documentation": null,
-            "id": 11760,
+            "id": 11779,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -195,16 +195,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11753,
+              "id": 11772,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11752,
+                  "id": 11771,
                   "name": "_finderAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11760,
+                  "scope": 11779,
                   "src": "338:22:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -213,7 +213,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11751,
+                    "id": 11770,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "338:7:43",
@@ -230,12 +230,12 @@
               "src": "337:24:43"
             },
             "returnParameters": {
-              "id": 11754,
+              "id": 11773,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "369:0:43"
             },
-            "scope": 11823,
+            "scope": 11842,
             "src": "326:90:43",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -243,38 +243,38 @@
           },
           {
             "body": {
-              "id": 11789,
+              "id": 11808,
               "nodeType": "Block",
               "src": "502:331:43",
               "statements": [
                 {
                   "assignments": [
-                    11766
+                    11785
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11766,
+                      "id": 11785,
                       "name": "finder",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11789,
+                      "scope": 11808,
                       "src": "512:22:43",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                        "typeIdentifier": "t_contract$_FinderInterface_$16367",
                         "typeString": "contract FinderInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11765,
+                        "id": 11784,
                         "name": "FinderInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16348,
+                        "referencedDeclaration": 16367,
                         "src": "512:15:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                          "typeIdentifier": "t_contract$_FinderInterface_$16367",
                           "typeString": "contract FinderInterface"
                         }
                       },
@@ -282,17 +282,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11770,
+                  "id": 11789,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11768,
+                        "id": 11787,
                         "name": "finderAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11750,
+                        "referencedDeclaration": 11769,
                         "src": "553:13:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -307,18 +307,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11767,
+                      "id": 11786,
                       "name": "FinderInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16348,
+                      "referencedDeclaration": 16367,
                       "src": "537:15:43",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16348_$",
+                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16367_$",
                         "typeString": "type(contract FinderInterface)"
                       }
                     },
-                    "id": 11769,
+                    "id": 11788,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -329,7 +329,7 @@
                     "src": "537:30:43",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                      "typeIdentifier": "t_contract$_FinderInterface_$16367",
                       "typeString": "contract FinderInterface"
                     }
                   },
@@ -338,16 +338,16 @@
                 },
                 {
                   "assignments": [
-                    11772
+                    11791
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11772,
+                      "id": 11791,
                       "name": "collateralWhitelist",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11789,
+                      "scope": 11808,
                       "src": "577:36:43",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -357,7 +357,7 @@
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11771,
+                        "id": 11790,
                         "name": "AddressWhitelist",
                         "nodeType": "UserDefinedTypeName",
                         "referencedDeclaration": 3434,
@@ -371,7 +371,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11780,
+                  "id": 11799,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -382,25 +382,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 11776,
+                              "id": 11795,
                               "name": "OracleInterfaces",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11741,
+                              "referencedDeclaration": 11760,
                               "src": "678:16:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11741_$",
+                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11760_$",
                                 "typeString": "type(library OracleInterfaces)"
                               }
                             },
-                            "id": 11777,
+                            "id": 11796,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "CollateralWhitelist",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 11740,
+                            "referencedDeclaration": 11759,
                             "src": "678:36:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -417,32 +417,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11774,
+                            "id": 11793,
                             "name": "finder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11766,
+                            "referencedDeclaration": 11785,
                             "src": "646:6:43",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                              "typeIdentifier": "t_contract$_FinderInterface_$16367",
                               "typeString": "contract FinderInterface"
                             }
                           },
-                          "id": 11775,
+                          "id": 11794,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "getImplementationAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 16347,
+                          "referencedDeclaration": 16366,
                           "src": "646:31:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                             "typeString": "function (bytes32) view external returns (address)"
                           }
                         },
-                        "id": 11778,
+                        "id": 11797,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -465,7 +465,7 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11773,
+                      "id": 11792,
                       "name": "AddressWhitelist",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -476,7 +476,7 @@
                         "typeString": "type(contract AddressWhitelist)"
                       }
                     },
-                    "id": 11779,
+                    "id": 11798,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -503,11 +503,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 11784,
+                            "id": 11803,
                             "name": "collateralAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11762,
+                            "referencedDeclaration": 11781,
                             "src": "777:17:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -524,18 +524,18 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11782,
+                            "id": 11801,
                             "name": "collateralWhitelist",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11772,
+                            "referencedDeclaration": 11791,
                             "src": "743:19:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_contract$_AddressWhitelist_$3434",
                               "typeString": "contract AddressWhitelist"
                             }
                           },
-                          "id": 11783,
+                          "id": 11802,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -549,7 +549,7 @@
                             "typeString": "function (address) view external returns (bool)"
                           }
                         },
-                        "id": 11785,
+                        "id": 11804,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -567,7 +567,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "436f6c6c61746572616c206e6f742077686974656c6973746564",
-                        "id": 11786,
+                        "id": 11805,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -594,7 +594,7 @@
                           "typeString": "literal_string \"Collateral not whitelisted\""
                         }
                       ],
-                      "id": 11781,
+                      "id": 11800,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -608,7 +608,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 11787,
+                    "id": 11806,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -623,14 +623,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11788,
+                  "id": 11807,
                   "nodeType": "ExpressionStatement",
                   "src": "735:91:43"
                 }
               ]
             },
             "documentation": null,
-            "id": 11790,
+            "id": 11809,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -638,16 +638,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11763,
+              "id": 11782,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11762,
+                  "id": 11781,
                   "name": "collateralAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11790,
+                  "scope": 11809,
                   "src": "461:25:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -656,7 +656,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11761,
+                    "id": 11780,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "461:7:43",
@@ -673,12 +673,12 @@
               "src": "460:27:43"
             },
             "returnParameters": {
-              "id": 11764,
+              "id": 11783,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "502:0:43"
             },
-            "scope": 11823,
+            "scope": 11842,
             "src": "422:411:43",
             "stateMutability": "view",
             "virtual": false,
@@ -686,38 +686,38 @@
           },
           {
             "body": {
-              "id": 11821,
+              "id": 11840,
               "nodeType": "Block",
               "src": "929:234:43",
               "statements": [
                 {
                   "assignments": [
-                    11799
+                    11818
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11799,
+                      "id": 11818,
                       "name": "finder",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11821,
+                      "scope": 11840,
                       "src": "939:22:43",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                        "typeIdentifier": "t_contract$_FinderInterface_$16367",
                         "typeString": "contract FinderInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11798,
+                        "id": 11817,
                         "name": "FinderInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16348,
+                        "referencedDeclaration": 16367,
                         "src": "939:15:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                          "typeIdentifier": "t_contract$_FinderInterface_$16367",
                           "typeString": "contract FinderInterface"
                         }
                       },
@@ -725,17 +725,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11803,
+                  "id": 11822,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11801,
+                        "id": 11820,
                         "name": "finderAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11750,
+                        "referencedDeclaration": 11769,
                         "src": "980:13:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -750,18 +750,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11800,
+                      "id": 11819,
                       "name": "FinderInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16348,
+                      "referencedDeclaration": 16367,
                       "src": "964:15:43",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16348_$",
+                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16367_$",
                         "typeString": "type(contract FinderInterface)"
                       }
                     },
-                    "id": 11802,
+                    "id": 11821,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -772,7 +772,7 @@
                     "src": "964:30:43",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                      "typeIdentifier": "t_contract$_FinderInterface_$16367",
                       "typeString": "contract FinderInterface"
                     }
                   },
@@ -781,32 +781,32 @@
                 },
                 {
                   "assignments": [
-                    11805
+                    11824
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11805,
+                      "id": 11824,
                       "name": "registry",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11821,
+                      "scope": 11840,
                       "src": "1004:17:43",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Registry_$13372",
+                        "typeIdentifier": "t_contract$_Registry_$13391",
                         "typeString": "contract Registry"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11804,
+                        "id": 11823,
                         "name": "Registry",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 13372,
+                        "referencedDeclaration": 13391,
                         "src": "1004:8:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Registry_$13372",
+                          "typeIdentifier": "t_contract$_Registry_$13391",
                           "typeString": "contract Registry"
                         }
                       },
@@ -814,7 +814,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11813,
+                  "id": 11832,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -825,25 +825,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 11809,
+                              "id": 11828,
                               "name": "OracleInterfaces",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11741,
+                              "referencedDeclaration": 11760,
                               "src": "1065:16:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11741_$",
+                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11760_$",
                                 "typeString": "type(library OracleInterfaces)"
                               }
                             },
-                            "id": 11810,
+                            "id": 11829,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "Registry",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 11737,
+                            "referencedDeclaration": 11756,
                             "src": "1065:25:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -860,32 +860,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11807,
+                            "id": 11826,
                             "name": "finder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11799,
+                            "referencedDeclaration": 11818,
                             "src": "1033:6:43",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                              "typeIdentifier": "t_contract$_FinderInterface_$16367",
                               "typeString": "contract FinderInterface"
                             }
                           },
-                          "id": 11808,
+                          "id": 11827,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "getImplementationAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 16347,
+                          "referencedDeclaration": 16366,
                           "src": "1033:31:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                             "typeString": "function (bytes32) view external returns (address)"
                           }
                         },
-                        "id": 11811,
+                        "id": 11830,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -908,18 +908,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11806,
+                      "id": 11825,
                       "name": "Registry",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13372,
+                      "referencedDeclaration": 13391,
                       "src": "1024:8:43",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_Registry_$13372_$",
+                        "typeIdentifier": "t_type$_t_contract$_Registry_$13391_$",
                         "typeString": "type(contract Registry)"
                       }
                     },
-                    "id": 11812,
+                    "id": 11831,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -930,7 +930,7 @@
                     "src": "1024:68:43",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Registry_$13372",
+                      "typeIdentifier": "t_contract$_Registry_$13391",
                       "typeString": "contract Registry"
                     }
                   },
@@ -943,11 +943,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11817,
+                        "id": 11836,
                         "name": "parties",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11793,
+                        "referencedDeclaration": 11812,
                         "src": "1128:7:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
@@ -956,11 +956,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 11818,
+                        "id": 11837,
                         "name": "contractToRegister",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11795,
+                        "referencedDeclaration": 11814,
                         "src": "1137:18:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -981,32 +981,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 11814,
+                        "id": 11833,
                         "name": "registry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11805,
+                        "referencedDeclaration": 11824,
                         "src": "1102:8:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Registry_$13372",
+                          "typeIdentifier": "t_contract$_Registry_$13391",
                           "typeString": "contract Registry"
                         }
                       },
-                      "id": 11816,
+                      "id": 11835,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "registerContract",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13110,
+                      "referencedDeclaration": 13129,
                       "src": "1102:25:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_address_$dyn_memory_ptr_$_t_address_$returns$__$",
                         "typeString": "function (address[] memory,address) external"
                       }
                     },
-                    "id": 11819,
+                    "id": 11838,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1021,14 +1021,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11820,
+                  "id": 11839,
                   "nodeType": "ExpressionStatement",
                   "src": "1102:54:43"
                 }
               ]
             },
             "documentation": null,
-            "id": 11822,
+            "id": 11841,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1036,16 +1036,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11796,
+              "id": 11815,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11793,
+                  "id": 11812,
                   "name": "parties",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11822,
+                  "scope": 11841,
                   "src": "866:24:43",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1055,7 +1055,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 11791,
+                      "id": 11810,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "866:7:43",
@@ -1065,7 +1065,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 11792,
+                    "id": 11811,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "866:9:43",
@@ -1079,11 +1079,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 11795,
+                  "id": 11814,
                   "name": "contractToRegister",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11822,
+                  "scope": 11841,
                   "src": "892:26:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1092,7 +1092,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11794,
+                    "id": 11813,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "892:7:43",
@@ -1109,19 +1109,19 @@
               "src": "865:54:43"
             },
             "returnParameters": {
-              "id": 11797,
+              "id": 11816,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "929:0:43"
             },
-            "scope": 11823,
+            "scope": 11842,
             "src": "839:324:43",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 11824,
+        "scope": 11843,
         "src": "249:916:43"
       }
     ],
@@ -1131,14 +1131,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/ContractCreator.sol",
     "exportedSymbols": {
       "ContractCreator": [
-        11823
+        11842
       ]
     },
-    "id": 11824,
+    "id": 11843,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11743,
+        "id": 11762,
         "literals": [
           "solidity",
           "^",
@@ -1151,10 +1151,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
         "file": "../interfaces/FinderInterface.sol",
-        "id": 11744,
+        "id": 11763,
         "nodeType": "ImportDirective",
-        "scope": 11824,
-        "sourceUnit": 16349,
+        "scope": 11843,
+        "sourceUnit": 16368,
         "src": "25:43:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1162,9 +1162,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/AddressWhitelist.sol",
         "file": "../../common/implementation/AddressWhitelist.sol",
-        "id": 11745,
+        "id": 11764,
         "nodeType": "ImportDirective",
-        "scope": 11824,
+        "scope": 11843,
         "sourceUnit": 3435,
         "src": "69:58:43",
         "symbolAliases": [],
@@ -1173,10 +1173,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Registry.sol",
         "file": "./Registry.sol",
-        "id": 11746,
+        "id": 11765,
         "nodeType": "ImportDirective",
-        "scope": 11824,
-        "sourceUnit": 13373,
+        "scope": 11843,
+        "sourceUnit": 13392,
         "src": "128:24:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1184,10 +1184,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
         "file": "./Constants.sol",
-        "id": 11747,
+        "id": 11766,
         "nodeType": "ImportDirective",
-        "scope": 11824,
-        "sourceUnit": 11742,
+        "scope": 11843,
+        "sourceUnit": 11761,
         "src": "153:25:43",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1198,26 +1198,26 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 11748,
+          "id": 11767,
           "nodeType": "StructuredDocumentation",
           "src": "181:67:43",
           "text": "@title Base contract for all financial contract creators"
         },
         "fullyImplemented": true,
-        "id": 11823,
+        "id": 11842,
         "linearizedBaseContracts": [
-          11823
+          11842
         ],
         "name": "ContractCreator",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 11750,
+            "id": 11769,
             "name": "finderAddress",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11823,
+            "scope": 11842,
             "src": "289:30:43",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1226,7 +1226,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 11749,
+              "id": 11768,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "289:7:43",
@@ -1241,25 +1241,25 @@
           },
           {
             "body": {
-              "id": 11759,
+              "id": 11778,
               "nodeType": "Block",
               "src": "369:47:43",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 11757,
+                    "id": 11776,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 11755,
+                      "id": 11774,
                       "name": "finderAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11750,
+                      "referencedDeclaration": 11769,
                       "src": "379:13:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1270,11 +1270,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 11756,
+                      "id": 11775,
                       "name": "_finderAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11752,
+                      "referencedDeclaration": 11771,
                       "src": "395:14:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -1287,14 +1287,14 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 11758,
+                  "id": 11777,
                   "nodeType": "ExpressionStatement",
                   "src": "379:30:43"
                 }
               ]
             },
             "documentation": null,
-            "id": 11760,
+            "id": 11779,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -1302,16 +1302,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11753,
+              "id": 11772,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11752,
+                  "id": 11771,
                   "name": "_finderAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11760,
+                  "scope": 11779,
                   "src": "338:22:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1320,7 +1320,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11751,
+                    "id": 11770,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "338:7:43",
@@ -1337,12 +1337,12 @@
               "src": "337:24:43"
             },
             "returnParameters": {
-              "id": 11754,
+              "id": 11773,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "369:0:43"
             },
-            "scope": 11823,
+            "scope": 11842,
             "src": "326:90:43",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1350,38 +1350,38 @@
           },
           {
             "body": {
-              "id": 11789,
+              "id": 11808,
               "nodeType": "Block",
               "src": "502:331:43",
               "statements": [
                 {
                   "assignments": [
-                    11766
+                    11785
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11766,
+                      "id": 11785,
                       "name": "finder",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11789,
+                      "scope": 11808,
                       "src": "512:22:43",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                        "typeIdentifier": "t_contract$_FinderInterface_$16367",
                         "typeString": "contract FinderInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11765,
+                        "id": 11784,
                         "name": "FinderInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16348,
+                        "referencedDeclaration": 16367,
                         "src": "512:15:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                          "typeIdentifier": "t_contract$_FinderInterface_$16367",
                           "typeString": "contract FinderInterface"
                         }
                       },
@@ -1389,17 +1389,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11770,
+                  "id": 11789,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11768,
+                        "id": 11787,
                         "name": "finderAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11750,
+                        "referencedDeclaration": 11769,
                         "src": "553:13:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1414,18 +1414,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11767,
+                      "id": 11786,
                       "name": "FinderInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16348,
+                      "referencedDeclaration": 16367,
                       "src": "537:15:43",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16348_$",
+                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16367_$",
                         "typeString": "type(contract FinderInterface)"
                       }
                     },
-                    "id": 11769,
+                    "id": 11788,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1436,7 +1436,7 @@
                     "src": "537:30:43",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                      "typeIdentifier": "t_contract$_FinderInterface_$16367",
                       "typeString": "contract FinderInterface"
                     }
                   },
@@ -1445,16 +1445,16 @@
                 },
                 {
                   "assignments": [
-                    11772
+                    11791
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11772,
+                      "id": 11791,
                       "name": "collateralWhitelist",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11789,
+                      "scope": 11808,
                       "src": "577:36:43",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -1464,7 +1464,7 @@
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11771,
+                        "id": 11790,
                         "name": "AddressWhitelist",
                         "nodeType": "UserDefinedTypeName",
                         "referencedDeclaration": 3434,
@@ -1478,7 +1478,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11780,
+                  "id": 11799,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -1489,25 +1489,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 11776,
+                              "id": 11795,
                               "name": "OracleInterfaces",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11741,
+                              "referencedDeclaration": 11760,
                               "src": "678:16:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11741_$",
+                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11760_$",
                                 "typeString": "type(library OracleInterfaces)"
                               }
                             },
-                            "id": 11777,
+                            "id": 11796,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "CollateralWhitelist",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 11740,
+                            "referencedDeclaration": 11759,
                             "src": "678:36:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -1524,32 +1524,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11774,
+                            "id": 11793,
                             "name": "finder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11766,
+                            "referencedDeclaration": 11785,
                             "src": "646:6:43",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                              "typeIdentifier": "t_contract$_FinderInterface_$16367",
                               "typeString": "contract FinderInterface"
                             }
                           },
-                          "id": 11775,
+                          "id": 11794,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "getImplementationAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 16347,
+                          "referencedDeclaration": 16366,
                           "src": "646:31:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                             "typeString": "function (bytes32) view external returns (address)"
                           }
                         },
-                        "id": 11778,
+                        "id": 11797,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1572,7 +1572,7 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11773,
+                      "id": 11792,
                       "name": "AddressWhitelist",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -1583,7 +1583,7 @@
                         "typeString": "type(contract AddressWhitelist)"
                       }
                     },
-                    "id": 11779,
+                    "id": 11798,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1610,11 +1610,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 11784,
+                            "id": 11803,
                             "name": "collateralAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11762,
+                            "referencedDeclaration": 11781,
                             "src": "777:17:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1631,18 +1631,18 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11782,
+                            "id": 11801,
                             "name": "collateralWhitelist",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11772,
+                            "referencedDeclaration": 11791,
                             "src": "743:19:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_contract$_AddressWhitelist_$3434",
                               "typeString": "contract AddressWhitelist"
                             }
                           },
-                          "id": 11783,
+                          "id": 11802,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1656,7 +1656,7 @@
                             "typeString": "function (address) view external returns (bool)"
                           }
                         },
-                        "id": 11785,
+                        "id": 11804,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1674,7 +1674,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "436f6c6c61746572616c206e6f742077686974656c6973746564",
-                        "id": 11786,
+                        "id": 11805,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1701,7 +1701,7 @@
                           "typeString": "literal_string \"Collateral not whitelisted\""
                         }
                       ],
-                      "id": 11781,
+                      "id": 11800,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -1715,7 +1715,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 11787,
+                    "id": 11806,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1730,14 +1730,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11788,
+                  "id": 11807,
                   "nodeType": "ExpressionStatement",
                   "src": "735:91:43"
                 }
               ]
             },
             "documentation": null,
-            "id": 11790,
+            "id": 11809,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1745,16 +1745,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11763,
+              "id": 11782,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11762,
+                  "id": 11781,
                   "name": "collateralAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11790,
+                  "scope": 11809,
                   "src": "461:25:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1763,7 +1763,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11761,
+                    "id": 11780,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "461:7:43",
@@ -1780,12 +1780,12 @@
               "src": "460:27:43"
             },
             "returnParameters": {
-              "id": 11764,
+              "id": 11783,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "502:0:43"
             },
-            "scope": 11823,
+            "scope": 11842,
             "src": "422:411:43",
             "stateMutability": "view",
             "virtual": false,
@@ -1793,38 +1793,38 @@
           },
           {
             "body": {
-              "id": 11821,
+              "id": 11840,
               "nodeType": "Block",
               "src": "929:234:43",
               "statements": [
                 {
                   "assignments": [
-                    11799
+                    11818
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11799,
+                      "id": 11818,
                       "name": "finder",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11821,
+                      "scope": 11840,
                       "src": "939:22:43",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                        "typeIdentifier": "t_contract$_FinderInterface_$16367",
                         "typeString": "contract FinderInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11798,
+                        "id": 11817,
                         "name": "FinderInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16348,
+                        "referencedDeclaration": 16367,
                         "src": "939:15:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                          "typeIdentifier": "t_contract$_FinderInterface_$16367",
                           "typeString": "contract FinderInterface"
                         }
                       },
@@ -1832,17 +1832,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11803,
+                  "id": 11822,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11801,
+                        "id": 11820,
                         "name": "finderAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11750,
+                        "referencedDeclaration": 11769,
                         "src": "980:13:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1857,18 +1857,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11800,
+                      "id": 11819,
                       "name": "FinderInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16348,
+                      "referencedDeclaration": 16367,
                       "src": "964:15:43",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16348_$",
+                        "typeIdentifier": "t_type$_t_contract$_FinderInterface_$16367_$",
                         "typeString": "type(contract FinderInterface)"
                       }
                     },
-                    "id": 11802,
+                    "id": 11821,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1879,7 +1879,7 @@
                     "src": "964:30:43",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                      "typeIdentifier": "t_contract$_FinderInterface_$16367",
                       "typeString": "contract FinderInterface"
                     }
                   },
@@ -1888,32 +1888,32 @@
                 },
                 {
                   "assignments": [
-                    11805
+                    11824
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11805,
+                      "id": 11824,
                       "name": "registry",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 11821,
+                      "scope": 11840,
                       "src": "1004:17:43",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Registry_$13372",
+                        "typeIdentifier": "t_contract$_Registry_$13391",
                         "typeString": "contract Registry"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 11804,
+                        "id": 11823,
                         "name": "Registry",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 13372,
+                        "referencedDeclaration": 13391,
                         "src": "1004:8:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Registry_$13372",
+                          "typeIdentifier": "t_contract$_Registry_$13391",
                           "typeString": "contract Registry"
                         }
                       },
@@ -1921,7 +1921,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11813,
+                  "id": 11832,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -1932,25 +1932,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 11809,
+                              "id": 11828,
                               "name": "OracleInterfaces",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11741,
+                              "referencedDeclaration": 11760,
                               "src": "1065:16:43",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11741_$",
+                                "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$11760_$",
                                 "typeString": "type(library OracleInterfaces)"
                               }
                             },
-                            "id": 11810,
+                            "id": 11829,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "Registry",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 11737,
+                            "referencedDeclaration": 11756,
                             "src": "1065:25:43",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -1967,32 +1967,32 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 11807,
+                            "id": 11826,
                             "name": "finder",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11799,
+                            "referencedDeclaration": 11818,
                             "src": "1033:6:43",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_FinderInterface_$16348",
+                              "typeIdentifier": "t_contract$_FinderInterface_$16367",
                               "typeString": "contract FinderInterface"
                             }
                           },
-                          "id": 11808,
+                          "id": 11827,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "getImplementationAddress",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 16347,
+                          "referencedDeclaration": 16366,
                           "src": "1033:31:43",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                             "typeString": "function (bytes32) view external returns (address)"
                           }
                         },
-                        "id": 11811,
+                        "id": 11830,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2015,18 +2015,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 11806,
+                      "id": 11825,
                       "name": "Registry",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13372,
+                      "referencedDeclaration": 13391,
                       "src": "1024:8:43",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_Registry_$13372_$",
+                        "typeIdentifier": "t_type$_t_contract$_Registry_$13391_$",
                         "typeString": "type(contract Registry)"
                       }
                     },
-                    "id": 11812,
+                    "id": 11831,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2037,7 +2037,7 @@
                     "src": "1024:68:43",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Registry_$13372",
+                      "typeIdentifier": "t_contract$_Registry_$13391",
                       "typeString": "contract Registry"
                     }
                   },
@@ -2050,11 +2050,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 11817,
+                        "id": 11836,
                         "name": "parties",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11793,
+                        "referencedDeclaration": 11812,
                         "src": "1128:7:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
@@ -2063,11 +2063,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 11818,
+                        "id": 11837,
                         "name": "contractToRegister",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11795,
+                        "referencedDeclaration": 11814,
                         "src": "1137:18:43",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2088,32 +2088,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 11814,
+                        "id": 11833,
                         "name": "registry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11805,
+                        "referencedDeclaration": 11824,
                         "src": "1102:8:43",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Registry_$13372",
+                          "typeIdentifier": "t_contract$_Registry_$13391",
                           "typeString": "contract Registry"
                         }
                       },
-                      "id": 11816,
+                      "id": 11835,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "registerContract",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13110,
+                      "referencedDeclaration": 13129,
                       "src": "1102:25:43",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_address_$dyn_memory_ptr_$_t_address_$returns$__$",
                         "typeString": "function (address[] memory,address) external"
                       }
                     },
-                    "id": 11819,
+                    "id": 11838,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2128,14 +2128,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 11820,
+                  "id": 11839,
                   "nodeType": "ExpressionStatement",
                   "src": "1102:54:43"
                 }
               ]
             },
             "documentation": null,
-            "id": 11822,
+            "id": 11841,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2143,16 +2143,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 11796,
+              "id": 11815,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11793,
+                  "id": 11812,
                   "name": "parties",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11822,
+                  "scope": 11841,
                   "src": "866:24:43",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2162,7 +2162,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 11791,
+                      "id": 11810,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "866:7:43",
@@ -2172,7 +2172,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 11792,
+                    "id": 11811,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "866:9:43",
@@ -2186,11 +2186,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 11795,
+                  "id": 11814,
                   "name": "contractToRegister",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 11822,
+                  "scope": 11841,
                   "src": "892:26:43",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2199,7 +2199,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11794,
+                    "id": 11813,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "892:7:43",
@@ -2216,19 +2216,19 @@
               "src": "865:54:43"
             },
             "returnParameters": {
-              "id": 11797,
+              "id": 11816,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "929:0:43"
             },
-            "scope": 11823,
+            "scope": 11842,
             "src": "839:324:43",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 11824,
+        "scope": 11843,
         "src": "249:916:43"
       }
     ],
@@ -2239,8 +2239,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:02.100Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.818Z",
   "devdoc": {
     "methods": {},
     "title": "Base contract for all financial contract creators"

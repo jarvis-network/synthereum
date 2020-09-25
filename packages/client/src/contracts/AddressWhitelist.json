@@ -210,7 +210,7 @@
         "id": 3227,
         "nodeType": "ImportDirective",
         "scope": 3435,
-        "sourceUnit": 17202,
+        "sourceUnit": 17221,
         "src": "25:52:9",
         "symbolAliases": [],
         "unitAlias": ""
@@ -236,10 +236,10 @@
               "id": 3230,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17201,
+              "referencedDeclaration": 17220,
               "src": "198:7:9",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$17201",
+                "typeIdentifier": "t_contract$_Ownable_$17220",
                 "typeString": "contract Ownable"
               }
             },
@@ -268,8 +268,8 @@
         ],
         "contractDependencies": [
           4331,
-          17092,
-          17201
+          17111,
+          17220
         ],
         "contractKind": "contract",
         "documentation": {
@@ -283,8 +283,8 @@
         "linearizedBaseContracts": [
           3434,
           4331,
-          17201,
-          17092
+          17220,
+          17111
         ],
         "name": "AddressWhitelist",
         "nodeType": "ContractDefinition",
@@ -963,7 +963,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "651:9:9",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1316,7 +1316,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "1280:9:9",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2704,7 +2704,7 @@
         "id": 3227,
         "nodeType": "ImportDirective",
         "scope": 3435,
-        "sourceUnit": 17202,
+        "sourceUnit": 17221,
         "src": "25:52:9",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2730,10 +2730,10 @@
               "id": 3230,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17201,
+              "referencedDeclaration": 17220,
               "src": "198:7:9",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$17201",
+                "typeIdentifier": "t_contract$_Ownable_$17220",
                 "typeString": "contract Ownable"
               }
             },
@@ -2762,8 +2762,8 @@
         ],
         "contractDependencies": [
           4331,
-          17092,
-          17201
+          17111,
+          17220
         ],
         "contractKind": "contract",
         "documentation": {
@@ -2777,8 +2777,8 @@
         "linearizedBaseContracts": [
           3434,
           4331,
-          17201,
-          17092
+          17220,
+          17111
         ],
         "name": "AddressWhitelist",
         "nodeType": "ContractDefinition",
@@ -3457,7 +3457,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "651:9:9",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3810,7 +3810,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "1280:9:9",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5176,8 +5176,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.698Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.574Z",
   "devdoc": {
     "methods": {
       "addToWhitelist(address)": {

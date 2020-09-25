@@ -231,7 +231,7 @@
         "id": 287,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 18487,
+        "sourceUnit": 18506,
         "src": "140:70:1",
         "symbolAliases": [
           {
@@ -338,7 +338,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18486",
+              "typeIdentifier": "t_contract$_IERC20_$18505",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -346,10 +346,10 @@
               "id": 293,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18486,
+              "referencedDeclaration": 18505,
               "src": "349:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18486",
+                "typeIdentifier": "t_contract$_IERC20_$18505",
                 "typeString": "contract IERC20"
               }
             },
@@ -398,7 +398,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18486",
+              "typeIdentifier": "t_contract$_IERC20_$18505",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -406,10 +406,10 @@
               "id": 297,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18486,
+              "referencedDeclaration": 18505,
               "src": "427:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18486",
+                "typeIdentifier": "t_contract$_IERC20_$18505",
                 "typeString": "contract IERC20"
               }
             },
@@ -840,7 +840,7 @@
         "id": 287,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 18487,
+        "sourceUnit": 18506,
         "src": "140:70:1",
         "symbolAliases": [
           {
@@ -947,7 +947,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18486",
+              "typeIdentifier": "t_contract$_IERC20_$18505",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -955,10 +955,10 @@
               "id": 293,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18486,
+              "referencedDeclaration": 18505,
               "src": "349:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18486",
+                "typeIdentifier": "t_contract$_IERC20_$18505",
                 "typeString": "contract IERC20"
               }
             },
@@ -1007,7 +1007,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18486",
+              "typeIdentifier": "t_contract$_IERC20_$18505",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -1015,10 +1015,10 @@
               "id": 297,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18486,
+              "referencedDeclaration": 18505,
               "src": "427:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18486",
+                "typeIdentifier": "t_contract$_IERC20_$18505",
                 "typeString": "contract IERC20"
               }
             },
@@ -1390,8 +1390,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.566Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.487Z",
   "devdoc": {
     "methods": {}
   },

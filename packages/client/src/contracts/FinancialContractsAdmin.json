@@ -91,14 +91,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol",
     "exportedSymbols": {
       "FinancialContractsAdmin": [
-        12201
+        12220
       ]
     },
-    "id": 12202,
+    "id": 12221,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 12155,
+        "id": 12174,
         "literals": [
           "solidity",
           "^",
@@ -111,10 +111,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
         "file": "../interfaces/AdministrateeInterface.sol",
-        "id": 12156,
+        "id": 12175,
         "nodeType": "ImportDirective",
-        "scope": 12202,
-        "sourceUnit": 16329,
+        "scope": 12221,
+        "sourceUnit": 16348,
         "src": "25:50:46",
         "symbolAliases": [],
         "unitAlias": ""
@@ -122,10 +122,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/access/Ownable.sol",
         "file": "@openzeppelin/contracts/access/Ownable.sol",
-        "id": 12157,
+        "id": 12176,
         "nodeType": "ImportDirective",
-        "scope": 12202,
-        "sourceUnit": 17202,
+        "scope": 12221,
+        "sourceUnit": 17221,
         "src": "76:52:46",
         "symbolAliases": [],
         "unitAlias": ""
@@ -137,76 +137,76 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 12159,
+              "id": 12178,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17201,
+              "referencedDeclaration": 17220,
               "src": "326:7:46",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$17201",
+                "typeIdentifier": "t_contract$_Ownable_$17220",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 12160,
+            "id": 12179,
             "nodeType": "InheritanceSpecifier",
             "src": "326:7:46"
           }
         ],
         "contractDependencies": [
-          17092,
-          17201
+          17111,
+          17220
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 12158,
+          "id": 12177,
           "nodeType": "StructuredDocumentation",
           "src": "131:158:46",
           "text": "@title Admin for financial contracts in the UMA system.\n@dev Allows appropriately permissioned admin roles to interact with financial contracts."
         },
         "fullyImplemented": true,
-        "id": 12201,
+        "id": 12220,
         "linearizedBaseContracts": [
-          12201,
-          17201,
-          17092
+          12220,
+          17220,
+          17111
         ],
         "name": "FinancialContractsAdmin",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 12179,
+              "id": 12198,
               "nodeType": "Block",
               "src": "591:140:46",
               "statements": [
                 {
                   "assignments": [
-                    12169
+                    12188
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 12169,
+                      "id": 12188,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 12179,
+                      "scope": 12198,
                       "src": "601:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 12168,
+                        "id": 12187,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16328,
+                        "referencedDeclaration": 16347,
                         "src": "601:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -214,17 +214,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 12173,
+                  "id": 12192,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12171,
+                        "id": 12190,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12163,
+                        "referencedDeclaration": 12182,
                         "src": "663:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -239,18 +239,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 12170,
+                      "id": 12189,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16328,
+                      "referencedDeclaration": 16347,
                       "src": "640:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16347_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 12172,
+                    "id": 12191,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -261,7 +261,7 @@
                     "src": "640:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
@@ -276,32 +276,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12174,
+                        "id": 12193,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12169,
+                        "referencedDeclaration": 12188,
                         "src": "691:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 12176,
+                      "id": 12195,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "emergencyShutdown",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16323,
+                      "referencedDeclaration": 16342,
                       "src": "691:31:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 12177,
+                    "id": 12196,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -316,33 +316,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12178,
+                  "id": 12197,
                   "nodeType": "ExpressionStatement",
                   "src": "691:33:46"
                 }
               ]
             },
             "documentation": {
-              "id": 12161,
+              "id": 12180,
               "nodeType": "StructuredDocumentation",
               "src": "340:169:46",
               "text": "@notice Calls emergency shutdown on the provided financial contract.\n@param financialContract address of the FinancialContract to be shut down."
             },
             "functionSelector": "0caf4121",
-            "id": 12180,
+            "id": 12199,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 12166,
+                "id": 12185,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 12165,
+                  "id": 12184,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "581:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -357,16 +357,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 12164,
+              "id": 12183,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12163,
+                  "id": 12182,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 12180,
+                  "scope": 12199,
                   "src": "545:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -375,7 +375,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12162,
+                    "id": 12181,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "545:7:46",
@@ -392,12 +392,12 @@
               "src": "544:27:46"
             },
             "returnParameters": {
-              "id": 12167,
+              "id": 12186,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "591:0:46"
             },
-            "scope": 12201,
+            "scope": 12220,
             "src": "514:217:46",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -405,38 +405,38 @@
           },
           {
             "body": {
-              "id": 12199,
+              "id": 12218,
               "nodeType": "Block",
               "src": "970:131:46",
               "statements": [
                 {
                   "assignments": [
-                    12189
+                    12208
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 12189,
+                      "id": 12208,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 12199,
+                      "scope": 12218,
                       "src": "980:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 12188,
+                        "id": 12207,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16328,
+                        "referencedDeclaration": 16347,
                         "src": "980:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -444,17 +444,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 12193,
+                  "id": 12212,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12191,
+                        "id": 12210,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12183,
+                        "referencedDeclaration": 12202,
                         "src": "1042:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -469,18 +469,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 12190,
+                      "id": 12209,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16328,
+                      "referencedDeclaration": 16347,
                       "src": "1019:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16347_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 12192,
+                    "id": 12211,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -491,7 +491,7 @@
                     "src": "1019:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
@@ -506,32 +506,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12194,
+                        "id": 12213,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12189,
+                        "referencedDeclaration": 12208,
                         "src": "1070:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 12196,
+                      "id": 12215,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "remargin",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16327,
+                      "referencedDeclaration": 16346,
                       "src": "1070:22:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 12197,
+                    "id": 12216,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -546,33 +546,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12198,
+                  "id": 12217,
                   "nodeType": "ExpressionStatement",
                   "src": "1070:24:46"
                 }
               ]
             },
             "documentation": {
-              "id": 12181,
+              "id": 12200,
               "nodeType": "StructuredDocumentation",
               "src": "737:160:46",
               "text": "@notice Calls remargin on the provided financial contract.\n@param financialContract address of the FinancialContract to be remargined."
             },
             "functionSelector": "547e1c40",
-            "id": 12200,
+            "id": 12219,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 12186,
+                "id": 12205,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 12185,
+                  "id": 12204,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "960:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -587,16 +587,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 12184,
+              "id": 12203,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12183,
+                  "id": 12202,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 12200,
+                  "scope": 12219,
                   "src": "924:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -605,7 +605,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12182,
+                    "id": 12201,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "924:7:46",
@@ -622,19 +622,19 @@
               "src": "923:27:46"
             },
             "returnParameters": {
-              "id": 12187,
+              "id": 12206,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "970:0:46"
             },
-            "scope": 12201,
+            "scope": 12220,
             "src": "902:199:46",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 12202,
+        "scope": 12221,
         "src": "290:813:46"
       }
     ],
@@ -644,14 +644,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/FinancialContractsAdmin.sol",
     "exportedSymbols": {
       "FinancialContractsAdmin": [
-        12201
+        12220
       ]
     },
-    "id": 12202,
+    "id": 12221,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 12155,
+        "id": 12174,
         "literals": [
           "solidity",
           "^",
@@ -664,10 +664,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
         "file": "../interfaces/AdministrateeInterface.sol",
-        "id": 12156,
+        "id": 12175,
         "nodeType": "ImportDirective",
-        "scope": 12202,
-        "sourceUnit": 16329,
+        "scope": 12221,
+        "sourceUnit": 16348,
         "src": "25:50:46",
         "symbolAliases": [],
         "unitAlias": ""
@@ -675,10 +675,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/access/Ownable.sol",
         "file": "@openzeppelin/contracts/access/Ownable.sol",
-        "id": 12157,
+        "id": 12176,
         "nodeType": "ImportDirective",
-        "scope": 12202,
-        "sourceUnit": 17202,
+        "scope": 12221,
+        "sourceUnit": 17221,
         "src": "76:52:46",
         "symbolAliases": [],
         "unitAlias": ""
@@ -690,76 +690,76 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 12159,
+              "id": 12178,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17201,
+              "referencedDeclaration": 17220,
               "src": "326:7:46",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$17201",
+                "typeIdentifier": "t_contract$_Ownable_$17220",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 12160,
+            "id": 12179,
             "nodeType": "InheritanceSpecifier",
             "src": "326:7:46"
           }
         ],
         "contractDependencies": [
-          17092,
-          17201
+          17111,
+          17220
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 12158,
+          "id": 12177,
           "nodeType": "StructuredDocumentation",
           "src": "131:158:46",
           "text": "@title Admin for financial contracts in the UMA system.\n@dev Allows appropriately permissioned admin roles to interact with financial contracts."
         },
         "fullyImplemented": true,
-        "id": 12201,
+        "id": 12220,
         "linearizedBaseContracts": [
-          12201,
-          17201,
-          17092
+          12220,
+          17220,
+          17111
         ],
         "name": "FinancialContractsAdmin",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 12179,
+              "id": 12198,
               "nodeType": "Block",
               "src": "591:140:46",
               "statements": [
                 {
                   "assignments": [
-                    12169
+                    12188
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 12169,
+                      "id": 12188,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 12179,
+                      "scope": 12198,
                       "src": "601:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 12168,
+                        "id": 12187,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16328,
+                        "referencedDeclaration": 16347,
                         "src": "601:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -767,17 +767,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 12173,
+                  "id": 12192,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12171,
+                        "id": 12190,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12163,
+                        "referencedDeclaration": 12182,
                         "src": "663:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -792,18 +792,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 12170,
+                      "id": 12189,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16328,
+                      "referencedDeclaration": 16347,
                       "src": "640:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16347_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 12172,
+                    "id": 12191,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -814,7 +814,7 @@
                     "src": "640:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
@@ -829,32 +829,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12174,
+                        "id": 12193,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12169,
+                        "referencedDeclaration": 12188,
                         "src": "691:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 12176,
+                      "id": 12195,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "emergencyShutdown",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16323,
+                      "referencedDeclaration": 16342,
                       "src": "691:31:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 12177,
+                    "id": 12196,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -869,33 +869,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12178,
+                  "id": 12197,
                   "nodeType": "ExpressionStatement",
                   "src": "691:33:46"
                 }
               ]
             },
             "documentation": {
-              "id": 12161,
+              "id": 12180,
               "nodeType": "StructuredDocumentation",
               "src": "340:169:46",
               "text": "@notice Calls emergency shutdown on the provided financial contract.\n@param financialContract address of the FinancialContract to be shut down."
             },
             "functionSelector": "0caf4121",
-            "id": 12180,
+            "id": 12199,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 12166,
+                "id": 12185,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 12165,
+                  "id": 12184,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "581:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -910,16 +910,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 12164,
+              "id": 12183,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12163,
+                  "id": 12182,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 12180,
+                  "scope": 12199,
                   "src": "545:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -928,7 +928,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12162,
+                    "id": 12181,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "545:7:46",
@@ -945,12 +945,12 @@
               "src": "544:27:46"
             },
             "returnParameters": {
-              "id": 12167,
+              "id": 12186,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "591:0:46"
             },
-            "scope": 12201,
+            "scope": 12220,
             "src": "514:217:46",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -958,38 +958,38 @@
           },
           {
             "body": {
-              "id": 12199,
+              "id": 12218,
               "nodeType": "Block",
               "src": "970:131:46",
               "statements": [
                 {
                   "assignments": [
-                    12189
+                    12208
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 12189,
+                      "id": 12208,
                       "name": "administratee",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 12199,
+                      "scope": 12218,
                       "src": "980:36:46",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                        "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                         "typeString": "contract AdministrateeInterface"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 12188,
+                        "id": 12207,
                         "name": "AdministrateeInterface",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 16328,
+                        "referencedDeclaration": 16347,
                         "src": "980:22:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
@@ -997,17 +997,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 12193,
+                  "id": 12212,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 12191,
+                        "id": 12210,
                         "name": "financialContract",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12183,
+                        "referencedDeclaration": 12202,
                         "src": "1042:17:46",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1022,18 +1022,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 12190,
+                      "id": 12209,
                       "name": "AdministrateeInterface",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 16328,
+                      "referencedDeclaration": 16347,
                       "src": "1019:22:46",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16328_$",
+                        "typeIdentifier": "t_type$_t_contract$_AdministrateeInterface_$16347_$",
                         "typeString": "type(contract AdministrateeInterface)"
                       }
                     },
-                    "id": 12192,
+                    "id": 12211,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1044,7 +1044,7 @@
                     "src": "1019:41:46",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                      "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                       "typeString": "contract AdministrateeInterface"
                     }
                   },
@@ -1059,32 +1059,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 12194,
+                        "id": 12213,
                         "name": "administratee",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 12189,
+                        "referencedDeclaration": 12208,
                         "src": "1070:13:46",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16328",
+                          "typeIdentifier": "t_contract$_AdministrateeInterface_$16347",
                           "typeString": "contract AdministrateeInterface"
                         }
                       },
-                      "id": 12196,
+                      "id": 12215,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "remargin",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 16327,
+                      "referencedDeclaration": 16346,
                       "src": "1070:22:46",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 12197,
+                    "id": 12216,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1099,33 +1099,33 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 12198,
+                  "id": 12217,
                   "nodeType": "ExpressionStatement",
                   "src": "1070:24:46"
                 }
               ]
             },
             "documentation": {
-              "id": 12181,
+              "id": 12200,
               "nodeType": "StructuredDocumentation",
               "src": "737:160:46",
               "text": "@notice Calls remargin on the provided financial contract.\n@param financialContract address of the FinancialContract to be remargined."
             },
             "functionSelector": "547e1c40",
-            "id": 12200,
+            "id": 12219,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 12186,
+                "id": 12205,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 12185,
+                  "id": 12204,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 17150,
+                  "referencedDeclaration": 17169,
                   "src": "960:9:46",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1140,16 +1140,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 12184,
+              "id": 12203,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 12183,
+                  "id": 12202,
                   "name": "financialContract",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 12200,
+                  "scope": 12219,
                   "src": "924:25:46",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1158,7 +1158,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 12182,
+                    "id": 12201,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "924:7:46",
@@ -1175,19 +1175,19 @@
               "src": "923:27:46"
             },
             "returnParameters": {
-              "id": 12187,
+              "id": 12206,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "970:0:46"
             },
-            "scope": 12201,
+            "scope": 12220,
             "src": "902:199:46",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 12202,
+        "scope": 12221,
         "src": "290:813:46"
       }
     ],
@@ -1198,8 +1198,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:02.116Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.830Z",
   "devdoc": {
     "details": "Allows appropriately permissioned admin roles to interact with financial contracts.",
     "methods": {

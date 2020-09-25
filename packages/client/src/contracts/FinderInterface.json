@@ -50,14 +50,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
     "exportedSymbols": {
       "FinderInterface": [
-        16348
+        16367
       ]
     },
-    "id": 16349,
+    "id": 16368,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16330,
+        "id": 16349,
         "literals": [
           "solidity",
           "^",
@@ -73,15 +73,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16331,
+          "id": 16350,
           "nodeType": "StructuredDocumentation",
           "src": "26:144:63",
           "text": "@title Provides addresses of the live contracts implementing certain interfaces.\n@dev Examples are the Oracle or Store interfaces."
         },
         "fullyImplemented": false,
-        "id": 16348,
+        "id": 16367,
         "linearizedBaseContracts": [
-          16348
+          16367
         ],
         "name": "FinderInterface",
         "nodeType": "ContractDefinition",
@@ -89,13 +89,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16332,
+              "id": 16351,
               "nodeType": "StructuredDocumentation",
               "src": "203:300:63",
               "text": "@notice Updates the address of the contract that implements `interfaceName`.\n@param interfaceName bytes32 encoding of the interface name that is either changed or registered.\n@param implementationAddress address of the deployed contract that implements the interface."
             },
             "functionSelector": "31f9665e",
-            "id": 16339,
+            "id": 16358,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -103,16 +103,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16337,
+              "id": 16356,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16334,
+                  "id": 16353,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16339,
+                  "scope": 16358,
                   "src": "545:21:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -121,7 +121,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 16333,
+                    "id": 16352,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "545:7:63",
@@ -135,11 +135,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16336,
+                  "id": 16355,
                   "name": "implementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16339,
+                  "scope": 16358,
                   "src": "568:29:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -148,7 +148,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16335,
+                    "id": 16354,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "568:7:63",
@@ -165,12 +165,12 @@
               "src": "544:54:63"
             },
             "returnParameters": {
-              "id": 16338,
+              "id": 16357,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "607:0:63"
             },
-            "scope": 16348,
+            "scope": 16367,
             "src": "508:100:63",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -179,13 +179,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16340,
+              "id": 16359,
               "nodeType": "StructuredDocumentation",
               "src": "614:250:63",
               "text": "@notice Gets the address of the contract that implements the given `interfaceName`.\n@param interfaceName queried interface.\n@return implementationAddress address of the deployed contract that implements the interface."
             },
             "functionSelector": "aafd5e40",
-            "id": 16347,
+            "id": 16366,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -193,16 +193,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16343,
+              "id": 16362,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16342,
+                  "id": 16361,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16347,
+                  "scope": 16366,
                   "src": "903:21:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -211,7 +211,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 16341,
+                    "id": 16360,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "903:7:63",
@@ -227,16 +227,16 @@
               "src": "902:23:63"
             },
             "returnParameters": {
-              "id": 16346,
+              "id": 16365,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16345,
+                  "id": 16364,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16347,
+                  "scope": 16366,
                   "src": "949:7:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -245,7 +245,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16344,
+                    "id": 16363,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "949:7:63",
@@ -261,14 +261,14 @@
               ],
               "src": "948:9:63"
             },
-            "scope": 16348,
+            "scope": 16367,
             "src": "869:89:63",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16349,
+        "scope": 16368,
         "src": "171:789:63"
       }
     ],
@@ -278,14 +278,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol",
     "exportedSymbols": {
       "FinderInterface": [
-        16348
+        16367
       ]
     },
-    "id": 16349,
+    "id": 16368,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16330,
+        "id": 16349,
         "literals": [
           "solidity",
           "^",
@@ -301,15 +301,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16331,
+          "id": 16350,
           "nodeType": "StructuredDocumentation",
           "src": "26:144:63",
           "text": "@title Provides addresses of the live contracts implementing certain interfaces.\n@dev Examples are the Oracle or Store interfaces."
         },
         "fullyImplemented": false,
-        "id": 16348,
+        "id": 16367,
         "linearizedBaseContracts": [
-          16348
+          16367
         ],
         "name": "FinderInterface",
         "nodeType": "ContractDefinition",
@@ -317,13 +317,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16332,
+              "id": 16351,
               "nodeType": "StructuredDocumentation",
               "src": "203:300:63",
               "text": "@notice Updates the address of the contract that implements `interfaceName`.\n@param interfaceName bytes32 encoding of the interface name that is either changed or registered.\n@param implementationAddress address of the deployed contract that implements the interface."
             },
             "functionSelector": "31f9665e",
-            "id": 16339,
+            "id": 16358,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -331,16 +331,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16337,
+              "id": 16356,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16334,
+                  "id": 16353,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16339,
+                  "scope": 16358,
                   "src": "545:21:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -349,7 +349,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 16333,
+                    "id": 16352,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "545:7:63",
@@ -363,11 +363,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 16336,
+                  "id": 16355,
                   "name": "implementationAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16339,
+                  "scope": 16358,
                   "src": "568:29:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -376,7 +376,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16335,
+                    "id": 16354,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "568:7:63",
@@ -393,12 +393,12 @@
               "src": "544:54:63"
             },
             "returnParameters": {
-              "id": 16338,
+              "id": 16357,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "607:0:63"
             },
-            "scope": 16348,
+            "scope": 16367,
             "src": "508:100:63",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -407,13 +407,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16340,
+              "id": 16359,
               "nodeType": "StructuredDocumentation",
               "src": "614:250:63",
               "text": "@notice Gets the address of the contract that implements the given `interfaceName`.\n@param interfaceName queried interface.\n@return implementationAddress address of the deployed contract that implements the interface."
             },
             "functionSelector": "aafd5e40",
-            "id": 16347,
+            "id": 16366,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -421,16 +421,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16343,
+              "id": 16362,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16342,
+                  "id": 16361,
                   "name": "interfaceName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16347,
+                  "scope": 16366,
                   "src": "903:21:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -439,7 +439,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 16341,
+                    "id": 16360,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "903:7:63",
@@ -455,16 +455,16 @@
               "src": "902:23:63"
             },
             "returnParameters": {
-              "id": 16346,
+              "id": 16365,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16345,
+                  "id": 16364,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16347,
+                  "scope": 16366,
                   "src": "949:7:63",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -473,7 +473,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16344,
+                    "id": 16363,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "949:7:63",
@@ -489,14 +489,14 @@
               ],
               "src": "948:9:63"
             },
-            "scope": 16348,
+            "scope": 16367,
             "src": "869:89:63",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16349,
+        "scope": 16368,
         "src": "171:789:63"
       }
     ],
@@ -507,8 +507,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:02.279Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.927Z",
   "devdoc": {
     "details": "Examples are the Oracle or Store interfaces.",
     "methods": {

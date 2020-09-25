@@ -881,10 +881,10 @@
               "id": 5307,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17568,
+              "referencedDeclaration": 17587,
               "src": "240:8:23",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$17568",
+                "typeIdentifier": "t_contract$_SafeMath_$17587",
                 "typeString": "library SafeMath"
               }
             },
@@ -9690,10 +9690,10 @@
               "id": 5307,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 17568,
+              "referencedDeclaration": 17587,
               "src": "240:8:23",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$17568",
+                "typeIdentifier": "t_contract$_SafeMath_$17587",
                 "typeString": "library SafeMath"
               }
             },
@@ -18395,8 +18395,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.827Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.652Z",
   "devdoc": {
     "methods": {}
   },

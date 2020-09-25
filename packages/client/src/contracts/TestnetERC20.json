@@ -345,7 +345,7 @@
         "id": 5014,
         "nodeType": "ImportDirective",
         "scope": 5052,
-        "sourceUnit": 18076,
+        "sourceUnit": 18095,
         "src": "25:55:15",
         "symbolAliases": [],
         "unitAlias": ""
@@ -360,10 +360,10 @@
               "id": 5016,
               "name": "ERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18075,
+              "referencedDeclaration": 18094,
               "src": "445:5:15",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20_$18075",
+                "typeIdentifier": "t_contract$_ERC20_$18094",
                 "typeString": "contract ERC20"
               }
             },
@@ -373,9 +373,9 @@
           }
         ],
         "contractDependencies": [
-          17092,
-          18075,
-          18486
+          17111,
+          18094,
+          18505
         ],
         "contractKind": "contract",
         "documentation": {
@@ -388,9 +388,9 @@
         "id": 5051,
         "linearizedBaseContracts": [
           5051,
-          18075,
-          18486,
-          17092
+          18094,
+          18505,
+          17111
         ],
         "name": "TestnetERC20",
         "nodeType": "ContractDefinition",
@@ -430,7 +430,7 @@
                       "name": "_setupDecimals",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 18063,
+                      "referencedDeclaration": 18082,
                       "src": "871:14:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint8_$returns$__$",
@@ -504,10 +504,10 @@
                   "name": "ERC20",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 18075,
+                  "referencedDeclaration": 18094,
                   "src": "839:5:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_ERC20_$18075_$",
+                    "typeIdentifier": "t_type$_t_contract$_ERC20_$18094_$",
                     "typeString": "type(contract ERC20)"
                   }
                 },
@@ -670,7 +670,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 17951,
+                      "referencedDeclaration": 17970,
                       "src": "1192:5:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -820,7 +820,7 @@
         "id": 5014,
         "nodeType": "ImportDirective",
         "scope": 5052,
-        "sourceUnit": 18076,
+        "sourceUnit": 18095,
         "src": "25:55:15",
         "symbolAliases": [],
         "unitAlias": ""
@@ -835,10 +835,10 @@
               "id": 5016,
               "name": "ERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18075,
+              "referencedDeclaration": 18094,
               "src": "445:5:15",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20_$18075",
+                "typeIdentifier": "t_contract$_ERC20_$18094",
                 "typeString": "contract ERC20"
               }
             },
@@ -848,9 +848,9 @@
           }
         ],
         "contractDependencies": [
-          17092,
-          18075,
-          18486
+          17111,
+          18094,
+          18505
         ],
         "contractKind": "contract",
         "documentation": {
@@ -863,9 +863,9 @@
         "id": 5051,
         "linearizedBaseContracts": [
           5051,
-          18075,
-          18486,
-          17092
+          18094,
+          18505,
+          17111
         ],
         "name": "TestnetERC20",
         "nodeType": "ContractDefinition",
@@ -905,7 +905,7 @@
                       "name": "_setupDecimals",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 18063,
+                      "referencedDeclaration": 18082,
                       "src": "871:14:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint8_$returns$__$",
@@ -979,10 +979,10 @@
                   "name": "ERC20",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 18075,
+                  "referencedDeclaration": 18094,
                   "src": "839:5:15",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_ERC20_$18075_$",
+                    "typeIdentifier": "t_type$_t_contract$_ERC20_$18094_$",
                     "typeString": "type(contract ERC20)"
                   }
                 },
@@ -1145,7 +1145,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 17951,
+                      "referencedDeclaration": 17970,
                       "src": "1192:5:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -1273,8 +1273,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.807Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.644Z",
   "devdoc": {
     "details": "This contract can be deployed or the interface can be used to communicate with Compound's ERC20 tokens.  Note: this token should never be used to store real value since it allows permissionless minting.",
     "methods": {

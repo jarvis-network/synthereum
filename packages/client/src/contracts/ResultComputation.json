@@ -12,14 +12,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/ResultComputation.sol",
     "exportedSymbols": {
       "ResultComputation": [
-        13543
+        13562
       ]
     },
-    "id": 13544,
+    "id": 13563,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13374,
+        "id": 13393,
         "literals": [
           "solidity",
           "^",
@@ -32,9 +32,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 13375,
+        "id": 13394,
         "nodeType": "ImportDirective",
-        "scope": 13544,
+        "scope": 13563,
         "sourceUnit": 4271,
         "src": "25:52:51",
         "symbolAliases": [],
@@ -46,24 +46,24 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 13376,
+          "id": 13395,
           "nodeType": "StructuredDocumentation",
           "src": "80:126:51",
           "text": "@title Computes vote results.\n@dev The result is the mode of the added votes. Otherwise, the vote is unresolved."
         },
         "fullyImplemented": true,
-        "id": 13543,
+        "id": 13562,
         "linearizedBaseContracts": [
-          13543
+          13562
         ],
         "name": "ResultComputation",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 13379,
+            "id": 13398,
             "libraryName": {
               "contractScope": null,
-              "id": 13377,
+              "id": 13396,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 4270,
@@ -77,7 +77,7 @@
             "src": "239:41:51",
             "typeName": {
               "contractScope": null,
-              "id": 13378,
+              "id": 13397,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 3583,
@@ -90,15 +90,15 @@
           },
           {
             "canonicalName": "ResultComputation.Data",
-            "id": 13388,
+            "id": 13407,
             "members": [
               {
                 "constant": false,
-                "id": 13383,
+                "id": 13402,
                 "name": "voteFrequency",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13388,
+                "scope": 13407,
                 "src": "517:52:51",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -107,9 +107,9 @@
                   "typeString": "mapping(int256 => struct FixedPoint.Unsigned)"
                 },
                 "typeName": {
-                  "id": 13382,
+                  "id": 13401,
                   "keyType": {
-                    "id": 13380,
+                    "id": 13399,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
                     "src": "525:6:51",
@@ -126,7 +126,7 @@
                   },
                   "valueType": {
                     "contractScope": null,
-                    "id": 13381,
+                    "id": 13400,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -142,11 +142,11 @@
               },
               {
                 "constant": false,
-                "id": 13385,
+                "id": 13404,
                 "name": "totalVotes",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13388,
+                "scope": 13407,
                 "src": "628:30:51",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -156,7 +156,7 @@
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 13384,
+                  "id": 13403,
                   "name": "FixedPoint.Unsigned",
                   "nodeType": "UserDefinedTypeName",
                   "referencedDeclaration": 3583,
@@ -171,11 +171,11 @@
               },
               {
                 "constant": false,
-                "id": 13387,
+                "id": 13406,
                 "name": "currentMode",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13388,
+                "scope": 13407,
                 "src": "778:18:51",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -184,7 +184,7 @@
                   "typeString": "int256"
                 },
                 "typeName": {
-                  "id": 13386,
+                  "id": 13405,
                   "name": "int256",
                   "nodeType": "ElementaryTypeName",
                   "src": "778:6:51",
@@ -199,20 +199,20 @@
             ],
             "name": "Data",
             "nodeType": "StructDefinition",
-            "scope": 13543,
+            "scope": 13562,
             "src": "426:377:51",
             "visibility": "public"
           },
           {
             "body": {
-              "id": 13446,
+              "id": 13465,
               "nodeType": "Block",
               "src": "1395:373:51",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 13406,
+                    "id": 13425,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -221,25 +221,25 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13398,
+                        "id": 13417,
                         "name": "data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13391,
+                        "referencedDeclaration": 13410,
                         "src": "1405:4:51",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                          "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                           "typeString": "struct ResultComputation.Data storage pointer"
                         }
                       },
-                      "id": 13400,
+                      "id": 13419,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "totalVotes",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13385,
+                      "referencedDeclaration": 13404,
                       "src": "1405:15:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
@@ -253,11 +253,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13404,
+                          "id": 13423,
                           "name": "numberTokens",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13395,
+                          "referencedDeclaration": 13414,
                           "src": "1443:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -276,32 +276,32 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 13401,
+                            "id": 13420,
                             "name": "data",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13391,
+                            "referencedDeclaration": 13410,
                             "src": "1423:4:51",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                              "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                               "typeString": "struct ResultComputation.Data storage pointer"
                             }
                           },
-                          "id": 13402,
+                          "id": 13421,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "totalVotes",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 13385,
+                          "referencedDeclaration": 13404,
                           "src": "1423:15:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13403,
+                        "id": 13422,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -315,7 +315,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                         }
                       },
-                      "id": 13405,
+                      "id": 13424,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -336,14 +336,14 @@
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "id": 13407,
+                  "id": 13426,
                   "nodeType": "ExpressionStatement",
                   "src": "1405:51:51"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 13420,
+                    "id": 13439,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -354,39 +354,39 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13408,
+                          "id": 13427,
                           "name": "data",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13391,
+                          "referencedDeclaration": 13410,
                           "src": "1466:4:51",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                            "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                             "typeString": "struct ResultComputation.Data storage pointer"
                           }
                         },
-                        "id": 13411,
+                        "id": 13430,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "voteFrequency",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 13383,
+                        "referencedDeclaration": 13402,
                         "src": "1466:18:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                           "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                         }
                       },
-                      "id": 13412,
+                      "id": 13431,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 13410,
+                        "id": 13429,
                         "name": "votePrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13393,
+                        "referencedDeclaration": 13412,
                         "src": "1485:9:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -411,11 +411,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13418,
+                          "id": 13437,
                           "name": "numberTokens",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13395,
+                          "referencedDeclaration": 13414,
                           "src": "1532:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -436,39 +436,39 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13413,
+                              "id": 13432,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1498:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13414,
+                            "id": 13433,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "voteFrequency",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13383,
+                            "referencedDeclaration": 13402,
                             "src": "1498:18:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                               "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                             }
                           },
-                          "id": 13416,
+                          "id": 13435,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 13415,
+                            "id": 13434,
                             "name": "votePrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13393,
+                            "referencedDeclaration": 13412,
                             "src": "1517:9:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -486,7 +486,7 @@
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13417,
+                        "id": 13436,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -500,7 +500,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                         }
                       },
-                      "id": 13419,
+                      "id": 13438,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -521,7 +521,7 @@
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "id": 13421,
+                  "id": 13440,
                   "nodeType": "ExpressionStatement",
                   "src": "1466:79:51"
                 },
@@ -532,7 +532,7 @@
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     },
-                    "id": 13437,
+                    "id": 13456,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -543,18 +543,18 @@
                         "typeIdentifier": "t_int256",
                         "typeString": "int256"
                       },
-                      "id": 13425,
+                      "id": 13444,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
                         "argumentTypes": null,
-                        "id": 13422,
+                        "id": 13441,
                         "name": "votePrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13393,
+                        "referencedDeclaration": 13412,
                         "src": "1572:9:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -567,25 +567,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13423,
+                          "id": 13442,
                           "name": "data",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13391,
+                          "referencedDeclaration": 13410,
                           "src": "1585:4:51",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                            "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                             "typeString": "struct ResultComputation.Data storage pointer"
                           }
                         },
-                        "id": 13424,
+                        "id": 13443,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "currentMode",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 13387,
+                        "referencedDeclaration": 13406,
                         "src": "1585:16:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -609,55 +609,55 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13431,
+                              "id": 13450,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1661:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13432,
+                            "id": 13451,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "voteFrequency",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13383,
+                            "referencedDeclaration": 13402,
                             "src": "1661:18:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                               "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                             }
                           },
-                          "id": 13435,
+                          "id": 13454,
                           "indexExpression": {
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13433,
+                              "id": 13452,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1680:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13434,
+                            "id": 13453,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "currentMode",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13387,
+                            "referencedDeclaration": 13406,
                             "src": "1680:16:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -689,39 +689,39 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13426,
+                              "id": 13445,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1617:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13427,
+                            "id": 13446,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "voteFrequency",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13383,
+                            "referencedDeclaration": 13402,
                             "src": "1617:18:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                               "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                             }
                           },
-                          "id": 13429,
+                          "id": 13448,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 13428,
+                            "id": 13447,
                             "name": "votePrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13393,
+                            "referencedDeclaration": 13412,
                             "src": "1636:9:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -739,7 +739,7 @@
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13430,
+                        "id": 13449,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -753,7 +753,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (bool)"
                         }
                       },
-                      "id": 13436,
+                      "id": 13455,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -775,18 +775,18 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 13445,
+                  "id": 13464,
                   "nodeType": "IfStatement",
                   "src": "1555:207:51",
                   "trueBody": {
-                    "id": 13444,
+                    "id": 13463,
                     "nodeType": "Block",
                     "src": "1709:53:51",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13442,
+                          "id": 13461,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -795,25 +795,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13438,
+                              "id": 13457,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1723:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13440,
+                            "id": 13459,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": true,
                             "memberName": "currentMode",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13387,
+                            "referencedDeclaration": 13406,
                             "src": "1723:16:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -824,11 +824,11 @@
                           "operator": "=",
                           "rightHandSide": {
                             "argumentTypes": null,
-                            "id": 13441,
+                            "id": 13460,
                             "name": "votePrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13393,
+                            "referencedDeclaration": 13412,
                             "src": "1742:9:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -841,7 +841,7 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 13443,
+                        "id": 13462,
                         "nodeType": "ExpressionStatement",
                         "src": "1723:28:51"
                       }
@@ -851,12 +851,12 @@
               ]
             },
             "documentation": {
-              "id": 13389,
+              "id": 13408,
               "nodeType": "StructuredDocumentation",
               "src": "949:307:51",
               "text": "@notice Adds a new vote to be used when computing the result.\n@param data contains information to which the vote is applied.\n@param votePrice value specified in the vote for the given `numberTokens`.\n@param numberTokens number of tokens that voted on the `votePrice`."
             },
-            "id": 13447,
+            "id": 13466,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -864,32 +864,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13396,
+              "id": 13415,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13391,
+                  "id": 13410,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13447,
+                  "scope": 13466,
                   "src": "1287:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13390,
+                    "id": 13409,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "1287:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -898,11 +898,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13393,
+                  "id": 13412,
                   "name": "votePrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13447,
+                  "scope": 13466,
                   "src": "1314:16:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -911,7 +911,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13392,
+                    "id": 13411,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1314:6:51",
@@ -925,11 +925,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13395,
+                  "id": 13414,
                   "name": "numberTokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13447,
+                  "scope": 13466,
                   "src": "1340:39:51",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -939,7 +939,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13394,
+                    "id": 13413,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -956,12 +956,12 @@
               "src": "1277:108:51"
             },
             "returnParameters": {
-              "id": 13397,
+              "id": 13416,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1395:0:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "1261:507:51",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -969,22 +969,22 @@
           },
           {
             "body": {
-              "id": 13505,
+              "id": 13524,
               "nodeType": "Block",
               "src": "2707:527:51",
               "statements": [
                 {
                   "assignments": [
-                    13462
+                    13481
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 13462,
+                      "id": 13481,
                       "name": "modeThreshold",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 13505,
+                      "scope": 13524,
                       "src": "2717:40:51",
                       "stateVariable": false,
                       "storageLocation": "memory",
@@ -994,7 +994,7 @@
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 13461,
+                        "id": 13480,
                         "name": "FixedPoint.Unsigned",
                         "nodeType": "UserDefinedTypeName",
                         "referencedDeclaration": 3583,
@@ -1008,14 +1008,14 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 13470,
+                  "id": 13489,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
                         "hexValue": "313030",
-                        "id": 13468,
+                        "id": 13487,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1044,7 +1044,7 @@
                           {
                             "argumentTypes": null,
                             "hexValue": "3530",
-                            "id": 13465,
+                            "id": 13484,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1069,7 +1069,7 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 13463,
+                            "id": 13482,
                             "name": "FixedPoint",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -1080,7 +1080,7 @@
                               "typeString": "type(library FixedPoint)"
                             }
                           },
-                          "id": 13464,
+                          "id": 13483,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1094,7 +1094,7 @@
                             "typeString": "function (uint256) pure returns (struct FixedPoint.Unsigned memory)"
                           }
                         },
-                        "id": 13466,
+                        "id": 13485,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1109,7 +1109,7 @@
                           "typeString": "struct FixedPoint.Unsigned memory"
                         }
                       },
-                      "id": 13467,
+                      "id": 13486,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -1123,7 +1123,7 @@
                         "typeString": "function (struct FixedPoint.Unsigned memory,uint256) pure returns (struct FixedPoint.Unsigned memory)"
                       }
                     },
-                    "id": 13469,
+                    "id": 13488,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1148,7 +1148,7 @@
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     },
-                    "id": 13488,
+                    "id": 13507,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1158,11 +1158,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13474,
+                          "id": 13493,
                           "name": "minVoteThreshold",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13452,
+                          "referencedDeclaration": 13471,
                           "src": "2858:16:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -1181,32 +1181,32 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 13471,
+                            "id": 13490,
                             "name": "data",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13450,
+                            "referencedDeclaration": 13469,
                             "src": "2828:4:51",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                              "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                               "typeString": "struct ResultComputation.Data storage pointer"
                             }
                           },
-                          "id": 13472,
+                          "id": 13491,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "totalVotes",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 13385,
+                          "referencedDeclaration": 13404,
                           "src": "2828:15:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13473,
+                        "id": 13492,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -1220,7 +1220,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (bool)"
                         }
                       },
-                      "id": 13475,
+                      "id": 13494,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1242,11 +1242,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13486,
+                          "id": 13505,
                           "name": "modeThreshold",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13462,
+                          "referencedDeclaration": 13481,
                           "src": "2963:13:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -1268,25 +1268,25 @@
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 13482,
+                                "id": 13501,
                                 "name": "data",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 13450,
+                                "referencedDeclaration": 13469,
                                 "src": "2932:4:51",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                  "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                   "typeString": "struct ResultComputation.Data storage pointer"
                                 }
                               },
-                              "id": 13483,
+                              "id": 13502,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "totalVotes",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 13385,
+                              "referencedDeclaration": 13404,
                               "src": "2932:15:51",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
@@ -1307,55 +1307,55 @@
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 13476,
+                                  "id": 13495,
                                   "name": "data",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 13450,
+                                  "referencedDeclaration": 13469,
                                   "src": "2891:4:51",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                     "typeString": "struct ResultComputation.Data storage pointer"
                                   }
                                 },
-                                "id": 13477,
+                                "id": 13496,
                                 "isConstant": false,
                                 "isLValue": true,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "voteFrequency",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 13383,
+                                "referencedDeclaration": 13402,
                                 "src": "2891:18:51",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                                   "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                                 }
                               },
-                              "id": 13480,
+                              "id": 13499,
                               "indexExpression": {
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 13478,
+                                  "id": 13497,
                                   "name": "data",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 13450,
+                                  "referencedDeclaration": 13469,
                                   "src": "2910:4:51",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                     "typeString": "struct ResultComputation.Data storage pointer"
                                   }
                                 },
-                                "id": 13479,
+                                "id": 13498,
                                 "isConstant": false,
                                 "isLValue": true,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "currentMode",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 13387,
+                                "referencedDeclaration": 13406,
                                 "src": "2910:16:51",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_int256",
@@ -1373,7 +1373,7 @@
                                 "typeString": "struct FixedPoint.Unsigned storage ref"
                               }
                             },
-                            "id": 13481,
+                            "id": 13500,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
@@ -1387,7 +1387,7 @@
                               "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                             }
                           },
-                          "id": 13484,
+                          "id": 13503,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1402,7 +1402,7 @@
                             "typeString": "struct FixedPoint.Unsigned memory"
                           }
                         },
-                        "id": 13485,
+                        "id": 13504,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -1416,7 +1416,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (bool)"
                         }
                       },
-                      "id": 13487,
+                      "id": 13506,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1438,25 +1438,25 @@
                     }
                   },
                   "falseBody": {
-                    "id": 13503,
+                    "id": 13522,
                     "nodeType": "Block",
                     "src": "3185:43:51",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13501,
+                          "id": 13520,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 13499,
+                            "id": 13518,
                             "name": "isResolved",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13455,
+                            "referencedDeclaration": 13474,
                             "src": "3199:10:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -1468,7 +1468,7 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "66616c7365",
-                            "id": 13500,
+                            "id": 13519,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1489,35 +1489,35 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 13502,
+                        "id": 13521,
                         "nodeType": "ExpressionStatement",
                         "src": "3199:18:51"
                       }
                     ]
                   },
-                  "id": 13504,
+                  "id": 13523,
                   "nodeType": "IfStatement",
                   "src": "2811:417:51",
                   "trueBody": {
-                    "id": 13498,
+                    "id": 13517,
                     "nodeType": "Block",
                     "src": "2988:191:51",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13491,
+                          "id": 13510,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 13489,
+                            "id": 13508,
                             "name": "isResolved",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13455,
+                            "referencedDeclaration": 13474,
                             "src": "3113:10:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -1529,7 +1529,7 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "74727565",
-                            "id": 13490,
+                            "id": 13509,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1550,25 +1550,25 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 13492,
+                        "id": 13511,
                         "nodeType": "ExpressionStatement",
                         "src": "3113:17:51"
                       },
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13496,
+                          "id": 13515,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 13493,
+                            "id": 13512,
                             "name": "price",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13457,
+                            "referencedDeclaration": 13476,
                             "src": "3144:5:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -1581,25 +1581,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13494,
+                              "id": 13513,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13450,
+                              "referencedDeclaration": 13469,
                               "src": "3152:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13495,
+                            "id": 13514,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "currentMode",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13387,
+                            "referencedDeclaration": 13406,
                             "src": "3152:16:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -1612,7 +1612,7 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 13497,
+                        "id": 13516,
                         "nodeType": "ExpressionStatement",
                         "src": "3144:24:51"
                       }
@@ -1622,12 +1622,12 @@
               ]
             },
             "documentation": {
-              "id": 13448,
+              "id": 13467,
               "nodeType": "StructuredDocumentation",
               "src": "1914:616:51",
               "text": "@notice Returns whether the result is resolved, and if so, what value it resolved to.\n@dev `price` should be ignored if `isResolved` is false.\n@param data contains information against which the `minVoteThreshold` is applied.\n@param minVoteThreshold min (exclusive) number of tokens that must have voted for the result to be valid. Can be\nused to enforce a minimum voter participation rate, regardless of how the votes are distributed.\n@return isResolved indicates if the price has been resolved correctly.\n@return price the price that the dvm resolved to."
             },
-            "id": 13506,
+            "id": 13525,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1635,32 +1635,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13453,
+              "id": 13472,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13450,
+                  "id": 13469,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2561:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13449,
+                    "id": 13468,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "2561:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -1669,11 +1669,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13452,
+                  "id": 13471,
                   "name": "minVoteThreshold",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2580:43:51",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1683,7 +1683,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13451,
+                    "id": 13470,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -1700,16 +1700,16 @@
               "src": "2560:64:51"
             },
             "returnParameters": {
-              "id": 13458,
+              "id": 13477,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13455,
+                  "id": 13474,
                   "name": "isResolved",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2672:15:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1718,7 +1718,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13454,
+                    "id": 13473,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2672:4:51",
@@ -1732,11 +1732,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13457,
+                  "id": 13476,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2689:12:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1745,7 +1745,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13456,
+                    "id": 13475,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2689:6:51",
@@ -1760,7 +1760,7 @@
               ],
               "src": "2671:31:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "2535:699:51",
             "stateMutability": "view",
             "virtual": false,
@@ -1768,7 +1768,7 @@
           },
           {
             "body": {
-              "id": 13526,
+              "id": 13545,
               "nodeType": "Block",
               "src": "3695:75:51",
               "statements": [
@@ -1779,18 +1779,18 @@
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     },
-                    "id": 13524,
+                    "id": 13543,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "argumentTypes": null,
-                      "id": 13516,
+                      "id": 13535,
                       "name": "voteHash",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13511,
+                      "referencedDeclaration": 13530,
                       "src": "3712:8:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1809,25 +1809,25 @@
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 13520,
+                                "id": 13539,
                                 "name": "data",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 13509,
+                                "referencedDeclaration": 13528,
                                 "src": "3745:4:51",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                  "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                   "typeString": "struct ResultComputation.Data storage pointer"
                                 }
                               },
-                              "id": 13521,
+                              "id": 13540,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "currentMode",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 13387,
+                              "referencedDeclaration": 13406,
                               "src": "3745:16:51",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_int256",
@@ -1844,7 +1844,7 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13518,
+                              "id": 13537,
                               "name": "abi",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
@@ -1855,7 +1855,7 @@
                                 "typeString": "abi"
                               }
                             },
-                            "id": 13519,
+                            "id": 13538,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1869,7 +1869,7 @@
                               "typeString": "function () pure returns (bytes memory)"
                             }
                           },
-                          "id": 13522,
+                          "id": 13541,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1892,7 +1892,7 @@
                             "typeString": "bytes memory"
                           }
                         ],
-                        "id": 13517,
+                        "id": 13536,
                         "name": "keccak256",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -1903,7 +1903,7 @@
                           "typeString": "function (bytes memory) pure returns (bytes32)"
                         }
                       },
-                      "id": 13523,
+                      "id": 13542,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1924,20 +1924,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 13515,
-                  "id": 13525,
+                  "functionReturnParameters": 13534,
+                  "id": 13544,
                   "nodeType": "Return",
                   "src": "3705:58:51"
                 }
               ]
             },
             "documentation": {
-              "id": 13507,
+              "id": 13526,
               "nodeType": "StructuredDocumentation",
               "src": "3240:360:51",
               "text": "@notice Checks whether a `voteHash` is considered correct.\n@dev Should only be called after a vote is resolved, i.e., via `getResolvedPrice`.\n@param data contains information against which the `voteHash` is checked.\n@param voteHash committed hash submitted by the voter.\n@return bool true if the vote was correct."
             },
-            "id": 13527,
+            "id": 13546,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1945,32 +1945,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13512,
+              "id": 13531,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13509,
+                  "id": 13528,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13527,
+                  "scope": 13546,
                   "src": "3629:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13508,
+                    "id": 13527,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "3629:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -1979,11 +1979,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13511,
+                  "id": 13530,
                   "name": "voteHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13527,
+                  "scope": 13546,
                   "src": "3648:16:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1992,7 +1992,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13510,
+                    "id": 13529,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "3648:7:51",
@@ -2008,16 +2008,16 @@
               "src": "3628:37:51"
             },
             "returnParameters": {
-              "id": 13515,
+              "id": 13534,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13514,
+                  "id": 13533,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13527,
+                  "scope": 13546,
                   "src": "3689:4:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2026,7 +2026,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13513,
+                    "id": 13532,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "3689:4:51",
@@ -2041,7 +2041,7 @@
               ],
               "src": "3688:6:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "3605:165:51",
             "stateMutability": "view",
             "virtual": false,
@@ -2049,7 +2049,7 @@
           },
           {
             "body": {
-              "id": 13541,
+              "id": 13560,
               "nodeType": "Block",
               "src": "4261:60:51",
               "statements": [
@@ -2060,55 +2060,55 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13535,
+                        "id": 13554,
                         "name": "data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13530,
+                        "referencedDeclaration": 13549,
                         "src": "4278:4:51",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                          "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                           "typeString": "struct ResultComputation.Data storage pointer"
                         }
                       },
-                      "id": 13536,
+                      "id": 13555,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "voteFrequency",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13383,
+                      "referencedDeclaration": 13402,
                       "src": "4278:18:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                         "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                       }
                     },
-                    "id": 13539,
+                    "id": 13558,
                     "indexExpression": {
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13537,
+                        "id": 13556,
                         "name": "data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13530,
+                        "referencedDeclaration": 13549,
                         "src": "4297:4:51",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                          "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                           "typeString": "struct ResultComputation.Data storage pointer"
                         }
                       },
-                      "id": 13538,
+                      "id": 13557,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "currentMode",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13387,
+                      "referencedDeclaration": 13406,
                       "src": "4297:16:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -2126,20 +2126,20 @@
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "functionReturnParameters": 13534,
-                  "id": 13540,
+                  "functionReturnParameters": 13553,
+                  "id": 13559,
                   "nodeType": "Return",
                   "src": "4271:43:51"
                 }
               ]
             },
             "documentation": {
-              "id": 13528,
+              "id": 13547,
               "nodeType": "StructuredDocumentation",
               "src": "3776:372:51",
               "text": "@notice Gets the total number of tokens whose votes are considered correct.\n@dev Should only be called after a vote is resolved, i.e., via `getResolvedPrice`.\n@param data contains all votes against which the correctly voted tokens are counted.\n@return FixedPoint.Unsigned which indicates the frequency of the correctly voted tokens."
             },
-            "id": 13542,
+            "id": 13561,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2147,32 +2147,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13531,
+              "id": 13550,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13530,
+                  "id": 13549,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13542,
+                  "scope": 13561,
                   "src": "4191:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13529,
+                    "id": 13548,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "4191:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -2183,16 +2183,16 @@
               "src": "4190:19:51"
             },
             "returnParameters": {
-              "id": 13534,
+              "id": 13553,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13533,
+                  "id": 13552,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13542,
+                  "scope": 13561,
                   "src": "4233:26:51",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2202,7 +2202,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13532,
+                    "id": 13551,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -2218,14 +2218,14 @@
               ],
               "src": "4232:28:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "4153:168:51",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 13544,
+        "scope": 13563,
         "src": "207:4116:51"
       }
     ],
@@ -2235,14 +2235,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/ResultComputation.sol",
     "exportedSymbols": {
       "ResultComputation": [
-        13543
+        13562
       ]
     },
-    "id": 13544,
+    "id": 13563,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13374,
+        "id": 13393,
         "literals": [
           "solidity",
           "^",
@@ -2255,9 +2255,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
         "file": "../../common/implementation/FixedPoint.sol",
-        "id": 13375,
+        "id": 13394,
         "nodeType": "ImportDirective",
-        "scope": 13544,
+        "scope": 13563,
         "sourceUnit": 4271,
         "src": "25:52:51",
         "symbolAliases": [],
@@ -2269,24 +2269,24 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 13376,
+          "id": 13395,
           "nodeType": "StructuredDocumentation",
           "src": "80:126:51",
           "text": "@title Computes vote results.\n@dev The result is the mode of the added votes. Otherwise, the vote is unresolved."
         },
         "fullyImplemented": true,
-        "id": 13543,
+        "id": 13562,
         "linearizedBaseContracts": [
-          13543
+          13562
         ],
         "name": "ResultComputation",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 13379,
+            "id": 13398,
             "libraryName": {
               "contractScope": null,
-              "id": 13377,
+              "id": 13396,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 4270,
@@ -2300,7 +2300,7 @@
             "src": "239:41:51",
             "typeName": {
               "contractScope": null,
-              "id": 13378,
+              "id": 13397,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 3583,
@@ -2313,15 +2313,15 @@
           },
           {
             "canonicalName": "ResultComputation.Data",
-            "id": 13388,
+            "id": 13407,
             "members": [
               {
                 "constant": false,
-                "id": 13383,
+                "id": 13402,
                 "name": "voteFrequency",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13388,
+                "scope": 13407,
                 "src": "517:52:51",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2330,9 +2330,9 @@
                   "typeString": "mapping(int256 => struct FixedPoint.Unsigned)"
                 },
                 "typeName": {
-                  "id": 13382,
+                  "id": 13401,
                   "keyType": {
-                    "id": 13380,
+                    "id": 13399,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
                     "src": "525:6:51",
@@ -2349,7 +2349,7 @@
                   },
                   "valueType": {
                     "contractScope": null,
-                    "id": 13381,
+                    "id": 13400,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -2365,11 +2365,11 @@
               },
               {
                 "constant": false,
-                "id": 13385,
+                "id": 13404,
                 "name": "totalVotes",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13388,
+                "scope": 13407,
                 "src": "628:30:51",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2379,7 +2379,7 @@
                 },
                 "typeName": {
                   "contractScope": null,
-                  "id": 13384,
+                  "id": 13403,
                   "name": "FixedPoint.Unsigned",
                   "nodeType": "UserDefinedTypeName",
                   "referencedDeclaration": 3583,
@@ -2394,11 +2394,11 @@
               },
               {
                 "constant": false,
-                "id": 13387,
+                "id": 13406,
                 "name": "currentMode",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
-                "scope": 13388,
+                "scope": 13407,
                 "src": "778:18:51",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2407,7 +2407,7 @@
                   "typeString": "int256"
                 },
                 "typeName": {
-                  "id": 13386,
+                  "id": 13405,
                   "name": "int256",
                   "nodeType": "ElementaryTypeName",
                   "src": "778:6:51",
@@ -2422,20 +2422,20 @@
             ],
             "name": "Data",
             "nodeType": "StructDefinition",
-            "scope": 13543,
+            "scope": 13562,
             "src": "426:377:51",
             "visibility": "public"
           },
           {
             "body": {
-              "id": 13446,
+              "id": 13465,
               "nodeType": "Block",
               "src": "1395:373:51",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 13406,
+                    "id": 13425,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2444,25 +2444,25 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13398,
+                        "id": 13417,
                         "name": "data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13391,
+                        "referencedDeclaration": 13410,
                         "src": "1405:4:51",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                          "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                           "typeString": "struct ResultComputation.Data storage pointer"
                         }
                       },
-                      "id": 13400,
+                      "id": 13419,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "totalVotes",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13385,
+                      "referencedDeclaration": 13404,
                       "src": "1405:15:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
@@ -2476,11 +2476,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13404,
+                          "id": 13423,
                           "name": "numberTokens",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13395,
+                          "referencedDeclaration": 13414,
                           "src": "1443:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -2499,32 +2499,32 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 13401,
+                            "id": 13420,
                             "name": "data",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13391,
+                            "referencedDeclaration": 13410,
                             "src": "1423:4:51",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                              "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                               "typeString": "struct ResultComputation.Data storage pointer"
                             }
                           },
-                          "id": 13402,
+                          "id": 13421,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "totalVotes",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 13385,
+                          "referencedDeclaration": 13404,
                           "src": "1423:15:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13403,
+                        "id": 13422,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -2538,7 +2538,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                         }
                       },
-                      "id": 13405,
+                      "id": 13424,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2559,14 +2559,14 @@
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "id": 13407,
+                  "id": 13426,
                   "nodeType": "ExpressionStatement",
                   "src": "1405:51:51"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 13420,
+                    "id": 13439,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2577,39 +2577,39 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13408,
+                          "id": 13427,
                           "name": "data",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13391,
+                          "referencedDeclaration": 13410,
                           "src": "1466:4:51",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                            "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                             "typeString": "struct ResultComputation.Data storage pointer"
                           }
                         },
-                        "id": 13411,
+                        "id": 13430,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "voteFrequency",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 13383,
+                        "referencedDeclaration": 13402,
                         "src": "1466:18:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                           "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                         }
                       },
-                      "id": 13412,
+                      "id": 13431,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 13410,
+                        "id": 13429,
                         "name": "votePrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13393,
+                        "referencedDeclaration": 13412,
                         "src": "1485:9:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -2634,11 +2634,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13418,
+                          "id": 13437,
                           "name": "numberTokens",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13395,
+                          "referencedDeclaration": 13414,
                           "src": "1532:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -2659,39 +2659,39 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13413,
+                              "id": 13432,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1498:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13414,
+                            "id": 13433,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "voteFrequency",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13383,
+                            "referencedDeclaration": 13402,
                             "src": "1498:18:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                               "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                             }
                           },
-                          "id": 13416,
+                          "id": 13435,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 13415,
+                            "id": 13434,
                             "name": "votePrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13393,
+                            "referencedDeclaration": 13412,
                             "src": "1517:9:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -2709,7 +2709,7 @@
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13417,
+                        "id": 13436,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -2723,7 +2723,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                         }
                       },
-                      "id": 13419,
+                      "id": 13438,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2744,7 +2744,7 @@
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "id": 13421,
+                  "id": 13440,
                   "nodeType": "ExpressionStatement",
                   "src": "1466:79:51"
                 },
@@ -2755,7 +2755,7 @@
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     },
-                    "id": 13437,
+                    "id": 13456,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2766,18 +2766,18 @@
                         "typeIdentifier": "t_int256",
                         "typeString": "int256"
                       },
-                      "id": 13425,
+                      "id": 13444,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
                         "argumentTypes": null,
-                        "id": 13422,
+                        "id": 13441,
                         "name": "votePrice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13393,
+                        "referencedDeclaration": 13412,
                         "src": "1572:9:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -2790,25 +2790,25 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13423,
+                          "id": 13442,
                           "name": "data",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13391,
+                          "referencedDeclaration": 13410,
                           "src": "1585:4:51",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                            "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                             "typeString": "struct ResultComputation.Data storage pointer"
                           }
                         },
-                        "id": 13424,
+                        "id": 13443,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "currentMode",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 13387,
+                        "referencedDeclaration": 13406,
                         "src": "1585:16:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_int256",
@@ -2832,55 +2832,55 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13431,
+                              "id": 13450,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1661:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13432,
+                            "id": 13451,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "voteFrequency",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13383,
+                            "referencedDeclaration": 13402,
                             "src": "1661:18:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                               "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                             }
                           },
-                          "id": 13435,
+                          "id": 13454,
                           "indexExpression": {
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13433,
+                              "id": 13452,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1680:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13434,
+                            "id": 13453,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "currentMode",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13387,
+                            "referencedDeclaration": 13406,
                             "src": "1680:16:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -2912,39 +2912,39 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13426,
+                              "id": 13445,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1617:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13427,
+                            "id": 13446,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "voteFrequency",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13383,
+                            "referencedDeclaration": 13402,
                             "src": "1617:18:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                               "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                             }
                           },
-                          "id": 13429,
+                          "id": 13448,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 13428,
+                            "id": 13447,
                             "name": "votePrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13393,
+                            "referencedDeclaration": 13412,
                             "src": "1636:9:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -2962,7 +2962,7 @@
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13430,
+                        "id": 13449,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -2976,7 +2976,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (bool)"
                         }
                       },
-                      "id": 13436,
+                      "id": 13455,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2998,18 +2998,18 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 13445,
+                  "id": 13464,
                   "nodeType": "IfStatement",
                   "src": "1555:207:51",
                   "trueBody": {
-                    "id": 13444,
+                    "id": 13463,
                     "nodeType": "Block",
                     "src": "1709:53:51",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13442,
+                          "id": 13461,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -3018,25 +3018,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13438,
+                              "id": 13457,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13391,
+                              "referencedDeclaration": 13410,
                               "src": "1723:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13440,
+                            "id": 13459,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": true,
                             "memberName": "currentMode",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13387,
+                            "referencedDeclaration": 13406,
                             "src": "1723:16:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -3047,11 +3047,11 @@
                           "operator": "=",
                           "rightHandSide": {
                             "argumentTypes": null,
-                            "id": 13441,
+                            "id": 13460,
                             "name": "votePrice",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13393,
+                            "referencedDeclaration": 13412,
                             "src": "1742:9:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -3064,7 +3064,7 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 13443,
+                        "id": 13462,
                         "nodeType": "ExpressionStatement",
                         "src": "1723:28:51"
                       }
@@ -3074,12 +3074,12 @@
               ]
             },
             "documentation": {
-              "id": 13389,
+              "id": 13408,
               "nodeType": "StructuredDocumentation",
               "src": "949:307:51",
               "text": "@notice Adds a new vote to be used when computing the result.\n@param data contains information to which the vote is applied.\n@param votePrice value specified in the vote for the given `numberTokens`.\n@param numberTokens number of tokens that voted on the `votePrice`."
             },
-            "id": 13447,
+            "id": 13466,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3087,32 +3087,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13396,
+              "id": 13415,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13391,
+                  "id": 13410,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13447,
+                  "scope": 13466,
                   "src": "1287:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13390,
+                    "id": 13409,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "1287:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -3121,11 +3121,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13393,
+                  "id": 13412,
                   "name": "votePrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13447,
+                  "scope": 13466,
                   "src": "1314:16:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3134,7 +3134,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13392,
+                    "id": 13411,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1314:6:51",
@@ -3148,11 +3148,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13395,
+                  "id": 13414,
                   "name": "numberTokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13447,
+                  "scope": 13466,
                   "src": "1340:39:51",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -3162,7 +3162,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13394,
+                    "id": 13413,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -3179,12 +3179,12 @@
               "src": "1277:108:51"
             },
             "returnParameters": {
-              "id": 13397,
+              "id": 13416,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1395:0:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "1261:507:51",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -3192,22 +3192,22 @@
           },
           {
             "body": {
-              "id": 13505,
+              "id": 13524,
               "nodeType": "Block",
               "src": "2707:527:51",
               "statements": [
                 {
                   "assignments": [
-                    13462
+                    13481
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 13462,
+                      "id": 13481,
                       "name": "modeThreshold",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 13505,
+                      "scope": 13524,
                       "src": "2717:40:51",
                       "stateVariable": false,
                       "storageLocation": "memory",
@@ -3217,7 +3217,7 @@
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 13461,
+                        "id": 13480,
                         "name": "FixedPoint.Unsigned",
                         "nodeType": "UserDefinedTypeName",
                         "referencedDeclaration": 3583,
@@ -3231,14 +3231,14 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 13470,
+                  "id": 13489,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
                         "hexValue": "313030",
-                        "id": 13468,
+                        "id": 13487,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3267,7 +3267,7 @@
                           {
                             "argumentTypes": null,
                             "hexValue": "3530",
-                            "id": 13465,
+                            "id": 13484,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3292,7 +3292,7 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 13463,
+                            "id": 13482,
                             "name": "FixedPoint",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -3303,7 +3303,7 @@
                               "typeString": "type(library FixedPoint)"
                             }
                           },
-                          "id": 13464,
+                          "id": 13483,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -3317,7 +3317,7 @@
                             "typeString": "function (uint256) pure returns (struct FixedPoint.Unsigned memory)"
                           }
                         },
-                        "id": 13466,
+                        "id": 13485,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -3332,7 +3332,7 @@
                           "typeString": "struct FixedPoint.Unsigned memory"
                         }
                       },
-                      "id": 13467,
+                      "id": 13486,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
@@ -3346,7 +3346,7 @@
                         "typeString": "function (struct FixedPoint.Unsigned memory,uint256) pure returns (struct FixedPoint.Unsigned memory)"
                       }
                     },
-                    "id": 13469,
+                    "id": 13488,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3371,7 +3371,7 @@
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     },
-                    "id": 13488,
+                    "id": 13507,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3381,11 +3381,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13474,
+                          "id": 13493,
                           "name": "minVoteThreshold",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13452,
+                          "referencedDeclaration": 13471,
                           "src": "2858:16:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -3404,32 +3404,32 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 13471,
+                            "id": 13490,
                             "name": "data",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13450,
+                            "referencedDeclaration": 13469,
                             "src": "2828:4:51",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                              "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                               "typeString": "struct ResultComputation.Data storage pointer"
                             }
                           },
-                          "id": 13472,
+                          "id": 13491,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "totalVotes",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 13385,
+                          "referencedDeclaration": 13404,
                           "src": "2828:15:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
                             "typeString": "struct FixedPoint.Unsigned storage ref"
                           }
                         },
-                        "id": 13473,
+                        "id": 13492,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -3443,7 +3443,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (bool)"
                         }
                       },
-                      "id": 13475,
+                      "id": 13494,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3465,11 +3465,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 13486,
+                          "id": 13505,
                           "name": "modeThreshold",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 13462,
+                          "referencedDeclaration": 13481,
                           "src": "2963:13:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
@@ -3491,25 +3491,25 @@
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 13482,
+                                "id": 13501,
                                 "name": "data",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 13450,
+                                "referencedDeclaration": 13469,
                                 "src": "2932:4:51",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                  "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                   "typeString": "struct ResultComputation.Data storage pointer"
                                 }
                               },
-                              "id": 13483,
+                              "id": 13502,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "totalVotes",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 13385,
+                              "referencedDeclaration": 13404,
                               "src": "2932:15:51",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
@@ -3530,55 +3530,55 @@
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 13476,
+                                  "id": 13495,
                                   "name": "data",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 13450,
+                                  "referencedDeclaration": 13469,
                                   "src": "2891:4:51",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                     "typeString": "struct ResultComputation.Data storage pointer"
                                   }
                                 },
-                                "id": 13477,
+                                "id": 13496,
                                 "isConstant": false,
                                 "isLValue": true,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "voteFrequency",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 13383,
+                                "referencedDeclaration": 13402,
                                 "src": "2891:18:51",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                                   "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                                 }
                               },
-                              "id": 13480,
+                              "id": 13499,
                               "indexExpression": {
                                 "argumentTypes": null,
                                 "expression": {
                                   "argumentTypes": null,
-                                  "id": 13478,
+                                  "id": 13497,
                                   "name": "data",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 13450,
+                                  "referencedDeclaration": 13469,
                                   "src": "2910:4:51",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                     "typeString": "struct ResultComputation.Data storage pointer"
                                   }
                                 },
-                                "id": 13479,
+                                "id": 13498,
                                 "isConstant": false,
                                 "isLValue": true,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "currentMode",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 13387,
+                                "referencedDeclaration": 13406,
                                 "src": "2910:16:51",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_int256",
@@ -3596,7 +3596,7 @@
                                 "typeString": "struct FixedPoint.Unsigned storage ref"
                               }
                             },
-                            "id": 13481,
+                            "id": 13500,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
@@ -3610,7 +3610,7 @@
                               "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory)"
                             }
                           },
-                          "id": 13484,
+                          "id": 13503,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -3625,7 +3625,7 @@
                             "typeString": "struct FixedPoint.Unsigned memory"
                           }
                         },
-                        "id": 13485,
+                        "id": 13504,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
@@ -3639,7 +3639,7 @@
                           "typeString": "function (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (bool)"
                         }
                       },
-                      "id": 13487,
+                      "id": 13506,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3661,25 +3661,25 @@
                     }
                   },
                   "falseBody": {
-                    "id": 13503,
+                    "id": 13522,
                     "nodeType": "Block",
                     "src": "3185:43:51",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13501,
+                          "id": 13520,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 13499,
+                            "id": 13518,
                             "name": "isResolved",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13455,
+                            "referencedDeclaration": 13474,
                             "src": "3199:10:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -3691,7 +3691,7 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "66616c7365",
-                            "id": 13500,
+                            "id": 13519,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3712,35 +3712,35 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 13502,
+                        "id": 13521,
                         "nodeType": "ExpressionStatement",
                         "src": "3199:18:51"
                       }
                     ]
                   },
-                  "id": 13504,
+                  "id": 13523,
                   "nodeType": "IfStatement",
                   "src": "2811:417:51",
                   "trueBody": {
-                    "id": 13498,
+                    "id": 13517,
                     "nodeType": "Block",
                     "src": "2988:191:51",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13491,
+                          "id": 13510,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 13489,
+                            "id": 13508,
                             "name": "isResolved",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13455,
+                            "referencedDeclaration": 13474,
                             "src": "3113:10:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -3752,7 +3752,7 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "74727565",
-                            "id": 13490,
+                            "id": 13509,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3773,25 +3773,25 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 13492,
+                        "id": 13511,
                         "nodeType": "ExpressionStatement",
                         "src": "3113:17:51"
                       },
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13496,
+                          "id": 13515,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "argumentTypes": null,
-                            "id": 13493,
+                            "id": 13512,
                             "name": "price",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 13457,
+                            "referencedDeclaration": 13476,
                             "src": "3144:5:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -3804,25 +3804,25 @@
                             "argumentTypes": null,
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13494,
+                              "id": 13513,
                               "name": "data",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 13450,
+                              "referencedDeclaration": 13469,
                               "src": "3152:4:51",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                 "typeString": "struct ResultComputation.Data storage pointer"
                               }
                             },
-                            "id": 13495,
+                            "id": 13514,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "currentMode",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 13387,
+                            "referencedDeclaration": 13406,
                             "src": "3152:16:51",
                             "typeDescriptions": {
                               "typeIdentifier": "t_int256",
@@ -3835,7 +3835,7 @@
                             "typeString": "int256"
                           }
                         },
-                        "id": 13497,
+                        "id": 13516,
                         "nodeType": "ExpressionStatement",
                         "src": "3144:24:51"
                       }
@@ -3845,12 +3845,12 @@
               ]
             },
             "documentation": {
-              "id": 13448,
+              "id": 13467,
               "nodeType": "StructuredDocumentation",
               "src": "1914:616:51",
               "text": "@notice Returns whether the result is resolved, and if so, what value it resolved to.\n@dev `price` should be ignored if `isResolved` is false.\n@param data contains information against which the `minVoteThreshold` is applied.\n@param minVoteThreshold min (exclusive) number of tokens that must have voted for the result to be valid. Can be\nused to enforce a minimum voter participation rate, regardless of how the votes are distributed.\n@return isResolved indicates if the price has been resolved correctly.\n@return price the price that the dvm resolved to."
             },
-            "id": 13506,
+            "id": 13525,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -3858,32 +3858,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13453,
+              "id": 13472,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13450,
+                  "id": 13469,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2561:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13449,
+                    "id": 13468,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "2561:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -3892,11 +3892,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13452,
+                  "id": 13471,
                   "name": "minVoteThreshold",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2580:43:51",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -3906,7 +3906,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13451,
+                    "id": 13470,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -3923,16 +3923,16 @@
               "src": "2560:64:51"
             },
             "returnParameters": {
-              "id": 13458,
+              "id": 13477,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13455,
+                  "id": 13474,
                   "name": "isResolved",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2672:15:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3941,7 +3941,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13454,
+                    "id": 13473,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2672:4:51",
@@ -3955,11 +3955,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13457,
+                  "id": 13476,
                   "name": "price",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13506,
+                  "scope": 13525,
                   "src": "2689:12:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3968,7 +3968,7 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 13456,
+                    "id": 13475,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2689:6:51",
@@ -3983,7 +3983,7 @@
               ],
               "src": "2671:31:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "2535:699:51",
             "stateMutability": "view",
             "virtual": false,
@@ -3991,7 +3991,7 @@
           },
           {
             "body": {
-              "id": 13526,
+              "id": 13545,
               "nodeType": "Block",
               "src": "3695:75:51",
               "statements": [
@@ -4002,18 +4002,18 @@
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     },
-                    "id": 13524,
+                    "id": 13543,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
                       "argumentTypes": null,
-                      "id": 13516,
+                      "id": 13535,
                       "name": "voteHash",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13511,
+                      "referencedDeclaration": 13530,
                       "src": "3712:8:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -4032,25 +4032,25 @@
                               "argumentTypes": null,
                               "expression": {
                                 "argumentTypes": null,
-                                "id": 13520,
+                                "id": 13539,
                                 "name": "data",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 13509,
+                                "referencedDeclaration": 13528,
                                 "src": "3745:4:51",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                                  "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                                   "typeString": "struct ResultComputation.Data storage pointer"
                                 }
                               },
-                              "id": 13521,
+                              "id": 13540,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "currentMode",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 13387,
+                              "referencedDeclaration": 13406,
                               "src": "3745:16:51",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_int256",
@@ -4067,7 +4067,7 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 13518,
+                              "id": 13537,
                               "name": "abi",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
@@ -4078,7 +4078,7 @@
                                 "typeString": "abi"
                               }
                             },
-                            "id": 13519,
+                            "id": 13538,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -4092,7 +4092,7 @@
                               "typeString": "function () pure returns (bytes memory)"
                             }
                           },
-                          "id": 13522,
+                          "id": 13541,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -4115,7 +4115,7 @@
                             "typeString": "bytes memory"
                           }
                         ],
-                        "id": 13517,
+                        "id": 13536,
                         "name": "keccak256",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -4126,7 +4126,7 @@
                           "typeString": "function (bytes memory) pure returns (bytes32)"
                         }
                       },
-                      "id": 13523,
+                      "id": 13542,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -4147,20 +4147,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 13515,
-                  "id": 13525,
+                  "functionReturnParameters": 13534,
+                  "id": 13544,
                   "nodeType": "Return",
                   "src": "3705:58:51"
                 }
               ]
             },
             "documentation": {
-              "id": 13507,
+              "id": 13526,
               "nodeType": "StructuredDocumentation",
               "src": "3240:360:51",
               "text": "@notice Checks whether a `voteHash` is considered correct.\n@dev Should only be called after a vote is resolved, i.e., via `getResolvedPrice`.\n@param data contains information against which the `voteHash` is checked.\n@param voteHash committed hash submitted by the voter.\n@return bool true if the vote was correct."
             },
-            "id": 13527,
+            "id": 13546,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -4168,32 +4168,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13512,
+              "id": 13531,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13509,
+                  "id": 13528,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13527,
+                  "scope": 13546,
                   "src": "3629:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13508,
+                    "id": 13527,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "3629:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -4202,11 +4202,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 13511,
+                  "id": 13530,
                   "name": "voteHash",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13527,
+                  "scope": 13546,
                   "src": "3648:16:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4215,7 +4215,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 13510,
+                    "id": 13529,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "3648:7:51",
@@ -4231,16 +4231,16 @@
               "src": "3628:37:51"
             },
             "returnParameters": {
-              "id": 13515,
+              "id": 13534,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13514,
+                  "id": 13533,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13527,
+                  "scope": 13546,
                   "src": "3689:4:51",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4249,7 +4249,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 13513,
+                    "id": 13532,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "3689:4:51",
@@ -4264,7 +4264,7 @@
               ],
               "src": "3688:6:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "3605:165:51",
             "stateMutability": "view",
             "virtual": false,
@@ -4272,7 +4272,7 @@
           },
           {
             "body": {
-              "id": 13541,
+              "id": 13560,
               "nodeType": "Block",
               "src": "4261:60:51",
               "statements": [
@@ -4283,55 +4283,55 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13535,
+                        "id": 13554,
                         "name": "data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13530,
+                        "referencedDeclaration": 13549,
                         "src": "4278:4:51",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                          "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                           "typeString": "struct ResultComputation.Data storage pointer"
                         }
                       },
-                      "id": 13536,
+                      "id": 13555,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "voteFrequency",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13383,
+                      "referencedDeclaration": 13402,
                       "src": "4278:18:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_int256_$_t_struct$_Unsigned_$3583_storage_$",
                         "typeString": "mapping(int256 => struct FixedPoint.Unsigned storage ref)"
                       }
                     },
-                    "id": 13539,
+                    "id": 13558,
                     "indexExpression": {
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13537,
+                        "id": 13556,
                         "name": "data",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13530,
+                        "referencedDeclaration": 13549,
                         "src": "4297:4:51",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                          "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                           "typeString": "struct ResultComputation.Data storage pointer"
                         }
                       },
-                      "id": 13538,
+                      "id": 13557,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "currentMode",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 13387,
+                      "referencedDeclaration": 13406,
                       "src": "4297:16:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_int256",
@@ -4349,20 +4349,20 @@
                       "typeString": "struct FixedPoint.Unsigned storage ref"
                     }
                   },
-                  "functionReturnParameters": 13534,
-                  "id": 13540,
+                  "functionReturnParameters": 13553,
+                  "id": 13559,
                   "nodeType": "Return",
                   "src": "4271:43:51"
                 }
               ]
             },
             "documentation": {
-              "id": 13528,
+              "id": 13547,
               "nodeType": "StructuredDocumentation",
               "src": "3776:372:51",
               "text": "@notice Gets the total number of tokens whose votes are considered correct.\n@dev Should only be called after a vote is resolved, i.e., via `getResolvedPrice`.\n@param data contains all votes against which the correctly voted tokens are counted.\n@return FixedPoint.Unsigned which indicates the frequency of the correctly voted tokens."
             },
-            "id": 13542,
+            "id": 13561,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -4370,32 +4370,32 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13531,
+              "id": 13550,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13530,
+                  "id": 13549,
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13542,
+                  "scope": 13561,
                   "src": "4191:17:51",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                    "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                     "typeString": "struct ResultComputation.Data"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13529,
+                    "id": 13548,
                     "name": "Data",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 13388,
+                    "referencedDeclaration": 13407,
                     "src": "4191:4:51",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Data_$13388_storage_ptr",
+                      "typeIdentifier": "t_struct$_Data_$13407_storage_ptr",
                       "typeString": "struct ResultComputation.Data"
                     }
                   },
@@ -4406,16 +4406,16 @@
               "src": "4190:19:51"
             },
             "returnParameters": {
-              "id": 13534,
+              "id": 13553,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13533,
+                  "id": 13552,
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13542,
+                  "scope": 13561,
                   "src": "4233:26:51",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -4425,7 +4425,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13532,
+                    "id": 13551,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 3583,
@@ -4441,14 +4441,14 @@
               ],
               "src": "4232:28:51"
             },
-            "scope": 13543,
+            "scope": 13562,
             "src": "4153:168:51",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 13544,
+        "scope": 13563,
         "src": "207:4116:51"
       }
     ],
@@ -4459,8 +4459,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:02.161Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.864Z",
   "devdoc": {
     "details": "The result is the mode of the added votes. Otherwise, the vote is unresolved.",
     "methods": {},

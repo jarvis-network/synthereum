@@ -256,7 +256,7 @@
         "id": 5195,
         "nodeType": "ImportDirective",
         "scope": 5216,
-        "sourceUnit": 18487,
+        "sourceUnit": 18506,
         "src": "25:56:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -271,10 +271,10 @@
               "id": 5197,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18486,
+              "referencedDeclaration": 18505,
               "src": "191:6:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18486",
+                "typeIdentifier": "t_contract$_IERC20_$18505",
                 "typeString": "contract IERC20"
               }
             },
@@ -284,7 +284,7 @@
           }
         ],
         "contractDependencies": [
-          18486
+          18505
         ],
         "contractKind": "contract",
         "documentation": {
@@ -297,7 +297,7 @@
         "id": 5215,
         "linearizedBaseContracts": [
           5215,
-          18486
+          18505
         ],
         "name": "ExpandedIERC20",
         "nodeType": "ContractDefinition",
@@ -516,7 +516,7 @@
         "id": 5195,
         "nodeType": "ImportDirective",
         "scope": 5216,
-        "sourceUnit": 18487,
+        "sourceUnit": 18506,
         "src": "25:56:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -531,10 +531,10 @@
               "id": 5197,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18486,
+              "referencedDeclaration": 18505,
               "src": "191:6:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18486",
+                "typeIdentifier": "t_contract$_IERC20_$18505",
                 "typeString": "contract IERC20"
               }
             },
@@ -544,7 +544,7 @@
           }
         ],
         "contractDependencies": [
-          18486
+          18505
         ],
         "contractKind": "contract",
         "documentation": {
@@ -557,7 +557,7 @@
         "id": 5215,
         "linearizedBaseContracts": [
           5215,
-          18486
+          18505
         ],
         "name": "ExpandedIERC20",
         "nodeType": "ContractDefinition",
@@ -754,8 +754,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.815Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.648Z",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {

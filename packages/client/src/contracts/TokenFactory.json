@@ -42,14 +42,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/TokenFactory.sol",
     "exportedSymbols": {
       "TokenFactory": [
-        7291
+        7305
       ]
     },
-    "id": 7292,
+    "id": 7306,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7230,
+        "id": 7244,
         "literals": [
           "solidity",
           "^",
@@ -62,10 +62,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/SyntheticToken.sol",
         "file": "./SyntheticToken.sol",
-        "id": 7231,
+        "id": 7245,
         "nodeType": "ImportDirective",
-        "scope": 7292,
-        "sourceUnit": 7229,
+        "scope": 7306,
+        "sourceUnit": 7243,
         "src": "25:30:34",
         "symbolAliases": [],
         "unitAlias": ""
@@ -73,9 +73,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol",
         "file": "../../common/interfaces/ExpandedIERC20.sol",
-        "id": 7232,
+        "id": 7246,
         "nodeType": "ImportDirective",
-        "scope": 7292,
+        "scope": 7306,
         "sourceUnit": 5216,
         "src": "56:52:34",
         "symbolAliases": [],
@@ -84,9 +84,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Lockable.sol",
         "file": "../../common/implementation/Lockable.sol",
-        "id": 7233,
+        "id": 7247,
         "nodeType": "ImportDirective",
-        "scope": 7292,
+        "scope": 7306,
         "sourceUnit": 4332,
         "src": "109:50:34",
         "symbolAliases": [],
@@ -99,7 +99,7 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 7235,
+              "id": 7249,
               "name": "Lockable",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 4331,
@@ -109,26 +109,26 @@
                 "typeString": "contract Lockable"
               }
             },
-            "id": 7236,
+            "id": 7250,
             "nodeType": "InheritanceSpecifier",
             "src": "261:8:34"
           }
         ],
         "contractDependencies": [
           4331,
-          7228
+          7242
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 7234,
+          "id": 7248,
           "nodeType": "StructuredDocumentation",
           "src": "162:72:34",
           "text": "@title Factory for creating new mintable and burnable tokens."
         },
         "fullyImplemented": true,
-        "id": 7291,
+        "id": 7305,
         "linearizedBaseContracts": [
-          7291,
+          7305,
           4331
         ],
         "name": "TokenFactory",
@@ -136,38 +136,38 @@
         "nodes": [
           {
             "body": {
-              "id": 7289,
+              "id": 7303,
               "nodeType": "Block",
               "src": "970:300:34",
               "statements": [
                 {
                   "assignments": [
-                    7251
+                    7265
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 7251,
+                      "id": 7265,
                       "name": "mintableToken",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 7289,
+                      "scope": 7303,
                       "src": "980:28:34",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                        "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                         "typeString": "contract SyntheticToken"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 7250,
+                        "id": 7264,
                         "name": "SyntheticToken",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 7228,
+                        "referencedDeclaration": 7242,
                         "src": "980:14:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
@@ -175,17 +175,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 7258,
+                  "id": 7272,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 7254,
+                        "id": 7268,
                         "name": "tokenName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7239,
+                        "referencedDeclaration": 7253,
                         "src": "1030:9:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -194,11 +194,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 7255,
+                        "id": 7269,
                         "name": "tokenSymbol",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7241,
+                        "referencedDeclaration": 7255,
                         "src": "1041:11:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -207,11 +207,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 7256,
+                        "id": 7270,
                         "name": "tokenDecimals",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7243,
+                        "referencedDeclaration": 7257,
                         "src": "1054:13:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint8",
@@ -234,7 +234,7 @@
                           "typeString": "uint8"
                         }
                       ],
-                      "id": 7253,
+                      "id": 7267,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -242,23 +242,23 @@
                       "nodeType": "NewExpression",
                       "src": "1011:18:34",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint8_$returns$_t_contract$_SyntheticToken_$7228_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint8_$returns$_t_contract$_SyntheticToken_$7242_$",
                         "typeString": "function (string memory,string memory,uint8) returns (contract SyntheticToken)"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 7252,
+                        "id": 7266,
                         "name": "SyntheticToken",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 7228,
+                        "referencedDeclaration": 7242,
                         "src": "1015:14:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       }
                     },
-                    "id": 7257,
+                    "id": 7271,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -269,7 +269,7 @@
                     "src": "1011:57:34",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                      "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                       "typeString": "contract SyntheticToken"
                     }
                   },
@@ -284,7 +284,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7262,
+                          "id": 7276,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -295,7 +295,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 7263,
+                        "id": 7277,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -319,32 +319,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 7259,
+                        "id": 7273,
                         "name": "mintableToken",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7251,
+                        "referencedDeclaration": 7265,
                         "src": "1078:13:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
-                      "id": 7261,
+                      "id": 7275,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "addMinter",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7115,
+                      "referencedDeclaration": 7129,
                       "src": "1078:23:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address) external"
                       }
                     },
-                    "id": 7264,
+                    "id": 7278,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -359,7 +359,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7265,
+                  "id": 7279,
                   "nodeType": "ExpressionStatement",
                   "src": "1078:35:34"
                 },
@@ -371,7 +371,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7269,
+                          "id": 7283,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -382,7 +382,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 7270,
+                        "id": 7284,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -406,32 +406,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 7266,
+                        "id": 7280,
                         "name": "mintableToken",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7251,
+                        "referencedDeclaration": 7265,
                         "src": "1123:13:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
-                      "id": 7268,
+                      "id": 7282,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "addBurner",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7151,
+                      "referencedDeclaration": 7165,
                       "src": "1123:23:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address) external"
                       }
                     },
-                    "id": 7271,
+                    "id": 7285,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -446,7 +446,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7272,
+                  "id": 7286,
                   "nodeType": "ExpressionStatement",
                   "src": "1123:35:34"
                 },
@@ -458,7 +458,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7276,
+                          "id": 7290,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -469,7 +469,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 7277,
+                        "id": 7291,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -493,32 +493,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 7273,
+                        "id": 7287,
                         "name": "mintableToken",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7251,
+                        "referencedDeclaration": 7265,
                         "src": "1168:13:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
-                      "id": 7275,
+                      "id": 7289,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "resetOwner",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7201,
                       "src": "1168:24:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address) external"
                       }
                     },
-                    "id": 7278,
+                    "id": 7292,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -533,25 +533,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7279,
+                  "id": 7293,
                   "nodeType": "ExpressionStatement",
                   "src": "1168:36:34"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 7287,
+                    "id": 7301,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 7280,
+                      "id": 7294,
                       "name": "newToken",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7248,
+                      "referencedDeclaration": 7262,
                       "src": "1214:8:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_contract$_ExpandedIERC20_$5215",
@@ -568,14 +568,14 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 7284,
+                              "id": 7298,
                               "name": "mintableToken",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 7251,
+                              "referencedDeclaration": 7265,
                               "src": "1248:13:34",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                                "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                                 "typeString": "contract SyntheticToken"
                               }
                             }
@@ -583,11 +583,11 @@
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                                "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                                 "typeString": "contract SyntheticToken"
                               }
                             ],
-                            "id": 7283,
+                            "id": 7297,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -599,7 +599,7 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 7282,
+                              "id": 7296,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "1240:7:34",
@@ -609,7 +609,7 @@
                               }
                             }
                           },
-                          "id": 7285,
+                          "id": 7299,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -632,7 +632,7 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 7281,
+                        "id": 7295,
                         "name": "ExpandedIERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -643,7 +643,7 @@
                           "typeString": "type(contract ExpandedIERC20)"
                         }
                       },
-                      "id": 7286,
+                      "id": 7300,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -664,29 +664,29 @@
                       "typeString": "contract ExpandedIERC20"
                     }
                   },
-                  "id": 7288,
+                  "id": 7302,
                   "nodeType": "ExpressionStatement",
                   "src": "1214:49:34"
                 }
               ]
             },
             "documentation": {
-              "id": 7237,
+              "id": 7251,
               "nodeType": "StructuredDocumentation",
               "src": "276:503:34",
               "text": "@notice Create a new token and return it to the caller.\n@dev The caller will become the only minter and burner and the new owner capable of assigning the roles.\n@param tokenName used to describe the new token.\n@param tokenSymbol short ticker abbreviation of the name. Ideally < 5 chars.\n@param tokenDecimals used to define the precision used in the token's numerical representation.\n@return newToken an instance of the newly created token interface."
             },
             "functionSelector": "e8a0aed3",
-            "id": 7290,
+            "id": 7304,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [],
-                "id": 7246,
+                "id": 7260,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 7245,
+                  "id": 7259,
                   "name": "nonReentrant",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -705,16 +705,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7244,
+              "id": 7258,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7239,
+                  "id": 7253,
                   "name": "tokenName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "814:25:34",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -723,7 +723,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 7238,
+                    "id": 7252,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "814:6:34",
@@ -737,11 +737,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 7241,
+                  "id": 7255,
                   "name": "tokenSymbol",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "849:27:34",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -750,7 +750,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 7240,
+                    "id": 7254,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "849:6:34",
@@ -764,11 +764,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 7243,
+                  "id": 7257,
                   "name": "tokenDecimals",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "886:19:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -777,7 +777,7 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 7242,
+                    "id": 7256,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
                     "src": "886:5:34",
@@ -793,16 +793,16 @@
               "src": "804:107:34"
             },
             "returnParameters": {
-              "id": 7249,
+              "id": 7263,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7248,
+                  "id": 7262,
                   "name": "newToken",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "945:23:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -812,7 +812,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7247,
+                    "id": 7261,
                     "name": "ExpandedIERC20",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 5215,
@@ -828,14 +828,14 @@
               ],
               "src": "944:25:34"
             },
-            "scope": 7291,
+            "scope": 7305,
             "src": "784:486:34",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7292,
+        "scope": 7306,
         "src": "236:1036:34"
       }
     ],
@@ -845,14 +845,14 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/TokenFactory.sol",
     "exportedSymbols": {
       "TokenFactory": [
-        7291
+        7305
       ]
     },
-    "id": 7292,
+    "id": 7306,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 7230,
+        "id": 7244,
         "literals": [
           "solidity",
           "^",
@@ -865,10 +865,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/SyntheticToken.sol",
         "file": "./SyntheticToken.sol",
-        "id": 7231,
+        "id": 7245,
         "nodeType": "ImportDirective",
-        "scope": 7292,
-        "sourceUnit": 7229,
+        "scope": 7306,
+        "sourceUnit": 7243,
         "src": "25:30:34",
         "symbolAliases": [],
         "unitAlias": ""
@@ -876,9 +876,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol",
         "file": "../../common/interfaces/ExpandedIERC20.sol",
-        "id": 7232,
+        "id": 7246,
         "nodeType": "ImportDirective",
-        "scope": 7292,
+        "scope": 7306,
         "sourceUnit": 5216,
         "src": "56:52:34",
         "symbolAliases": [],
@@ -887,9 +887,9 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Lockable.sol",
         "file": "../../common/implementation/Lockable.sol",
-        "id": 7233,
+        "id": 7247,
         "nodeType": "ImportDirective",
-        "scope": 7292,
+        "scope": 7306,
         "sourceUnit": 4332,
         "src": "109:50:34",
         "symbolAliases": [],
@@ -902,7 +902,7 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 7235,
+              "id": 7249,
               "name": "Lockable",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 4331,
@@ -912,26 +912,26 @@
                 "typeString": "contract Lockable"
               }
             },
-            "id": 7236,
+            "id": 7250,
             "nodeType": "InheritanceSpecifier",
             "src": "261:8:34"
           }
         ],
         "contractDependencies": [
           4331,
-          7228
+          7242
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 7234,
+          "id": 7248,
           "nodeType": "StructuredDocumentation",
           "src": "162:72:34",
           "text": "@title Factory for creating new mintable and burnable tokens."
         },
         "fullyImplemented": true,
-        "id": 7291,
+        "id": 7305,
         "linearizedBaseContracts": [
-          7291,
+          7305,
           4331
         ],
         "name": "TokenFactory",
@@ -939,38 +939,38 @@
         "nodes": [
           {
             "body": {
-              "id": 7289,
+              "id": 7303,
               "nodeType": "Block",
               "src": "970:300:34",
               "statements": [
                 {
                   "assignments": [
-                    7251
+                    7265
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 7251,
+                      "id": 7265,
                       "name": "mintableToken",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 7289,
+                      "scope": 7303,
                       "src": "980:28:34",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                        "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                         "typeString": "contract SyntheticToken"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 7250,
+                        "id": 7264,
                         "name": "SyntheticToken",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 7228,
+                        "referencedDeclaration": 7242,
                         "src": "980:14:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
@@ -978,17 +978,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 7258,
+                  "id": 7272,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 7254,
+                        "id": 7268,
                         "name": "tokenName",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7239,
+                        "referencedDeclaration": 7253,
                         "src": "1030:9:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -997,11 +997,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 7255,
+                        "id": 7269,
                         "name": "tokenSymbol",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7241,
+                        "referencedDeclaration": 7255,
                         "src": "1041:11:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -1010,11 +1010,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 7256,
+                        "id": 7270,
                         "name": "tokenDecimals",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7243,
+                        "referencedDeclaration": 7257,
                         "src": "1054:13:34",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint8",
@@ -1037,7 +1037,7 @@
                           "typeString": "uint8"
                         }
                       ],
-                      "id": 7253,
+                      "id": 7267,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1045,23 +1045,23 @@
                       "nodeType": "NewExpression",
                       "src": "1011:18:34",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint8_$returns$_t_contract$_SyntheticToken_$7228_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint8_$returns$_t_contract$_SyntheticToken_$7242_$",
                         "typeString": "function (string memory,string memory,uint8) returns (contract SyntheticToken)"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 7252,
+                        "id": 7266,
                         "name": "SyntheticToken",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 7228,
+                        "referencedDeclaration": 7242,
                         "src": "1015:14:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       }
                     },
-                    "id": 7257,
+                    "id": 7271,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1072,7 +1072,7 @@
                     "src": "1011:57:34",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                      "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                       "typeString": "contract SyntheticToken"
                     }
                   },
@@ -1087,7 +1087,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7262,
+                          "id": 7276,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1098,7 +1098,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 7263,
+                        "id": 7277,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1122,32 +1122,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 7259,
+                        "id": 7273,
                         "name": "mintableToken",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7251,
+                        "referencedDeclaration": 7265,
                         "src": "1078:13:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
-                      "id": 7261,
+                      "id": 7275,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "addMinter",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7115,
+                      "referencedDeclaration": 7129,
                       "src": "1078:23:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address) external"
                       }
                     },
-                    "id": 7264,
+                    "id": 7278,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1162,7 +1162,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7265,
+                  "id": 7279,
                   "nodeType": "ExpressionStatement",
                   "src": "1078:35:34"
                 },
@@ -1174,7 +1174,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7269,
+                          "id": 7283,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1185,7 +1185,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 7270,
+                        "id": 7284,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1209,32 +1209,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 7266,
+                        "id": 7280,
                         "name": "mintableToken",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7251,
+                        "referencedDeclaration": 7265,
                         "src": "1123:13:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
-                      "id": 7268,
+                      "id": 7282,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "addBurner",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7151,
+                      "referencedDeclaration": 7165,
                       "src": "1123:23:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address) external"
                       }
                     },
-                    "id": 7271,
+                    "id": 7285,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1249,7 +1249,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7272,
+                  "id": 7286,
                   "nodeType": "ExpressionStatement",
                   "src": "1123:35:34"
                 },
@@ -1261,7 +1261,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 7276,
+                          "id": 7290,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1272,7 +1272,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 7277,
+                        "id": 7291,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1296,32 +1296,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 7273,
+                        "id": 7287,
                         "name": "mintableToken",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 7251,
+                        "referencedDeclaration": 7265,
                         "src": "1168:13:34",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                          "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                           "typeString": "contract SyntheticToken"
                         }
                       },
-                      "id": 7275,
+                      "id": 7289,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "resetOwner",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7201,
                       "src": "1168:24:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address) external"
                       }
                     },
-                    "id": 7278,
+                    "id": 7292,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1336,25 +1336,25 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 7279,
+                  "id": 7293,
                   "nodeType": "ExpressionStatement",
                   "src": "1168:36:34"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 7287,
+                    "id": 7301,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 7280,
+                      "id": 7294,
                       "name": "newToken",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7248,
+                      "referencedDeclaration": 7262,
                       "src": "1214:8:34",
                       "typeDescriptions": {
                         "typeIdentifier": "t_contract$_ExpandedIERC20_$5215",
@@ -1371,14 +1371,14 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 7284,
+                              "id": 7298,
                               "name": "mintableToken",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 7251,
+                              "referencedDeclaration": 7265,
                               "src": "1248:13:34",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                                "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                                 "typeString": "contract SyntheticToken"
                               }
                             }
@@ -1386,11 +1386,11 @@
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_contract$_SyntheticToken_$7228",
+                                "typeIdentifier": "t_contract$_SyntheticToken_$7242",
                                 "typeString": "contract SyntheticToken"
                               }
                             ],
-                            "id": 7283,
+                            "id": 7297,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1402,7 +1402,7 @@
                               "typeString": "type(address)"
                             },
                             "typeName": {
-                              "id": 7282,
+                              "id": 7296,
                               "name": "address",
                               "nodeType": "ElementaryTypeName",
                               "src": "1240:7:34",
@@ -1412,7 +1412,7 @@
                               }
                             }
                           },
-                          "id": 7285,
+                          "id": 7299,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1435,7 +1435,7 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 7281,
+                        "id": 7295,
                         "name": "ExpandedIERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
@@ -1446,7 +1446,7 @@
                           "typeString": "type(contract ExpandedIERC20)"
                         }
                       },
-                      "id": 7286,
+                      "id": 7300,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1467,29 +1467,29 @@
                       "typeString": "contract ExpandedIERC20"
                     }
                   },
-                  "id": 7288,
+                  "id": 7302,
                   "nodeType": "ExpressionStatement",
                   "src": "1214:49:34"
                 }
               ]
             },
             "documentation": {
-              "id": 7237,
+              "id": 7251,
               "nodeType": "StructuredDocumentation",
               "src": "276:503:34",
               "text": "@notice Create a new token and return it to the caller.\n@dev The caller will become the only minter and burner and the new owner capable of assigning the roles.\n@param tokenName used to describe the new token.\n@param tokenSymbol short ticker abbreviation of the name. Ideally < 5 chars.\n@param tokenDecimals used to define the precision used in the token's numerical representation.\n@return newToken an instance of the newly created token interface."
             },
             "functionSelector": "e8a0aed3",
-            "id": 7290,
+            "id": 7304,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [],
-                "id": 7246,
+                "id": 7260,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 7245,
+                  "id": 7259,
                   "name": "nonReentrant",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -1508,16 +1508,16 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 7244,
+              "id": 7258,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7239,
+                  "id": 7253,
                   "name": "tokenName",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "814:25:34",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1526,7 +1526,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 7238,
+                    "id": 7252,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "814:6:34",
@@ -1540,11 +1540,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 7241,
+                  "id": 7255,
                   "name": "tokenSymbol",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "849:27:34",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1553,7 +1553,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 7240,
+                    "id": 7254,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "849:6:34",
@@ -1567,11 +1567,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 7243,
+                  "id": 7257,
                   "name": "tokenDecimals",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "886:19:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1580,7 +1580,7 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 7242,
+                    "id": 7256,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
                     "src": "886:5:34",
@@ -1596,16 +1596,16 @@
               "src": "804:107:34"
             },
             "returnParameters": {
-              "id": 7249,
+              "id": 7263,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 7248,
+                  "id": 7262,
                   "name": "newToken",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 7290,
+                  "scope": 7304,
                   "src": "945:23:34",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1615,7 +1615,7 @@
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 7247,
+                    "id": 7261,
                     "name": "ExpandedIERC20",
                     "nodeType": "UserDefinedTypeName",
                     "referencedDeclaration": 5215,
@@ -1631,14 +1631,14 @@
               ],
               "src": "944:25:34"
             },
-            "scope": 7291,
+            "scope": 7305,
             "src": "784:486:34",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 7292,
+        "scope": 7306,
         "src": "236:1036:34"
       }
     ],
@@ -1649,8 +1649,8 @@
     "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-17T18:56:01.933Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-18T09:03:22.715Z",
   "devdoc": {
     "methods": {
       "createToken(string,string,uint8)": {
