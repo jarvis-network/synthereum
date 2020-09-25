@@ -11,10 +11,10 @@ import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
 interface TICInterface {
   // Describe fee structure
   struct Fee {
-    // Fees charged when a user mints tokens
-    FixedPoint.Unsigned mintFee;
-    address[] mintFeeRecipients;
-    uint32[] mintFeeProportions;
+    // Fees charged when a user mints, redeem and excahnges tokens
+    FixedPoint.Unsigned feePercentage;
+    address[] feeRecipients;
+    uint32[] feeProportions;
     // Fees taken from the interest accrued by collateral
     address[] interestFeeRecipients;
     uint32[] interestFeeProportions;
@@ -34,6 +34,7 @@ interface TICInterface {
     address sender;
     TICInterface destTIC;
     FixedPoint.Unsigned numTokens;
+    FixedPoint.Unsigned collateralAmount;
     FixedPoint.Unsigned destNumTokens;
   }
 
@@ -76,6 +77,7 @@ interface TICInterface {
   function exchangeRequest(
     TICInterface destTIC,
     uint256 numTokens,
+    uint256 collateralAmount,
     uint256 destNumTokens
   ) external;
 
@@ -93,7 +95,7 @@ interface TICInterface {
 
   function syntheticToken() external view returns (IERC20);
 
-  function calculateMintFee(uint256 collateralAmount)
+  function calculateFee(uint256 collateralAmount)
     external
     view
     returns (uint256);

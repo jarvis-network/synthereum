@@ -39,7 +39,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     uint256 hatID;
     Fee fee;
     // Used with individual proportions to scale values
-    uint256 totalMintFeeProportions;
+    uint256 totalFeeProportions;
     mapping(bytes32 => MintRequest) mintRequests;
     HitchensUnorderedKeySetLib.Set mintRequestSet;
     mapping(bytes32 => ExchangeRequest) exchangeRequests;
@@ -349,16 +349,19 @@ contract TIC is TICInterface, ReentrancyGuard {
    *      are requested the transaction will fail.
    * @param destTIC The destination TIC
    * @param numTokens The number of source tokens to swap
+   * @param collateralAmount Collateral amount equivalent to numTokens and destNumTokens
    * @param destNumTokens The number of destination tokens the swap attempts to procure
    */
   function exchangeRequest(
     TICInterface destTIC,
     uint256 numTokens,
+    uint256 collateralAmount,
     uint256 destNumTokens
   ) external override nonReentrant {
     bytes32 exchangeID = ticStorage.exchangeRequest(
       destTIC,
       FixedPoint.Unsigned(numTokens),
+      FixedPoint.Unsigned(collateralAmount),
       FixedPoint.Unsigned(destNumTokens)
     );
 
@@ -441,7 +444,7 @@ contract TIC is TICInterface, ReentrancyGuard {
    * @notice Calculate the fees a user will have to pay to mint tokens with their collateral
    * @return The fee structure
    */
-  function calculateMintFee(uint256 collateralAmount)
+  function calculateFee(uint256 collateralAmount)
     external
     override
     view
@@ -450,7 +453,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     return
       FixedPoint
         .Unsigned(collateralAmount)
-        .mul(ticStorage.fee.mintFee)
+        .mul(ticStorage.fee.feePercentage)
         .rawValue;
   }
 

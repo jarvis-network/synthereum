@@ -91,7 +91,8 @@ library TICHelper {
    *       low collateralization ratio if they are the derivative's first sponsor, mint tokens
    *       at that ratio through the TIC, forcing the TIC to take on an undercollateralized
    *       position, then liquidate the TIC.
-   * TODO: Make sure a user cannot mint a ton of tokens with little collateral and force the LP to provide all the extra.
+   * TODO: Make sure a user cannot mint a ton of tokens with little collateral and force
+           the LP to provide all the extra.
    */
   function mintRequest(
     TIC.Storage storage self,
@@ -157,7 +158,7 @@ library TICHelper {
 
     // Calculate fees
     FixedPoint.Unsigned memory feeTotal = mint.collateralAmount.mul(
-      self.fee.mintFee
+      self.fee.feePercentage
     );
 
     // Pull user's collateral and mint fee into the TIC
@@ -175,20 +176,7 @@ library TICHelper {
     // Transfer synthetic asset to the user
     self.transferSynTokens(mint.sender, mint.numTokens);
 
-    // Distribute fees
-    // TODO: Consider using the withdrawal pattern for fees
-    for (uint256 i = 0; i < self.fee.mintFeeRecipients.length; i++) {
-      require(
-        self.rtoken.token().transfer(
-          self.fee.mintFeeRecipients[i],
-          // This order is important because it mixes FixedPoint with unscaled uint
-          feeTotal
-            .mul(self.fee.mintFeeProportions[i])
-            .div(self.totalMintFeeProportions)
-            .rawValue
-        )
-      );
-    }
+    self.sendFee(feeTotal);
   }
 
   /**
@@ -402,12 +390,21 @@ library TICHelper {
     );
 
     require(amountWithdrawn.isGreaterThan(redeem.collateralAmount));
-    require(
-      self.rtoken.redeemAndTransfer(
-        redeem.sender,
-        redeem.collateralAmount.rawValue
-      )
+
+    require(self.rtoken.redeem(redeem.collateralAmount.rawValue));
+
+    // Calculate fees
+    FixedPoint.Unsigned memory feeTotal = redeem.collateralAmount.mul(
+      self.fee.feePercentage
     );
+
+    //Send net amount of dai to the user that submit redeem request
+    self.rtoken.token().transfer(
+      redeem.sender,
+      redeem.collateralAmount.sub(feeTotal).rawValue
+    );
+
+    self.sendFee(feeTotal);
   }
 
   /**
@@ -509,6 +506,7 @@ library TICHelper {
    * @param self Data type the library is attached to
    * @param destTIC The destination TIC
    * @param numTokens The number of source tokens to swap
+   * @param collateralAmount Collateral amount equivalent to numTokens and destNumTokens
    * @param destNumTokens The number of destination tokens the swap attempts to procure
    * @return The exchange request ID
    */
@@ -516,6 +514,7 @@ library TICHelper {
     TIC.Storage storage self,
     TICInterface destTIC,
     FixedPoint.Unsigned memory numTokens,
+    FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory destNumTokens
   ) public returns (bytes32) {
     bytes32 exchangeID = keccak256(
@@ -534,6 +533,7 @@ library TICHelper {
       msg.sender,
       destTIC,
       numTokens,
+      collateralAmount,
       destNumTokens
     );
 
@@ -572,15 +572,36 @@ library TICHelper {
     FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
       self.rtoken.balanceOf(address(this)).sub(prevBalance)
     );
-    require(amountWithdrawn.isGreaterThan(0), 'No tokens were redeemed');
 
     require(
-      self.rtoken.approve(address(exchange.destTIC), amountWithdrawn.rawValue)
+      amountWithdrawn.isGreaterThan(exchange.collateralAmount),
+      'No tokens were redeemed'
+    );
+
+    // Calculate fees
+    FixedPoint.Unsigned memory feeTotal = exchange.collateralAmount.mul(
+      self.fee.feePercentage
+    );
+
+    // Redeem the RToken fee for the underlying
+    self.rtoken.redeem(feeTotal.rawValue);
+
+    self.sendFee(feeTotal);
+
+    FixedPoint.Unsigned memory destinationCollateral = amountWithdrawn.sub(
+      feeTotal
+    );
+
+    require(
+      self.rtoken.approve(
+        address(exchange.destTIC),
+        destinationCollateral.rawValue
+      )
     );
 
     // Mint the destination tokens with the withdrawn collateral
     exchange.destTIC.exchangeMint(
-      amountWithdrawn.rawValue,
+      destinationCollateral.rawValue,
       exchange.destNumTokens.rawValue
     );
 
@@ -768,15 +789,40 @@ library TICHelper {
     internal
   {
     require(
-      _fee.mintFeeRecipients.length == _fee.mintFeeProportions.length,
+      _fee.feeRecipients.length == _fee.feeProportions.length,
       'Fee recipients and fee proportions do not match'
     );
 
     self.fee = _fee;
 
     // Store the sum of all proportions
-    for (uint256 i = 0; i < self.fee.mintFeeProportions.length; i++) {
-      self.totalMintFeeProportions += self.fee.mintFeeProportions[i];
+    for (uint256 i = 0; i < self.fee.feeProportions.length; i++) {
+      self.totalFeeProportions += self.fee.feeProportions[i];
+    }
+  }
+
+  /**
+   * @notice Set the TIC fee structure parameters
+   * @param self Data type the library is attached tfo
+   * @param _feeAmount Amount of fee to send
+   */
+  function sendFee(
+    TIC.Storage storage self,
+    FixedPoint.Unsigned memory _feeAmount
+  ) internal {
+    // Distribute fees
+    // TODO: Consider using the withdrawal pattern for fees
+    for (uint256 i = 0; i < self.fee.feeRecipients.length; i++) {
+      require(
+        self.rtoken.token().transfer(
+          self.fee.feeRecipients[i],
+          // This order is important because it mixes FixedPoint with unscaled uint
+          _feeAmount
+            .mul(self.fee.feeProportions[i])
+            .div(self.totalFeeProportions)
+            .rawValue
+        )
+      );
     }
   }
 

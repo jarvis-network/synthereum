@@ -5,6 +5,8 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 abstract contract IRToken is IERC20 {
   IERC20 public token;
 
+  function redeem(uint256 redeemTokens) external virtual returns (bool);
+
   function redeemAndTransfer(address redeemTo, uint256 redeemTokens)
     external
     virtual

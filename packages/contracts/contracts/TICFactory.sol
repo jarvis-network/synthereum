@@ -48,15 +48,15 @@ contract TICFactory is Ownable, ReentrancyGuard {
     uint256 startingCollateralization,
     TIC.Fee calldata fee
   ) external onlyOwner nonReentrant {
-    // Create the derivative contract
-    // TODO: `ExpiringMultiPartyCreator` past commit b6dc123e11d7253cdbe0fcc40b7ab4a992c4e56d
-    //       requires `minSponsorTokens` param.
-    address derivative = derivativeCreator.createExpiringMultiParty(params);
     //Require TIC does not exist
     require(
       address(symbolToTIC[params.syntheticSymbol]) == address(0),
       'TIC already exists'
     );
+    // Create the derivative contract
+    // TODO: `ExpiringMultiPartyCreator` past commit b6dc123e11d7253cdbe0fcc40b7ab4a992c4e56d
+    //       requires `minSponsorTokens` param.
+    address derivative = derivativeCreator.createExpiringMultiParty(params);
     // Create the TIC
     symbolToTIC[params.syntheticSymbol] = new TIC(
       IExpiringMultiParty(derivative),
