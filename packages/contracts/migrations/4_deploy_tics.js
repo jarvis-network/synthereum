@@ -18,9 +18,9 @@ module.exports = function (deployer, network, accounts) {
   collateralAddress = contracts[networkId]['collateralAddress'];
 
   const fee = {
-    mintFee: { rawValue: web3Utils.toWei('0.001') },
-    mintFeeRecipients: [protocolOwner, liquidityProvider],
-    mintFeeProportions: [50, 50],
+    feePercentage: { rawValue: web3Utils.toWei('0.001') },
+    feeRecipients: [protocolOwner, liquidityProvider],
+    feeProportions: [50, 50],
     interestFeeRecipients: [protocolOwner, liquidityProvider],
     interestFeeProportions: [10, 90],
   };
@@ -43,7 +43,7 @@ module.exports = function (deployer, network, accounts) {
       params.priceFeedIdentifier = web3Utils.toHex(
         assetParams.priceFeedIdentifier,
       );
-
+      console.log(params);
       const factory = await TICFactory.deployed();
       const { receipt } = await factory.createTIC(
         params,
