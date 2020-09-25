@@ -213,7 +213,7 @@ class SynFiatKeeper:
                         sender = mint[2]
                         allowance = self.collateral_tokens[i].functions.allowance(sender, tic.address).call()
                         balance = self.collateral_tokens[i].functions.balanceOf(sender).call()
-                        
+
                         if balance >= collateral:
                             if allowance >= collateral:
                                 self.resolve_request(mint[0], tic.functions.approveMint, "Approved mint")
@@ -273,7 +273,7 @@ class SynFiatKeeper:
                         sender = redeem[2]
                         allowance = self.synthetic_tokens[i].functions.allowance(sender, tic.address).call()
                         balance = self.synthetic_tokens[i].functions.balanceOf(sender).call()
-                        
+
                         if balance >= tokens:
                             if allowance >= tokens:
                                 self.resolve_request(redeem[0], tic.functions.approveRedeem, "Approved redeem")
@@ -336,7 +336,7 @@ class SynFiatKeeper:
                     if dest_tic_index == None:
                         self.logger.warning(f"No TIC configured for address {exchange[3]}")
                         continue
-                    
+
                     dest_price_feed = self.tic_config["synthetics"][dest_tic_index]["price_feed"]
                     dest_ohlc = self.get_price_feed_ohlc(dest_price_feed, request_time)
 
@@ -349,13 +349,13 @@ class SynFiatKeeper:
                         self.logger.info(f"{self.tic_config['synthetics'][dest_tic_index]['symbol']} was ${dest_price} for exchange request {exchange[0].hex()}")
 
                         tokens = exchange[4][0]
-                        dest_tokens = exchange[5][0]
+                        dest_tokens = exchange[6][0]
 
                         if tokens * price >= dest_tokens * dest_price * (1 - self.max_slippage):
                             sender = exchange[2]
                             allowance = self.synthetic_tokens[i].functions.allowance(sender, tic.address).call()
                             balance = self.synthetic_tokens[i].functions.balanceOf(sender).call()
-                            
+
                             if balance >= tokens:
                                 if allowance >= tokens:
                                     self.resolve_request(exchange[0], tic.functions.approveExchange, "Approved exchange")
@@ -386,7 +386,7 @@ class SynFiatKeeper:
 
     def get_price_feed_ohlc(self, price_feed, request_time):
         endpoint = "https://data.jarvis.exchange/jarvis/prices/history"
-        
+
         query = f"?symbol={price_feed}&resolution=1&from={(request_time - 60)}&to={request_time}"
 
         response = requests.get(endpoint + query)
