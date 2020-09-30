@@ -8,7 +8,6 @@ import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
 import {FixedPoint} from './uma-contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IRToken} from './IRToken.sol';
 import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
 
 /**
@@ -56,21 +55,8 @@ library TICHelper {
     self.validator = _validator;
     self.startingCollateralization = _startingCollateralization;
     self.setFee(_fee);
-
-    // Set RToken hat according to the interest fee structure
-    self.rtoken = IRToken(address(self.derivative.collateralCurrency()));
-    self.hatID = self.rtoken.createHat(
-      self.fee.interestFeeRecipients,
-      self.fee.interestFeeProportions,
-      false
-    );
-
-    // Use hat inheritance to set the derivative's hat
-    // - This is necessary to stop an attacker from transfering RToken directly to the
-    //   derivative before an LP and redirect all the fees to themselves.
-    require(
-      self.rtoken.transfer(address(self.derivative), 0),
-      "Failed to set the derivative's RToken hat"
+    self.collateralToken = IERC20(
+      address(self.derivative.collateralCurrency())
     );
   }
 
@@ -162,10 +148,7 @@ library TICHelper {
     );
 
     // Pull user's collateral and mint fee into the TIC
-    self.pullUnderlying(mint.sender, mint.collateralAmount.add(feeTotal));
-
-    // Convert user's collateral to an RToken
-    self.mintRTokens(mint.collateralAmount);
+    self.pullCollateral(mint.sender, mint.collateralAmount.add(feeTotal));
 
     // Mint synthetic asset with margin from user and provider
     self.mintSynTokens(
@@ -201,10 +184,7 @@ library TICHelper {
     FixedPoint.Unsigned memory collateralAmount
   ) public {
     // Pull LP's collateral into the TIC
-    self.pullUnderlying(msg.sender, collateralAmount);
-
-    // Convert LP's collateral to an RToken
-    self.mintRTokens(collateralAmount);
+    self.pullCollateral(msg.sender, collateralAmount);
   }
 
   /**
@@ -218,7 +198,7 @@ library TICHelper {
   ) public {
     // Redeem the RToken collateral for the underlying and transfer to the user
     require(
-      self.rtoken.redeemAndTransfer(msg.sender, collateralAmount.rawValue)
+      self.collateralToken.transfer(msg.sender, collateralAmount.rawValue)
     );
   }
 
@@ -255,7 +235,7 @@ library TICHelper {
     );
 
     // Pull RToken collateral from calling TIC contract
-    require(self.pullRTokens(collateralAmount));
+    require(self.pullCollateral(msg.sender, collateralAmount));
 
     // Mint new tokens with the collateral
     self.mintSynTokens(numTokens.mulCeil(targetCollateralization), numTokens);
@@ -283,18 +263,18 @@ library TICHelper {
    *       86d8ffcd694bbed40140dede179692e7036f2996
    */
   function withdrawPassedRequest(TIC.Storage storage self) public {
-    uint256 prevBalance = self.rtoken.balanceOf(address(this));
+    uint256 prevBalance = self.collateralToken.balanceOf(address(this));
 
     // TODO: This will return the amount withdrawn after commit
     //       86d8ffcd694bbed40140dede179692e7036f2996
     self.derivative.withdrawPassedRequest();
 
     FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.rtoken.balanceOf(address(this)).sub(prevBalance)
+      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
     );
     require(amountWithdrawn.isGreaterThan(0), 'No tokens were redeemed');
     require(
-      self.rtoken.redeemAndTransfer(msg.sender, amountWithdrawn.rawValue)
+      self.collateralToken.transfer(msg.sender, amountWithdrawn.rawValue)
     );
   }
 
@@ -380,18 +360,16 @@ library TICHelper {
       'Token approve failed'
     );
 
-    uint256 prevBalance = self.rtoken.balanceOf(address(this));
+    uint256 prevBalance = self.collateralToken.balanceOf(address(this));
 
     // Redeem the synthetic tokens for RToken collateral
     self.derivative.redeem(redeem.numTokens);
 
     FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.rtoken.balanceOf(address(this)).sub(prevBalance)
+      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
     );
 
     require(amountWithdrawn.isGreaterThan(redeem.collateralAmount));
-
-    require(self.rtoken.redeem(redeem.collateralAmount.rawValue));
 
     // Calculate fees
     FixedPoint.Unsigned memory feeTotal = redeem.collateralAmount.mul(
@@ -399,7 +377,7 @@ library TICHelper {
     );
 
     //Send net amount of dai to the user that submit redeem request
-    self.rtoken.token().transfer(
+    self.collateralToken.transfer(
       redeem.sender,
       redeem.collateralAmount.sub(feeTotal).rawValue
     );
@@ -461,7 +439,7 @@ library TICHelper {
       );
     }
 
-    uint256 prevBalance = self.rtoken.balanceOf(address(this));
+    uint256 prevBalance = self.collateralToken.balanceOf(address(this));
 
     // Redeem the synthetic tokens for RToken collateral
     // TODO: This will return the amount withdrawn after commit
@@ -469,7 +447,7 @@ library TICHelper {
     self.derivative.settleExpired();
 
     FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.rtoken.balanceOf(address(this)).sub(prevBalance)
+      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
     );
     // TODO: May need to allow LPs to continue despite noting being withdrawn
     require(amountWithdrawn.isGreaterThan(0), 'No collateral was withdrawn');
@@ -481,7 +459,9 @@ library TICHelper {
     if (msg.sender == self.liquidityProvider) {
       // Redeem LP collateral held in TIC pool
       // Includes excess collateral withdrawn by a user previously calling `settleExpired`
-      totalToRedeem = FixedPoint.Unsigned(self.rtoken.balanceOf(address(this)));
+      totalToRedeem = FixedPoint.Unsigned(
+        self.collateralToken.balanceOf(address(this))
+      );
     } else {
       // Otherwise, separate excess collateral from redeemed token value
       // Must be called after `derivative.settleExpired` to make sure expiryPrice is set
@@ -495,7 +475,7 @@ library TICHelper {
     }
 
     // Redeem the RToken collateral for the underlying and transfer to the user
-    require(self.rtoken.redeemAndTransfer(msg.sender, totalToRedeem.rawValue));
+    require(self.collateralToken.transfer(msg.sender, totalToRedeem.rawValue));
   }
 
   /**
@@ -562,7 +542,7 @@ library TICHelper {
     self.exchangeRequestSet.remove(exchangeID);
     delete self.exchangeRequests[exchangeID];
 
-    uint256 prevBalance = self.rtoken.balanceOf(address(this));
+    uint256 prevBalance = self.collateralToken.balanceOf(address(this));
 
     // Burn the source tokens to get collateral
     // TODO: This will be able to return the amount withdrawn after commit
@@ -570,7 +550,7 @@ library TICHelper {
     self.redeemForCollateral(exchange.sender, exchange.numTokens);
 
     FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.rtoken.balanceOf(address(this)).sub(prevBalance)
+      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
     );
 
     require(
@@ -583,9 +563,6 @@ library TICHelper {
       self.fee.feePercentage
     );
 
-    // Redeem the RToken fee for the underlying
-    self.rtoken.redeem(feeTotal.rawValue);
-
     self.sendFee(feeTotal);
 
     FixedPoint.Unsigned memory destinationCollateral = amountWithdrawn.sub(
@@ -593,7 +570,7 @@ library TICHelper {
     );
 
     require(
-      self.rtoken.approve(
+      self.collateralToken.approve(
         address(exchange.destTIC),
         destinationCollateral.rawValue
       )
@@ -701,49 +678,22 @@ library TICHelper {
   //----------------------------------------
 
   /**
-   * @notice Mints an amount of RTokens using the default hat
-   * @param self Data type the library is attached to
-   * @param numTokens The amount of underlying used to mint RTokens
-   */
-  function mintRTokens(
-    TIC.Storage storage self,
-    FixedPoint.Unsigned memory numTokens
-  ) internal {
-    require(
-      self.rtoken.token().approve(address(self.rtoken), numTokens.rawValue),
-      'Token approve failed'
-    );
-    require(self.rtoken.mintWithSelectedHat(numTokens.rawValue, self.hatID));
-  }
-
-  /**
-   * @notice Pulls RTokens from the sender to store in the TIC
+   * @notice Pulls collateral tokens from the sender to store in the TIC
    * @param self Data type the library is attached to
    * @param numTokens The number of tokens to pull
    * @return `true` if the transfer succeeded, otherwise `false`
    */
-  function pullRTokens(
-    TIC.Storage storage self,
-    FixedPoint.Unsigned memory numTokens
-  ) internal returns (bool) {
-    return
-      self.rtoken.transferFrom(msg.sender, address(this), numTokens.rawValue);
-  }
-
-  /**
-   * @notice Pulls underlying tokens from the sender to store in the TIC
-   * @param self Data type the library is attached to
-   * @param from Address to pull tokens from
-   * @param numTokens The number of tokens to pull
-   * @return `true` if the transfer succeeded, otherwise `false`
-   */
-  function pullUnderlying(
+  function pullCollateral(
     TIC.Storage storage self,
     address from,
     FixedPoint.Unsigned memory numTokens
   ) internal returns (bool) {
     return
-      self.rtoken.token().transferFrom(from, address(this), numTokens.rawValue);
+      self.collateralToken.transferFrom(
+        from,
+        address(this),
+        numTokens.rawValue
+      );
   }
 
   /**
@@ -758,7 +708,10 @@ library TICHelper {
     FixedPoint.Unsigned memory numTokens
   ) internal {
     require(
-      self.rtoken.approve(address(self.derivative), collateralAmount.rawValue)
+      self.collateralToken.approve(
+        address(self.derivative),
+        collateralAmount.rawValue
+      )
     );
     self.derivative.create(collateralAmount, numTokens);
   }
@@ -814,7 +767,7 @@ library TICHelper {
     // TODO: Consider using the withdrawal pattern for fees
     for (uint256 i = 0; i < self.fee.feeRecipients.length; i++) {
       require(
-        self.rtoken.token().transfer(
+        self.collateralToken.transfer(
           self.fee.feeRecipients[i],
           // This order is important because it mixes FixedPoint with unscaled uint
           _feeAmount
@@ -908,7 +861,7 @@ library TICHelper {
   ) internal view returns (bool) {
     // Collateral ratio possible for new tokens accounting for LP collateral
     FixedPoint.Unsigned memory newCollateralization = collateralAmount
-      .add(FixedPoint.Unsigned(self.rtoken.balanceOf(address(this))))
+      .add(FixedPoint.Unsigned(self.collateralToken.balanceOf(address(this))))
       .div(numTokens);
 
     // Check that LP collateral can support the tokens to be minted

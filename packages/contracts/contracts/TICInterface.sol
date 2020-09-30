@@ -15,9 +15,6 @@ interface TICInterface {
     FixedPoint.Unsigned feePercentage;
     address[] feeRecipients;
     uint32[] feeProportions;
-    // Fees taken from the interest accrued by collateral
-    address[] interestFeeRecipients;
-    uint32[] interestFeeProportions;
   }
 
   struct MintRequest {

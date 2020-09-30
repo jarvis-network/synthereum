@@ -35,7 +35,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     FixedPoint.Unsigned startingCollateralization;
     address liquidityProvider;
     address validator;
-    IRToken rtoken;
+    IERC20 collateralToken;
     uint256 hatID;
     Fee fee;
     // Used with individual proportions to scale values
@@ -429,7 +429,7 @@ contract TIC is TICInterface, ReentrancyGuard {
    * @return The ERC20 collateral token
    */
   function collateralToken() external override view returns (IERC20) {
-    return ticStorage.rtoken.token();
+    return ticStorage.collateralToken;
   }
 
   /**
