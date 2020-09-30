@@ -14,15 +14,13 @@ module.exports = function (deployer, network, accounts) {
 
   const networkId = config.networks[network.replace(/-fork$/, '')].network_id;
 
-  // Kovan rDAI address
+  // Kovan collateral address
   collateralAddress = contracts[networkId]['collateralAddress'];
 
   const fee = {
     feePercentage: { rawValue: web3Utils.toWei('0.001') },
     feeRecipients: [protocolOwner, liquidityProvider],
     feeProportions: [50, 50],
-    interestFeeRecipients: [protocolOwner, liquidityProvider],
-    interestFeeProportions: [10, 90],
   };
 
   console.log('\n');
