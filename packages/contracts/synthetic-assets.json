@@ -4,7 +4,7 @@
     "syntheticSymbol": "jEUR",
     "priceFeedIdentifier": "EUR/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
-    "startingCollateralization": "1537000000000000000",
+    "startingCollateralization": "1527000",
     "minSponsorTokens": { "rawValue": "1000000000000000000" }
   },
   {
@@ -12,7 +12,7 @@
     "syntheticSymbol": "jCHF",
     "priceFeedIdentifier": "CHF/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
-    "startingCollateralization": "1429000000000000000",
+    "startingCollateralization": "1415000",
     "minSponsorTokens": { "rawValue": "1000000000000000000" }
   },
   {
@@ -20,7 +20,7 @@
     "syntheticSymbol": "jGBP",
     "priceFeedIdentifier": "GBP/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
-    "startingCollateralization": "1684000000000000000",
+    "startingCollateralization": "1676000",
     "minSponsorTokens": { "rawValue": "1000000000000000000" }
   },
   {
@@ -28,7 +28,7 @@
     "syntheticSymbol": "jXAU",
     "priceFeedIdentifier": "XAU/USD",
     "collateralRequirement": { "rawValue": "1200000000000000000" },
-    "startingCollateralization": "2916000000000000000000",
+    "startingCollateralization": "2866000000",
     "minSponsorTokens": { "rawValue": "500000000000000" }
   },
   {
@@ -38,7 +38,7 @@
     "collateralRequirement": {
       "rawValue": "1200000000000000000"
     },
-    "startingCollateralization": "5025000000000000000000",
+    "startingCollateralization": "5068000000",
     "minSponsorTokens": { "rawValue": "300000000000000" }
   },
   {
@@ -48,7 +48,7 @@
     "collateralRequirement": {
       "rawValue": "1200000000000000000"
     },
-    "startingCollateralization": "61500000000000000000",
+    "startingCollateralization": "58170000",
     "minSponsorTokens": { "rawValue": "25000000000000000" }
   },
   {
@@ -58,7 +58,7 @@
     "collateralRequirement": {
       "rawValue": "1200000000000000000"
     },
-    "startingCollateralization": "40350000000000000000",
+    "startingCollateralization": "36090000",
     "minSponsorTokens": { "rawValue": "45000000000000000" }
   }
 ]
