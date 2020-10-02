@@ -13,7 +13,7 @@ import Transactions from './Transactions';
 
 const Pages = ({
   assets,
-  dai,
+  collateral,
   syntheticTokens,
   setLoading,
   lastTx,
@@ -25,7 +25,7 @@ const Pages = ({
         <ExchangeRates assets={assets} syntheticTokens={syntheticTokens} />
       </Route>
       <Route path="/transactions">
-        <Transactions assets={assets} />
+        <Transactions assets={assets} collateral={collateral} />
       </Route>
       <Route path="/insights">
         <Insights />
@@ -38,7 +38,7 @@ const Pages = ({
           <Grid item md={5}>
             <OrderForm
               assets={assets}
-              dai={dai}
+              collateral={collateral}
               syntheticTokens={syntheticTokens}
               setLoading={setLoading}
               setLastTx={setLastTx}
@@ -48,7 +48,7 @@ const Pages = ({
             <WalletBalance
               assets={assets}
               syntheticTokens={syntheticTokens}
-              dai={dai}
+              collateral={collateral}
               lastTx={lastTx}
             />
           </Grid>

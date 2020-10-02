@@ -18,13 +18,18 @@ import TokenPicker from '../TokenPicker';
 
 import useStyles from './styles';
 
-import { toFixedNumber } from '../../../helpers/utils.js';
+import { toFixedNumber, fromScaledWei, toScaledWei } from '../../../helpers/utils.js';
 
 const SELECT_TOKEN = 'select';
 
+
+
+
+
+
 export default function OrderForm({
   assets,
-  dai,
+  collateral,
   syntheticTokens,
   setLoading,
   setLastTx,
@@ -34,6 +39,7 @@ export default function OrderForm({
   const context = useWeb3Context();
   const [inputToken, setInputToken] = useState(assets.length);
   const [outputToken, setOutputToken] = useState(0);
+  const [tokens, setTokens] = useState(assets);
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -44,15 +50,7 @@ export default function OrderForm({
 
   const [notify, setNotify] = useState(null);
 
-  const { fromWei, toWei, toBN } = context.library.utils;
-
-  const tokens = assets.concat([
-    {
-      name: 'DAI',
-      symbol: 'DAI',
-      price: 1,
-    },
-  ]);
+  const { toBN } = context.library.utils;
 
   useEffect(() => {
     if (!notify) {
@@ -66,6 +64,25 @@ export default function OrderForm({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context, context.active]);
+
+  useEffect(() => {
+    const setExtendedTokens = async function (collateral, assets){
+     console.log(assets);
+    const collateralName = await collateral.methods.name().call();
+    const collateralSymbol = await collateral.methods.symbol().call();
+    const collateralDecimals = await collateral.methods.decimals().call();
+    const tokensExtended = assets.concat(
+      {
+        name: collateralName,
+        symbol: collateralSymbol,
+        decimals: collateralDecimals,
+        price: 1,
+      });
+      setTokens(tokensExtended);
+    }
+    setExtendedTokens(collateral, assets);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assets]);
 
   const getOrderType = () => {
     const daiIndex = assets.length;
@@ -81,18 +98,24 @@ export default function OrderForm({
   };
 
   const calculateFees = value => {
-    const newCollateralAmount = value * tokens[outputToken].price;
-    setCollateralAmount(newCollateralAmount);
+    console.log(value);
+    console.log(tokens);
+    console.log(inputToken);
     const token = tokens[inputToken].contract
       ? tokens[inputToken]
       : tokens[outputToken];
+      console.log(token);
     if (token.contract) {
+
+      console.log(value);
       token.contract.methods
-        .calculateFee(toWei(newCollateralAmount.toString()))
+        .calculateFee(toScaledWei(Number(value).toFixed(tokens[tokens.length - 1].decimals), tokens[tokens.length - 1].decimals))
         .call()
         .then(response => {
+            console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+          console.log(response);
           setFeeAmount(response);
-        });
+        }).catch(e=> console.log(e));
     }
   };
 
@@ -105,10 +128,12 @@ export default function OrderForm({
 
   useEffect(() => {
     if (inputAmount > 0 && tokens[outputToken] && tokens[inputToken]) {
+      const newCollateralAmount = inputAmount * tokens[inputToken].price;
       const tokenAmount =
-        (inputAmount * tokens[inputToken].price) / tokens[outputToken].price;
+            newCollateralAmount / tokens[outputToken].price;
+      setCollateralAmount(newCollateralAmount);
       setOutputAmount(tokenAmount);
-      calculateFees(tokenAmount);
+      calculateFees(newCollateralAmount);
     }
   }, [inputAmount, inputToken, outputToken]);
 
@@ -124,7 +149,7 @@ export default function OrderForm({
       .calculateFee(collateralAmount)
       .call()
       .then(mintFee => {
-        dai.methods
+        collateral.methods
           .approve(
             assets[outputToken].contract.options.address,
             toBN(collateralAmount).add(toBN(mintFee)),
@@ -247,23 +272,22 @@ export default function OrderForm({
       if (orderType === 'mint') {
         setLoading(true);
 
-        const collateralAmountTKNbits = toWei(Number(inputAmount).toString());
+        const collateralAmountTKNbits = toScaledWei(Number(inputAmount).toFixed(tokens[tokens.length - 1].decimals), tokens[tokens.length - 1].decimals);
 
-        const orderAmountTKNbits = toWei(Number(outputAmount).toString());
+        const orderAmountTKNbits = toScaledWei(Number(outputAmount).toFixed(tokens[tokens.length - 1].decimals), 18);
         buyOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === 'redeem') {
         setLoading(true);
 
-        const collateralAmountTKNbits = toWei(Number(outputAmount).toString());
-        const orderAmountTKNbits = toWei(Number(inputAmount).toString());
+        const collateralAmountTKNbits = toScaledWei(Number(outputAmount).toFixed(tokens[tokens.length - 1].decimals), tokens[tokens.length - 1].decimals);
+        const orderAmountTKNbits = toScaledWei(Number(inputAmount).toFixed(tokens[tokens.length - 1].decimals), 18);
         sellOrder(collateralAmountTKNbits, orderAmountTKNbits);
       } else if (orderType === 'exchange') {
         setLoading(true);
-        const inputAmountTKNbits = toWei(Number(inputAmount).toString());
-        const collateralAmountTKNbits = toWei(
-          Number(collateralAmount).toString(),
-        );
-        const outputAmountTKNbits = toWei(Number(outputAmount).toString());
+        const inputAmountTKNbits = toScaledWei(Number(inputAmount).toFixed(tokens[tokens.length - 1].decimals), 18);
+        const collateralAmountTKNbits = toScaledWei(
+          Number(collateralAmount).toFixed(tokens[tokens.length - 1].decimals), tokens[tokens.length - 1].decimals);
+        const outputAmountTKNbits = toScaledWei(Number(outputAmount).toFixed(tokens[tokens.length - 1].decimals), 18);
         exchangeOrder(
           inputAmountTKNbits,
           collateralAmountTKNbits,
@@ -334,8 +358,8 @@ export default function OrderForm({
                     <TableRow className={classes.TableRow}>
                       <TableCell>Fee</TableCell>
                       <TableCell align="right">
-                        {toFixedNumber(fromWei(feeAmount), 5)}{' '}
-                        {'DAI'}
+                        {toFixedNumber(fromScaledWei(feeAmount, tokens[tokens.length - 1].decimals), 5)}{' '}
+                        {tokens[tokens.length - 1].symbol}
                       </TableCell>
                     </TableRow>
                   </TableBody>
