@@ -31,20 +31,6 @@
   },
   {
     "inputs": [],
-    "name": "isOwner",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -173,6 +159,28 @@
             "internalType": "struct FixedPoint.Unsigned",
             "name": "disputerDisputeRewardPct",
             "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "rawValue",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct FixedPoint.Unsigned",
+            "name": "minSponsorTokens",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawalLiveness",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationLiveness",
+            "type": "uint256"
           }
         ],
         "internalType": "struct ExpiringMultiPartyCreator.Params",
@@ -182,6 +190,11 @@
       {
         "internalType": "address",
         "name": "liquidityProvider",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "validator",
         "type": "address"
       },
       {
@@ -200,27 +213,17 @@
               }
             ],
             "internalType": "struct FixedPoint.Unsigned",
-            "name": "mintFee",
+            "name": "feePercentage",
             "type": "tuple"
           },
           {
             "internalType": "address[]",
-            "name": "mintFeeRecipients",
+            "name": "feeRecipients",
             "type": "address[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "mintFeeProportions",
-            "type": "uint32[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "interestFeeRecipients",
-            "type": "address[]"
-          },
-          {
-            "internalType": "uint32[]",
-            "name": "interestFeeProportions",
+            "name": "feeProportions",
             "type": "uint32[]"
           }
         ],

@@ -44,16 +44,6 @@
             "internalType": "uint32[]",
             "name": "feeProportions",
             "type": "uint32[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "interestFeeRecipients",
-            "type": "address[]"
-          },
-          {
-            "internalType": "uint32[]",
-            "name": "interestFeeProportions",
-            "type": "uint32[]"
           }
         ],
         "internalType": "struct TICInterface.Fee",
@@ -519,8 +509,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -533,8 +522,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -547,8 +535,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [
@@ -567,8 +554,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -622,8 +608,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -677,8 +662,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   },
   {
     "inputs": [],
@@ -749,7 +733,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
   }
 ]

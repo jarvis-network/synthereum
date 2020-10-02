@@ -204,15 +204,15 @@ class SynFiatKeeper:
 
                     self.logger.info(f"{self.tic_config['synthetics'][i]['symbol']} was ${price} for mint request {mint[0].hex()}")
 
-                    collateral = mint[3][0]
+                    collateral = mint[3][0]*(10**12)
                     tokens = mint[4][0]
 
                     self.logger.info(f"Minting {tokens} tokens with {collateral} collateral")
 
                     if collateral >= tokens * price * (1 - self.max_slippage):
                         sender = mint[2]
-                        allowance = self.collateral_tokens[i].functions.allowance(sender, tic.address).call()
-                        balance = self.collateral_tokens[i].functions.balanceOf(sender).call()
+                        allowance = (self.collateral_tokens[i].functions.allowance(sender, tic.address).call())*(10**12)
+                        balance = (self.collateral_tokens[i].functions.balanceOf(sender).call())*(10**12)
 
                         if balance >= collateral:
                             if allowance >= collateral:
@@ -264,15 +264,15 @@ class SynFiatKeeper:
 
                     self.logger.info(f"{self.tic_config['synthetics'][i]['symbol']} was ${price} for redeem request {redeem[0].hex()}")
 
-                    collateral = redeem[3][0]
+                    collateral = redeem[3][0]*(10**12)
                     tokens = redeem[4][0]
 
                     self.logger.info(f"Redeeming {tokens} tokens with {collateral} collateral")
 
                     if collateral <= tokens * price * (1 + self.max_slippage):
                         sender = redeem[2]
-                        allowance = self.synthetic_tokens[i].functions.allowance(sender, tic.address).call()
-                        balance = self.synthetic_tokens[i].functions.balanceOf(sender).call()
+                        allowance = (self.synthetic_tokens[i].functions.allowance(sender, tic.address).call())
+                        balance = (self.synthetic_tokens[i].functions.balanceOf(sender).call())
 
                         if balance >= tokens:
                             if allowance >= tokens:
