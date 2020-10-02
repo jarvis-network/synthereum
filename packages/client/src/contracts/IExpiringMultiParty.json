@@ -160,11 +160,12 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"collateralCurrency\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"collateralAmount\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"}],\"name\":\"create\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"expiryPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"}],\"name\":\"redeem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"collateralAmount\",\"type\":\"tuple\"}],\"name\":\"requestWithdrawal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleExpired\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenCurrency\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalPositionCollateral\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalTokensOutstanding\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawPassedRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/IExpiringMultiParty.sol\":\"IExpiringMultiParty\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/IExpiringMultiParty.sol\":{\"keccak256\":\"0x6d34dd097ae64c134be221194a860dc811a482a463b8648a03cd805ce0c5086b\",\"urls\":[\"bzz-raw://6b93fbc3ebbba428112b3735a47e1e35cbd1b5334b1bf8dbe4b4d3ccdf41952b\",\"dweb:/ipfs/QmXG3QyYgwsD9DTf1VZb1UUqssoZa1MoJ9jRcrL6aKsQCg\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xeaa0bef7c35ff2902ef852864d217d75071da9cc96e9cdf5dcb77d54f4e4fefa\",\"urls\":[\"bzz-raw://9c5b1224f4bb7d8d992a1c71b8e2f8c2c8e655af30eb468058dd0eade3218d13\",\"dweb:/ipfs/QmYQ1WUhRwHgfPL5v1MVjCL7AvSVPEdPJt53Q2L5R6zwJU\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506102b3806100206000396000f3fe608060405234801561001057600080fd5b50600436106100be5760003560e01c80636ba2f99211610076578063bc1216301161005b578063bc12163014610115578063edfa9a9b14610143578063fcccedc7146100f6576100be565b80636ba2f992146101285780637048594b1461013b576100be565b806333a46ca2116100a757806333a46ca2146100f657806343e4771b146101005780635f1af1ca14610115576100be565b80630c9229ca146100c35780630de15fd9146100e1575b600080fd5b6100cb61014b565b6040516100d89190610274565b60405180910390f35b6100e9610151565b6040516100d89190610249565b6100fe61016d565b005b61010861016f565b6040516100d8919061026a565b6100fe6101233660046101f3565b61017a565b6100fe610136366004610215565b61017d565b6100e9610181565b6100cb61019d565b60005481565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b565b6101776101a3565b90565b50565b5050565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60025481565b6040518060200160405280600081525090565b6000602082840312156101c7578081fd5b6040516020810181811067ffffffffffffffff821117156101e6578283fd5b6040529135825250919050565b600060208284031215610204578081fd5b61020e83836101b6565b9392505050565b60008060408385031215610227578081fd5b61023184846101b6565b915061024084602085016101b6565b90509250929050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b9051815260200190565b9081526020019056fea2646970667358221220d467896d787586b1baf36f097bc77c63cbbcf464407db9443999176563c00a4364736f6c63430006040033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100be5760003560e01c80636ba2f99211610076578063bc1216301161005b578063bc12163014610115578063edfa9a9b14610143578063fcccedc7146100f6576100be565b80636ba2f992146101285780637048594b1461013b576100be565b806333a46ca2116100a757806333a46ca2146100f657806343e4771b146101005780635f1af1ca14610115576100be565b80630c9229ca146100c35780630de15fd9146100e1575b600080fd5b6100cb61014b565b6040516100d89190610274565b60405180910390f35b6100e9610151565b6040516100d89190610249565b6100fe61016d565b005b61010861016f565b6040516100d8919061026a565b6100fe6101233660046101f3565b61017a565b6100fe610136366004610215565b61017d565b6100e9610181565b6100cb61019d565b60005481565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b565b6101776101a3565b90565b50565b5050565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60025481565b6040518060200160405280600081525090565b6000602082840312156101c7578081fd5b6040516020810181811067ffffffffffffffff821117156101e6578283fd5b6040529135825250919050565b600060208284031215610204578081fd5b61020e83836101b6565b9392505050565b60008060408385031215610227578081fd5b61023184846101b6565b915061024084602085016101b6565b90509250929050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b9051815260200190565b9081526020019056fea2646970667358221220d467896d787586b1baf36f097bc77c63cbbcf464407db9443999176563c00a4364736f6c63430006040033",
-  "sourceMap": "212:702:1:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;212:702:1;;;;;;;",
-  "deployedSourceMap": "212:702:1:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;212:702:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;294:49:1;;;:::i;:::-;;;;;;;;;;;;;;;;427:32;;;:::i;:::-;;;;;;;;552:44;;;:::i;:::-;;824:88;;;:::i;:::-;;;;;;;;715:63;;;;;;;;;:::i;601:108::-;;;;;;;;;:::i;349:27::-;;;:::i;382:38::-;;;:::i;294:49::-;;;;:::o;427:32::-;;;;;;:::o;552:44::-;:::o;824:88::-;882:26;;:::i;:::-;824:88;:::o;715:63::-;;:::o;601:108::-;;;:::o;349:27::-;;;;;;:::o;382:38::-;;;;:::o;212:702::-;;;;;;;;;;;;;;:::o;38:328:-1:-;;153:4;141:9;136:3;132:19;128:30;125:2;;;-1:-1;;161:12;125:2;2938;2932:9;153:4;2968:6;2964:17;3075:6;3063:10;3060:22;3039:18;3027:10;3024:34;3021:62;3018:2;;;-1:-1;;3086:12;3018:2;2938;3105:22;440:20;;270:75;;-1:-1;180:29;119:247;-1:-1;119:247;510:293;;640:2;628:9;619:7;615:23;611:32;608:2;;;-1:-1;;646:12;608:2;708:79;779:7;755:22;708:79;;;698:89;602:201;-1:-1;;;602:201;810:470;;;983:2;971:9;962:7;958:23;954:32;951:2;;;-1:-1;;989:12;951:2;1051:79;1122:7;1098:22;1051:79;;;1041:89;;1185:79;1256:7;1167:2;1236:9;1232:22;1185:79;;;1175:89;;945:335;;;;;;2080:245;3212:42;3201:54;;;;1374:66;;2214:2;2199:18;;2185:140;2332:317;1730:23;;1911:37;;2502:2;2487:18;;2473:176;2656:213;1911:37;;;2774:2;2759:18;;2745:124",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"collateralCurrency\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"collateralAmount\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"}],\"name\":\"create\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"expiryPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"numTokens\",\"type\":\"tuple\"}],\"name\":\"redeem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"collateralAmount\",\"type\":\"tuple\"}],\"name\":\"requestWithdrawal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleExpired\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenCurrency\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalPositionCollateral\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalTokensOutstanding\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawPassedRequest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/IExpiringMultiParty.sol\":\"IExpiringMultiParty\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/IExpiringMultiParty.sol\":{\"keccak256\":\"0x6d34dd097ae64c134be221194a860dc811a482a463b8648a03cd805ce0c5086b\",\"urls\":[\"bzz-raw://6b93fbc3ebbba428112b3735a47e1e35cbd1b5334b1bf8dbe4b4d3ccdf41952b\",\"dweb:/ipfs/QmXG3QyYgwsD9DTf1VZb1UUqssoZa1MoJ9jRcrL6aKsQCg\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xeaa0bef7c35ff2902ef852864d217d75071da9cc96e9cdf5dcb77d54f4e4fefa\",\"urls\":[\"bzz-raw://9c5b1224f4bb7d8d992a1c71b8e2f8c2c8e655af30eb468058dd0eade3218d13\",\"dweb:/ipfs/QmYQ1WUhRwHgfPL5v1MVjCL7AvSVPEdPJt53Q2L5R6zwJU\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506102b3806100206000396000f3fe608060405234801561001057600080fd5b50600436106100be5760003560e01c80636ba2f99211610076578063bc1216301161005b578063bc12163014610115578063edfa9a9b14610143578063fcccedc7146100f6576100be565b80636ba2f992146101285780637048594b1461013b576100be565b806333a46ca2116100a757806333a46ca2146100f657806343e4771b146101005780635f1af1ca14610115576100be565b80630c9229ca146100c35780630de15fd9146100e1575b600080fd5b6100cb61014b565b6040516100d89190610274565b60405180910390f35b6100e9610151565b6040516100d89190610249565b6100fe61016d565b005b61010861016f565b6040516100d8919061026a565b6100fe6101233660046101f3565b61017a565b6100fe610136366004610215565b61017d565b6100e9610181565b6100cb61019d565b60005481565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b565b6101776101a3565b90565b50565b5050565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60025481565b6040518060200160405280600081525090565b6000602082840312156101c7578081fd5b6040516020810181811067ffffffffffffffff821117156101e6578283fd5b6040529135825250919050565b600060208284031215610204578081fd5b61020e83836101b6565b9392505050565b60008060408385031215610227578081fd5b61023184846101b6565b915061024084602085016101b6565b90509250929050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b9051815260200190565b9081526020019056fea2646970667358221220ab0a4e04fa02a638a1473357f81c2a453a60dcd2c5271044606c5944e146996c64736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100be5760003560e01c80636ba2f99211610076578063bc1216301161005b578063bc12163014610115578063edfa9a9b14610143578063fcccedc7146100f6576100be565b80636ba2f992146101285780637048594b1461013b576100be565b806333a46ca2116100a757806333a46ca2146100f657806343e4771b146101005780635f1af1ca14610115576100be565b80630c9229ca146100c35780630de15fd9146100e1575b600080fd5b6100cb61014b565b6040516100d89190610274565b60405180910390f35b6100e9610151565b6040516100d89190610249565b6100fe61016d565b005b61010861016f565b6040516100d8919061026a565b6100fe6101233660046101f3565b61017a565b6100fe610136366004610215565b61017d565b6100e9610181565b6100cb61019d565b60005481565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b565b6101776101a3565b90565b50565b5050565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60025481565b6040518060200160405280600081525090565b6000602082840312156101c7578081fd5b6040516020810181811067ffffffffffffffff821117156101e6578283fd5b6040529135825250919050565b600060208284031215610204578081fd5b61020e83836101b6565b9392505050565b60008060408385031215610227578081fd5b61023184846101b6565b915061024084602085016101b6565b90509250929050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b9051815260200190565b9081526020019056fea2646970667358221220ab0a4e04fa02a638a1473357f81c2a453a60dcd2c5271044606c5944e146996c64736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "212:702:1:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "212:702:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;294:49;;;:::i;:::-;;;;;;;;;;;;;;;;427:32;;;:::i;:::-;;;;;;;;552:44;;;:::i;:::-;;824:88;;;:::i;:::-;;;;;;;;715:63;;;;;;;;;:::i;601:108::-;;;;;;;;;:::i;349:27::-;;;:::i;382:38::-;;;:::i;294:49::-;;;;:::o;427:32::-;;;;;;:::o;552:44::-;:::o;824:88::-;882:26;;:::i;:::-;824:88;:::o;715:63::-;;:::o;601:108::-;;;:::o;349:27::-;;;;;;:::o;382:38::-;;;;:::o;-1:-1:-1:-;;;;;;;;;;;;;;:::o;38:328::-;;153:4;141:9;136:3;132:19;128:30;125:2;;;-1:-1;;161:12;125:2;2965;2959:9;153:4;2995:6;2991:17;3102:6;3090:10;3087:22;3066:18;3054:10;3051:34;3048:62;3045:2;;;-1:-1;;3113:12;3045:2;2965;3132:22;440:20;;270:75;;-1:-1;180:29;119:247;-1:-1;119:247;510:293;;640:2;628:9;619:7;615:23;611:32;608:2;;;-1:-1;;646:12;608:2;708:79;779:7;755:22;708:79;;;698:89;602:201;-1:-1;;;602:201;810:470;;;983:2;971:9;962:7;958:23;954:32;951:2;;;-1:-1;;989:12;951:2;1051:79;1122:7;1098:22;1051:79;;;1041:89;;1185:79;1256:7;1167:2;1236:9;1232:22;1185:79;;;1175:89;;945:335;;;;;;2080:254;3239:42;3228:54;;;;1374:66;;2223:2;2208:18;;2194:140;2341:326;1730:23;;1911:37;;2520:2;2505:18;;2491:176;2674:222;1911:37;;;2801:2;2786:18;;2772:124",
   "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport {FixedPoint} from \"./uma-contracts/common/implementation/FixedPoint.sol\";\nimport {IERC20} from \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\n\ncontract IExpiringMultiParty {\n    using FixedPoint for FixedPoint.Unsigned;\n\n    FixedPoint.Unsigned public totalTokensOutstanding;\n    IERC20 public tokenCurrency;\n    FixedPoint.Unsigned public expiryPrice;\n\n    IERC20 public collateralCurrency;\n\n    function requestWithdrawal(FixedPoint.Unsigned memory collateralAmount) public {}\n    function withdrawPassedRequest() external {}\n    function create(FixedPoint.Unsigned memory collateralAmount, FixedPoint.Unsigned memory numTokens) public {}\n\n    function redeem(FixedPoint.Unsigned memory numTokens) public {}\n    function settleExpired() external {}\n    function totalPositionCollateral() external view returns (FixedPoint.Unsigned memory) {}\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/IExpiringMultiParty.sol",
   "ast": {
@@ -175,6 +176,7 @@
       ]
     },
     "id": 334,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -203,7 +205,7 @@
         "id": 285,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 4271,
+        "sourceUnit": 4239,
         "src": "59:80:1",
         "symbolAliases": [
           {
@@ -231,7 +233,7 @@
         "id": 287,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 18506,
+        "sourceUnit": 18478,
         "src": "140:70:1",
         "symbolAliases": [
           {
@@ -274,10 +276,10 @@
               "id": 288,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4270,
+              "referencedDeclaration": 4238,
               "src": "253:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FixedPoint_$4270",
+                "typeIdentifier": "t_contract$_FixedPoint_$4238",
                 "typeString": "library FixedPoint"
               }
             },
@@ -288,10 +290,10 @@
               "id": 289,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3583,
+              "referencedDeclaration": 3551,
               "src": "268:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             }
@@ -300,6 +302,7 @@
             "constant": false,
             "functionSelector": "0c9229ca",
             "id": 292,
+            "mutability": "mutable",
             "name": "totalTokensOutstanding",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -308,7 +311,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3551_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -316,10 +319,10 @@
               "id": 291,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3583,
+              "referencedDeclaration": 3551,
               "src": "294:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -330,6 +333,7 @@
             "constant": false,
             "functionSelector": "7048594b",
             "id": 294,
+            "mutability": "mutable",
             "name": "tokenCurrency",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -338,7 +342,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18505",
+              "typeIdentifier": "t_contract$_IERC20_$18477",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -346,10 +350,10 @@
               "id": 293,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18505,
+              "referencedDeclaration": 18477,
               "src": "349:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18505",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -360,6 +364,7 @@
             "constant": false,
             "functionSelector": "edfa9a9b",
             "id": 296,
+            "mutability": "mutable",
             "name": "expiryPrice",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -368,7 +373,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3551_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -376,10 +381,10 @@
               "id": 295,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3583,
+              "referencedDeclaration": 3551,
               "src": "382:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -390,6 +395,7 @@
             "constant": false,
             "functionSelector": "0de15fd9",
             "id": 298,
+            "mutability": "mutable",
             "name": "collateralCurrency",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -398,7 +404,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18505",
+              "typeIdentifier": "t_contract$_IERC20_$18477",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -406,10 +412,10 @@
               "id": 297,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18505,
+              "referencedDeclaration": 18477,
               "src": "427:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18505",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -439,6 +445,7 @@
                 {
                   "constant": false,
                   "id": 300,
+                  "mutability": "mutable",
                   "name": "collateralAmount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -447,7 +454,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -455,10 +462,10 @@
                     "id": 299,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "493:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -537,6 +544,7 @@
                 {
                   "constant": false,
                   "id": 310,
+                  "mutability": "mutable",
                   "name": "collateralAmount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -545,7 +553,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -553,10 +561,10 @@
                     "id": 309,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "617:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -566,6 +574,7 @@
                 {
                   "constant": false,
                   "id": 312,
+                  "mutability": "mutable",
                   "name": "numTokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -574,7 +583,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -582,10 +591,10 @@
                     "id": 311,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "662:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -630,6 +639,7 @@
                 {
                   "constant": false,
                   "id": 318,
+                  "mutability": "mutable",
                   "name": "numTokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -638,7 +648,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -646,10 +656,10 @@
                     "id": 317,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "731:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -734,6 +744,7 @@
                 {
                   "constant": false,
                   "id": 329,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -742,7 +753,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -750,10 +761,10 @@
                     "id": 328,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "882:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -784,6 +795,7 @@
       ]
     },
     "id": 334,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -812,7 +824,7 @@
         "id": 285,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 4271,
+        "sourceUnit": 4239,
         "src": "59:80:1",
         "symbolAliases": [
           {
@@ -840,7 +852,7 @@
         "id": 287,
         "nodeType": "ImportDirective",
         "scope": 334,
-        "sourceUnit": 18506,
+        "sourceUnit": 18478,
         "src": "140:70:1",
         "symbolAliases": [
           {
@@ -883,10 +895,10 @@
               "id": 288,
               "name": "FixedPoint",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4270,
+              "referencedDeclaration": 4238,
               "src": "253:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_FixedPoint_$4270",
+                "typeIdentifier": "t_contract$_FixedPoint_$4238",
                 "typeString": "library FixedPoint"
               }
             },
@@ -897,10 +909,10 @@
               "id": 289,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3583,
+              "referencedDeclaration": 3551,
               "src": "268:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             }
@@ -909,6 +921,7 @@
             "constant": false,
             "functionSelector": "0c9229ca",
             "id": 292,
+            "mutability": "mutable",
             "name": "totalTokensOutstanding",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -917,7 +930,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3551_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -925,10 +938,10 @@
               "id": 291,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3583,
+              "referencedDeclaration": 3551,
               "src": "294:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -939,6 +952,7 @@
             "constant": false,
             "functionSelector": "7048594b",
             "id": 294,
+            "mutability": "mutable",
             "name": "tokenCurrency",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -947,7 +961,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18505",
+              "typeIdentifier": "t_contract$_IERC20_$18477",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -955,10 +969,10 @@
               "id": 293,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18505,
+              "referencedDeclaration": 18477,
               "src": "349:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18505",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -969,6 +983,7 @@
             "constant": false,
             "functionSelector": "edfa9a9b",
             "id": 296,
+            "mutability": "mutable",
             "name": "expiryPrice",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -977,7 +992,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Unsigned_$3583_storage",
+              "typeIdentifier": "t_struct$_Unsigned_$3551_storage",
               "typeString": "struct FixedPoint.Unsigned"
             },
             "typeName": {
@@ -985,10 +1000,10 @@
               "id": 295,
               "name": "FixedPoint.Unsigned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 3583,
+              "referencedDeclaration": 3551,
               "src": "382:19:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                 "typeString": "struct FixedPoint.Unsigned"
               }
             },
@@ -999,6 +1014,7 @@
             "constant": false,
             "functionSelector": "0de15fd9",
             "id": 298,
+            "mutability": "mutable",
             "name": "collateralCurrency",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -1007,7 +1023,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18505",
+              "typeIdentifier": "t_contract$_IERC20_$18477",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -1015,10 +1031,10 @@
               "id": 297,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18505,
+              "referencedDeclaration": 18477,
               "src": "427:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18505",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -1048,6 +1064,7 @@
                 {
                   "constant": false,
                   "id": 300,
+                  "mutability": "mutable",
                   "name": "collateralAmount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1056,7 +1073,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1064,10 +1081,10 @@
                     "id": 299,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "493:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1146,6 +1163,7 @@
                 {
                   "constant": false,
                   "id": 310,
+                  "mutability": "mutable",
                   "name": "collateralAmount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1154,7 +1172,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1162,10 +1180,10 @@
                     "id": 309,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "617:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1175,6 +1193,7 @@
                 {
                   "constant": false,
                   "id": 312,
+                  "mutability": "mutable",
                   "name": "numTokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1183,7 +1202,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1191,10 +1210,10 @@
                     "id": 311,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "662:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1239,6 +1258,7 @@
                 {
                   "constant": false,
                   "id": 318,
+                  "mutability": "mutable",
                   "name": "numTokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1247,7 +1267,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1255,10 +1275,10 @@
                     "id": 317,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "731:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1343,6 +1363,7 @@
                 {
                   "constant": false,
                   "id": 329,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1351,7 +1372,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_Unsigned_$3583_memory_ptr",
+                    "typeIdentifier": "t_struct$_Unsigned_$3551_memory_ptr",
                     "typeString": "struct FixedPoint.Unsigned"
                   },
                   "typeName": {
@@ -1359,10 +1380,10 @@
                     "id": 328,
                     "name": "FixedPoint.Unsigned",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 3583,
+                    "referencedDeclaration": 3551,
                     "src": "882:19:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Unsigned_$3583_storage_ptr",
+                      "typeIdentifier": "t_struct$_Unsigned_$3551_storage_ptr",
                       "typeString": "struct FixedPoint.Unsigned"
                     }
                   },
@@ -1387,11 +1408,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.5",
-  "updatedAt": "2020-09-18T09:03:22.487Z",
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-09-30T12:21:56.562Z",
   "devdoc": {
     "methods": {}
   },

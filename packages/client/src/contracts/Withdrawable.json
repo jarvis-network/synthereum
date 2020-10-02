@@ -218,9 +218,10 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AddedSharedMember\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldMember\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"RemovedSharedMember\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"ResetExclusiveMember\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"}],\"name\":\"addMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"}],\"name\":\"getMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"memberToCheck\",\"type\":\"address\"}],\"name\":\"holdsRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"memberToRemove\",\"type\":\"address\"}],\"name\":\"removeMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"}],\"name\":\"renounceMembership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"}],\"name\":\"resetMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Address\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdrawErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addMember(uint256,address)\":{\"details\":\"Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.\",\"params\":{\"newMember\":\"the new SharedRole member.\",\"roleId\":\"the SharedRole membership to modify.\"}},\"getMember(uint256)\":{\"details\":\"Reverts if `roleId` does not represent an initialized, exclusive role.\",\"params\":{\"roleId\":\"the ExclusiveRole membership to check.\"},\"returns\":{\"_0\":\"the address of the current ExclusiveRole member.\"}},\"holdsRole(uint256,address)\":{\"details\":\"Reverts if roleId does not correspond to an initialized role.\",\"params\":{\"memberToCheck\":\"the address to check.\",\"roleId\":\"the Role to check.\"},\"returns\":{\"_0\":\"True if `memberToCheck` is a member of `roleId`.\"}},\"removeMember(uint256,address)\":{\"details\":\"Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.\",\"params\":{\"memberToRemove\":\"the current SharedRole member to remove.\",\"roleId\":\"the SharedRole membership to modify.\"}},\"renounceMembership(uint256)\":{\"details\":\"Reverts if the caller is not a member of the role for `roleId` or if `roleId` is not an initialized, SharedRole.\",\"params\":{\"roleId\":\"the SharedRole membership to modify.\"}},\"resetMember(uint256,address)\":{\"details\":\"Reverts if the caller is not a member of the managing role for `roleId` or if `roleId` is not an initialized, ExclusiveRole.\",\"params\":{\"newMember\":\"the new ExclusiveRole member.\",\"roleId\":\"the ExclusiveRole membership to modify.\"}},\"withdrawErc20(address,uint256)\":{\"params\":{\"amount\":\"amount of tokens to withdraw.\",\"erc20Address\":\"ERC20 token to withdraw.\"}}},\"title\":\"Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds.\"},\"userdoc\":{\"methods\":{\"addMember(uint256,address)\":{\"notice\":\"Adds `newMember` to the shared role, `roleId`.\"},\"getMember(uint256)\":{\"notice\":\"Gets the current holder of the exclusive role, `roleId`.\"},\"holdsRole(uint256,address)\":{\"notice\":\"Whether `memberToCheck` is a member of roleId.\"},\"removeMember(uint256,address)\":{\"notice\":\"Removes `memberToRemove` from the shared role, `roleId`.\"},\"renounceMembership(uint256)\":{\"notice\":\"Removes caller from the role, `roleId`.\"},\"resetMember(uint256,address)\":{\"notice\":\"Changes the exclusive role holder of `roleId` to `newMember`.\"},\"withdraw(uint256)\":{\"notice\":\"Withdraws ETH from the contract.\"},\"withdrawErc20(address,uint256)\":{\"notice\":\"Withdraws ERC20 tokens from the contract.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol\":\"Withdrawable\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol\":{\"keccak256\":\"0x93b7932a9bf98defef8cd3dedfd7a11d8054107f123014cfd98970f491e96ed4\",\"urls\":[\"bzz-raw://f4d0201fe3e21a78bb805b9add2d0184be86a0bb706fdfcfd75ac95f8ac4aab9\",\"dweb:/ipfs/QmXjFT3zUMZ1T1omL8d8RTr7MDhCoLuAqFpCKJs3D6tJmy\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol\":{\"keccak256\":\"0x14ee8a3748c18299f330c86e802af4520528e8e999e69961fdaed4bd7dfdbe22\",\"urls\":[\"bzz-raw://ac15e925f11f5b09d5665ebf941df67b0b5c5a90715b79bb5afbaf84469201ea\",\"dweb:/ipfs/QmZUKbxXx1cTmNnSTbuBwpu9beUCD8Fi5Nfg86sf99m1ZB\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/token/ERC20/SafeERC20.sol\":{\"keccak256\":\"0xa27d8d0bf389702f2b124fff3d86238b17ec0abd47d1401e81dc48a1509dbb9a\",\"urls\":[\"bzz-raw://899c25b79e783c1e4ccdd06928e332e2b37f3ecaa487f49ef68ef9fde6b18f82\",\"dweb:/ipfs/QmV3rZDWabetVSmZ2iviS5tajKzvR3AEwsicKZao4ptTg2\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AddedSharedMember\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldMember\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"RemovedSharedMember\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"ResetExclusiveMember\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"}],\"name\":\"addMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"}],\"name\":\"getMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"memberToCheck\",\"type\":\"address\"}],\"name\":\"holdsRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"memberToRemove\",\"type\":\"address\"}],\"name\":\"removeMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"}],\"name\":\"renounceMembership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roleId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"newMember\",\"type\":\"address\"}],\"name\":\"resetMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"erc20Address\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdrawErc20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addMember(uint256,address)\":{\"details\":\"Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.\",\"params\":{\"newMember\":\"the new SharedRole member.\",\"roleId\":\"the SharedRole membership to modify.\"}},\"getMember(uint256)\":{\"details\":\"Reverts if `roleId` does not represent an initialized, exclusive role.\",\"params\":{\"roleId\":\"the ExclusiveRole membership to check.\"},\"returns\":{\"_0\":\"the address of the current ExclusiveRole member.\"}},\"holdsRole(uint256,address)\":{\"details\":\"Reverts if roleId does not correspond to an initialized role.\",\"params\":{\"memberToCheck\":\"the address to check.\",\"roleId\":\"the Role to check.\"},\"returns\":{\"_0\":\"True if `memberToCheck` is a member of `roleId`.\"}},\"removeMember(uint256,address)\":{\"details\":\"Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.\",\"params\":{\"memberToRemove\":\"the current SharedRole member to remove.\",\"roleId\":\"the SharedRole membership to modify.\"}},\"renounceMembership(uint256)\":{\"details\":\"Reverts if the caller is not a member of the role for `roleId` or if `roleId` is not an initialized, SharedRole.\",\"params\":{\"roleId\":\"the SharedRole membership to modify.\"}},\"resetMember(uint256,address)\":{\"details\":\"Reverts if the caller is not a member of the managing role for `roleId` or if `roleId` is not an initialized, ExclusiveRole.\",\"params\":{\"newMember\":\"the new ExclusiveRole member.\",\"roleId\":\"the ExclusiveRole membership to modify.\"}},\"withdrawErc20(address,uint256)\":{\"params\":{\"amount\":\"amount of tokens to withdraw.\",\"erc20Address\":\"ERC20 token to withdraw.\"}}},\"title\":\"Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds.\"},\"userdoc\":{\"methods\":{\"addMember(uint256,address)\":{\"notice\":\"Adds `newMember` to the shared role, `roleId`.\"},\"getMember(uint256)\":{\"notice\":\"Gets the current holder of the exclusive role, `roleId`.\"},\"holdsRole(uint256,address)\":{\"notice\":\"Whether `memberToCheck` is a member of roleId.\"},\"removeMember(uint256,address)\":{\"notice\":\"Removes `memberToRemove` from the shared role, `roleId`.\"},\"renounceMembership(uint256)\":{\"notice\":\"Removes caller from the role, `roleId`.\"},\"resetMember(uint256,address)\":{\"notice\":\"Changes the exclusive role holder of `roleId` to `newMember`.\"},\"withdraw(uint256)\":{\"notice\":\"Withdraws ETH from the contract.\"},\"withdrawErc20(address,uint256)\":{\"notice\":\"Withdraws ERC20 tokens from the contract.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol\":\"Withdrawable\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol\":{\"keccak256\":\"0x93b7932a9bf98defef8cd3dedfd7a11d8054107f123014cfd98970f491e96ed4\",\"urls\":[\"bzz-raw://f4d0201fe3e21a78bb805b9add2d0184be86a0bb706fdfcfd75ac95f8ac4aab9\",\"dweb:/ipfs/QmXjFT3zUMZ1T1omL8d8RTr7MDhCoLuAqFpCKJs3D6tJmy\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol\":{\"keccak256\":\"0x14ee8a3748c18299f330c86e802af4520528e8e999e69961fdaed4bd7dfdbe22\",\"urls\":[\"bzz-raw://ac15e925f11f5b09d5665ebf941df67b0b5c5a90715b79bb5afbaf84469201ea\",\"dweb:/ipfs/QmZUKbxXx1cTmNnSTbuBwpu9beUCD8Fi5Nfg86sf99m1ZB\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/token/ERC20/SafeERC20.sol\":{\"keccak256\":\"0xa27d8d0bf389702f2b124fff3d86238b17ec0abd47d1401e81dc48a1509dbb9a\",\"urls\":[\"bzz-raw://899c25b79e783c1e4ccdd06928e332e2b37f3ecaa487f49ef68ef9fde6b18f82\",\"dweb:/ipfs/QmV3rZDWabetVSmZ2iviS5tajKzvR3AEwsicKZao4ptTg2\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "/**\n * Withdrawable contract.\n */\n\npragma solidity ^0.6.0;\n\nimport \"@openzeppelin/contracts/utils/Address.sol\";\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\nimport \"@openzeppelin/contracts/token/ERC20/SafeERC20.sol\";\n\nimport \"./MultiRole.sol\";\n\n\n/**\n * @title Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds.\n */\nabstract contract Withdrawable is MultiRole {\n    using SafeERC20 for IERC20;\n\n    uint256 private roleId;\n\n    /**\n     * @notice Withdraws ETH from the contract.\n     */\n    function withdraw(uint256 amount) external onlyRoleHolder(roleId) {\n        Address.sendValue(msg.sender, amount);\n    }\n\n    /**\n     * @notice Withdraws ERC20 tokens from the contract.\n     * @param erc20Address ERC20 token to withdraw.\n     * @param amount amount of tokens to withdraw.\n     */\n    function withdrawErc20(address erc20Address, uint256 amount) external onlyRoleHolder(roleId) {\n        IERC20 erc20 = IERC20(erc20Address);\n        erc20.safeTransfer(msg.sender, amount);\n    }\n\n    /**\n     * @notice Internal method that allows derived contracts to create a role for withdrawal.\n     * @dev Either this method or `_setWithdrawRole` must be called by the derived class for this contract to function\n     * properly.\n     * @param newRoleId ID corresponding to role whose members can withdraw.\n     * @param managingRoleId ID corresponding to managing role who can modify the withdrawable role's membership.\n     * @param withdrawerAddress new manager of withdrawable role.\n     */\n    function _createWithdrawRole(\n        uint256 newRoleId,\n        uint256 managingRoleId,\n        address withdrawerAddress\n    ) internal {\n        roleId = newRoleId;\n        _createExclusiveRole(newRoleId, managingRoleId, withdrawerAddress);\n    }\n\n    /**\n     * @notice Internal method that allows derived contracts to choose the role for withdrawal.\n     * @dev The role `setRoleId` must exist. Either this method or `_createWithdrawRole` must be\n     * called by the derived class for this contract to function properly.\n     * @param setRoleId ID corresponding to role whose members can withdraw.\n     */\n    function _setWithdrawRole(uint256 setRoleId) internal onlyValidRole(setRoleId) {\n        roleId = setRoleId;\n    }\n}\n",
@@ -229,14 +230,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol",
     "exportedSymbols": {
       "Withdrawable": [
-        5179
+        5147
       ]
     },
-    "id": 5180,
+    "id": 5148,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5087,
+        "id": 5055,
         "literals": [
           "solidity",
           "^",
@@ -249,10 +251,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/utils/Address.sol",
         "file": "@openzeppelin/contracts/utils/Address.sol",
-        "id": 5088,
+        "id": 5056,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 18798,
+        "scope": 5148,
+        "sourceUnit": 18770,
         "src": "60:51:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -260,10 +262,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 5089,
+        "id": 5057,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 18506,
+        "scope": 5148,
+        "sourceUnit": 18478,
         "src": "112:56:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -271,10 +273,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "id": 5090,
+        "id": 5058,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 18734,
+        "scope": 5148,
+        "sourceUnit": 18706,
         "src": "169:59:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -282,10 +284,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol",
         "file": "./MultiRole.sol",
-        "id": 5091,
+        "id": 5059,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 4940,
+        "scope": 5148,
+        "sourceUnit": 4908,
         "src": "230:25:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -297,51 +299,51 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5093,
+              "id": 5061,
               "name": "MultiRole",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4939,
+              "referencedDeclaration": 4907,
               "src": "417:9:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MultiRole_$4939",
+                "typeIdentifier": "t_contract$_MultiRole_$4907",
                 "typeString": "contract MultiRole"
               }
             },
-            "id": 5094,
+            "id": 5062,
             "nodeType": "InheritanceSpecifier",
             "src": "417:9:17"
           }
         ],
         "contractDependencies": [
-          4939
+          4907
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 5092,
+          "id": 5060,
           "nodeType": "StructuredDocumentation",
           "src": "258:124:17",
-          "text": "@title Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds."
+          "text": " @title Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds."
         },
         "fullyImplemented": true,
-        "id": 5179,
+        "id": 5147,
         "linearizedBaseContracts": [
-          5179,
-          4939
+          5147,
+          4907
         ],
         "name": "Withdrawable",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 5097,
+            "id": 5065,
             "libraryName": {
               "contractScope": null,
-              "id": 5095,
+              "id": 5063,
               "name": "SafeERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18733,
+              "referencedDeclaration": 18705,
               "src": "439:9:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeERC20_$18733",
+                "typeIdentifier": "t_contract$_SafeERC20_$18705",
                 "typeString": "library SafeERC20"
               }
             },
@@ -349,24 +351,25 @@
             "src": "433:27:17",
             "typeName": {
               "contractScope": null,
-              "id": 5096,
+              "id": 5064,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18505,
+              "referencedDeclaration": 18477,
               "src": "453:6:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18505",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             }
           },
           {
             "constant": false,
-            "id": 5099,
+            "id": 5067,
+            "mutability": "mutable",
             "name": "roleId",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 5179,
+            "scope": 5147,
             "src": "466:22:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -375,7 +378,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 5098,
+              "id": 5066,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "466:7:17",
@@ -389,7 +392,7 @@
           },
           {
             "body": {
-              "id": 5116,
+              "id": 5084,
               "nodeType": "Block",
               "src": "625:54:17",
               "statements": [
@@ -401,7 +404,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 5111,
+                          "id": 5079,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -412,7 +415,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 5112,
+                        "id": 5080,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -428,11 +431,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5113,
+                        "id": 5081,
                         "name": "amount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5102,
+                        "referencedDeclaration": 5070,
                         "src": "665:6:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -453,32 +456,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 5108,
+                        "id": 5076,
                         "name": "Address",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 18797,
+                        "referencedDeclaration": 18769,
                         "src": "635:7:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_Address_$18797_$",
+                          "typeIdentifier": "t_type$_t_contract$_Address_$18769_$",
                           "typeString": "type(library Address)"
                         }
                       },
-                      "id": 5110,
+                      "id": 5078,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "sendValue",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18796,
+                      "referencedDeclaration": 18768,
                       "src": "635:17:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_payable_$_t_uint256_$returns$__$",
                         "typeString": "function (address payable,uint256)"
                       }
                     },
-                    "id": 5114,
+                    "id": 5082,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -493,20 +496,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5115,
+                  "id": 5083,
                   "nodeType": "ExpressionStatement",
                   "src": "635:37:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5100,
+              "id": 5068,
               "nodeType": "StructuredDocumentation",
               "src": "495:59:17",
-              "text": "@notice Withdraws ETH from the contract."
+              "text": " @notice Withdraws ETH from the contract."
             },
             "functionSelector": "2e1a7d4d",
-            "id": 5117,
+            "id": 5085,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -514,11 +517,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5105,
+                    "id": 5073,
                     "name": "roleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5099,
+                    "referencedDeclaration": 5067,
                     "src": "617:6:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -526,14 +529,14 @@
                     }
                   }
                 ],
-                "id": 5106,
+                "id": 5074,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5104,
+                  "id": 5072,
                   "name": "onlyRoleHolder",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4556,
+                  "referencedDeclaration": 4524,
                   "src": "602:14:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -548,16 +551,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5103,
+              "id": 5071,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5102,
+                  "id": 5070,
+                  "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5117,
+                  "scope": 5085,
                   "src": "577:14:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -566,7 +570,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5101,
+                    "id": 5069,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:7:17",
@@ -582,12 +586,12 @@
               "src": "576:16:17"
             },
             "returnParameters": {
-              "id": 5107,
+              "id": 5075,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "625:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "559:120:17",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -595,38 +599,39 @@
           },
           {
             "body": {
-              "id": 5142,
+              "id": 5110,
               "nodeType": "Block",
               "src": "954:100:17",
               "statements": [
                 {
                   "assignments": [
-                    5129
+                    5097
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 5129,
+                      "id": 5097,
+                      "mutability": "mutable",
                       "name": "erc20",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 5142,
+                      "scope": 5110,
                       "src": "964:12:17",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$18505",
+                        "typeIdentifier": "t_contract$_IERC20_$18477",
                         "typeString": "contract IERC20"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5128,
+                        "id": 5096,
                         "name": "IERC20",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 18505,
+                        "referencedDeclaration": 18477,
                         "src": "964:6:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$18505",
+                          "typeIdentifier": "t_contract$_IERC20_$18477",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -634,17 +639,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 5133,
+                  "id": 5101,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5131,
+                        "id": 5099,
                         "name": "erc20Address",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5120,
+                        "referencedDeclaration": 5088,
                         "src": "986:12:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -659,18 +664,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5130,
+                      "id": 5098,
                       "name": "IERC20",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 18505,
+                      "referencedDeclaration": 18477,
                       "src": "979:6:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_IERC20_$18505_$",
+                        "typeIdentifier": "t_type$_t_contract$_IERC20_$18477_$",
                         "typeString": "type(contract IERC20)"
                       }
                     },
-                    "id": 5132,
+                    "id": 5100,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -681,7 +686,7 @@
                     "src": "979:20:17",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$18505",
+                      "typeIdentifier": "t_contract$_IERC20_$18477",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -696,7 +701,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 5137,
+                          "id": 5105,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -707,7 +712,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 5138,
+                        "id": 5106,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -723,11 +728,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5139,
+                        "id": 5107,
                         "name": "amount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5122,
+                        "referencedDeclaration": 5090,
                         "src": "1040:6:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -748,32 +753,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 5134,
+                        "id": 5102,
                         "name": "erc20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5129,
+                        "referencedDeclaration": 5097,
                         "src": "1009:5:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$18505",
+                          "typeIdentifier": "t_contract$_IERC20_$18477",
                           "typeString": "contract IERC20"
                         }
                       },
-                      "id": 5136,
+                      "id": 5104,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "safeTransfer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18539,
+                      "referencedDeclaration": 18511,
                       "src": "1009:18:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_IERC20_$18505_$_t_address_$_t_uint256_$returns$__$bound_to$_t_contract$_IERC20_$18505_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_IERC20_$18477_$_t_address_$_t_uint256_$returns$__$bound_to$_t_contract$_IERC20_$18477_$",
                         "typeString": "function (contract IERC20,address,uint256)"
                       }
                     },
-                    "id": 5140,
+                    "id": 5108,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -788,20 +793,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5141,
+                  "id": 5109,
                   "nodeType": "ExpressionStatement",
                   "src": "1009:38:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5118,
+              "id": 5086,
               "nodeType": "StructuredDocumentation",
               "src": "685:171:17",
-              "text": "@notice Withdraws ERC20 tokens from the contract.\n@param erc20Address ERC20 token to withdraw.\n@param amount amount of tokens to withdraw."
+              "text": " @notice Withdraws ERC20 tokens from the contract.\n @param erc20Address ERC20 token to withdraw.\n @param amount amount of tokens to withdraw."
             },
             "functionSelector": "bd1f4b52",
-            "id": 5143,
+            "id": 5111,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -809,11 +814,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5125,
+                    "id": 5093,
                     "name": "roleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5099,
+                    "referencedDeclaration": 5067,
                     "src": "946:6:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -821,14 +826,14 @@
                     }
                   }
                 ],
-                "id": 5126,
+                "id": 5094,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5124,
+                  "id": 5092,
                   "name": "onlyRoleHolder",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4556,
+                  "referencedDeclaration": 4524,
                   "src": "931:14:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -843,16 +848,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5123,
+              "id": 5091,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5120,
+                  "id": 5088,
+                  "mutability": "mutable",
                   "name": "erc20Address",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5143,
+                  "scope": 5111,
                   "src": "884:20:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -861,7 +867,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5119,
+                    "id": 5087,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "884:7:17",
@@ -876,11 +882,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5122,
+                  "id": 5090,
+                  "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5143,
+                  "scope": 5111,
                   "src": "906:14:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -889,7 +896,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5121,
+                    "id": 5089,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "906:7:17",
@@ -905,12 +912,12 @@
               "src": "883:38:17"
             },
             "returnParameters": {
-              "id": 5127,
+              "id": 5095,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "954:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "861:193:17",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -918,25 +925,25 @@
           },
           {
             "body": {
-              "id": 5163,
+              "id": 5131,
               "nodeType": "Block",
               "src": "1701:111:17",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5155,
+                    "id": 5123,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5153,
+                      "id": 5121,
                       "name": "roleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5099,
+                      "referencedDeclaration": 5067,
                       "src": "1711:6:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -947,11 +954,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5154,
+                      "id": 5122,
                       "name": "newRoleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5146,
+                      "referencedDeclaration": 5114,
                       "src": "1720:9:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -964,7 +971,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5156,
+                  "id": 5124,
                   "nodeType": "ExpressionStatement",
                   "src": "1711:18:17"
                 },
@@ -974,11 +981,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5158,
+                        "id": 5126,
                         "name": "newRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5146,
+                        "referencedDeclaration": 5114,
                         "src": "1760:9:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -987,11 +994,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5159,
+                        "id": 5127,
                         "name": "managingRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5148,
+                        "referencedDeclaration": 5116,
                         "src": "1771:14:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1000,11 +1007,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5160,
+                        "id": 5128,
                         "name": "withdrawerAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5150,
+                        "referencedDeclaration": 5118,
                         "src": "1787:17:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1027,18 +1034,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5157,
+                      "id": 5125,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4938,
+                      "referencedDeclaration": 4906,
                       "src": "1739:20:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 5161,
+                    "id": 5129,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1053,19 +1060,19 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5162,
+                  "id": 5130,
                   "nodeType": "ExpressionStatement",
                   "src": "1739:66:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5144,
+              "id": 5112,
               "nodeType": "StructuredDocumentation",
               "src": "1060:498:17",
-              "text": "@notice Internal method that allows derived contracts to create a role for withdrawal.\n@dev Either this method or `_setWithdrawRole` must be called by the derived class for this contract to function\nproperly.\n@param newRoleId ID corresponding to role whose members can withdraw.\n@param managingRoleId ID corresponding to managing role who can modify the withdrawable role's membership.\n@param withdrawerAddress new manager of withdrawable role."
+              "text": " @notice Internal method that allows derived contracts to create a role for withdrawal.\n @dev Either this method or `_setWithdrawRole` must be called by the derived class for this contract to function\n properly.\n @param newRoleId ID corresponding to role whose members can withdraw.\n @param managingRoleId ID corresponding to managing role who can modify the withdrawable role's membership.\n @param withdrawerAddress new manager of withdrawable role."
             },
-            "id": 5164,
+            "id": 5132,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1073,16 +1080,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5151,
+              "id": 5119,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5146,
+                  "id": 5114,
+                  "mutability": "mutable",
                   "name": "newRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5164,
+                  "scope": 5132,
                   "src": "1601:17:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1091,7 +1099,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5145,
+                    "id": 5113,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1601:7:17",
@@ -1105,11 +1113,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5148,
+                  "id": 5116,
+                  "mutability": "mutable",
                   "name": "managingRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5164,
+                  "scope": 5132,
                   "src": "1628:22:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1118,7 +1127,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5147,
+                    "id": 5115,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1628:7:17",
@@ -1132,11 +1141,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5150,
+                  "id": 5118,
+                  "mutability": "mutable",
                   "name": "withdrawerAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5164,
+                  "scope": 5132,
                   "src": "1660:25:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1145,7 +1155,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5149,
+                    "id": 5117,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1660:7:17",
@@ -1162,12 +1172,12 @@
               "src": "1591:100:17"
             },
             "returnParameters": {
-              "id": 5152,
+              "id": 5120,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1701:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "1563:249:17",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1175,25 +1185,25 @@
           },
           {
             "body": {
-              "id": 5177,
+              "id": 5145,
               "nodeType": "Block",
               "src": "2258:35:17",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5175,
+                    "id": 5143,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5173,
+                      "id": 5141,
                       "name": "roleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5099,
+                      "referencedDeclaration": 5067,
                       "src": "2268:6:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1204,11 +1214,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5174,
+                      "id": 5142,
                       "name": "setRoleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5167,
+                      "referencedDeclaration": 5135,
                       "src": "2277:9:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1221,19 +1231,19 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5176,
+                  "id": 5144,
                   "nodeType": "ExpressionStatement",
                   "src": "2268:18:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5165,
+              "id": 5133,
               "nodeType": "StructuredDocumentation",
               "src": "1818:356:17",
-              "text": "@notice Internal method that allows derived contracts to choose the role for withdrawal.\n@dev The role `setRoleId` must exist. Either this method or `_createWithdrawRole` must be\ncalled by the derived class for this contract to function properly.\n@param setRoleId ID corresponding to role whose members can withdraw."
+              "text": " @notice Internal method that allows derived contracts to choose the role for withdrawal.\n @dev The role `setRoleId` must exist. Either this method or `_createWithdrawRole` must be\n called by the derived class for this contract to function properly.\n @param setRoleId ID corresponding to role whose members can withdraw."
             },
-            "id": 5178,
+            "id": 5146,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -1241,11 +1251,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5170,
+                    "id": 5138,
                     "name": "setRoleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5167,
+                    "referencedDeclaration": 5135,
                     "src": "2247:9:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1253,14 +1263,14 @@
                     }
                   }
                 ],
-                "id": 5171,
+                "id": 5139,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5169,
+                  "id": 5137,
                   "name": "onlyValidRole",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4815,
+                  "referencedDeclaration": 4783,
                   "src": "2233:13:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -1275,16 +1285,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5168,
+              "id": 5136,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5167,
+                  "id": 5135,
+                  "mutability": "mutable",
                   "name": "setRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5178,
+                  "scope": 5146,
                   "src": "2205:17:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1293,7 +1304,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5166,
+                    "id": 5134,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2205:7:17",
@@ -1309,19 +1320,19 @@
               "src": "2204:19:17"
             },
             "returnParameters": {
-              "id": 5172,
+              "id": 5140,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2258:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "2179:114:17",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 5180,
+        "scope": 5148,
         "src": "383:1912:17"
       }
     ],
@@ -1331,14 +1342,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Withdrawable.sol",
     "exportedSymbols": {
       "Withdrawable": [
-        5179
+        5147
       ]
     },
-    "id": 5180,
+    "id": 5148,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5087,
+        "id": 5055,
         "literals": [
           "solidity",
           "^",
@@ -1351,10 +1363,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/utils/Address.sol",
         "file": "@openzeppelin/contracts/utils/Address.sol",
-        "id": 5088,
+        "id": 5056,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 18798,
+        "scope": 5148,
+        "sourceUnit": 18770,
         "src": "60:51:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1362,10 +1374,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 5089,
+        "id": 5057,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 18506,
+        "scope": 5148,
+        "sourceUnit": 18478,
         "src": "112:56:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1373,10 +1385,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "id": 5090,
+        "id": 5058,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 18734,
+        "scope": 5148,
+        "sourceUnit": 18706,
         "src": "169:59:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1384,10 +1396,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol",
         "file": "./MultiRole.sol",
-        "id": 5091,
+        "id": 5059,
         "nodeType": "ImportDirective",
-        "scope": 5180,
-        "sourceUnit": 4940,
+        "scope": 5148,
+        "sourceUnit": 4908,
         "src": "230:25:17",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1399,51 +1411,51 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5093,
+              "id": 5061,
               "name": "MultiRole",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4939,
+              "referencedDeclaration": 4907,
               "src": "417:9:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MultiRole_$4939",
+                "typeIdentifier": "t_contract$_MultiRole_$4907",
                 "typeString": "contract MultiRole"
               }
             },
-            "id": 5094,
+            "id": 5062,
             "nodeType": "InheritanceSpecifier",
             "src": "417:9:17"
           }
         ],
         "contractDependencies": [
-          4939
+          4907
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 5092,
+          "id": 5060,
           "nodeType": "StructuredDocumentation",
           "src": "258:124:17",
-          "text": "@title Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds."
+          "text": " @title Base contract that allows a specific role to withdraw any ETH and/or ERC20 tokens that the contract holds."
         },
         "fullyImplemented": true,
-        "id": 5179,
+        "id": 5147,
         "linearizedBaseContracts": [
-          5179,
-          4939
+          5147,
+          4907
         ],
         "name": "Withdrawable",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 5097,
+            "id": 5065,
             "libraryName": {
               "contractScope": null,
-              "id": 5095,
+              "id": 5063,
               "name": "SafeERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18733,
+              "referencedDeclaration": 18705,
               "src": "439:9:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeERC20_$18733",
+                "typeIdentifier": "t_contract$_SafeERC20_$18705",
                 "typeString": "library SafeERC20"
               }
             },
@@ -1451,24 +1463,25 @@
             "src": "433:27:17",
             "typeName": {
               "contractScope": null,
-              "id": 5096,
+              "id": 5064,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18505,
+              "referencedDeclaration": 18477,
               "src": "453:6:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18505",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             }
           },
           {
             "constant": false,
-            "id": 5099,
+            "id": 5067,
+            "mutability": "mutable",
             "name": "roleId",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 5179,
+            "scope": 5147,
             "src": "466:22:17",
             "stateVariable": true,
             "storageLocation": "default",
@@ -1477,7 +1490,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 5098,
+              "id": 5066,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "466:7:17",
@@ -1491,7 +1504,7 @@
           },
           {
             "body": {
-              "id": 5116,
+              "id": 5084,
               "nodeType": "Block",
               "src": "625:54:17",
               "statements": [
@@ -1503,7 +1516,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 5111,
+                          "id": 5079,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1514,7 +1527,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 5112,
+                        "id": 5080,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1530,11 +1543,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5113,
+                        "id": 5081,
                         "name": "amount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5102,
+                        "referencedDeclaration": 5070,
                         "src": "665:6:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1555,32 +1568,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 5108,
+                        "id": 5076,
                         "name": "Address",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 18797,
+                        "referencedDeclaration": 18769,
                         "src": "635:7:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_Address_$18797_$",
+                          "typeIdentifier": "t_type$_t_contract$_Address_$18769_$",
                           "typeString": "type(library Address)"
                         }
                       },
-                      "id": 5110,
+                      "id": 5078,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "sendValue",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18796,
+                      "referencedDeclaration": 18768,
                       "src": "635:17:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_payable_$_t_uint256_$returns$__$",
                         "typeString": "function (address payable,uint256)"
                       }
                     },
-                    "id": 5114,
+                    "id": 5082,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1595,20 +1608,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5115,
+                  "id": 5083,
                   "nodeType": "ExpressionStatement",
                   "src": "635:37:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5100,
+              "id": 5068,
               "nodeType": "StructuredDocumentation",
               "src": "495:59:17",
-              "text": "@notice Withdraws ETH from the contract."
+              "text": " @notice Withdraws ETH from the contract."
             },
             "functionSelector": "2e1a7d4d",
-            "id": 5117,
+            "id": 5085,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -1616,11 +1629,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5105,
+                    "id": 5073,
                     "name": "roleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5099,
+                    "referencedDeclaration": 5067,
                     "src": "617:6:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1628,14 +1641,14 @@
                     }
                   }
                 ],
-                "id": 5106,
+                "id": 5074,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5104,
+                  "id": 5072,
                   "name": "onlyRoleHolder",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4556,
+                  "referencedDeclaration": 4524,
                   "src": "602:14:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -1650,16 +1663,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5103,
+              "id": 5071,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5102,
+                  "id": 5070,
+                  "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5117,
+                  "scope": 5085,
                   "src": "577:14:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1668,7 +1682,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5101,
+                    "id": 5069,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:7:17",
@@ -1684,12 +1698,12 @@
               "src": "576:16:17"
             },
             "returnParameters": {
-              "id": 5107,
+              "id": 5075,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "625:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "559:120:17",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1697,38 +1711,39 @@
           },
           {
             "body": {
-              "id": 5142,
+              "id": 5110,
               "nodeType": "Block",
               "src": "954:100:17",
               "statements": [
                 {
                   "assignments": [
-                    5129
+                    5097
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 5129,
+                      "id": 5097,
+                      "mutability": "mutable",
                       "name": "erc20",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 5142,
+                      "scope": 5110,
                       "src": "964:12:17",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$18505",
+                        "typeIdentifier": "t_contract$_IERC20_$18477",
                         "typeString": "contract IERC20"
                       },
                       "typeName": {
                         "contractScope": null,
-                        "id": 5128,
+                        "id": 5096,
                         "name": "IERC20",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 18505,
+                        "referencedDeclaration": 18477,
                         "src": "964:6:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$18505",
+                          "typeIdentifier": "t_contract$_IERC20_$18477",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -1736,17 +1751,17 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 5133,
+                  "id": 5101,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5131,
+                        "id": 5099,
                         "name": "erc20Address",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5120,
+                        "referencedDeclaration": 5088,
                         "src": "986:12:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1761,18 +1776,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5130,
+                      "id": 5098,
                       "name": "IERC20",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 18505,
+                      "referencedDeclaration": 18477,
                       "src": "979:6:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_IERC20_$18505_$",
+                        "typeIdentifier": "t_type$_t_contract$_IERC20_$18477_$",
                         "typeString": "type(contract IERC20)"
                       }
                     },
-                    "id": 5132,
+                    "id": 5100,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1783,7 +1798,7 @@
                     "src": "979:20:17",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$18505",
+                      "typeIdentifier": "t_contract$_IERC20_$18477",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -1798,7 +1813,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 5137,
+                          "id": 5105,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1809,7 +1824,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 5138,
+                        "id": 5106,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1825,11 +1840,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5139,
+                        "id": 5107,
                         "name": "amount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5122,
+                        "referencedDeclaration": 5090,
                         "src": "1040:6:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1850,32 +1865,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 5134,
+                        "id": 5102,
                         "name": "erc20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5129,
+                        "referencedDeclaration": 5097,
                         "src": "1009:5:17",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$18505",
+                          "typeIdentifier": "t_contract$_IERC20_$18477",
                           "typeString": "contract IERC20"
                         }
                       },
-                      "id": 5136,
+                      "id": 5104,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "safeTransfer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 18539,
+                      "referencedDeclaration": 18511,
                       "src": "1009:18:17",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_IERC20_$18505_$_t_address_$_t_uint256_$returns$__$bound_to$_t_contract$_IERC20_$18505_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_contract$_IERC20_$18477_$_t_address_$_t_uint256_$returns$__$bound_to$_t_contract$_IERC20_$18477_$",
                         "typeString": "function (contract IERC20,address,uint256)"
                       }
                     },
-                    "id": 5140,
+                    "id": 5108,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1890,20 +1905,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5141,
+                  "id": 5109,
                   "nodeType": "ExpressionStatement",
                   "src": "1009:38:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5118,
+              "id": 5086,
               "nodeType": "StructuredDocumentation",
               "src": "685:171:17",
-              "text": "@notice Withdraws ERC20 tokens from the contract.\n@param erc20Address ERC20 token to withdraw.\n@param amount amount of tokens to withdraw."
+              "text": " @notice Withdraws ERC20 tokens from the contract.\n @param erc20Address ERC20 token to withdraw.\n @param amount amount of tokens to withdraw."
             },
             "functionSelector": "bd1f4b52",
-            "id": 5143,
+            "id": 5111,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -1911,11 +1926,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5125,
+                    "id": 5093,
                     "name": "roleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5099,
+                    "referencedDeclaration": 5067,
                     "src": "946:6:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1923,14 +1938,14 @@
                     }
                   }
                 ],
-                "id": 5126,
+                "id": 5094,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5124,
+                  "id": 5092,
                   "name": "onlyRoleHolder",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4556,
+                  "referencedDeclaration": 4524,
                   "src": "931:14:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -1945,16 +1960,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5123,
+              "id": 5091,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5120,
+                  "id": 5088,
+                  "mutability": "mutable",
                   "name": "erc20Address",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5143,
+                  "scope": 5111,
                   "src": "884:20:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1963,7 +1979,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5119,
+                    "id": 5087,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "884:7:17",
@@ -1978,11 +1994,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5122,
+                  "id": 5090,
+                  "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5143,
+                  "scope": 5111,
                   "src": "906:14:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1991,7 +2008,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5121,
+                    "id": 5089,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "906:7:17",
@@ -2007,12 +2024,12 @@
               "src": "883:38:17"
             },
             "returnParameters": {
-              "id": 5127,
+              "id": 5095,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "954:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "861:193:17",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2020,25 +2037,25 @@
           },
           {
             "body": {
-              "id": 5163,
+              "id": 5131,
               "nodeType": "Block",
               "src": "1701:111:17",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5155,
+                    "id": 5123,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5153,
+                      "id": 5121,
                       "name": "roleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5099,
+                      "referencedDeclaration": 5067,
                       "src": "1711:6:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2049,11 +2066,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5154,
+                      "id": 5122,
                       "name": "newRoleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5146,
+                      "referencedDeclaration": 5114,
                       "src": "1720:9:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2066,7 +2083,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5156,
+                  "id": 5124,
                   "nodeType": "ExpressionStatement",
                   "src": "1711:18:17"
                 },
@@ -2076,11 +2093,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5158,
+                        "id": 5126,
                         "name": "newRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5146,
+                        "referencedDeclaration": 5114,
                         "src": "1760:9:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2089,11 +2106,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5159,
+                        "id": 5127,
                         "name": "managingRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5148,
+                        "referencedDeclaration": 5116,
                         "src": "1771:14:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2102,11 +2119,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5160,
+                        "id": 5128,
                         "name": "withdrawerAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5150,
+                        "referencedDeclaration": 5118,
                         "src": "1787:17:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2129,18 +2146,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5157,
+                      "id": 5125,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4938,
+                      "referencedDeclaration": 4906,
                       "src": "1739:20:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 5161,
+                    "id": 5129,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2155,19 +2172,19 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5162,
+                  "id": 5130,
                   "nodeType": "ExpressionStatement",
                   "src": "1739:66:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5144,
+              "id": 5112,
               "nodeType": "StructuredDocumentation",
               "src": "1060:498:17",
-              "text": "@notice Internal method that allows derived contracts to create a role for withdrawal.\n@dev Either this method or `_setWithdrawRole` must be called by the derived class for this contract to function\nproperly.\n@param newRoleId ID corresponding to role whose members can withdraw.\n@param managingRoleId ID corresponding to managing role who can modify the withdrawable role's membership.\n@param withdrawerAddress new manager of withdrawable role."
+              "text": " @notice Internal method that allows derived contracts to create a role for withdrawal.\n @dev Either this method or `_setWithdrawRole` must be called by the derived class for this contract to function\n properly.\n @param newRoleId ID corresponding to role whose members can withdraw.\n @param managingRoleId ID corresponding to managing role who can modify the withdrawable role's membership.\n @param withdrawerAddress new manager of withdrawable role."
             },
-            "id": 5164,
+            "id": 5132,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -2175,16 +2192,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5151,
+              "id": 5119,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5146,
+                  "id": 5114,
+                  "mutability": "mutable",
                   "name": "newRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5164,
+                  "scope": 5132,
                   "src": "1601:17:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2193,7 +2211,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5145,
+                    "id": 5113,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1601:7:17",
@@ -2207,11 +2225,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5148,
+                  "id": 5116,
+                  "mutability": "mutable",
                   "name": "managingRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5164,
+                  "scope": 5132,
                   "src": "1628:22:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2220,7 +2239,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5147,
+                    "id": 5115,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1628:7:17",
@@ -2234,11 +2253,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5150,
+                  "id": 5118,
+                  "mutability": "mutable",
                   "name": "withdrawerAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5164,
+                  "scope": 5132,
                   "src": "1660:25:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2247,7 +2267,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5149,
+                    "id": 5117,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1660:7:17",
@@ -2264,12 +2284,12 @@
               "src": "1591:100:17"
             },
             "returnParameters": {
-              "id": 5152,
+              "id": 5120,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1701:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "1563:249:17",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -2277,25 +2297,25 @@
           },
           {
             "body": {
-              "id": 5177,
+              "id": 5145,
               "nodeType": "Block",
               "src": "2258:35:17",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 5175,
+                    "id": 5143,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 5173,
+                      "id": 5141,
                       "name": "roleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5099,
+                      "referencedDeclaration": 5067,
                       "src": "2268:6:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2306,11 +2326,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 5174,
+                      "id": 5142,
                       "name": "setRoleId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5167,
+                      "referencedDeclaration": 5135,
                       "src": "2277:9:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2323,19 +2343,19 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 5176,
+                  "id": 5144,
                   "nodeType": "ExpressionStatement",
                   "src": "2268:18:17"
                 }
               ]
             },
             "documentation": {
-              "id": 5165,
+              "id": 5133,
               "nodeType": "StructuredDocumentation",
               "src": "1818:356:17",
-              "text": "@notice Internal method that allows derived contracts to choose the role for withdrawal.\n@dev The role `setRoleId` must exist. Either this method or `_createWithdrawRole` must be\ncalled by the derived class for this contract to function properly.\n@param setRoleId ID corresponding to role whose members can withdraw."
+              "text": " @notice Internal method that allows derived contracts to choose the role for withdrawal.\n @dev The role `setRoleId` must exist. Either this method or `_createWithdrawRole` must be\n called by the derived class for this contract to function properly.\n @param setRoleId ID corresponding to role whose members can withdraw."
             },
-            "id": 5178,
+            "id": 5146,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -2343,11 +2363,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5170,
+                    "id": 5138,
                     "name": "setRoleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5167,
+                    "referencedDeclaration": 5135,
                     "src": "2247:9:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -2355,14 +2375,14 @@
                     }
                   }
                 ],
-                "id": 5171,
+                "id": 5139,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5169,
+                  "id": 5137,
                   "name": "onlyValidRole",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4815,
+                  "referencedDeclaration": 4783,
                   "src": "2233:13:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -2377,16 +2397,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5168,
+              "id": 5136,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5167,
+                  "id": 5135,
+                  "mutability": "mutable",
                   "name": "setRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5178,
+                  "scope": 5146,
                   "src": "2205:17:17",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2395,7 +2416,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5166,
+                    "id": 5134,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2205:7:17",
@@ -2411,19 +2432,19 @@
               "src": "2204:19:17"
             },
             "returnParameters": {
-              "id": 5172,
+              "id": 5140,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2258:0:17"
             },
-            "scope": 5179,
+            "scope": 5147,
             "src": "2179:114:17",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 5180,
+        "scope": 5148,
         "src": "383:1912:17"
       }
     ],
@@ -2431,11 +2452,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.5",
-  "updatedAt": "2020-09-18T09:03:22.646Z",
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-09-30T12:21:56.750Z",
   "devdoc": {
     "methods": {
       "addMember(uint256,address)": {

@@ -333,7 +333,7 @@
         "id": 337,
         "nodeType": "ImportDirective",
         "scope": 381,
-        "sourceUnit": 18615,
+        "sourceUnit": 18478,
         "src": "33:70:2",
         "symbolAliases": [
           {
@@ -365,10 +365,10 @@
               "id": 338,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18614,
+              "referencedDeclaration": 18477,
               "src": "134:6:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18614",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -378,7 +378,7 @@
           }
         ],
         "contractDependencies": [
-          18614
+          18477
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -386,7 +386,7 @@
         "id": 380,
         "linearizedBaseContracts": [
           380,
-          18614
+          18477
         ],
         "name": "IRToken",
         "nodeType": "ContractDefinition",
@@ -404,7 +404,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18614",
+              "typeIdentifier": "t_contract$_IERC20_$18477",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -412,10 +412,10 @@
               "id": 340,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18614,
+              "referencedDeclaration": 18477,
               "src": "147:6:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18614",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -942,7 +942,7 @@
         "id": 337,
         "nodeType": "ImportDirective",
         "scope": 381,
-        "sourceUnit": 18615,
+        "sourceUnit": 18478,
         "src": "33:70:2",
         "symbolAliases": [
           {
@@ -974,10 +974,10 @@
               "id": 338,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18614,
+              "referencedDeclaration": 18477,
               "src": "134:6:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18614",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -987,7 +987,7 @@
           }
         ],
         "contractDependencies": [
-          18614
+          18477
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -995,7 +995,7 @@
         "id": 380,
         "linearizedBaseContracts": [
           380,
-          18614
+          18477
         ],
         "name": "IRToken",
         "nodeType": "ContractDefinition",
@@ -1013,7 +1013,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$18614",
+              "typeIdentifier": "t_contract$_IERC20_$18477",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -1021,10 +1021,10 @@
               "id": 340,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18614,
+              "referencedDeclaration": 18477,
               "src": "147:6:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18614",
+                "typeIdentifier": "t_contract$_IERC20_$18477",
                 "typeString": "contract IERC20"
               }
             },
@@ -1525,8 +1525,9 @@
     "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-25T10:03:23.855Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-01T17:37:36.988Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {

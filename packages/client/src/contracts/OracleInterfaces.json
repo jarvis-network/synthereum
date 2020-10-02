@@ -80,25 +80,27 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"CollateralWhitelist\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"FinancialContractsAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"IdentifierWhitelist\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Oracle\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Registry\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Store\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"title\":\"Stores common interface names used throughout the DVM by registration in the Finder.\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol\":\"OracleInterfaces\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol\":{\"keccak256\":\"0xfa5379e18f31da723268d949acf3ecd8b76593467210032e91e2ac47201e9c80\",\"urls\":[\"bzz-raw://c15222ccf0c0e418ebe2915e59b8765db4335f11a83f5db44436719da02da51a\",\"dweb:/ipfs/QmQfj8ADqa5s7EpeqNmnt1g5YUid9Yc49DQvtufrpL1Npq\"]}},\"version\":1}",
-  "bytecode": "0x6101d1610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361061007c5760003560e01c8063598dd0971161005a578063598dd097146100ab5780637db9743b146100b3578063f24a534e146100bb5761007c565b80632a71e5b31461008157806342e90c331461009b5780634f4a180b146100a3575b600080fd5b6100896100c3565b60408051918252519081900360200190f35b6100896100e7565b61008961010b565b61008961012f565b610089610153565b610089610177565b7f46696e616e6369616c436f6e74726163747341646d696e00000000000000000081565b7f53746f726500000000000000000000000000000000000000000000000000000081565b7f4964656e74696669657257686974656c6973740000000000000000000000000081565b7f436f6c6c61746572616c57686974656c6973740000000000000000000000000081565b7f526567697374727900000000000000000000000000000000000000000000000081565b7f4f7261636c6500000000000000000000000000000000000000000000000000008156fea2646970667358221220726f6239f60ad8de14b4e16993dae44f5e3ed3ea41c00c4aa52660ca9440ddc764736f6c63430006040033",
-  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040526004361061007c5760003560e01c8063598dd0971161005a578063598dd097146100ab5780637db9743b146100b3578063f24a534e146100bb5761007c565b80632a71e5b31461008157806342e90c331461009b5780634f4a180b146100a3575b600080fd5b6100896100c3565b60408051918252519081900360200190f35b6100896100e7565b61008961010b565b61008961012f565b610089610153565b610089610177565b7f46696e616e6369616c436f6e74726163747341646d696e00000000000000000081565b7f53746f726500000000000000000000000000000000000000000000000000000081565b7f4964656e74696669657257686974656c6973740000000000000000000000000081565b7f436f6c6c61746572616c57686974656c6973740000000000000000000000000081565b7f526567697374727900000000000000000000000000000000000000000000000081565b7f4f7261636c6500000000000000000000000000000000000000000000000000008156fea2646970667358221220726f6239f60ad8de14b4e16993dae44f5e3ed3ea41c00c4aa52660ca9440ddc764736f6c63430006040033",
-  "sourceMap": "129:398:42:-:0;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
-  "deployedSourceMap": "129:398:42:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;325:75:42;;;:::i;:::-;;;;;;;;;;;;;;;;280:39;;;:::i;207:67::-;;;:::i;457:::-;;;:::i;406:45::-;;;:::i;160:41::-;;;:::i;325:75::-;;;:::o;280:39::-;;;:::o;207:67::-;;;:::o;457:::-;;;:::o;406:45::-;;;:::o;160:41::-;;;:::o",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"CollateralWhitelist\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"FinancialContractsAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"IdentifierWhitelist\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Oracle\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Registry\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Store\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"title\":\"Stores common interface names used throughout the DVM by registration in the Finder.\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol\":\"OracleInterfaces\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol\":{\"keccak256\":\"0xfa5379e18f31da723268d949acf3ecd8b76593467210032e91e2ac47201e9c80\",\"urls\":[\"bzz-raw://c15222ccf0c0e418ebe2915e59b8765db4335f11a83f5db44436719da02da51a\",\"dweb:/ipfs/QmQfj8ADqa5s7EpeqNmnt1g5YUid9Yc49DQvtufrpL1Npq\"]}},\"version\":1}",
+  "bytecode": "0x6101d1610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361061007c5760003560e01c8063598dd0971161005a578063598dd097146100ab5780637db9743b146100b3578063f24a534e146100bb5761007c565b80632a71e5b31461008157806342e90c331461009b5780634f4a180b146100a3575b600080fd5b6100896100c3565b60408051918252519081900360200190f35b6100896100e7565b61008961010b565b61008961012f565b610089610153565b610089610177565b7f46696e616e6369616c436f6e74726163747341646d696e00000000000000000081565b7f53746f726500000000000000000000000000000000000000000000000000000081565b7f4964656e74696669657257686974656c6973740000000000000000000000000081565b7f436f6c6c61746572616c57686974656c6973740000000000000000000000000081565b7f526567697374727900000000000000000000000000000000000000000000000081565b7f4f7261636c6500000000000000000000000000000000000000000000000000008156fea2646970667358221220d8b764ed5f6b6aa654b34453e3bdb1cae022d9313787bbf041dbd938bc475bbd64736f6c634300060a0033",
+  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040526004361061007c5760003560e01c8063598dd0971161005a578063598dd097146100ab5780637db9743b146100b3578063f24a534e146100bb5761007c565b80632a71e5b31461008157806342e90c331461009b5780634f4a180b146100a3575b600080fd5b6100896100c3565b60408051918252519081900360200190f35b6100896100e7565b61008961010b565b61008961012f565b610089610153565b610089610177565b7f46696e616e6369616c436f6e74726163747341646d696e00000000000000000081565b7f53746f726500000000000000000000000000000000000000000000000000000081565b7f4964656e74696669657257686974656c6973740000000000000000000000000081565b7f436f6c6c61746572616c57686974656c6973740000000000000000000000000081565b7f526567697374727900000000000000000000000000000000000000000000000081565b7f4f7261636c6500000000000000000000000000000000000000000000000000008156fea2646970667358221220d8b764ed5f6b6aa654b34453e3bdb1cae022d9313787bbf041dbd938bc475bbd64736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "129:398:42:-:0;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "129:398:42:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;325:75;;;:::i;:::-;;;;;;;;;;;;;;;;280:39;;;:::i;207:67::-;;;:::i;457:::-;;;:::i;406:45::-;;;:::i;160:41::-;;;:::i;325:75::-;;;:::o;280:39::-;;;:::o;207:67::-;;;:::o;457:::-;;;:::o;406:45::-;;;:::o;160:41::-;;;:::o",
   "source": "pragma solidity ^0.6.0;\n\n\n/**\n * @title Stores common interface names used throughout the DVM by registration in the Finder.\n */\nlibrary OracleInterfaces {\n    bytes32 public constant Oracle = \"Oracle\";\n    bytes32 public constant IdentifierWhitelist = \"IdentifierWhitelist\";\n    bytes32 public constant Store = \"Store\";\n    bytes32 public constant FinancialContractsAdmin = \"FinancialContractsAdmin\";\n    bytes32 public constant Registry = \"Registry\";\n    bytes32 public constant CollateralWhitelist = \"CollateralWhitelist\";\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
   "ast": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
     "exportedSymbols": {
       "OracleInterfaces": [
-        11760
+        11729
       ]
     },
-    "id": 11761,
+    "id": 11730,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11740,
+        "id": 11709,
         "literals": [
           "solidity",
           "^",
@@ -114,15 +116,15 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 11741,
+          "id": 11710,
           "nodeType": "StructuredDocumentation",
           "src": "26:102:42",
-          "text": "@title Stores common interface names used throughout the DVM by registration in the Finder."
+          "text": " @title Stores common interface names used throughout the DVM by registration in the Finder."
         },
         "fullyImplemented": true,
-        "id": 11760,
+        "id": 11729,
         "linearizedBaseContracts": [
-          11760
+          11729
         ],
         "name": "OracleInterfaces",
         "nodeType": "ContractDefinition",
@@ -130,11 +132,12 @@
           {
             "constant": true,
             "functionSelector": "f24a534e",
-            "id": 11744,
+            "id": 11713,
+            "mutability": "constant",
             "name": "Oracle",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "160:41:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -143,7 +146,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11742,
+              "id": 11711,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "160:7:42",
@@ -155,7 +158,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "4f7261636c65",
-              "id": 11743,
+              "id": 11712,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -175,11 +178,12 @@
           {
             "constant": true,
             "functionSelector": "4f4a180b",
-            "id": 11747,
+            "id": 11716,
+            "mutability": "constant",
             "name": "IdentifierWhitelist",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "207:67:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -188,7 +192,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11745,
+              "id": 11714,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "207:7:42",
@@ -200,7 +204,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "4964656e74696669657257686974656c697374",
-              "id": 11746,
+              "id": 11715,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -220,11 +224,12 @@
           {
             "constant": true,
             "functionSelector": "42e90c33",
-            "id": 11750,
+            "id": 11719,
+            "mutability": "constant",
             "name": "Store",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "280:39:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -233,7 +238,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11748,
+              "id": 11717,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "280:7:42",
@@ -245,7 +250,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "53746f7265",
-              "id": 11749,
+              "id": 11718,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -265,11 +270,12 @@
           {
             "constant": true,
             "functionSelector": "2a71e5b3",
-            "id": 11753,
+            "id": 11722,
+            "mutability": "constant",
             "name": "FinancialContractsAdmin",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "325:75:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -278,7 +284,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11751,
+              "id": 11720,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "325:7:42",
@@ -290,7 +296,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "46696e616e6369616c436f6e74726163747341646d696e",
-              "id": 11752,
+              "id": 11721,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -310,11 +316,12 @@
           {
             "constant": true,
             "functionSelector": "7db9743b",
-            "id": 11756,
+            "id": 11725,
+            "mutability": "constant",
             "name": "Registry",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "406:45:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -323,7 +330,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11754,
+              "id": 11723,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "406:7:42",
@@ -335,7 +342,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "5265676973747279",
-              "id": 11755,
+              "id": 11724,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -355,11 +362,12 @@
           {
             "constant": true,
             "functionSelector": "598dd097",
-            "id": 11759,
+            "id": 11728,
+            "mutability": "constant",
             "name": "CollateralWhitelist",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "457:67:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -368,7 +376,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11757,
+              "id": 11726,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "457:7:42",
@@ -380,7 +388,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "436f6c6c61746572616c57686974656c697374",
-              "id": 11758,
+              "id": 11727,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -398,7 +406,7 @@
             "visibility": "public"
           }
         ],
-        "scope": 11761,
+        "scope": 11730,
         "src": "129:398:42"
       }
     ],
@@ -408,14 +416,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
     "exportedSymbols": {
       "OracleInterfaces": [
-        11760
+        11729
       ]
     },
-    "id": 11761,
+    "id": 11730,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11740,
+        "id": 11709,
         "literals": [
           "solidity",
           "^",
@@ -431,15 +440,15 @@
         "contractDependencies": [],
         "contractKind": "library",
         "documentation": {
-          "id": 11741,
+          "id": 11710,
           "nodeType": "StructuredDocumentation",
           "src": "26:102:42",
-          "text": "@title Stores common interface names used throughout the DVM by registration in the Finder."
+          "text": " @title Stores common interface names used throughout the DVM by registration in the Finder."
         },
         "fullyImplemented": true,
-        "id": 11760,
+        "id": 11729,
         "linearizedBaseContracts": [
-          11760
+          11729
         ],
         "name": "OracleInterfaces",
         "nodeType": "ContractDefinition",
@@ -447,11 +456,12 @@
           {
             "constant": true,
             "functionSelector": "f24a534e",
-            "id": 11744,
+            "id": 11713,
+            "mutability": "constant",
             "name": "Oracle",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "160:41:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -460,7 +470,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11742,
+              "id": 11711,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "160:7:42",
@@ -472,7 +482,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "4f7261636c65",
-              "id": 11743,
+              "id": 11712,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -492,11 +502,12 @@
           {
             "constant": true,
             "functionSelector": "4f4a180b",
-            "id": 11747,
+            "id": 11716,
+            "mutability": "constant",
             "name": "IdentifierWhitelist",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "207:67:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -505,7 +516,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11745,
+              "id": 11714,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "207:7:42",
@@ -517,7 +528,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "4964656e74696669657257686974656c697374",
-              "id": 11746,
+              "id": 11715,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -537,11 +548,12 @@
           {
             "constant": true,
             "functionSelector": "42e90c33",
-            "id": 11750,
+            "id": 11719,
+            "mutability": "constant",
             "name": "Store",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "280:39:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -550,7 +562,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11748,
+              "id": 11717,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "280:7:42",
@@ -562,7 +574,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "53746f7265",
-              "id": 11749,
+              "id": 11718,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -582,11 +594,12 @@
           {
             "constant": true,
             "functionSelector": "2a71e5b3",
-            "id": 11753,
+            "id": 11722,
+            "mutability": "constant",
             "name": "FinancialContractsAdmin",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "325:75:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -595,7 +608,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11751,
+              "id": 11720,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "325:7:42",
@@ -607,7 +620,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "46696e616e6369616c436f6e74726163747341646d696e",
-              "id": 11752,
+              "id": 11721,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -627,11 +640,12 @@
           {
             "constant": true,
             "functionSelector": "7db9743b",
-            "id": 11756,
+            "id": 11725,
+            "mutability": "constant",
             "name": "Registry",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "406:45:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -640,7 +654,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11754,
+              "id": 11723,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "406:7:42",
@@ -652,7 +666,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "5265676973747279",
-              "id": 11755,
+              "id": 11724,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -672,11 +686,12 @@
           {
             "constant": true,
             "functionSelector": "598dd097",
-            "id": 11759,
+            "id": 11728,
+            "mutability": "constant",
             "name": "CollateralWhitelist",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 11760,
+            "scope": 11729,
             "src": "457:67:42",
             "stateVariable": true,
             "storageLocation": "default",
@@ -685,7 +700,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11757,
+              "id": 11726,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "457:7:42",
@@ -697,7 +712,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "436f6c6c61746572616c57686974656c697374",
-              "id": 11758,
+              "id": 11727,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -715,7 +730,7 @@
             "visibility": "public"
           }
         ],
-        "scope": 11761,
+        "scope": 11730,
         "src": "129:398:42"
       }
     ],
@@ -723,11 +738,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.5",
-  "updatedAt": "2020-09-18T09:03:22.817Z",
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-09-30T12:21:56.958Z",
   "devdoc": {
     "methods": {},
     "title": "Stores common interface names used throughout the DVM by registration in the Finder."

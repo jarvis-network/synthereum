@@ -121,9 +121,10 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"}],\"name\":\"addPartyToContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllRegisteredContracts\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"}],\"name\":\"getRegisteredContracts\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"isContractRegistered\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"isPartyMemberOfContract\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"parties\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"registerContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"}],\"name\":\"removePartyFromContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addPartyToContract(address)\":{\"details\":\"msg.sender must be the contract to which the party member is added.\",\"params\":{\"party\":\"address to be added to the contract.\"}},\"getRegisteredContracts(address)\":{\"params\":{\"party\":\"address of the party.\"},\"returns\":{\"_0\":\"an array of the contracts the party is registered to.\"}},\"isContractRegistered(address)\":{\"details\":\"If it is registered, it is an authorized participant in the UMA system.\",\"params\":{\"contractAddress\":\"address of the contract.\"},\"returns\":{\"_0\":\"bool indicates whether the contract is registered.\"}},\"isPartyMemberOfContract(address,address)\":{\"params\":{\"contractAddress\":\"address to check against the party.\",\"party\":\"party to check.\"},\"returns\":{\"_0\":\"bool indicating if the address is a party of the contract.\"}},\"registerContract(address[],address)\":{\"details\":\"Only authorized contract creators can call this method.\",\"params\":{\"contractAddress\":\"defines the address of the deployed contract.\",\"parties\":\"an array of addresses who become parties in the contract.\"}},\"removePartyFromContract(address)\":{\"details\":\"msg.sender must be the contract to which the party member is added.\",\"params\":{\"party\":\"address to be removed from the contract.\"}}},\"title\":\"Interface for a registry of contracts and contract creators.\"},\"userdoc\":{\"methods\":{\"addPartyToContract(address)\":{\"notice\":\"Adds a party to the calling contract.\"},\"getAllRegisteredContracts()\":{\"notice\":\"Returns all registered contracts.\"},\"getRegisteredContracts(address)\":{\"notice\":\"Returns a list of all contracts that are associated with a particular party.\"},\"isContractRegistered(address)\":{\"notice\":\"Returns whether the contract has been registered with the registry.\"},\"isPartyMemberOfContract(address,address)\":{\"notice\":\"checks if an address is a party in a contract.\"},\"registerContract(address[],address)\":{\"notice\":\"Registers a new contract.\"},\"removePartyFromContract(address)\":{\"notice\":\"Removes a party member to the calling contract.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol\":\"RegistryInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol\":{\"keccak256\":\"0x9945a1e0c23bf6dfeb768de35c3a3b1cb5325b229add6cf480cccf2fb90c5600\",\"urls\":[\"bzz-raw://95be068d174428524e76fdfbc8b30067e54fd241dc5e05c657741f53a5946b83\",\"dweb:/ipfs/QmYz8AiEkCpPeZSTo3CqjGZHDZW5c6Pj2jKyzrYeSpvkjh\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"}],\"name\":\"addPartyToContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getAllRegisteredContracts\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"}],\"name\":\"getRegisteredContracts\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"isContractRegistered\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"isPartyMemberOfContract\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"parties\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"name\":\"registerContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"party\",\"type\":\"address\"}],\"name\":\"removePartyFromContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addPartyToContract(address)\":{\"details\":\"msg.sender must be the contract to which the party member is added.\",\"params\":{\"party\":\"address to be added to the contract.\"}},\"getAllRegisteredContracts()\":{\"returns\":{\"_0\":\"all registered contract addresses within the system.\"}},\"getRegisteredContracts(address)\":{\"params\":{\"party\":\"address of the party.\"},\"returns\":{\"_0\":\"an array of the contracts the party is registered to.\"}},\"isContractRegistered(address)\":{\"details\":\"If it is registered, it is an authorized participant in the UMA system.\",\"params\":{\"contractAddress\":\"address of the contract.\"},\"returns\":{\"_0\":\"bool indicates whether the contract is registered.\"}},\"isPartyMemberOfContract(address,address)\":{\"params\":{\"contractAddress\":\"address to check against the party.\",\"party\":\"party to check.\"},\"returns\":{\"_0\":\"bool indicating if the address is a party of the contract.\"}},\"registerContract(address[],address)\":{\"details\":\"Only authorized contract creators can call this method.\",\"params\":{\"contractAddress\":\"defines the address of the deployed contract.\",\"parties\":\"an array of addresses who become parties in the contract.\"}},\"removePartyFromContract(address)\":{\"details\":\"msg.sender must be the contract to which the party member is added.\",\"params\":{\"party\":\"address to be removed from the contract.\"}}},\"title\":\"Interface for a registry of contracts and contract creators.\"},\"userdoc\":{\"methods\":{\"addPartyToContract(address)\":{\"notice\":\"Adds a party to the calling contract.\"},\"getAllRegisteredContracts()\":{\"notice\":\"Returns all registered contracts.\"},\"getRegisteredContracts(address)\":{\"notice\":\"Returns a list of all contracts that are associated with a particular party.\"},\"isContractRegistered(address)\":{\"notice\":\"Returns whether the contract has been registered with the registry.\"},\"isPartyMemberOfContract(address,address)\":{\"notice\":\"checks if an address is a party in a contract.\"},\"registerContract(address[],address)\":{\"notice\":\"Registers a new contract.\"},\"removePartyFromContract(address)\":{\"notice\":\"Removes a party member to the calling contract.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol\":\"RegistryInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol\":{\"keccak256\":\"0x9945a1e0c23bf6dfeb768de35c3a3b1cb5325b229add6cf480cccf2fb90c5600\",\"urls\":[\"bzz-raw://95be068d174428524e76fdfbc8b30067e54fd241dc5e05c657741f53a5946b83\",\"dweb:/ipfs/QmYz8AiEkCpPeZSTo3CqjGZHDZW5c6Pj2jKyzrYeSpvkjh\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
+  "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.6.0;\n\npragma experimental ABIEncoderV2;\n\n\n/**\n * @title Interface for a registry of contracts and contract creators.\n */\ninterface RegistryInterface {\n    /**\n     * @notice Registers a new contract.\n     * @dev Only authorized contract creators can call this method.\n     * @param parties an array of addresses who become parties in the contract.\n     * @param contractAddress defines the address of the deployed contract.\n     */\n    function registerContract(address[] calldata parties, address contractAddress) external;\n\n    /**\n     * @notice Returns whether the contract has been registered with the registry.\n     * @dev If it is registered, it is an authorized participant in the UMA system.\n     * @param contractAddress address of the contract.\n     * @return bool indicates whether the contract is registered.\n     */\n    function isContractRegistered(address contractAddress) external view returns (bool);\n\n    /**\n     * @notice Returns a list of all contracts that are associated with a particular party.\n     * @param party address of the party.\n     * @return an array of the contracts the party is registered to.\n     */\n    function getRegisteredContracts(address party) external view returns (address[] memory);\n\n    /**\n     * @notice Returns all registered contracts.\n     * @return all registered contract addresses within the system.\n     */\n    function getAllRegisteredContracts() external view returns (address[] memory);\n\n    /**\n     * @notice Adds a party to the calling contract.\n     * @dev msg.sender must be the contract to which the party member is added.\n     * @param party address to be added to the contract.\n     */\n    function addPartyToContract(address party) external;\n\n    /**\n     * @notice Removes a party member to the calling contract.\n     * @dev msg.sender must be the contract to which the party member is added.\n     * @param party address to be removed from the contract.\n     */\n    function removePartyFromContract(address party) external;\n\n    /**\n     * @notice checks if an address is a party in a contract.\n     * @param party party to check.\n     * @param contractAddress address to check against the party.\n     * @return bool indicating if the address is a party of the contract.\n     */\n    function isPartyMemberOfContract(address party, address contractAddress) external view returns (bool);\n}\n",
@@ -132,14 +133,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol",
     "exportedSymbols": {
       "RegistryInterface": [
-        16484
+        16456
       ]
     },
-    "id": 16485,
+    "id": 16457,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16426,
+        "id": 16398,
         "literals": [
           "solidity",
           "^",
@@ -150,7 +152,7 @@
         "src": "0:23:66"
       },
       {
-        "id": 16427,
+        "id": 16399,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -164,15 +166,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16428,
+          "id": 16400,
           "nodeType": "StructuredDocumentation",
           "src": "61:78:66",
-          "text": "@title Interface for a registry of contracts and contract creators."
+          "text": " @title Interface for a registry of contracts and contract creators."
         },
         "fullyImplemented": false,
-        "id": 16484,
+        "id": 16456,
         "linearizedBaseContracts": [
-          16484
+          16456
         ],
         "name": "RegistryInterface",
         "nodeType": "ContractDefinition",
@@ -180,13 +182,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16429,
+              "id": 16401,
               "nodeType": "StructuredDocumentation",
               "src": "174:276:66",
-              "text": "@notice Registers a new contract.\n@dev Only authorized contract creators can call this method.\n@param parties an array of addresses who become parties in the contract.\n@param contractAddress defines the address of the deployed contract."
+              "text": " @notice Registers a new contract.\n @dev Only authorized contract creators can call this method.\n @param parties an array of addresses who become parties in the contract.\n @param contractAddress defines the address of the deployed contract."
             },
             "functionSelector": "66c8c250",
-            "id": 16437,
+            "id": 16409,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -194,16 +196,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16435,
+              "id": 16407,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16432,
+                  "id": 16404,
+                  "mutability": "mutable",
                   "name": "parties",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16437,
+                  "scope": 16409,
                   "src": "481:26:66",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -213,7 +216,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16430,
+                      "id": 16402,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "481:7:66",
@@ -223,7 +226,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 16431,
+                    "id": 16403,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "481:9:66",
@@ -237,11 +240,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 16434,
+                  "id": 16406,
+                  "mutability": "mutable",
                   "name": "contractAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16437,
+                  "scope": 16409,
                   "src": "509:23:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -250,7 +254,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16433,
+                    "id": 16405,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "509:7:66",
@@ -267,12 +271,12 @@
               "src": "480:53:66"
             },
             "returnParameters": {
-              "id": 16436,
+              "id": 16408,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "542:0:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "455:88:66",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -281,13 +285,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16438,
+              "id": 16410,
               "nodeType": "StructuredDocumentation",
               "src": "549:299:66",
-              "text": "@notice Returns whether the contract has been registered with the registry.\n@dev If it is registered, it is an authorized participant in the UMA system.\n@param contractAddress address of the contract.\n@return bool indicates whether the contract is registered."
+              "text": " @notice Returns whether the contract has been registered with the registry.\n @dev If it is registered, it is an authorized participant in the UMA system.\n @param contractAddress address of the contract.\n @return bool indicates whether the contract is registered."
             },
             "functionSelector": "f9f6b49b",
-            "id": 16445,
+            "id": 16417,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -295,16 +299,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16441,
+              "id": 16413,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16440,
+                  "id": 16412,
+                  "mutability": "mutable",
                   "name": "contractAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16445,
+                  "scope": 16417,
                   "src": "883:23:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -313,7 +318,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16439,
+                    "id": 16411,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "883:7:66",
@@ -330,16 +335,17 @@
               "src": "882:25:66"
             },
             "returnParameters": {
-              "id": 16444,
+              "id": 16416,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16443,
+                  "id": 16415,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16445,
+                  "scope": 16417,
                   "src": "931:4:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -348,7 +354,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 16442,
+                    "id": 16414,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "931:4:66",
@@ -363,7 +369,7 @@
               ],
               "src": "930:6:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "853:84:66",
             "stateMutability": "view",
             "virtual": false,
@@ -372,13 +378,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16446,
+              "id": 16418,
               "nodeType": "StructuredDocumentation",
               "src": "943:214:66",
-              "text": "@notice Returns a list of all contracts that are associated with a particular party.\n@param party address of the party.\n@return an array of the contracts the party is registered to."
+              "text": " @notice Returns a list of all contracts that are associated with a particular party.\n @param party address of the party.\n @return an array of the contracts the party is registered to."
             },
             "functionSelector": "188c6ff8",
-            "id": 16454,
+            "id": 16426,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -386,16 +392,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16449,
+              "id": 16421,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16448,
+                  "id": 16420,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16454,
+                  "scope": 16426,
                   "src": "1194:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -404,7 +411,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16447,
+                    "id": 16419,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1194:7:66",
@@ -421,16 +428,17 @@
               "src": "1193:15:66"
             },
             "returnParameters": {
-              "id": 16453,
+              "id": 16425,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16452,
+                  "id": 16424,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16454,
+                  "scope": 16426,
                   "src": "1232:16:66",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -440,7 +448,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16450,
+                      "id": 16422,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1232:7:66",
@@ -450,7 +458,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 16451,
+                    "id": 16423,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1232:9:66",
@@ -465,7 +473,7 @@
               ],
               "src": "1231:18:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1162:88:66",
             "stateMutability": "view",
             "virtual": false,
@@ -474,13 +482,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16455,
+              "id": 16427,
               "nodeType": "StructuredDocumentation",
               "src": "1256:128:66",
-              "text": "@notice Returns all registered contracts.\n@return all registered contract addresses within the system."
+              "text": " @notice Returns all registered contracts.\n @return all registered contract addresses within the system."
             },
             "functionSelector": "1676ddc3",
-            "id": 16461,
+            "id": 16433,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -488,22 +496,23 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16456,
+              "id": 16428,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1423:2:66"
             },
             "returnParameters": {
-              "id": 16460,
+              "id": 16432,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16459,
+                  "id": 16431,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16461,
+                  "scope": 16433,
                   "src": "1449:16:66",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -513,7 +522,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16457,
+                      "id": 16429,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1449:7:66",
@@ -523,7 +532,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 16458,
+                    "id": 16430,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1449:9:66",
@@ -538,7 +547,7 @@
               ],
               "src": "1448:18:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1389:78:66",
             "stateMutability": "view",
             "virtual": false,
@@ -547,13 +556,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16462,
+              "id": 16434,
               "nodeType": "StructuredDocumentation",
               "src": "1473:201:66",
-              "text": "@notice Adds a party to the calling contract.\n@dev msg.sender must be the contract to which the party member is added.\n@param party address to be added to the contract."
+              "text": " @notice Adds a party to the calling contract.\n @dev msg.sender must be the contract to which the party member is added.\n @param party address to be added to the contract."
             },
             "functionSelector": "167cdde7",
-            "id": 16467,
+            "id": 16439,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -561,16 +570,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16465,
+              "id": 16437,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16464,
+                  "id": 16436,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16467,
+                  "scope": 16439,
                   "src": "1707:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -579,7 +589,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16463,
+                    "id": 16435,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1707:7:66",
@@ -596,12 +606,12 @@
               "src": "1706:15:66"
             },
             "returnParameters": {
-              "id": 16466,
+              "id": 16438,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1730:0:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1679:52:66",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -610,13 +620,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16468,
+              "id": 16440,
               "nodeType": "StructuredDocumentation",
               "src": "1737:215:66",
-              "text": "@notice Removes a party member to the calling contract.\n@dev msg.sender must be the contract to which the party member is added.\n@param party address to be removed from the contract."
+              "text": " @notice Removes a party member to the calling contract.\n @dev msg.sender must be the contract to which the party member is added.\n @param party address to be removed from the contract."
             },
             "functionSelector": "303118d0",
-            "id": 16473,
+            "id": 16445,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -624,16 +634,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16471,
+              "id": 16443,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16470,
+                  "id": 16442,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16473,
+                  "scope": 16445,
                   "src": "1990:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -642,7 +653,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16469,
+                    "id": 16441,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1990:7:66",
@@ -659,12 +670,12 @@
               "src": "1989:15:66"
             },
             "returnParameters": {
-              "id": 16472,
+              "id": 16444,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2013:0:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1957:57:66",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -673,13 +684,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16474,
+              "id": 16446,
               "nodeType": "StructuredDocumentation",
               "src": "2020:249:66",
-              "text": "@notice checks if an address is a party in a contract.\n@param party party to check.\n@param contractAddress address to check against the party.\n@return bool indicating if the address is a party of the contract."
+              "text": " @notice checks if an address is a party in a contract.\n @param party party to check.\n @param contractAddress address to check against the party.\n @return bool indicating if the address is a party of the contract."
             },
             "functionSelector": "7a3edab0",
-            "id": 16483,
+            "id": 16455,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -687,16 +698,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16479,
+              "id": 16451,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16476,
+                  "id": 16448,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16455,
                   "src": "2307:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -705,7 +717,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16475,
+                    "id": 16447,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2307:7:66",
@@ -720,11 +732,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 16478,
+                  "id": 16450,
+                  "mutability": "mutable",
                   "name": "contractAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16455,
                   "src": "2322:23:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -733,7 +746,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16477,
+                    "id": 16449,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2322:7:66",
@@ -750,16 +763,17 @@
               "src": "2306:40:66"
             },
             "returnParameters": {
-              "id": 16482,
+              "id": 16454,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16481,
+                  "id": 16453,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16455,
                   "src": "2370:4:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -768,7 +782,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 16480,
+                    "id": 16452,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2370:4:66",
@@ -783,14 +797,14 @@
               ],
               "src": "2369:6:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "2274:102:66",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16485,
+        "scope": 16457,
         "src": "140:2238:66"
       }
     ],
@@ -800,14 +814,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol",
     "exportedSymbols": {
       "RegistryInterface": [
-        16484
+        16456
       ]
     },
-    "id": 16485,
+    "id": 16457,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16426,
+        "id": 16398,
         "literals": [
           "solidity",
           "^",
@@ -818,7 +833,7 @@
         "src": "0:23:66"
       },
       {
-        "id": 16427,
+        "id": 16399,
         "literals": [
           "experimental",
           "ABIEncoderV2"
@@ -832,15 +847,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16428,
+          "id": 16400,
           "nodeType": "StructuredDocumentation",
           "src": "61:78:66",
-          "text": "@title Interface for a registry of contracts and contract creators."
+          "text": " @title Interface for a registry of contracts and contract creators."
         },
         "fullyImplemented": false,
-        "id": 16484,
+        "id": 16456,
         "linearizedBaseContracts": [
-          16484
+          16456
         ],
         "name": "RegistryInterface",
         "nodeType": "ContractDefinition",
@@ -848,13 +863,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16429,
+              "id": 16401,
               "nodeType": "StructuredDocumentation",
               "src": "174:276:66",
-              "text": "@notice Registers a new contract.\n@dev Only authorized contract creators can call this method.\n@param parties an array of addresses who become parties in the contract.\n@param contractAddress defines the address of the deployed contract."
+              "text": " @notice Registers a new contract.\n @dev Only authorized contract creators can call this method.\n @param parties an array of addresses who become parties in the contract.\n @param contractAddress defines the address of the deployed contract."
             },
             "functionSelector": "66c8c250",
-            "id": 16437,
+            "id": 16409,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -862,16 +877,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16435,
+              "id": 16407,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16432,
+                  "id": 16404,
+                  "mutability": "mutable",
                   "name": "parties",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16437,
+                  "scope": 16409,
                   "src": "481:26:66",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -881,7 +897,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16430,
+                      "id": 16402,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "481:7:66",
@@ -891,7 +907,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 16431,
+                    "id": 16403,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "481:9:66",
@@ -905,11 +921,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 16434,
+                  "id": 16406,
+                  "mutability": "mutable",
                   "name": "contractAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16437,
+                  "scope": 16409,
                   "src": "509:23:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -918,7 +935,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16433,
+                    "id": 16405,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "509:7:66",
@@ -935,12 +952,12 @@
               "src": "480:53:66"
             },
             "returnParameters": {
-              "id": 16436,
+              "id": 16408,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "542:0:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "455:88:66",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -949,13 +966,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16438,
+              "id": 16410,
               "nodeType": "StructuredDocumentation",
               "src": "549:299:66",
-              "text": "@notice Returns whether the contract has been registered with the registry.\n@dev If it is registered, it is an authorized participant in the UMA system.\n@param contractAddress address of the contract.\n@return bool indicates whether the contract is registered."
+              "text": " @notice Returns whether the contract has been registered with the registry.\n @dev If it is registered, it is an authorized participant in the UMA system.\n @param contractAddress address of the contract.\n @return bool indicates whether the contract is registered."
             },
             "functionSelector": "f9f6b49b",
-            "id": 16445,
+            "id": 16417,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -963,16 +980,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16441,
+              "id": 16413,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16440,
+                  "id": 16412,
+                  "mutability": "mutable",
                   "name": "contractAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16445,
+                  "scope": 16417,
                   "src": "883:23:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -981,7 +999,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16439,
+                    "id": 16411,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "883:7:66",
@@ -998,16 +1016,17 @@
               "src": "882:25:66"
             },
             "returnParameters": {
-              "id": 16444,
+              "id": 16416,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16443,
+                  "id": 16415,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16445,
+                  "scope": 16417,
                   "src": "931:4:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1016,7 +1035,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 16442,
+                    "id": 16414,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "931:4:66",
@@ -1031,7 +1050,7 @@
               ],
               "src": "930:6:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "853:84:66",
             "stateMutability": "view",
             "virtual": false,
@@ -1040,13 +1059,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16446,
+              "id": 16418,
               "nodeType": "StructuredDocumentation",
               "src": "943:214:66",
-              "text": "@notice Returns a list of all contracts that are associated with a particular party.\n@param party address of the party.\n@return an array of the contracts the party is registered to."
+              "text": " @notice Returns a list of all contracts that are associated with a particular party.\n @param party address of the party.\n @return an array of the contracts the party is registered to."
             },
             "functionSelector": "188c6ff8",
-            "id": 16454,
+            "id": 16426,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1054,16 +1073,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16449,
+              "id": 16421,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16448,
+                  "id": 16420,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16454,
+                  "scope": 16426,
                   "src": "1194:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1072,7 +1092,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16447,
+                    "id": 16419,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1194:7:66",
@@ -1089,16 +1109,17 @@
               "src": "1193:15:66"
             },
             "returnParameters": {
-              "id": 16453,
+              "id": 16425,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16452,
+                  "id": 16424,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16454,
+                  "scope": 16426,
                   "src": "1232:16:66",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1108,7 +1129,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16450,
+                      "id": 16422,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1232:7:66",
@@ -1118,7 +1139,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 16451,
+                    "id": 16423,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1232:9:66",
@@ -1133,7 +1154,7 @@
               ],
               "src": "1231:18:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1162:88:66",
             "stateMutability": "view",
             "virtual": false,
@@ -1142,13 +1163,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16455,
+              "id": 16427,
               "nodeType": "StructuredDocumentation",
               "src": "1256:128:66",
-              "text": "@notice Returns all registered contracts.\n@return all registered contract addresses within the system."
+              "text": " @notice Returns all registered contracts.\n @return all registered contract addresses within the system."
             },
             "functionSelector": "1676ddc3",
-            "id": 16461,
+            "id": 16433,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1156,22 +1177,23 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16456,
+              "id": 16428,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1423:2:66"
             },
             "returnParameters": {
-              "id": 16460,
+              "id": 16432,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16459,
+                  "id": 16431,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16461,
+                  "scope": 16433,
                   "src": "1449:16:66",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1181,7 +1203,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16457,
+                      "id": 16429,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1449:7:66",
@@ -1191,7 +1213,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 16458,
+                    "id": 16430,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1449:9:66",
@@ -1206,7 +1228,7 @@
               ],
               "src": "1448:18:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1389:78:66",
             "stateMutability": "view",
             "virtual": false,
@@ -1215,13 +1237,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16462,
+              "id": 16434,
               "nodeType": "StructuredDocumentation",
               "src": "1473:201:66",
-              "text": "@notice Adds a party to the calling contract.\n@dev msg.sender must be the contract to which the party member is added.\n@param party address to be added to the contract."
+              "text": " @notice Adds a party to the calling contract.\n @dev msg.sender must be the contract to which the party member is added.\n @param party address to be added to the contract."
             },
             "functionSelector": "167cdde7",
-            "id": 16467,
+            "id": 16439,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1229,16 +1251,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16465,
+              "id": 16437,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16464,
+                  "id": 16436,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16467,
+                  "scope": 16439,
                   "src": "1707:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1247,7 +1270,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16463,
+                    "id": 16435,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1707:7:66",
@@ -1264,12 +1287,12 @@
               "src": "1706:15:66"
             },
             "returnParameters": {
-              "id": 16466,
+              "id": 16438,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1730:0:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1679:52:66",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1278,13 +1301,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16468,
+              "id": 16440,
               "nodeType": "StructuredDocumentation",
               "src": "1737:215:66",
-              "text": "@notice Removes a party member to the calling contract.\n@dev msg.sender must be the contract to which the party member is added.\n@param party address to be removed from the contract."
+              "text": " @notice Removes a party member to the calling contract.\n @dev msg.sender must be the contract to which the party member is added.\n @param party address to be removed from the contract."
             },
             "functionSelector": "303118d0",
-            "id": 16473,
+            "id": 16445,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1292,16 +1315,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16471,
+              "id": 16443,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16470,
+                  "id": 16442,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16473,
+                  "scope": 16445,
                   "src": "1990:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1310,7 +1334,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16469,
+                    "id": 16441,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1990:7:66",
@@ -1327,12 +1351,12 @@
               "src": "1989:15:66"
             },
             "returnParameters": {
-              "id": 16472,
+              "id": 16444,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2013:0:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "1957:57:66",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1341,13 +1365,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16474,
+              "id": 16446,
               "nodeType": "StructuredDocumentation",
               "src": "2020:249:66",
-              "text": "@notice checks if an address is a party in a contract.\n@param party party to check.\n@param contractAddress address to check against the party.\n@return bool indicating if the address is a party of the contract."
+              "text": " @notice checks if an address is a party in a contract.\n @param party party to check.\n @param contractAddress address to check against the party.\n @return bool indicating if the address is a party of the contract."
             },
             "functionSelector": "7a3edab0",
-            "id": 16483,
+            "id": 16455,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -1355,16 +1379,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16479,
+              "id": 16451,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16476,
+                  "id": 16448,
+                  "mutability": "mutable",
                   "name": "party",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16455,
                   "src": "2307:13:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1373,7 +1398,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16475,
+                    "id": 16447,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2307:7:66",
@@ -1388,11 +1413,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 16478,
+                  "id": 16450,
+                  "mutability": "mutable",
                   "name": "contractAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16455,
                   "src": "2322:23:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1401,7 +1427,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 16477,
+                    "id": 16449,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2322:7:66",
@@ -1418,16 +1444,17 @@
               "src": "2306:40:66"
             },
             "returnParameters": {
-              "id": 16482,
+              "id": 16454,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16481,
+                  "id": 16453,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 16483,
+                  "scope": 16455,
                   "src": "2370:4:66",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1436,7 +1463,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 16480,
+                    "id": 16452,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2370:4:66",
@@ -1451,14 +1478,14 @@
               ],
               "src": "2369:6:66"
             },
-            "scope": 16484,
+            "scope": 16456,
             "src": "2274:102:66",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16485,
+        "scope": 16457,
         "src": "140:2238:66"
       }
     ],
@@ -1466,17 +1493,22 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.5",
-  "updatedAt": "2020-09-18T09:03:22.929Z",
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-09-30T12:21:57.106Z",
   "devdoc": {
     "methods": {
       "addPartyToContract(address)": {
         "details": "msg.sender must be the contract to which the party member is added.",
         "params": {
           "party": "address to be added to the contract."
+        }
+      },
+      "getAllRegisteredContracts()": {
+        "returns": {
+          "_0": "all registered contract addresses within the system."
         }
       },
       "getRegisteredContracts(address)": {

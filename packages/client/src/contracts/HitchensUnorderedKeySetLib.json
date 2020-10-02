@@ -1,11 +1,12 @@
 {
   "contractName": "HitchensUnorderedKeySetLib",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":\"HitchensUnorderedKeySetLib\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":{\"keccak256\":\"0x142da629f58e2b09a11da8006446c1eda8b2953f1e0739c0770ab38f93d9eb0c\",\"urls\":[\"bzz-raw://de4821dd728a462ea53a02054fd6eab0d92cdfc14899b8915ce7be28b5948b90\",\"dweb:/ipfs/QmQGetR43W3FyjdGPu6wG5t7B34ypjw9Y39cxArUKjEfLR\"]}},\"version\":1}",
-  "bytecode": "0x60db610025600b82828239805160001a60731461001857fe5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361060335760003560e01c8063440f7e9a146038575b600080fd5b818015604357600080fd5b50605e60048036036020811015605857600080fd5b50356060565b005b606c600182016000606f565b50565b5080546000825590600052602060002090810190606c919060a291905b80821115609e5760008155600101608c565b5090565b9056fea26469706673582212200fbb25a7f71e8726eebc82593b0b09fa559853f9c7ae0726072337d7d612be7c64736f6c63430006040033",
-  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040526004361060335760003560e01c8063440f7e9a146038575b600080fd5b818015604357600080fd5b50605e60048036036020811015605857600080fd5b50356060565b005b606c600182016000606f565b50565b5080546000825590600052602060002090810190606c919060a291905b80821115609e5760008155600101608c565b5090565b9056fea26469706673582212200fbb25a7f71e8726eebc82593b0b09fa559853f9c7ae0726072337d7d612be7c64736f6c63430006040033",
-  "sourceMap": "1420:1449:0:-:0;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
-  "deployedSourceMap": "1420:1449:0:-:0;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;2789:78:0;;5:9:-1;2:2;;;27:1;24;17:12;2:2;2789:78:0;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;2789:78:0;;:::i;:::-;;;2841:19;2848:12;;;;2841:19;:::i;:::-;2789:78;:::o;1420:1449::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":\"HitchensUnorderedKeySetLib\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":{\"keccak256\":\"0x142da629f58e2b09a11da8006446c1eda8b2953f1e0739c0770ab38f93d9eb0c\",\"urls\":[\"bzz-raw://de4821dd728a462ea53a02054fd6eab0d92cdfc14899b8915ce7be28b5948b90\",\"dweb:/ipfs/QmQGetR43W3FyjdGPu6wG5t7B34ypjw9Y39cxArUKjEfLR\"]}},\"version\":1}",
+  "bytecode": "0x60db610025600b82828239805160001a60731461001857fe5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361060335760003560e01c8063440f7e9a146038575b600080fd5b818015604357600080fd5b50605e60048036036020811015605857600080fd5b50356060565b005b606c600182016000606f565b50565b5080546000825590600052602060002090810190606c919060a291905b80821115609e5760008155600101608c565b5090565b9056fea2646970667358221220c94f092d657c1f2b20d93c25573b0dc47cf60c559fa26d1b94c5112178d41ccf64736f6c634300060a0033",
+  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040526004361060335760003560e01c8063440f7e9a146038575b600080fd5b818015604357600080fd5b50605e60048036036020811015605857600080fd5b50356060565b005b606c600182016000606f565b50565b5080546000825590600052602060002090810190606c919060a291905b80821115609e5760008155600101608c565b5090565b9056fea2646970667358221220c94f092d657c1f2b20d93c25573b0dc47cf60c559fa26d1b94c5112178d41ccf64736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "1420:1449:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "1420:1449:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;2789:78;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;2789:78:0;;:::i;:::-;;;2841:19;2848:12;;;;2841:19;:::i;:::-;2789:78;:::o;-1:-1:-1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
   "source": "pragma solidity ^0.6.0; \n\n/* \nHitchens UnorderedKeySet v0.93\n\nLibrary for managing CRUD operations in dynamic key sets.\n\nhttps://github.com/rob-Hitchens/UnorderedKeySet\n\nCopyright (c), 2019, Rob Hitchens, the MIT License\nModifications Copyright (C) 2020 Will Shahda\n\n2020-05-04 Will Shahda\n\n    * Updated for Solidity 0.6.0\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nTHIS SOFTWARE IS NOT TESTED OR AUDITED. DO NOT USE FOR PRODUCTION.\n*/\n\nlibrary HitchensUnorderedKeySetLib {\n    \n    struct Set {\n        mapping(bytes32 => uint) keyPointers;\n        bytes32[] keyList;\n    }\n    \n    function insert(Set storage self, bytes32 key) internal {\n        require(key != 0x0, \"UnorderedKeySet(100) - Key cannot be 0x0\");\n        require(!exists(self, key), \"UnorderedKeySet(101) - Key already exists in the set.\");\n        self.keyList.push(key);\n        self.keyPointers[key] = self.keyList.length - 1;\n    }\n    \n    function remove(Set storage self, bytes32 key) internal {\n        require(exists(self, key), \"UnorderedKeySet(102) - Key does not exist in the set.\");\n        bytes32 keyToMove = self.keyList[count(self) - 1];\n        uint rowToReplace = self.keyPointers[key];\n        self.keyPointers[keyToMove] = rowToReplace;\n        self.keyList[rowToReplace] = keyToMove;\n        delete self.keyPointers[key];\n        self.keyList.pop();\n    }\n    \n    function count(Set storage self) internal view returns(uint) {\n        return(self.keyList.length);\n    }\n    \n    function exists(Set storage self, bytes32 key) internal view returns(bool) {\n        if(self.keyList.length == 0) return false;\n        return self.keyList[self.keyPointers[key]] == key;\n    }\n    \n    function keyAtIndex(Set storage self, uint index) internal view returns(bytes32) {\n        return self.keyList[index];\n    }\n    \n    function nukeSet(Set storage self) public {\n        delete self.keyList;\n    }\n}\n\ncontract HitchensUnorderedKeySet {\n    \n    using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;\n    HitchensUnorderedKeySetLib.Set set;\n    \n    event LogUpdate(address sender, string action, bytes32 key);\n    \n    function exists(bytes32 key) public view returns(bool) {\n        return set.exists(key);\n    }\n    \n    function insert(bytes32 key) public {\n        set.insert(key);\n        emit LogUpdate(msg.sender, \"insert\", key);\n    }\n    \n    function remove(bytes32 key) public {\n        set.remove(key);\n        emit LogUpdate(msg.sender, \"remove\", key);\n    }\n    \n    function count() public view returns(uint) {\n        return set.count();\n    }\n    \n    function keyAtIndex(uint index) public view returns(bytes32) {\n        return set.keyAtIndex(index);\n    }\n    \n    function nukeSet() public {\n        set.nukeSet();\n    }\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol",
   "ast": {
@@ -19,6 +20,7 @@
       ]
     },
     "id": 281,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -53,6 +55,7 @@
               {
                 "constant": false,
                 "id": 5,
+                "mutability": "mutable",
                 "name": "keyPointers",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -99,6 +102,7 @@
               {
                 "constant": false,
                 "id": 8,
+                "mutability": "mutable",
                 "name": "keyList",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -675,6 +679,7 @@
                 {
                   "constant": false,
                   "id": 11,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -704,6 +709,7 @@
                 {
                   "constant": false,
                   "id": 13,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -891,6 +897,7 @@
                     {
                       "constant": false,
                       "id": 69,
+                      "mutability": "mutable",
                       "name": "keyToMove",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -1058,6 +1065,7 @@
                     {
                       "constant": false,
                       "id": 80,
+                      "mutability": "mutable",
                       "name": "rowToReplace",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -1483,6 +1491,7 @@
                 {
                   "constant": false,
                   "id": 55,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1512,6 +1521,7 @@
                 {
                   "constant": false,
                   "id": 57,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1642,6 +1652,7 @@
                 {
                   "constant": false,
                   "id": 118,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1678,6 +1689,7 @@
                 {
                   "constant": false,
                   "id": 121,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1983,6 +1995,7 @@
                 {
                   "constant": false,
                   "id": 131,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2012,6 +2025,7 @@
                 {
                   "constant": false,
                   "id": 133,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2046,6 +2060,7 @@
                 {
                   "constant": false,
                   "id": 136,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2164,6 +2179,7 @@
                 {
                   "constant": false,
                   "id": 159,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2193,6 +2209,7 @@
                 {
                   "constant": false,
                   "id": 161,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2227,6 +2244,7 @@
                 {
                   "constant": false,
                   "id": 164,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2334,6 +2352,7 @@
                 {
                   "constant": false,
                   "id": 174,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2425,6 +2444,7 @@
           {
             "constant": false,
             "id": 188,
+            "mutability": "mutable",
             "name": "set",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -2465,6 +2485,7 @@
                   "constant": false,
                   "id": 190,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "sender",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2494,6 +2515,7 @@
                   "constant": false,
                   "id": 192,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "action",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2522,6 +2544,7 @@
                   "constant": false,
                   "id": 194,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2647,6 +2670,7 @@
                 {
                   "constant": false,
                   "id": 198,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2681,6 +2705,7 @@
                 {
                   "constant": false,
                   "id": 201,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2919,6 +2944,7 @@
                 {
                   "constant": false,
                   "id": 211,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3163,6 +3189,7 @@
                 {
                   "constant": false,
                   "id": 230,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3285,6 +3312,7 @@
                 {
                   "constant": false,
                   "id": 250,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3414,6 +3442,7 @@
                 {
                   "constant": false,
                   "id": 259,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3448,6 +3477,7 @@
                 {
                   "constant": false,
                   "id": 262,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3586,6 +3616,7 @@
       ]
     },
     "id": 281,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -3620,6 +3651,7 @@
               {
                 "constant": false,
                 "id": 5,
+                "mutability": "mutable",
                 "name": "keyPointers",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -3666,6 +3698,7 @@
               {
                 "constant": false,
                 "id": 8,
+                "mutability": "mutable",
                 "name": "keyList",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -4242,6 +4275,7 @@
                 {
                   "constant": false,
                   "id": 11,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -4271,6 +4305,7 @@
                 {
                   "constant": false,
                   "id": 13,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -4458,6 +4493,7 @@
                     {
                       "constant": false,
                       "id": 69,
+                      "mutability": "mutable",
                       "name": "keyToMove",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -4625,6 +4661,7 @@
                     {
                       "constant": false,
                       "id": 80,
+                      "mutability": "mutable",
                       "name": "rowToReplace",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -5050,6 +5087,7 @@
                 {
                   "constant": false,
                   "id": 55,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5079,6 +5117,7 @@
                 {
                   "constant": false,
                   "id": 57,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5209,6 +5248,7 @@
                 {
                   "constant": false,
                   "id": 118,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5245,6 +5285,7 @@
                 {
                   "constant": false,
                   "id": 121,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5550,6 +5591,7 @@
                 {
                   "constant": false,
                   "id": 131,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5579,6 +5621,7 @@
                 {
                   "constant": false,
                   "id": 133,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5613,6 +5656,7 @@
                 {
                   "constant": false,
                   "id": 136,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5731,6 +5775,7 @@
                 {
                   "constant": false,
                   "id": 159,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5760,6 +5805,7 @@
                 {
                   "constant": false,
                   "id": 161,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5794,6 +5840,7 @@
                 {
                   "constant": false,
                   "id": 164,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5901,6 +5948,7 @@
                 {
                   "constant": false,
                   "id": 174,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5992,6 +6040,7 @@
           {
             "constant": false,
             "id": 188,
+            "mutability": "mutable",
             "name": "set",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -6032,6 +6081,7 @@
                   "constant": false,
                   "id": 190,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "sender",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6061,6 +6111,7 @@
                   "constant": false,
                   "id": 192,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "action",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6089,6 +6140,7 @@
                   "constant": false,
                   "id": 194,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6214,6 +6266,7 @@
                 {
                   "constant": false,
                   "id": 198,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6248,6 +6301,7 @@
                 {
                   "constant": false,
                   "id": 201,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6486,6 +6540,7 @@
                 {
                   "constant": false,
                   "id": 211,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6730,6 +6785,7 @@
                 {
                   "constant": false,
                   "id": 230,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6852,6 +6908,7 @@
                 {
                   "constant": false,
                   "id": 250,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6981,6 +7038,7 @@
                 {
                   "constant": false,
                   "id": 259,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -7015,6 +7073,7 @@
                 {
                   "constant": false,
                   "id": 262,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -7144,11 +7203,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.5",
-  "updatedAt": "2020-09-18T09:03:22.482Z",
+  "schemaVersion": "3.2.0",
+  "updatedAt": "2020-09-30T12:21:56.548Z",
   "devdoc": {
     "methods": {}
   },
