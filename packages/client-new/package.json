@@ -1,0 +1,27 @@
+{
+    "name": "client-new",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build && next export",
+        "build:static": "yarn build && yarn export",
+        "start": "next start",
+        "postinstall": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/"
+    },
+    "dependencies": {
+        "@jarvis-network/ui": "^0.4.2",
+        "@reduxjs/toolkit": "^1.4.0",
+        "next": "9.5.3",
+        "react": "16.13.1",
+        "react-dom": "16.13.1",
+        "react-redux": "^7.2.1",
+        "redux": "^4.0.5",
+        "redux-devtools-extension": "^2.13.8"
+    },
+    "devDependencies": {
+        "@types/node": "^14.11.2",
+        "@types/react": "^16.9.49",
+        "typescript": "^4.0.3"
+    }
+}
