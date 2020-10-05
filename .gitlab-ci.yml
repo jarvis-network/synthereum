@@ -9,6 +9,27 @@ stages:
     - dev
     - production
 
+build_frontend_new:
+  <<: *only-default
+  image: 'node:lts-alpine'
+  stage: build
+  before_script:
+    - apk add git python3 make g++
+  variables:
+    CI: 'false'
+  cache:
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules
+  script:
+    - yarn install
+    - yarn build:client-new
+  artifacts:
+    paths:
+      - packages/client-new/out
+
 build_frontend:
   <<: *only-default
   image: 'node:lts-alpine'
@@ -76,6 +97,29 @@ deploy-production-to-netlify:
     - production
   script:
     - netlify deploy --prod --dir ./packages/client/build
+
+.deploy-frontend-new-default: &deploy-frontend-new-default
+  <<: *deploy-frontend-default
+  needs:
+    - job: build_frontend_new
+      artifacts: true
+  variables:
+    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NG'
+
+deploy-preview-new-to-netlify:
+  <<: *deploy-frontend-new-default
+  only:
+    - merge_requests
+    - dev
+  script:
+    - netlify deploy --dir ./packages/client-new/out
+
+deploy-production-new-to-netlify:
+  <<: *deploy-frontend-new-default
+  only:
+    - production
+  script:
+    - netlify deploy --prod --dir ./packages/client-new/out
 
 .deploy-keeper-bot-default: &deploy-keeper-bot-default
   image: azuresdk/azure-cli-python

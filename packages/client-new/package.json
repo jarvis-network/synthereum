@@ -1,12 +1,11 @@
 {
-    "name": "client-new",
+    "name": "@jarvis/synthereum-client-new",
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "start:server": "next start",
         "build": "next build && next export",
-        "build:static": "yarn build && yarn export",
-        "start": "next start",
+        "start": "next dev",
         "postinstall": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/"
     },
     "dependencies": {
