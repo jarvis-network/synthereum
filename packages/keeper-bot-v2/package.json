@@ -1,0 +1,43 @@
+{
+  "name": "@jarvis/keeper-bot-v2",
+  "version": "0.1.0",
+  "description": "",
+  "bin": {
+    "synfiat-keeper": "./dist/synfiat-keeper.js"
+  },
+  "types": "dist/synfiat-keeper.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebulishOnly": "npm ci && npm run build",
+    "clean": "rimraf ./dist",
+    "lint": "tslint -p tsconfig.json",
+    "prebuild": "yarn run clean",
+    "build": "tsc",
+    "start": "node dist/synfiat-keeper.js",
+    "start:dev": "nodemon src/synfiat-keeper.ts"
+  },
+  "author": "Edi Sinovcic",
+  "license": "MIT",
+  "dependencies": {
+    "@jarvis/web3-utils": "0.1.0",
+    "@makerdao/dai": "^0.32.5",
+    "axios": "^0.20.0",
+    "bunyan": "^1.8.14",
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "performance-now": "^2.1.0",
+    "ts-node": "^9.0.0",
+    "web3": "^1.3.0",
+    "workspace": "^0.0.1-preview.1",
+    "yargs": "^16.0.3"
+  },
+  "devDependencies": {
+    "@types/bunyan": "^1.8.6",
+    "@types/node": "^14.14.2",
+    "@types/yargs": "^15.0.7",
+    "nodemon": "2.0.4",
+    "tslint": "^6.1.3"
+  }
+}

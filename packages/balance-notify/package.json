@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@jarvis/synthereum-contracts": "1.0.0",
+    "@jarvis/web3-utils": "0.1.0",
     "bn.js": "^4.11.9",
     "web3": "^1.2.11",
     "web3-eth-contract": "^1.2.11",

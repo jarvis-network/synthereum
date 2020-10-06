@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  keeper_bot:
+    build: .
+    image: jarvis/synfiat-keeper-v2
+    env_file:
+      - ./packages/keeper-bot-v2/.env
+    network_mode: host
+    secrets:
+      - key_store
+      - password
+secrets:
+  key_store:
+    file: ./hust/UTC--2020-10-16T15-36-24.099989596Z--d3aa822264423af29fe7f35cb32538f91a3dcc99
+  password:
+    file: ./hust/synfiat.pass

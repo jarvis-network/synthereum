@@ -15,9 +15,12 @@
     "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-contracts' build",
     "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis/balance-notify' build",
     "start:client-new": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client-new' start",
+    "build:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis/keeper-bot-v2' build",
+    "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis/web3-utils' build",
     "start:client": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client' start",
     "start:bot": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
     "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis/balance-notify' start",
+    "start:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis/keeper-bot-v2' start",
     "verify": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-contracts' verify-contract:kovan"
   },
   "workspaces": {

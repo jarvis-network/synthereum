@@ -133,6 +133,13 @@ build
 azure-functions-core-tools
 local.settings.json
 
+# VSCode
+.vscode/
+
+**/hush
+**/keystore
+**/logging
+
 # Nix build output
 result
 

@@ -68,8 +68,22 @@ build_keeper_bot:
     - echo "$ACR_CI_PASSWORD" | docker login -u "$ACR_CI_USER" --password-stdin $ACR_URL
     - *acr_path_script
   script:
-    - docker build --pull -t "$ACR_IMAGE_FULL_NAME" ./packages/keeper-bot
-    - docker push "$ACR_IMAGE_FULL_NAME"
+    - docker build --pull -t "${ACR_IMAGE_FULL_NAME}-old" ./packages/keeper-bot
+    - docker push "${ACR_IMAGE_FULL_NAME}-old"
+
+build_keeper_bot-v2:
+  <<: *enabled-branches
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - docker info
+    - echo "$ACR_CI_PASSWORD" | docker login -u "$ACR_CI_USER" --password-stdin $ACR_URL
+    - *acr_path_script
+  script:
+    - docker build --pull -t "${ACR_IMAGE_FULL_NAME}-new" -f ./Dockerfile ./
+    - docker push "${ACR_IMAGE_FULL_NAME}-new"
 
 .deploy-frontend-default: &deploy-frontend-default
   stage: deploy
@@ -138,7 +152,7 @@ deploy-production-new-to-netlify:
       az container create \
       --resource-group $CONTAINER_INSTANCE_RESOURCE_GROUP \
       --name $CONTAINER_INSTANCE_NAME \
-      --image $ACR_IMAGE_FULL_NAME \
+      --image ${ACR_IMAGE_FULL_NAME}-new \
       --registry-username $ACR_CI_USER \
       --registry-password $ACR_CI_PASSWORD \
       --environment-variables ETH_FROM=$CI_ETH_FROM RPC_HOST=$CI_RPC_HOST FREQUENCY=$CI_FREQUENCY \
