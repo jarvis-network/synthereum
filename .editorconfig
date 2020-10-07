@@ -10,7 +10,7 @@ indent_style = space
 indent_size = 4
 max_line_length = 80
 
-[*.{Dockerfile,dart,js,jsx,scss,ts,tsx,vim,yaml,yml}]
+[*.{Dockerfile,dart,js,json,jsx,scss,ts,tsx,vim,yaml,yml}]
 indent_size = 2
 
 [*.{html}]
