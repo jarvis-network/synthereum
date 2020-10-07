@@ -24,13 +24,14 @@
     "@openzeppelin/contracts": "3.0.0-beta.0",
     "@openzeppelin/test-helpers": "^0.5.4",
     "@truffle/hdwallet-provider": "^1.0.34",
-    "truffle-plugin-verify": "^0.4.0",
     "chainlink": "^0.8.2",
     "dotenv": "^8.2.0",
     "protocol": "github:UMAprotocol/protocol#8df987bee7aa90780b524c701c19db8b6d9d113b"
   },
   "devDependencies": {
     "ganache-time-traveler": "^1.0.14",
-    "husky": "^4.2.3"
+    "husky": "^4.2.3",
+    "truffle": "^5.1.45",
+    "truffle-plugin-verify": "^0.4.0"
   }
 }
