@@ -47,7 +47,7 @@ module.exports = {
       network_id: 42,
       gas: 10000000,
       gasPrice: 3000000000,
-    }
+    },
   },
   compilers: {
     solc: {

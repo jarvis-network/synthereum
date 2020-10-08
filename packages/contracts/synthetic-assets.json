@@ -5,7 +5,7 @@
     "priceFeedIdentifier": "EUR/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
     "startingCollateralization": "1537000000000000000",
-    "minSponsorTokens": {"rawValue": "1000000000000000000"}
+    "minSponsorTokens": { "rawValue": "1000000000000000000" }
   },
   {
     "syntheticName": "Jarvis Synthetic Swiss Franc",
@@ -13,7 +13,7 @@
     "priceFeedIdentifier": "CHF/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
     "startingCollateralization": "1429000000000000000",
-    "minSponsorTokens": {"rawValue": "1000000000000000000"}
+    "minSponsorTokens": { "rawValue": "1000000000000000000" }
   },
   {
     "syntheticName": "Jarvis Synthetic British Pound",
@@ -21,7 +21,7 @@
     "priceFeedIdentifier": "GBP/USD",
     "collateralRequirement": { "rawValue": "1100000000000000000" },
     "startingCollateralization": "1684000000000000000",
-    "minSponsorTokens": {"rawValue": "1000000000000000000"}
+    "minSponsorTokens": { "rawValue": "1000000000000000000" }
   },
   {
     "syntheticName": "Jarvis Synthetic Gold",
@@ -29,7 +29,7 @@
     "priceFeedIdentifier": "XAU/USD",
     "collateralRequirement": { "rawValue": "1200000000000000000" },
     "startingCollateralization": "2916000000000000000000",
-    "minSponsorTokens": {"rawValue": "500000000000000"}
+    "minSponsorTokens": { "rawValue": "500000000000000" }
   },
   {
     "syntheticName": "Jarvis Synthetic S&P500",
@@ -39,7 +39,7 @@
       "rawValue": "1200000000000000000"
     },
     "startingCollateralization": "5025000000000000000000",
-    "minSponsorTokens": {"rawValue": "300000000000000"}
+    "minSponsorTokens": { "rawValue": "300000000000000" }
   },
   {
     "syntheticName": "Jarvis Synthetic Crude Oil",
@@ -49,7 +49,7 @@
       "rawValue": "1200000000000000000"
     },
     "startingCollateralization": "61500000000000000000",
-    "minSponsorTokens": {"rawValue": "25000000000000000"}
+    "minSponsorTokens": { "rawValue": "25000000000000000" }
   },
   {
     "syntheticName": "Jarvis Synthetic Silver",
@@ -59,6 +59,6 @@
       "rawValue": "1200000000000000000"
     },
     "startingCollateralization": "40350000000000000000",
-    "minSponsorTokens": {"rawValue": "45000000000000000"}
+    "minSponsorTokens": { "rawValue": "45000000000000000" }
   }
 ]

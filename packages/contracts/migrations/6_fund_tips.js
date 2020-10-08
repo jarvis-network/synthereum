@@ -28,11 +28,15 @@ module.exports = function (deployer, network, accounts) {
             from: liquidityProvider,
           });
           console.log(
-            `Approved ${web3.utils.fromWei(asset.amount)} $ for TIC pool ${asset.syntheticSymbol}`,
+            `Approved ${web3.utils.fromWei(asset.amount)} $ for TIC pool ${
+              asset.syntheticSymbol
+            }`,
           );
           await TICInstance.deposit(asset.amount, { from: liquidityProvider });
           console.log(
-            `TIC pool ${asset.syntheticSymbol} funded with ${web3.utils.fromWei(asset.amount)} $ `,
+            `TIC pool ${asset.syntheticSymbol} funded with ${web3.utils.fromWei(
+              asset.amount,
+            )} $ `,
           );
         } catch (error) {
           console.log(error);
