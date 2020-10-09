@@ -1,9 +1,17 @@
+import {ThemeNameType} from "@jarvis-network/ui";
+
 export interface State {
-  theme: string; // @todo use type def from ui library
+  theme: ThemeNameType;
+  auth: {
+    state: boolean;
+  },
 }
 
 const initialState: State = {
   theme: "light",
+  auth: {
+    state: false,
+  },
 };
 
 export default initialState;

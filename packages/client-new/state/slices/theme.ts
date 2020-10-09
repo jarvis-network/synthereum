@@ -1,9 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
 import initialState from "state/initialState";
+import {ThemeNameType} from "@jarvis-network/ui";
 
 interface SetThemeAction {
   payload: {
-    theme: string;
+    theme: ThemeNameType
   }
 }
 
