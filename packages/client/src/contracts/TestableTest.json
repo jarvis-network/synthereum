@@ -4,9 +4,9 @@
     {
       "inputs": [
         {
-          "internalType": "bool",
-          "name": "_isTest",
-          "type": "bool"
+          "internalType": "address",
+          "name": "_timerAddress",
+          "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
@@ -26,29 +26,29 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "isTest",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_time",
+          "name": "time",
           "type": "uint256"
         }
       ],
       "name": "setCurrentTime",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "timerAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -70,25 +70,27 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"_isTest\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"getCurrentTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTestableTimeAndBlockTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"testableTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"blockTime\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isTest\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_time\",\"type\":\"uint256\"}],\"name\":\"setCurrentTime\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"setCurrentTime(uint256)\":{\"details\":\"Will revert if not running in test mode.\"}}},\"userdoc\":{\"methods\":{\"getCurrentTime()\":{\"notice\":\"Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.\"},\"setCurrentTime(uint256)\":{\"notice\":\"Sets the current time.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol\":\"TestableTest\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol\":{\"keccak256\":\"0x1ea9262aa640c92290496eaefe68dde2543e4582c0f7b0499b680342ce5b6d19\",\"urls\":[\"bzz-raw://e87bba4ff3007d8c02ee4a3b0464267966ff8445c107fc887b1a627241cf1c7b\",\"dweb:/ipfs/QmPkCdBf7BpeXVEpthncz2FpRvKFzjwWMHQ58ZdY3J7kXY\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol\":{\"keccak256\":\"0x5bdf215153be624f17dee10aef9bc97c501d8375a4627064372c706e8ead01d1\",\"urls\":[\"bzz-raw://d4fa8729b3d7fa55aaefa39cd30b0498f0dc8081694d22b2c0d50f8cec870087\",\"dweb:/ipfs/QmZVBbPFNKWFqe5crLEkqwVoFYayLavwdvbSBzkGwzwZ4x\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506040516101983803806101988339818101604052602081101561003357600080fd5b50516000805460ff19168215801591909117909155819061005357426001555b5050610134806100646000396000f3fe6080604052348015600f57600080fd5b506004361060465760003560e01c806322f8e56614604b57806329cb924d1460675780639381a34514607f578063dc6ff7bd146099575b600080fd5b606560048036036020811015605f57600080fd5b503560b8565b005b606d60cb565b60408051918252519081900360200190f35b608560e4565b604080519115158252519081900360200190f35b609f60ed565b6040805192835260208301919091528051918290030190f35b60005460ff1660c657600080fd5b600155565b6000805460ff161560de575060015460e1565b50425b90565b60005460ff1681565b60008060f660cb565b92429250905056fea2646970667358221220affd89a3e664660c63578c8706d0fb672dc5d7caaf209c406e19f36d6d909cd764736f6c63430006040033",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060465760003560e01c806322f8e56614604b57806329cb924d1460675780639381a34514607f578063dc6ff7bd146099575b600080fd5b606560048036036020811015605f57600080fd5b503560b8565b005b606d60cb565b60408051918252519081900360200190f35b608560e4565b604080519115158252519081900360200190f35b609f60ed565b6040805192835260208301919091528051918290030190f35b60005460ff1660c657600080fd5b600155565b6000805460ff161560de575060015460e1565b50425b90565b60005460ff1681565b60008060f660cb565b92429250905056fea2646970667358221220affd89a3e664660c63578c8706d0fb672dc5d7caaf209c406e19f36d6d909cd764736f6c63430006040033",
-  "sourceMap": "153:348:20:-:0;;;242:53;5:9:-1;2:2;;;27:1;24;17:12;2:2;242:53:20;;;;;;;;;;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;242:53:20;377:6:13;:16;;-1:-1:-1;;377:16:13;;;;;;;;;;;;242:53:20;;403:96:13;;444:3;430:11;:17;403:96;332:173;242:53:20;153:348;;;;;;",
-  "deployedSourceMap": "153:348:20:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;153:348:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;755:92:13;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;755:92:13;;:::i;:::-;;1036:206;;;:::i;:::-;;;;;;;;;;;;;;;;276:18;;;:::i;:::-;;;;;;;;;;;;;;;;;;301:198:20;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;755:92:13;617:6;;;;609:15;;12:1:-1;9;2:12;609:15:13;821:11:::1;:19:::0;755:92::o;1036:206::-;1083:4;1103:6;;;;1099:137;;;-1:-1:-1;1132:11:13;;1125:18;;1099:137;-1:-1:-1;1181:3:13;1099:137;1036:206;:::o;276:18::-;;;;;;:::o;301:198:20:-;363:17;382:14;470:16;:14;:16::i;:::-;462:30;488:3;;-1:-1:-1;301:198:20;-1:-1:-1;301:198:20:o",
-  "source": "pragma solidity ^0.6.0;\n\nimport \"../implementation/Testable.sol\";\n\n\n// TestableTest is derived from the abstract contract Testable for testing purposes.\ncontract TestableTest is Testable {\n    // solhint-disable-next-line no-empty-blocks\n    constructor(bool _isTest) public Testable(_isTest) {}\n\n    function getTestableTimeAndBlockTime() external view returns (uint testableTime, uint blockTime) {\n        // solhint-disable-next-line not-rely-on-time\n        return (getCurrentTime(), now);\n    }\n}\n",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_timerAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"getCurrentTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTestableTimeAndBlockTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"testableTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"blockTime\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"}],\"name\":\"setCurrentTime\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"timerAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"getCurrentTime()\":{\"returns\":{\"_0\":\"uint for the current Testable timestamp.\"}},\"setCurrentTime(uint256)\":{\"details\":\"Will revert if not running in test mode.\",\"params\":{\"time\":\"timestamp to set current Testable time to.\"}}}},\"userdoc\":{\"methods\":{\"getCurrentTime()\":{\"notice\":\"Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.\"},\"setCurrentTime(uint256)\":{\"notice\":\"Sets the current time.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol\":\"TestableTest\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol\":{\"keccak256\":\"0x15b3f57e51e6e1d5f11b09cefd1cc60550e72fb827bf7cf8ff67b208368c7ec0\",\"urls\":[\"bzz-raw://8bdd28e1cb12662124354cc330acd14733dfbb786daf6401b1f5969a1e11b14d\",\"dweb:/ipfs/QmWY8kEXEALJ55CgHSCPZgAA4b39Ef2YdKshhnvqkyWEcm\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Timer.sol\":{\"keccak256\":\"0x1db17ce4c028ed96713c3fddda6d34155281e104a47b2c65283fd0f8293d78b1\",\"urls\":[\"bzz-raw://8f306faba8d5190f36c87a8f47cce3bd7894bc5540599819aea2dd5b8ffa9413\",\"dweb:/ipfs/Qmeg4wuF1Dw5DAuoxyfnrmMZ5MK6af226hEHxCJgWKgrch\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol\":{\"keccak256\":\"0xbb1c54cfa9b6bd4965a4b86aff6313ee6e92a08c4059a648bdd3e68b7d2abe2f\",\"urls\":[\"bzz-raw://462735317959a913639c55cc7f86ef480a4a15208609dd1d1d0f2109ea9576a8\",\"dweb:/ipfs/QmX8ijfa9wL67N1xMT2DPH2SRzfqJ7x1BYt1m9DY3q2FaY\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516103103803806103108339818101604052602081101561003357600080fd5b5051600080546001600160a01b039092166001600160a01b03199092169190911790556102ab806100656000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c80631c39c38d1461005157806322f8e5661461008257806329cb924d146100a1578063dc6ff7bd146100bb575b600080fd5b6100596100dc565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61009f6004803603602081101561009857600080fd5b50356100f8565b005b6100a96101a3565b60408051918252519081900360200190f35b6100c3610262565b6040805192835260208301919091528051918290030190f35b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1661011a57600080fd5b60008054604080517f22f8e56600000000000000000000000000000000000000000000000000000000815260048101859052905173ffffffffffffffffffffffffffffffffffffffff909216926322f8e5669260248084019382900301818387803b15801561018857600080fd5b505af115801561019c573d6000803e3d6000fd5b5050505050565b6000805473ffffffffffffffffffffffffffffffffffffffff161561025c576000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166329cb924d6040518163ffffffff1660e01b815260040160206040518083038186803b15801561022957600080fd5b505afa15801561023d573d6000803e3d6000fd5b505050506040513d602081101561025357600080fd5b5051905061025f565b50425b90565b60008061026d6101a3565b92429250905056fea264697066735822122077ffed2fe9a09cefb7b3c743b446bbd112ecf0c0b593ee0f07072129b38765de64736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c80631c39c38d1461005157806322f8e5661461008257806329cb924d146100a1578063dc6ff7bd146100bb575b600080fd5b6100596100dc565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61009f6004803603602081101561009857600080fd5b50356100f8565b005b6100a96101a3565b60408051918252519081900360200190f35b6100c3610262565b6040805192835260208301919091528051918290030190f35b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1661011a57600080fd5b60008054604080517f22f8e56600000000000000000000000000000000000000000000000000000000815260048101859052905173ffffffffffffffffffffffffffffffffffffffff909216926322f8e5669260248084019382900301818387803b15801561018857600080fd5b505af115801561019c573d6000803e3d6000fd5b5050505050565b6000805473ffffffffffffffffffffffffffffffffffffffff161561025c576000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166329cb924d6040518163ffffffff1660e01b815260040160206040518083038186803b15801561022957600080fd5b505afa15801561023d573d6000803e3d6000fd5b505050506040513d602081101561025357600080fd5b5051905061025f565b50425b90565b60008061026d6101a3565b92429250905056fea264697066735822122077ffed2fe9a09cefb7b3c743b446bbd112ecf0c0b593ee0f07072129b38765de64736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "153:369:29:-:0;;;242:68;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;242:68:29;702:12:14;:28;;-1:-1:-1;;;;;702:28:14;;;-1:-1:-1;;;;;;702:28:14;;;;;;;;;153:369:29;;;;;;",
+  "deployedSourceMap": "153:369:29:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;356:27:14;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1071:115;;;;;;;;;;;;;;;;-1:-1:-1;1071:115:14;;:::i;:::-;;1431:256;;;:::i;:::-;;;;;;;;;;;;;;;;316:204:29;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;356:27:14;;;;;;:::o;1071:115::-;873:3;849:12;:28;:12;841:37;;;;;;1145:12:::1;::::0;;1139:40:::1;::::0;;;;;::::1;::::0;::::1;::::0;;;;;1145:12:::1;::::0;;::::1;::::0;1139:34:::1;::::0;:40;;;;;;;;;;1145:12;;1139:40;::::1;;::::0;::::1;;;;::::0;::::1;;;;;;;;;;;;::::0;::::1;;;;;;;;;1071:115:::0;:::o;1431:256::-;1478:7;1501:12;;:28;:12;:28;1497:184;;1558:12;;;;;;;;;;;1552:34;;;:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1552:36:14;;-1:-1:-1;1545:43:14;;1497:184;-1:-1:-1;1626:3:14;1497:184;1431:256;:::o;316:204:29:-;378:20;400:17;491:16;:14;:16::i;:::-;483:30;509:3;;-1:-1:-1;316:204:29;-1:-1:-1;316:204:29:o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"../implementation/Testable.sol\";\n\n\n// TestableTest is derived from the abstract contract Testable for testing purposes.\ncontract TestableTest is Testable {\n    // solhint-disable-next-line no-empty-blocks\n    constructor(address _timerAddress) public Testable(_timerAddress) {}\n\n    function getTestableTimeAndBlockTime() external view returns (uint256 testableTime, uint256 blockTime) {\n        // solhint-disable-next-line not-rely-on-time\n        return (getCurrentTime(), now);\n    }\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol",
   "ast": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol",
     "exportedSymbols": {
       "TestableTest": [
-        5714
+        6408
       ]
     },
-    "id": 5715,
+    "id": 6409,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5688,
+        "id": 6382,
         "literals": [
           "solidity",
           "^",
@@ -96,16 +98,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:20"
+        "src": "0:23:29"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol",
         "file": "../implementation/Testable.sol",
-        "id": 5689,
+        "id": 6383,
         "nodeType": "ImportDirective",
-        "scope": 5715,
-        "sourceUnit": 4829,
-        "src": "25:40:20",
+        "scope": 6409,
+        "sourceUnit": 4980,
+        "src": "25:40:29",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -116,44 +118,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5690,
+              "id": 6384,
               "name": "Testable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4828,
-              "src": "178:8:20",
+              "referencedDeclaration": 4979,
+              "src": "178:8:29",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Testable_$4828",
+                "typeIdentifier": "t_contract$_Testable_$4979",
                 "typeString": "contract Testable"
               }
             },
-            "id": 5691,
+            "id": 6385,
             "nodeType": "InheritanceSpecifier",
-            "src": "178:8:20"
+            "src": "178:8:29"
           }
         ],
         "contractDependencies": [
-          4828
+          4979
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5714,
+        "id": 6408,
         "linearizedBaseContracts": [
-          5714,
-          4828
+          6408,
+          4979
         ],
         "name": "TestableTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 5699,
+              "id": 6393,
               "nodeType": "Block",
-              "src": "293:2:20",
+              "src": "308:2:29",
               "statements": []
             },
             "documentation": null,
-            "id": 5700,
+            "id": 6394,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -161,90 +163,92 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5696,
-                    "name": "_isTest",
+                    "id": 6390,
+                    "name": "_timerAddress",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5693,
-                    "src": "284:7:20",
+                    "referencedDeclaration": 6387,
+                    "src": "293:13:29",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
                     }
                   }
                 ],
-                "id": 5697,
+                "id": 6391,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5695,
+                  "id": 6389,
                   "name": "Testable",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4828,
-                  "src": "275:8:20",
+                  "referencedDeclaration": 4979,
+                  "src": "284:8:29",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Testable_$4828_$",
+                    "typeIdentifier": "t_type$_t_contract$_Testable_$4979_$",
                     "typeString": "type(contract Testable)"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "275:17:20"
+                "src": "284:23:29"
               }
             ],
             "name": "",
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5694,
+              "id": 6388,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5693,
-                  "name": "_isTest",
+                  "id": 6387,
+                  "mutability": "mutable",
+                  "name": "_timerAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5700,
-                  "src": "254:12:20",
+                  "scope": 6394,
+                  "src": "254:21:29",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5692,
-                    "name": "bool",
+                    "id": 6386,
+                    "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "254:4:20",
+                    "src": "254:7:29",
+                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
                     }
                   },
                   "value": null,
                   "visibility": "internal"
                 }
               ],
-              "src": "253:14:20"
+              "src": "253:23:29"
             },
             "returnParameters": {
-              "id": 5698,
+              "id": 6392,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "293:0:20"
+              "src": "308:0:29"
             },
-            "scope": 5714,
-            "src": "242:53:20",
+            "scope": 6408,
+            "src": "242:68:29",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 5712,
+              "id": 6406,
               "nodeType": "Block",
-              "src": "398:101:20",
+              "src": "419:101:29",
               "statements": [
                 {
                   "expression": {
@@ -255,18 +259,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 5707,
+                          "id": 6401,
                           "name": "getCurrentTime",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4827,
-                          "src": "470:14:20",
+                          "referencedDeclaration": 4978,
+                          "src": "491:14:29",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_uint256_$",
                             "typeString": "function () view returns (uint256)"
                           }
                         },
-                        "id": 5708,
+                        "id": 6402,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -274,7 +278,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "470:16:20",
+                        "src": "491:16:29",
                         "tryCall": false,
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -283,41 +287,41 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5709,
+                        "id": 6403,
                         "name": "now",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": -17,
-                        "src": "488:3:20",
+                        "src": "509:3:29",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       }
                     ],
-                    "id": 5710,
+                    "id": 6404,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "TupleExpression",
-                    "src": "469:23:20",
+                    "src": "490:23:29",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$_t_uint256_$_t_uint256_$",
                       "typeString": "tuple(uint256,uint256)"
                     }
                   },
-                  "functionReturnParameters": 5706,
-                  "id": 5711,
+                  "functionReturnParameters": 6400,
+                  "id": 6405,
                   "nodeType": "Return",
-                  "src": "462:30:20"
+                  "src": "483:30:29"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "dc6ff7bd",
-            "id": 5713,
+            "id": 6407,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -325,23 +329,24 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5701,
+              "id": 6395,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "337:2:20"
+              "src": "352:2:29"
             },
             "returnParameters": {
-              "id": 5706,
+              "id": 6400,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5703,
+                  "id": 6397,
+                  "mutability": "mutable",
                   "name": "testableTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5713,
-                  "src": "363:17:20",
+                  "scope": 6407,
+                  "src": "378:20:29",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -349,10 +354,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5702,
-                    "name": "uint",
+                    "id": 6396,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "363:4:20",
+                    "src": "378:7:29",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -363,12 +368,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5705,
+                  "id": 6399,
+                  "mutability": "mutable",
                   "name": "blockTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5713,
-                  "src": "382:14:20",
+                  "scope": 6407,
+                  "src": "400:17:29",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -376,10 +382,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5704,
-                    "name": "uint",
+                    "id": 6398,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "382:4:20",
+                    "src": "400:7:29",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -389,33 +395,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "362:35:20"
+              "src": "377:41:29"
             },
-            "scope": 5714,
-            "src": "301:198:20",
+            "scope": 6408,
+            "src": "316:204:29",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 5715,
-        "src": "153:348:20"
+        "scope": 6409,
+        "src": "153:369:29"
       }
     ],
-    "src": "0:502:20"
+    "src": "0:523:29"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/TestableTest.sol",
     "exportedSymbols": {
       "TestableTest": [
-        5714
+        6408
       ]
     },
-    "id": 5715,
+    "id": 6409,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5688,
+        "id": 6382,
         "literals": [
           "solidity",
           "^",
@@ -423,16 +430,16 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:20"
+        "src": "0:23:29"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol",
         "file": "../implementation/Testable.sol",
-        "id": 5689,
+        "id": 6383,
         "nodeType": "ImportDirective",
-        "scope": 5715,
-        "sourceUnit": 4829,
-        "src": "25:40:20",
+        "scope": 6409,
+        "sourceUnit": 4980,
+        "src": "25:40:29",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -443,44 +450,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5690,
+              "id": 6384,
               "name": "Testable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4828,
-              "src": "178:8:20",
+              "referencedDeclaration": 4979,
+              "src": "178:8:29",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Testable_$4828",
+                "typeIdentifier": "t_contract$_Testable_$4979",
                 "typeString": "contract Testable"
               }
             },
-            "id": 5691,
+            "id": 6385,
             "nodeType": "InheritanceSpecifier",
-            "src": "178:8:20"
+            "src": "178:8:29"
           }
         ],
         "contractDependencies": [
-          4828
+          4979
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5714,
+        "id": 6408,
         "linearizedBaseContracts": [
-          5714,
-          4828
+          6408,
+          4979
         ],
         "name": "TestableTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 5699,
+              "id": 6393,
               "nodeType": "Block",
-              "src": "293:2:20",
+              "src": "308:2:29",
               "statements": []
             },
             "documentation": null,
-            "id": 5700,
+            "id": 6394,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -488,90 +495,92 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5696,
-                    "name": "_isTest",
+                    "id": 6390,
+                    "name": "_timerAddress",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5693,
-                    "src": "284:7:20",
+                    "referencedDeclaration": 6387,
+                    "src": "293:13:29",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
                     }
                   }
                 ],
-                "id": 5697,
+                "id": 6391,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5695,
+                  "id": 6389,
                   "name": "Testable",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4828,
-                  "src": "275:8:20",
+                  "referencedDeclaration": 4979,
+                  "src": "284:8:29",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Testable_$4828_$",
+                    "typeIdentifier": "t_type$_t_contract$_Testable_$4979_$",
                     "typeString": "type(contract Testable)"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "275:17:20"
+                "src": "284:23:29"
               }
             ],
             "name": "",
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5694,
+              "id": 6388,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5693,
-                  "name": "_isTest",
+                  "id": 6387,
+                  "mutability": "mutable",
+                  "name": "_timerAddress",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5700,
-                  "src": "254:12:20",
+                  "scope": 6394,
+                  "src": "254:21:29",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5692,
-                    "name": "bool",
+                    "id": 6386,
+                    "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "254:4:20",
+                    "src": "254:7:29",
+                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
                     }
                   },
                   "value": null,
                   "visibility": "internal"
                 }
               ],
-              "src": "253:14:20"
+              "src": "253:23:29"
             },
             "returnParameters": {
-              "id": 5698,
+              "id": 6392,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "293:0:20"
+              "src": "308:0:29"
             },
-            "scope": 5714,
-            "src": "242:53:20",
+            "scope": 6408,
+            "src": "242:68:29",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 5712,
+              "id": 6406,
               "nodeType": "Block",
-              "src": "398:101:20",
+              "src": "419:101:29",
               "statements": [
                 {
                   "expression": {
@@ -582,18 +591,18 @@
                         "arguments": [],
                         "expression": {
                           "argumentTypes": [],
-                          "id": 5707,
+                          "id": 6401,
                           "name": "getCurrentTime",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 4827,
-                          "src": "470:14:20",
+                          "referencedDeclaration": 4978,
+                          "src": "491:14:29",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_uint256_$",
                             "typeString": "function () view returns (uint256)"
                           }
                         },
-                        "id": 5708,
+                        "id": 6402,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -601,7 +610,7 @@
                         "lValueRequested": false,
                         "names": [],
                         "nodeType": "FunctionCall",
-                        "src": "470:16:20",
+                        "src": "491:16:29",
                         "tryCall": false,
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -610,41 +619,41 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5709,
+                        "id": 6403,
                         "name": "now",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": -17,
-                        "src": "488:3:20",
+                        "src": "509:3:29",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
                       }
                     ],
-                    "id": 5710,
+                    "id": 6404,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "TupleExpression",
-                    "src": "469:23:20",
+                    "src": "490:23:29",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$_t_uint256_$_t_uint256_$",
                       "typeString": "tuple(uint256,uint256)"
                     }
                   },
-                  "functionReturnParameters": 5706,
-                  "id": 5711,
+                  "functionReturnParameters": 6400,
+                  "id": 6405,
                   "nodeType": "Return",
-                  "src": "462:30:20"
+                  "src": "483:30:29"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "dc6ff7bd",
-            "id": 5713,
+            "id": 6407,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -652,23 +661,24 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5701,
+              "id": 6395,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "337:2:20"
+              "src": "352:2:29"
             },
             "returnParameters": {
-              "id": 5706,
+              "id": 6400,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5703,
+                  "id": 6397,
+                  "mutability": "mutable",
                   "name": "testableTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5713,
-                  "src": "363:17:20",
+                  "scope": 6407,
+                  "src": "378:20:29",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -676,10 +686,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5702,
-                    "name": "uint",
+                    "id": 6396,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "363:4:20",
+                    "src": "378:7:29",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -690,12 +700,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5705,
+                  "id": 6399,
+                  "mutability": "mutable",
                   "name": "blockTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5713,
-                  "src": "382:14:20",
+                  "scope": 6407,
+                  "src": "400:17:29",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -703,10 +714,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5704,
-                    "name": "uint",
+                    "id": 6398,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "382:4:20",
+                    "src": "400:7:29",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -716,32 +727,40 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "362:35:20"
+              "src": "377:41:29"
             },
-            "scope": 5714,
-            "src": "301:198:20",
+            "scope": 6408,
+            "src": "316:204:29",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 5715,
-        "src": "153:348:20"
+        "scope": 6409,
+        "src": "153:369:29"
       }
     ],
-    "src": "0:502:20"
+    "src": "0:523:29"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.514Z",
+  "updatedAt": "2020-09-30T12:21:56.810Z",
   "devdoc": {
     "methods": {
+      "getCurrentTime()": {
+        "returns": {
+          "_0": "uint for the current Testable timestamp."
+        }
+      },
       "setCurrentTime(uint256)": {
-        "details": "Will revert if not running in test mode."
+        "details": "Will revert if not running in test mode.",
+        "params": {
+          "time": "timestamp to set current Testable time to."
+        }
       }
     }
   },

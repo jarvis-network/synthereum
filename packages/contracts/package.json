@@ -15,20 +15,23 @@
     "migrate:kovan": "truffle migrate --network kovan -f 1 --to 4 --skip-dry-run",
     "run:deposit": "truffle migrate --network kovan -f 6 --to 6 --skip-dry-run",
     "run:withdraw": "truffle migrate --network kovan -f 7 --to 7 --skip-dry-run",
-    "run:add-assets": "truffle migrate --network kovan -f 5 --to 5 --skip-dry-run"
+    "run:add-assets": "truffle migrate --network kovan -f 5 --to 5 --skip-dry-run",
+    "verify-contract:kovan": "truffle run verify TICFactory --network kovan"
   },
-  "author": "",
+  "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "3.0.0-beta.0",
+    "@openzeppelin/contracts": "3.0.0",
     "@openzeppelin/test-helpers": "^0.5.4",
     "@truffle/hdwallet-provider": "^1.0.34",
     "chainlink": "^0.8.2",
     "dotenv": "^8.2.0",
-    "protocol": "github:UMAprotocol/protocol#8df987bee7aa90780b524c701c19db8b6d9d113b"
+    "protocol": "github:UMAprotocol/protocol#72384c36655869c2e69072d56b54e8b0aa3826e6"
   },
   "devDependencies": {
     "ganache-time-traveler": "^1.0.14",
-    "husky": "^4.2.3"
+    "husky": "^4.2.3",
+    "truffle": "^5.1.45",
+    "truffle-plugin-verify": "^0.4.0"
   }
 }

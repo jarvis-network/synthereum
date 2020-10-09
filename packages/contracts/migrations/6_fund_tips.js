@@ -1,4 +1,4 @@
-const IERC20 = artifacts.require('IERC20');
+const ERC20 = artifacts.require('ERC20');
 const rDAI = artifacts.require('IRToken');
 const TIC = artifacts.require('TIC');
 const TICFactory = artifacts.require('TICFactory');
@@ -12,10 +12,8 @@ module.exports = function (deployer, network, accounts) {
     const TICFactoryInstance = await TICFactory.at(
       contracts[networkId]['ticFactory'],
     );
-    const rTokenAddress = contracts[networkId]['collateralAddress'];
-    const rTokenInstance = await rDAI.at(rTokenAddress);
-    const collateralAddress = await rTokenInstance.token.call();
-    const collateralInstance = await IERC20.at(collateralAddress);
+    const collateralAddress = contracts[networkId]['collateralAddress'];
+    const collateralInstance = await ERC20.at(collateralAddress);
 
     const deployments = await Promise.all(
       assets.map(async asset => {
@@ -28,11 +26,17 @@ module.exports = function (deployer, network, accounts) {
             from: liquidityProvider,
           });
           console.log(
-            `Approved ${web3.utils.fromWei(asset.amount)} $ for TIC pool ${asset.syntheticSymbol}`,
+            `Approved ${web3.utils.fromWei(
+              asset.amount,
+              'mwei',
+            )} $ for TIC pool ${asset.syntheticSymbol}`,
           );
           await TICInstance.deposit(asset.amount, { from: liquidityProvider });
           console.log(
-            `TIC pool ${asset.syntheticSymbol} funded with ${web3.utils.fromWei(asset.amount)} $ `,
+            `TIC pool ${asset.syntheticSymbol} funded with ${web3.utils.fromWei(
+              asset.amount,
+              'mwei',
+            )} $ `,
           );
         } catch (error) {
           console.log(error);

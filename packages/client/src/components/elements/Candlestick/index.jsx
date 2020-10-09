@@ -17,11 +17,7 @@ const Candlestick = ({ symbol, days }) => {
     try {
       const start = parseInt(days) * 60 * 60 * 24;
       console.log(symbol, days);
-      let symbolFeed = symbol;
-      if (symbolFeed === 'CHFUSD') {
-        symbolFeed = 'USDCHF';
-      }
-      const response = await jarvisPriceHistory(symbolFeed, start);
+      const response = await jarvisPriceHistory(symbol, start);
       let dataToSet = response.t.map((day, index) => [
         moment(day * 1000).format('M/D'),
         response.l[index],

@@ -77,25 +77,27 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"phaseLength\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"voteTiming\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"phaseLength\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"currentTime\",\"type\":\"uint256\"}],\"name\":\"wrapComputeCurrentPhase\",\"outputs\":[{\"internalType\":\"enum VotingInterface.Phase\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"currentTime\",\"type\":\"uint256\"}],\"name\":\"wrapComputeCurrentRoundId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"phaseLength\",\"type\":\"uint256\"}],\"name\":\"wrapInit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol\":\"VoteTimingTest\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xf93005a2285b10a0b7e7b53fef45c4921c5131edc80f6481848b670a37343275\",\"urls\":[\"bzz-raw://dd2db53bbd8b4c3312e274e392c3f0781c56e520f858ef77a04a075d18123625\",\"dweb:/ipfs/QmPxr5HSYVJKfzWnQpGVf4hg4kxMrCRTAw5isjkBmvsA5N\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol\":{\"keccak256\":\"0xb42ab86d621c9573fb4f61589e716ada9d949e66e875fb9c3419dff46f6a6840\",\"urls\":[\"bzz-raw://5aec9577474b2dc732024d8165262a033f0fb4a2f2043a2f811350589b3a80df\",\"dweb:/ipfs/QmW64uLPtYeCrGZrT2e6Vt7pdDNqyhrXWTNVSWmNAWd1hB\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol\":{\"keccak256\":\"0xbbd3db2435c890fbe817cd7543d72df2210fbcacb68389aede34c7b7f15650d5\",\"urls\":[\"bzz-raw://a8283e8277d8c0850d263b90200020e60e4ebf1e601af12d1715508220395ead\",\"dweb:/ipfs/QmPfy11cbU6J5iSj13qpHMdje5YaYZGwFZ6X5HDqvMoAoc\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":{\"keccak256\":\"0x3677a2cfd2a09d5ef89365d346102e2c4fa5c0e4f5bb1e7ed4ff112180431f09\",\"urls\":[\"bzz-raw://17cd3829cc517352517bbaab0957f3158a209345b78a4dea3f7e38a7a904d365\",\"dweb:/ipfs/QmfGzg1hHVpGQzswhHJJ5sakyiDjfC7vwtCqiKLus15vX3\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0xe4ed9d633e8e678e8ece3756e4002cc7989b72cd29a17ecdacdabf4fd48820a7\",\"urls\":[\"bzz-raw://03a55c81a7d4c93a1ca6d9b931830c1fde2799bfbbf5841321f67e7b056c36c2\",\"dweb:/ipfs/QmbcgdfB278NvzVZKjA7Jf1NjSeCCQ2277mJGL4UskyS56\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506040516104993803806104998339818101604052602081101561003357600080fd5b5051610047816001600160e01b0361004d16565b5061006c565b61006581600061006860201b61015c1790919060201c565b50565b9055565b61041e8061007b6000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806329e4b0131461005157806344d8ce9a1461008057806371b7db531461009f578063d9336ea4146100a7575b600080fd5b61006e6004803603602081101561006757600080fd5b50356100e8565b60408051918252519081900360200190f35b61009d6004803603602081101561009657600080fd5b5035610100565b005b61006e610114565b6100c4600480360360208110156100bd57600080fd5b503561011a565b604051808260028111156100d457fe5b60ff16815260200191505060405180910390f35b60006100fa818363ffffffff61012c16565b92915050565b61011160008263ffffffff61015c16565b50565b60005481565b60006100fa818363ffffffff61016016565b600080610142600285549063ffffffff61019816565b9050610154838263ffffffff61020b16565b949350505050565b9055565b60006101866002845461017a90859063ffffffff61020b16565b9063ffffffff61024d16565b600281111561019157fe5b9392505050565b6000826101a7575060006100fa565b828202828482816101b457fe5b0414610191576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260218152602001806103c86021913960400191505060405180910390fd5b600061019183836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f00000000000081525061028f565b600061019183836040518060400160405280601881526020017f536166654d6174683a206d6f64756c6f206279207a65726f000000000000000081525061034b565b60008183610335576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b838110156102fa5781810151838201526020016102e2565b50505050905090810190601f1680156103275780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161034157fe5b0495945050505050565b600081836103b4576040517f08c379a00000000000000000000000000000000000000000000000000000000081526020600482018181528351602484015283519092839260449091019190850190808383600083156102fa5781810151838201526020016102e2565b508284816103be57fe5b0694935050505056fe536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f77a26469706673582212201c0c828dde5eed4a1e4dd7778c017b0d25f26f80a6b8afbfa5b8c8bee299102964736f6c63430006040033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806329e4b0131461005157806344d8ce9a1461008057806371b7db531461009f578063d9336ea4146100a7575b600080fd5b61006e6004803603602081101561006757600080fd5b50356100e8565b60408051918252519081900360200190f35b61009d6004803603602081101561009657600080fd5b5035610100565b005b61006e610114565b6100c4600480360360208110156100bd57600080fd5b503561011a565b604051808260028111156100d457fe5b60ff16815260200191505060405180910390f35b60006100fa818363ffffffff61012c16565b92915050565b61011160008263ffffffff61015c16565b50565b60005481565b60006100fa818363ffffffff61016016565b600080610142600285549063ffffffff61019816565b9050610154838263ffffffff61020b16565b949350505050565b9055565b60006101866002845461017a90859063ffffffff61020b16565b9063ffffffff61024d16565b600281111561019157fe5b9392505050565b6000826101a7575060006100fa565b828202828482816101b457fe5b0414610191576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260218152602001806103c86021913960400191505060405180910390fd5b600061019183836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f00000000000081525061028f565b600061019183836040518060400160405280601881526020017f536166654d6174683a206d6f64756c6f206279207a65726f000000000000000081525061034b565b60008183610335576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b838110156102fa5781810151838201526020016102e2565b50505050905090810190601f1680156103275780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161034157fe5b0495945050505050565b600081836103b4576040517f08c379a00000000000000000000000000000000000000000000000000000000081526020600482018181528351602484015283519092839260449091019190850190808383600083156102fa5781810151838201526020016102e2565b508284816103be57fe5b0694935050505056fe536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f77a26469706673582212201c0c828dde5eed4a1e4dd7778c017b0d25f26f80a6b8afbfa5b8c8bee299102964736f6c63430006040033",
-  "sourceMap": "156:611:48:-:0;;;269:75;5:9:-1;2:2;;;27:1;24;17:12;2:2;269:75:48;;;;;;;;;;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;269:75:48;316:21;269:75;-1:-1:-1;;;;;316:8:48;:21;:::i;:::-;269:75;156:611;;677:88;730:28;746:11;730:10;:15;;;;;;:28;;;;:::i;:::-;677:88;:::o;434:107:43:-;504:30;;434:107::o;156:611:48:-;;;;;;;",
-  "deployedSourceMap": "156:611:48:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;156:611:48;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;350:151:48;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;350:151:48;;:::i;:::-;;;;;;;;;;;;;;;;677:88;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;677:88:48;;:::i;:::-;;229:33;;;:::i;507:164::-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;507:164:48;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;350:151;426:4;449:45;426:4;482:11;449:45;:32;:45;:::i;:::-;442:52;350:151;-1:-1:-1;;350:151:48:o;677:88::-;730:28;:10;746:11;730:28;:15;:28;:::i;:::-;677:88;:::o;229:33::-;;;;:::o;507:164::-;581:21;621:43;581:21;652:11;621:43;:30;:43;:::i;876:258:43:-;967:12;;1010:72;1036:44;1010:16;;;:72;:20;:72;:::i;:::-;991:91;-1:-1:-1;1099:28:43;:11;991:91;1099:28;:15;:28;:::i;:::-;1092:35;876:258;-1:-1:-1;;;;876:258:43:o;434:107::-;504:30;;434:107::o;1752:405::-;1841:21;2047:89;2090:44;2063:16;;2047:33;;:11;;:33;:15;:33;:::i;:::-;:37;:89;:37;:89;:::i;:::-;2008:142;;;;;;;;1989:161;1752:405;-1:-1:-1;;;1752:405:43:o;2159:459:68:-;2217:7;2458:6;2454:45;;-1:-1:-1;2487:1:68;2480:8;;2454:45;2521:5;;;2525:1;2521;:5;:1;2544:5;;;;;:10;2536:56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3073:130;3131:7;3157:39;3161:1;3164;3157:39;;;;;;;;;;;;;;;;;:3;:39::i;4500:128::-;4558:7;4584:37;4588:1;4591;4584:37;;;;;;;;;;;;;;;;;:3;:37::i;3718:338::-;3804:7;3904:12;3897:5;3889:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;3889:28:68;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3927:9;3943:1;3939;:5;;;;;;;3718:338;-1:-1:-1;;;;;3718:338:68:o;5132:163::-;5218:7;5253:12;5245:6;5237:29;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;27:10:-1;;8:100;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;5237:29:68;;5287:1;5283;:5;;;;;;;5132:163;-1:-1:-1;;;;5132:163:68:o",
-  "source": "pragma solidity ^0.6.0;\n\nimport \"../../interfaces/VotingInterface.sol\";\nimport \"../VoteTiming.sol\";\n\n\n// Wraps the library VoteTiming for testing purposes.\ncontract VoteTimingTest {\n    using VoteTiming for VoteTiming.Data;\n\n    VoteTiming.Data public voteTiming;\n\n    constructor(uint phaseLength) public {\n        wrapInit(phaseLength);\n    }\n\n    function wrapComputeCurrentRoundId(uint currentTime) external view returns (uint) {\n        return voteTiming.computeCurrentRoundId(currentTime);\n    }\n\n    function wrapComputeCurrentPhase(uint currentTime) external view returns (VotingInterface.Phase) {\n        return voteTiming.computeCurrentPhase(currentTime);\n    }\n\n    function wrapInit(uint phaseLength) public {\n        voteTiming.init(phaseLength);\n    }\n}\n",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"phaseLength\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"voteTiming\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"phaseLength\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"currentTime\",\"type\":\"uint256\"}],\"name\":\"wrapComputeCurrentPhase\",\"outputs\":[{\"internalType\":\"enum VotingInterface.Phase\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"currentTime\",\"type\":\"uint256\"}],\"name\":\"wrapComputeCurrentRoundId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"phaseLength\",\"type\":\"uint256\"}],\"name\":\"wrapInit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol\":\"VoteTimingTest\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xeaa0bef7c35ff2902ef852864d217d75071da9cc96e9cdf5dcb77d54f4e4fefa\",\"urls\":[\"bzz-raw://9c5b1224f4bb7d8d992a1c71b8e2f8c2c8e655af30eb468058dd0eade3218d13\",\"dweb:/ipfs/QmYQ1WUhRwHgfPL5v1MVjCL7AvSVPEdPJt53Q2L5R6zwJU\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol\":{\"keccak256\":\"0xe344ecb50ad8caa1cfcd86bcabbc22385e76fa41916eefaf6c1e70ee1f81f14d\",\"urls\":[\"bzz-raw://348a246b1a1c58ffe830b1e00284d9919e26a9fa368b03dcdeb06d2180c69433\",\"dweb:/ipfs/QmUCAhLUY9YUeJXYkpDvF2HZkrN9665eh8eacpmr4m69bS\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol\":{\"keccak256\":\"0x5aa61476664f2ea859ccd208e8c5015b46364fa18299afcfc7091a7633dd7ede\",\"urls\":[\"bzz-raw://f13df61feeeebd26f5cc14142f4ede57c0174e06099beb7ff69a25095cbe1623\",\"dweb:/ipfs/QmZEqNYwRR8qZT8Br3hE5HzJ5kixMALgaNF3HNHWDYFbkK\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":{\"keccak256\":\"0xd2c1deaa9272918b57a367ea8ff0fe5d6e93f4384eaabf720d0b23f2c19bf6fb\",\"urls\":[\"bzz-raw://7b7de6eb7675b19a46bb4538e9910a86850022a6223de150d91ea62fd5db8ba8\",\"dweb:/ipfs/QmfZLEcCPJ58aPBDQfoooE2oywPhm6FT7AkyhLzAFDBPgk\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516104b33803806104b38339818101604052602081101561003357600080fd5b5051610047816001600160e01b0361004d16565b50610079565b61006581600061006860201b61012c1790919060201c565b50565b6000811161007557600080fd5b9055565b61042b806100886000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806329e4b0131461005157806344d8ce9a1461008057806371b7db531461009f578063d9336ea4146100a7575b600080fd5b61006e6004803603602081101561006757600080fd5b50356100e8565b60408051918252519081900360200190f35b61009d6004803603602081101561009657600080fd5b5035610100565b005b61006e610114565b6100c4600480360360208110156100bd57600080fd5b503561011a565b604051808260028111156100d457fe5b60ff16815260200191505060405180910390f35b60006100fa818363ffffffff61013d16565b92915050565b61011160008263ffffffff61012c16565b50565b60005481565b60006100fa818363ffffffff61016d16565b6000811161013957600080fd5b9055565b600080610153600285549063ffffffff6101a516565b9050610165838263ffffffff61021816565b949350505050565b60006101936002845461018790859063ffffffff61021816565b9063ffffffff61025a16565b600281111561019e57fe5b9392505050565b6000826101b4575060006100fa565b828202828482816101c157fe5b041461019e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260218152602001806103d56021913960400191505060405180910390fd5b600061019e83836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f00000000000081525061029c565b600061019e83836040518060400160405280601881526020017f536166654d6174683a206d6f64756c6f206279207a65726f0000000000000000815250610358565b60008183610342576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b838110156103075781810151838201526020016102ef565b50505050905090810190601f1680156103345780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161034e57fe5b0495945050505050565b600081836103c1576040517f08c379a00000000000000000000000000000000000000000000000000000000081526020600482018181528351602484015283519092839260449091019190850190808383600083156103075781810151838201526020016102ef565b508284816103cb57fe5b0694935050505056fe536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f77a26469706673582212208383458fc5ea77c4ee7c6f85112a594f7a4068d321320a95fe484e2ea5ffce5764736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806329e4b0131461005157806344d8ce9a1461008057806371b7db531461009f578063d9336ea4146100a7575b600080fd5b61006e6004803603602081101561006757600080fd5b50356100e8565b60408051918252519081900360200190f35b61009d6004803603602081101561009657600080fd5b5035610100565b005b61006e610114565b6100c4600480360360208110156100bd57600080fd5b503561011a565b604051808260028111156100d457fe5b60ff16815260200191505060405180910390f35b60006100fa818363ffffffff61013d16565b92915050565b61011160008263ffffffff61012c16565b50565b60005481565b60006100fa818363ffffffff61016d16565b6000811161013957600080fd5b9055565b600080610153600285549063ffffffff6101a516565b9050610165838263ffffffff61021816565b949350505050565b60006101936002845461018790859063ffffffff61021816565b9063ffffffff61025a16565b600281111561019e57fe5b9392505050565b6000826101b4575060006100fa565b828202828482816101c157fe5b041461019e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260218152602001806103d56021913960400191505060405180910390fd5b600061019e83836040518060400160405280601a81526020017f536166654d6174683a206469766973696f6e206279207a65726f00000000000081525061029c565b600061019e83836040518060400160405280601881526020017f536166654d6174683a206d6f64756c6f206279207a65726f0000000000000000815250610358565b60008183610342576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825283818151815260200191508051906020019080838360005b838110156103075781810151838201526020016102ef565b50505050905090810190601f1680156103345780820380516001836020036101000a031916815260200191505b509250505060405180910390fd5b50600083858161034e57fe5b0495945050505050565b600081836103c1576040517f08c379a00000000000000000000000000000000000000000000000000000000081526020600482018181528351602484015283519092839260449091019190850190808383600083156103075781810151838201526020016102ef565b508284816103cb57fe5b0694935050505056fe536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f77a26469706673582212208383458fc5ea77c4ee7c6f85112a594f7a4068d321320a95fe484e2ea5ffce5764736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "156:626:60:-:0;;;269:78;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;269:78:60;319:21;269:78;-1:-1:-1;;;;;319:8:60;:21;:::i;:::-;269:78;156:626;;689:91;745:28;761:11;745:10;:15;;;;;;:28;;;;:::i;:::-;689:91;:::o;440:238:54:-;629:1;615:11;:15;607:24;;;;;;641:30;;440:238::o;156:626:60:-;;;;;;;",
+  "deployedSourceMap": "156:626:60:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;353:157;;;;;;;;;;;;;;;;-1:-1:-1;353:157:60;;:::i;:::-;;;;;;;;;;;;;;;;689:91;;;;;;;;;;;;;;;;-1:-1:-1;689:91:60;;:::i;:::-;;229:33;;;:::i;516:167::-;;;;;;;;;;;;;;;;-1:-1:-1;516:167:60;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;353:157;432:7;458:45;432:7;491:11;458:45;:32;:45;:::i;:::-;451:52;353:157;-1:-1:-1;;353:157:60:o;689:91::-;745:28;:10;761:11;745:28;:15;:28;:::i;:::-;689:91;:::o;229:33::-;;;;:::o;516:167::-;593:21;633:43;593:21;664:11;633:43;:30;:43;:::i;440:238:54:-;629:1;615:11;:15;607:24;;;;;;641:30;;440:238::o;1269:262::-;1363:7;;1404:75;1433:44;1404:16;;;:75;:20;:75;:::i;:::-;1382:97;-1:-1:-1;1496:28:54;:11;1382:97;1496:28;:15;:28;:::i;:::-;1489:35;1269:262;-1:-1:-1;;;;1269:262:54:o;2362:411::-;2454:21;2660:92;2706:44;2676:16;;2660:33;;:11;;:33;:15;:33;:::i;:::-;:37;:92;:37;:92;:::i;:::-;2621:145;;;;;;;;2602:164;2362:411;-1:-1:-1;;;2362:411:54:o;2119:459:75:-;2177:7;2418:6;2414:45;;-1:-1:-1;2447:1:75;2440:8;;2414:45;2481:5;;;2485:1;2481;:5;:1;2504:5;;;;;:10;2496:56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3033:130;3091:7;3117:39;3121:1;3124;3117:39;;;;;;;;;;;;;;;;;:3;:39::i;4420:128::-;4478:7;4504:37;4508:1;4511;4504:37;;;;;;;;;;;;;;;;;:3;:37::i;3638:338::-;3724:7;3824:12;3817:5;3809:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3847:9;3863:1;3859;:5;;;;;;;3638:338;-1:-1:-1;;;;;3638:338:75:o;5012:163::-;5098:7;5133:12;5125:6;5117:29;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5167:1;5163;:5;;;;;;;5012:163;-1:-1:-1;;;;5012:163:75:o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"../../interfaces/VotingInterface.sol\";\nimport \"../VoteTiming.sol\";\n\n\n// Wraps the library VoteTiming for testing purposes.\ncontract VoteTimingTest {\n    using VoteTiming for VoteTiming.Data;\n\n    VoteTiming.Data public voteTiming;\n\n    constructor(uint256 phaseLength) public {\n        wrapInit(phaseLength);\n    }\n\n    function wrapComputeCurrentRoundId(uint256 currentTime) external view returns (uint256) {\n        return voteTiming.computeCurrentRoundId(currentTime);\n    }\n\n    function wrapComputeCurrentPhase(uint256 currentTime) external view returns (VotingInterface.Phase) {\n        return voteTiming.computeCurrentPhase(currentTime);\n    }\n\n    function wrapInit(uint256 phaseLength) public {\n        voteTiming.init(phaseLength);\n    }\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol",
   "ast": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol",
     "exportedSymbols": {
       "VoteTimingTest": [
-        13994
+        16263
       ]
     },
-    "id": 13995,
+    "id": 16264,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13938,
+        "id": 16207,
         "literals": [
           "solidity",
           "^",
@@ -103,27 +105,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:48"
+        "src": "0:23:60"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
         "file": "../../interfaces/VotingInterface.sol",
-        "id": 13939,
+        "id": 16208,
         "nodeType": "ImportDirective",
-        "scope": 13995,
-        "sourceUnit": 14284,
-        "src": "25:46:48",
+        "scope": 16264,
+        "sourceUnit": 16605,
+        "src": "25:46:60",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol",
         "file": "../VoteTiming.sol",
-        "id": 13940,
+        "id": 16209,
         "nodeType": "ImportDirective",
-        "scope": 13995,
-        "sourceUnit": 12000,
-        "src": "72:27:48",
+        "scope": 16264,
+        "sourceUnit": 14105,
+        "src": "72:27:60",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -134,38 +136,38 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 13994,
+        "id": 16263,
         "linearizedBaseContracts": [
-          13994
+          16263
         ],
         "name": "VoteTimingTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 13943,
+            "id": 16212,
             "libraryName": {
               "contractScope": null,
-              "id": 13941,
+              "id": 16210,
               "name": "VoteTiming",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11999,
-              "src": "192:10:48",
+              "referencedDeclaration": 14104,
+              "src": "192:10:60",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_VoteTiming_$11999",
+                "typeIdentifier": "t_contract$_VoteTiming_$14104",
                 "typeString": "library VoteTiming"
               }
             },
             "nodeType": "UsingForDirective",
-            "src": "186:37:48",
+            "src": "186:37:60",
             "typeName": {
               "contractScope": null,
-              "id": 13942,
+              "id": 16211,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11894,
-              "src": "207:15:48",
+              "referencedDeclaration": 13993,
+              "src": "207:15:60",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$13993_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             }
@@ -173,27 +175,28 @@
           {
             "constant": false,
             "functionSelector": "71b7db53",
-            "id": 13945,
+            "id": 16214,
+            "mutability": "mutable",
             "name": "voteTiming",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 13994,
-            "src": "229:33:48",
+            "scope": 16263,
+            "src": "229:33:60",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Data_$11894_storage",
+              "typeIdentifier": "t_struct$_Data_$13993_storage",
               "typeString": "struct VoteTiming.Data"
             },
             "typeName": {
               "contractScope": null,
-              "id": 13944,
+              "id": 16213,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11894,
-              "src": "229:15:48",
+              "referencedDeclaration": 13993,
+              "src": "229:15:60",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$13993_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             },
@@ -202,9 +205,9 @@
           },
           {
             "body": {
-              "id": 13954,
+              "id": 16223,
               "nodeType": "Block",
-              "src": "306:38:48",
+              "src": "309:38:60",
               "statements": [
                 {
                   "expression": {
@@ -212,12 +215,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13951,
+                        "id": 16220,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13947,
-                        "src": "325:11:48",
+                        "referencedDeclaration": 16216,
+                        "src": "328:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -231,18 +234,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 13950,
+                      "id": 16219,
                       "name": "wrapInit",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13993,
-                      "src": "316:8:48",
+                      "referencedDeclaration": 16262,
+                      "src": "319:8:60",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$returns$__$",
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 13952,
+                    "id": 16221,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -250,21 +253,21 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "316:21:48",
+                    "src": "319:21:60",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13953,
+                  "id": 16222,
                   "nodeType": "ExpressionStatement",
-                  "src": "316:21:48"
+                  "src": "319:21:60"
                 }
               ]
             },
             "documentation": null,
-            "id": 13955,
+            "id": 16224,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -272,17 +275,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13948,
+              "id": 16217,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13947,
+                  "id": 16216,
+                  "mutability": "mutable",
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13955,
-                  "src": "281:16:48",
+                  "scope": 16224,
+                  "src": "281:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -290,10 +294,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13946,
-                    "name": "uint",
+                    "id": 16215,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "281:4:48",
+                    "src": "281:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -303,25 +307,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "280:18:48"
+              "src": "280:21:60"
             },
             "returnParameters": {
-              "id": 13949,
+              "id": 16218,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "306:0:48"
+              "src": "309:0:60"
             },
-            "scope": 13994,
-            "src": "269:75:48",
+            "scope": 16263,
+            "src": "269:78:60",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 13967,
+              "id": 16236,
               "nodeType": "Block",
-              "src": "432:69:48",
+              "src": "441:69:60",
               "statements": [
                 {
                   "expression": {
@@ -329,12 +333,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13964,
+                        "id": 16233,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13957,
-                        "src": "482:11:48",
+                        "referencedDeclaration": 16226,
+                        "src": "491:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -350,32 +354,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13962,
+                        "id": 16231,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13945,
-                        "src": "449:10:48",
+                        "referencedDeclaration": 16214,
+                        "src": "458:10:60",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11894_storage",
+                          "typeIdentifier": "t_struct$_Data_$13993_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13963,
+                      "id": 16232,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentRoundId",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11938,
-                      "src": "449:32:48",
+                      "referencedDeclaration": 14043,
+                      "src": "458:32:60",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$13993_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$13993_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (uint256)"
                       }
                     },
-                    "id": 13965,
+                    "id": 16234,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -383,23 +387,23 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "449:45:48",
+                    "src": "458:45:60",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 13961,
-                  "id": 13966,
+                  "functionReturnParameters": 16230,
+                  "id": 16235,
                   "nodeType": "Return",
-                  "src": "442:52:48"
+                  "src": "451:52:60"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "29e4b013",
-            "id": 13968,
+            "id": 16237,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -407,17 +411,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13958,
+              "id": 16227,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13957,
+                  "id": 16226,
+                  "mutability": "mutable",
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13968,
-                  "src": "385:16:48",
+                  "scope": 16237,
+                  "src": "388:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -425,10 +430,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13956,
-                    "name": "uint",
+                    "id": 16225,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "385:4:48",
+                    "src": "388:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -438,20 +443,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "384:18:48"
+              "src": "387:21:60"
             },
             "returnParameters": {
-              "id": 13961,
+              "id": 16230,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13960,
+                  "id": 16229,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13968,
-                  "src": "426:4:48",
+                  "scope": 16237,
+                  "src": "432:7:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -459,10 +465,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13959,
-                    "name": "uint",
+                    "id": 16228,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "426:4:48",
+                    "src": "432:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -472,19 +478,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "425:6:48"
+              "src": "431:9:60"
             },
-            "scope": 13994,
-            "src": "350:151:48",
+            "scope": 16263,
+            "src": "353:157:60",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 13980,
+              "id": 16249,
               "nodeType": "Block",
-              "src": "604:67:48",
+              "src": "616:67:60",
               "statements": [
                 {
                   "expression": {
@@ -492,12 +498,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13977,
+                        "id": 16246,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13970,
-                        "src": "652:11:48",
+                        "referencedDeclaration": 16239,
+                        "src": "664:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -513,32 +519,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13975,
+                        "id": 16244,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13945,
-                        "src": "621:10:48",
+                        "referencedDeclaration": 16214,
+                        "src": "633:10:60",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11894_storage",
+                          "typeIdentifier": "t_struct$_Data_$13993_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13976,
+                      "id": 16245,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentPhase",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11998,
-                      "src": "621:30:48",
+                      "referencedDeclaration": 14103,
+                      "src": "633:30:60",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$14214_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$13993_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$16529_$bound_to$_t_struct$_Data_$13993_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (enum VotingInterface.Phase)"
                       }
                     },
-                    "id": 13978,
+                    "id": 16247,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -546,23 +552,23 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "621:43:48",
+                    "src": "633:43:60",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$14214",
+                      "typeIdentifier": "t_enum$_Phase_$16529",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
-                  "functionReturnParameters": 13974,
-                  "id": 13979,
+                  "functionReturnParameters": 16243,
+                  "id": 16248,
                   "nodeType": "Return",
-                  "src": "614:50:48"
+                  "src": "626:50:60"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "d9336ea4",
-            "id": 13981,
+            "id": 16250,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -570,17 +576,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13971,
+              "id": 16240,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13970,
+                  "id": 16239,
+                  "mutability": "mutable",
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13981,
-                  "src": "540:16:48",
+                  "scope": 16250,
+                  "src": "549:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -588,10 +595,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13969,
-                    "name": "uint",
+                    "id": 16238,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "540:4:48",
+                    "src": "549:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -601,35 +608,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "539:18:48"
+              "src": "548:21:60"
             },
             "returnParameters": {
-              "id": 13974,
+              "id": 16243,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13973,
+                  "id": 16242,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13981,
-                  "src": "581:21:48",
+                  "scope": 16250,
+                  "src": "593:21:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Phase_$14214",
+                    "typeIdentifier": "t_enum$_Phase_$16529",
                     "typeString": "enum VotingInterface.Phase"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13972,
+                    "id": 16241,
                     "name": "VotingInterface.Phase",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 14214,
-                    "src": "581:21:48",
+                    "referencedDeclaration": 16529,
+                    "src": "593:21:60",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$14214",
+                      "typeIdentifier": "t_enum$_Phase_$16529",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
@@ -637,19 +645,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "580:23:48"
+              "src": "592:23:60"
             },
-            "scope": 13994,
-            "src": "507:164:48",
+            "scope": 16263,
+            "src": "516:167:60",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 13992,
+              "id": 16261,
               "nodeType": "Block",
-              "src": "720:45:48",
+              "src": "735:45:60",
               "statements": [
                 {
                   "expression": {
@@ -657,12 +665,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13989,
+                        "id": 16258,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13983,
-                        "src": "746:11:48",
+                        "referencedDeclaration": 16252,
+                        "src": "761:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -678,32 +686,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13986,
+                        "id": 16255,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13945,
-                        "src": "730:10:48",
+                        "referencedDeclaration": 16214,
+                        "src": "745:10:60",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11894_storage",
+                          "typeIdentifier": "t_struct$_Data_$13993_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13988,
+                      "id": 16257,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "init",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11909,
-                      "src": "730:15:48",
+                      "referencedDeclaration": 14014,
+                      "src": "745:15:60",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$13993_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$13993_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256)"
                       }
                     },
-                    "id": 13990,
+                    "id": 16259,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -711,22 +719,22 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "730:28:48",
+                    "src": "745:28:60",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13991,
+                  "id": 16260,
                   "nodeType": "ExpressionStatement",
-                  "src": "730:28:48"
+                  "src": "745:28:60"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "44d8ce9a",
-            "id": 13993,
+            "id": 16262,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -734,17 +742,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13984,
+              "id": 16253,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13983,
+                  "id": 16252,
+                  "mutability": "mutable",
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13993,
-                  "src": "695:16:48",
+                  "scope": 16262,
+                  "src": "707:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -752,10 +761,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13982,
-                    "name": "uint",
+                    "id": 16251,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "695:4:48",
+                    "src": "707:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -765,39 +774,40 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "694:18:48"
+              "src": "706:21:60"
             },
             "returnParameters": {
-              "id": 13985,
+              "id": 16254,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "720:0:48"
+              "src": "735:0:60"
             },
-            "scope": 13994,
-            "src": "677:88:48",
+            "scope": 16263,
+            "src": "689:91:60",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 13995,
-        "src": "156:611:48"
+        "scope": 16264,
+        "src": "156:626:60"
       }
     ],
-    "src": "0:768:48"
+    "src": "0:783:60"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/test/VoteTimingTest.sol",
     "exportedSymbols": {
       "VoteTimingTest": [
-        13994
+        16263
       ]
     },
-    "id": 13995,
+    "id": 16264,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 13938,
+        "id": 16207,
         "literals": [
           "solidity",
           "^",
@@ -805,27 +815,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:48"
+        "src": "0:23:60"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol",
         "file": "../../interfaces/VotingInterface.sol",
-        "id": 13939,
+        "id": 16208,
         "nodeType": "ImportDirective",
-        "scope": 13995,
-        "sourceUnit": 14284,
-        "src": "25:46:48",
+        "scope": 16264,
+        "sourceUnit": 16605,
+        "src": "25:46:60",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol",
         "file": "../VoteTiming.sol",
-        "id": 13940,
+        "id": 16209,
         "nodeType": "ImportDirective",
-        "scope": 13995,
-        "sourceUnit": 12000,
-        "src": "72:27:48",
+        "scope": 16264,
+        "sourceUnit": 14105,
+        "src": "72:27:60",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -836,38 +846,38 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 13994,
+        "id": 16263,
         "linearizedBaseContracts": [
-          13994
+          16263
         ],
         "name": "VoteTimingTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "id": 13943,
+            "id": 16212,
             "libraryName": {
               "contractScope": null,
-              "id": 13941,
+              "id": 16210,
               "name": "VoteTiming",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11999,
-              "src": "192:10:48",
+              "referencedDeclaration": 14104,
+              "src": "192:10:60",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_VoteTiming_$11999",
+                "typeIdentifier": "t_contract$_VoteTiming_$14104",
                 "typeString": "library VoteTiming"
               }
             },
             "nodeType": "UsingForDirective",
-            "src": "186:37:48",
+            "src": "186:37:60",
             "typeName": {
               "contractScope": null,
-              "id": 13942,
+              "id": 16211,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11894,
-              "src": "207:15:48",
+              "referencedDeclaration": 13993,
+              "src": "207:15:60",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$13993_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             }
@@ -875,27 +885,28 @@
           {
             "constant": false,
             "functionSelector": "71b7db53",
-            "id": 13945,
+            "id": 16214,
+            "mutability": "mutable",
             "name": "voteTiming",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 13994,
-            "src": "229:33:48",
+            "scope": 16263,
+            "src": "229:33:60",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Data_$11894_storage",
+              "typeIdentifier": "t_struct$_Data_$13993_storage",
               "typeString": "struct VoteTiming.Data"
             },
             "typeName": {
               "contractScope": null,
-              "id": 13944,
+              "id": 16213,
               "name": "VoteTiming.Data",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11894,
-              "src": "229:15:48",
+              "referencedDeclaration": 13993,
+              "src": "229:15:60",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Data_$11894_storage_ptr",
+                "typeIdentifier": "t_struct$_Data_$13993_storage_ptr",
                 "typeString": "struct VoteTiming.Data"
               }
             },
@@ -904,9 +915,9 @@
           },
           {
             "body": {
-              "id": 13954,
+              "id": 16223,
               "nodeType": "Block",
-              "src": "306:38:48",
+              "src": "309:38:60",
               "statements": [
                 {
                   "expression": {
@@ -914,12 +925,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13951,
+                        "id": 16220,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13947,
-                        "src": "325:11:48",
+                        "referencedDeclaration": 16216,
+                        "src": "328:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -933,18 +944,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 13950,
+                      "id": 16219,
                       "name": "wrapInit",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 13993,
-                      "src": "316:8:48",
+                      "referencedDeclaration": 16262,
+                      "src": "319:8:60",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$returns$__$",
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 13952,
+                    "id": 16221,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -952,21 +963,21 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "316:21:48",
+                    "src": "319:21:60",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13953,
+                  "id": 16222,
                   "nodeType": "ExpressionStatement",
-                  "src": "316:21:48"
+                  "src": "319:21:60"
                 }
               ]
             },
             "documentation": null,
-            "id": 13955,
+            "id": 16224,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -974,17 +985,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13948,
+              "id": 16217,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13947,
+                  "id": 16216,
+                  "mutability": "mutable",
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13955,
-                  "src": "281:16:48",
+                  "scope": 16224,
+                  "src": "281:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -992,10 +1004,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13946,
-                    "name": "uint",
+                    "id": 16215,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "281:4:48",
+                    "src": "281:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1005,25 +1017,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "280:18:48"
+              "src": "280:21:60"
             },
             "returnParameters": {
-              "id": 13949,
+              "id": 16218,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "306:0:48"
+              "src": "309:0:60"
             },
-            "scope": 13994,
-            "src": "269:75:48",
+            "scope": 16263,
+            "src": "269:78:60",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 13967,
+              "id": 16236,
               "nodeType": "Block",
-              "src": "432:69:48",
+              "src": "441:69:60",
               "statements": [
                 {
                   "expression": {
@@ -1031,12 +1043,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13964,
+                        "id": 16233,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13957,
-                        "src": "482:11:48",
+                        "referencedDeclaration": 16226,
+                        "src": "491:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1052,32 +1064,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13962,
+                        "id": 16231,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13945,
-                        "src": "449:10:48",
+                        "referencedDeclaration": 16214,
+                        "src": "458:10:60",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11894_storage",
+                          "typeIdentifier": "t_struct$_Data_$13993_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13963,
+                      "id": 16232,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentRoundId",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11938,
-                      "src": "449:32:48",
+                      "referencedDeclaration": 14043,
+                      "src": "458:32:60",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$13993_storage_ptr_$_t_uint256_$returns$_t_uint256_$bound_to$_t_struct$_Data_$13993_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (uint256)"
                       }
                     },
-                    "id": 13965,
+                    "id": 16234,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1085,23 +1097,23 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "449:45:48",
+                    "src": "458:45:60",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 13961,
-                  "id": 13966,
+                  "functionReturnParameters": 16230,
+                  "id": 16235,
                   "nodeType": "Return",
-                  "src": "442:52:48"
+                  "src": "451:52:60"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "29e4b013",
-            "id": 13968,
+            "id": 16237,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1109,17 +1121,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13958,
+              "id": 16227,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13957,
+                  "id": 16226,
+                  "mutability": "mutable",
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13968,
-                  "src": "385:16:48",
+                  "scope": 16237,
+                  "src": "388:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1127,10 +1140,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13956,
-                    "name": "uint",
+                    "id": 16225,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "385:4:48",
+                    "src": "388:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1140,20 +1153,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "384:18:48"
+              "src": "387:21:60"
             },
             "returnParameters": {
-              "id": 13961,
+              "id": 16230,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13960,
+                  "id": 16229,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13968,
-                  "src": "426:4:48",
+                  "scope": 16237,
+                  "src": "432:7:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1161,10 +1175,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13959,
-                    "name": "uint",
+                    "id": 16228,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "426:4:48",
+                    "src": "432:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1174,19 +1188,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "425:6:48"
+              "src": "431:9:60"
             },
-            "scope": 13994,
-            "src": "350:151:48",
+            "scope": 16263,
+            "src": "353:157:60",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 13980,
+              "id": 16249,
               "nodeType": "Block",
-              "src": "604:67:48",
+              "src": "616:67:60",
               "statements": [
                 {
                   "expression": {
@@ -1194,12 +1208,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13977,
+                        "id": 16246,
                         "name": "currentTime",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13970,
-                        "src": "652:11:48",
+                        "referencedDeclaration": 16239,
+                        "src": "664:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1215,32 +1229,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13975,
+                        "id": 16244,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13945,
-                        "src": "621:10:48",
+                        "referencedDeclaration": 16214,
+                        "src": "633:10:60",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11894_storage",
+                          "typeIdentifier": "t_struct$_Data_$13993_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13976,
+                      "id": 16245,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "computeCurrentPhase",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11998,
-                      "src": "621:30:48",
+                      "referencedDeclaration": 14103,
+                      "src": "633:30:60",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$14214_$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_Data_$13993_storage_ptr_$_t_uint256_$returns$_t_enum$_Phase_$16529_$bound_to$_t_struct$_Data_$13993_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256) view returns (enum VotingInterface.Phase)"
                       }
                     },
-                    "id": 13978,
+                    "id": 16247,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1248,23 +1262,23 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "621:43:48",
+                    "src": "633:43:60",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$14214",
+                      "typeIdentifier": "t_enum$_Phase_$16529",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
-                  "functionReturnParameters": 13974,
-                  "id": 13979,
+                  "functionReturnParameters": 16243,
+                  "id": 16248,
                   "nodeType": "Return",
-                  "src": "614:50:48"
+                  "src": "626:50:60"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "d9336ea4",
-            "id": 13981,
+            "id": 16250,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1272,17 +1286,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13971,
+              "id": 16240,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13970,
+                  "id": 16239,
+                  "mutability": "mutable",
                   "name": "currentTime",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13981,
-                  "src": "540:16:48",
+                  "scope": 16250,
+                  "src": "549:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1290,10 +1305,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13969,
-                    "name": "uint",
+                    "id": 16238,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "540:4:48",
+                    "src": "549:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1303,35 +1318,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "539:18:48"
+              "src": "548:21:60"
             },
             "returnParameters": {
-              "id": 13974,
+              "id": 16243,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13973,
+                  "id": 16242,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13981,
-                  "src": "581:21:48",
+                  "scope": 16250,
+                  "src": "593:21:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_Phase_$14214",
+                    "typeIdentifier": "t_enum$_Phase_$16529",
                     "typeString": "enum VotingInterface.Phase"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 13972,
+                    "id": 16241,
                     "name": "VotingInterface.Phase",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 14214,
-                    "src": "581:21:48",
+                    "referencedDeclaration": 16529,
+                    "src": "593:21:60",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_Phase_$14214",
+                      "typeIdentifier": "t_enum$_Phase_$16529",
                       "typeString": "enum VotingInterface.Phase"
                     }
                   },
@@ -1339,19 +1355,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "580:23:48"
+              "src": "592:23:60"
             },
-            "scope": 13994,
-            "src": "507:164:48",
+            "scope": 16263,
+            "src": "516:167:60",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
             "body": {
-              "id": 13992,
+              "id": 16261,
               "nodeType": "Block",
-              "src": "720:45:48",
+              "src": "735:45:60",
               "statements": [
                 {
                   "expression": {
@@ -1359,12 +1375,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 13989,
+                        "id": 16258,
                         "name": "phaseLength",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13983,
-                        "src": "746:11:48",
+                        "referencedDeclaration": 16252,
+                        "src": "761:11:60",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1380,32 +1396,32 @@
                       ],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 13986,
+                        "id": 16255,
                         "name": "voteTiming",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 13945,
-                        "src": "730:10:48",
+                        "referencedDeclaration": 16214,
+                        "src": "745:10:60",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Data_$11894_storage",
+                          "typeIdentifier": "t_struct$_Data_$13993_storage",
                           "typeString": "struct VoteTiming.Data storage ref"
                         }
                       },
-                      "id": 13988,
+                      "id": 16257,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "init",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 11909,
-                      "src": "730:15:48",
+                      "referencedDeclaration": 14014,
+                      "src": "745:15:60",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$11894_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$11894_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_Data_$13993_storage_ptr_$_t_uint256_$returns$__$bound_to$_t_struct$_Data_$13993_storage_ptr_$",
                         "typeString": "function (struct VoteTiming.Data storage pointer,uint256)"
                       }
                     },
-                    "id": 13990,
+                    "id": 16259,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1413,22 +1429,22 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "730:28:48",
+                    "src": "745:28:60",
                     "tryCall": false,
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 13991,
+                  "id": 16260,
                   "nodeType": "ExpressionStatement",
-                  "src": "730:28:48"
+                  "src": "745:28:60"
                 }
               ]
             },
             "documentation": null,
             "functionSelector": "44d8ce9a",
-            "id": 13993,
+            "id": 16262,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1436,17 +1452,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 13984,
+              "id": 16253,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 13983,
+                  "id": 16252,
+                  "mutability": "mutable",
                   "name": "phaseLength",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 13993,
-                  "src": "695:16:48",
+                  "scope": 16262,
+                  "src": "707:19:60",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1454,10 +1471,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 13982,
-                    "name": "uint",
+                    "id": 16251,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "695:4:48",
+                    "src": "707:7:60",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1467,34 +1484,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "694:18:48"
+              "src": "706:21:60"
             },
             "returnParameters": {
-              "id": 13985,
+              "id": 16254,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "720:0:48"
+              "src": "735:0:60"
             },
-            "scope": 13994,
-            "src": "677:88:48",
+            "scope": 16263,
+            "src": "689:91:60",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 13995,
-        "src": "156:611:48"
+        "scope": 16264,
+        "src": "156:626:60"
       }
     ],
-    "src": "0:768:48"
+    "src": "0:783:60"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.668Z",
+  "updatedAt": "2020-09-30T12:21:57.092Z",
   "devdoc": {
     "methods": {}
   },

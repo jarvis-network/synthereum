@@ -44,7 +44,7 @@ open_url() {
     fi
 }
 
-REPO_PATH='https://gitlab.com/jarvis-network/smart-contracts/synthereum/SynFiat'
+REPO_PATH='https://gitlab.com/jarvis-network/apps/exchange/mono-repo'
 DEV_BRANCH='dev'
 MASTER_BRANCH='production'
 

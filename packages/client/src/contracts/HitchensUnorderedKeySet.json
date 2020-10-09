@@ -111,11 +111,12 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"action\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"LogUpdate\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"count\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"exists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"insert\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"keyAtIndex\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"nukeSet\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"remove\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":\"HitchensUnorderedKeySet\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":{\"keccak256\":\"0x142da629f58e2b09a11da8006446c1eda8b2953f1e0739c0770ab38f93d9eb0c\",\"urls\":[\"bzz-raw://de4821dd728a462ea53a02054fd6eab0d92cdfc14899b8915ce7be28b5948b90\",\"dweb:/ipfs/QmQGetR43W3FyjdGPu6wG5t7B34ypjw9Y39cxArUKjEfLR\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b50610620806100206000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c806338a699a41161005057806338a699a4146100b85780638e0db0d9146100e957806395bc26731461010657610072565b806306661abd146100775780630e654c02146100915780632d287e431461009b575b600080fd5b61007f610123565b60408051918252519081900360200190f35b610099610134565b005b610099600480360360208110156100b157600080fd5b50356101b7565b6100d5600480360360208110156100ce57600080fd5b5035610239565b604080519115158252519081900360200190f35b61007f600480360360208110156100ff57600080fd5b5035610251565b6100996004803603602081101561011c57600080fd5b5035610263565b600061012f60006102e5565b905090565b604080517f440f7e9a000000000000000000000000000000000000000000000000000000008152600060048201819052915173__HitchensUnorderedKeySetLib____________9263440f7e9a9260248082019391829003018186803b15801561019d57600080fd5b505af41580156101b1573d6000803e3d6000fd5b50505050565b6101c860008263ffffffff6102ec16565b604080513381528082018390526060602082018190526006908201527f696e736572740000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b600061024b818363ffffffff6103f316565b92915050565b600061024b818363ffffffff61043b16565b61027460008263ffffffff61045f16565b604080513381528082018390526060602082018190526006908201527f72656d6f76650000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b6001015490565b80610342576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260288152602001806105596028913960400191505060405180910390fd5b61034c82826103f3565b156103a2576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105b66035913960400191505060405180910390fd5b60018281018054918201815560008181526020808220909301849055905492815292905260409091207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9091019055565b60018201546000906104075750600061024b565b600082815260208490526040902054600184018054849290811061042757fe5b906000526020600020015414905092915050565b600082600101828154811061044c57fe5b9060005260206000200154905092915050565b61046982826103f3565b6104be576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105816035913960400191505060405180910390fd5b60008260010160016104cf856102e5565b03815481106104da57fe5b600091825260208083209091015484835290859052604080832054828452922082905560018501805491935083918390811061051257fe5b60009182526020808320909101929092558481529085905260408120556001840180548061053c57fe5b600190038181906000526020600020016000905590555050505056fe556e6f7264657265644b65795365742831303029202d204b65792063616e6e6f7420626520307830556e6f7264657265644b65795365742831303229202d204b657920646f6573206e6f7420657869737420696e20746865207365742e556e6f7264657265644b65795365742831303129202d204b657920616c72656164792065786973747320696e20746865207365742ea2646970667358221220a51134d197ab9cf5d9ccdeb73cc1a3efcb3f8ec289659167f3e3c19c7a5fe8c664736f6c63430006040033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c806338a699a41161005057806338a699a4146100b85780638e0db0d9146100e957806395bc26731461010657610072565b806306661abd146100775780630e654c02146100915780632d287e431461009b575b600080fd5b61007f610123565b60408051918252519081900360200190f35b610099610134565b005b610099600480360360208110156100b157600080fd5b50356101b7565b6100d5600480360360208110156100ce57600080fd5b5035610239565b604080519115158252519081900360200190f35b61007f600480360360208110156100ff57600080fd5b5035610251565b6100996004803603602081101561011c57600080fd5b5035610263565b600061012f60006102e5565b905090565b604080517f440f7e9a000000000000000000000000000000000000000000000000000000008152600060048201819052915173__HitchensUnorderedKeySetLib____________9263440f7e9a9260248082019391829003018186803b15801561019d57600080fd5b505af41580156101b1573d6000803e3d6000fd5b50505050565b6101c860008263ffffffff6102ec16565b604080513381528082018390526060602082018190526006908201527f696e736572740000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b600061024b818363ffffffff6103f316565b92915050565b600061024b818363ffffffff61043b16565b61027460008263ffffffff61045f16565b604080513381528082018390526060602082018190526006908201527f72656d6f76650000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b6001015490565b80610342576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260288152602001806105596028913960400191505060405180910390fd5b61034c82826103f3565b156103a2576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105b66035913960400191505060405180910390fd5b60018281018054918201815560008181526020808220909301849055905492815292905260409091207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9091019055565b60018201546000906104075750600061024b565b600082815260208490526040902054600184018054849290811061042757fe5b906000526020600020015414905092915050565b600082600101828154811061044c57fe5b9060005260206000200154905092915050565b61046982826103f3565b6104be576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105816035913960400191505060405180910390fd5b60008260010160016104cf856102e5565b03815481106104da57fe5b600091825260208083209091015484835290859052604080832054828452922082905560018501805491935083918390811061051257fe5b60009182526020808320909101929092558481529085905260408120556001840180548061053c57fe5b600190038181906000526020600020016000905590555050505056fe556e6f7264657265644b65795365742831303029202d204b65792063616e6e6f7420626520307830556e6f7264657265644b65795365742831303229202d204b657920646f6573206e6f7420657869737420696e20746865207365742e556e6f7264657265644b65795365742831303129202d204b657920616c72656164792065786973747320696e20746865207365742ea2646970667358221220a51134d197ab9cf5d9ccdeb73cc1a3efcb3f8ec289659167f3e3c19c7a5fe8c664736f6c63430006040033",
-  "sourceMap": "2871:856:0:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;2871:856:0;;;;;;;",
-  "deployedSourceMap": "2871:856:0:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;2871:856:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;3465:78:0;;;:::i;:::-;;;;;;;;;;;;;;;;3669:56;;;:::i;:::-;;3207:119;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;3207:119:0;;:::i;3103:94::-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;3103:94:0;;:::i;:::-;;;;;;;;;;;;;;;;;;3553:106;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;3553:106:0;;:::i;3336:119::-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;3336:119:0;;:::i;3465:78::-;3502:4;3525:11;:3;:9;:11::i;:::-;3518:18;;3465:78;:::o;3669:56::-;3705:13;;;;;;:3;:13;;;;;;;;:11;;;;:13;;;;;;;;;;;:11;:13;;;2:2:-1;;;;27:1;24;17:12;2:2;3705:13:0;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;3705:13:0;;;;3669:56::o;3207:119::-;3253:15;:3;3264;3253:15;:10;:15;:::i;:::-;3283:36;;;3293:10;3283:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3207:119;:::o;3103:94::-;3152:4;3175:15;3152:4;3186:3;3175:15;:10;:15;:::i;:::-;3168:22;3103:94;-1:-1:-1;;3103:94:0:o;3553:106::-;3605:7;3631:21;3605:7;3646:5;3631:21;:14;:21;:::i;3336:119::-;3382:15;:3;3393;3382:15;:10;:15;:::i;:::-;3412:36;;;3422:10;3412:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3336:119;:::o;2338:105::-;2416:12;;:19;;2338:105::o;1567:319::-;1641:10;1633:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1715:17;1722:4;1728:3;1715:6;:17::i;:::-;1714:18;1706:84;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1800:12;;;;27:10:-1;;23:18;;;45:23;;-1:-1;1800:22:0;;;;;;;;;;;;;1856:19;;1832:21;;;;;;;;;;1800:22;1856:23;;;1832:47;;1567:319::o;2453:192::-;2541:12;;;:19;2522:4;;2538:41;;-1:-1:-1;2574:5:0;2567:12;;2538:41;2609:16;:21;;;;;;;;;;;2596:12;;;:35;;2635:3;;2609:21;2596:35;;;;;;;;;;;;;;:42;2589:49;;2453:192;;;;:::o;2655:124::-;2727:7;2753:4;:12;;2766:5;2753:19;;;;;;;;;;;;;;;;2746:26;;2655:124;;;;:::o;1896:432::-;1970:17;1977:4;1983:3;1970:6;:17::i;:::-;1962:83;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2055:17;2075:4;:12;;2102:1;2088:11;2094:4;2088:5;:11::i;:::-;:15;2075:29;;;;;;;;;;;;;;;;;;;;2134:21;;;;;;;;;;;;2165:27;;;;;:42;;;2217:12;;;:26;;2075:29;;-1:-1:-1;2075:29:0;;2134:21;;2217:26;;;;;;;;;;;;;;;;;:38;;;;2272:21;;;;;;;;;;2265:28;2303:12;;;:18;;;;;;;;;;;;;;;;;;;;;;;;1896:432;;;;:::o",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"action\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"LogUpdate\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"count\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"exists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"insert\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"keyAtIndex\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"nukeSet\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"key\",\"type\":\"bytes32\"}],\"name\":\"remove\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":\"HitchensUnorderedKeySet\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol\":{\"keccak256\":\"0x142da629f58e2b09a11da8006446c1eda8b2953f1e0739c0770ab38f93d9eb0c\",\"urls\":[\"bzz-raw://de4821dd728a462ea53a02054fd6eab0d92cdfc14899b8915ce7be28b5948b90\",\"dweb:/ipfs/QmQGetR43W3FyjdGPu6wG5t7B34ypjw9Y39cxArUKjEfLR\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610620806100206000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c806338a699a41161005057806338a699a4146100b85780638e0db0d9146100e957806395bc26731461010657610072565b806306661abd146100775780630e654c02146100915780632d287e431461009b575b600080fd5b61007f610123565b60408051918252519081900360200190f35b610099610134565b005b610099600480360360208110156100b157600080fd5b50356101b7565b6100d5600480360360208110156100ce57600080fd5b5035610239565b604080519115158252519081900360200190f35b61007f600480360360208110156100ff57600080fd5b5035610251565b6100996004803603602081101561011c57600080fd5b5035610263565b600061012f60006102e5565b905090565b604080517f440f7e9a000000000000000000000000000000000000000000000000000000008152600060048201819052915173__HitchensUnorderedKeySetLib____________9263440f7e9a9260248082019391829003018186803b15801561019d57600080fd5b505af41580156101b1573d6000803e3d6000fd5b50505050565b6101c860008263ffffffff6102ec16565b604080513381528082018390526060602082018190526006908201527f696e736572740000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b600061024b818363ffffffff6103f316565b92915050565b600061024b818363ffffffff61043b16565b61027460008263ffffffff61045f16565b604080513381528082018390526060602082018190526006908201527f72656d6f76650000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b6001015490565b80610342576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260288152602001806105596028913960400191505060405180910390fd5b61034c82826103f3565b156103a2576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105b66035913960400191505060405180910390fd5b60018281018054918201815560008181526020808220909301849055905492815292905260409091207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9091019055565b60018201546000906104075750600061024b565b600082815260208490526040902054600184018054849290811061042757fe5b906000526020600020015414905092915050565b600082600101828154811061044c57fe5b9060005260206000200154905092915050565b61046982826103f3565b6104be576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105816035913960400191505060405180910390fd5b60008260010160016104cf856102e5565b03815481106104da57fe5b600091825260208083209091015484835290859052604080832054828452922082905560018501805491935083918390811061051257fe5b60009182526020808320909101929092558481529085905260408120556001840180548061053c57fe5b600190038181906000526020600020016000905590555050505056fe556e6f7264657265644b65795365742831303029202d204b65792063616e6e6f7420626520307830556e6f7264657265644b65795365742831303229202d204b657920646f6573206e6f7420657869737420696e20746865207365742e556e6f7264657265644b65795365742831303129202d204b657920616c72656164792065786973747320696e20746865207365742ea2646970667358221220c8d191b2d314713cf6ae5a63b09c2c3a1cf2d6e1f23f2f83b3c47bf810f6530664736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c806338a699a41161005057806338a699a4146100b85780638e0db0d9146100e957806395bc26731461010657610072565b806306661abd146100775780630e654c02146100915780632d287e431461009b575b600080fd5b61007f610123565b60408051918252519081900360200190f35b610099610134565b005b610099600480360360208110156100b157600080fd5b50356101b7565b6100d5600480360360208110156100ce57600080fd5b5035610239565b604080519115158252519081900360200190f35b61007f600480360360208110156100ff57600080fd5b5035610251565b6100996004803603602081101561011c57600080fd5b5035610263565b600061012f60006102e5565b905090565b604080517f440f7e9a000000000000000000000000000000000000000000000000000000008152600060048201819052915173__HitchensUnorderedKeySetLib____________9263440f7e9a9260248082019391829003018186803b15801561019d57600080fd5b505af41580156101b1573d6000803e3d6000fd5b50505050565b6101c860008263ffffffff6102ec16565b604080513381528082018390526060602082018190526006908201527f696e736572740000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b600061024b818363ffffffff6103f316565b92915050565b600061024b818363ffffffff61043b16565b61027460008263ffffffff61045f16565b604080513381528082018390526060602082018190526006908201527f72656d6f76650000000000000000000000000000000000000000000000000000608082015290517fa4869f7c3fa4f122d4ca6781128192666d46e2b77aad294a632bd837170912349181900360a00190a150565b6001015490565b80610342576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260288152602001806105596028913960400191505060405180910390fd5b61034c82826103f3565b156103a2576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105b66035913960400191505060405180910390fd5b60018281018054918201815560008181526020808220909301849055905492815292905260409091207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9091019055565b60018201546000906104075750600061024b565b600082815260208490526040902054600184018054849290811061042757fe5b906000526020600020015414905092915050565b600082600101828154811061044c57fe5b9060005260206000200154905092915050565b61046982826103f3565b6104be576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260358152602001806105816035913960400191505060405180910390fd5b60008260010160016104cf856102e5565b03815481106104da57fe5b600091825260208083209091015484835290859052604080832054828452922082905560018501805491935083918390811061051257fe5b60009182526020808320909101929092558481529085905260408120556001840180548061053c57fe5b600190038181906000526020600020016000905590555050505056fe556e6f7264657265644b65795365742831303029202d204b65792063616e6e6f7420626520307830556e6f7264657265644b65795365742831303229202d204b657920646f6573206e6f7420657869737420696e20746865207365742e556e6f7264657265644b65795365742831303129202d204b657920616c72656164792065786973747320696e20746865207365742ea2646970667358221220c8d191b2d314713cf6ae5a63b09c2c3a1cf2d6e1f23f2f83b3c47bf810f6530664736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "2871:856:0:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "2871:856:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3465:78;;;:::i;:::-;;;;;;;;;;;;;;;;3669:56;;;:::i;:::-;;3207:119;;;;;;;;;;;;;;;;-1:-1:-1;3207:119:0;;:::i;3103:94::-;;;;;;;;;;;;;;;;-1:-1:-1;3103:94:0;;:::i;:::-;;;;;;;;;;;;;;;;;;3553:106;;;;;;;;;;;;;;;;-1:-1:-1;3553:106:0;;:::i;3336:119::-;;;;;;;;;;;;;;;;-1:-1:-1;3336:119:0;;:::i;3465:78::-;3502:4;3525:11;:3;:9;:11::i;:::-;3518:18;;3465:78;:::o;3669:56::-;3705:13;;;;;;:3;:13;;;;;;;;:11;;;;:13;;;;;;;;;;;:11;:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3669:56::o;3207:119::-;3253:15;:3;3264;3253:15;:10;:15;:::i;:::-;3283:36;;;3293:10;3283:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3207:119;:::o;3103:94::-;3152:4;3175:15;3152:4;3186:3;3175:15;:10;:15;:::i;:::-;3168:22;3103:94;-1:-1:-1;;3103:94:0:o;3553:106::-;3605:7;3631:21;3605:7;3646:5;3631:21;:14;:21;:::i;3336:119::-;3382:15;:3;3393;3382:15;:10;:15;:::i;:::-;3412:36;;;3422:10;3412:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3336:119;:::o;2338:105::-;2416:12;;:19;;2338:105::o;1567:319::-;1641:10;1633:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1715:17;1722:4;1728:3;1715:6;:17::i;:::-;1714:18;1706:84;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1800:12;;;;:22;;;;;;;-1:-1:-1;1800:22:0;;;;;;;;;;;;;1856:19;;1832:21;;;;;;;;;;1800:22;1856:23;;;1832:47;;1567:319::o;2453:192::-;2541:12;;;:19;2522:4;;2538:41;;-1:-1:-1;2574:5:0;2567:12;;2538:41;2609:16;:21;;;;;;;;;;;2596:12;;;:35;;2635:3;;2609:21;2596:35;;;;;;;;;;;;;;:42;2589:49;;2453:192;;;;:::o;2655:124::-;2727:7;2753:4;:12;;2766:5;2753:19;;;;;;;;;;;;;;;;2746:26;;2655:124;;;;:::o;1896:432::-;1970:17;1977:4;1983:3;1970:6;:17::i;:::-;1962:83;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2055:17;2075:4;:12;;2102:1;2088:11;2094:4;2088:5;:11::i;:::-;:15;2075:29;;;;;;;;;;;;;;;;;;;;2134:21;;;;;;;;;;;;2165:27;;;;;:42;;;2217:12;;;:26;;2075:29;;-1:-1:-1;2075:29:0;;2134:21;;2217:26;;;;;;;;;;;;;;;;;:38;;;;2272:21;;;;;;;;;;2265:28;2303:12;;;:18;;;;;;;;;;;;;;;;;;;;;;;;1896:432;;;;:::o",
   "source": "pragma solidity ^0.6.0; \n\n/* \nHitchens UnorderedKeySet v0.93\n\nLibrary for managing CRUD operations in dynamic key sets.\n\nhttps://github.com/rob-Hitchens/UnorderedKeySet\n\nCopyright (c), 2019, Rob Hitchens, the MIT License\nModifications Copyright (C) 2020 Will Shahda\n\n2020-05-04 Will Shahda\n\n    * Updated for Solidity 0.6.0\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nTHIS SOFTWARE IS NOT TESTED OR AUDITED. DO NOT USE FOR PRODUCTION.\n*/\n\nlibrary HitchensUnorderedKeySetLib {\n    \n    struct Set {\n        mapping(bytes32 => uint) keyPointers;\n        bytes32[] keyList;\n    }\n    \n    function insert(Set storage self, bytes32 key) internal {\n        require(key != 0x0, \"UnorderedKeySet(100) - Key cannot be 0x0\");\n        require(!exists(self, key), \"UnorderedKeySet(101) - Key already exists in the set.\");\n        self.keyList.push(key);\n        self.keyPointers[key] = self.keyList.length - 1;\n    }\n    \n    function remove(Set storage self, bytes32 key) internal {\n        require(exists(self, key), \"UnorderedKeySet(102) - Key does not exist in the set.\");\n        bytes32 keyToMove = self.keyList[count(self) - 1];\n        uint rowToReplace = self.keyPointers[key];\n        self.keyPointers[keyToMove] = rowToReplace;\n        self.keyList[rowToReplace] = keyToMove;\n        delete self.keyPointers[key];\n        self.keyList.pop();\n    }\n    \n    function count(Set storage self) internal view returns(uint) {\n        return(self.keyList.length);\n    }\n    \n    function exists(Set storage self, bytes32 key) internal view returns(bool) {\n        if(self.keyList.length == 0) return false;\n        return self.keyList[self.keyPointers[key]] == key;\n    }\n    \n    function keyAtIndex(Set storage self, uint index) internal view returns(bytes32) {\n        return self.keyList[index];\n    }\n    \n    function nukeSet(Set storage self) public {\n        delete self.keyList;\n    }\n}\n\ncontract HitchensUnorderedKeySet {\n    \n    using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;\n    HitchensUnorderedKeySetLib.Set set;\n    \n    event LogUpdate(address sender, string action, bytes32 key);\n    \n    function exists(bytes32 key) public view returns(bool) {\n        return set.exists(key);\n    }\n    \n    function insert(bytes32 key) public {\n        set.insert(key);\n        emit LogUpdate(msg.sender, \"insert\", key);\n    }\n    \n    function remove(bytes32 key) public {\n        set.remove(key);\n        emit LogUpdate(msg.sender, \"remove\", key);\n    }\n    \n    function count() public view returns(uint) {\n        return set.count();\n    }\n    \n    function keyAtIndex(uint index) public view returns(bytes32) {\n        return set.keyAtIndex(index);\n    }\n    \n    function nukeSet() public {\n        set.nukeSet();\n    }\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/HitchensUnorderedKeySet.sol",
   "ast": {
@@ -129,6 +130,7 @@
       ]
     },
     "id": 281,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -163,6 +165,7 @@
               {
                 "constant": false,
                 "id": 5,
+                "mutability": "mutable",
                 "name": "keyPointers",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -209,6 +212,7 @@
               {
                 "constant": false,
                 "id": 8,
+                "mutability": "mutable",
                 "name": "keyList",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -785,6 +789,7 @@
                 {
                   "constant": false,
                   "id": 11,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -814,6 +819,7 @@
                 {
                   "constant": false,
                   "id": 13,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1001,6 +1007,7 @@
                     {
                       "constant": false,
                       "id": 69,
+                      "mutability": "mutable",
                       "name": "keyToMove",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -1168,6 +1175,7 @@
                     {
                       "constant": false,
                       "id": 80,
+                      "mutability": "mutable",
                       "name": "rowToReplace",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -1593,6 +1601,7 @@
                 {
                   "constant": false,
                   "id": 55,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1622,6 +1631,7 @@
                 {
                   "constant": false,
                   "id": 57,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1752,6 +1762,7 @@
                 {
                   "constant": false,
                   "id": 118,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -1788,6 +1799,7 @@
                 {
                   "constant": false,
                   "id": 121,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2093,6 +2105,7 @@
                 {
                   "constant": false,
                   "id": 131,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2122,6 +2135,7 @@
                 {
                   "constant": false,
                   "id": 133,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2156,6 +2170,7 @@
                 {
                   "constant": false,
                   "id": 136,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2274,6 +2289,7 @@
                 {
                   "constant": false,
                   "id": 159,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2303,6 +2319,7 @@
                 {
                   "constant": false,
                   "id": 161,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2337,6 +2354,7 @@
                 {
                   "constant": false,
                   "id": 164,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2444,6 +2462,7 @@
                 {
                   "constant": false,
                   "id": 174,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2535,6 +2554,7 @@
           {
             "constant": false,
             "id": 188,
+            "mutability": "mutable",
             "name": "set",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -2575,6 +2595,7 @@
                   "constant": false,
                   "id": 190,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "sender",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2604,6 +2625,7 @@
                   "constant": false,
                   "id": 192,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "action",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2632,6 +2654,7 @@
                   "constant": false,
                   "id": 194,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2757,6 +2780,7 @@
                 {
                   "constant": false,
                   "id": 198,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -2791,6 +2815,7 @@
                 {
                   "constant": false,
                   "id": 201,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3029,6 +3054,7 @@
                 {
                   "constant": false,
                   "id": 211,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3273,6 +3299,7 @@
                 {
                   "constant": false,
                   "id": 230,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3395,6 +3422,7 @@
                 {
                   "constant": false,
                   "id": 250,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3524,6 +3552,7 @@
                 {
                   "constant": false,
                   "id": 259,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3558,6 +3587,7 @@
                 {
                   "constant": false,
                   "id": 262,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -3696,6 +3726,7 @@
       ]
     },
     "id": 281,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -3730,6 +3761,7 @@
               {
                 "constant": false,
                 "id": 5,
+                "mutability": "mutable",
                 "name": "keyPointers",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -3776,6 +3808,7 @@
               {
                 "constant": false,
                 "id": 8,
+                "mutability": "mutable",
                 "name": "keyList",
                 "nodeType": "VariableDeclaration",
                 "overrides": null,
@@ -4352,6 +4385,7 @@
                 {
                   "constant": false,
                   "id": 11,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -4381,6 +4415,7 @@
                 {
                   "constant": false,
                   "id": 13,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -4568,6 +4603,7 @@
                     {
                       "constant": false,
                       "id": 69,
+                      "mutability": "mutable",
                       "name": "keyToMove",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -4735,6 +4771,7 @@
                     {
                       "constant": false,
                       "id": 80,
+                      "mutability": "mutable",
                       "name": "rowToReplace",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
@@ -5160,6 +5197,7 @@
                 {
                   "constant": false,
                   "id": 55,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5189,6 +5227,7 @@
                 {
                   "constant": false,
                   "id": 57,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5319,6 +5358,7 @@
                 {
                   "constant": false,
                   "id": 118,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5355,6 +5395,7 @@
                 {
                   "constant": false,
                   "id": 121,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5660,6 +5701,7 @@
                 {
                   "constant": false,
                   "id": 131,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5689,6 +5731,7 @@
                 {
                   "constant": false,
                   "id": 133,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5723,6 +5766,7 @@
                 {
                   "constant": false,
                   "id": 136,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5841,6 +5885,7 @@
                 {
                   "constant": false,
                   "id": 159,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5870,6 +5915,7 @@
                 {
                   "constant": false,
                   "id": 161,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -5904,6 +5950,7 @@
                 {
                   "constant": false,
                   "id": 164,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6011,6 +6058,7 @@
                 {
                   "constant": false,
                   "id": 174,
+                  "mutability": "mutable",
                   "name": "self",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6102,6 +6150,7 @@
           {
             "constant": false,
             "id": 188,
+            "mutability": "mutable",
             "name": "set",
             "nodeType": "VariableDeclaration",
             "overrides": null,
@@ -6142,6 +6191,7 @@
                   "constant": false,
                   "id": 190,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "sender",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6171,6 +6221,7 @@
                   "constant": false,
                   "id": 192,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "action",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6199,6 +6250,7 @@
                   "constant": false,
                   "id": 194,
                   "indexed": false,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6324,6 +6376,7 @@
                 {
                   "constant": false,
                   "id": 198,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6358,6 +6411,7 @@
                 {
                   "constant": false,
                   "id": 201,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6596,6 +6650,7 @@
                 {
                   "constant": false,
                   "id": 211,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6840,6 +6895,7 @@
                 {
                   "constant": false,
                   "id": 230,
+                  "mutability": "mutable",
                   "name": "key",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -6962,6 +7018,7 @@
                 {
                   "constant": false,
                   "id": 250,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -7091,6 +7148,7 @@
                 {
                   "constant": false,
                   "id": 259,
+                  "mutability": "mutable",
                   "name": "index",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -7125,6 +7183,7 @@
                 {
                   "constant": false,
                   "id": 262,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
@@ -7254,11 +7313,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.312Z",
+  "updatedAt": "2020-09-30T12:21:56.542Z",
   "devdoc": {
     "methods": {}
   },

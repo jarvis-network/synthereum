@@ -48,19 +48,6 @@
     },
     {
       "inputs": [],
-      "name": "isOwner",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "owner",
       "outputs": [
         {
@@ -138,25 +125,27 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.4+commit.1dca32f3\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"SupportedIdentifierAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"SupportedIdentifierRemoved\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"addSupportedIdentifier\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"isIdentifierSupported\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"removeSupportedIdentifier\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addSupportedIdentifier(bytes32)\":{\"details\":\"Price requests using this identifier will be succeed after this call.\",\"params\":{\"identifier\":\"uniquely identifies added the identifier. Eg: BTC/UCD.\"}},\"isIdentifierSupported(bytes32)\":{\"params\":{\"identifier\":\"uniquely identifies added the identifier. Eg: BTC/UCD.\"},\"returns\":{\"_0\":\"bool if the identifier is supported (or not).\"}},\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"removeSupportedIdentifier(bytes32)\":{\"details\":\"Price requests using this identifier will no longer succeed after this call.\",\"params\":{\"identifier\":\"uniquely identifies added the identifier. Eg: BTC/UCD.\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"Stores a whitelist of supported identifiers that the oracle can provide prices for.\"},\"userdoc\":{\"methods\":{\"addSupportedIdentifier(bytes32)\":{\"notice\":\"Adds the provided identifier as a supported identifier.\"},\"isIdentifierSupported(bytes32)\":{\"notice\":\"Checks whether an identifier is on the whitelist.\"},\"removeSupportedIdentifier(bytes32)\":{\"notice\":\"Removes the identifier from the whitelist.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol\":\"IdentifierWhitelist\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol\":{\"keccak256\":\"0xb87917945594ea4652a7f52bb0f28d333d18e26dd0f65f1f7991d4def3a4129e\",\"urls\":[\"bzz-raw://cb3f2a81b70e715c9ce7cf87c9c4a857ee8789e6509f643236488ee2619faf3d\",\"dweb:/ipfs/QmXCU3YKK8ub44Jsn4jQpSJhrMSRsoBgjdCgRnjB8KwnoB\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol\":{\"keccak256\":\"0x5c98652625d064a41b0e68cf1ab557658869f9798b2535581d92377f4cea9edb\",\"urls\":[\"bzz-raw://2e58a66b95a9e5b409fce1a01b05e8b93c44b174c001c832ab29fee2933de2c3\",\"dweb:/ipfs/QmeL3hefTjvUmQtHVtVqaGU3MZuZp2aUcnBkU9GQh3NRpF\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x039ba4cb83f1b30a3c575283aebeab66035aa4a3d5c88e73a67dbfba3691ac23\",\"urls\":[\"bzz-raw://7e319b9647837e7b286b01ef90e1b2dc62aea6d17acc11145c822193b6454db1\",\"dweb:/ipfs/QmW5vUEeePdJfj3abT8XHcZKideyCpSuDnz65Vfp6yu62P\"]}},\"version\":1}",
-  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b61065f806100796000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c80638e0d3ca71161005b5780638e0d3ca7146100da5780638f32d59b146100f757806390978d1b14610113578063f2fde38b146101305761007d565b806310a7e20114610082578063715018a6146100a15780638da5cb5b146100a9575b600080fd5b61009f6004803603602081101561009857600080fd5b5035610163565b005b61009f610251565b6100b1610333565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61009f600480360360208110156100f057600080fd5b503561034f565b6100ff610437565b604080519115158252519081900360200190f35b6100ff6004803603602081101561012957600080fd5b5035610475565b61009f6004803603602081101561014657600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661048a565b61016b610437565b6101d657604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff1661024e57600081815260016020819052604080832080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169092179091555182917fa0ca1076d765c13772089a90b5121cf6ddf63c9f7891c4e5031adbc85936b27691a25b50565b610259610437565b6102c457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b610357610437565b6103c257604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff161561024e5760008181526001602052604080822080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001690555182917fefdf15ca0f9402bd4e933b0edb0db65b23cc50d27cb010d8abcadaae4fa944e591a250565b6000805473ffffffffffffffffffffffffffffffffffffffff16610459610506565b73ffffffffffffffffffffffffffffffffffffffff1614905090565b60009081526001602052604090205460ff1690565b610492610437565b6104fd57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b61024e8161050a565b3390565b73ffffffffffffffffffffffffffffffffffffffff8116610576576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806106046026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff9290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a26469706673582212207c6858a9c914f1513fe37a28e652d03e4fd331885f9151c64b4dc2eeed254ba764736f6c63430006040033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c80638e0d3ca71161005b5780638e0d3ca7146100da5780638f32d59b146100f757806390978d1b14610113578063f2fde38b146101305761007d565b806310a7e20114610082578063715018a6146100a15780638da5cb5b146100a9575b600080fd5b61009f6004803603602081101561009857600080fd5b5035610163565b005b61009f610251565b6100b1610333565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61009f600480360360208110156100f057600080fd5b503561034f565b6100ff610437565b604080519115158252519081900360200190f35b6100ff6004803603602081101561012957600080fd5b5035610475565b61009f6004803603602081101561014657600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661048a565b61016b610437565b6101d657604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff1661024e57600081815260016020819052604080832080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169092179091555182917fa0ca1076d765c13772089a90b5121cf6ddf63c9f7891c4e5031adbc85936b27691a25b50565b610259610437565b6102c457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b610357610437565b6103c257604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff161561024e5760008181526001602052604080822080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001690555182917fefdf15ca0f9402bd4e933b0edb0db65b23cc50d27cb010d8abcadaae4fa944e591a250565b6000805473ffffffffffffffffffffffffffffffffffffffff16610459610506565b73ffffffffffffffffffffffffffffffffffffffff1614905090565b60009081526001602052604090205460ff1690565b610492610437565b6104fd57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b61024e8161050a565b3390565b73ffffffffffffffffffffffffffffffffffffffff8116610576576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806106046026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff9290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a26469706673582212207c6858a9c914f1513fe37a28e652d03e4fd331885f9151c64b4dc2eeed254ba764736f6c63430006040033",
-  "sourceMap": "242:2549:38:-:0;;;698:17:69;718:12;-1:-1:-1;;;;;718:10:69;:12;:::i;:::-;740:6;:18;;-1:-1:-1;;;;;;740:18:69;-1:-1:-1;;;;;740:18:69;;;;;;;773:43;;740:18;;-1:-1:-1;740:18:69;773:43;;740:6;;773:43;664:159;242:2549:38;;735:104:63;822:10;735:104;:::o;242:2549:38:-;;;;;;;",
-  "deployedSourceMap": "242:2549:38:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;242:2549:38;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12:1:-1;9;2:12;1290:254:38;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1290:254:38;;:::i;:::-;;1684:145:69;;;:::i;899:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1905:259:38;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1905:259:38;;:::i;1250:92:69:-;;;:::i;:::-;;;;;;;;;;;;;;;;;;2644:145:38;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;2644:145:38;;:::i;1978:115:69:-;;;;;;15:2:-1;10:3;7:11;4:2;;;31:1;28;21:12;4:2;-1:-1;1978:115:69;;;;:::i;1290:254:38:-;1103:9:69;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1385:32:38::1;::::0;;;:20:::1;:32;::::0;;;;;::::1;;1380:158;;1433:32;::::0;;;1468:4:::1;1433:32;::::0;;;;;;;:39;;;::::1;::::0;;::::1;::::0;;;1491:36;1454:10;;1491:36:::1;::::0;::::1;1380:158;1290:254:::0;:::o;1684:145:69:-;1103:9;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1790:1:::1;1774:6:::0;;1753:40:::1;::::0;::::1;1774:6:::0;;::::1;::::0;1753:40:::1;::::0;1790:1;;1753:40:::1;1820:1;1803:19:::0;;;::::1;::::0;;1684:145::o;899:77::-;937:7;963:6;;;899:77;:::o;1905:259:38:-;1103:9:69;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2002:32:38::1;::::0;;;:20:::1;:32;::::0;;;;;::::1;;1998:160;;;2085:5;2050:32:::0;;;:20:::1;:32;::::0;;;;;:40;;;::::1;::::0;;2109:38;2071:10;;2109:38:::1;::::0;::::1;1905:259:::0;:::o;1250:92:69:-;1290:4;1329:6;;;;1313:12;:10;:12::i;:::-;:22;;;1306:29;;1250:92;:::o;2644:145:38:-;2727:4;2750:32;;;:20;:32;;;;;;;;;2644:145::o;1978:115:69:-;1103:9;:7;:9::i;:::-;1095:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2058:28:::1;2077:8;2058:18;:28::i;735:104:63:-:0;822:10;735:104;:::o;2194:233:69:-;2275:22;;;2267:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2376:6;;;2355:38;;;;;;;2376:6;;;2355:38;;;2403:6;:17;;;;;;;;;;;;;;;2194:233::o",
-  "source": "pragma solidity ^0.6.0;\n\nimport \"../interfaces/IdentifierWhitelistInterface.sol\";\nimport \"@openzeppelin/contracts/ownership/Ownable.sol\";\n\n\n/**\n * @title Stores a whitelist of supported identifiers that the oracle can provide prices for.\n */\ncontract IdentifierWhitelist is IdentifierWhitelistInterface, Ownable {\n    /****************************************\n     *     INTERNAL VARIABLES AND STORAGE   *\n     ****************************************/\n\n    mapping(bytes32 => bool) private supportedIdentifiers;\n\n    /****************************************\n     *                EVENTS                *\n     ****************************************/\n\n    event SupportedIdentifierAdded(bytes32 indexed identifier);\n    event SupportedIdentifierRemoved(bytes32 indexed identifier);\n\n    /****************************************\n     *    ADMIN STATE MODIFYING FUNCTIONS   *\n     ****************************************/\n\n    /**\n     * @notice Adds the provided identifier as a supported identifier.\n     * @dev Price requests using this identifier will be succeed after this call.\n     * @param identifier uniquely identifies added the identifier. Eg: BTC/UCD.\n     */\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function addSupportedIdentifier(bytes32 identifier) external override onlyOwner {\n        if (!supportedIdentifiers[identifier]) {\n            supportedIdentifiers[identifier] = true;\n            emit SupportedIdentifierAdded(identifier);\n        }\n    }\n\n    /**\n     * @notice Removes the identifier from the whitelist.\n     * @dev Price requests using this identifier will no longer succeed after this call.\n     * @param identifier uniquely identifies added the identifier. Eg: BTC/UCD.\n     */\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function removeSupportedIdentifier(bytes32 identifier) external override onlyOwner {\n        if (supportedIdentifiers[identifier]) {\n            supportedIdentifiers[identifier] = false;\n            emit SupportedIdentifierRemoved(identifier);\n        }\n    }\n\n    /****************************************\n     *     WHITELIST GETTERS FUNCTIONS      *\n     ****************************************/\n\n    /**\n     * @notice Checks whether an identifier is on the whitelist.\n     * @param identifier uniquely identifies added the identifier. Eg: BTC/UCD.\n     * @return bool if the identifier is supported (or not).\n     */\n    // TODO(#969) Remove once prettier-plugin-solidity can handle the \"override\" keyword\n    // prettier-ignore\n    function isIdentifierSupported(bytes32 identifier) external override view returns (bool) {\n        return supportedIdentifiers[identifier];\n    }\n}\n",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"SupportedIdentifierAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"SupportedIdentifierRemoved\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"addSupportedIdentifier\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"isIdentifierSupported\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"removeSupportedIdentifier\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addSupportedIdentifier(bytes32)\":{\"details\":\"Price requests using this identifier will succeed after this call.\",\"params\":{\"identifier\":\"unique UTF-8 representation for the feed being added. Eg: BTC/USD.\"}},\"isIdentifierSupported(bytes32)\":{\"params\":{\"identifier\":\"unique UTF-8 representation for the feed being queried. Eg: BTC/USD.\"},\"returns\":{\"_0\":\"bool if the identifier is supported (or not).\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"removeSupportedIdentifier(bytes32)\":{\"details\":\"Price requests using this identifier will no longer succeed after this call.\",\"params\":{\"identifier\":\"unique UTF-8 representation for the feed being removed. Eg: BTC/USD.\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"Stores a whitelist of supported identifiers that the oracle can provide prices for.\"},\"userdoc\":{\"methods\":{\"addSupportedIdentifier(bytes32)\":{\"notice\":\"Adds the provided identifier as a supported identifier.\"},\"isIdentifierSupported(bytes32)\":{\"notice\":\"Checks whether an identifier is on the whitelist.\"},\"removeSupportedIdentifier(bytes32)\":{\"notice\":\"Removes the identifier from the whitelist.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol\":\"IdentifierWhitelist\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol\":{\"keccak256\":\"0xc090af0318b230bc02101dbe8971e0949fd3f446b6a81c11519e21660dbe92cf\",\"urls\":[\"bzz-raw://b2c4c4a819c5bc255ac71927a98b72c8c6b9eec8578b4e13e0d8d8072cd7e8a4\",\"dweb:/ipfs/QmZkxHua85jaJmAiFQX81qFHHUgSk5mkGwRG2kUe38wsUu\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol\":{\"keccak256\":\"0x0b1eef7b2b24bafb30c446bc99fa826352bb5e8c12b56f0a1867bdcee8583789\",\"urls\":[\"bzz-raw://8c03cc413725a68b581c9ecc363bdc67b1a0263893651836a6f012a1924b621c\",\"dweb:/ipfs/QmYz1wQJHtpoEutko6J4BSKb2bAw8ARQvyviSLN5Pqkr38\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060006100246001600160e01b0361007316565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a350610077565b3390565b61067d806100866000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c80638e0d3ca7116100505780638e0d3ca7146100cf57806390978d1b146100ec578063f2fde38b1461011d57610072565b806310a7e20114610077578063715018a6146100965780638da5cb5b1461009e575b600080fd5b6100946004803603602081101561008d57600080fd5b5035610150565b005b61009461025c565b6100a661035c565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b610094600480360360208110156100e557600080fd5b5035610378565b6101096004803603602081101561010257600080fd5b503561047e565b604080519115158252519081900360200190f35b6100946004803603602081101561013357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610493565b61015861061d565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146101e157604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff1661025957600081815260016020819052604080832080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169092179091555182917fa0ca1076d765c13772089a90b5121cf6ddf63c9f7891c4e5031adbc85936b27691a25b50565b61026461061d565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146102ed57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b61038061061d565b60005473ffffffffffffffffffffffffffffffffffffffff90811691161461040957604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff16156102595760008181526001602052604080822080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001690555182917fefdf15ca0f9402bd4e933b0edb0db65b23cc50d27cb010d8abcadaae4fa944e591a250565b60009081526001602052604090205460ff1690565b61049b61061d565b60005473ffffffffffffffffffffffffffffffffffffffff90811691161461052457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b73ffffffffffffffffffffffffffffffffffffffff8116610590576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806106226026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a26469706673582212202756561f681d78f24bbcb4c2e6a75a9f172794aa0291e1b71ae36a19d780e0e564736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c80638e0d3ca7116100505780638e0d3ca7146100cf57806390978d1b146100ec578063f2fde38b1461011d57610072565b806310a7e20114610077578063715018a6146100965780638da5cb5b1461009e575b600080fd5b6100946004803603602081101561008d57600080fd5b5035610150565b005b61009461025c565b6100a661035c565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b610094600480360360208110156100e557600080fd5b5035610378565b6101096004803603602081101561010257600080fd5b503561047e565b604080519115158252519081900360200190f35b6100946004803603602081101561013357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610493565b61015861061d565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146101e157604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff1661025957600081815260016020819052604080832080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169092179091555182917fa0ca1076d765c13772089a90b5121cf6ddf63c9f7891c4e5031adbc85936b27691a25b50565b61026461061d565b60005473ffffffffffffffffffffffffffffffffffffffff9081169116146102ed57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff1690565b61038061061d565b60005473ffffffffffffffffffffffffffffffffffffffff90811691161461040957604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b60008181526001602052604090205460ff16156102595760008181526001602052604080822080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001690555182917fefdf15ca0f9402bd4e933b0edb0db65b23cc50d27cb010d8abcadaae4fa944e591a250565b60009081526001602052604090205460ff1690565b61049b61061d565b60005473ffffffffffffffffffffffffffffffffffffffff90811691161461052457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b73ffffffffffffffffffffffffffffffffffffffff8116610590576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260268152602001806106226026913960400191505060405180910390fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b339056fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f2061646472657373a26469706673582212202756561f681d78f24bbcb4c2e6a75a9f172794aa0291e1b71ae36a19d780e0e564736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "239:2250:49:-:0;;;;;;;;;;;;-1:-1:-1;832:17:72;852:12;-1:-1:-1;;;;;852:10:72;:12;:::i;:::-;874:6;:18;;-1:-1:-1;;;;;;874:18:72;-1:-1:-1;;;;;874:18:72;;;;;;;907:43;;874:18;;-1:-1:-1;874:18:72;907:43;;874:6;;907:43;798:159;239:2250:49;;735:104:71;822:10;735:104;:::o;239:2250:49:-;;;;;;;",
+  "deployedSourceMap": "239:2250:49:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1184:254;;;;;;;;;;;;;;;;-1:-1:-1;1184:254:49;;:::i;:::-;;1656:145:72;;;:::i;1033:77::-;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1701:259:49;;;;;;;;;;;;;;;;-1:-1:-1;1701:259:49;;:::i;2342:145::-;;;;;;;;;;;;;;;;-1:-1:-1;2342:145:49;;:::i;:::-;;;;;;;;;;;;;;;;;;1950:240:72;;;;;;;;;;;;;;;;-1:-1:-1;1950:240:72;;;;:::i;1184:254:49:-;1247:12:72;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1279:32:49::1;::::0;;;:20:::1;:32;::::0;;;;;::::1;;1274:158;;1327:32;::::0;;;1362:4:::1;1327:32;::::0;;;;;;;:39;;;::::1;::::0;;::::1;::::0;;;1385:36;1348:10;;1385:36:::1;::::0;::::1;1274:158;1184:254:::0;:::o;1656:145:72:-;1247:12;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1762:1:::1;1746:6:::0;;1725:40:::1;::::0;::::1;1746:6:::0;;::::1;::::0;1725:40:::1;::::0;1762:1;;1725:40:::1;1792:1;1775:19:::0;;;::::1;::::0;;1656:145::o;1033:77::-;1071:7;1097:6;;;1033:77;:::o;1701:259:49:-;1247:12:72;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1798:32:49::1;::::0;;;:20:::1;:32;::::0;;;;;::::1;;1794:160;;;1881:5;1846:32:::0;;;:20:::1;:32;::::0;;;;;:40;;;::::1;::::0;;1905:38;1867:10;;1905:38:::1;::::0;::::1;1701:259:::0;:::o;2342:145::-;2425:4;2448:32;;;:20;:32;;;;;;;;;2342:145::o;1950:240:72:-;1247:12;:10;:12::i;:::-;1237:6;;:22;:6;;;:22;;;1229:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2038:22:::1;::::0;::::1;2030:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2139:6;::::0;;2118:38:::1;::::0;::::1;::::0;;::::1;::::0;2139:6;::::1;::::0;2118:38:::1;::::0;::::1;2166:6;:17:::0;;;::::1;;::::0;;;::::1;::::0;;;::::1;::::0;;1950:240::o;735:104:71:-;822:10;735:104;:::o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"../interfaces/IdentifierWhitelistInterface.sol\";\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\n\n\n/**\n * @title Stores a whitelist of supported identifiers that the oracle can provide prices for.\n */\ncontract IdentifierWhitelist is IdentifierWhitelistInterface, Ownable {\n    /****************************************\n     *     INTERNAL VARIABLES AND STORAGE   *\n     ****************************************/\n\n    mapping(bytes32 => bool) private supportedIdentifiers;\n\n    /****************************************\n     *                EVENTS                *\n     ****************************************/\n\n    event SupportedIdentifierAdded(bytes32 indexed identifier);\n    event SupportedIdentifierRemoved(bytes32 indexed identifier);\n\n    /****************************************\n     *    ADMIN STATE MODIFYING FUNCTIONS   *\n     ****************************************/\n\n    /**\n     * @notice Adds the provided identifier as a supported identifier.\n     * @dev Price requests using this identifier will succeed after this call.\n     * @param identifier unique UTF-8 representation for the feed being added. Eg: BTC/USD.\n     */\n    function addSupportedIdentifier(bytes32 identifier) external override onlyOwner {\n        if (!supportedIdentifiers[identifier]) {\n            supportedIdentifiers[identifier] = true;\n            emit SupportedIdentifierAdded(identifier);\n        }\n    }\n\n    /**\n     * @notice Removes the identifier from the whitelist.\n     * @dev Price requests using this identifier will no longer succeed after this call.\n     * @param identifier unique UTF-8 representation for the feed being removed. Eg: BTC/USD.\n     */\n    function removeSupportedIdentifier(bytes32 identifier) external override onlyOwner {\n        if (supportedIdentifiers[identifier]) {\n            supportedIdentifiers[identifier] = false;\n            emit SupportedIdentifierRemoved(identifier);\n        }\n    }\n\n    /****************************************\n     *     WHITELIST GETTERS FUNCTIONS      *\n     ****************************************/\n\n    /**\n     * @notice Checks whether an identifier is on the whitelist.\n     * @param identifier unique UTF-8 representation for the feed being queried. Eg: BTC/USD.\n     * @return bool if the identifier is supported (or not).\n     */\n    function isIdentifierSupported(bytes32 identifier) external override view returns (bool) {\n        return supportedIdentifiers[identifier];\n    }\n}\n",
   "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol",
   "ast": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol",
     "exportedSymbols": {
       "IdentifierWhitelist": [
-        10846
+        12903
       ]
     },
-    "id": 10847,
+    "id": 12904,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10760,
+        "id": 12816,
         "literals": [
           "solidity",
           "^",
@@ -164,27 +153,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:38"
+        "src": "0:23:49"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol",
         "file": "../interfaces/IdentifierWhitelistInterface.sol",
-        "id": 10761,
+        "id": 12817,
         "nodeType": "ImportDirective",
-        "scope": 10847,
-        "sourceUnit": 14052,
-        "src": "25:56:38",
+        "scope": 12904,
+        "sourceUnit": 16365,
+        "src": "25:56:49",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "id": 10762,
+        "absolutePath": "@openzeppelin/contracts/access/Ownable.sol",
+        "file": "@openzeppelin/contracts/access/Ownable.sol",
+        "id": 12818,
         "nodeType": "ImportDirective",
-        "scope": 10847,
-        "sourceUnit": 20398,
-        "src": "82:55:38",
+        "scope": 12904,
+        "sourceUnit": 17193,
+        "src": "82:52:49",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -195,70 +184,77 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10764,
+              "id": 12820,
               "name": "IdentifierWhitelistInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 14051,
-              "src": "274:28:38",
+              "referencedDeclaration": 16364,
+              "src": "271:28:49",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IdentifierWhitelistInterface_$14051",
+                "typeIdentifier": "t_contract$_IdentifierWhitelistInterface_$16364",
                 "typeString": "contract IdentifierWhitelistInterface"
               }
             },
-            "id": 10765,
+            "id": 12821,
             "nodeType": "InheritanceSpecifier",
-            "src": "274:28:38"
+            "src": "271:28:49"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10766,
+              "id": 12822,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20397,
-              "src": "304:7:38",
+              "referencedDeclaration": 17192,
+              "src": "301:7:49",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$20397",
+                "typeIdentifier": "t_contract$_Ownable_$17192",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 10767,
+            "id": 12823,
             "nodeType": "InheritanceSpecifier",
-            "src": "304:7:38"
+            "src": "301:7:49"
           }
         ],
         "contractDependencies": [
-          14051,
-          19440,
-          20397
+          16364,
+          17083,
+          17192
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10763,
+          "id": 12819,
           "nodeType": "StructuredDocumentation",
-          "src": "140:101:38",
-          "text": "@title Stores a whitelist of supported identifiers that the oracle can provide prices for."
+          "src": "137:101:49",
+          "text": " @title Stores a whitelist of supported identifiers that the oracle can provide prices for."
         },
         "fullyImplemented": true,
-        "id": 10846,
+        "id": 12903,
         "linearizedBaseContracts": [
-          10846,
-          20397,
-          19440,
-          14051
+          12903,
+          17192,
+          17083,
+          16364
         ],
         "name": "IdentifierWhitelist",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 10771,
+            "documentation": {
+              "id": 12824,
+              "nodeType": "StructuredDocumentation",
+              "src": "315:134:49",
+              "text": "**************************************\n     INTERNAL VARIABLES AND STORAGE   ****************************************"
+            },
+            "id": 12828,
+            "mutability": "mutable",
             "name": "supportedIdentifiers",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 10846,
-            "src": "458:53:38",
+            "scope": 12903,
+            "src": "455:53:49",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -266,28 +262,28 @@
               "typeString": "mapping(bytes32 => bool)"
             },
             "typeName": {
-              "id": 10770,
+              "id": 12827,
               "keyType": {
-                "id": 10768,
+                "id": 12825,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "466:7:38",
+                "src": "463:7:49",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "458:24:38",
+              "src": "455:24:49",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                 "typeString": "mapping(bytes32 => bool)"
               },
               "valueType": {
-                "id": 10769,
+                "id": 12826,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
-                "src": "477:4:38",
+                "src": "474:4:49",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bool",
                   "typeString": "bool"
@@ -300,27 +296,28 @@
           {
             "anonymous": false,
             "documentation": {
-              "id": 10772,
+              "id": 12829,
               "nodeType": "StructuredDocumentation",
-              "src": "518:134:38",
-              "text": "**************************************\n               EVENTS                ****************************************"
+              "src": "515:134:49",
+              "text": "**************************************\n                EVENTS                ****************************************"
             },
-            "id": 10776,
+            "id": 12833,
             "name": "SupportedIdentifierAdded",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 10775,
+              "id": 12832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10774,
+                  "id": 12831,
                   "indexed": true,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10776,
-                  "src": "689:26:38",
+                  "scope": 12833,
+                  "src": "686:26:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -328,10 +325,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10773,
+                    "id": 12830,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "689:7:38",
+                    "src": "686:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -341,29 +338,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "688:28:38"
+              "src": "685:28:49"
             },
-            "src": "658:59:38"
+            "src": "655:59:49"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 10780,
+            "id": 12837,
             "name": "SupportedIdentifierRemoved",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 10779,
+              "id": 12836,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10778,
+                  "id": 12835,
                   "indexed": true,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10780,
-                  "src": "755:26:38",
+                  "scope": 12837,
+                  "src": "752:26:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -371,10 +369,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10777,
+                    "id": 12834,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "755:7:38",
+                    "src": "752:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -384,23 +382,23 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "754:28:38"
+              "src": "751:28:49"
             },
-            "src": "722:61:38"
+            "src": "719:61:49"
           },
           {
             "baseFunctions": [
-              14036
+              16349
             ],
             "body": {
-              "id": 10805,
+              "id": 12862,
               "nodeType": "Block",
-              "src": "1370:174:38",
+              "src": "1264:174:49",
               "statements": [
                 {
                   "condition": {
                     "argumentTypes": null,
-                    "id": 10792,
+                    "id": 12849,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -408,31 +406,31 @@
                     "nodeType": "UnaryOperation",
                     "operator": "!",
                     "prefix": true,
-                    "src": "1384:33:38",
+                    "src": "1278:33:49",
                     "subExpression": {
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 10789,
+                        "id": 12846,
                         "name": "supportedIdentifiers",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10771,
-                        "src": "1385:20:38",
+                        "referencedDeclaration": 12828,
+                        "src": "1279:20:49",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                           "typeString": "mapping(bytes32 => bool)"
                         }
                       },
-                      "id": 10791,
+                      "id": 12848,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10790,
+                        "id": 12847,
                         "name": "identifier",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10783,
-                        "src": "1406:10:38",
+                        "referencedDeclaration": 12840,
+                        "src": "1300:10:49",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
@@ -443,7 +441,7 @@
                       "isPure": false,
                       "lValueRequested": false,
                       "nodeType": "IndexAccess",
-                      "src": "1385:32:38",
+                      "src": "1279:32:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
                         "typeString": "bool"
@@ -455,18 +453,18 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 10804,
+                  "id": 12861,
                   "nodeType": "IfStatement",
-                  "src": "1380:158:38",
+                  "src": "1274:158:49",
                   "trueBody": {
-                    "id": 10803,
+                    "id": 12860,
                     "nodeType": "Block",
-                    "src": "1419:119:38",
+                    "src": "1313:119:49",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 10797,
+                          "id": 12854,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -475,26 +473,26 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 10793,
+                              "id": 12850,
                               "name": "supportedIdentifiers",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10771,
-                              "src": "1433:20:38",
+                              "referencedDeclaration": 12828,
+                              "src": "1327:20:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                                 "typeString": "mapping(bytes32 => bool)"
                               }
                             },
-                            "id": 10795,
+                            "id": 12852,
                             "indexExpression": {
                               "argumentTypes": null,
-                              "id": 10794,
+                              "id": 12851,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10783,
-                              "src": "1454:10:38",
+                              "referencedDeclaration": 12840,
+                              "src": "1348:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -505,7 +503,7 @@
                             "isPure": false,
                             "lValueRequested": true,
                             "nodeType": "IndexAccess",
-                            "src": "1433:32:38",
+                            "src": "1327:32:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
@@ -516,14 +514,14 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "74727565",
-                            "id": 10796,
+                            "id": 12853,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "bool",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "1468:4:38",
+                            "src": "1362:4:49",
                             "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -531,15 +529,15 @@
                             },
                             "value": "true"
                           },
-                          "src": "1433:39:38",
+                          "src": "1327:39:49",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
                           }
                         },
-                        "id": 10798,
+                        "id": 12855,
                         "nodeType": "ExpressionStatement",
-                        "src": "1433:39:38"
+                        "src": "1327:39:49"
                       },
                       {
                         "eventCall": {
@@ -547,12 +545,12 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10800,
+                              "id": 12857,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10783,
-                              "src": "1516:10:38",
+                              "referencedDeclaration": 12840,
+                              "src": "1410:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -566,18 +564,18 @@
                                 "typeString": "bytes32"
                               }
                             ],
-                            "id": 10799,
+                            "id": 12856,
                             "name": "SupportedIdentifierAdded",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10776,
-                            "src": "1491:24:38",
+                            "referencedDeclaration": 12833,
+                            "src": "1385:24:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$returns$__$",
                               "typeString": "function (bytes32)"
                             }
                           },
-                          "id": 10801,
+                          "id": 12858,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -585,16 +583,16 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "1491:36:38",
+                          "src": "1385:36:49",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_tuple$__$",
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 10802,
+                        "id": 12859,
                         "nodeType": "EmitStatement",
-                        "src": "1486:41:38"
+                        "src": "1380:41:49"
                       }
                     ]
                   }
@@ -602,56 +600,57 @@
               ]
             },
             "documentation": {
-              "id": 10781,
+              "id": 12838,
               "nodeType": "StructuredDocumentation",
-              "src": "929:244:38",
-              "text": "@notice Adds the provided identifier as a supported identifier.\n@dev Price requests using this identifier will be succeed after this call.\n@param identifier uniquely identifies added the identifier. Eg: BTC/UCD."
+              "src": "926:253:49",
+              "text": " @notice Adds the provided identifier as a supported identifier.\n @dev Price requests using this identifier will succeed after this call.\n @param identifier unique UTF-8 representation for the feed being added. Eg: BTC/USD."
             },
             "functionSelector": "10a7e201",
-            "id": 10806,
+            "id": 12863,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10787,
+                "id": 12844,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10786,
+                  "id": 12843,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "1360:9:38",
+                  "referencedDeclaration": 17141,
+                  "src": "1254:9:49",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "1360:9:38"
+                "src": "1254:9:49"
               }
             ],
             "name": "addSupportedIdentifier",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 10785,
+              "id": 12842,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1351:8:38"
+              "src": "1245:8:49"
             },
             "parameters": {
-              "id": 10784,
+              "id": 12841,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10783,
+                  "id": 12840,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10806,
-                  "src": "1322:18:38",
+                  "scope": 12863,
+                  "src": "1216:18:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -659,10 +658,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10782,
+                    "id": 12839,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1322:7:38",
+                    "src": "1216:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -672,54 +671,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1321:20:38"
+              "src": "1215:20:49"
             },
             "returnParameters": {
-              "id": 10788,
+              "id": 12845,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1370:0:38"
+              "src": "1264:0:49"
             },
-            "scope": 10846,
-            "src": "1290:254:38",
+            "scope": 12903,
+            "src": "1184:254:49",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "baseFunctions": [
-              14042
+              16355
             ],
             "body": {
-              "id": 10830,
+              "id": 12887,
               "nodeType": "Block",
-              "src": "1988:176:38",
+              "src": "1784:176:49",
               "statements": [
                 {
                   "condition": {
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
-                      "id": 10815,
+                      "id": 12872,
                       "name": "supportedIdentifiers",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10771,
-                      "src": "2002:20:38",
+                      "referencedDeclaration": 12828,
+                      "src": "1798:20:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                         "typeString": "mapping(bytes32 => bool)"
                       }
                     },
-                    "id": 10817,
+                    "id": 12874,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 10816,
+                      "id": 12873,
                       "name": "identifier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10809,
-                      "src": "2023:10:38",
+                      "referencedDeclaration": 12866,
+                      "src": "1819:10:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -730,25 +729,25 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "IndexAccess",
-                    "src": "2002:32:38",
+                    "src": "1798:32:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
                   "falseBody": null,
-                  "id": 10829,
+                  "id": 12886,
                   "nodeType": "IfStatement",
-                  "src": "1998:160:38",
+                  "src": "1794:160:49",
                   "trueBody": {
-                    "id": 10828,
+                    "id": 12885,
                     "nodeType": "Block",
-                    "src": "2036:122:38",
+                    "src": "1832:122:49",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 10822,
+                          "id": 12879,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -757,26 +756,26 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 10818,
+                              "id": 12875,
                               "name": "supportedIdentifiers",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10771,
-                              "src": "2050:20:38",
+                              "referencedDeclaration": 12828,
+                              "src": "1846:20:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                                 "typeString": "mapping(bytes32 => bool)"
                               }
                             },
-                            "id": 10820,
+                            "id": 12877,
                             "indexExpression": {
                               "argumentTypes": null,
-                              "id": 10819,
+                              "id": 12876,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10809,
-                              "src": "2071:10:38",
+                              "referencedDeclaration": 12866,
+                              "src": "1867:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -787,7 +786,7 @@
                             "isPure": false,
                             "lValueRequested": true,
                             "nodeType": "IndexAccess",
-                            "src": "2050:32:38",
+                            "src": "1846:32:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
@@ -798,14 +797,14 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "66616c7365",
-                            "id": 10821,
+                            "id": 12878,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "bool",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "2085:5:38",
+                            "src": "1881:5:49",
                             "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -813,15 +812,15 @@
                             },
                             "value": "false"
                           },
-                          "src": "2050:40:38",
+                          "src": "1846:40:49",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
                           }
                         },
-                        "id": 10823,
+                        "id": 12880,
                         "nodeType": "ExpressionStatement",
-                        "src": "2050:40:38"
+                        "src": "1846:40:49"
                       },
                       {
                         "eventCall": {
@@ -829,12 +828,12 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10825,
+                              "id": 12882,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10809,
-                              "src": "2136:10:38",
+                              "referencedDeclaration": 12866,
+                              "src": "1932:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -848,18 +847,18 @@
                                 "typeString": "bytes32"
                               }
                             ],
-                            "id": 10824,
+                            "id": 12881,
                             "name": "SupportedIdentifierRemoved",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10780,
-                            "src": "2109:26:38",
+                            "referencedDeclaration": 12837,
+                            "src": "1905:26:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$returns$__$",
                               "typeString": "function (bytes32)"
                             }
                           },
-                          "id": 10826,
+                          "id": 12883,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -867,16 +866,16 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "2109:38:38",
+                          "src": "1905:38:49",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_tuple$__$",
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 10827,
+                        "id": 12884,
                         "nodeType": "EmitStatement",
-                        "src": "2104:43:38"
+                        "src": "1900:43:49"
                       }
                     ]
                   }
@@ -884,56 +883,57 @@
               ]
             },
             "documentation": {
-              "id": 10807,
+              "id": 12864,
               "nodeType": "StructuredDocumentation",
-              "src": "1550:238:38",
-              "text": "@notice Removes the identifier from the whitelist.\n@dev Price requests using this identifier will no longer succeed after this call.\n@param identifier uniquely identifies added the identifier. Eg: BTC/UCD."
+              "src": "1444:252:49",
+              "text": " @notice Removes the identifier from the whitelist.\n @dev Price requests using this identifier will no longer succeed after this call.\n @param identifier unique UTF-8 representation for the feed being removed. Eg: BTC/USD."
             },
             "functionSelector": "8e0d3ca7",
-            "id": 10831,
+            "id": 12888,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10813,
+                "id": 12870,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10812,
+                  "id": 12869,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "1978:9:38",
+                  "referencedDeclaration": 17141,
+                  "src": "1774:9:49",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "1978:9:38"
+                "src": "1774:9:49"
               }
             ],
             "name": "removeSupportedIdentifier",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 10811,
+              "id": 12868,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1969:8:38"
+              "src": "1765:8:49"
             },
             "parameters": {
-              "id": 10810,
+              "id": 12867,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10809,
+                  "id": 12866,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10831,
-                  "src": "1940:18:38",
+                  "scope": 12888,
+                  "src": "1736:18:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -941,10 +941,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10808,
+                    "id": 12865,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1940:7:38",
+                    "src": "1736:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -954,54 +954,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1939:20:38"
+              "src": "1735:20:49"
             },
             "returnParameters": {
-              "id": 10814,
+              "id": 12871,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1988:0:38"
+              "src": "1784:0:49"
             },
-            "scope": 10846,
-            "src": "1905:259:38",
+            "scope": 12903,
+            "src": "1701:259:49",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "baseFunctions": [
-              14050
+              16363
             ],
             "body": {
-              "id": 10844,
+              "id": 12901,
               "nodeType": "Block",
-              "src": "2733:56:38",
+              "src": "2431:56:49",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
-                      "id": 10840,
+                      "id": 12897,
                       "name": "supportedIdentifiers",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10771,
-                      "src": "2750:20:38",
+                      "referencedDeclaration": 12828,
+                      "src": "2448:20:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                         "typeString": "mapping(bytes32 => bool)"
                       }
                     },
-                    "id": 10842,
+                    "id": 12899,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 10841,
+                      "id": 12898,
                       "name": "identifier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10834,
-                      "src": "2771:10:38",
+                      "referencedDeclaration": 12891,
+                      "src": "2469:10:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -1012,50 +1012,51 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "IndexAccess",
-                    "src": "2750:32:38",
+                    "src": "2448:32:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 10839,
-                  "id": 10843,
+                  "functionReturnParameters": 12896,
+                  "id": 12900,
                   "nodeType": "Return",
-                  "src": "2743:39:38"
+                  "src": "2441:39:49"
                 }
               ]
             },
             "documentation": {
-              "id": 10832,
+              "id": 12889,
               "nodeType": "StructuredDocumentation",
-              "src": "2310:217:38",
-              "text": "@notice Checks whether an identifier is on the whitelist.\n@param identifier uniquely identifies added the identifier. Eg: BTC/UCD.\n@return bool if the identifier is supported (or not)."
+              "src": "2106:231:49",
+              "text": " @notice Checks whether an identifier is on the whitelist.\n @param identifier unique UTF-8 representation for the feed being queried. Eg: BTC/USD.\n @return bool if the identifier is supported (or not)."
             },
             "functionSelector": "90978d1b",
-            "id": 10845,
+            "id": 12902,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "isIdentifierSupported",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 10836,
+              "id": 12893,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "2704:8:38"
+              "src": "2402:8:49"
             },
             "parameters": {
-              "id": 10835,
+              "id": 12892,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10834,
+                  "id": 12891,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10845,
-                  "src": "2675:18:38",
+                  "scope": 12902,
+                  "src": "2373:18:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1063,10 +1064,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10833,
+                    "id": 12890,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2675:7:38",
+                    "src": "2373:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1076,20 +1077,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2674:20:38"
+              "src": "2372:20:49"
             },
             "returnParameters": {
-              "id": 10839,
+              "id": 12896,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10838,
+                  "id": 12895,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10845,
-                  "src": "2727:4:38",
+                  "scope": 12902,
+                  "src": "2425:4:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1097,10 +1099,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 10837,
+                    "id": 12894,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2727:4:38",
+                    "src": "2425:4:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1110,33 +1112,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2726:6:38"
+              "src": "2424:6:49"
             },
-            "scope": 10846,
-            "src": "2644:145:38",
+            "scope": 12903,
+            "src": "2342:145:49",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 10847,
-        "src": "242:2549:38"
+        "scope": 12904,
+        "src": "239:2250:49"
       }
     ],
-    "src": "0:2792:38"
+    "src": "0:2490:49"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/IdentifierWhitelist.sol",
     "exportedSymbols": {
       "IdentifierWhitelist": [
-        10846
+        12903
       ]
     },
-    "id": 10847,
+    "id": 12904,
+    "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10760,
+        "id": 12816,
         "literals": [
           "solidity",
           "^",
@@ -1144,27 +1147,27 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:38"
+        "src": "0:23:49"
       },
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol",
         "file": "../interfaces/IdentifierWhitelistInterface.sol",
-        "id": 10761,
+        "id": 12817,
         "nodeType": "ImportDirective",
-        "scope": 10847,
-        "sourceUnit": 14052,
-        "src": "25:56:38",
+        "scope": 12904,
+        "sourceUnit": 16365,
+        "src": "25:56:49",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
-        "id": 10762,
+        "absolutePath": "@openzeppelin/contracts/access/Ownable.sol",
+        "file": "@openzeppelin/contracts/access/Ownable.sol",
+        "id": 12818,
         "nodeType": "ImportDirective",
-        "scope": 10847,
-        "sourceUnit": 20398,
-        "src": "82:55:38",
+        "scope": 12904,
+        "sourceUnit": 17193,
+        "src": "82:52:49",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1175,70 +1178,77 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10764,
+              "id": 12820,
               "name": "IdentifierWhitelistInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 14051,
-              "src": "274:28:38",
+              "referencedDeclaration": 16364,
+              "src": "271:28:49",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IdentifierWhitelistInterface_$14051",
+                "typeIdentifier": "t_contract$_IdentifierWhitelistInterface_$16364",
                 "typeString": "contract IdentifierWhitelistInterface"
               }
             },
-            "id": 10765,
+            "id": 12821,
             "nodeType": "InheritanceSpecifier",
-            "src": "274:28:38"
+            "src": "271:28:49"
           },
           {
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10766,
+              "id": 12822,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 20397,
-              "src": "304:7:38",
+              "referencedDeclaration": 17192,
+              "src": "301:7:49",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$20397",
+                "typeIdentifier": "t_contract$_Ownable_$17192",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 10767,
+            "id": 12823,
             "nodeType": "InheritanceSpecifier",
-            "src": "304:7:38"
+            "src": "301:7:49"
           }
         ],
         "contractDependencies": [
-          14051,
-          19440,
-          20397
+          16364,
+          17083,
+          17192
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10763,
+          "id": 12819,
           "nodeType": "StructuredDocumentation",
-          "src": "140:101:38",
-          "text": "@title Stores a whitelist of supported identifiers that the oracle can provide prices for."
+          "src": "137:101:49",
+          "text": " @title Stores a whitelist of supported identifiers that the oracle can provide prices for."
         },
         "fullyImplemented": true,
-        "id": 10846,
+        "id": 12903,
         "linearizedBaseContracts": [
-          10846,
-          20397,
-          19440,
-          14051
+          12903,
+          17192,
+          17083,
+          16364
         ],
         "name": "IdentifierWhitelist",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 10771,
+            "documentation": {
+              "id": 12824,
+              "nodeType": "StructuredDocumentation",
+              "src": "315:134:49",
+              "text": "**************************************\n     INTERNAL VARIABLES AND STORAGE   ****************************************"
+            },
+            "id": 12828,
+            "mutability": "mutable",
             "name": "supportedIdentifiers",
             "nodeType": "VariableDeclaration",
             "overrides": null,
-            "scope": 10846,
-            "src": "458:53:38",
+            "scope": 12903,
+            "src": "455:53:49",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1246,28 +1256,28 @@
               "typeString": "mapping(bytes32 => bool)"
             },
             "typeName": {
-              "id": 10770,
+              "id": 12827,
               "keyType": {
-                "id": 10768,
+                "id": 12825,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
-                "src": "466:7:38",
+                "src": "463:7:49",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bytes32",
                   "typeString": "bytes32"
                 }
               },
               "nodeType": "Mapping",
-              "src": "458:24:38",
+              "src": "455:24:49",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                 "typeString": "mapping(bytes32 => bool)"
               },
               "valueType": {
-                "id": 10769,
+                "id": 12826,
                 "name": "bool",
                 "nodeType": "ElementaryTypeName",
-                "src": "477:4:38",
+                "src": "474:4:49",
                 "typeDescriptions": {
                   "typeIdentifier": "t_bool",
                   "typeString": "bool"
@@ -1280,27 +1290,28 @@
           {
             "anonymous": false,
             "documentation": {
-              "id": 10772,
+              "id": 12829,
               "nodeType": "StructuredDocumentation",
-              "src": "518:134:38",
-              "text": "**************************************\n               EVENTS                ****************************************"
+              "src": "515:134:49",
+              "text": "**************************************\n                EVENTS                ****************************************"
             },
-            "id": 10776,
+            "id": 12833,
             "name": "SupportedIdentifierAdded",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 10775,
+              "id": 12832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10774,
+                  "id": 12831,
                   "indexed": true,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10776,
-                  "src": "689:26:38",
+                  "scope": 12833,
+                  "src": "686:26:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1308,10 +1319,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10773,
+                    "id": 12830,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "689:7:38",
+                    "src": "686:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1321,29 +1332,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "688:28:38"
+              "src": "685:28:49"
             },
-            "src": "658:59:38"
+            "src": "655:59:49"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 10780,
+            "id": 12837,
             "name": "SupportedIdentifierRemoved",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 10779,
+              "id": 12836,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10778,
+                  "id": 12835,
                   "indexed": true,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10780,
-                  "src": "755:26:38",
+                  "scope": 12837,
+                  "src": "752:26:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1351,10 +1363,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10777,
+                    "id": 12834,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "755:7:38",
+                    "src": "752:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1364,23 +1376,23 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "754:28:38"
+              "src": "751:28:49"
             },
-            "src": "722:61:38"
+            "src": "719:61:49"
           },
           {
             "baseFunctions": [
-              14036
+              16349
             ],
             "body": {
-              "id": 10805,
+              "id": 12862,
               "nodeType": "Block",
-              "src": "1370:174:38",
+              "src": "1264:174:49",
               "statements": [
                 {
                   "condition": {
                     "argumentTypes": null,
-                    "id": 10792,
+                    "id": 12849,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1388,31 +1400,31 @@
                     "nodeType": "UnaryOperation",
                     "operator": "!",
                     "prefix": true,
-                    "src": "1384:33:38",
+                    "src": "1278:33:49",
                     "subExpression": {
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 10789,
+                        "id": 12846,
                         "name": "supportedIdentifiers",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10771,
-                        "src": "1385:20:38",
+                        "referencedDeclaration": 12828,
+                        "src": "1279:20:49",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                           "typeString": "mapping(bytes32 => bool)"
                         }
                       },
-                      "id": 10791,
+                      "id": 12848,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10790,
+                        "id": 12847,
                         "name": "identifier",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10783,
-                        "src": "1406:10:38",
+                        "referencedDeclaration": 12840,
+                        "src": "1300:10:49",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
@@ -1423,7 +1435,7 @@
                       "isPure": false,
                       "lValueRequested": false,
                       "nodeType": "IndexAccess",
-                      "src": "1385:32:38",
+                      "src": "1279:32:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
                         "typeString": "bool"
@@ -1435,18 +1447,18 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 10804,
+                  "id": 12861,
                   "nodeType": "IfStatement",
-                  "src": "1380:158:38",
+                  "src": "1274:158:49",
                   "trueBody": {
-                    "id": 10803,
+                    "id": 12860,
                     "nodeType": "Block",
-                    "src": "1419:119:38",
+                    "src": "1313:119:49",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 10797,
+                          "id": 12854,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1455,26 +1467,26 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 10793,
+                              "id": 12850,
                               "name": "supportedIdentifiers",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10771,
-                              "src": "1433:20:38",
+                              "referencedDeclaration": 12828,
+                              "src": "1327:20:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                                 "typeString": "mapping(bytes32 => bool)"
                               }
                             },
-                            "id": 10795,
+                            "id": 12852,
                             "indexExpression": {
                               "argumentTypes": null,
-                              "id": 10794,
+                              "id": 12851,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10783,
-                              "src": "1454:10:38",
+                              "referencedDeclaration": 12840,
+                              "src": "1348:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -1485,7 +1497,7 @@
                             "isPure": false,
                             "lValueRequested": true,
                             "nodeType": "IndexAccess",
-                            "src": "1433:32:38",
+                            "src": "1327:32:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
@@ -1496,14 +1508,14 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "74727565",
-                            "id": 10796,
+                            "id": 12853,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "bool",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "1468:4:38",
+                            "src": "1362:4:49",
                             "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -1511,15 +1523,15 @@
                             },
                             "value": "true"
                           },
-                          "src": "1433:39:38",
+                          "src": "1327:39:49",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
                           }
                         },
-                        "id": 10798,
+                        "id": 12855,
                         "nodeType": "ExpressionStatement",
-                        "src": "1433:39:38"
+                        "src": "1327:39:49"
                       },
                       {
                         "eventCall": {
@@ -1527,12 +1539,12 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10800,
+                              "id": 12857,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10783,
-                              "src": "1516:10:38",
+                              "referencedDeclaration": 12840,
+                              "src": "1410:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -1546,18 +1558,18 @@
                                 "typeString": "bytes32"
                               }
                             ],
-                            "id": 10799,
+                            "id": 12856,
                             "name": "SupportedIdentifierAdded",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10776,
-                            "src": "1491:24:38",
+                            "referencedDeclaration": 12833,
+                            "src": "1385:24:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$returns$__$",
                               "typeString": "function (bytes32)"
                             }
                           },
-                          "id": 10801,
+                          "id": 12858,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1565,16 +1577,16 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "1491:36:38",
+                          "src": "1385:36:49",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_tuple$__$",
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 10802,
+                        "id": 12859,
                         "nodeType": "EmitStatement",
-                        "src": "1486:41:38"
+                        "src": "1380:41:49"
                       }
                     ]
                   }
@@ -1582,56 +1594,57 @@
               ]
             },
             "documentation": {
-              "id": 10781,
+              "id": 12838,
               "nodeType": "StructuredDocumentation",
-              "src": "929:244:38",
-              "text": "@notice Adds the provided identifier as a supported identifier.\n@dev Price requests using this identifier will be succeed after this call.\n@param identifier uniquely identifies added the identifier. Eg: BTC/UCD."
+              "src": "926:253:49",
+              "text": " @notice Adds the provided identifier as a supported identifier.\n @dev Price requests using this identifier will succeed after this call.\n @param identifier unique UTF-8 representation for the feed being added. Eg: BTC/USD."
             },
             "functionSelector": "10a7e201",
-            "id": 10806,
+            "id": 12863,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10787,
+                "id": 12844,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10786,
+                  "id": 12843,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "1360:9:38",
+                  "referencedDeclaration": 17141,
+                  "src": "1254:9:49",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "1360:9:38"
+                "src": "1254:9:49"
               }
             ],
             "name": "addSupportedIdentifier",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 10785,
+              "id": 12842,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1351:8:38"
+              "src": "1245:8:49"
             },
             "parameters": {
-              "id": 10784,
+              "id": 12841,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10783,
+                  "id": 12840,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10806,
-                  "src": "1322:18:38",
+                  "scope": 12863,
+                  "src": "1216:18:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1639,10 +1652,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10782,
+                    "id": 12839,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1322:7:38",
+                    "src": "1216:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1652,54 +1665,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1321:20:38"
+              "src": "1215:20:49"
             },
             "returnParameters": {
-              "id": 10788,
+              "id": 12845,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1370:0:38"
+              "src": "1264:0:49"
             },
-            "scope": 10846,
-            "src": "1290:254:38",
+            "scope": 12903,
+            "src": "1184:254:49",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "baseFunctions": [
-              14042
+              16355
             ],
             "body": {
-              "id": 10830,
+              "id": 12887,
               "nodeType": "Block",
-              "src": "1988:176:38",
+              "src": "1784:176:49",
               "statements": [
                 {
                   "condition": {
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
-                      "id": 10815,
+                      "id": 12872,
                       "name": "supportedIdentifiers",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10771,
-                      "src": "2002:20:38",
+                      "referencedDeclaration": 12828,
+                      "src": "1798:20:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                         "typeString": "mapping(bytes32 => bool)"
                       }
                     },
-                    "id": 10817,
+                    "id": 12874,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 10816,
+                      "id": 12873,
                       "name": "identifier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10809,
-                      "src": "2023:10:38",
+                      "referencedDeclaration": 12866,
+                      "src": "1819:10:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -1710,25 +1723,25 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "IndexAccess",
-                    "src": "2002:32:38",
+                    "src": "1798:32:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
                   "falseBody": null,
-                  "id": 10829,
+                  "id": 12886,
                   "nodeType": "IfStatement",
-                  "src": "1998:160:38",
+                  "src": "1794:160:49",
                   "trueBody": {
-                    "id": 10828,
+                    "id": 12885,
                     "nodeType": "Block",
-                    "src": "2036:122:38",
+                    "src": "1832:122:49",
                     "statements": [
                       {
                         "expression": {
                           "argumentTypes": null,
-                          "id": 10822,
+                          "id": 12879,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1737,26 +1750,26 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 10818,
+                              "id": 12875,
                               "name": "supportedIdentifiers",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10771,
-                              "src": "2050:20:38",
+                              "referencedDeclaration": 12828,
+                              "src": "1846:20:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                                 "typeString": "mapping(bytes32 => bool)"
                               }
                             },
-                            "id": 10820,
+                            "id": 12877,
                             "indexExpression": {
                               "argumentTypes": null,
-                              "id": 10819,
+                              "id": 12876,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10809,
-                              "src": "2071:10:38",
+                              "referencedDeclaration": 12866,
+                              "src": "1867:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -1767,7 +1780,7 @@
                             "isPure": false,
                             "lValueRequested": true,
                             "nodeType": "IndexAccess",
-                            "src": "2050:32:38",
+                            "src": "1846:32:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
@@ -1778,14 +1791,14 @@
                           "rightHandSide": {
                             "argumentTypes": null,
                             "hexValue": "66616c7365",
-                            "id": 10821,
+                            "id": 12878,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "bool",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "2085:5:38",
+                            "src": "1881:5:49",
                             "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
@@ -1793,15 +1806,15 @@
                             },
                             "value": "false"
                           },
-                          "src": "2050:40:38",
+                          "src": "1846:40:49",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
                           }
                         },
-                        "id": 10823,
+                        "id": 12880,
                         "nodeType": "ExpressionStatement",
-                        "src": "2050:40:38"
+                        "src": "1846:40:49"
                       },
                       {
                         "eventCall": {
@@ -1809,12 +1822,12 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 10825,
+                              "id": 12882,
                               "name": "identifier",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 10809,
-                              "src": "2136:10:38",
+                              "referencedDeclaration": 12866,
+                              "src": "1932:10:49",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
                                 "typeString": "bytes32"
@@ -1828,18 +1841,18 @@
                                 "typeString": "bytes32"
                               }
                             ],
-                            "id": 10824,
+                            "id": 12881,
                             "name": "SupportedIdentifierRemoved",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10780,
-                            "src": "2109:26:38",
+                            "referencedDeclaration": 12837,
+                            "src": "1905:26:49",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$returns$__$",
                               "typeString": "function (bytes32)"
                             }
                           },
-                          "id": 10826,
+                          "id": 12883,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1847,16 +1860,16 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "2109:38:38",
+                          "src": "1905:38:49",
                           "tryCall": false,
                           "typeDescriptions": {
                             "typeIdentifier": "t_tuple$__$",
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 10827,
+                        "id": 12884,
                         "nodeType": "EmitStatement",
-                        "src": "2104:43:38"
+                        "src": "1900:43:49"
                       }
                     ]
                   }
@@ -1864,56 +1877,57 @@
               ]
             },
             "documentation": {
-              "id": 10807,
+              "id": 12864,
               "nodeType": "StructuredDocumentation",
-              "src": "1550:238:38",
-              "text": "@notice Removes the identifier from the whitelist.\n@dev Price requests using this identifier will no longer succeed after this call.\n@param identifier uniquely identifies added the identifier. Eg: BTC/UCD."
+              "src": "1444:252:49",
+              "text": " @notice Removes the identifier from the whitelist.\n @dev Price requests using this identifier will no longer succeed after this call.\n @param identifier unique UTF-8 representation for the feed being removed. Eg: BTC/USD."
             },
             "functionSelector": "8e0d3ca7",
-            "id": 10831,
+            "id": 12888,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 10813,
+                "id": 12870,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10812,
+                  "id": 12869,
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 20323,
-                  "src": "1978:9:38",
+                  "referencedDeclaration": 17141,
+                  "src": "1774:9:49",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "1978:9:38"
+                "src": "1774:9:49"
               }
             ],
             "name": "removeSupportedIdentifier",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 10811,
+              "id": 12868,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1969:8:38"
+              "src": "1765:8:49"
             },
             "parameters": {
-              "id": 10810,
+              "id": 12867,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10809,
+                  "id": 12866,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10831,
-                  "src": "1940:18:38",
+                  "scope": 12888,
+                  "src": "1736:18:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1921,10 +1935,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10808,
+                    "id": 12865,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1940:7:38",
+                    "src": "1736:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1934,54 +1948,54 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1939:20:38"
+              "src": "1735:20:49"
             },
             "returnParameters": {
-              "id": 10814,
+              "id": 12871,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1988:0:38"
+              "src": "1784:0:49"
             },
-            "scope": 10846,
-            "src": "1905:259:38",
+            "scope": 12903,
+            "src": "1701:259:49",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
             "baseFunctions": [
-              14050
+              16363
             ],
             "body": {
-              "id": 10844,
+              "id": 12901,
               "nodeType": "Block",
-              "src": "2733:56:38",
+              "src": "2431:56:49",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
                     "baseExpression": {
                       "argumentTypes": null,
-                      "id": 10840,
+                      "id": 12897,
                       "name": "supportedIdentifiers",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10771,
-                      "src": "2750:20:38",
+                      "referencedDeclaration": 12828,
+                      "src": "2448:20:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_bytes32_$_t_bool_$",
                         "typeString": "mapping(bytes32 => bool)"
                       }
                     },
-                    "id": 10842,
+                    "id": 12899,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 10841,
+                      "id": 12898,
                       "name": "identifier",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10834,
-                      "src": "2771:10:38",
+                      "referencedDeclaration": 12891,
+                      "src": "2469:10:49",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -1992,50 +2006,51 @@
                     "isPure": false,
                     "lValueRequested": false,
                     "nodeType": "IndexAccess",
-                    "src": "2750:32:38",
+                    "src": "2448:32:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 10839,
-                  "id": 10843,
+                  "functionReturnParameters": 12896,
+                  "id": 12900,
                   "nodeType": "Return",
-                  "src": "2743:39:38"
+                  "src": "2441:39:49"
                 }
               ]
             },
             "documentation": {
-              "id": 10832,
+              "id": 12889,
               "nodeType": "StructuredDocumentation",
-              "src": "2310:217:38",
-              "text": "@notice Checks whether an identifier is on the whitelist.\n@param identifier uniquely identifies added the identifier. Eg: BTC/UCD.\n@return bool if the identifier is supported (or not)."
+              "src": "2106:231:49",
+              "text": " @notice Checks whether an identifier is on the whitelist.\n @param identifier unique UTF-8 representation for the feed being queried. Eg: BTC/USD.\n @return bool if the identifier is supported (or not)."
             },
             "functionSelector": "90978d1b",
-            "id": 10845,
+            "id": 12902,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "isIdentifierSupported",
             "nodeType": "FunctionDefinition",
             "overrides": {
-              "id": 10836,
+              "id": 12893,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "2704:8:38"
+              "src": "2402:8:49"
             },
             "parameters": {
-              "id": 10835,
+              "id": 12892,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10834,
+                  "id": 12891,
+                  "mutability": "mutable",
                   "name": "identifier",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10845,
-                  "src": "2675:18:38",
+                  "scope": 12902,
+                  "src": "2373:18:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2043,10 +2058,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 10833,
+                    "id": 12890,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2675:7:38",
+                    "src": "2373:7:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -2056,20 +2071,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2674:20:38"
+              "src": "2372:20:49"
             },
             "returnParameters": {
-              "id": 10839,
+              "id": 12896,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10838,
+                  "id": 12895,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10845,
-                  "src": "2727:4:38",
+                  "scope": 12902,
+                  "src": "2425:4:49",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2077,10 +2093,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 10837,
+                    "id": 12894,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2727:4:38",
+                    "src": "2425:4:49",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -2090,46 +2106,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2726:6:38"
+              "src": "2424:6:49"
             },
-            "scope": 10846,
-            "src": "2644:145:38",
+            "scope": 12903,
+            "src": "2342:145:49",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 10847,
-        "src": "242:2549:38"
+        "scope": 12904,
+        "src": "239:2250:49"
       }
     ],
-    "src": "0:2792:38"
+    "src": "0:2490:49"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.6.4+commit.1dca32f3.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-08-14T09:32:05.618Z",
+  "updatedAt": "2020-09-30T12:21:56.995Z",
   "devdoc": {
     "methods": {
       "addSupportedIdentifier(bytes32)": {
-        "details": "Price requests using this identifier will be succeed after this call.",
+        "details": "Price requests using this identifier will succeed after this call.",
         "params": {
-          "identifier": "uniquely identifies added the identifier. Eg: BTC/UCD."
+          "identifier": "unique UTF-8 representation for the feed being added. Eg: BTC/USD."
         }
       },
       "isIdentifierSupported(bytes32)": {
         "params": {
-          "identifier": "uniquely identifies added the identifier. Eg: BTC/UCD."
+          "identifier": "unique UTF-8 representation for the feed being queried. Eg: BTC/USD."
         },
         "returns": {
           "_0": "bool if the identifier is supported (or not)."
         }
-      },
-      "isOwner()": {
-        "details": "Returns true if the caller is the current owner."
       },
       "owner()": {
         "details": "Returns the address of the current owner."
@@ -2137,11 +2150,11 @@
       "removeSupportedIdentifier(bytes32)": {
         "details": "Price requests using this identifier will no longer succeed after this call.",
         "params": {
-          "identifier": "uniquely identifies added the identifier. Eg: BTC/UCD."
+          "identifier": "unique UTF-8 representation for the feed being removed. Eg: BTC/USD."
         }
       },
       "renounceOwnership()": {
-        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
       },
       "transferOwnership(address)": {
         "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."

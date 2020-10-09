@@ -1,0 +1,33 @@
+{
+  "factory_address": "0x99149A92B7B53d39Aa824602d96D47c7bF4fBe77",
+  "synthetics": [
+    {
+      "symbol": "jEUR",
+      "price_feed": "EURUSD"
+    },
+    {
+      "symbol": "jGBP",
+      "price_feed": "GBPUSD"
+    },
+    {
+      "symbol": "jCHF",
+      "price_feed": "USDCHF"
+    },
+    {
+      "symbol": "jXAU",
+      "price_feed": "XAUUSD"
+    },
+    {
+      "symbol": "jSPX",
+      "price_feed": "SPXUSD"
+    },
+    {
+      "symbol": "jXTI",
+      "price_feed": "XTIUSD"
+    },
+    {
+      "symbol": "jXAG",
+      "price_feed": "XAGUSD"
+    }
+  ]
+}

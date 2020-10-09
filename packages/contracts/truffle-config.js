@@ -18,9 +18,14 @@ const mnemonic = getEnv(mnemonicEnv);
 const kovanEnv = 'ETH_KOVAN_ENDPOINT';
 const kovanEndpoint = getEnv(kovanEnv);
 
+const etherscanApiKeyEnv = 'ETHERSCAN_APY_KEY';
+const etherscanApiKey = getEnv(etherscanApiKeyEnv);
+
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
+  plugins: ['truffle-plugin-verify'],
+  api_keys: {
+    etherscan: etherscanApiKey,
+  },
   mocha: {
     useColors: false,
   },
@@ -31,7 +36,7 @@ module.exports = {
         return new HDWalletProvider(mnemonic, kovanEndpoint, 0, 2);
       },
       network_id: 42,
-      gas: 8000000,
+      gas: 10000000,
       gasPrice: 3000000000,
     },
     'kovan-fork': {
@@ -40,13 +45,13 @@ module.exports = {
         return new HDWalletProvider(mnemonic, 'http://127.0.0.1:8545/', 0, 2);
       },
       network_id: 42,
-      gas: 8000000,
+      gas: 10000000,
       gasPrice: 3000000000,
     },
   },
   compilers: {
     solc: {
-      version: '0.6.4',
+      version: '0.6.10',
       settings: {
         optimizer: {
           enabled: true,

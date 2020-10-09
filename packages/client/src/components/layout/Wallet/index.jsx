@@ -6,8 +6,9 @@ import { jarvisExchangeRate } from '../../../jarvisAPI.js';
 import TICFactory from '../../../contracts/TICFactory.json';
 import TIC from '../../../contracts/TIC.json';
 import ExpiringMultiParty from '../../../contracts/ExpiringMultiParty.json';
-import MCD_DAI from '../../../MCD_DAI.json';
+import collateralToken from '../../../collateralToken.json';
 import IERC20 from '../../../contracts/IERC20.json';
+import ERC20 from '../../../contracts/ERC20.json';
 
 import defaultAssets from '../../../helpers/defaultAssets.js';
 
@@ -25,7 +26,7 @@ export default function Wallet({ setLoading }) {
 
   const [assets, setAssets] = useState(defaultAssets);
   const [syntheticTokens, setSyntheticTokens] = useState([]);
-  const [dai, setDai] = useState(null);
+  const [collateral, setCollateral] = useState(null);
   // Used to refresh stale data after a transaction is made
   const [lastTx, setLastTx] = useState('');
 
@@ -130,8 +131,8 @@ export default function Wallet({ setLoading }) {
         setAssets(newAssets);
       });
 
-      setDai(
-        new Contract(IERC20.abi, MCD_DAI.networks[context.networkId].address),
+      setCollateral(
+        new Contract(ERC20.abi, collateralToken.networks[context.networkId].address),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,7 +147,7 @@ export default function Wallet({ setLoading }) {
         <div className={classes.toolbar} />
         <Pages
           assets={assets}
-          dai={dai}
+          collateral={collateral}
           syntheticTokens={syntheticTokens}
           setLoading={setLoading}
           lastTx={lastTx}

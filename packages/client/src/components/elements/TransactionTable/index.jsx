@@ -15,7 +15,7 @@ import useStyles from './styles';
 import { useWeb3Context } from 'web3-react';
 import * as icons from '../../../assets/icons';
 import Loader from '../Loader';
-import { toFixedNumber } from '../../../helpers/utils.js';
+import { toFixedNumber, fromScaledWei, toScaledWei } from '../../../helpers/utils.js';
 
 const getStatus = (ev, approvedEvents, rejectedEvents, idField) => {
   let status = 'pending';
@@ -40,18 +40,20 @@ const getStatus = (ev, approvedEvents, rejectedEvents, idField) => {
   };
 };
 
-const TransactionTable = ({ assets, token }) => {
+const TransactionTable = ({ assets, collateral,token }) => {
   const classes = useStyles();
   const context = useWeb3Context();
   const { fromWei } = context.library.utils;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [decimals, setDecimals] = useState(0);
 
   // TODO: should only render component once contracts are ready
   const contractsReady = assets[0].contract ? true : false;
 
   async function listEvents(eventNames, idField) {
     try {
+      let collateralSymbol = await collateral.methods.symbol().call();
       const blockNumber = await context.library.eth.getBlockNumber();
       console.log(blockNumber, 'blockNumber');
 
@@ -74,7 +76,7 @@ const TransactionTable = ({ assets, token }) => {
 
       if (eventNames[0] === 'MintRequested') {
         toAsset = assets[token].symbol;
-        fromAsset = 'DAI';
+        fromAsset = collateralSymbol;
         return requestedEvents.map(ev => {
           return {
             ...ev,
@@ -83,7 +85,7 @@ const TransactionTable = ({ assets, token }) => {
           };
         });
       } else if (eventNames[0] === 'RedeemRequested') {
-        toAsset = 'DAI';
+        toAsset = collateralSymbol;
         fromAsset = assets[token].symbol;
         return requestedEvents.map(ev => {
           return {
@@ -153,6 +155,15 @@ const TransactionTable = ({ assets, token }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractsReady, token]);
 
+  useEffect(() => {
+    if (context.active && collateral) {
+      collateral.methods
+        .decimals()
+        .call()
+        .then(decimalsNumber => setDecimals(decimalsNumber));
+    }
+  }, [context, context.active, collateral]);
+
   return (
     <Paper className={classes.Paper}>
       {loading ? (
@@ -195,14 +206,15 @@ const TransactionTable = ({ assets, token }) => {
                           src={icons[ev.fromAsset]}
                         />
                         {`-${toFixedNumber(
-                          fromWei(
-                            ev.returnValues[
-                              ev.event === 'RedeemRequested'
-                                ? 'numTokens'
-                                : 'collateralAmount'
-                            ],
-                          ),
-                          5,
+                          ev.event === 'RedeemRequested' ?
+                          fromScaledWei(
+                            ev.returnValues['numTokens'],
+                              18
+                             ): fromScaledWei(
+                            ev.returnValues['collateralAmount'],
+                            decimals),
+
+                          5
                         )}`}
                       </Box>
                     </TableCell>
@@ -216,7 +228,7 @@ const TransactionTable = ({ assets, token }) => {
                           src={icons[ev.fromAsset]}
                         />
                         {`-${toFixedNumber(
-                          fromWei(ev.returnValues['numTokens']),
+                          fromScaledWei(ev.returnValues['numTokens'], 18),
                           5,
                         )}`}
                       </Box>
@@ -232,14 +244,13 @@ const TransactionTable = ({ assets, token }) => {
                           height="28"
                           src={icons[ev.toAsset]}
                         />
-                        {`+${toFixedNumber(
-                          fromWei(
-                            ev.returnValues[
-                              ev.event === 'RedeemRequested'
-                                ? 'collateralAmount'
-                                : 'numTokens'
-                            ],
-                          ),
+                        {`+${toFixedNumber(ev.event === 'RedeemRequested' ?
+                          fromScaledWei(
+                            ev.returnValues['collateralAmount'],
+                              decimals
+                             ): fromScaledWei(
+                            ev.returnValues['numTokens'],
+                            18),
                           5,
                         )}`}
                       </Box>

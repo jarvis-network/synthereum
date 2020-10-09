@@ -60,7 +60,7 @@ export default function ExchangeRates({ assets, syntheticTokens }) {
                 </Tooltip>
               </TableCell>
               <TableCell align="right">
-                {asset.price.toLocaleString()} DAI
+                {asset.price.toLocaleString()} USDC
               </TableCell>
             </TableRow>
           ))}

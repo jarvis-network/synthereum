@@ -7,6 +7,10 @@ const buildQuery = params =>
     .join('&');
 
 export function jarvisExchangeRate(priceFeed, start = 60) {
+  if (priceFeed === 'CHFUSD') {
+    priceFeed = 'USDCHF';
+  }
+
   const now = Math.floor(Date.now() / 1000);
   const params = {
     symbol: priceFeed,
@@ -26,6 +30,9 @@ export function jarvisExchangeRate(priceFeed, start = 60) {
 }
 
 export function jarvisPriceHistory(priceFeed, start = 60) {
+  if (priceFeed === 'CHFUSD') {
+    priceFeed = 'USDCHF';
+  }
   const now = Math.floor(Date.now() / 1000);
   const params = {
     symbol: priceFeed,

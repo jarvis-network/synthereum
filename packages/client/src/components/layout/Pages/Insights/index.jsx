@@ -23,11 +23,7 @@ const Insights = () => {
 
   async function getPrice() {
     try {
-      let symbolFeed = symbol;
-      if (symbolFeed === 'CHFUSD') {
-        symbolFeed = 'USDCHF';
-      }
-      const response = await jarvisExchangeRate(symbolFeed);
+      const response = await jarvisExchangeRate(symbol);
       setPrice(response);
     } catch (err) {
       console.error(err);

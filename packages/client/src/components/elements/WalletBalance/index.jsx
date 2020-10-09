@@ -17,13 +17,13 @@ import * as icons from '../../../assets/icons';
 
 import useStyles from './styles';
 import CollateralBar from '../CollateralBar';
-import { toFixedNumber } from '../../../helpers/utils.js';
+import { toFixedNumber, fromScaledWei, toScaledWei } from '../../../helpers/utils.js';
 
 export default function WalletBalance({
   assets,
   syntheticTokens,
   token,
-  dai,
+  collateral,
   lastTx,
 }) {
   const classes = useStyles();
@@ -34,6 +34,10 @@ export default function WalletBalance({
     Array(syntheticTokens.length).fill('0'),
   );
   const [balance, setBalance] = useState('0');
+
+  const [decimals, setDecimals] = useState('0');
+
+  const [collateralSymbol,setCollateralSymbol] = useState('');
 
   const { fromWei } = context.library.utils;
 
@@ -81,13 +85,28 @@ export default function WalletBalance({
   }, [context, context.active, syntheticTokens, token, lastTx]);
 
   useEffect(() => {
-    if (context.active && dai) {
-      dai.methods
+    if (context.active && collateral) {
+      collateral.methods
+        .decimals()
+        .call()
+        .then(decimalsNumber => setDecimals(decimalsNumber));
+      collateral.methods
+        .symbol()
+        .call()
+        .then(symbolName => setCollateralSymbol(symbolName));
+    }
+  }, [context, context.active, collateral, lastTx]);
+
+
+  useEffect(() => {
+    if (context.active && collateral) {
+      collateral.methods
         .balanceOf(context.account)
         .call()
         .then(balance => setBalance(balance));
     }
-  }, [context, context.active, dai, lastTx]);
+  }, [context, context.active, collateral, lastTx]);
+
 
   return (
     <Card className={classes.Paper}>
@@ -101,7 +120,7 @@ export default function WalletBalance({
           <TableBody>
             {assets.map((asset, index) => {
               const value = asset.price * fromWei(asset.totalTokens.toString());
-              const total = fromWei(asset.collateral.toString());
+              const total = fromScaledWei(asset.collateral.toString(),decimals);
               return (
                 <TableRow key={index}>
                   <TableCell className={classes.TokenIconCell}>
@@ -139,16 +158,16 @@ export default function WalletBalance({
             })}
             <TableRow>
               <TableCell>
-                <img alt="DAI" width="56" height="56" src={icons.DAI} />
+                <img alt="DAI" width="56" height="56" src={icons.USDC} />
               </TableCell>
               <TableCell colSpan="2">
                 <Typography variant="h6" display="block">
-                  DAI
+                 {collateralSymbol}
                 </Typography>
               </TableCell>
               <TableCell align="right">
                 <Typography className={classes.BalanceCell}>
-                  {toFixedNumber(fromWei(balance, 'ether'), 5)}
+                  {toFixedNumber(fromScaledWei(balance, decimals), 5)}
                 </Typography>
               </TableCell>
             </TableRow>

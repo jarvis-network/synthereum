@@ -1,0 +1,19 @@
+version: "3.2"
+services:
+  synfiat_keeper:
+    build: .
+    image: jarvis/synfiat-keeper
+    env_file:
+      - .env
+    network_mode: host
+    command: >
+      bash -c "./synfiat-keeper --rpc-host=$${RPC_HOST} --eth-from=$${ETH_FROM} --frequency=$${FREQUENCY} \
+      --eth-key='key_file=/run/secrets/key_store,pass_file=/run/secrets/password'"
+    secrets:
+      - key_store
+      - password
+secrets:
+  key_store:
+    file: ./hush/synfiat.json
+  password:
+    file: ./hush/synfiat.pass
