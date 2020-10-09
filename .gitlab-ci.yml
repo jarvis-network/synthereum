@@ -80,6 +80,8 @@ build_keeper_bot:
   needs:
     - job: build_frontend
       artifacts: true
+  variables:
+    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
   before_script:
     - yarn global add netlify-cli
 
@@ -104,7 +106,7 @@ deploy-production-to-netlify:
     - job: build_frontend_new
       artifacts: true
   variables:
-    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NG'
+    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
 
 deploy-preview-new-to-netlify:
   <<: *deploy-frontend-new-default
