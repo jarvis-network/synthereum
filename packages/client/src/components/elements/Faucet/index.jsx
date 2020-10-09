@@ -126,10 +126,10 @@ export default function Faucet({
             <br />
             <Typography variant="h6">
               In order to showcase the potential of our protocol we invite you
-              to test it in demo. To do so you will need some DAI and ETH on
-              test net environment, which are called kovan DAI and kovan ETH. So
+              to test it in demo. To do so you will need some USDC and ETH on
+              test net environment, which are called kovan USDC and kovan ETH. So
               before you can play a bit with the awesome features that this
-              protocol offers make sure to Redeem some kDAI and kETH by clicking
+              protocol offers make sure to Redeem some kUSDC and kETH by clicking
               the button below.
             </Typography>
             <br />
