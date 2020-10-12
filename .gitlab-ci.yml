@@ -124,7 +124,7 @@ deploy-production-new-to-netlify:
     - netlify deploy --prod --dir ./packages/client-new/out
 
 .deploy-keeper-bot-default: &deploy-keeper-bot-default
-  image: azuresdk/azure-cli-python
+  image: mcr.microsoft.com/azure-cli
   stage: deploy
   needs:
     - job: build_keeper_bot
@@ -153,7 +153,7 @@ deploy-production-new-to-netlify:
       --cpu 1 --memory 0.5
 
 .delete-keeper-bot-default: &delete-keeper-bot-default
-  image: azuresdk/azure-cli-python
+  image: mcr.microsoft.com/azure-cli
   stage: delete
   needs:
     - job: build_keeper_bot
