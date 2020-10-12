@@ -40,7 +40,7 @@ const ExampleBox = () => {
 
   return (
     <Container style={boxStyle}>
-      <Tabs tabs={tabs} active={0} />
+      <Tabs tabs={tabs} selected={0} />
 
       <div>
         <button onClick={handleSetTheme.bind(null, "dark")}>Set dark mode</button>

@@ -1,10 +1,9 @@
 import {createSlice} from "@reduxjs/toolkit";
 import initialState from "state/initialState";
+import {UserState} from "bnc-onboard/dist/src/interfaces";
 
 interface SetLoginStateAction {
-  payload: {
-    state: boolean;
-  }
+  payload: Omit<UserState, "wallet">,
 }
 
 const authSlice = createSlice({
@@ -12,7 +11,7 @@ const authSlice = createSlice({
   initialState: initialState.auth,
   reducers: {
     setLoginState(state, action: SetLoginStateAction) {
-      state.state = action.payload.state;
+      return action.payload;
     }
   }
 });

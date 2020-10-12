@@ -6,6 +6,7 @@ import { styled } from "@jarvis-network/ui";
 import {useStore} from "state/store";
 import AppThemeProvider from "components/AppThemeProvider";
 import PreloadBackground from "components/PreloadBackground";
+import AuthProvider from "components/auth/AuthProvider";
 
 import "./_app.css";
 
@@ -22,11 +23,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <StateProvider store={store}>
       <AppThemeProvider>
-        <MainWrapper>
-          <PreloadBackground>
-            <Component {...pageProps} />
-          </PreloadBackground>
-        </MainWrapper>
+        <AuthProvider>
+          <MainWrapper>
+            <PreloadBackground>
+              <Component {...pageProps} />
+            </PreloadBackground>
+          </MainWrapper>
+        </AuthProvider>
       </AppThemeProvider>
     </StateProvider>
   )
