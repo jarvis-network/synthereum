@@ -3,14 +3,14 @@ stages:
   - deploy
   - delete
 
-.only-default: &only-default
+.enabled-branches: &enabled-branches
   only:
     - merge_requests
     - dev
     - production
 
 build_frontend_new:
-  <<: *only-default
+  <<: *enabled-branches
   image: 'node:lts-alpine'
   stage: build
   before_script:
@@ -31,7 +31,7 @@ build_frontend_new:
       - packages/client-new/out
 
 build_frontend:
-  <<: *only-default
+  <<: *enabled-branches
   image: 'node:lts-alpine'
   stage: build
   before_script:
@@ -61,7 +61,7 @@ build_frontend:
     ACR_IMAGE_FULL_NAME="${ACR_URL}/${CI_PROJECT_PATH}:${ACR_IMAGE_TAG}"
 
 build_keeper_bot:
-  <<: *only-default
+  <<: *enabled-branches
   image: docker:latest
   services:
     - docker:dind
@@ -184,6 +184,6 @@ deploy-azure-production:
     - production
 
 delete-azure:
-  <<: *only-default
+  <<: *enabled-branches
   <<: *delete-keeper-bot-default
   when: manual
