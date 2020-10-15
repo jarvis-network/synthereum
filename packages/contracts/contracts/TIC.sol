@@ -78,6 +78,8 @@ contract TIC is TICInterface, ReentrancyGuard {
   );
   event RedeemApproved(bytes32 redeemID, address indexed sender);
   event RedeemRejected(bytes32 redeemID, address indexed sender);
+  event SetFeePercentage(uint256 feePercentage);
+  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
 
   //----------------------------------------
   // State variables
@@ -112,9 +114,9 @@ contract TIC is TICInterface, ReentrancyGuard {
       _derivative,
       _liquidityProvider,
       _validator,
-      FixedPoint.Unsigned(_startingCollateralization),
-      _fee
+      FixedPoint.Unsigned(_startingCollateralization)
     );
+    setFee(_fee);
   }
 
   //----------------------------------------
@@ -497,5 +499,50 @@ contract TIC is TICInterface, ReentrancyGuard {
     returns (ExchangeRequest[] memory)
   {
     return ticStorage.getExchangeRequests();
+  }
+
+  //----------------------------------------
+  // Public functions
+  //----------------------------------------
+
+  /**
+   * @notice Update the fee percentage, recipients and recipient proportions
+   * @param _fee Fee struct containing percentage, recipients and proportions
+   */
+  function setFee(Fee memory _fee)
+    public
+    override
+    nonReentrant
+    onlyLiquidityProvider
+  {
+    setFeePercentage(_fee.feePercentage.rawValue);
+    setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
+  }
+
+  /**
+   * @notice Update the fee percentage
+   * @param _feePercentage The new fee percentage
+   */
+  function setFeePercentage(uint256 _feePercentage)
+    public
+    override
+    nonReentrant
+    onlyLiquidityProvider
+  {
+    ticStorage.setFeePercentage(FixedPoint.Unsigned(_feePercentage));
+    emit SetFeePercentage(_feePercentage);
+  }
+
+  /**
+   * @notice Update the fee recipients and recipient proportions
+   * @param _feeRecipients Array of the new fee recipients
+   * @param _feeProportions Array of the new fee recipient proportions
+   */
+  function setFeeRecipients(
+    address[] memory _feeRecipients,
+    uint32[] memory _feeProportions
+  ) public override nonReentrant onlyLiquidityProvider {
+    ticStorage.setFeeRecipients(_feeRecipients, _feeProportions);
+    emit SetFeeRecipients(_feeRecipients, _feeProportions);
   }
 }

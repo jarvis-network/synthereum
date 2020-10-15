@@ -40,21 +40,18 @@ library TICHelper {
    * @param _liquidityProvider The liquidity provider
    * @param _validator The address that validates mint and exchange requests
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
-   * @param _fee The fee structure
    */
   function initialize(
     TIC.Storage storage self,
     IExpiringMultiParty _derivative,
     address _liquidityProvider,
     address _validator,
-    FixedPoint.Unsigned memory _startingCollateralization,
-    TICInterface.Fee memory _fee
+    FixedPoint.Unsigned memory _startingCollateralization
   ) public {
     self.derivative = _derivative;
     self.liquidityProvider = _liquidityProvider;
     self.validator = _validator;
     self.startingCollateralization = _startingCollateralization;
-    self.setFee(_fee);
     self.collateralToken = IERC20(
       address(self.derivative.collateralCurrency())
     );
@@ -610,6 +607,46 @@ library TICHelper {
     delete self.exchangeRequests[exchangeID];
   }
 
+  /**
+   * @notice Update the fee percentage
+   * @param self Data type the library is attached to
+   * @param _feePercentage The new fee percentage
+   */
+  function setFeePercentage(
+    TIC.Storage storage self,
+    FixedPoint.Unsigned memory _feePercentage
+  ) public {
+    self.fee.feePercentage = _feePercentage;
+  }
+
+  /**
+   * @notice Update the fee recipients and recipient proportions
+   * @param self Data type the library is attached to
+   * @param _feeRecipients Array of the new fee recipients
+   * @param _feeProportions Array of the new fee recipient proportions
+   */
+  function setFeeRecipients(
+    TIC.Storage storage self,
+    address[] memory _feeRecipients,
+    uint32[] memory _feeProportions
+  ) public {
+    require(
+      _feeRecipients.length == _feeProportions.length,
+      'Fee recipients and fee proportions do not match'
+    );
+
+    uint256 totalActualFeeProportions;
+
+    // Store the sum of all proportions
+    for (uint256 i = 0; i < _feeProportions.length; i++) {
+      totalActualFeeProportions += _feeProportions[i];
+    }
+
+    self.fee.feeRecipients = _feeRecipients;
+    self.fee.feeProportions = _feeProportions;
+    self.totalFeeProportions = totalActualFeeProportions;
+  }
+
   //----------------------------------------
   // Public views
   //----------------------------------------
@@ -733,27 +770,6 @@ library TICHelper {
     require(
       self.derivative.tokenCurrency().transfer(recipient, numTokens.rawValue)
     );
-  }
-
-  /**
-   * @notice Set the TIC fee structure parameters
-   * @param self Data type the library is attached to
-   * @param _fee The fee structure
-   */
-  function setFee(TIC.Storage storage self, TICInterface.Fee memory _fee)
-    internal
-  {
-    require(
-      _fee.feeRecipients.length == _fee.feeProportions.length,
-      'Fee recipients and fee proportions do not match'
-    );
-
-    self.fee = _fee;
-
-    // Store the sum of all proportions
-    for (uint256 i = 0; i < self.fee.feeProportions.length; i++) {
-      self.totalFeeProportions += self.fee.feeProportions[i];
-    }
   }
 
   /**

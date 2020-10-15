@@ -82,6 +82,15 @@ interface TICInterface {
 
   function rejectExchange(bytes32 exchangeID) external;
 
+  function setFee(Fee calldata _fee) external;
+
+  function setFeePercentage(uint256 _feePercentage) external;
+
+  function setFeeRecipients(
+    address[] calldata _feeRecipients,
+    uint32[] calldata _feeProportions
+  ) external;
+
   //----------------------------------------
   // External views
   //----------------------------------------
