@@ -1,0 +1,16 @@
+### Default owner for everything
+* @PetarKirov
+
+### Allow everyone to edit root files
+/* @jarvis-network
+
+### ... except CODEOWNERS
+/CODEOWNERS @PetarKirov
+
+### Packages
+/packages/balance-notify/ @PetarKirov @Aleione @asim_jarvis @edi-shardlabs
+/packages/client/ @PetarKirov @igor-shardlabs @jacek.nowacki1 @jurijtokarski
+/packages/client-new/ @PetarKirov @igor-shardlabs @jacek.nowacki1 @jurijtokarski
+/packages/contracts/ @Aleione
+/packages/keeper-bot/ @PetarKirov @Aleione @asim_jarvis @edi-shardlabs
+
