@@ -246,6 +246,19 @@ contract TIC is TICInterface, ReentrancyGuard {
   }
 
   /**
+   * @notice Move collateral from TIC to its derivative in order to increase GCR
+   * @param collateralAmount The amount of collateral to move into derivative
+   */
+  function depositIntoDerivative(uint256 collateralAmount)
+    external
+    override
+    nonReentrant
+    onlyLiquidityProvider
+  {
+    ticStorage.depositIntoDerivative(FixedPoint.Unsigned(collateralAmount));
+  }
+
+  /**
    * @notice Start a withdrawal request
    * @notice Collateral can be withdrawn once the liveness period has elapsed
    * @param collateralAmount The amount of short margin to withdraw

@@ -13,6 +13,8 @@ contract IExpiringMultiParty {
 
   IERC20 public collateralCurrency;
 
+  function deposit(FixedPoint.Unsigned memory collateralAmount) public {}
+
   function requestWithdrawal(FixedPoint.Unsigned memory collateralAmount)
     public
   {}

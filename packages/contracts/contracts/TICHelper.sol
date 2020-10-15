@@ -243,6 +243,23 @@ library TICHelper {
   }
 
   /**
+   * @notice Move collateral from TIC to its derivative in order to increase GCR
+   * @param self Data type the library is attached to
+   * @param collateralAmount The amount of collateral to move into derivative
+   */
+  function depositIntoDerivative(
+    TIC.Storage storage self,
+    FixedPoint.Unsigned memory collateralAmount
+  ) public {
+    IExpiringMultiParty derivative = self.derivative;
+    self.collateralToken.approve(
+      address(derivative),
+      collateralAmount.rawValue
+    );
+    derivative.deposit(collateralAmount);
+  }
+
+  /**
    * @notice Start a withdrawal request
    * @notice Collateral can be withdrawn once the liveness period has elapsed
    * @param self Data type the library is attached to

@@ -59,6 +59,8 @@ interface TICInterface {
 
   function exchangeMint(uint256 collateralAmount, uint256 numTokens) external;
 
+  function depositIntoDerivative(uint256 collateralAmount) external;
+
   function withdrawRequest(uint256 collateralAmount) external;
 
   function withdrawPassedRequest() external;
