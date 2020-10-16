@@ -38,6 +38,10 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
   }, [])
 
   useEffect(() => {
+    if (!onboard) {
+      return;
+    }
+
     setLogin({
       async login(wallet) {
         const select = await onboard.walletSelect(wallet);
@@ -64,6 +68,12 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
       }
     })
   }, [onboard])
+
+  if (!login) {
+    // wait for instances to be ready before rendering anything that may depend
+    // on them
+    return null;
+  }
 
   return (
     <OnboardContext.Provider value={onboard}>
