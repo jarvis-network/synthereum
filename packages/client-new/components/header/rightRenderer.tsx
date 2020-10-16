@@ -1,14 +1,10 @@
 import React, {useContext, useEffect} from "react";
 import { useSelector } from "react-redux";
-import {AccountButton, styled} from "@jarvis-network/ui";
+import {AccountDropdown} from "@jarvis-network/ui";
 
 import SignInUpButton from "components/header/SignInUpButton";
 import {AuthContext} from "components/auth/AuthProvider";
 import {State} from "state/initialState";
-
-const CustomAccountButton = styled(AccountButton)`
-  width: 320px;
-`
 
 const noop = () => undefined;
 
@@ -34,9 +30,39 @@ const render = () => {
     }
   }, [])
 
+  const links = [
+    {
+      name: "Account",
+      key: "Account",
+      onClick: () => alert("Account")
+    },
+    {
+      name: "Activity",
+      key: "Activity",
+      onClick: () => alert("Activity")
+    },
+    {
+      name: "Help",
+      key: "Help",
+      onClick: () => alert("Help")
+    },
+  ];
+
   if (auth.address) {
     const addr = cutWalletAddress(auth.address)
-    return <CustomAccountButton name={""} wallet={addr} />
+    return (
+      <AccountDropdown
+        width={"195px"}
+        links={links}
+        position={"absolute"}
+        name={""}
+        wallet={addr}
+        onLogout={authLogin.logout}
+        onModeChange={() => null}
+        onThemeChange={() => null}
+        mode={"demo"}
+        />
+    )
   }
   return <SignInUpButton onClick={logIn} />
 };
