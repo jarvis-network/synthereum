@@ -6,6 +6,7 @@ import SignInUpButton from "components/header/SignInUpButton";
 import {AuthContext} from "components/auth/AuthProvider";
 import {State} from "state/initialState";
 import { setTheme } from "state/slices/theme";
+import avatar from "utils/avatar";
 
 const noop = () => undefined;
 
@@ -67,7 +68,8 @@ const render = () => {
         onModeChange={() => null}
         onThemeChange={handleSetTheme}
         mode={"demo"}
-        />
+        image={avatar(auth.address)}
+      />
     )
   }
   return <SignInUpButton onClick={logIn} />
