@@ -1,10 +1,11 @@
 import React, {useContext, useEffect} from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {AccountDropdown} from "@jarvis-network/ui";
 
 import SignInUpButton from "components/header/SignInUpButton";
 import {AuthContext} from "components/auth/AuthProvider";
 import {State} from "state/initialState";
+import { setTheme } from "state/slices/theme";
 
 const noop = () => undefined;
 
@@ -16,6 +17,7 @@ const cutWalletAddress = (address: string) => {
 }
 
 const render = () => {
+  const dispatch = useDispatch();
   const auth = useSelector((state: State) => state.auth);
   const authLogin = useContext(AuthContext)
 
@@ -29,6 +31,10 @@ const render = () => {
       authLogin.login(autoLoginWallet).catch(noop);
     }
   }, [])
+
+  const handleSetTheme = (theme) => {
+    dispatch(setTheme({ theme }))
+  }
 
   const links = [
     {
@@ -59,7 +65,7 @@ const render = () => {
         wallet={addr}
         onLogout={authLogin.logout}
         onModeChange={() => null}
-        onThemeChange={() => null}
+        onThemeChange={handleSetTheme}
         mode={"demo"}
         />
     )
