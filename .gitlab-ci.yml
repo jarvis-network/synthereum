@@ -20,7 +20,7 @@ build_frontend_new:
   cache:
     key:
       files:
-        - yarn.lockau
+        - yarn.lock
     paths:
       - node_modules
   script:
