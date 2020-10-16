@@ -1,16 +1,19 @@
-# SynFiat
+# Jarvis Exchange | Synthereum
 
 Built on top of the priceless contracts developed by [UMA](https://docs.umaproject.org/uma/index.html).
 
 ## Requirements
-- NPM
-- Truffle
+- Git
+- [Node.js](https://nodejs.org/) [LTS (currently v12)](https://nodejs.org/en/about/releases/) (later versions may also work, but that's not verified)
+- [Yarn](https://classic.yarnpkg.com/lang/en/) (could be installed via npm: `npm install -g yarn` or though your OS' package manager)
+- Python 3
 
 ## Installation
 ```
-git clone git@github.com:opz/SynFiat.git
-cd SynFiat
-npm install
+git clone git@gitlab.com:jarvis-network/apps/exchange/mono-repo.git jarvis-exchange
+# Or alternatively, `git clone https://gitlab.com/jarvis-network/apps/exchange/mono-repo.git jarvis-exchange` if SSH doesn't work for you
+cd jarvis-exchange
+yarn install
 ```
 
 ### Configure networks
@@ -170,7 +173,7 @@ Finally get the account addresses we will use to interact with the contracts.
 const accounts = await web3.eth.getAccounts();
 ```
 
-### Making a collateral deposit as a liquidity provider 
+### Making a collateral deposit as a liquidity provider
 We will assume that `accounts[0]` is the liquidity provider.
 
 Set the amount of collateral to deposit.
