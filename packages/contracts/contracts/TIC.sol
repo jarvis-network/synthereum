@@ -12,7 +12,6 @@ import {FixedPoint} from './uma-contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {TICHelper} from './TICHelper.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IRToken} from './IRToken.sol';
 import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
 
 /**
@@ -134,7 +133,8 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
       _roles.validator,
       FixedPoint.Unsigned(_startingCollateralization)
     );
-    setFee(_fee);
+    _setFeePercentage(_fee.feePercentage.rawValue);
+    _setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
   }
 
   //----------------------------------------
@@ -551,9 +551,14 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    * @notice Update the fee percentage, recipients and recipient proportions
    * @param _fee Fee struct containing percentage, recipients and proportions
    */
-  function setFee(Fee memory _fee) public override nonReentrant onlyMaintainer {
-    setFeePercentage(_fee.feePercentage.rawValue);
-    setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
+  function setFee(Fee memory _fee)
+    external
+    override
+    nonReentrant
+    onlyMaintainer
+  {
+    _setFeePercentage(_fee.feePercentage.rawValue);
+    _setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
   }
 
   /**
@@ -561,11 +566,35 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    * @param _feePercentage The new fee percentage
    */
   function setFeePercentage(uint256 _feePercentage)
-    public
+    external
     override
     nonReentrant
     onlyMaintainer
   {
+    _setFeePercentage(_feePercentage);
+  }
+
+  /**
+   * @notice Update the percentage of the fee
+   * @param _feeRecipients The percentage of new fee
+   * @param _feeProportions The percentage of new fee
+   */
+  function setFeeRecipients(
+    address[] memory _feeRecipients,
+    uint32[] memory _feeProportions
+  ) external override nonReentrant onlyMaintainer {
+    _setFeeRecipients(_feeRecipients, _feeProportions);
+  }
+
+  //----------------------------------------
+  // Private functions
+  //----------------------------------------
+
+  /**
+   * @notice Update the recipients and their proportions
+   * @param _feePercentage The percentage of new fee
+   */
+  function _setFeePercentage(uint256 _feePercentage) private {
     ticStorage.setFeePercentage(FixedPoint.Unsigned(_feePercentage));
     emit SetFeePercentage(_feePercentage);
   }
@@ -575,10 +604,10 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    * @param _feeRecipients Array of the new fee recipients
    * @param _feeProportions Array of the new fee recipient proportions
    */
-  function setFeeRecipients(
+  function _setFeeRecipients(
     address[] memory _feeRecipients,
     uint32[] memory _feeProportions
-  ) public override nonReentrant onlyMaintainer {
+  ) private {
     ticStorage.setFeeRecipients(_feeRecipients, _feeProportions);
     emit SetFeeRecipients(_feeRecipients, _feeProportions);
   }
