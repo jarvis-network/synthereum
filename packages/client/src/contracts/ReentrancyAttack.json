@@ -27,15 +27,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/ReentrancyAttack.sol",
     "exportedSymbols": {
       "ReentrancyAttack": [
-        6125
+        6486
       ]
     },
-    "id": 6126,
+    "id": 6487,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6102,
+        "id": 6463,
         "literals": [
           "solidity",
           "^",
@@ -52,33 +52,33 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6125,
+        "id": 6486,
         "linearizedBaseContracts": [
-          6125
+          6486
         ],
         "name": "ReentrancyAttack",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 6123,
+              "id": 6484,
               "nodeType": "Block",
               "src": "270:199:26",
               "statements": [
                 {
                   "assignments": [
-                    6108,
+                    6469,
                     null
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 6108,
+                      "id": 6469,
                       "mutability": "mutable",
                       "name": "success",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 6123,
+                      "scope": 6484,
                       "src": "340:12:26",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -87,7 +87,7 @@
                         "typeString": "bool"
                       },
                       "typeName": {
-                        "id": 6107,
+                        "id": 6468,
                         "name": "bool",
                         "nodeType": "ElementaryTypeName",
                         "src": "340:4:26",
@@ -101,7 +101,7 @@
                     },
                     null
                   ],
-                  "id": 6117,
+                  "id": 6478,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -110,11 +110,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 6114,
+                            "id": 6475,
                             "name": "data",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6104,
+                            "referencedDeclaration": 6465,
                             "src": "397:4:26",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes4",
@@ -131,7 +131,7 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 6112,
+                            "id": 6473,
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -142,7 +142,7 @@
                               "typeString": "abi"
                             }
                           },
-                          "id": 6113,
+                          "id": 6474,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -156,7 +156,7 @@
                             "typeString": "function (bytes4) pure returns (bytes memory)"
                           }
                         },
-                        "id": 6115,
+                        "id": 6476,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -183,7 +183,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 6109,
+                          "id": 6470,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -194,7 +194,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 6110,
+                        "id": 6471,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -208,7 +208,7 @@
                           "typeString": "address payable"
                         }
                       },
-                      "id": 6111,
+                      "id": 6472,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -222,7 +222,7 @@
                         "typeString": "function (bytes memory) payable returns (bool,bytes memory)"
                       }
                     },
-                    "id": 6116,
+                    "id": 6477,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -246,11 +246,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6119,
+                        "id": 6480,
                         "name": "success",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6108,
+                        "referencedDeclaration": 6469,
                         "src": "421:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
@@ -260,7 +260,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "5265656e7472616e637941747461636b3a206661696c65642063616c6c",
-                        "id": 6120,
+                        "id": 6481,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -287,7 +287,7 @@
                           "typeString": "literal_string \"ReentrancyAttack: failed call\""
                         }
                       ],
-                      "id": 6118,
+                      "id": 6479,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -301,7 +301,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 6121,
+                    "id": 6482,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -316,7 +316,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6122,
+                  "id": 6483,
                   "nodeType": "ExpressionStatement",
                   "src": "413:49:26"
                 }
@@ -324,7 +324,7 @@
             },
             "documentation": null,
             "functionSelector": "0a2df1ed",
-            "id": 6124,
+            "id": 6485,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -332,17 +332,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6105,
+              "id": 6466,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6104,
+                  "id": 6465,
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6124,
+                  "scope": 6485,
                   "src": "250:11:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -351,7 +351,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 6103,
+                    "id": 6464,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "250:6:26",
@@ -367,19 +367,19 @@
               "src": "249:13:26"
             },
             "returnParameters": {
-              "id": 6106,
+              "id": 6467,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "270:0:26"
             },
-            "scope": 6125,
+            "scope": 6486,
             "src": "230:239:26",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 6126,
+        "scope": 6487,
         "src": "198:273:26"
       }
     ],
@@ -389,15 +389,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/ReentrancyAttack.sol",
     "exportedSymbols": {
       "ReentrancyAttack": [
-        6125
+        6486
       ]
     },
-    "id": 6126,
+    "id": 6487,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6102,
+        "id": 6463,
         "literals": [
           "solidity",
           "^",
@@ -414,33 +414,33 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 6125,
+        "id": 6486,
         "linearizedBaseContracts": [
-          6125
+          6486
         ],
         "name": "ReentrancyAttack",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 6123,
+              "id": 6484,
               "nodeType": "Block",
               "src": "270:199:26",
               "statements": [
                 {
                   "assignments": [
-                    6108,
+                    6469,
                     null
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 6108,
+                      "id": 6469,
                       "mutability": "mutable",
                       "name": "success",
                       "nodeType": "VariableDeclaration",
                       "overrides": null,
-                      "scope": 6123,
+                      "scope": 6484,
                       "src": "340:12:26",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -449,7 +449,7 @@
                         "typeString": "bool"
                       },
                       "typeName": {
-                        "id": 6107,
+                        "id": 6468,
                         "name": "bool",
                         "nodeType": "ElementaryTypeName",
                         "src": "340:4:26",
@@ -463,7 +463,7 @@
                     },
                     null
                   ],
-                  "id": 6117,
+                  "id": 6478,
                   "initialValue": {
                     "argumentTypes": null,
                     "arguments": [
@@ -472,11 +472,11 @@
                         "arguments": [
                           {
                             "argumentTypes": null,
-                            "id": 6114,
+                            "id": 6475,
                             "name": "data",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6104,
+                            "referencedDeclaration": 6465,
                             "src": "397:4:26",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes4",
@@ -493,7 +493,7 @@
                           ],
                           "expression": {
                             "argumentTypes": null,
-                            "id": 6112,
+                            "id": 6473,
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -504,7 +504,7 @@
                               "typeString": "abi"
                             }
                           },
-                          "id": 6113,
+                          "id": 6474,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -518,7 +518,7 @@
                             "typeString": "function (bytes4) pure returns (bytes memory)"
                           }
                         },
-                        "id": 6115,
+                        "id": 6476,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -545,7 +545,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 6109,
+                          "id": 6470,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -556,7 +556,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 6110,
+                        "id": 6471,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -570,7 +570,7 @@
                           "typeString": "address payable"
                         }
                       },
-                      "id": 6111,
+                      "id": 6472,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -584,7 +584,7 @@
                         "typeString": "function (bytes memory) payable returns (bool,bytes memory)"
                       }
                     },
-                    "id": 6116,
+                    "id": 6477,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -608,11 +608,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 6119,
+                        "id": 6480,
                         "name": "success",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6108,
+                        "referencedDeclaration": 6469,
                         "src": "421:7:26",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
@@ -622,7 +622,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "5265656e7472616e637941747461636b3a206661696c65642063616c6c",
-                        "id": 6120,
+                        "id": 6481,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -649,7 +649,7 @@
                           "typeString": "literal_string \"ReentrancyAttack: failed call\""
                         }
                       ],
-                      "id": 6118,
+                      "id": 6479,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -663,7 +663,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 6121,
+                    "id": 6482,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -678,7 +678,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 6122,
+                  "id": 6483,
                   "nodeType": "ExpressionStatement",
                   "src": "413:49:26"
                 }
@@ -686,7 +686,7 @@
             },
             "documentation": null,
             "functionSelector": "0a2df1ed",
-            "id": 6124,
+            "id": 6485,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -694,17 +694,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 6105,
+              "id": 6466,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6104,
+                  "id": 6465,
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 6124,
+                  "scope": 6485,
                   "src": "250:11:26",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -713,7 +713,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 6103,
+                    "id": 6464,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "250:6:26",
@@ -729,19 +729,19 @@
               "src": "249:13:26"
             },
             "returnParameters": {
-              "id": 6106,
+              "id": 6467,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "270:0:26"
             },
-            "scope": 6125,
+            "scope": 6486,
             "src": "230:239:26",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 6126,
+        "scope": 6487,
         "src": "198:273:26"
       }
     ],
@@ -752,8 +752,8 @@
     "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-30T12:21:56.801Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-19T18:33:22.287Z",
   "devdoc": {
     "methods": {}
   },

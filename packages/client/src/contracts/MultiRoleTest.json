@@ -258,15 +258,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/MultiRoleTest.sol",
     "exportedSymbols": {
       "MultiRoleTest": [
-        5954
+        6315
       ]
     },
-    "id": 5955,
+    "id": 6316,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5908,
+        "id": 6269,
         "literals": [
           "solidity",
           "^",
@@ -279,10 +279,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol",
         "file": "../implementation/MultiRole.sol",
-        "id": 5909,
+        "id": 6270,
         "nodeType": "ImportDirective",
-        "scope": 5955,
-        "sourceUnit": 4908,
+        "scope": 6316,
+        "sourceUnit": 5269,
         "src": "58:41:24",
         "symbolAliases": [],
         "unitAlias": ""
@@ -294,38 +294,38 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5910,
+              "id": 6271,
               "name": "MultiRole",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4907,
+              "referencedDeclaration": 5268,
               "src": "244:9:24",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MultiRole_$4907",
+                "typeIdentifier": "t_contract$_MultiRole_$5268",
                 "typeString": "contract MultiRole"
               }
             },
-            "id": 5911,
+            "id": 6272,
             "nodeType": "InheritanceSpecifier",
             "src": "244:9:24"
           }
         ],
         "contractDependencies": [
-          4907
+          5268
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5954,
+        "id": 6315,
         "linearizedBaseContracts": [
-          5954,
-          4907
+          6315,
+          5268
         ],
         "name": "MultiRoleTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 5927,
+              "id": 6288,
               "nodeType": "Block",
               "src": "400:74:24",
               "statements": [
@@ -335,11 +335,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5922,
+                        "id": 6283,
                         "name": "roleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5913,
+                        "referencedDeclaration": 6274,
                         "src": "428:6:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -348,11 +348,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5923,
+                        "id": 6284,
                         "name": "managingRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5915,
+                        "referencedDeclaration": 6276,
                         "src": "436:14:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -361,11 +361,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5924,
+                        "id": 6285,
                         "name": "initialMembers",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5918,
+                        "referencedDeclaration": 6279,
                         "src": "452:14:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
@@ -388,18 +388,18 @@
                           "typeString": "address[] calldata"
                         }
                       ],
-                      "id": 5921,
+                      "id": 6282,
                       "name": "_createSharedRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4854,
+                      "referencedDeclaration": 5215,
                       "src": "410:17:24",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_array$_t_address_$dyn_memory_ptr_$returns$__$",
                         "typeString": "function (uint256,uint256,address[] memory)"
                       }
                     },
-                    "id": 5925,
+                    "id": 6286,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -414,7 +414,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5926,
+                  "id": 6287,
                   "nodeType": "ExpressionStatement",
                   "src": "410:57:24"
                 }
@@ -422,7 +422,7 @@
             },
             "documentation": null,
             "functionSelector": "19fefdf0",
-            "id": 5928,
+            "id": 6289,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -430,17 +430,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5919,
+              "id": 6280,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5913,
+                  "id": 6274,
                   "mutability": "mutable",
                   "name": "roleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5928,
+                  "scope": 6289,
                   "src": "295:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -449,7 +449,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5912,
+                    "id": 6273,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "295:7:24",
@@ -463,12 +463,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5915,
+                  "id": 6276,
                   "mutability": "mutable",
                   "name": "managingRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5928,
+                  "scope": 6289,
                   "src": "319:22:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -477,7 +477,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5914,
+                    "id": 6275,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "319:7:24",
@@ -491,12 +491,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5918,
+                  "id": 6279,
                   "mutability": "mutable",
                   "name": "initialMembers",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5928,
+                  "scope": 6289,
                   "src": "351:33:24",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -506,7 +506,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5916,
+                      "id": 6277,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "351:7:24",
@@ -516,7 +516,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5917,
+                    "id": 6278,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "351:9:24",
@@ -532,12 +532,12 @@
               "src": "285:105:24"
             },
             "returnParameters": {
-              "id": 5920,
+              "id": 6281,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "400:0:24"
             },
-            "scope": 5954,
+            "scope": 6315,
             "src": "260:214:24",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -545,7 +545,7 @@
           },
           {
             "body": {
-              "id": 5943,
+              "id": 6304,
               "nodeType": "Block",
               "src": "611:76:24",
               "statements": [
@@ -555,11 +555,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5938,
+                        "id": 6299,
                         "name": "roleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5930,
+                        "referencedDeclaration": 6291,
                         "src": "642:6:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -568,11 +568,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5939,
+                        "id": 6300,
                         "name": "managingRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5932,
+                        "referencedDeclaration": 6293,
                         "src": "650:14:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -581,11 +581,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5940,
+                        "id": 6301,
                         "name": "initialMember",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5934,
+                        "referencedDeclaration": 6295,
                         "src": "666:13:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -608,18 +608,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5937,
+                      "id": 6298,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4906,
+                      "referencedDeclaration": 5267,
                       "src": "621:20:24",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 5941,
+                    "id": 6302,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -634,7 +634,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5942,
+                  "id": 6303,
                   "nodeType": "ExpressionStatement",
                   "src": "621:59:24"
                 }
@@ -642,7 +642,7 @@
             },
             "documentation": null,
             "functionSelector": "e2ad8db9",
-            "id": 5944,
+            "id": 6305,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -650,17 +650,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5935,
+              "id": 6296,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5930,
+                  "id": 6291,
                   "mutability": "mutable",
                   "name": "roleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5944,
+                  "scope": 6305,
                   "src": "518:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -669,7 +669,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5929,
+                    "id": 6290,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "518:7:24",
@@ -683,12 +683,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5932,
+                  "id": 6293,
                   "mutability": "mutable",
                   "name": "managingRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5944,
+                  "scope": 6305,
                   "src": "542:22:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -697,7 +697,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5931,
+                    "id": 6292,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "542:7:24",
@@ -711,12 +711,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5934,
+                  "id": 6295,
                   "mutability": "mutable",
                   "name": "initialMember",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5944,
+                  "scope": 6305,
                   "src": "574:21:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -725,7 +725,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5933,
+                    "id": 6294,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "574:7:24",
@@ -742,12 +742,12 @@
               "src": "508:93:24"
             },
             "returnParameters": {
-              "id": 5936,
+              "id": 6297,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "611:0:24"
             },
-            "scope": 5954,
+            "scope": 6315,
             "src": "480:207:24",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -755,14 +755,14 @@
           },
           {
             "body": {
-              "id": 5952,
+              "id": 6313,
               "nodeType": "Block",
               "src": "827:2:24",
               "statements": []
             },
             "documentation": null,
             "functionSelector": "52b34d49",
-            "id": 5953,
+            "id": 6314,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -770,11 +770,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5949,
+                    "id": 6310,
                     "name": "roleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5946,
+                    "referencedDeclaration": 6307,
                     "src": "819:6:24",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -782,14 +782,14 @@
                     }
                   }
                 ],
-                "id": 5950,
+                "id": 6311,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5948,
+                  "id": 6309,
                   "name": "onlyRoleHolder",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4524,
+                  "referencedDeclaration": 4885,
                   "src": "804:14:24",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -804,17 +804,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5947,
+              "id": 6308,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5946,
+                  "id": 6307,
                   "mutability": "mutable",
                   "name": "roleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5953,
+                  "scope": 6314,
                   "src": "774:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -823,7 +823,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5945,
+                    "id": 6306,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "774:7:24",
@@ -839,19 +839,19 @@
               "src": "773:16:24"
             },
             "returnParameters": {
-              "id": 5951,
+              "id": 6312,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "827:0:24"
             },
-            "scope": 5954,
+            "scope": 6315,
             "src": "742:87:24",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 5955,
+        "scope": 6316,
         "src": "218:613:24"
       }
     ],
@@ -861,15 +861,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/test/MultiRoleTest.sol",
     "exportedSymbols": {
       "MultiRoleTest": [
-        5954
+        6315
       ]
     },
-    "id": 5955,
+    "id": 6316,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5908,
+        "id": 6269,
         "literals": [
           "solidity",
           "^",
@@ -882,10 +882,10 @@
       {
         "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol",
         "file": "../implementation/MultiRole.sol",
-        "id": 5909,
+        "id": 6270,
         "nodeType": "ImportDirective",
-        "scope": 5955,
-        "sourceUnit": 4908,
+        "scope": 6316,
+        "sourceUnit": 5269,
         "src": "58:41:24",
         "symbolAliases": [],
         "unitAlias": ""
@@ -897,38 +897,38 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5910,
+              "id": 6271,
               "name": "MultiRole",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4907,
+              "referencedDeclaration": 5268,
               "src": "244:9:24",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MultiRole_$4907",
+                "typeIdentifier": "t_contract$_MultiRole_$5268",
                 "typeString": "contract MultiRole"
               }
             },
-            "id": 5911,
+            "id": 6272,
             "nodeType": "InheritanceSpecifier",
             "src": "244:9:24"
           }
         ],
         "contractDependencies": [
-          4907
+          5268
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 5954,
+        "id": 6315,
         "linearizedBaseContracts": [
-          5954,
-          4907
+          6315,
+          5268
         ],
         "name": "MultiRoleTest",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 5927,
+              "id": 6288,
               "nodeType": "Block",
               "src": "400:74:24",
               "statements": [
@@ -938,11 +938,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5922,
+                        "id": 6283,
                         "name": "roleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5913,
+                        "referencedDeclaration": 6274,
                         "src": "428:6:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -951,11 +951,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5923,
+                        "id": 6284,
                         "name": "managingRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5915,
+                        "referencedDeclaration": 6276,
                         "src": "436:14:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -964,11 +964,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5924,
+                        "id": 6285,
                         "name": "initialMembers",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5918,
+                        "referencedDeclaration": 6279,
                         "src": "452:14:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
@@ -991,18 +991,18 @@
                           "typeString": "address[] calldata"
                         }
                       ],
-                      "id": 5921,
+                      "id": 6282,
                       "name": "_createSharedRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4854,
+                      "referencedDeclaration": 5215,
                       "src": "410:17:24",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_array$_t_address_$dyn_memory_ptr_$returns$__$",
                         "typeString": "function (uint256,uint256,address[] memory)"
                       }
                     },
-                    "id": 5925,
+                    "id": 6286,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1017,7 +1017,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5926,
+                  "id": 6287,
                   "nodeType": "ExpressionStatement",
                   "src": "410:57:24"
                 }
@@ -1025,7 +1025,7 @@
             },
             "documentation": null,
             "functionSelector": "19fefdf0",
-            "id": 5928,
+            "id": 6289,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1033,17 +1033,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5919,
+              "id": 6280,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5913,
+                  "id": 6274,
                   "mutability": "mutable",
                   "name": "roleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5928,
+                  "scope": 6289,
                   "src": "295:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1052,7 +1052,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5912,
+                    "id": 6273,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "295:7:24",
@@ -1066,12 +1066,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5915,
+                  "id": 6276,
                   "mutability": "mutable",
                   "name": "managingRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5928,
+                  "scope": 6289,
                   "src": "319:22:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1080,7 +1080,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5914,
+                    "id": 6275,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "319:7:24",
@@ -1094,12 +1094,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5918,
+                  "id": 6279,
                   "mutability": "mutable",
                   "name": "initialMembers",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5928,
+                  "scope": 6289,
                   "src": "351:33:24",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1109,7 +1109,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5916,
+                      "id": 6277,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "351:7:24",
@@ -1119,7 +1119,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5917,
+                    "id": 6278,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "351:9:24",
@@ -1135,12 +1135,12 @@
               "src": "285:105:24"
             },
             "returnParameters": {
-              "id": 5920,
+              "id": 6281,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "400:0:24"
             },
-            "scope": 5954,
+            "scope": 6315,
             "src": "260:214:24",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1148,7 +1148,7 @@
           },
           {
             "body": {
-              "id": 5943,
+              "id": 6304,
               "nodeType": "Block",
               "src": "611:76:24",
               "statements": [
@@ -1158,11 +1158,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 5938,
+                        "id": 6299,
                         "name": "roleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5930,
+                        "referencedDeclaration": 6291,
                         "src": "642:6:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1171,11 +1171,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5939,
+                        "id": 6300,
                         "name": "managingRoleId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5932,
+                        "referencedDeclaration": 6293,
                         "src": "650:14:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1184,11 +1184,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 5940,
+                        "id": 6301,
                         "name": "initialMember",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 5934,
+                        "referencedDeclaration": 6295,
                         "src": "666:13:24",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1211,18 +1211,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 5937,
+                      "id": 6298,
                       "name": "_createExclusiveRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 4906,
+                      "referencedDeclaration": 5267,
                       "src": "621:20:24",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_uint256_$_t_address_$returns$__$",
                         "typeString": "function (uint256,uint256,address)"
                       }
                     },
-                    "id": 5941,
+                    "id": 6302,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1237,7 +1237,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 5942,
+                  "id": 6303,
                   "nodeType": "ExpressionStatement",
                   "src": "621:59:24"
                 }
@@ -1245,7 +1245,7 @@
             },
             "documentation": null,
             "functionSelector": "e2ad8db9",
-            "id": 5944,
+            "id": 6305,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1253,17 +1253,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5935,
+              "id": 6296,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5930,
+                  "id": 6291,
                   "mutability": "mutable",
                   "name": "roleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5944,
+                  "scope": 6305,
                   "src": "518:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1272,7 +1272,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5929,
+                    "id": 6290,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "518:7:24",
@@ -1286,12 +1286,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5932,
+                  "id": 6293,
                   "mutability": "mutable",
                   "name": "managingRoleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5944,
+                  "scope": 6305,
                   "src": "542:22:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1300,7 +1300,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5931,
+                    "id": 6292,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "542:7:24",
@@ -1314,12 +1314,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5934,
+                  "id": 6295,
                   "mutability": "mutable",
                   "name": "initialMember",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5944,
+                  "scope": 6305,
                   "src": "574:21:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1328,7 +1328,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5933,
+                    "id": 6294,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "574:7:24",
@@ -1345,12 +1345,12 @@
               "src": "508:93:24"
             },
             "returnParameters": {
-              "id": 5936,
+              "id": 6297,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "611:0:24"
             },
-            "scope": 5954,
+            "scope": 6315,
             "src": "480:207:24",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1358,14 +1358,14 @@
           },
           {
             "body": {
-              "id": 5952,
+              "id": 6313,
               "nodeType": "Block",
               "src": "827:2:24",
               "statements": []
             },
             "documentation": null,
             "functionSelector": "52b34d49",
-            "id": 5953,
+            "id": 6314,
             "implemented": true,
             "kind": "function",
             "modifiers": [
@@ -1373,11 +1373,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 5949,
+                    "id": 6310,
                     "name": "roleId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 5946,
+                    "referencedDeclaration": 6307,
                     "src": "819:6:24",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -1385,14 +1385,14 @@
                     }
                   }
                 ],
-                "id": 5950,
+                "id": 6311,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 5948,
+                  "id": 6309,
                   "name": "onlyRoleHolder",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 4524,
+                  "referencedDeclaration": 4885,
                   "src": "804:14:24",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_uint256_$",
@@ -1407,17 +1407,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5947,
+              "id": 6308,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5946,
+                  "id": 6307,
                   "mutability": "mutable",
                   "name": "roleId",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5953,
+                  "scope": 6314,
                   "src": "774:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1426,7 +1426,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5945,
+                    "id": 6306,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "774:7:24",
@@ -1442,19 +1442,19 @@
               "src": "773:16:24"
             },
             "returnParameters": {
-              "id": 5951,
+              "id": 6312,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "827:0:24"
             },
-            "scope": 5954,
+            "scope": 6315,
             "src": "742:87:24",
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 5955,
+        "scope": 6316,
         "src": "218:613:24"
       }
     ],
@@ -1465,8 +1465,8 @@
     "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-30T12:21:56.794Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-19T18:33:22.284Z",
   "devdoc": {
     "methods": {
       "addMember(uint256,address)": {

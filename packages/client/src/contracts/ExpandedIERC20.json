@@ -234,15 +234,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol",
     "exportedSymbols": {
       "ExpandedIERC20": [
-        5183
+        5544
       ]
     },
-    "id": 5184,
+    "id": 5545,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5162,
+        "id": 5523,
         "literals": [
           "solidity",
           "^",
@@ -255,10 +255,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 5163,
+        "id": 5524,
         "nodeType": "ImportDirective",
-        "scope": 5184,
-        "sourceUnit": 18478,
+        "scope": 5545,
+        "sourceUnit": 19104,
         "src": "25:56:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -270,36 +270,36 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5165,
+              "id": 5526,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18477,
+              "referencedDeclaration": 19103,
               "src": "191:6:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18477",
+                "typeIdentifier": "t_contract$_IERC20_$19103",
                 "typeString": "contract IERC20"
               }
             },
-            "id": 5166,
+            "id": 5527,
             "nodeType": "InheritanceSpecifier",
             "src": "191:6:19"
           }
         ],
         "contractDependencies": [
-          18477
+          19103
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 5164,
+          "id": 5525,
           "nodeType": "StructuredDocumentation",
           "src": "84:70:19",
           "text": " @title ERC20 interface that includes burn and mint methods."
         },
         "fullyImplemented": false,
-        "id": 5183,
+        "id": 5544,
         "linearizedBaseContracts": [
-          5183,
-          18477
+          5544,
+          19103
         ],
         "name": "ExpandedIERC20",
         "nodeType": "ContractDefinition",
@@ -307,13 +307,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 5167,
+              "id": 5528,
               "nodeType": "StructuredDocumentation",
               "src": "204:169:19",
               "text": " @notice Burns a specific amount of the caller's tokens.\n @dev Only burns the caller's tokens, so it is safe to leave this method permissionless."
             },
             "functionSelector": "42966c68",
-            "id": 5172,
+            "id": 5533,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -321,17 +321,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5170,
+              "id": 5531,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5169,
+                  "id": 5530,
                   "mutability": "mutable",
                   "name": "value",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5172,
+                  "scope": 5533,
                   "src": "392:13:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -340,7 +340,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5168,
+                    "id": 5529,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "392:7:19",
@@ -356,12 +356,12 @@
               "src": "391:15:19"
             },
             "returnParameters": {
-              "id": 5171,
+              "id": 5532,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "423:0:19"
             },
-            "scope": 5183,
+            "scope": 5544,
             "src": "378:46:19",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -370,13 +370,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 5173,
+              "id": 5534,
               "nodeType": "StructuredDocumentation",
               "src": "430:185:19",
               "text": " @notice Mints tokens and adds them to the balance of the `to` address.\n @dev This method should be permissioned to only allow designated parties to mint tokens."
             },
             "functionSelector": "40c10f19",
-            "id": 5182,
+            "id": 5543,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -384,17 +384,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5178,
+              "id": 5539,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5175,
+                  "id": 5536,
                   "mutability": "mutable",
                   "name": "to",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5182,
+                  "scope": 5543,
                   "src": "634:10:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -403,7 +403,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5174,
+                    "id": 5535,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "634:7:19",
@@ -418,12 +418,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5177,
+                  "id": 5538,
                   "mutability": "mutable",
                   "name": "value",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5182,
+                  "scope": 5543,
                   "src": "646:13:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -432,7 +432,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5176,
+                    "id": 5537,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "646:7:19",
@@ -448,17 +448,17 @@
               "src": "633:27:19"
             },
             "returnParameters": {
-              "id": 5181,
+              "id": 5542,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5180,
+                  "id": 5541,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5182,
+                  "scope": 5543,
                   "src": "687:4:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -467,7 +467,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5179,
+                    "id": 5540,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "687:4:19",
@@ -482,14 +482,14 @@
               ],
               "src": "686:6:19"
             },
-            "scope": 5183,
+            "scope": 5544,
             "src": "620:73:19",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "external"
           }
         ],
-        "scope": 5184,
+        "scope": 5545,
         "src": "155:540:19"
       }
     ],
@@ -499,15 +499,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol",
     "exportedSymbols": {
       "ExpandedIERC20": [
-        5183
+        5544
       ]
     },
-    "id": 5184,
+    "id": 5545,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5162,
+        "id": 5523,
         "literals": [
           "solidity",
           "^",
@@ -520,10 +520,10 @@
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 5163,
+        "id": 5524,
         "nodeType": "ImportDirective",
-        "scope": 5184,
-        "sourceUnit": 18478,
+        "scope": 5545,
+        "sourceUnit": 19104,
         "src": "25:56:19",
         "symbolAliases": [],
         "unitAlias": ""
@@ -535,36 +535,36 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 5165,
+              "id": 5526,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 18477,
+              "referencedDeclaration": 19103,
               "src": "191:6:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$18477",
+                "typeIdentifier": "t_contract$_IERC20_$19103",
                 "typeString": "contract IERC20"
               }
             },
-            "id": 5166,
+            "id": 5527,
             "nodeType": "InheritanceSpecifier",
             "src": "191:6:19"
           }
         ],
         "contractDependencies": [
-          18477
+          19103
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 5164,
+          "id": 5525,
           "nodeType": "StructuredDocumentation",
           "src": "84:70:19",
           "text": " @title ERC20 interface that includes burn and mint methods."
         },
         "fullyImplemented": false,
-        "id": 5183,
+        "id": 5544,
         "linearizedBaseContracts": [
-          5183,
-          18477
+          5544,
+          19103
         ],
         "name": "ExpandedIERC20",
         "nodeType": "ContractDefinition",
@@ -572,13 +572,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 5167,
+              "id": 5528,
               "nodeType": "StructuredDocumentation",
               "src": "204:169:19",
               "text": " @notice Burns a specific amount of the caller's tokens.\n @dev Only burns the caller's tokens, so it is safe to leave this method permissionless."
             },
             "functionSelector": "42966c68",
-            "id": 5172,
+            "id": 5533,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -586,17 +586,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5170,
+              "id": 5531,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5169,
+                  "id": 5530,
                   "mutability": "mutable",
                   "name": "value",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5172,
+                  "scope": 5533,
                   "src": "392:13:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -605,7 +605,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5168,
+                    "id": 5529,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "392:7:19",
@@ -621,12 +621,12 @@
               "src": "391:15:19"
             },
             "returnParameters": {
-              "id": 5171,
+              "id": 5532,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "423:0:19"
             },
-            "scope": 5183,
+            "scope": 5544,
             "src": "378:46:19",
             "stateMutability": "nonpayable",
             "virtual": true,
@@ -635,13 +635,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 5173,
+              "id": 5534,
               "nodeType": "StructuredDocumentation",
               "src": "430:185:19",
               "text": " @notice Mints tokens and adds them to the balance of the `to` address.\n @dev This method should be permissioned to only allow designated parties to mint tokens."
             },
             "functionSelector": "40c10f19",
-            "id": 5182,
+            "id": 5543,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -649,17 +649,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5178,
+              "id": 5539,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5175,
+                  "id": 5536,
                   "mutability": "mutable",
                   "name": "to",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5182,
+                  "scope": 5543,
                   "src": "634:10:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -668,7 +668,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5174,
+                    "id": 5535,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "634:7:19",
@@ -683,12 +683,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5177,
+                  "id": 5538,
                   "mutability": "mutable",
                   "name": "value",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5182,
+                  "scope": 5543,
                   "src": "646:13:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -697,7 +697,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5176,
+                    "id": 5537,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "646:7:19",
@@ -713,17 +713,17 @@
               "src": "633:27:19"
             },
             "returnParameters": {
-              "id": 5181,
+              "id": 5542,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5180,
+                  "id": 5541,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5182,
+                  "scope": 5543,
                   "src": "687:4:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -732,7 +732,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5179,
+                    "id": 5540,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "687:4:19",
@@ -747,14 +747,14 @@
               ],
               "src": "686:6:19"
             },
-            "scope": 5183,
+            "scope": 5544,
             "src": "620:73:19",
             "stateMutability": "nonpayable",
             "virtual": true,
             "visibility": "external"
           }
         ],
-        "scope": 5184,
+        "scope": 5545,
         "src": "155:540:19"
       }
     ],
@@ -765,8 +765,8 @@
     "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.2.0",
-  "updatedAt": "2020-09-30T12:21:56.753Z",
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-19T18:33:22.273Z",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {
