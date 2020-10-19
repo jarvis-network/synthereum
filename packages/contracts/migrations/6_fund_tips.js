@@ -1,14 +1,14 @@
 const ERC20 = artifacts.require('ERC20');
-const rDAI = artifacts.require('IRToken');
 const TIC = artifacts.require('TIC');
 const TICFactory = artifacts.require('TICFactory');
 const assets = require('../fund-assets.json');
 const contracts = require('../contract-dependencies.json');
+const rolesConfig = require('../roles.json');
 
 module.exports = function (deployer, network, accounts) {
   async function fund() {
-    const liquidityProvider = accounts[0]; // Whoever the liquidity provider should be
     const networkId = config.networks[network.replace(/-fork$/, '')].network_id;
+    const liquidityProvider = rolesConfig[networkId].liquidityProvider; // Whoever the liquidity provider should be
     const TICFactoryInstance = await TICFactory.at(
       contracts[networkId]['ticFactory'],
     );

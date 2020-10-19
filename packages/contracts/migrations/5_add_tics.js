@@ -4,26 +4,26 @@ const config = require('../truffle-config.js');
 const contracts = require('../contract-dependencies.json');
 const assets = require('../add-synthetic-assets.json');
 const TICConfig = require('../tic-config.json');
+const feeConfig = require('../fees.json');
+const rolesConfig = require('../roles.json');
 
 var TICFactory = artifacts.require('TICFactory');
 
 module.exports = function (deployer, network, accounts) {
-  const protocolOwner = accounts[0]; // Account to pay protocol fees to
-  const liquidityProvider = accounts[0]; // Whoever the liquidity provider should be
-  const validator = accounts[1]; // Whoever validates mint and exchange requests
-
   const networkId = config.networks[network.replace(/-fork$/, '')].network_id;
 
   // Kovan rDAI address
   collateralAddress = contracts[networkId]['collateralAddress'];
 
   const fee = {
-    mintFee: { rawValue: web3Utils.toWei('0.001') },
-    mintFeeRecipients: [protocolOwner, liquidityProvider],
-    mintFeeProportions: [50, 50],
-    interestFeeRecipients: [protocolOwner, liquidityProvider],
-    interestFeeProportions: [10, 90],
+    feePercentage: {
+      rawValue: web3Utils.toWei(feeConfig[networkId].feePercentage.toString()),
+    },
+    feeRecipients: feeConfig[networkId].feeRecipients,
+    feeProportions: feeConfig[networkId].feeProportions,
   };
+
+  const roles = rolesConfig[networkId];
 
   console.log('\n');
 
@@ -43,14 +43,13 @@ module.exports = function (deployer, network, accounts) {
       params.priceFeedIdentifier = web3Utils.toHex(
         assetParams.priceFeedIdentifier,
       );
-
       const factory = await TICFactory.at(contracts[networkId]['ticFactory']);
       const { receipt } = await factory.createTIC(
         params,
-        liquidityProvider,
-        validator,
         startingCollateralization,
+        roles,
         fee,
+        { from: rolesConfig[networkId].maintainer },
       );
       console.log(`   > gas used: ${receipt.gasUsed}`);
       console.log('\n');
