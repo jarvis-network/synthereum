@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
+import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
@@ -11,7 +11,22 @@ import {
   ExpiringMultiPartyCreator
 } from './uma-contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol';
 
-contract TICFactory is Ownable, ReentrancyGuard {
+contract TICFactory is AccessControl, ReentrancyGuard {
+  //----------------------------------------
+  // Constants
+  //----------------------------------------
+
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
+
+  //----------------------------------------
+  // Struct
+  //----------------------------------------
+
+  struct Roles {
+    address admin;
+    address maintainer;
+  }
+
   //----------------------------------------
   // State variables
   //----------------------------------------
@@ -25,8 +40,26 @@ contract TICFactory is Ownable, ReentrancyGuard {
   // Constructor
   //----------------------------------------
 
-  constructor(ExpiringMultiPartyCreator _derivativeCreator) public {
+  constructor(Roles memory _roles, ExpiringMultiPartyCreator _derivativeCreator)
+    public
+  {
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
     derivativeCreator = _derivativeCreator;
+  }
+
+  //----------------------------------------
+  // Modifiers
+  //----------------------------------------
+
+  modifier onlyMaintainer() {
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
+    );
+    _;
   }
 
   //----------------------------------------
@@ -36,18 +69,16 @@ contract TICFactory is Ownable, ReentrancyGuard {
   /**
    * @notice Creates a new TIC
    * @param params The parameters used to create the underlying derivative
-   * @param liquidityProvider The liquidity provider
-   * @param validator The address that validates mint and exchange requests
    * @param startingCollateralization Collateralization ratio to use before a global one is set
+   * @param roles The addresses of admin, maintainer, liquidity provider and validator
    * @param fee The fee structure
    */
   function createTIC(
     ExpiringMultiPartyCreator.Params calldata params,
-    address liquidityProvider,
-    address validator,
     uint256 startingCollateralization,
+    TIC.Roles calldata roles,
     TIC.Fee calldata fee
-  ) external onlyOwner nonReentrant {
+  ) external onlyMaintainer nonReentrant {
     //Require TIC does not exist
     require(
       address(symbolToTIC[params.syntheticSymbol]) == address(0),
@@ -60,8 +91,7 @@ contract TICFactory is Ownable, ReentrancyGuard {
     // Create the TIC
     symbolToTIC[params.syntheticSymbol] = new TIC(
       IExpiringMultiParty(derivative),
-      liquidityProvider,
-      validator,
+      roles,
       startingCollateralization,
       fee
     );

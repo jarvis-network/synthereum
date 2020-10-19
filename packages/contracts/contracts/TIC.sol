@@ -1,6 +1,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
 import {TICInterface} from './TICInterface.sol';
 import {
   ReentrancyGuard
@@ -20,7 +21,18 @@ import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
  * @dev Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent
  *      to the `ExpiringMultiParty` contract.
  */
-contract TIC is TICInterface, ReentrancyGuard {
+contract TIC is AccessControl, TICInterface, ReentrancyGuard {
+  //----------------------------------------
+  // Constants
+  //----------------------------------------
+
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
+
+  bytes32 public constant LIQUIDITY_PROVIDER_ROLE =
+    keccak256('Liquidity Provider');
+
+  bytes32 public constant VALIDATOR_ROLE = keccak256('Validator');
+
   //----------------------------------------
   // Type definitions
   //----------------------------------------
@@ -98,22 +110,28 @@ contract TIC is TICInterface, ReentrancyGuard {
    *      by the collateral requirement. The degree to which it is greater should be based on
    *      the expected asset volatility.
    * @param _derivative The `ExpiringMultiParty`
-   * @param _liquidityProvider The liquidity provider
-   * @param _validator The address that validates mint and exchange requests
+   * @param _roles The addresses of admin, maintainer, liquidity provider and validator
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
    * @param _fee The fee structure
    */
   constructor(
     IExpiringMultiParty _derivative,
-    address _liquidityProvider,
-    address _validator,
+    Roles memory _roles,
     uint256 _startingCollateralization,
     Fee memory _fee
   ) public nonReentrant {
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(LIQUIDITY_PROVIDER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(VALIDATOR_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
+    _setupRole(LIQUIDITY_PROVIDER_ROLE, _roles.liquidityProvider);
+    _setupRole(VALIDATOR_ROLE, _roles.validator);
     ticStorage.initialize(
       _derivative,
-      _liquidityProvider,
-      _validator,
+      _roles.liquidityProvider,
+      _roles.validator,
       FixedPoint.Unsigned(_startingCollateralization)
     );
     setFee(_fee);
@@ -123,16 +141,27 @@ contract TIC is TICInterface, ReentrancyGuard {
   // Modifiers
   //----------------------------------------
 
+  modifier onlyMaintainer() {
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
+    );
+    _;
+  }
+
   modifier onlyLiquidityProvider() {
     require(
-      msg.sender == ticStorage.liquidityProvider,
-      'Must be liquidity provider'
+      hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender),
+      'Sender must be the liquidity provider'
     );
     _;
   }
 
   modifier onlyValidator() {
-    require(msg.sender == ticStorage.validator, 'Must be validator');
+    require(
+      hasRole(VALIDATOR_ROLE, msg.sender),
+      'Sender must be the validator'
+    );
     _;
   }
 
@@ -522,12 +551,7 @@ contract TIC is TICInterface, ReentrancyGuard {
    * @notice Update the fee percentage, recipients and recipient proportions
    * @param _fee Fee struct containing percentage, recipients and proportions
    */
-  function setFee(Fee memory _fee)
-    public
-    override
-    nonReentrant
-    onlyLiquidityProvider
-  {
+  function setFee(Fee memory _fee) public override nonReentrant onlyMaintainer {
     setFeePercentage(_fee.feePercentage.rawValue);
     setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
   }
@@ -540,7 +564,7 @@ contract TIC is TICInterface, ReentrancyGuard {
     public
     override
     nonReentrant
-    onlyLiquidityProvider
+    onlyMaintainer
   {
     ticStorage.setFeePercentage(FixedPoint.Unsigned(_feePercentage));
     emit SetFeePercentage(_feePercentage);
@@ -554,7 +578,7 @@ contract TIC is TICInterface, ReentrancyGuard {
   function setFeeRecipients(
     address[] memory _feeRecipients,
     uint32[] memory _feeProportions
-  ) public override nonReentrant onlyLiquidityProvider {
+  ) public override nonReentrant onlyMaintainer {
     ticStorage.setFeeRecipients(_feeRecipients, _feeProportions);
     emit SetFeeRecipients(_feeRecipients, _feeProportions);
   }

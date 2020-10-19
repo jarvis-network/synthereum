@@ -17,6 +17,14 @@ interface TICInterface {
     uint32[] feeProportions;
   }
 
+  //Describe role structure
+  struct Roles {
+    address admin;
+    address maintainer;
+    address liquidityProvider;
+    address validator;
+  }
+
   struct MintRequest {
     bytes32 mintID;
     uint256 timestamp;
