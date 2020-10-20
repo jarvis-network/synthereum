@@ -11225,6 +11225,11 @@ fake-merkle-patricia-tree@^1.0.1:
   dependencies:
     checkpoint-store "^1.1.0"
 
+fancy-canvas@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/fancy-canvas/-/fancy-canvas-0.2.2.tgz#33fd4976724169a1eda5015f515a2a1302d1ec91"
+  integrity sha512-50qi8xA0QkHbjmb8h7XQ6k2fvD7y/yMfiUw9YTarJ7rWrq6o5/3CCXPouYk+XSLASvvxtjyiQLRBFt3qkE3oyA==
+
 fancy-log@^1.3.2:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/fancy-log/-/fancy-log-1.3.3.tgz#dbc19154f558690150a23953a0adbd035be45fc7"
@@ -14783,6 +14788,13 @@ liftoff@^3.1.0:
     object.map "^1.0.0"
     rechoir "^0.6.2"
     resolve "^1.1.7"
+
+lightweight-charts@^3.1.5:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/lightweight-charts/-/lightweight-charts-3.1.5.tgz#d8b9c413dcfe55da1ca6520afb8014359800a90c"
+  integrity sha512-8EnvrOVJIjnQka7Eqag5noH+Wl4n9viYbLDajM/dWPS3jJIig83AMK49lOO9DNW9l72N8PaQKx9ztYNVT3BiMA==
+  dependencies:
+    fancy-canvas "0.2.2"
 
 lines-and-columns@^1.1.6:
   version "1.1.6"
