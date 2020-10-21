@@ -1,13 +1,13 @@
-import {ThemeNameType} from "@jarvis-network/ui";
-import {UserState} from "bnc-onboard/dist/src/interfaces";
+import { ThemeNameType } from '@jarvis-network/ui';
+import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 export interface State {
   theme: ThemeNameType;
-  auth: Omit<UserState, "wallet">,
+  auth: Omit<UserState, 'wallet'>;
 }
 
 const initialState: State = {
-  theme: "light",
+  theme: 'light',
   auth: {
     address: null,
     network: null,

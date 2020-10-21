@@ -1,4 +1,4 @@
-import {styled} from "@jarvis-network/ui";
+import { styled } from '@jarvis-network/ui';
 
 const Background = styled.div<{ image: string }>`
   height: 100%;
@@ -10,6 +10,6 @@ const Background = styled.div<{ image: string }>`
   @media (min-width: 721px) {
     background-position: center 118px;
   }
-`
+`;
 
 export default Background;

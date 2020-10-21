@@ -1,9 +1,8 @@
-import React from "react";
+import React from 'react';
+import { Header, styled } from '@jarvis-network/ui';
 
-import { Header, styled } from "@jarvis-network/ui";
-import NextLinkAdapter from "components/NextLink";
-
-import rightRenderer from "components/header/rightRenderer";
+import NextLinkAdapter from '@/components/NextLink';
+import rightRenderer from '@/components/header/rightRenderer';
 
 const Container = styled.div`
   height: 100%;
@@ -17,7 +16,7 @@ const HeaderContainer = styled.div`
   border-width: 0;
   border-bottom-width: 1px;
 
-  img[alt=Logo] {
+  img[alt='Logo'] {
     height: 30px;
     margin-left: 15px;
   }
@@ -26,7 +25,7 @@ const HeaderContainer = styled.div`
     order: 1;
     border-bottom-width: 0;
   }
-`
+`;
 
 const CustomHeader = styled(Header)`
   padding-top: 0;
@@ -38,22 +37,20 @@ const CustomHeader = styled(Header)`
 const Content = styled.div`
   overflow-y: auto;
   flex: 1;
-`
+`;
 
-const StickyHeader = (props) => {
+const StickyHeader = ({ children }) => {
   return (
     <Container>
       <HeaderContainer>
         <CustomHeader
-          leftSide={{ menu: []}}
+          leftSide={{ menu: [] }}
           rightSide={rightRenderer}
           link={NextLinkAdapter}
-          logoUrl={"/images/logo.svg"}
+          logoUrl="/images/logo.svg"
         />
       </HeaderContainer>
-      <Content className={"content"}>
-        {props.children}
-      </Content>
+      <Content className="content">{children}</Content>
     </Container>
   );
 };

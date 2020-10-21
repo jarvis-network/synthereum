@@ -1,11 +1,11 @@
-import React, { createContext, useState, useEffect} from "react";
-import { useDispatch } from 'react-redux'
-import Onboard from "bnc-onboard";
-import Web3 from "web3";
-import {API} from "bnc-onboard/dist/src/interfaces";
+import React, { createContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import Onboard from 'bnc-onboard';
+import Web3 from 'web3';
+import { API } from 'bnc-onboard/dist/src/interfaces';
 
-import {setLoginState} from "state/slices/auth";
-import ENSHelper from "utils/ens";
+import { setLoginState } from '@/state/slices/auth';
+import ENSHelper from '@/utils/ens';
 
 interface AuthMethods {
   login: (wallet?: string) => Promise<boolean>;
@@ -29,20 +29,20 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const onboard = Onboard({
+    const onboardInstance = Onboard({
       dappId: ONBOARD_API_KEY,
       networkId: NETWORK_ID,
       subscriptions: {
         wallet: wallet => {
-          const web3 = new Web3(wallet.provider);
-          setWeb3(web3);
-          const ens = new ENSHelper(web3);
-          setEns(ens)
-        }
-      }
+          const web3instance = new Web3(wallet.provider);
+          setWeb3(web3instance);
+          const ensInstance = new ENSHelper(web3instance);
+          setEns(ensInstance);
+        },
+      },
     });
-    setOnboard(onboard);
-  }, [])
+    setOnboard(onboardInstance);
+  }, []);
 
   useEffect(() => {
     if (!onboard) {
@@ -57,25 +57,25 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
         }
         const check = await onboard.walletCheck();
         if (check) {
-          const onboardState = onboard.getState()
-          localStorage.setItem("jarvis/autologin", onboardState.wallet.name);
+          const onboardState = onboard.getState();
+          localStorage.setItem('jarvis/autologin', onboardState.wallet.name);
 
           const state = { ...onboardState };
           delete state.wallet;
-          dispatch(setLoginState(state))
+          dispatch(setLoginState(state));
         }
         return check;
       },
       logout() {
         onboard.walletReset();
-        const state = { ... onboard.getState() }
+        const state = { ...onboard.getState() };
         delete state.wallet;
-        localStorage.removeItem("jarvis/autologin");
+        localStorage.removeItem('jarvis/autologin');
 
-        dispatch(setLoginState(state))
-      }
-    })
-  }, [onboard])
+        dispatch(setLoginState(state));
+      },
+    });
+  }, [onboard]);
 
   if (!auth) {
     // wait for instances to be ready before rendering anything that may depend
@@ -87,20 +87,13 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
     <OnboardContext.Provider value={onboard}>
       <Web3Context.Provider value={web3}>
         <ENSContext.Provider value={ens}>
-          <AuthContext.Provider value={auth}>
-            {children}
-          </AuthContext.Provider>
+          <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
         </ENSContext.Provider>
       </Web3Context.Provider>
     </OnboardContext.Provider>
-  )
+  );
 };
 
-export default AuthProvider
+export default AuthProvider;
 
-export {
-  OnboardContext,
-  Web3Context,
-  AuthContext,
-  ENSContext,
-}
+export { OnboardContext, Web3Context, AuthContext, ENSContext };

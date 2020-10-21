@@ -1,17 +1,13 @@
-import React from "react";
-import { useSelector } from 'react-redux'
-import { ThemeProvider} from "@jarvis-network/ui";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { ThemeProvider } from '@jarvis-network/ui';
 
-import {State} from "state/initialState";
+import { State } from '@/state/initialState';
 
-const AppThemeProvider = (props) => {
-  const theme = useSelector((state: State) => state.theme)
+const AppThemeProvider = ({ children }) => {
+  const theme = useSelector((state: State) => state.theme);
 
-  return (
-    <ThemeProvider theme={theme}>
-      {props.children}
-    </ThemeProvider>
-  );
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
 export default AppThemeProvider;

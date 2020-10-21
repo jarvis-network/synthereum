@@ -1,10 +1,10 @@
-import blockies from "ethereum-blockies";
+import blockies from 'ethereum-blockies';
 
 const cache = new Map<string, string>();
 
 const avatar = (seed: string): string => {
-  if (typeof window === "undefined") {
-    return "";
+  if (typeof window === 'undefined') {
+    return '';
   }
 
   if (cache.get(seed)) {
@@ -12,14 +12,14 @@ const avatar = (seed: string): string => {
   }
 
   const icon = blockies.create({
-    seed: seed,
+    seed,
     // warning: due to a bug in etherum-blockies colors can't be left random
     color: '#742dd0',
     bgcolor: '#28b710',
-    spotcolor: "#fff",
+    spotcolor: '#fff',
   });
-  cache.set(seed, icon.toDataURL("image/png"));
+  cache.set(seed, icon.toDataURL('image/png'));
   return cache.get(seed);
-}
+};
 
 export default avatar;

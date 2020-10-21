@@ -1,20 +1,20 @@
-import React from "react";
-import {styled, Tabs} from "@jarvis-network/ui";
-import { useSelector } from 'react-redux'
+import React from 'react';
+import { styled, Tabs } from '@jarvis-network/ui';
+import { useSelector } from 'react-redux';
 
-import {State} from "state/initialState";
+import { State } from '@/state/initialState';
 
 const tabs = [
   {
-    title: "Exchange",
+    title: 'Exchange',
   },
-]
+];
 
 const mainContentBackground = {
-  night: "#2e3541",
-  dark: "#292929",
-  light: "#fff",
-}
+  night: '#2e3541',
+  dark: '#292929',
+  light: '#fff',
+};
 
 const Container = styled.div`
   width: 500px;
@@ -29,8 +29,8 @@ const ExampleBox = () => {
   const theme = useSelector((state: State) => state.theme);
 
   const boxStyle = {
-    background: mainContentBackground[theme]
-  }
+    background: mainContentBackground[theme],
+  };
 
   return (
     <Container style={boxStyle}>

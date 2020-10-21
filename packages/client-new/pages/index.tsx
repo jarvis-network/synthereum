@@ -1,11 +1,11 @@
-import React from "react";
-import { useSelector } from 'react-redux'
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import {State} from "state/initialState";
-import StickyHeader from "components/header/StickyHeader";
-import backgroundMap from "data/backgrounds";
-import Background from "components/Background";
-import ExampleBox from "components/ExampleBox";
+import { State } from '@/state/initialState';
+import StickyHeader from '@/components/header/StickyHeader';
+import backgroundMap from '@/data/backgrounds';
+import Background from '@/components/Background';
+import ExampleBox from '@/components/ExampleBox';
 
 export default function Home() {
   const theme = useSelector((state: State) => state.theme);
@@ -17,5 +17,5 @@ export default function Home() {
         <ExampleBox />
       </Background>
     </StickyHeader>
-  )
+  );
 }

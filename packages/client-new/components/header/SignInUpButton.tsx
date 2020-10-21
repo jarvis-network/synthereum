@@ -1,5 +1,5 @@
-import React from "react";
-import {styled} from "@jarvis-network/ui";
+import React from 'react';
+import { styled } from '@jarvis-network/ui';
 
 interface Props {
   onClick: () => void;
@@ -21,10 +21,8 @@ const Button = styled.button`
   outline: none;
 `;
 
-const SignInUpButton: React.FC<Props> = (props) => {
-    return (
-      <Button onClick={props.onClick}>Sign in / Sign up</Button>
-    );
+const SignInUpButton: React.FC<Props> = ({ onClick }) => {
+  return <Button onClick={onClick}>Sign in / Sign up</Button>;
 };
 
 export default SignInUpButton;
