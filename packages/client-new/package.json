@@ -9,9 +9,10 @@
         "postinstall": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/"
     },
     "dependencies": {
-        "@jarvis-network/ui": "^0.4.4",
+        "@jarvis-network/ui": "^0.4.5",
         "@reduxjs/toolkit": "^1.4.0",
         "bnc-onboard": "^1.14.0",
+        "eth-ens-namehash": "^2.0.8",
         "ethereum-blockies": "^0.1.1",
         "next": "9.5.3",
         "react": "16.13.1",

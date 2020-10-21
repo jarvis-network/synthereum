@@ -7,6 +7,7 @@ import {AuthContext} from "components/auth/AuthProvider";
 import {State} from "state/initialState";
 import { setTheme } from "state/slices/theme";
 import avatar from "utils/avatar";
+import usePrettyName from "utils/usePrettyName";
 
 const noop = () => undefined;
 
@@ -21,6 +22,7 @@ const render = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state: State) => state.auth);
   const authLogin = useContext(AuthContext)
+  const name = usePrettyName(auth.address)
 
   const logIn = async () => {
     await authLogin.login();
@@ -62,7 +64,7 @@ const render = () => {
         width={"195px"}
         links={links}
         position={"absolute"}
-        name={""}
+        name={name || ""}
         wallet={addr}
         onLogout={authLogin.logout}
         onModeChange={() => null}

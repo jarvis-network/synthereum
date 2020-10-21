@@ -3,24 +3,28 @@ import { useDispatch } from 'react-redux'
 import Onboard from "bnc-onboard";
 import Web3 from "web3";
 import {API} from "bnc-onboard/dist/src/interfaces";
-import {setLoginState} from "../../state/slices/auth";
 
-const OnboardContext = createContext(null);
-const Web3Context = createContext(null);
-const AuthContext = createContext(null);
-
-const NETWORK_ID = 42;
-const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
+import {setLoginState} from "state/slices/auth";
+import ENSHelper from "utils/ens";
 
 interface AuthMethods {
   login: (wallet?: string) => Promise<boolean>;
   logout: () => void;
 }
 
+const OnboardContext = createContext<API>(null);
+const Web3Context = createContext<Web3>(null);
+const AuthContext = createContext<AuthMethods>(null);
+const ENSContext = createContext<ENSHelper>(null);
+
+const NETWORK_ID = 42;
+const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
+
 const AuthProvider: React.FC<{}> = ({ children }) => {
+  const [ens, setEns] = useState<ENSHelper>();
   const [web3, setWeb3] = useState<Web3>();
   const [onboard, setOnboard] = useState<API>();
-  const [login, setLogin] = useState<AuthMethods>();
+  const [auth, setAuth] = useState<AuthMethods>();
 
   const dispatch = useDispatch();
 
@@ -30,7 +34,10 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
       networkId: NETWORK_ID,
       subscriptions: {
         wallet: wallet => {
-          setWeb3(new Web3(wallet.provider));
+          const web3 = new Web3(wallet.provider);
+          setWeb3(web3);
+          const ens = new ENSHelper(web3);
+          setEns(ens)
         }
       }
     });
@@ -42,7 +49,7 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
       return;
     }
 
-    setLogin({
+    setAuth({
       async login(wallet) {
         const select = await onboard.walletSelect(wallet);
         if (!select) {
@@ -63,13 +70,14 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
         onboard.walletReset();
         const state = { ... onboard.getState() }
         delete state.wallet;
+        localStorage.removeItem("jarvis/autologin");
 
         dispatch(setLoginState(state))
       }
     })
   }, [onboard])
 
-  if (!login) {
+  if (!auth) {
     // wait for instances to be ready before rendering anything that may depend
     // on them
     return null;
@@ -78,9 +86,11 @@ const AuthProvider: React.FC<{}> = ({ children }) => {
   return (
     <OnboardContext.Provider value={onboard}>
       <Web3Context.Provider value={web3}>
-        <AuthContext.Provider value={login}>
-          {children}
-        </AuthContext.Provider>
+        <ENSContext.Provider value={ens}>
+          <AuthContext.Provider value={auth}>
+            {children}
+          </AuthContext.Provider>
+        </ENSContext.Provider>
       </Web3Context.Provider>
     </OnboardContext.Provider>
   )
@@ -92,4 +102,5 @@ export {
   OnboardContext,
   Web3Context,
   AuthContext,
+  ENSContext,
 }
