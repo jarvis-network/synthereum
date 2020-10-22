@@ -1,0 +1,392 @@
+{
+  "contractName": "FundingRateStoreInterface",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "identifier",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getFundingRateForIdentifier",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "rawValue",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct FixedPoint.Unsigned",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"identifier\",\"type\":\"bytes32\"}],\"name\":\"getFundingRateForIdentifier\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Interface used by financial contracts to interact with a storage contract which sets and gets funding rates.\",\"methods\":{\"getFundingRateForIdentifier(bytes32)\":{\"details\":\"This method should never revert.\",\"params\":{\"identifier\":\"uniquely identifier that the calling contracts wants to get a funding rate for.\"},\"returns\":{\"_0\":\"FixedPoint representing the funding rate for the given identifier. Rates > 1 represent \\\"positive\\\" funding rates, and < 1 represent \\\"negative\\\" funding rates.\"}}},\"title\":\"Funding Rate Store interface.\"},\"userdoc\":{\"methods\":{\"getFundingRateForIdentifier(bytes32)\":{\"notice\":\"Gets the latest funding rate for `identifier`.\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/interfaces/FundingRateStoreInterface.sol\":\"FundingRateStoreInterface\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xeaa0bef7c35ff2902ef852864d217d75071da9cc96e9cdf5dcb77d54f4e4fefa\",\"urls\":[\"bzz-raw://9c5b1224f4bb7d8d992a1c71b8e2f8c2c8e655af30eb468058dd0eade3218d13\",\"dweb:/ipfs/QmYQ1WUhRwHgfPL5v1MVjCL7AvSVPEdPJt53Q2L5R6zwJU\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/interfaces/FundingRateStoreInterface.sol\":{\"keccak256\":\"0xbf8ec493b730f0cb3f9b4b57fe2d50aba513c1f7e6f868176b120f7cce3499e3\",\"urls\":[\"bzz-raw://b9c5675e801fe4296818ac22513d0c6a7487dce6d46bd57d48f86c813795f47f\",\"dweb:/ipfs/QmaYuB1PP1zEDJ8yM6wwCGtUJ3BF4EKNbfT6kkuQGFu8jE\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\nimport \"../../../common/implementation/FixedPoint.sol\";\n\n\n/**\n * @title Funding Rate Store interface.\n * @dev Interface used by financial contracts to interact with a storage contract which sets and gets funding rates.\n */\ninterface FundingRateStoreInterface {\n    /**\n     * @notice Gets the latest funding rate for `identifier`.\n     * @dev This method should never revert.\n     * @param identifier uniquely identifier that the calling contracts wants to get a funding rate for.\n     * @return FixedPoint representing the funding rate for the given identifier. Rates > 1 represent \"positive\"\n     * funding rates, and < 1 represent \"negative\" funding rates.\n     */\n    function getFundingRateForIdentifier(bytes32 identifier) external view returns (FixedPoint.Unsigned memory);\n}\n",
+  "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/interfaces/FundingRateStoreInterface.sol",
+  "ast": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/interfaces/FundingRateStoreInterface.sol",
+    "exportedSymbols": {
+      "FundingRateStoreInterface": [
+        12468
+      ]
+    },
+    "id": 12469,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 12456,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:44"
+      },
+      {
+        "id": 12457,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:44"
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
+        "file": "../../../common/implementation/FixedPoint.sol",
+        "id": 12458,
+        "nodeType": "ImportDirective",
+        "scope": 12469,
+        "sourceUnit": 4556,
+        "src": "59:55:44",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 12459,
+          "nodeType": "StructuredDocumentation",
+          "src": "117:164:44",
+          "text": " @title Funding Rate Store interface.\n @dev Interface used by financial contracts to interact with a storage contract which sets and gets funding rates."
+        },
+        "fullyImplemented": false,
+        "id": 12468,
+        "linearizedBaseContracts": [
+          12468
+        ],
+        "name": "FundingRateStoreInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 12460,
+              "nodeType": "StructuredDocumentation",
+              "src": "324:402:44",
+              "text": " @notice Gets the latest funding rate for `identifier`.\n @dev This method should never revert.\n @param identifier uniquely identifier that the calling contracts wants to get a funding rate for.\n @return FixedPoint representing the funding rate for the given identifier. Rates > 1 represent \"positive\"\n funding rates, and < 1 represent \"negative\" funding rates."
+            },
+            "functionSelector": "3933870d",
+            "id": 12467,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getFundingRateForIdentifier",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 12463,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 12462,
+                  "mutability": "mutable",
+                  "name": "identifier",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12467,
+                  "src": "768:18:44",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 12461,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "768:7:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "767:20:44"
+            },
+            "returnParameters": {
+              "id": 12466,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 12465,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12467,
+                  "src": "811:26:44",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 12464,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "811:19:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "810:28:44"
+            },
+            "scope": 12468,
+            "src": "731:108:44",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 12469,
+        "src": "282:559:44"
+      }
+    ],
+    "src": "0:842:44"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/interfaces/FundingRateStoreInterface.sol",
+    "exportedSymbols": {
+      "FundingRateStoreInterface": [
+        12468
+      ]
+    },
+    "id": 12469,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 12456,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:44"
+      },
+      {
+        "id": 12457,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:44"
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol",
+        "file": "../../../common/implementation/FixedPoint.sol",
+        "id": 12458,
+        "nodeType": "ImportDirective",
+        "scope": 12469,
+        "sourceUnit": 4556,
+        "src": "59:55:44",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 12459,
+          "nodeType": "StructuredDocumentation",
+          "src": "117:164:44",
+          "text": " @title Funding Rate Store interface.\n @dev Interface used by financial contracts to interact with a storage contract which sets and gets funding rates."
+        },
+        "fullyImplemented": false,
+        "id": 12468,
+        "linearizedBaseContracts": [
+          12468
+        ],
+        "name": "FundingRateStoreInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 12460,
+              "nodeType": "StructuredDocumentation",
+              "src": "324:402:44",
+              "text": " @notice Gets the latest funding rate for `identifier`.\n @dev This method should never revert.\n @param identifier uniquely identifier that the calling contracts wants to get a funding rate for.\n @return FixedPoint representing the funding rate for the given identifier. Rates > 1 represent \"positive\"\n funding rates, and < 1 represent \"negative\" funding rates."
+            },
+            "functionSelector": "3933870d",
+            "id": 12467,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getFundingRateForIdentifier",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 12463,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 12462,
+                  "mutability": "mutable",
+                  "name": "identifier",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12467,
+                  "src": "768:18:44",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 12461,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "768:7:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "767:20:44"
+            },
+            "returnParameters": {
+              "id": 12466,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 12465,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12467,
+                  "src": "811:26:44",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 12464,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "811:19:44",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "810:28:44"
+            },
+            "scope": 12468,
+            "src": "731:108:44",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 12469,
+        "src": "282:559:44"
+      }
+    ],
+    "src": "0:842:44"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-22T14:01:04.436Z",
+  "devdoc": {
+    "details": "Interface used by financial contracts to interact with a storage contract which sets and gets funding rates.",
+    "methods": {
+      "getFundingRateForIdentifier(bytes32)": {
+        "details": "This method should never revert.",
+        "params": {
+          "identifier": "uniquely identifier that the calling contracts wants to get a funding rate for."
+        },
+        "returns": {
+          "_0": "FixedPoint representing the funding rate for the given identifier. Rates > 1 represent \"positive\" funding rates, and < 1 represent \"negative\" funding rates."
+        }
+      }
+    },
+    "title": "Funding Rate Store interface."
+  },
+  "userdoc": {
+    "methods": {
+      "getFundingRateForIdentifier(bytes32)": {
+        "notice": "Gets the latest funding rate for `identifier`."
+      }
+    }
+  }
+}

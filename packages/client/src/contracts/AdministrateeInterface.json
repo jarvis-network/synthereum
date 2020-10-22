@@ -28,15 +28,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
     "exportedSymbols": {
       "AdministrateeInterface": [
-        16680
+        20691
       ]
     },
-    "id": 16681,
+    "id": 20692,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16670,
+        "id": 20681,
         "literals": [
           "solidity",
           "^",
@@ -44,7 +44,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:62"
+        "src": "0:23:72"
       },
       {
         "abstract": false,
@@ -52,15 +52,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16671,
+          "id": 20682,
           "nodeType": "StructuredDocumentation",
-          "src": "26:77:62",
+          "src": "26:77:72",
           "text": " @title Interface that all financial contracts expose to the admin."
         },
         "fullyImplemented": false,
-        "id": 16680,
+        "id": 20691,
         "linearizedBaseContracts": [
-          16680
+          20691
         ],
         "name": "AdministrateeInterface",
         "nodeType": "ContractDefinition",
@@ -68,13 +68,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16672,
+              "id": 20683,
               "nodeType": "StructuredDocumentation",
-              "src": "143:83:62",
+              "src": "143:83:72",
               "text": " @notice Initiates the shutdown process, in case of an emergency."
             },
             "functionSelector": "3403c2fc",
-            "id": 16675,
+            "id": 20686,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -82,19 +82,19 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16673,
+              "id": 20684,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "257:2:62"
+              "src": "257:2:72"
             },
             "returnParameters": {
-              "id": 16674,
+              "id": 20685,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "268:0:62"
+              "src": "268:0:72"
             },
-            "scope": 16680,
-            "src": "231:38:62",
+            "scope": 20691,
+            "src": "231:38:72",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -102,13 +102,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16676,
+              "id": 20687,
               "nodeType": "StructuredDocumentation",
-              "src": "275:241:62",
+              "src": "275:241:72",
               "text": " @notice A core contract method called independently or as a part of other financial contract transactions.\n @dev It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract."
             },
             "functionSelector": "bda02e77",
-            "id": 16679,
+            "id": 20690,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -116,43 +116,43 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16677,
+              "id": 20688,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "538:2:62"
+              "src": "538:2:72"
             },
             "returnParameters": {
-              "id": 16678,
+              "id": 20689,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "549:0:62"
+              "src": "549:0:72"
             },
-            "scope": 16680,
-            "src": "521:29:62",
+            "scope": 20691,
+            "src": "521:29:72",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16681,
-        "src": "104:448:62"
+        "scope": 20692,
+        "src": "104:448:72"
       }
     ],
-    "src": "0:553:62"
+    "src": "0:553:72"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/AdministrateeInterface.sol",
     "exportedSymbols": {
       "AdministrateeInterface": [
-        16680
+        20691
       ]
     },
-    "id": 16681,
+    "id": 20692,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 16670,
+        "id": 20681,
         "literals": [
           "solidity",
           "^",
@@ -160,7 +160,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:62"
+        "src": "0:23:72"
       },
       {
         "abstract": false,
@@ -168,15 +168,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 16671,
+          "id": 20682,
           "nodeType": "StructuredDocumentation",
-          "src": "26:77:62",
+          "src": "26:77:72",
           "text": " @title Interface that all financial contracts expose to the admin."
         },
         "fullyImplemented": false,
-        "id": 16680,
+        "id": 20691,
         "linearizedBaseContracts": [
-          16680
+          20691
         ],
         "name": "AdministrateeInterface",
         "nodeType": "ContractDefinition",
@@ -184,13 +184,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16672,
+              "id": 20683,
               "nodeType": "StructuredDocumentation",
-              "src": "143:83:62",
+              "src": "143:83:72",
               "text": " @notice Initiates the shutdown process, in case of an emergency."
             },
             "functionSelector": "3403c2fc",
-            "id": 16675,
+            "id": 20686,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -198,19 +198,19 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16673,
+              "id": 20684,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "257:2:62"
+              "src": "257:2:72"
             },
             "returnParameters": {
-              "id": 16674,
+              "id": 20685,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "268:0:62"
+              "src": "268:0:72"
             },
-            "scope": 16680,
-            "src": "231:38:62",
+            "scope": 20691,
+            "src": "231:38:72",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -218,13 +218,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 16676,
+              "id": 20687,
               "nodeType": "StructuredDocumentation",
-              "src": "275:241:62",
+              "src": "275:241:72",
               "text": " @notice A core contract method called independently or as a part of other financial contract transactions.\n @dev It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract."
             },
             "functionSelector": "bda02e77",
-            "id": 16679,
+            "id": 20690,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -232,29 +232,29 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 16677,
+              "id": 20688,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "538:2:62"
+              "src": "538:2:72"
             },
             "returnParameters": {
-              "id": 16678,
+              "id": 20689,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "549:0:62"
+              "src": "549:0:72"
             },
-            "scope": 16680,
-            "src": "521:29:62",
+            "scope": 20691,
+            "src": "521:29:72",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 16681,
-        "src": "104:448:62"
+        "scope": 20692,
+        "src": "104:448:72"
       }
     ],
-    "src": "0:553:62"
+    "src": "0:553:72"
   },
   "compiler": {
     "name": "solc",
@@ -262,7 +262,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.5",
-  "updatedAt": "2020-10-19T18:33:22.444Z",
+  "updatedAt": "2020-10-22T14:01:04.647Z",
   "devdoc": {
     "methods": {
       "remargin()": {

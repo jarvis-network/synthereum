@@ -1,0 +1,2296 @@
+{
+  "contractName": "Umip15Upgrader",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_governor",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_existingVoting",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_newVoting",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_finder",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "existingVoting",
+      "outputs": [
+        {
+          "internalType": "contract Voting",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "finder",
+      "outputs": [
+        {
+          "internalType": "contract Finder",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "governor",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "newVoting",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "upgrade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_governor\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_existingVoting\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_newVoting\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_finder\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"existingVoting\",\"outputs\":[{\"internalType\":\"contract Voting\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"finder\",\"outputs\":[{\"internalType\":\"contract Finder\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"governor\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"newVoting\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"upgrade\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"title\":\"A contract to track a whitelist of addresses.\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/umips/Umip15Upgrader.sol\":\"Umip15Upgrader\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/ExpandedERC20.sol\":{\"keccak256\":\"0x24cca39fcaab3e759d15b90a62aaf5c20343318593f598e9d652d3e9e57de191\",\"urls\":[\"bzz-raw://a236292c9c9a00f524c80f61f43e4b795e849531dcb0b5ef868d942e06ccc10c\",\"dweb:/ipfs/Qma9ssE3jQsgijsaSMrfxzzzKY9q79HyA9giqZ8gzjhY5F\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xeaa0bef7c35ff2902ef852864d217d75071da9cc96e9cdf5dcb77d54f4e4fefa\",\"urls\":[\"bzz-raw://9c5b1224f4bb7d8d992a1c71b8e2f8c2c8e655af30eb468058dd0eade3218d13\",\"dweb:/ipfs/QmYQ1WUhRwHgfPL5v1MVjCL7AvSVPEdPJt53Q2L5R6zwJU\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/MultiRole.sol\":{\"keccak256\":\"0x93b7932a9bf98defef8cd3dedfd7a11d8054107f123014cfd98970f491e96ed4\",\"urls\":[\"bzz-raw://f4d0201fe3e21a78bb805b9add2d0184be86a0bb706fdfcfd75ac95f8ac4aab9\",\"dweb:/ipfs/QmXjFT3zUMZ1T1omL8d8RTr7MDhCoLuAqFpCKJs3D6tJmy\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Testable.sol\":{\"keccak256\":\"0x15b3f57e51e6e1d5f11b09cefd1cc60550e72fb827bf7cf8ff67b208368c7ec0\",\"urls\":[\"bzz-raw://8bdd28e1cb12662124354cc330acd14733dfbb786daf6401b1f5969a1e11b14d\",\"dweb:/ipfs/QmWY8kEXEALJ55CgHSCPZgAA4b39Ef2YdKshhnvqkyWEcm\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Timer.sol\":{\"keccak256\":\"0x1db17ce4c028ed96713c3fddda6d34155281e104a47b2c65283fd0f8293d78b1\",\"urls\":[\"bzz-raw://8f306faba8d5190f36c87a8f47cce3bd7894bc5540599819aea2dd5b8ffa9413\",\"dweb:/ipfs/Qmeg4wuF1Dw5DAuoxyfnrmMZ5MK6af226hEHxCJgWKgrch\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/ExpandedIERC20.sol\":{\"keccak256\":\"0xdde1eb1c04fb1733219a7946c04ba5e2a763dc7c5e64b71240c2deaab1e811d5\",\"urls\":[\"bzz-raw://e5997f5c5cfb0a76cdcce36e937971b32707d70e7f37bb8cf9722c3c98a3dc63\",\"dweb:/ipfs/QmXtGBrJDk87Rot81L2T1YFyEtivBHMiuaXrgZYnFAsciH\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol\":{\"keccak256\":\"0xfa5379e18f31da723268d949acf3ecd8b76593467210032e91e2ac47201e9c80\",\"urls\":[\"bzz-raw://c15222ccf0c0e418ebe2915e59b8765db4335f11a83f5db44436719da02da51a\",\"dweb:/ipfs/QmQfj8ADqa5s7EpeqNmnt1g5YUid9Yc49DQvtufrpL1Npq\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Finder.sol\":{\"keccak256\":\"0xccd0161e5c45c1c87db216634786e9dcd941202457b04789adbc223ba007d976\",\"urls\":[\"bzz-raw://592de6f9c65311e1109c6135c5965d1bbedf4287c2b2afb572904f8319c30960\",\"dweb:/ipfs/QmT14HB1e4G3TjmCgyHZ4H7imFFD53RN3Z6NWuVmzZB5y6\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Registry.sol\":{\"keccak256\":\"0xb9267d77d51680272ee375a0dfe930b9bccfc248f8eb03a2f692671f67903d1c\",\"urls\":[\"bzz-raw://12edbdbd26d12c48dd790c79122e9a34f99f9aece10449fdf25a008735be2544\",\"dweb:/ipfs/QmNeS4JdnMqqjkDJ38RcowKwSktKBXZZbNWq3M4T6mQ8yE\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/ResultComputation.sol\":{\"keccak256\":\"0xbbfb6a7e5db762994f6798bf534dd2042452963b0cbb31164319ed1ac3b350b8\",\"urls\":[\"bzz-raw://a2ad051ada25c5149a37c3a80d4b94d08ed7c55aabe04954890921f7a41f058a\",\"dweb:/ipfs/QmdUtJ7aRqqgqE6jnpU7JVdUssJPbn1XUEj8stymfTqLpJ\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VoteTiming.sol\":{\"keccak256\":\"0xe344ecb50ad8caa1cfcd86bcabbc22385e76fa41916eefaf6c1e70ee1f81f14d\",\"urls\":[\"bzz-raw://348a246b1a1c58ffe830b1e00284d9919e26a9fa368b03dcdeb06d2180c69433\",\"dweb:/ipfs/QmUCAhLUY9YUeJXYkpDvF2HZkrN9665eh8eacpmr4m69bS\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Voting.sol\":{\"keccak256\":\"0x132782db4ef4bcd6ccfb2635ceae26afa3aea5d630fff980aec6ebfa386cfa76\",\"urls\":[\"bzz-raw://60ca9114a287c7ff44685aabd929d57683cd960ac82cbf5f2808ed200787f3f4\",\"dweb:/ipfs/QmXwWumGdALjPsCU32qgBTjrYdc34qpJuB9sQmTHRTjFvY\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/VotingToken.sol\":{\"keccak256\":\"0xd75bce30b76f3c2caf8815af47673b3d4c33f10be856f8008d095619846bec6e\",\"urls\":[\"bzz-raw://ce83b3a24ecfa858a7a85dda1e08c8cbbaf6556196661149cdc4fb4045ea8896\",\"dweb:/ipfs/QmbhsFdGTh8CY9bEExniK2ytGcmT1n5h6QE6WXCEZcGjYk\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol\":{\"keccak256\":\"0x266903a280400446041bbc9c839c2be8805bbde710a42c5cad36d6eb2d932a17\",\"urls\":[\"bzz-raw://16bb92ad84fcec107a09ea6a5b3987f8217842e1c5e676b64fc0c3191f32ed91\",\"dweb:/ipfs/QmVjLDHUuqN527VSrzQAy8ox1infQro6kTaZQ7ezX9weeA\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/IdentifierWhitelistInterface.sol\":{\"keccak256\":\"0x0b1eef7b2b24bafb30c446bc99fa826352bb5e8c12b56f0a1867bdcee8583789\",\"urls\":[\"bzz-raw://8c03cc413725a68b581c9ecc363bdc67b1a0263893651836a6f012a1924b621c\",\"dweb:/ipfs/QmYz1wQJHtpoEutko6J4BSKb2bAw8ARQvyviSLN5Pqkr38\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/OracleInterface.sol\":{\"keccak256\":\"0xcf0a9487f059626ddfb4555fcc4ea4c1223c68267aaaf342541ebf38d1c37527\",\"urls\":[\"bzz-raw://dc27e5ca23a9d7711ce0d819ac096b4c5609014fad6ccc7bb8a724f761987d5e\",\"dweb:/ipfs/QmZnaKgBefrkis9V5UUfkWKagKAX3dEcYK6WgTRSZhBeRp\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/RegistryInterface.sol\":{\"keccak256\":\"0x9945a1e0c23bf6dfeb768de35c3a3b1cb5325b229add6cf480cccf2fb90c5600\",\"urls\":[\"bzz-raw://95be068d174428524e76fdfbc8b30067e54fd241dc5e05c657741f53a5946b83\",\"dweb:/ipfs/QmYz8AiEkCpPeZSTo3CqjGZHDZW5c6Pj2jKyzrYeSpvkjh\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/VotingInterface.sol\":{\"keccak256\":\"0xd2c1deaa9272918b57a367ea8ff0fe5d6e93f4384eaabf720d0b23f2c19bf6fb\",\"urls\":[\"bzz-raw://7b7de6eb7675b19a46bb4538e9910a86850022a6223de150d91ea62fd5db8ba8\",\"dweb:/ipfs/QmfZLEcCPJ58aPBDQfoooE2oywPhm6FT7AkyhLzAFDBPgk\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/umips/Umip15Upgrader.sol\":{\"keccak256\":\"0x8d3eed5272d8ab6b42a1f6b802f708f623d8474541a7549868447005dfdf2a0c\",\"urls\":[\"bzz-raw://4b028dc2ee63b11f607cff53a3f96285da8ca9ccc91b747f1d58c51c197f0bde\",\"dweb:/ipfs/QmVEoqJsYq2uewGBdZGMM6qU6qooT5fBXFCQokVf24Y5eZ\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x0de74dfa6b37943c1b834cbd8fb7a8d052e5ff80c7adb33692102dd6cd2985e9\",\"urls\":[\"bzz-raw://9d2d827fcf4a838f5821732c0acd6a40d21c2a5a2cfe2563feec91465f47bb60\",\"dweb:/ipfs/Qmex3wMKf5Sghbfvr288RUg1kP2uAyTMf11w83WbMbpQQc\"]},\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x9a8c691b81a4a48adbbd5b010faa56a168c189e711495c16347d93b60b805f82\",\"urls\":[\"bzz-raw://d951d626ed7bfe1a2d7a6bd4af315ff8691929bd567594d6ab53599fe9e17e4e\",\"dweb:/ipfs/QmYkGeowpa6Bjr9aaDirWdDo7hSfShzzZhanKC4nTfRhLj\"]},\"@openzeppelin/contracts/cryptography/ECDSA.sol\":{\"keccak256\":\"0x0c4a4883483cd70c6541aa55ae609483d65d457f160963da29acfc39f9a555ec\",\"urls\":[\"bzz-raw://8fa01aeec715a6ee596e68809306717f9343f175058217f85761161bfc832dfd\",\"dweb:/ipfs/QmTRt1sA3PQjiBV8Hka4jQ5hmAY8CJrujz2TMt5PqdNKjc\"]},\"@openzeppelin/contracts/math/Math.sol\":{\"keccak256\":\"0x50280546205978ca6573541955e15453b4c07a19e6c8ec4f6785a5ae0d7343fb\",\"urls\":[\"bzz-raw://6463c7833ba4b3cbc3b56d50b56e7ce870aaec674633d7897a459b234478fa3e\",\"dweb:/ipfs/QmRkfjwTpA5E4SxUoHw8Qb7g6eXahtgmLrWWtTGH2TDZLj\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x3211de52f707a62a356a34fdea9d6a7bed46402d5ce45f1891a16fe2132fbb47\",\"urls\":[\"bzz-raw://45dfe794ad43a3674fab38a378c57eb6ed3353949f6529ccad4a4cbc91d45fc5\",\"dweb:/ipfs/QmReFGciE9fgsb6Nas1Fx593pzKWMjaDa1VQg4CEJQaD6U\"]},\"@openzeppelin/contracts/token/ERC20/ERC20Snapshot.sol\":{\"keccak256\":\"0x5e3f26bd43cf4dc30cfc964c03cefd701fe11952ee12e43222bbbe11ff2f928f\",\"urls\":[\"bzz-raw://2d4a8b33e68ae7e906907b42a2dde2693545672f1e2b37b82bc18799056a8392\",\"dweb:/ipfs/QmT3AdfADU3xDZ1jemuFxVutTHq8SdoJtBHdUpKyoTyKgh\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]},\"@openzeppelin/contracts/utils/Arrays.sol\":{\"keccak256\":\"0x6167b89f91ae6ca26fcba6ad04565ffa70a74694e0e46fda9b1500b2b796cf34\",\"urls\":[\"bzz-raw://aa7a5a74568c83dee67049f8dc42a80450add6c440828a2f16ac4f64905faa75\",\"dweb:/ipfs/QmaVFRGewWReDnvpHraeyrh3GsHLxH1tq6BVKdhYxBaykT\"]},\"@openzeppelin/contracts/utils/Counters.sol\":{\"keccak256\":\"0x4f3a00edb976e97943fe0a620ea2948955a75eff2a9231c202d50d1e062d8da5\",\"urls\":[\"bzz-raw://4d83aa87b7c75f666d57a0e5b779a19c00b453b14ee4ed88cfda6d056fdcf14c\",\"dweb:/ipfs/QmXpWwQVFo66hsrAZmHxoxNzwEwBDgNWvaUYqY4TJV38vk\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060405161050b38038061050b8339818101604052608081101561003357600080fd5b50805160208201516040830151606090930151600080546001600160a01b039485166001600160a01b0319918216179091556001805493851693821693909317909255600380549484169483169490941790935560028054929093169116179055610468806100a36000396000f3fe608060405234801561001057600080fd5b50600436106100675760003560e01c8063b9a3c84c11610050578063b9a3c84c146100a5578063d0fc1572146100ad578063d55ec697146100b557610067565b80630c340a241461006c578063679b721c1461009d575b600080fd5b6100746100bf565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6100746100db565b6100746100f7565b610074610113565b6100bd61012f565b005b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60025473ffffffffffffffffffffffffffffffffffffffff1681565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff16331461019f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260378152602001806103fc6037913960400191505060405180910390fd5b600254600354604080517f31f9665e0000000000000000000000000000000000000000000000000000000081527f4f7261636c650000000000000000000000000000000000000000000000000000600482015273ffffffffffffffffffffffffffffffffffffffff9283166024820152905191909216916331f9665e91604480830192600092919082900301818387803b15801561023c57600080fd5b505af1158015610250573d6000803e3d6000fd5b5050600154600354604080517f2960b5af00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff92831660048201529051919092169350632960b5af9250602480830192600092919082900301818387803b1580156102cb57600080fd5b505af11580156102df573d6000803e3d6000fd5b505060015460008054604080517ff2fde38b00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff9283166004820152905191909316945063f2fde38b935060248084019382900301818387803b15801561035657600080fd5b505af115801561036a573d6000803e3d6000fd5b505060025460008054604080517ff2fde38b00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff9283166004820152905191909316945063f2fde38b935060248084019382900301818387803b1580156103e157600080fd5b505af11580156103f5573d6000803e3d6000fd5b5050505056fe557067726164652063616e206f6e6c7920626520696e6974696174656420627920746865206578697374696e6720676f7665726e6f722ea2646970667358221220e0fd1de1bdd6b7a8fea3d4c4247e89765762cc5d2d93e96f20c57ec04d89617764736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100675760003560e01c8063b9a3c84c11610050578063b9a3c84c146100a5578063d0fc1572146100ad578063d55ec697146100b557610067565b80630c340a241461006c578063679b721c1461009d575b600080fd5b6100746100bf565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6100746100db565b6100746100f7565b610074610113565b6100bd61012f565b005b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60025473ffffffffffffffffffffffffffffffffffffffff1681565b60035473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff16331461019f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260378152602001806103fc6037913960400191505060405180910390fd5b600254600354604080517f31f9665e0000000000000000000000000000000000000000000000000000000081527f4f7261636c650000000000000000000000000000000000000000000000000000600482015273ffffffffffffffffffffffffffffffffffffffff9283166024820152905191909216916331f9665e91604480830192600092919082900301818387803b15801561023c57600080fd5b505af1158015610250573d6000803e3d6000fd5b5050600154600354604080517f2960b5af00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff92831660048201529051919092169350632960b5af9250602480830192600092919082900301818387803b1580156102cb57600080fd5b505af11580156102df573d6000803e3d6000fd5b505060015460008054604080517ff2fde38b00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff9283166004820152905191909316945063f2fde38b935060248084019382900301818387803b15801561035657600080fd5b505af115801561036a573d6000803e3d6000fd5b505060025460008054604080517ff2fde38b00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff9283166004820152905191909316945063f2fde38b935060248084019382900301818387803b1580156103e157600080fd5b505af11580156103f5573d6000803e3d6000fd5b5050505056fe557067726164652063616e206f6e6c7920626520696e6974696174656420627920746865206578697374696e6720676f7665726e6f722ea2646970667358221220e0fd1de1bdd6b7a8fea3d4c4247e89765762cc5d2d93e96f20c57ec04d89617764736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "232:1299:80:-:0;;;683:291;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;683:291:80;;;;;;;;;;;;;;;831:8;:20;;-1:-1:-1;;;;;831:20:80;;;-1:-1:-1;;;;;;831:20:80;;;;;;;;861:40;;;;;;;;;;;;;;;911:9;:22;;;;;;;;;;;;;;;943:6;:24;;;;;;;;;;;232:1299;;;;;;",
+  "deployedSourceMap": "232:1299:80:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;333:23;;;:::i;:::-;;;;;;;;;;;;;;;;;;;459:28;;;:::i;596:20::-;;;:::i;652:24::-;;;:::i;980:549::-;;;:::i;:::-;;333:23;;;;;;:::o;459:28::-;;;;;;:::o;596:20::-;;;;;;:::o;652:24::-;;;;;;:::o;980:549::-;1040:8;;;;1026:10;:22;1018:90;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1166:6;;1226:9;;1166:70;;;;;;1201:23;1166:70;;;;:6;1226:9;;;1166:70;;;;;;:6;;;;;:34;;:70;;;;;:6;;:70;;;;;;;:6;;:70;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1298:14:80;;1325:9;;1298:37;;;;;;:14;1325:9;;;1298:37;;;;;;:14;;;;;-1:-1:-1;1298:26:80;;-1:-1:-1;1298:37:80;;;;;:14;;:37;;;;;;;:14;;:37;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1436:14:80;;;1469:8;;1436:42;;;;;;:14;1469:8;;;1436:42;;;;;;:14;;;;;-1:-1:-1;1436:32:80;;-1:-1:-1;1436:42:80;;;;;;;;;;:14;;:42;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1488:6:80;;;1513:8;;1488:34;;;;;;:6;1513:8;;;1488:34;;;;;;:6;;;;;-1:-1:-1;1488:24:80;;-1:-1:-1;1488:34:80;;;;;;;;;;:6;;:34;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;980:549::o",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"../oracle/implementation/Finder.sol\";\nimport \"../oracle/implementation/Constants.sol\";\nimport \"../oracle/implementation/Voting.sol\";\n\n\n/**\n * @title A contract to track a whitelist of addresses.\n */\ncontract Umip15Upgrader {\n    // Existing governor is the only one who can initiate the upgrade.\n    address public governor;\n\n    // Existing Voting contract needs to be informed of the address of the new Voting contract.\n    Voting public existingVoting;\n\n    // New governor will be the new owner of the finder.\n\n    // Finder contract to push upgrades to.\n    Finder public finder;\n\n    // Addresses to upgrade.\n    address public newVoting;\n\n    constructor(\n        address _governor,\n        address _existingVoting,\n        address _newVoting,\n        address _finder\n    ) public {\n        governor = _governor;\n        existingVoting = Voting(_existingVoting);\n        newVoting = _newVoting;\n        finder = Finder(_finder);\n    }\n\n    function upgrade() external {\n        require(msg.sender == governor, \"Upgrade can only be initiated by the existing governor.\");\n\n        // Change the addresses in the Finder.\n        finder.changeImplementationAddress(OracleInterfaces.Oracle, newVoting);\n        // Set current Voting contract to migrated.\n        existingVoting.setMigrated(newVoting);\n\n        // Transfer back ownership of old voting contract and the finder to the governor.\n        existingVoting.transferOwnership(governor);\n        finder.transferOwnership(governor);\n    }\n}\n",
+  "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/umips/Umip15Upgrader.sol",
+  "ast": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/umips/Umip15Upgrader.sol",
+    "exportedSymbols": {
+      "Umip15Upgrader": [
+        21356
+      ]
+    },
+    "id": 21357,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 21273,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:80"
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Finder.sol",
+        "file": "../oracle/implementation/Finder.sol",
+        "id": 21274,
+        "nodeType": "ImportDirective",
+        "scope": 21357,
+        "sourceUnit": 16633,
+        "src": "25:45:80",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
+        "file": "../oracle/implementation/Constants.sol",
+        "id": 21275,
+        "nodeType": "ImportDirective",
+        "scope": 21357,
+        "sourceUnit": 16102,
+        "src": "71:48:80",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Voting.sol",
+        "file": "../oracle/implementation/Voting.sol",
+        "id": 21276,
+        "nodeType": "ImportDirective",
+        "scope": 21357,
+        "sourceUnit": 20331,
+        "src": "120:45:80",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 21277,
+          "nodeType": "StructuredDocumentation",
+          "src": "168:63:80",
+          "text": " @title A contract to track a whitelist of addresses."
+        },
+        "fullyImplemented": true,
+        "id": 21356,
+        "linearizedBaseContracts": [
+          21356
+        ],
+        "name": "Umip15Upgrader",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "0c340a24",
+            "id": 21279,
+            "mutability": "mutable",
+            "name": "governor",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "333:23:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 21278,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "333:7:80",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "679b721c",
+            "id": 21281,
+            "mutability": "mutable",
+            "name": "existingVoting",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "459:28:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Voting_$20330",
+              "typeString": "contract Voting"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 21280,
+              "name": "Voting",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 20330,
+              "src": "459:6:80",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Voting_$20330",
+                "typeString": "contract Voting"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "b9a3c84c",
+            "id": 21283,
+            "mutability": "mutable",
+            "name": "finder",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "596:20:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Finder_$16632",
+              "typeString": "contract Finder"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 21282,
+              "name": "Finder",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 16632,
+              "src": "596:6:80",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Finder_$16632",
+                "typeString": "contract Finder"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "d0fc1572",
+            "id": 21285,
+            "mutability": "mutable",
+            "name": "newVoting",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "652:24:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 21284,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "652:7:80",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 21316,
+              "nodeType": "Block",
+              "src": "821:153:80",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21298,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21296,
+                      "name": "governor",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21279,
+                      "src": "831:8:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 21297,
+                      "name": "_governor",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21287,
+                      "src": "842:9:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "831:20:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 21299,
+                  "nodeType": "ExpressionStatement",
+                  "src": "831:20:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21304,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21300,
+                      "name": "existingVoting",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21281,
+                      "src": "861:14:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Voting_$20330",
+                        "typeString": "contract Voting"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 21302,
+                          "name": "_existingVoting",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21289,
+                          "src": "885:15:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 21301,
+                        "name": "Voting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 20330,
+                        "src": "878:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_Voting_$20330_$",
+                          "typeString": "type(contract Voting)"
+                        }
+                      },
+                      "id": 21303,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "878:23:80",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Voting_$20330",
+                        "typeString": "contract Voting"
+                      }
+                    },
+                    "src": "861:40:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Voting_$20330",
+                      "typeString": "contract Voting"
+                    }
+                  },
+                  "id": 21305,
+                  "nodeType": "ExpressionStatement",
+                  "src": "861:40:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21308,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21306,
+                      "name": "newVoting",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21285,
+                      "src": "911:9:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 21307,
+                      "name": "_newVoting",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21291,
+                      "src": "923:10:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "911:22:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 21309,
+                  "nodeType": "ExpressionStatement",
+                  "src": "911:22:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21314,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21310,
+                      "name": "finder",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21283,
+                      "src": "943:6:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Finder_$16632",
+                        "typeString": "contract Finder"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 21312,
+                          "name": "_finder",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21293,
+                          "src": "959:7:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 21311,
+                        "name": "Finder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16632,
+                        "src": "952:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_Finder_$16632_$",
+                          "typeString": "type(contract Finder)"
+                        }
+                      },
+                      "id": 21313,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "952:15:80",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Finder_$16632",
+                        "typeString": "contract Finder"
+                      }
+                    },
+                    "src": "943:24:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Finder_$16632",
+                      "typeString": "contract Finder"
+                    }
+                  },
+                  "id": 21315,
+                  "nodeType": "ExpressionStatement",
+                  "src": "943:24:80"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 21317,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 21294,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 21287,
+                  "mutability": "mutable",
+                  "name": "_governor",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "704:17:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21286,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "704:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 21289,
+                  "mutability": "mutable",
+                  "name": "_existingVoting",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "731:23:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21288,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "731:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 21291,
+                  "mutability": "mutable",
+                  "name": "_newVoting",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "764:18:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21290,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "764:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 21293,
+                  "mutability": "mutable",
+                  "name": "_finder",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "792:15:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21292,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "792:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "694:119:80"
+            },
+            "returnParameters": {
+              "id": 21295,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "821:0:80"
+            },
+            "scope": 21356,
+            "src": "683:291:80",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 21354,
+              "nodeType": "Block",
+              "src": "1008:521:80",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 21324,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "argumentTypes": null,
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 21321,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": -15,
+                            "src": "1026:3:80",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 21322,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "1026:10:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address_payable",
+                            "typeString": "address payable"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "argumentTypes": null,
+                          "id": 21323,
+                          "name": "governor",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21279,
+                          "src": "1040:8:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "1026:22:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "hexValue": "557067726164652063616e206f6e6c7920626520696e6974696174656420627920746865206578697374696e6720676f7665726e6f722e",
+                        "id": 21325,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "1050:57:80",
+                        "subdenomination": null,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_4db24fbc87e76b84e79677127469c789993474aacecfe299002c900dae58b154",
+                          "typeString": "literal_string \"Upgrade can only be initiated by the existing governor.\""
+                        },
+                        "value": "Upgrade can only be initiated by the existing governor."
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_4db24fbc87e76b84e79677127469c789993474aacecfe299002c900dae58b154",
+                          "typeString": "literal_string \"Upgrade can only be initiated by the existing governor.\""
+                        }
+                      ],
+                      "id": 21320,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -18,
+                        -18
+                      ],
+                      "referencedDeclaration": -18,
+                      "src": "1018:7:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 21326,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1018:90:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21327,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1018:90:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 21331,
+                          "name": "OracleInterfaces",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 16101,
+                          "src": "1201:16:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$16101_$",
+                            "typeString": "type(library OracleInterfaces)"
+                          }
+                        },
+                        "id": 21332,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "Oracle",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 16085,
+                        "src": "1201:23:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 21333,
+                        "name": "newVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21285,
+                        "src": "1226:9:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21328,
+                        "name": "finder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21283,
+                        "src": "1166:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Finder_$16632",
+                          "typeString": "contract Finder"
+                        }
+                      },
+                      "id": 21330,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "changeImplementationAddress",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 16603,
+                      "src": "1166:34:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_address_$returns$__$",
+                        "typeString": "function (bytes32,address) external"
+                      }
+                    },
+                    "id": 21334,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1166:70:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21335,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1166:70:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 21339,
+                        "name": "newVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21285,
+                        "src": "1325:9:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21336,
+                        "name": "existingVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21281,
+                        "src": "1298:14:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Voting_$20330",
+                          "typeString": "contract Voting"
+                        }
+                      },
+                      "id": 21338,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "setMigrated",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 19891,
+                      "src": "1298:26:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 21340,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1298:37:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21341,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1298:37:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 21345,
+                        "name": "governor",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21279,
+                        "src": "1469:8:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21342,
+                        "name": "existingVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21281,
+                        "src": "1436:14:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Voting_$20330",
+                          "typeString": "contract Voting"
+                        }
+                      },
+                      "id": 21344,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transferOwnership",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 21913,
+                      "src": "1436:32:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 21346,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1436:42:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21347,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1436:42:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 21351,
+                        "name": "governor",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21279,
+                        "src": "1513:8:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21348,
+                        "name": "finder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21283,
+                        "src": "1488:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Finder_$16632",
+                          "typeString": "contract Finder"
+                        }
+                      },
+                      "id": 21350,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transferOwnership",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 21913,
+                      "src": "1488:24:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 21352,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1488:34:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21353,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1488:34:80"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "d55ec697",
+            "id": 21355,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "upgrade",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 21318,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "996:2:80"
+            },
+            "returnParameters": {
+              "id": 21319,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1008:0:80"
+            },
+            "scope": 21356,
+            "src": "980:549:80",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 21357,
+        "src": "232:1299:80"
+      }
+    ],
+    "src": "0:1532:80"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/umips/Umip15Upgrader.sol",
+    "exportedSymbols": {
+      "Umip15Upgrader": [
+        21356
+      ]
+    },
+    "id": 21357,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 21273,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:80"
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Finder.sol",
+        "file": "../oracle/implementation/Finder.sol",
+        "id": 21274,
+        "nodeType": "ImportDirective",
+        "scope": 21357,
+        "sourceUnit": 16633,
+        "src": "25:45:80",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol",
+        "file": "../oracle/implementation/Constants.sol",
+        "id": 21275,
+        "nodeType": "ImportDirective",
+        "scope": 21357,
+        "sourceUnit": 16102,
+        "src": "71:48:80",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Voting.sol",
+        "file": "../oracle/implementation/Voting.sol",
+        "id": 21276,
+        "nodeType": "ImportDirective",
+        "scope": 21357,
+        "sourceUnit": 20331,
+        "src": "120:45:80",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 21277,
+          "nodeType": "StructuredDocumentation",
+          "src": "168:63:80",
+          "text": " @title A contract to track a whitelist of addresses."
+        },
+        "fullyImplemented": true,
+        "id": 21356,
+        "linearizedBaseContracts": [
+          21356
+        ],
+        "name": "Umip15Upgrader",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "0c340a24",
+            "id": 21279,
+            "mutability": "mutable",
+            "name": "governor",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "333:23:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 21278,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "333:7:80",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "679b721c",
+            "id": 21281,
+            "mutability": "mutable",
+            "name": "existingVoting",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "459:28:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Voting_$20330",
+              "typeString": "contract Voting"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 21280,
+              "name": "Voting",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 20330,
+              "src": "459:6:80",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Voting_$20330",
+                "typeString": "contract Voting"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "b9a3c84c",
+            "id": 21283,
+            "mutability": "mutable",
+            "name": "finder",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "596:20:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_Finder_$16632",
+              "typeString": "contract Finder"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 21282,
+              "name": "Finder",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 16632,
+              "src": "596:6:80",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Finder_$16632",
+                "typeString": "contract Finder"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "d0fc1572",
+            "id": 21285,
+            "mutability": "mutable",
+            "name": "newVoting",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 21356,
+            "src": "652:24:80",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 21284,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "652:7:80",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 21316,
+              "nodeType": "Block",
+              "src": "821:153:80",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21298,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21296,
+                      "name": "governor",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21279,
+                      "src": "831:8:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 21297,
+                      "name": "_governor",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21287,
+                      "src": "842:9:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "831:20:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 21299,
+                  "nodeType": "ExpressionStatement",
+                  "src": "831:20:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21304,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21300,
+                      "name": "existingVoting",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21281,
+                      "src": "861:14:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Voting_$20330",
+                        "typeString": "contract Voting"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 21302,
+                          "name": "_existingVoting",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21289,
+                          "src": "885:15:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 21301,
+                        "name": "Voting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 20330,
+                        "src": "878:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_Voting_$20330_$",
+                          "typeString": "type(contract Voting)"
+                        }
+                      },
+                      "id": 21303,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "878:23:80",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Voting_$20330",
+                        "typeString": "contract Voting"
+                      }
+                    },
+                    "src": "861:40:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Voting_$20330",
+                      "typeString": "contract Voting"
+                    }
+                  },
+                  "id": 21305,
+                  "nodeType": "ExpressionStatement",
+                  "src": "861:40:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21308,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21306,
+                      "name": "newVoting",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21285,
+                      "src": "911:9:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 21307,
+                      "name": "_newVoting",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21291,
+                      "src": "923:10:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "911:22:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 21309,
+                  "nodeType": "ExpressionStatement",
+                  "src": "911:22:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 21314,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 21310,
+                      "name": "finder",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 21283,
+                      "src": "943:6:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Finder_$16632",
+                        "typeString": "contract Finder"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 21312,
+                          "name": "_finder",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21293,
+                          "src": "959:7:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 21311,
+                        "name": "Finder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16632,
+                        "src": "952:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_Finder_$16632_$",
+                          "typeString": "type(contract Finder)"
+                        }
+                      },
+                      "id": 21313,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "952:15:80",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_Finder_$16632",
+                        "typeString": "contract Finder"
+                      }
+                    },
+                    "src": "943:24:80",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Finder_$16632",
+                      "typeString": "contract Finder"
+                    }
+                  },
+                  "id": 21315,
+                  "nodeType": "ExpressionStatement",
+                  "src": "943:24:80"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 21317,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 21294,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 21287,
+                  "mutability": "mutable",
+                  "name": "_governor",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "704:17:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21286,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "704:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 21289,
+                  "mutability": "mutable",
+                  "name": "_existingVoting",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "731:23:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21288,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "731:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 21291,
+                  "mutability": "mutable",
+                  "name": "_newVoting",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "764:18:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21290,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "764:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 21293,
+                  "mutability": "mutable",
+                  "name": "_finder",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 21317,
+                  "src": "792:15:80",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 21292,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "792:7:80",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "694:119:80"
+            },
+            "returnParameters": {
+              "id": 21295,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "821:0:80"
+            },
+            "scope": 21356,
+            "src": "683:291:80",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 21354,
+              "nodeType": "Block",
+              "src": "1008:521:80",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 21324,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "argumentTypes": null,
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 21321,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": -15,
+                            "src": "1026:3:80",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 21322,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "1026:10:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address_payable",
+                            "typeString": "address payable"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "argumentTypes": null,
+                          "id": 21323,
+                          "name": "governor",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21279,
+                          "src": "1040:8:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "1026:22:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "hexValue": "557067726164652063616e206f6e6c7920626520696e6974696174656420627920746865206578697374696e6720676f7665726e6f722e",
+                        "id": 21325,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "1050:57:80",
+                        "subdenomination": null,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_4db24fbc87e76b84e79677127469c789993474aacecfe299002c900dae58b154",
+                          "typeString": "literal_string \"Upgrade can only be initiated by the existing governor.\""
+                        },
+                        "value": "Upgrade can only be initiated by the existing governor."
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_4db24fbc87e76b84e79677127469c789993474aacecfe299002c900dae58b154",
+                          "typeString": "literal_string \"Upgrade can only be initiated by the existing governor.\""
+                        }
+                      ],
+                      "id": 21320,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -18,
+                        -18
+                      ],
+                      "referencedDeclaration": -18,
+                      "src": "1018:7:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 21326,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1018:90:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21327,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1018:90:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 21331,
+                          "name": "OracleInterfaces",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 16101,
+                          "src": "1201:16:80",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_OracleInterfaces_$16101_$",
+                            "typeString": "type(library OracleInterfaces)"
+                          }
+                        },
+                        "id": 21332,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "Oracle",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 16085,
+                        "src": "1201:23:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 21333,
+                        "name": "newVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21285,
+                        "src": "1226:9:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21328,
+                        "name": "finder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21283,
+                        "src": "1166:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Finder_$16632",
+                          "typeString": "contract Finder"
+                        }
+                      },
+                      "id": 21330,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "changeImplementationAddress",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 16603,
+                      "src": "1166:34:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_bytes32_$_t_address_$returns$__$",
+                        "typeString": "function (bytes32,address) external"
+                      }
+                    },
+                    "id": 21334,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1166:70:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21335,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1166:70:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 21339,
+                        "name": "newVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21285,
+                        "src": "1325:9:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21336,
+                        "name": "existingVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21281,
+                        "src": "1298:14:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Voting_$20330",
+                          "typeString": "contract Voting"
+                        }
+                      },
+                      "id": 21338,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "setMigrated",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 19891,
+                      "src": "1298:26:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 21340,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1298:37:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21341,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1298:37:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 21345,
+                        "name": "governor",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21279,
+                        "src": "1469:8:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21342,
+                        "name": "existingVoting",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21281,
+                        "src": "1436:14:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Voting_$20330",
+                          "typeString": "contract Voting"
+                        }
+                      },
+                      "id": 21344,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transferOwnership",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 21913,
+                      "src": "1436:32:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 21346,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1436:42:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21347,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1436:42:80"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 21351,
+                        "name": "governor",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21279,
+                        "src": "1513:8:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 21348,
+                        "name": "finder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 21283,
+                        "src": "1488:6:80",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_Finder_$16632",
+                          "typeString": "contract Finder"
+                        }
+                      },
+                      "id": 21350,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transferOwnership",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 21913,
+                      "src": "1488:24:80",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 21352,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1488:34:80",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21353,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1488:34:80"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "d55ec697",
+            "id": 21355,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "upgrade",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 21318,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "996:2:80"
+            },
+            "returnParameters": {
+              "id": 21319,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1008:0:80"
+            },
+            "scope": 21356,
+            "src": "980:549:80",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 21357,
+        "src": "232:1299:80"
+      }
+    ],
+    "src": "0:1532:80"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-22T14:01:04.668Z",
+  "devdoc": {
+    "methods": {},
+    "title": "A contract to track a whitelist of addresses."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

@@ -1,0 +1,1441 @@
+{
+  "contractName": "FundingRateApplierTest",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_fpFinderAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_fundingRateIdentifier",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "_timerAddress",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "newMultiplier",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "lastUpdateTime",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "updateTime",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "paymentPeriod",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "latestFundingRate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "effectiveFundingRateForPaymentPeriod",
+          "type": "uint256"
+        }
+      ],
+      "name": "NewFundingRate",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "cumulativeFundingRateMultiplier",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "rawValue",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "fpFinder",
+      "outputs": [
+        {
+          "internalType": "contract FinderInterface",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "fundingRateIdentifier",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lastUpdateTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "applyFundingRate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "paymentPeriodSeconds",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "rawValue",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct FixedPoint.Unsigned",
+          "name": "fundingRatePerSecond",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "rawValue",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct FixedPoint.Unsigned",
+          "name": "feeMultiplier",
+          "type": "tuple"
+        }
+      ],
+      "name": "calculateEffectiveFundingRate",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "rawValue",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct FixedPoint.Unsigned",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "rawValue",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct FixedPoint.Unsigned",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_fpFinderAddress\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_fundingRateIdentifier\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"_timerAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"newMultiplier\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"lastUpdateTime\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"updateTime\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"paymentPeriod\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"latestFundingRate\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"effectiveFundingRateForPaymentPeriod\",\"type\":\"uint256\"}],\"name\":\"NewFundingRate\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"applyFundingRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"paymentPeriodSeconds\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"fundingRatePerSecond\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"feeMultiplier\",\"type\":\"tuple\"}],\"name\":\"calculateEffectiveFundingRate\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"internalType\":\"struct FixedPoint.Unsigned\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cumulativeFundingRateMultiplier\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"rawValue\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fpFinder\",\"outputs\":[{\"internalType\":\"contract FinderInterface\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"fundingRateIdentifier\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lastUpdateTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"fpFinder()\":{\"notice\":\"************************************** FUNDING RATE APPLIER DATA STRUCTURES ****************************************\"}}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/test/FundingRateApplierTest.sol\":\"FundingRateApplierTest\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/FixedPoint.sol\":{\"keccak256\":\"0xeaa0bef7c35ff2902ef852864d217d75071da9cc96e9cdf5dcb77d54f4e4fefa\",\"urls\":[\"bzz-raw://9c5b1224f4bb7d8d992a1c71b8e2f8c2c8e655af30eb468058dd0eade3218d13\",\"dweb:/ipfs/QmYQ1WUhRwHgfPL5v1MVjCL7AvSVPEdPJt53Q2L5R6zwJU\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Lockable.sol\":{\"keccak256\":\"0xfe828b4a29f9f4610081793374ace7d88d9cb3a3d6fe13fa28097a04de879406\",\"urls\":[\"bzz-raw://6eedeeeb92e1be8721def0edf794b05d5e279a03eb489da05050de765ca04397\",\"dweb:/ipfs/QmXkp7HvFbCkugbhnUDi1MNMNuvkuPPX4odUphgSGKUGAe\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/implementation/Timer.sol\":{\"keccak256\":\"0x1db17ce4c028ed96713c3fddda6d34155281e104a47b2c65283fd0f8293d78b1\",\"urls\":[\"bzz-raw://8f306faba8d5190f36c87a8f47cce3bd7894bc5540599819aea2dd5b8ffa9413\",\"dweb:/ipfs/Qmeg4wuF1Dw5DAuoxyfnrmMZ5MK6af226hEHxCJgWKgrch\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/FundingRateApplier.sol\":{\"keccak256\":\"0xbd2cd540513d267a0d71d9b9a4a6e7b2a9c31c5c2b7b1e0db9f48b8a53f16109\",\"urls\":[\"bzz-raw://a9fdfc01c17b2f49ea7e50e0708562e15d1e633227f6b9b63c32bd7715891960\",\"dweb:/ipfs/QmNicQhXpXZdaiJ4N453VhkoeWS8JqfUr9FaCkPGyR4WVn\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/interfaces/FundingRateStoreInterface.sol\":{\"keccak256\":\"0xbf8ec493b730f0cb3f9b4b57fe2d50aba513c1f7e6f868176b120f7cce3499e3\",\"urls\":[\"bzz-raw://b9c5675e801fe4296818ac22513d0c6a7487dce6d46bd57d48f86c813795f47f\",\"dweb:/ipfs/QmaYuB1PP1zEDJ8yM6wwCGtUJ3BF4EKNbfT6kkuQGFu8jE\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/test/FundingRateApplierTest.sol\":{\"keccak256\":\"0x6a5b94b41d28ae533b7a9ff22e7dc4e4d2af1404c47a7fbe12b2216d83a65926\",\"urls\":[\"bzz-raw://39468c52659d3dad88d17bfbe64ad3043d23db0fdbf6fe5a515d2aeabf3f7af5\",\"dweb:/ipfs/Qmf65FHjDnn15UyuaFBonLQfpBW48s9RZgWyTJ6j2DKoZD\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/implementation/Constants.sol\":{\"keccak256\":\"0xfa5379e18f31da723268d949acf3ecd8b76593467210032e91e2ac47201e9c80\",\"urls\":[\"bzz-raw://c15222ccf0c0e418ebe2915e59b8765db4335f11a83f5db44436719da02da51a\",\"dweb:/ipfs/QmQfj8ADqa5s7EpeqNmnt1g5YUid9Yc49DQvtufrpL1Npq\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/FinderInterface.sol\":{\"keccak256\":\"0x266903a280400446041bbc9c839c2be8805bbde710a42c5cad36d6eb2d932a17\",\"urls\":[\"bzz-raw://16bb92ad84fcec107a09ea6a5b3987f8217842e1c5e676b64fc0c3191f32ed91\",\"dweb:/ipfs/QmVjLDHUuqN527VSrzQAy8ox1infQro6kTaZQ7ezX9weeA\"]},\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/oracle/interfaces/StoreInterface.sol\":{\"keccak256\":\"0x3d885e5bd438f0944d0acd5e87b77cb5030cbf5c88aca9b8d53738eedbf9c194\",\"urls\":[\"bzz-raw://24c9b213a7c87a2bdf62fbeeb6b0051dd4379ea060ada498760a281dda886fa3\",\"dweb:/ipfs/QmZgHZkyG6cQujfJ56hjFHjM2215hCevFusVcvUuss2tgf\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x04d34b3cd5677bea25f8dfceb6dec0eaa071d4d4b789a43f13fe0c415ba4c296\",\"urls\":[\"bzz-raw://e7e8b526a6839e5ba14f0d23a830387fec47f7043ce01d42c9f285b709a9d080\",\"dweb:/ipfs/QmXmhhFmX5gcAvVzNiDPAGA35iHMPNaYtQkACswRHBVTNw\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x6cc1cb934a3ac2137a7dcaed018af9e235392236ceecfd3687259702b9c767ad\",\"urls\":[\"bzz-raw://0055fa88138cd1c3c6440370f8580f85857f8fe9dec41c99af9eafbeb8d9c3ce\",\"dweb:/ipfs/QmX1xDh8vwGLLCH8ti45eXjQ7Wcxv1FEGTR3jkFnd5Nv6F\"]},\"@openzeppelin/contracts/token/ERC20/SafeERC20.sol\":{\"keccak256\":\"0xa27d8d0bf389702f2b124fff3d86238b17ec0abd47d1401e81dc48a1509dbb9a\",\"urls\":[\"bzz-raw://899c25b79e783c1e4ccdd06928e332e2b37f3ecaa487f49ef68ef9fde6b18f82\",\"dweb:/ipfs/QmV3rZDWabetVSmZ2iviS5tajKzvR3AEwsicKZao4ptTg2\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x5f7da58ee3d9faa9b8999a93d49c8ff978f1afc88ae9bcfc6f9cbb44da011c2b\",\"urls\":[\"bzz-raw://4f089d954b3ecaa26949412fe63e9a184b056562c6c13dd4a0529a5d9a2e685a\",\"dweb:/ipfs/QmVK5iCNAMcEJQxT59bsC5E53JQASDQPU6khHox3d5ZXCn\"]}},\"version\":1}",
+  "bytecode": "0x60806040523480156200001157600080fd5b5060405162000d2e38038062000d2e833981016040819052620000349162000247565b6000805460ff19166001179055828282620000576001600160e01b036200016116565b6200006a6001600160e01b036200019116565b60008054610100600160a81b0319166101006001600160a01b0386811691909102919091179091556002839055600480546001600160a01b03191683831617808255604080516329cb924d60e01b8152905191909316926329cb924d9281810192602092909190829003018186803b158015620000e657600080fd5b505afa158015620000fb573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906200012191906200028e565b6001819055506200013e60016200019d60201b620001491760201c565b51600355620001556001600160e01b03620001dc16565b50505050505062000338565b60005460ff166200018f5760405162461bcd60e51b81526004016200018690620002e8565b60405180910390fd5b565b6000805460ff19169055565b620001a762000234565b6040518060200160405280620001d4670de0b6b3a764000085620001eb60201b6200017d1790919060201c565b905292915050565b6000805460ff19166001179055565b600082620001fc575060006200022e565b828202828482816200020a57fe5b04146200022b5760405162461bcd60e51b81526004016200018690620002a7565b90505b92915050565b6040518060200160405280600081525090565b6000806000606084860312156200025c578283fd5b835162000269816200031f565b60208501516040860151919450925062000283816200031f565b809150509250925092565b600060208284031215620002a0578081fd5b5051919050565b60208082526021908201527f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f6040820152607760f81b606082015260800190565b6020808252601f908201527f5265656e7472616e637947756172643a207265656e7472616e742063616c6c00604082015260600190565b6001600160a01b03811681146200033557600080fd5b50565b6109e680620003486000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c8063916108b211610050578063916108b2146100a7578063c8f33c91146100c8578063d7ba7fe7146100d057610072565b806321d405121461007757806371f3c1b7146100955780637b4ff6731461009f575b600080fd5b61007f6100e5565b60405161008c919061080b565b60405180910390f35b61009d6100eb565b005b61007f6100f5565b6100ba6100b53660046107ce565b6100fb565b60405161008c929190610963565b61007f610122565b6100d8610128565b60405161008c9190610814565b60025481565b6100f36101e3565b565b60035481565b610103610725565b61010b610725565b61011685858561032f565b91509150935093915050565b60015481565b600054610100900473ffffffffffffffffffffffffffffffffffffffff1681565b610151610725565b60408051602081019091528061017584670de0b6b3a764000063ffffffff61017d16565b905292915050565b60008261018c575060006101dd565b8282028284828161019957fe5b04146101da576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101d190610906565b60405180910390fd5b90505b92915050565b6000600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166329cb924d6040518163ffffffff1660e01b815260040160206040518083038186803b15801561024d57600080fd5b505afa158015610261573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061028591906107b6565b9050600061029e6001548361041f90919063ffffffff16565b90506102a8610725565b6102b0610461565b90506102ba610725565b604080516020810190915260035481526102d7908490849061032f565b905160038190558351600154835160405194955091938793927f4b403d8f3c4695884ccd4a31e9507b4085f284f236a0d598098494cc1c8487999261031f9290918b91610973565b60405180910390a4505050600155565b610337610725565b61033f610725565b610347610725565b6103516001610149565b905061035b610725565b5080610365610725565b5084610377878463ffffffff61051f16565b156103c5576103ac61039f896103938a8763ffffffff61052616565b9063ffffffff61055816565b849063ffffffff61057f16565b91506103be868363ffffffff6105a816565b9050610413565b6103d5878463ffffffff6105eb16565b15610413576103fe6103f189610393868b63ffffffff61052616565b849063ffffffff61052616565b9150610410868363ffffffff6105a816565b90505b97909650945050505050565b60006101da83836040518060400160405280601e81526020017f536166654d6174683a207375627472616374696f6e206f766572666c6f7700008152506105f2565b610469610725565b6000610473610638565b6002546040517f3933870d00000000000000000000000000000000000000000000000000000000815291925073ffffffffffffffffffffffffffffffffffffffff831691633933870d916104c99160040161080b565b60206040518083038186803b1580156104e157600080fd5b505afa1580156104f5573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906105199190610791565b91505090565b5190511190565b61052e610725565b604080516020810190915282518451829161054f919063ffffffff61041f16565b90529392505050565b610560610725565b60408051602081019091528351819061054f908563ffffffff61017d16565b610587610725565b604080516020810190915282518451829161054f919063ffffffff6106e616565b6105b0610725565b6040805160208101909152825184518291670de0b6b3a7640000916105da9163ffffffff61017d16565b816105e157fe5b0490529392505050565b5190511090565b60008184841115610630576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101d19190610835565b505050900390565b600080546040517faafd5e4000000000000000000000000000000000000000000000000000000000815261010090910473ffffffffffffffffffffffffffffffffffffffff169063aafd5e4090610691906004016108a6565b60206040518083038186803b1580156106a957600080fd5b505afa1580156106bd573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106e1919061075d565b905090565b6000828201838110156101da576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101d1906108cf565b6040518060200160405280600081525090565b600060208284031215610749578081fd5b6107536020610989565b9135825250919050565b60006020828403121561076e578081fd5b815173ffffffffffffffffffffffffffffffffffffffff811681146101da578182fd5b6000602082840312156107a2578081fd5b6107ac6020610989565b9151825250919050565b6000602082840312156107c7578081fd5b5051919050565b6000806000606084860312156107e2578182fd5b833592506107f38560208601610738565b91506108028560408601610738565b90509250925092565b90815260200190565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b6000602080835283518082850152825b8181101561086157858101830151858201604001528201610845565b818111156108725783604083870101525b50601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016929092016040019392505050565b7f46756e64696e675261746553746f726500000000000000000000000000000000815260200190565b6020808252601b908201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604082015260600190565b60208082526021908201527f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f60408201527f7700000000000000000000000000000000000000000000000000000000000000606082015260800190565b9151825251602082015260400190565b9283526020830191909152604082015260600190565b60405181810167ffffffffffffffff811182821017156109a857600080fd5b60405291905056fea2646970667358221220aae93334143a980f5dfb0b892353827545d4e0d61c20d8758b0c277be16a393064736f6c634300060a0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c8063916108b211610050578063916108b2146100a7578063c8f33c91146100c8578063d7ba7fe7146100d057610072565b806321d405121461007757806371f3c1b7146100955780637b4ff6731461009f575b600080fd5b61007f6100e5565b60405161008c919061080b565b60405180910390f35b61009d6100eb565b005b61007f6100f5565b6100ba6100b53660046107ce565b6100fb565b60405161008c929190610963565b61007f610122565b6100d8610128565b60405161008c9190610814565b60025481565b6100f36101e3565b565b60035481565b610103610725565b61010b610725565b61011685858561032f565b91509150935093915050565b60015481565b600054610100900473ffffffffffffffffffffffffffffffffffffffff1681565b610151610725565b60408051602081019091528061017584670de0b6b3a764000063ffffffff61017d16565b905292915050565b60008261018c575060006101dd565b8282028284828161019957fe5b04146101da576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101d190610906565b60405180910390fd5b90505b92915050565b6000600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166329cb924d6040518163ffffffff1660e01b815260040160206040518083038186803b15801561024d57600080fd5b505afa158015610261573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061028591906107b6565b9050600061029e6001548361041f90919063ffffffff16565b90506102a8610725565b6102b0610461565b90506102ba610725565b604080516020810190915260035481526102d7908490849061032f565b905160038190558351600154835160405194955091938793927f4b403d8f3c4695884ccd4a31e9507b4085f284f236a0d598098494cc1c8487999261031f9290918b91610973565b60405180910390a4505050600155565b610337610725565b61033f610725565b610347610725565b6103516001610149565b905061035b610725565b5080610365610725565b5084610377878463ffffffff61051f16565b156103c5576103ac61039f896103938a8763ffffffff61052616565b9063ffffffff61055816565b849063ffffffff61057f16565b91506103be868363ffffffff6105a816565b9050610413565b6103d5878463ffffffff6105eb16565b15610413576103fe6103f189610393868b63ffffffff61052616565b849063ffffffff61052616565b9150610410868363ffffffff6105a816565b90505b97909650945050505050565b60006101da83836040518060400160405280601e81526020017f536166654d6174683a207375627472616374696f6e206f766572666c6f7700008152506105f2565b610469610725565b6000610473610638565b6002546040517f3933870d00000000000000000000000000000000000000000000000000000000815291925073ffffffffffffffffffffffffffffffffffffffff831691633933870d916104c99160040161080b565b60206040518083038186803b1580156104e157600080fd5b505afa1580156104f5573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906105199190610791565b91505090565b5190511190565b61052e610725565b604080516020810190915282518451829161054f919063ffffffff61041f16565b90529392505050565b610560610725565b60408051602081019091528351819061054f908563ffffffff61017d16565b610587610725565b604080516020810190915282518451829161054f919063ffffffff6106e616565b6105b0610725565b6040805160208101909152825184518291670de0b6b3a7640000916105da9163ffffffff61017d16565b816105e157fe5b0490529392505050565b5190511090565b60008184841115610630576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101d19190610835565b505050900390565b600080546040517faafd5e4000000000000000000000000000000000000000000000000000000000815261010090910473ffffffffffffffffffffffffffffffffffffffff169063aafd5e4090610691906004016108a6565b60206040518083038186803b1580156106a957600080fd5b505afa1580156106bd573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106e1919061075d565b905090565b6000828201838110156101da576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101d1906108cf565b6040518060200160405280600081525090565b600060208284031215610749578081fd5b6107536020610989565b9135825250919050565b60006020828403121561076e578081fd5b815173ffffffffffffffffffffffffffffffffffffffff811681146101da578182fd5b6000602082840312156107a2578081fd5b6107ac6020610989565b9151825250919050565b6000602082840312156107c7578081fd5b5051919050565b6000806000606084860312156107e2578182fd5b833592506107f38560208601610738565b91506108028560408601610738565b90509250925092565b90815260200190565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b6000602080835283518082850152825b8181101561086157858101830151858201604001528201610845565b818111156108725783604083870101525b50601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016929092016040019392505050565b7f46756e64696e675261746553746f726500000000000000000000000000000000815260200190565b6020808252601b908201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604082015260600190565b60208082526021908201527f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f60408201527f7700000000000000000000000000000000000000000000000000000000000000606082015260800190565b9151825251602082015260400190565b9283526020830191909152604082015260600190565b60405181810167ffffffffffffffff811182821017156109a857600080fd5b60405291905056fea2646970667358221220aae93334143a980f5dfb0b892353827545d4e0d61c20d8758b0c277be16a393064736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "179:742:51:-:0;;;239:208;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;864:11:11;:18;;-1:-1:-1;;864:18:11;878:4;864:18;;;388:16:51;406:22;430:13;1298:19:11;-1:-1:-1;;;;;1298:17:11;:19;:::i;:::-;1327:17;-1:-1:-1;;;;;1327:15:11;:17;:::i;:::-;3607:8:33::1;:42:::0;;-1:-1:-1;;;;;;3607:42:33::1;;-1:-1:-1::0;;;;;3607:42:33;;::::1;::::0;;;::::1;::::0;;;::::1;::::0;;;3659:21:::1;:46:::0;;;3716:5:::1;:28:::0;;-1:-1:-1;;;;;;3716:28:33::1;::::0;;::::1;;::::0;;;3771:22:::1;::::0;;-1:-1:-1;;;3771:22:33;;;;:5;;;::::1;::::0;:20:::1;::::0;:22;;::::1;::::0;::::1;::::0;;;;;;;;;:5;:22;::::1;;::::0;::::1;;;;::::0;::::1;;;;;;;;;;;;::::0;::::1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3754:14;:39;;;;3921:30;3949:1;3921:27;;;;;:30;;:::i;:::-;3887:64:::0;:31:::1;:64:::0;1365:20:11;-1:-1:-1;;;;;1365:18:11;:20;:::i;:::-;3454:504:33;;;239:208:51;;;179:742;;2117:186:11;2249:11;;;;2241:55;;;;-1:-1:-1;;;2241:55:11;;;;;;;;;;;;;;;;;2117:186::o;2309:136::-;2433:5;2419:19;;-1:-1:-1;;2419:19:11;;;2309:136::o;722:135:10:-;782:15;;:::i;:::-;816:34;;;;;;;;825:24;436:6;825:1;:5;;;;;;:24;;;;:::i;:::-;816:34;;809:41;722:135;-1:-1:-1;;722:135:10:o;2451:206:11:-;2632:11;:18;;-1:-1:-1;;2632:18:11;2646:4;2632:18;;;2451:206::o;2119:459:87:-;2177:7;2418:6;2414:45;;-1:-1:-1;2447:1:87;2440:8;;2414:45;2481:5;;;2485:1;2481;:5;:1;2504:5;;;;;:10;2496:56;;;;-1:-1:-1;;;2496:56:87;;;;;;;;;2570:1;-1:-1:-1;2119:459:87;;;;;:::o;179:742:51:-;;;;;;;;;;;;;;:::o;428:535:-1:-;;;;577:2;565:9;556:7;552:23;548:32;545:2;;;-1:-1;;583:12;545:2;89:6;83:13;101:33;128:5;101:33;;;746:2;796:22;;224:13;865:2;915:22;;83:13;635:74;;-1:-1;224:13;-1:-1;101:33;83:13;101:33;;;873:74;;;;539:424;;;;;;970:263;;1085:2;1073:9;1064:7;1060:23;1056:32;1053:2;;;-1:-1;;1091:12;1053:2;-1:-1;365:13;;1047:186;-1:-1;1047:186;1959:416;2159:2;2173:47;;;1465:2;2144:18;;;2909:19;1501:34;2949:14;;;1481:55;-1:-1;;;1556:12;;;1549:25;1593:12;;;2130:245;2382:416;2582:2;2596:47;;;1844:2;2567:18;;;2909:19;1880:33;2949:14;;;1860:54;1933:12;;;2553:245;3361:117;-1:-1;;;;;3216:54;;3420:35;;3410:2;;3469:1;;3459:12;3410:2;3404:74;;;179:742:51;;;;;;",
+  "deployedSourceMap": "179:742:51:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1302:36:33;;;:::i;:::-;;;;;;;;;;;;;;;;453:80:51;;;:::i;:::-;;1909:58:33;;;:::i;539:380:51:-;;;;;;;;;:::i;:::-;;;;;;;;;1212:29:33;;;:::i;1106:31::-;;;:::i;:::-;;;;;;;;1302:36;;;;:::o;453:80:51:-;498:28;:26;:28::i;:::-;453:80::o;1909:58:33:-;;;;:::o;539:380:51:-;750:26;;:::i;:::-;778;;:::i;:::-;823:89;854:20;876;898:13;823:30;:89::i;:::-;816:96;;;;539:380;;;;;;:::o;1212:29:33:-;;;;:::o;1106:31::-;;;;;;;;;:::o;722:135:10:-;782:15;;:::i;:::-;816:34;;;;;;;;;;825:24;:1;436:6;825:24;:5;:24;:::i;:::-;816:34;;809:41;722:135;-1:-1:-1;;722:135:10:o;2119:459:87:-;2177:7;2418:6;2414:45;;-1:-1:-1;2447:1:87;2440:8;;2414:45;2481:5;;;2485:1;2481;:5;:1;2504:5;;;;;:10;2496:56;;;;;;;;;;;;;;;;;;;;;;2570:1;-1:-1:-1;2119:459:87;;;;;:::o;5305:876:33:-;5362:19;5384:5;;;;;;;;;;;:20;;;:22;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5362:44;;5416:21;5440:31;5456:14;;5440:11;:15;;:31;;;;:::i;:::-;5416:55;;5482:54;;:::i;:::-;5539:23;:21;:23::i;:::-;5482:80;;5573:56;;:::i;:::-;5706:153;;;;;;;;;5818:31;5706:153;;;;;5750:13;;5777:27;;5706:30;:153::i;:::-;5639:220;;5640:31;5639:220;;;6037:36;;5957:14;;6087:38;;5875:260;;5639:220;;-1:-1:-1;6037:36:33;;6010:13;;5639:220;5875:260;;;;5957:14;;5985:11;;5875:260;;;;;;;;;;-1:-1:-1;;;6146:14:33;:28;5305:876::o;6187:1806::-;6401:26;;:::i;:::-;6429;;:::i;:::-;6607:30;;:::i;:::-;6640;6668:1;6640:27;:30::i;:::-;6607:63;;6680:56;;:::i;:::-;-1:-1:-1;6739:3:33;6834:43;;:::i;:::-;-1:-1:-1;6880:13:33;6907:39;:20;6942:3;6907:39;:34;:39;:::i;:::-;6903:1017;;;7254:64;7262:55;7296:20;7262:29;:20;7287:3;7262:29;:24;:29;:::i;:::-;:33;:55;:33;:55;:::i;:::-;7254:3;;:64;:7;:64;:::i;:::-;7222:96;-1:-1:-1;7351:48:33;:13;7222:96;7351:48;:17;:48;:::i;:::-;7332:67;;6903:1017;;;7420:36;:20;7452:3;7420:36;:31;:36;:::i;:::-;7416:504;;;7764:64;7772:55;7806:20;7772:29;:3;7780:20;7772:29;:7;:29;:::i;:55::-;7764:3;;:64;:7;:64;:::i;:::-;7732:96;-1:-1:-1;7861:48:33;:13;7732:96;7861:48;:17;:48;:::i;:::-;7842:67;;7416:504;7938:16;7956:29;;-1:-1:-1;6187:1806:33;-1:-1:-1;;;;;6187:1806:33:o;1274:134:87:-;1332:7;1358:43;1362:1;1365;1358:43;;;;;;;;;;;;;;;;;:3;:43::i;4612:252:33:-;4668:26;;:::i;:::-;4706:42;4751:22;:20;:22::i;:::-;4835:21;;4790:67;;;;;4706;;-1:-1:-1;4790:44:33;;;;;;:67;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4783:74;;;4612:252;:::o;1632:137:10:-;1752:10;1739;;:23;;1632:137::o;6797:151::-;6871:15;;:::i;:::-;6905:36;;;;;;;;;6929:10;;6914;;6905:36;;6914:26;;:10;:26;:14;:26;:::i;:::-;6905:36;;6898:43;6797:151;-1:-1:-1;;;6797:151:10:o;8779:134::-;8845:15;;:::i;:::-;8879:27;;;;;;;;;8888:10;;8879:27;;8888:17;;8903:1;8888:17;:14;:17;:::i;6123:151::-;6197:15;;:::i;:::-;6231:36;;;;;;;;;6255:10;;6240;;6231:36;;6240:26;;:10;:26;:14;:26;:::i;7876:650::-;7950:15;;:::i;:::-;8463:56;;;;;;;;;8487:10;;8472;;8463:56;;436:6;;8472:26;;;:14;:26;:::i;:::-;:46;;;;;;8463:56;;8456:63;7876:650;-1:-1:-1;;;7876:650:10:o;3574:134::-;3691:10;3678;;:23;;3574:134::o;1692:187:87:-;1778:7;1813:12;1805:6;;;;1797:29;;;;;;;;;;;;;;;-1:-1:-1;;;1848:5:87;;;1692:187::o;4420:186:33:-;4475:25;4545:8;;:53;;;;;:8;;;;;;;:33;;:53;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4512:87;;4420:186;:::o;834:176:87:-;892:7;923:5;;;946:6;;;;938:46;;;;;;;;;;;;;-1:-1:-1;;;;;;;;;;;;;;:::o;179:328::-;;294:4;282:9;277:3;273:19;269:30;266:2;;;-1:-1;;302:12;266:2;330:20;294:4;330:20;;;971;;411:75;;-1:-1;321:29;260:247;-1:-1;260:247;1182:263;;1297:2;1285:9;1276:7;1272:23;1268:32;1265:2;;;-1:-1;;1303:12;1265:2;89:6;83:13;8896:42;9817:5;8885:54;9792:5;9789:35;9779:2;;-1:-1;;9828:12;1452:315;;1593:2;1581:9;1572:7;1568:23;1564:32;1561:2;;;-1:-1;;1599:12;1561:2;709:20;1593:2;709:20;;;1119:13;;790:86;;-1:-1;797:16;1555:212;-1:-1;1555:212;1774:263;;1889:2;1877:9;1868:7;1864:23;1860:32;1857:2;;;-1:-1;;1895:12;1857:2;-1:-1;1119:13;;1851:186;-1:-1;1851:186;2044:595;;;;2234:2;2222:9;2213:7;2209:23;2205:32;2202:2;;;-1:-1;;2240:12;2202:2;984:6;971:20;2292:63;;2410:79;2481:7;2392:2;2461:9;2457:22;2410:79;;;2400:89;;2544:79;2615:7;2526:2;2595:9;2591:22;2544:79;;;2534:89;;2196:443;;;;;;4828:222;2717:37;;;4955:2;4940:18;;4926:124;5057:272;8896:42;8885:54;;;;2862:75;;5209:2;5194:18;;5180:149;5336:310;;5483:2;;5504:17;5497:47;3094:5;8433:12;8590:6;5483:2;5472:9;5468:18;8578:19;-1:-1;9421:101;9435:6;9432:1;9429:13;9421:101;;;9502:11;;;;;9496:18;9483:11;;;8618:14;9483:11;9476:39;9450:10;;9421:101;;;9537:6;9534:1;9531:13;9528:2;;;-1:-1;8618:14;9593:6;5472:9;9584:16;;9577:27;9528:2;-1:-1;9713:2;9693:14;9709:7;9689:28;3252:39;;;;8618:14;3252:39;;5454:192;-1:-1;;;5454:192;5653:348;3452:18;3440:31;;5843:2;5828:18;;5814:187;6008:416;6208:2;6222:47;;;3710:2;6193:18;;;8578:19;3746:29;8618:14;;;3726:50;3795:12;;;6179:245;6431:416;6631:2;6645:47;;;4046:2;6616:18;;;8578:19;4082:34;8618:14;;;4062:55;4151:3;4137:12;;;4130:25;4174:12;;;6602:245;6854:541;4478:23;;2717:37;;4478:23;7381:2;7366:18;;2717:37;7113:2;7098:18;;7084:311;7631:444;2717:37;;;7978:2;7963:18;;2717:37;;;;8061:2;8046:18;;2717:37;7814:2;7799:18;;7785:290;8082:256;8144:2;8138:9;8170:17;;;8245:18;8230:34;;8266:22;;;8227:62;8224:2;;;8302:1;;8292:12;8224:2;8144;8311:22;8122:216;;-1:-1;8122:216",
+  "source": "pragma solidity ^0.6.0;\n\npragma experimental ABIEncoderV2;\n\nimport \"../common/FundingRateApplier.sol\";\n\n\n// Implements FundingRateApplier internal methods to enable unit testing.\ncontract FundingRateApplierTest is FundingRateApplier {\n    constructor(\n        address _fpFinderAddress,\n        bytes32 _fundingRateIdentifier,\n        address _timerAddress\n    ) public FundingRateApplier(_fpFinderAddress, _fundingRateIdentifier, _timerAddress) {}\n\n    function applyFundingRate() public {\n        _applyEffectiveFundingRate();\n    }\n\n    function calculateEffectiveFundingRate(\n        uint256 paymentPeriodSeconds,\n        FixedPoint.Unsigned memory fundingRatePerSecond,\n        FixedPoint.Unsigned memory feeMultiplier\n    ) public pure returns (FixedPoint.Unsigned memory, FixedPoint.Unsigned memory) {\n        return _calculateEffectiveFundingRate(paymentPeriodSeconds, fundingRatePerSecond, feeMultiplier);\n    }\n}\n",
+  "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/test/FundingRateApplierTest.sol",
+  "ast": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/test/FundingRateApplierTest.sol",
+    "exportedSymbols": {
+      "FundingRateApplierTest": [
+        16079
+      ]
+    },
+    "id": 16080,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 16032,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:51"
+      },
+      {
+        "id": 16033,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "25:33:51"
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/FundingRateApplier.sol",
+        "file": "../common/FundingRateApplier.sol",
+        "id": 16034,
+        "nodeType": "ImportDirective",
+        "scope": 16080,
+        "sourceUnit": 7679,
+        "src": "60:42:51",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 16035,
+              "name": "FundingRateApplier",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 7678,
+              "src": "214:18:51",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_FundingRateApplier_$7678",
+                "typeString": "contract FundingRateApplier"
+              }
+            },
+            "id": 16036,
+            "nodeType": "InheritanceSpecifier",
+            "src": "214:18:51"
+          }
+        ],
+        "contractDependencies": [
+          4616,
+          7678
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 16079,
+        "linearizedBaseContracts": [
+          16079,
+          7678,
+          4616
+        ],
+        "name": "FundingRateApplierTest",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 16050,
+              "nodeType": "Block",
+              "src": "445:2:51",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 16051,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 16045,
+                    "name": "_fpFinderAddress",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 16038,
+                    "src": "388:16:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  {
+                    "argumentTypes": null,
+                    "id": 16046,
+                    "name": "_fundingRateIdentifier",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 16040,
+                    "src": "406:22:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  {
+                    "argumentTypes": null,
+                    "id": 16047,
+                    "name": "_timerAddress",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 16042,
+                    "src": "430:13:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 16048,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 16044,
+                  "name": "FundingRateApplier",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 7678,
+                  "src": "369:18:51",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_FundingRateApplier_$7678_$",
+                    "typeString": "type(contract FundingRateApplier)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "369:75:51"
+              }
+            ],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 16043,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16038,
+                  "mutability": "mutable",
+                  "name": "_fpFinderAddress",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16051,
+                  "src": "260:24:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16037,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "260:7:51",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16040,
+                  "mutability": "mutable",
+                  "name": "_fundingRateIdentifier",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16051,
+                  "src": "294:30:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 16039,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "294:7:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16042,
+                  "mutability": "mutable",
+                  "name": "_timerAddress",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16051,
+                  "src": "334:21:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16041,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "334:7:51",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "250:111:51"
+            },
+            "returnParameters": {
+              "id": 16049,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "445:0:51"
+            },
+            "scope": 16079,
+            "src": "239:208:51",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 16057,
+              "nodeType": "Block",
+              "src": "488:45:51",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 16054,
+                      "name": "_applyEffectiveFundingRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7586,
+                      "src": "498:26:51",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
+                        "typeString": "function ()"
+                      }
+                    },
+                    "id": 16055,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "498:28:51",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 16056,
+                  "nodeType": "ExpressionStatement",
+                  "src": "498:28:51"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "71f3c1b7",
+            "id": 16058,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "applyFundingRate",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 16052,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "478:2:51"
+            },
+            "returnParameters": {
+              "id": 16053,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "488:0:51"
+            },
+            "scope": 16079,
+            "src": "453:80:51",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 16077,
+              "nodeType": "Block",
+              "src": "806:113:51",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 16072,
+                        "name": "paymentPeriodSeconds",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16060,
+                        "src": "854:20:51",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 16073,
+                        "name": "fundingRatePerSecond",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16062,
+                        "src": "876:20:51",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 16074,
+                        "name": "feeMultiplier",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16064,
+                        "src": "898:13:51",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        },
+                        {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        }
+                      ],
+                      "id": 16071,
+                      "name": "_calculateEffectiveFundingRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7677,
+                      "src": "823:30:51",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_struct$_Unsigned_$3868_memory_ptr_$_t_struct$_Unsigned_$3868_memory_ptr_$returns$_t_struct$_Unsigned_$3868_memory_ptr_$_t_struct$_Unsigned_$3868_memory_ptr_$",
+                        "typeString": "function (uint256,struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory)"
+                      }
+                    },
+                    "id": 16075,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "823:89:51",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_struct$_Unsigned_$3868_memory_ptr_$_t_struct$_Unsigned_$3868_memory_ptr_$",
+                      "typeString": "tuple(struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory)"
+                    }
+                  },
+                  "functionReturnParameters": 16070,
+                  "id": 16076,
+                  "nodeType": "Return",
+                  "src": "816:96:51"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "916108b2",
+            "id": 16078,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calculateEffectiveFundingRate",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 16065,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16060,
+                  "mutability": "mutable",
+                  "name": "paymentPeriodSeconds",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "587:28:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 16059,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "587:7:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16062,
+                  "mutability": "mutable",
+                  "name": "fundingRatePerSecond",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "625:47:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16061,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "625:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16064,
+                  "mutability": "mutable",
+                  "name": "feeMultiplier",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "682:40:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16063,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "682:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "577:151:51"
+            },
+            "returnParameters": {
+              "id": 16070,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16067,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "750:26:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16066,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "750:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16069,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "778:26:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16068,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "778:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "749:56:51"
+            },
+            "scope": 16079,
+            "src": "539:380:51",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 16080,
+        "src": "179:742:51"
+      }
+    ],
+    "src": "0:922:51"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/test/FundingRateApplierTest.sol",
+    "exportedSymbols": {
+      "FundingRateApplierTest": [
+        16079
+      ]
+    },
+    "id": 16080,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 16032,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:51"
+      },
+      {
+        "id": 16033,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "25:33:51"
+      },
+      {
+        "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/common/FundingRateApplier.sol",
+        "file": "../common/FundingRateApplier.sol",
+        "id": 16034,
+        "nodeType": "ImportDirective",
+        "scope": 16080,
+        "sourceUnit": 7679,
+        "src": "60:42:51",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 16035,
+              "name": "FundingRateApplier",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 7678,
+              "src": "214:18:51",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_FundingRateApplier_$7678",
+                "typeString": "contract FundingRateApplier"
+              }
+            },
+            "id": 16036,
+            "nodeType": "InheritanceSpecifier",
+            "src": "214:18:51"
+          }
+        ],
+        "contractDependencies": [
+          4616,
+          7678
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 16079,
+        "linearizedBaseContracts": [
+          16079,
+          7678,
+          4616
+        ],
+        "name": "FundingRateApplierTest",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 16050,
+              "nodeType": "Block",
+              "src": "445:2:51",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 16051,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 16045,
+                    "name": "_fpFinderAddress",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 16038,
+                    "src": "388:16:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  {
+                    "argumentTypes": null,
+                    "id": 16046,
+                    "name": "_fundingRateIdentifier",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 16040,
+                    "src": "406:22:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  {
+                    "argumentTypes": null,
+                    "id": 16047,
+                    "name": "_timerAddress",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 16042,
+                    "src": "430:13:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 16048,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 16044,
+                  "name": "FundingRateApplier",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 7678,
+                  "src": "369:18:51",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_FundingRateApplier_$7678_$",
+                    "typeString": "type(contract FundingRateApplier)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "369:75:51"
+              }
+            ],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 16043,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16038,
+                  "mutability": "mutable",
+                  "name": "_fpFinderAddress",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16051,
+                  "src": "260:24:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16037,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "260:7:51",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16040,
+                  "mutability": "mutable",
+                  "name": "_fundingRateIdentifier",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16051,
+                  "src": "294:30:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 16039,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "294:7:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16042,
+                  "mutability": "mutable",
+                  "name": "_timerAddress",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16051,
+                  "src": "334:21:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 16041,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "334:7:51",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "250:111:51"
+            },
+            "returnParameters": {
+              "id": 16049,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "445:0:51"
+            },
+            "scope": 16079,
+            "src": "239:208:51",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 16057,
+              "nodeType": "Block",
+              "src": "488:45:51",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 16054,
+                      "name": "_applyEffectiveFundingRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7586,
+                      "src": "498:26:51",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
+                        "typeString": "function ()"
+                      }
+                    },
+                    "id": 16055,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "498:28:51",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 16056,
+                  "nodeType": "ExpressionStatement",
+                  "src": "498:28:51"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "71f3c1b7",
+            "id": 16058,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "applyFundingRate",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 16052,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "478:2:51"
+            },
+            "returnParameters": {
+              "id": 16053,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "488:0:51"
+            },
+            "scope": 16079,
+            "src": "453:80:51",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 16077,
+              "nodeType": "Block",
+              "src": "806:113:51",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 16072,
+                        "name": "paymentPeriodSeconds",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16060,
+                        "src": "854:20:51",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 16073,
+                        "name": "fundingRatePerSecond",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16062,
+                        "src": "876:20:51",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 16074,
+                        "name": "feeMultiplier",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 16064,
+                        "src": "898:13:51",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        },
+                        {
+                          "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                          "typeString": "struct FixedPoint.Unsigned memory"
+                        }
+                      ],
+                      "id": 16071,
+                      "name": "_calculateEffectiveFundingRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7677,
+                      "src": "823:30:51",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_struct$_Unsigned_$3868_memory_ptr_$_t_struct$_Unsigned_$3868_memory_ptr_$returns$_t_struct$_Unsigned_$3868_memory_ptr_$_t_struct$_Unsigned_$3868_memory_ptr_$",
+                        "typeString": "function (uint256,struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory) pure returns (struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory)"
+                      }
+                    },
+                    "id": 16075,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "823:89:51",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_struct$_Unsigned_$3868_memory_ptr_$_t_struct$_Unsigned_$3868_memory_ptr_$",
+                      "typeString": "tuple(struct FixedPoint.Unsigned memory,struct FixedPoint.Unsigned memory)"
+                    }
+                  },
+                  "functionReturnParameters": 16070,
+                  "id": 16076,
+                  "nodeType": "Return",
+                  "src": "816:96:51"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "916108b2",
+            "id": 16078,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calculateEffectiveFundingRate",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 16065,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16060,
+                  "mutability": "mutable",
+                  "name": "paymentPeriodSeconds",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "587:28:51",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 16059,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "587:7:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16062,
+                  "mutability": "mutable",
+                  "name": "fundingRatePerSecond",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "625:47:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16061,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "625:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16064,
+                  "mutability": "mutable",
+                  "name": "feeMultiplier",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "682:40:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16063,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "682:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "577:151:51"
+            },
+            "returnParameters": {
+              "id": 16070,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 16067,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "750:26:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16066,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "750:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16069,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 16078,
+                  "src": "778:26:51",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Unsigned_$3868_memory_ptr",
+                    "typeString": "struct FixedPoint.Unsigned"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 16068,
+                    "name": "FixedPoint.Unsigned",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 3868,
+                    "src": "778:19:51",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Unsigned_$3868_storage_ptr",
+                      "typeString": "struct FixedPoint.Unsigned"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "749:56:51"
+            },
+            "scope": 16079,
+            "src": "539:380:51",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 16080,
+        "src": "179:742:51"
+      }
+    ],
+    "src": "0:922:51"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-22T14:01:04.499Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {
+      "fpFinder()": {
+        "notice": "************************************** FUNDING RATE APPLIER DATA STRUCTURES ****************************************"
+      }
+    }
+  }
+}

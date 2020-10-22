@@ -1,0 +1,127 @@
+{
+  "contractName": "FundingRateStore",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/implementation/FundingRateStore.sol\":\"FundingRateStore\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/implementation/FundingRateStore.sol\":{\"keccak256\":\"0x5d6567136faedd9c4c7010342bdb218791dfbfa1193ada32a469a8c82f623e32\",\"urls\":[\"bzz-raw://053be1d87981bcbbd4450d2e5692bb5fb0bc88b7d5788b578d3e92920e2cd443\",\"dweb:/ipfs/QmSMRdqxdaSMTuqeRdFsb34qQAZqqYShrJ5MGEWFLLhD8t\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212202b26eeb53e75c91a10ce62bb6a0630e9ad5cc8d95f2d26446882a7894fd1f47c64736f6c634300060a0033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212202b26eeb53e75c91a10ce62bb6a0630e9ad5cc8d95f2d26446882a7894fd1f47c64736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "69:30:43:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "69:30:43:-:0;;;;;",
+  "source": "pragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\n\n// TODO:\ncontract FundingRateStore {\n\n}\n",
+  "sourcePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/implementation/FundingRateStore.sol",
+  "ast": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/implementation/FundingRateStore.sol",
+    "exportedSymbols": {
+      "FundingRateStore": [
+        12454
+      ]
+    },
+    "id": 12455,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 12452,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:43"
+      },
+      {
+        "id": 12453,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:43"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 12454,
+        "linearizedBaseContracts": [
+          12454
+        ],
+        "name": "FundingRateStore",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 12455,
+        "src": "69:30:43"
+      }
+    ],
+    "src": "0:100:43"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/financial-templates/funding-rate-store/implementation/FundingRateStore.sol",
+    "exportedSymbols": {
+      "FundingRateStore": [
+        12454
+      ]
+    },
+    "id": 12455,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 12452,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:43"
+      },
+      {
+        "id": 12453,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "24:33:43"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 12454,
+        "linearizedBaseContracts": [
+          12454
+        ],
+        "name": "FundingRateStore",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 12455,
+        "src": "69:30:43"
+      }
+    ],
+    "src": "0:100:43"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-10-22T14:01:04.435Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

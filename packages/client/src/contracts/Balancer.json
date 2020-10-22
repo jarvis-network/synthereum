@@ -38,15 +38,15 @@
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/Balancer.sol",
     "exportedSymbols": {
       "Balancer": [
-        5521
+        5477
       ]
     },
-    "id": 5522,
+    "id": 5478,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5510,
+        "id": 5466,
         "literals": [
           "solidity",
           "^",
@@ -54,7 +54,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:18"
+        "src": "0:23:17"
       },
       {
         "abstract": true,
@@ -62,15 +62,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 5511,
+          "id": 5467,
           "nodeType": "StructuredDocumentation",
-          "src": "26:144:18",
+          "src": "26:144:17",
           "text": " @title Interface for Balancer.\n @dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
         },
         "fullyImplemented": false,
-        "id": 5521,
+        "id": 5477,
         "linearizedBaseContracts": [
-          5521
+          5477
         ],
         "name": "Balancer",
         "nodeType": "ContractDefinition",
@@ -79,7 +79,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "1446a7ff",
-            "id": 5520,
+            "id": 5476,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -87,18 +87,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5516,
+              "id": 5472,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5513,
+                  "id": 5469,
                   "mutability": "mutable",
                   "name": "tokenIn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5520,
-                  "src": "233:15:18",
+                  "scope": 5476,
+                  "src": "233:15:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -106,10 +106,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5512,
+                    "id": 5468,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "233:7:18",
+                    "src": "233:7:17",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -121,13 +121,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5515,
+                  "id": 5471,
                   "mutability": "mutable",
                   "name": "tokenOut",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5520,
-                  "src": "250:16:18",
+                  "scope": 5476,
+                  "src": "250:16:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -135,10 +135,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5514,
+                    "id": 5470,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "250:7:18",
+                    "src": "250:7:17",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -149,21 +149,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "232:35:18"
+              "src": "232:35:17"
             },
             "returnParameters": {
-              "id": 5519,
+              "id": 5475,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5518,
+                  "id": 5474,
                   "mutability": "mutable",
                   "name": "spotPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5520,
-                  "src": "299:17:18",
+                  "scope": 5476,
+                  "src": "299:17:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -171,10 +171,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5517,
+                    "id": 5473,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "299:7:18",
+                    "src": "299:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -184,34 +184,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "298:19:18"
+              "src": "298:19:17"
             },
-            "scope": 5521,
-            "src": "204:114:18",
+            "scope": 5477,
+            "src": "204:114:17",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "external"
           }
         ],
-        "scope": 5522,
-        "src": "171:149:18"
+        "scope": 5478,
+        "src": "171:149:17"
       }
     ],
-    "src": "0:321:18"
+    "src": "0:321:17"
   },
   "legacyAST": {
     "absolutePath": "/home/alessandrovm/JarvisLavoro/SynFiat/packages/contracts/contracts/uma-contracts/common/interfaces/Balancer.sol",
     "exportedSymbols": {
       "Balancer": [
-        5521
+        5477
       ]
     },
-    "id": 5522,
+    "id": 5478,
     "license": null,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5510,
+        "id": 5466,
         "literals": [
           "solidity",
           "^",
@@ -219,7 +219,7 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:18"
+        "src": "0:23:17"
       },
       {
         "abstract": true,
@@ -227,15 +227,15 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 5511,
+          "id": 5467,
           "nodeType": "StructuredDocumentation",
-          "src": "26:144:18",
+          "src": "26:144:17",
           "text": " @title Interface for Balancer.\n @dev This only contains the methods/events that we use in our contracts or offchain infrastructure."
         },
         "fullyImplemented": false,
-        "id": 5521,
+        "id": 5477,
         "linearizedBaseContracts": [
-          5521
+          5477
         ],
         "name": "Balancer",
         "nodeType": "ContractDefinition",
@@ -244,7 +244,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "1446a7ff",
-            "id": 5520,
+            "id": 5476,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -252,18 +252,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 5516,
+              "id": 5472,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5513,
+                  "id": 5469,
                   "mutability": "mutable",
                   "name": "tokenIn",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5520,
-                  "src": "233:15:18",
+                  "scope": 5476,
+                  "src": "233:15:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -271,10 +271,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5512,
+                    "id": 5468,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "233:7:18",
+                    "src": "233:7:17",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -286,13 +286,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 5515,
+                  "id": 5471,
                   "mutability": "mutable",
                   "name": "tokenOut",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5520,
-                  "src": "250:16:18",
+                  "scope": 5476,
+                  "src": "250:16:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -300,10 +300,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5514,
+                    "id": 5470,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "250:7:18",
+                    "src": "250:7:17",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -314,21 +314,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "232:35:18"
+              "src": "232:35:17"
             },
             "returnParameters": {
-              "id": 5519,
+              "id": 5475,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5518,
+                  "id": 5474,
                   "mutability": "mutable",
                   "name": "spotPrice",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 5520,
-                  "src": "299:17:18",
+                  "scope": 5476,
+                  "src": "299:17:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -336,10 +336,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5517,
+                    "id": 5473,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "299:7:18",
+                    "src": "299:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -349,20 +349,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "298:19:18"
+              "src": "298:19:17"
             },
-            "scope": 5521,
-            "src": "204:114:18",
+            "scope": 5477,
+            "src": "204:114:17",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "external"
           }
         ],
-        "scope": 5522,
-        "src": "171:149:18"
+        "scope": 5478,
+        "src": "171:149:17"
       }
     ],
-    "src": "0:321:18"
+    "src": "0:321:17"
   },
   "compiler": {
     "name": "solc",
@@ -370,7 +370,7 @@
   },
   "networks": {},
   "schemaVersion": "3.2.5",
-  "updatedAt": "2020-10-19T18:33:22.273Z",
+  "updatedAt": "2020-10-22T14:01:04.208Z",
   "devdoc": {
     "details": "This only contains the methods/events that we use in our contracts or offchain infrastructure.",
     "methods": {},
