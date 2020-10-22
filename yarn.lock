@@ -18227,9 +18227,9 @@ proto-list@~1.2.1:
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
-"protocol@github:UMAprotocol/protocol#72384c36655869c2e69072d56b54e8b0aa3826e6":
+"protocol@github:UMAprotocol/protocol#dfb07c3288c96b6ddf8853093f9479d01dd0043b":
   version "1.0.0"
-  resolved "https://codeload.github.com/UMAprotocol/protocol/tar.gz/72384c36655869c2e69072d56b54e8b0aa3826e6"
+  resolved "https://codeload.github.com/UMAprotocol/protocol/tar.gz/dfb07c3288c96b6ddf8853093f9479d01dd0043b"
 
 protocols@^1.1.0, protocols@^1.4.0:
   version "1.4.7"
