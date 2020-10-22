@@ -86,10 +86,10 @@ const Chart: FC<CandleStickChartProps> = ({
 
   const resizeHandler = () => {
     if (chartRef.current) {
-      let chartWidth = autoWidth
+      const chartWidth = autoWidth
         ? chartRef.current.parentNode.clientWidth
         : width;
-      let chartHeight = autoHeight
+      const chartHeight = autoHeight
         ? chartRef.current.parentNode.clientHeight
         : height;
 
@@ -116,6 +116,8 @@ const Chart: FC<CandleStickChartProps> = ({
         setChart(createChart(chartRef.current));
       });
     }
+
+    return () => chart && chart.remove();
   }, []);
 
   // 2. add candle series
