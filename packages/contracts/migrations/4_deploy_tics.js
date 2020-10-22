@@ -15,6 +15,9 @@ module.exports = function (deployer, network, accounts) {
   // Kovan collateral address
   collateralAddress = contracts[networkId]['collateralAddress'];
 
+  //Benficiary address in case of inflationary collateral token
+  excessTokenBeneficiary = rolesConfig[networkId].maintainer;
+
   const fee = {
     feePercentage: {
       rawValue: web3Utils.toWei(feeConfig[networkId].feePercentage.toString()),
@@ -39,7 +42,12 @@ module.exports = function (deployer, network, accounts) {
         assetParams['startingCollateralization'];
       delete assetParams['startingCollateralization'];
 
-      let params = { ...TICConfig, collateralAddress, ...assetParams };
+      let params = {
+        ...TICConfig,
+        collateralAddress,
+        ...assetParams,
+        excessTokenBeneficiary,
+      };
       params.priceFeedIdentifier = web3Utils.toHex(
         assetParams.priceFeedIdentifier,
       );
