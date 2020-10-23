@@ -10,14 +10,25 @@ const usePrettyName = (address: string) => {
 
   useEffect(() => {
     if (!ens) {
-      return;
+      return () => {};
     }
+
+    let cancelled = false;
 
     setName(null);
     ens
       .prettyName(address)
-      .then(resolvedName => setName(resolvedName))
+      .then(resolvedName => {
+        if (!cancelled) {
+          setName(resolvedName);
+        }
+      })
       .catch(noop);
+
+    return () => {
+      cancelled = true;
+      setName(null);
+    };
   }, [ens, address]);
 
   return name;
