@@ -1,6 +1,6 @@
 import { Logger } from '../logger';
 import * as bunyan from 'bunyan';
-import now from 'performance-now';
+import { performance } from 'perf_hooks';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import axios from 'axios';
@@ -96,7 +96,7 @@ export default class SynFiatKeeper {
   }
 
   checkMintRequests() {
-    let started: number = now();
+    let started: number = performance.now();
     this.mintRequests;
     this.tics.forEach(async (tic, i) => {
       this.mintRequests = await tic.methods
@@ -177,14 +177,16 @@ export default class SynFiatKeeper {
           this.resolveRequest(mint[0], tic.methods.rejectMint, 'Rejected mint');
         }
         this.logger.info(
-          `Checked mint requests in ${(now() - started) / 1000} second(s)`,
+          `Checked mint requests in ${
+            (performance.now() - started) / 1000
+          } second(s)`,
         ); // miliseconds to seconds is /1000
       });
     });
   }
 
   checkRedeemRequests() {
-    let started: number = now();
+    let started: number = performance.now();
 
     this.tics.forEach(async (tic, i) => {
       let redeemRequests: any[] = await tic.methods
@@ -269,14 +271,16 @@ export default class SynFiatKeeper {
         }
 
         this.logger.info(
-          `Checked redeem requests in ${(now() - started) / 1000} second(s)`,
+          `Checked redeem requests in ${
+            (performance.now() - started) / 1000
+          } second(s)`,
         );
       });
     });
   }
 
   checkExchangeRequests() {
-    const started: number = now();
+    const started: number = performance.now();
     this.tics.forEach(async (tic, i) => {
       let exchangeRequests: any[] = await tic.methods
         .getExchangeRequests()
@@ -400,7 +404,9 @@ export default class SynFiatKeeper {
       }
     });
     this.logger.info(
-      `Checked exchange requests in ${(now() - started) / 1000} second(s)`,
+      `Checked exchange requests in ${
+        (performance.now() - started) / 1000
+      } second(s)`,
     );
   }
 
