@@ -20,7 +20,7 @@ const ENSContext = createContext<ENSHelper>(null);
 const NETWORK_ID = 42;
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
 
-const AuthProvider: React.FC<{}> = ({ children }) => {
+const AuthProvider: React.FC = ({ children }) => {
   const [ens, setEns] = useState<ENSHelper>();
   const [web3, setWeb3] = useState<Web3>();
   const [onboard, setOnboard] = useState<API>();

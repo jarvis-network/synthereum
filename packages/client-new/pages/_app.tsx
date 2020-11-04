@@ -1,5 +1,5 @@
 import React from 'react';
-import type { AppProps /*, AppContext */ } from 'next/app';
+import type { AppProps /* , AppContext */ } from 'next/app';
 import { Provider as StateProvider } from 'react-redux';
 
 import { styled } from '@jarvis-network/ui';
@@ -9,6 +9,7 @@ import AppThemeProvider from '@/components/AppThemeProvider';
 import AuthProvider from '@/components/auth/AuthProvider';
 
 import './_app.css';
+import 'react-table/react-table.css';
 
 const MainWrapper = styled.div`
   height: 100vh;

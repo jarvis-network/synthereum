@@ -100,11 +100,7 @@ const Chart: FC<CandleStickChartProps> = ({
 
   // import createChart function
   const importCreateChartFunction = async () => {
-    try {
-      return (await import('lightweight-charts/index')).createChart;
-    } catch (err) {
-      console.log(err);
-    }
+    return (await import('lightweight-charts/index')).createChart;
   };
 
   // ----- USEEFFECT HOOKS -----
@@ -112,9 +108,12 @@ const Chart: FC<CandleStickChartProps> = ({
   // 1. create chart
   useEffect(() => {
     if (chartRef && !chart) {
-      importCreateChartFunction().then(createChart => {
-        setChart(createChart(chartRef.current));
-      });
+      importCreateChartFunction()
+        .then(createChart => {
+          setChart(createChart(chartRef.current));
+        })
+        // eslint-disable-next-line no-console
+        .catch(e => console.error(e));
     }
 
     return () => chart && chart.remove();
@@ -130,7 +129,7 @@ const Chart: FC<CandleStickChartProps> = ({
   // 3. update chart
   useEffect(() => {
     if (chart) {
-      let options = {
+      const options = {
         width: autoWidth ? chartRef.current.parentNode.clientWidth : width,
         height: autoHeight ? chartRef.current.parentNode.clientHeight : height,
         layout: chartLayoutConfig,

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { AccountDropdown } from '@jarvis-network/ui';
+import { AccountDropdown, styled } from '@jarvis-network/ui';
 
 import SignInUpButton from '@/components/header/SignInUpButton';
 import { AuthContext } from '@/components/auth/AuthProvider';
@@ -17,6 +17,13 @@ const cutWalletAddress = (address: string) => {
 
   return `${start}...${end}`;
 };
+
+// @TODO move to ui lib
+const StyledAccountDropdown = styled(AccountDropdown)`
+  > :last-child {
+    z-index: 1;
+  }
+`;
 
 const render = () => {
   const dispatch = useDispatch();
@@ -63,7 +70,7 @@ const render = () => {
   if (auth.address) {
     const addr = cutWalletAddress(auth.address);
     return (
-      <AccountDropdown
+      <StyledAccountDropdown
         width="195px"
         links={links}
         position="absolute"
