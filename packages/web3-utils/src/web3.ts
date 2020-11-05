@@ -51,11 +51,16 @@ export type AbiSource =
       abi: {};
     };
 
-export function getContractAbiFromArtifacts(contractName: string, relativePath?: string) {
-  if(relativePath){
-    return loadJSON(`${relativePath}/${contractName}.json`)
+export function getContractAbiFromArtifacts(
+  contractName: string,
+  relativePath?: string,
+) {
+  if (relativePath) {
+    return loadJSON(`${relativePath}/${contractName}.json`);
   }
-  return loadJSON(`../../../build/contracts/${contractName}.json`);
+  return loadJSON(
+    `../../../packages/contracts/build/contracts/${contractName}.json`,
+  ).abi;
 }
 
 export async function getContract<T extends BaseContract>(
@@ -118,7 +123,7 @@ export function once<T>(
   maxConfirmations = 1,
 ) {
   return new Promise((resolve, reject) => {
-    promiEvent.once('error', error => reject(error));
+    promiEvent.once('error', reject);
     switch (type) {
       case 'sending':
         promiEvent.once(type, () => resolve());
@@ -128,7 +133,7 @@ export function once<T>(
         break;
       case 'transactionHash':
       case 'receipt':
-        promiEvent.once(type, txHashOrReceipt => resolve(txHashOrReceipt));
+        promiEvent.once(type, resolve);
         break;
       case 'confirmation':
         function onConfirm(
@@ -252,37 +257,4 @@ export async function getBlockAverageTime(
     times.push(parseInt(time.toString()));
   }
   return Math.round(times.reduce((a, b) => a + b) / times.length);
-}
-
-export async function getClosestBlock(
-  web3: Web3,
-  initBlock: number,
-  endingTimestamp: number,
-): Promise<number> {
-  let lastBlockNumber = (await web3.eth.getBlock('latest')).number;
-  let startBlockNumber = initBlock;
-  while (1 === 1) {
-    const middleBlockIncrement = Math.floor(
-      (lastBlockNumber - startBlockNumber) / 2,
-    );
-    const candidateBlock = startBlockNumber + middleBlockIncrement;
-    const candidateTimestamp = await getBlockTimestamp(web3, candidateBlock);
-    const nextCandidateTimestamp = await getBlockTimestamp(
-      web3,
-      candidateBlock + 1,
-    );
-    if (
-      candidateTimestamp <= endingTimestamp &&
-      nextCandidateTimestamp > endingTimestamp
-    ) {
-      return candidateBlock;
-    } else if (
-      candidateTimestamp <= endingTimestamp &&
-      nextCandidateTimestamp <= endingTimestamp
-    ) {
-      startBlockNumber = candidateBlock;
-    } else {
-      lastBlockNumber = candidateBlock;
-    }
-  }
 }

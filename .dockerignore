@@ -1,5 +1,4 @@
 **/node_modules
 **/packages/keeper-bot
-**/packages/contracts
 **/packages/client
 **/packages/balance-notify

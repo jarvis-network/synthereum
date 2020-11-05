@@ -16,7 +16,9 @@ export function getInfuraWeb3(network: Network): Web3 {
 
 export function getInfuraEndpoint(network: Network) {
   const networkName =
-    typeof network === 'number' ? networkNames[network] : network;
+    network in networkNames
+      ? networkNames[network as keyof typeof networkNames]
+      : network;
   const projectId = process.env.INFURA_KEY;
   return `https://${networkName}.infura.io/v3/${projectId}`;
 }

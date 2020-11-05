@@ -15,7 +15,7 @@
     "lint": "tslint -p tsconfig.json",
     "prebuild": "yarn run clean",
     "build": "tsc",
-    "start": "node dist/synfiat-keeper.js",
+    "start": "ts-node dist/synfiat-keeper.js",
     "start:dev": "nodemon src/synfiat-keeper.ts"
   },
   "author": "Edi Sinovcic",
@@ -37,6 +37,7 @@
     "@types/node": "^14.14.2",
     "@types/yargs": "^15.0.7",
     "nodemon": "2.0.4",
+    "ts-node": "^9.0.0",
     "tslint": "^6.1.3"
   }
 }

@@ -1,6 +1,6 @@
 FROM node:12-alpine as builder
 
-RUN apk add --update git
+RUN apk add --update git python make g++
 WORKDIR /src
 
 COPY . .
@@ -8,4 +8,4 @@ COPY . .
 RUN yarn install
 RUN yarn run build:keeper-bot
 
-CMD "yarn run start start:keeper-bot"
+CMD "yarn run start:keeper-bot"
