@@ -8,6 +8,15 @@ import { Web3Service } from '@jarvis/web3-utils';
 import path from 'path';
 import fs from 'fs';
 
+interface SyntheticInfo {
+  ticAddress: string;
+  tic: Contract;
+  collateralTokenAddress: string;
+  collateralToken: Contract;
+  syntheticTokenAddress: string;
+  syntheticToken: Contract;
+}
+
 export default class SynFiatKeeper {
   mintInterval: any;
   redeemInterval: any;
@@ -17,14 +26,14 @@ export default class SynFiatKeeper {
   maxSlippage: number;
   ticConfig: any;
   factoryABI: AbiItem[];
-  ticAddresses: string[];
+  ticAddresses: string[] = [];
   ticABI: any;
-  tics: any[];
-  collateralTokenAddresses: string[];
+  tics: any[] = [];
+  collateralTokenAddresses: string[] = [];
   erc20ABI: AbiItem[];
-  collateralTokens: any[];
-  syntethicTokenAddresses: any[];
-  syntheticTokens: any[];
+  collateralTokens: any[] = [];
+  syntheticTokenAddresses: any[] = [];
+  syntheticTokens: any[] = [];
   mintRequests: any[];
   frequency: number;
 
@@ -42,34 +51,56 @@ export default class SynFiatKeeper {
         .readFileSync(path.resolve(__dirname, '..', '..', 'config', 'tic.json'))
         .toString(),
     );
+    const synthetics = this.ticConfig['synthetics'] as any[];
+
+    // 1) Obtain TICFactory instace
     let factory = await this.getContract(
       this.ticConfig['factory_address'],
       'TICFactory',
     );
+    const syntheticInfos = await Promise.all(
+      synthetics.map(async (synthetic: any) => {
+        let symbol = synthetic['symbol']; // say jEUR
 
-    this.ticAddresses = [];
-    this.tics = [];
-    this.collateralTokenAddresses = [];
-    this.collateralTokens = [];
-    this.syntethicTokenAddresses = [];
-    this.syntheticTokens = [];
-    this.ticConfig['synthetics'].forEach(async (synthetic: any) => {
-      let address = await factory.methods
-        .symbolToTIC(synthetic['symbol'])
-        .call();
-      const tic = await this.getContract(address, 'TIC');
-      this.tics.push(tic);
-      const collateralTokenAddress = await tic.methods.collateralToken().call();
-      this.collateralTokenAddresses.push(collateralTokenAddress);
-      const collateralToken = await this.getContract(
-        collateralTokenAddress,
-        'IERC20',
-      );
-      this.collateralTokens.push(collateralToken);
-      const syntheticTokenAddress = await tic.methods.syntheticToken().call();
-      this.syntethicTokenAddresses.push(syntheticTokenAddress);
-      const syntheticToken = await this.getContract(address, 'IERC20');
-      this.syntheticTokens.push(syntheticToken);
+        // 2) Get TIC instance for jEUR
+        let ticAddress = await factory.methods.symbolToTIC(symbol).call();
+        const tic = await this.getContract(ticAddress, 'TIC');
+        // 3) Get the collateral token for jEUR:
+        const collateralTokenAddress = await tic.methods
+          .collateralToken()
+          .call();
+
+        const collateralToken = await this.getContract(
+          collateralTokenAddress,
+          'IERC20',
+        );
+        // 4) Get actual synthetic token jEUR:
+        const syntheticTokenAddress = await tic.methods.syntheticToken().call();
+
+        const syntheticToken = await this.getContract(
+          syntheticTokenAddress,
+          'IERC20',
+        );
+
+        const info: SyntheticInfo = {
+          tic,
+          ticAddress,
+          syntheticToken,
+          syntheticTokenAddress,
+          collateralToken,
+          collateralTokenAddress,
+        };
+
+        return info;
+      }),
+    );
+    syntheticInfos.map(info => {
+      for (const key in info) {
+        const pluralKey = (key[key.length - 1] === 's'
+          ? key + 'es'
+          : key + 's') as keyof SynFiatKeeper;
+        (this[pluralKey] as any[]).push(info[key as keyof typeof info]);
+      }
     });
   }
 
