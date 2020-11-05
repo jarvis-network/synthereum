@@ -1,13 +1,13 @@
 import React, { useContext, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AccountDropdown, styled } from '@jarvis-network/ui';
 
 import SignInUpButton from '@/components/header/SignInUpButton';
 import { AuthContext } from '@/components/auth/AuthProvider';
-import { State } from '@/state/initialState';
 import { setTheme } from '@/state/slices/theme';
 import avatar from '@/utils/avatar';
 import usePrettyName from '@/utils/usePrettyName';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const noop = () => undefined;
 
@@ -27,7 +27,7 @@ const StyledAccountDropdown = styled(AccountDropdown)`
 
 const render = () => {
   const dispatch = useDispatch();
-  const auth = useSelector((state: State) => state.auth);
+  const auth = useReduxSelector(state => state.auth);
   const authLogin = useContext(AuthContext);
   const name = usePrettyName(auth.address);
 

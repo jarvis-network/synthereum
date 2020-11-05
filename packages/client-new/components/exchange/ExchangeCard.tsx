@@ -1,17 +1,18 @@
 import React, { useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 
-import { styled, ColumnType, Flag, DataGrid } from '@jarvis-network/ui';
+import { styled, ColumnType, DataGrid } from '@jarvis-network/ui';
 import ChooseAsset from '@/components/exchange/ChooseAsset';
 import MainForm from '@/components/exchange/MainForm';
-import { State } from '@/state/initialState';
 import {
   setChooseAsset,
   setPayAsset,
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { Asset, AssetPair } from '@/data/assets';
+
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 import StyledCard from './StyledCard';
 import StyledSearchBar from './StyledSearchBar';
@@ -79,10 +80,10 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 
 const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
-  const chooseAsset = useSelector(
-    (state: State) => state.exchange.chooseAssetActive,
+  const chooseAsset = useReduxSelector(
+    state => state.exchange.chooseAssetActive,
   );
-  const list = useSelector((state: State) => state.assets.list);
+  const list = useReduxSelector(state => state.assets.list);
 
   const pairsList = useMemo(() => createPairs(list), [list]);
 

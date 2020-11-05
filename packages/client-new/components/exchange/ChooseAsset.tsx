@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 import { ColumnType, DataGrid, Flag, styled, Tabs } from '@jarvis-network/ui';
 
 import StyledCard from '@/components/exchange/StyledCard';
-import { State } from '@/state/initialState';
 import { Asset } from '@/data/assets';
-
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 import StyledSearchBar from './StyledSearchBar';
 
@@ -132,8 +131,8 @@ const ScrollableTabs = styled(StyledTabs)`
 
 const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const dispatch = useDispatch();
-  const list = useSelector((state: State) => state.assets.list);
-  const asset = useSelector((state: State) => state.exchange.chooseAssetActive);
+  const list = useReduxSelector(state => state.assets.list);
+  const asset = useReduxSelector(state => state.exchange.chooseAssetActive);
 
   const [selected, setSelected] = useState(0);
 

@@ -1,9 +1,11 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, styled } from '@jarvis-network/ui';
+import { useDispatch } from 'react-redux';
+import { styled } from '@jarvis-network/ui';
 
 import ExchangeRateIcon from '@/components/exchange/ExchangeRateIcon';
-import { State } from '@/state/initialState';
+import useRate from '@/utils/useRate';
+import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Container = styled.div`
   display: grid;
@@ -27,21 +29,30 @@ const Assets = styled.div`
 `;
 
 const ExchangeRate = props => {
-  const rate = useSelector((state: State) => state.exchange.rate);
-  const payAsset = useSelector((state: State) => state.exchange.payAsset);
-  const receiveAsset = useSelector(
-    (state: State) => state.exchange.receiveAsset,
+  const dispatch = useDispatch();
+  const { payAsset, receiveAsset, invertRateInfo } = useReduxSelector(
+    state => state.exchange,
   );
 
-  if (!payAsset || !receiveAsset) {
+  const rate = invertRateInfo
+    ? useRate(receiveAsset, payAsset)
+    : useRate(payAsset, receiveAsset);
+
+  if (!payAsset || !receiveAsset || !rate) {
     return null;
   }
 
+  const handleInvertClick = () => {
+    dispatch(invertRateInfoAction());
+  };
+
   return (
     <Container>
-      <Rate>{rate}</Rate>
+      <Rate>{rate.rate}</Rate>
       <Assets>
-        {payAsset} per {receiveAsset} <ExchangeRateIcon />
+        {invertRateInfo ? payAsset : receiveAsset} per{' '}
+        {invertRateInfo ? receiveAsset : payAsset}
+        <ExchangeRateIcon onClick={handleInvertClick} />
       </Assets>
     </Container>
   );

@@ -1,5 +1,5 @@
 import { Icon, styled } from '@jarvis-network/ui';
-import React from 'react';
+import React, { MouseEvent } from 'react';
 
 const Container = styled.button`
   position: relative;
@@ -28,9 +28,13 @@ const Container = styled.button`
   }
 `;
 
-const ExchangeRateIcon: React.FC = props => {
+interface Props {
+  onClick: (event: MouseEvent) => void;
+}
+
+const ExchangeRateIcon: React.FC<Props> = ({ onClick }) => {
   return (
-    <Container>
+    <Container onClick={onClick}>
       <Icon icon="BsArrowLeft" />
       <Icon icon="BsArrowRight" />
     </Container>

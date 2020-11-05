@@ -1,9 +1,10 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Flag, Icon, styled } from '@jarvis-network/ui';
-import { AssetType, State } from '@/state/initialState';
+import { AssetType } from '@/state/initialState';
 import { Asset as AssetItemType } from '@/data/assets';
 import { setChooseAsset } from '@/state/slices/exchange';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Container = styled.div`
   grid-area: asset;
@@ -68,10 +69,10 @@ interface Props {
 const Asset: React.FC<Props> = ({ type }) => {
   const dispatch = useDispatch();
 
-  const assetSymbol = useSelector((state: State) =>
+  const assetSymbol = useReduxSelector(state =>
     type === 'pay' ? state.exchange.payAsset : state.exchange.receiveAsset,
   );
-  const asset: AssetItemType = useSelector((state: State) =>
+  const asset: AssetItemType = useReduxSelector(state =>
     state.assets.list.find(a => a.symbol === assetSymbol),
   );
 

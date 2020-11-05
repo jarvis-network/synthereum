@@ -1,14 +1,28 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
+
 import assets, { Asset } from '@/data/assets';
+import fakeRates from '@/data/fakeRates.json';
+import fakeWallet from '@/data/fakeWallet.json';
 
 type Values = 'pay' | 'receive';
+
+export interface WalletInfo {
+  amount: number;
+}
+
+export interface Rate {
+  rate: number;
+}
 
 export interface State {
   theme: ThemeNameType;
   auth: Omit<UserState, 'wallet'>;
   assets: {
     list: Asset[];
+    rates: {
+      [key: string]: Rate;
+    };
   };
   exchange: {
     // pay/receive are stored as string to allow incomplete input fills while
@@ -20,8 +34,11 @@ export interface State {
     base: Values;
     payAsset: string;
     receiveAsset: string;
-    rate: number; // @TODO remove when blockchain integration is done
+    invertRateInfo: boolean;
     chooseAssetActive: Values;
+  };
+  wallet: {
+    [key: string]: WalletInfo;
   };
 }
 
@@ -36,16 +53,18 @@ const initialState: State = {
   },
   assets: {
     list: assets,
+    rates: fakeRates,
   },
   exchange: {
-    pay: '10',
-    receive: '22',
+    pay: '0',
+    receive: '0',
     base: 'pay',
-    payAsset: null,
+    payAsset: null, // @TODO set as USDC
     receiveAsset: null,
-    rate: 1.4,
+    invertRateInfo: false,
     chooseAssetActive: null,
   },
+  wallet: fakeWallet as { [key: string]: WalletInfo },
 };
 
 export default initialState;

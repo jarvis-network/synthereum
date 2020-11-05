@@ -1,8 +1,7 @@
 import React from 'react';
 import { Icon, styled, Tabs } from '@jarvis-network/ui';
-import { useSelector } from 'react-redux';
 
-import { State } from '@/state/initialState';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 interface Props {
   className?: string;
@@ -59,7 +58,7 @@ const Card: React.FC<Props> = ({
   onBack,
   children,
 }) => {
-  const theme = useSelector((state: State) => state.theme);
+  const theme = useReduxSelector(state => state.theme);
 
   const boxStyle = {
     background: mainContentBackground[theme],

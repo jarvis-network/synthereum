@@ -54,6 +54,10 @@ const exchangeSlice = createSlice({
       // eslint-disable-next-line no-param-reassign
       state.receiveAsset = action.payload;
     },
+    invertRateInfo(state) {
+      // eslint-disable-next-line no-param-reassign
+      state.invertRateInfo = !state.invertRateInfo;
+    },
   },
 });
 
@@ -64,6 +68,7 @@ export const {
   setReceive,
   setPayAsset,
   setReceiveAsset,
+  invertRateInfo,
 } = exchangeSlice.actions;
 
 export default exchangeSlice.reducer;

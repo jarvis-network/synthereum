@@ -1,11 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { ThemeProvider } from '@jarvis-network/ui';
 
-import { State } from '@/state/initialState';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const AppThemeProvider = ({ children }) => {
-  const theme = useSelector((state: State) => state.theme);
+  const theme = useReduxSelector(state => state.theme);
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };

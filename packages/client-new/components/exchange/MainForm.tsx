@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Button, Icon, styled } from '@jarvis-network/ui';
 
 import { State } from '@/state/initialState';
@@ -12,14 +12,20 @@ import {
 } from '@/state/slices/exchange';
 
 import ExchangeRate from '@/components/exchange/ExchangeRate';
+import useRate from '@/utils/useRate';
+
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 import Asset from './Asset';
+import Max from './Max';
 
 interface Props {}
 
-const ExchangeBox = styled.div`
+const ExchangeBox = styled.div<{ error: boolean }>`
   margin: 15px 30px;
-  border: 1px solid ${props => props.theme.border.secondary};
+  border: 1px solid
+    ${props =>
+      !props.error ? props.theme.border.secondary : props.theme.border.invalid};
   padding: 5px 10px 5px 15px;
   display: grid;
   grid-template-columns: auto auto;
@@ -27,24 +33,12 @@ const ExchangeBox = styled.div`
   grid-template-areas:
     'title max'
     'amount asset';
+  position: relative;
 `;
 
 const Title = styled.div`
   font-size: ${props => props.theme.font.sizes.s};
   grid-area: title;
-`;
-
-const Max = styled.button`
-  grid-area: max;
-  justify-self: end;
-  font-size: 8px;
-  color: ${props => props.theme.text.secondary};
-  border: none;
-  padding: 0;
-  background: none;
-  outline: none !important;
-  text-transform: uppercase;
-  cursor: pointer;
 `;
 
 const Amount = styled.input`
@@ -81,21 +75,30 @@ const SwapButton = styled(Button)`
   margin-top: 25px;
 `;
 
+const ErrorMessage = styled.div`
+  position: absolute;
+  bottom: -14px;
+  font-size: 8px;
+  color: ${props => props.theme.text.invalid};
+  left: 0;
+`;
+
 const MainForm: React.FC<Props> = () => {
   const dispatch = useDispatch();
-
-  const base = useSelector((state: State) => state.exchange.base);
-  const pay = useSelector((state: State) => state.exchange.pay);
-  const receive = useSelector((state: State) => state.exchange.receive);
-  const rate = useSelector((state: State) => state.exchange.rate);
-  const payAsset = useSelector((state: State) => state.exchange.payAsset);
-  const receiveAsset = useSelector(
-    (state: State) => state.exchange.receiveAsset,
+  const { base, pay, receive, payAsset, receiveAsset } = useReduxSelector(
+    state => state.exchange,
   );
+  const wallet = useReduxSelector(state => state.wallet[payAsset] || null);
+  const rate = useRate(payAsset, receiveAsset);
 
-  const payValue = base === 'pay' ? pay : String(Number(receive) / rate);
+  const balance = wallet ? wallet.amount : 0;
+
+  const payValue =
+    base === 'pay' ? pay : rate ? String(Number(receive) / rate.rate) : '';
   const receiveValue =
-    base === 'receive' ? receive : String(Number(pay) * rate);
+    base === 'receive' ? receive : rate ? String(Number(pay) * rate.rate) : '';
+
+  const insufficientBalance = Number(payValue) > balance;
 
   const updateBase = (baseValue: State['exchange']['base']) => {
     dispatch(setBase(baseValue));
@@ -122,11 +125,14 @@ const MainForm: React.FC<Props> = () => {
     updatePay(receiveValue);
   };
 
+  const swapDisabled =
+    !Number(payValue) || !Number(receiveValue) || insufficientBalance;
+
   return (
     <>
-      <ExchangeBox>
+      <ExchangeBox error={insufficientBalance}>
         <Title>You pay</Title>
-        <Max>max: 12.344</Max>
+        <Max />
         <Amount
           value={payValue}
           onChange={e => {
@@ -135,11 +141,14 @@ const MainForm: React.FC<Props> = () => {
           }}
         />
         <Asset type="pay" />
+        <ErrorMessage>
+          {insufficientBalance && 'Insufficient funds'}
+        </ErrorMessage>
       </ExchangeBox>
       <IconButton onClick={flipValues}>
         <Icon icon="IoIosArrowRoundDown" />
       </IconButton>
-      <ExchangeBox>
+      <ExchangeBox error={false}>
         <Title>You receive</Title>
         <Amount
           value={receiveValue}
@@ -152,7 +161,9 @@ const MainForm: React.FC<Props> = () => {
       </ExchangeBox>
       <Footer>
         <ExchangeRate />
-        <SwapButton disabled>Swap</SwapButton>
+        <SwapButton disabled={swapDisabled} type="success">
+          Swap
+        </SwapButton>
       </Footer>
     </>
   );
