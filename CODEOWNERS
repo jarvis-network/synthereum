@@ -8,9 +8,8 @@
 /CODEOWNERS @PetarKirov
 
 ### Packages
-/packages/balance-notify/ @PetarKirov @Aleione @asim_jarvis @edi-shardlabs
-/packages/client/ @PetarKirov @igor-shardlabs @jacek.nowacki1 @jurijtokarski
-/packages/client-new/ @PetarKirov @igor-shardlabs @jacek.nowacki1 @jurijtokarski
+/packages/balance-notify/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
+/packages/client/ @PetarKirov @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
+/packages/client-new/ @PetarKirov @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
 /packages/contracts/ @Aleione
-/packages/keeper-bot/ @PetarKirov @Aleione @asim_jarvis @edi-shardlabs
-
+/packages/keeper-bot/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
