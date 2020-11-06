@@ -10,7 +10,8 @@ web3.setPrivateKey(env.PRIVATE_KEY);
 let keeper = new SynFiatKeeper(web3, env);
 (async () => {
   await keeper.loadContracts();
-  await keeper.start();
+  keeper.start();
+  process.on('SIGINT', () => {
+    keeper.stop();
+  });
 })();
-
-export default keeper;

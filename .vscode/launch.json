@@ -11,9 +11,7 @@
       "runtimeArgs": ["-r", "ts-node/register"],
       "envFile": "${workspaceFolder}/packages/keeper-bot-v2/.env",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "${workspaceFolder}/packages/keeper-bot-v2/src/synfiat-keeper.ts"
-      ],
+      "args": ["${workspaceFolder}/packages/keeper-bot-v2/src/index.ts"],
       "env": {
         "TS_NODE_PROJECT": "${workspaceFolder}/packages/keeper-bot-v2/tsconfig.json"
       }

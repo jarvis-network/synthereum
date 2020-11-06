@@ -9,7 +9,7 @@ const {
   NETWORK_ID,
 } = process.env;
 
-interface ENV {
+export interface ENV {
   RPC_HOST: string;
   FREQUENCY: string;
   PRIVATE_KEY: string;
