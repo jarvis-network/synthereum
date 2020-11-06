@@ -2,17 +2,17 @@
   "name": "@jarvis/synthereum-contracts",
   "version": "1.0.0",
   "description": "",
-  "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
     "format": "prettier --write './contracts/*.sol'",
-    "build": "yarn build:solidity",
+    "build": "yarn build:solidity && yarn build:contracts-ts",
     "build:solidity": "truffle compile && mkdir -p dist/abi && cp ./build/contracts/*.json ./dist/abi/",
+    "build:contracts-ts": "typechain --target web3-v1 --outDir ./src/contracts/ './build/contracts/*.json'",
     "migrate:kovan": "truffle migrate --network kovan -f 1 --to 4 --skip-dry-run",
     "run:deposit": "truffle migrate --network kovan -f 6 --to 6 --skip-dry-run",
     "run:withdraw": "truffle migrate --network kovan -f 7 --to 7 --skip-dry-run",
@@ -22,18 +22,17 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "3.0.0",
-    "@openzeppelin/test-helpers": "^0.5.4",
-    "@truffle/hdwallet-provider": "^1.0.34",
-    "chainlink": "^0.8.2",
+    "@openzeppelin/contracts": "^3.0.0",
+    "@openzeppelin/test-helpers": "^0.5.9",
+    "@truffle/hdwallet-provider": "^1.2.0",
     "dotenv": "^8.2.0",
     "protocol": "github:UMAprotocol/protocol#dfb07c3288c96b6ddf8853093f9479d01dd0043b"
   },
   "devDependencies": {
-    "ganache-time-traveler": "^1.0.14",
-    "husky": "^4.2.3",
-    "prettier-plugin-solidity": "^1.0.0-alpha.60",
-    "truffle": "^5.1.45",
-    "truffle-plugin-verify": "^0.4.0"
+    "@typechain/web3-v1": "^1.0.0",
+    "ganache-time-traveler": "^1.0.15",
+    "truffle": "^5.1.52",
+    "truffle-plugin-verify": "^0.5.0",
+    "typechain": "^4.0.0"
   }
 }

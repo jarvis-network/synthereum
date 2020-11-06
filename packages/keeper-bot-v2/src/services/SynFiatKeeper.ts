@@ -1,67 +1,49 @@
 import { Logger } from '../logger';
 import * as bunyan from 'bunyan';
 import { performance } from 'perf_hooks';
-import { Contract, CallOptions } from 'web3-eth-contract';
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
 import type { ENV } from '../config';
-import { Web3Service } from '@jarvis/web3-utils';
+import {
+  BaseContract,
+  NonPayableTransactionObject,
+  Web3Service,
+} from '@jarvis/web3-utils';
+import type { TICInterface } from '@jarvis/synthereum-contracts/src/contracts/TICInterface';
+import type { TICFactory } from '@jarvis/synthereum-contracts/src/contracts/TICFactory';
+import type { ERC20 } from '@jarvis/synthereum-contracts/src/contracts/ERC20';
+import { parseTokens, scale } from './maths';
 
-interface GenericContract<T = {}> extends Contract {
-  methods: T;
-}
-
-type ContractMethod<
-  CallPromiseResolveType = void,
-  Parameters extends unknown[] = []
-> = (
-  ...args: Parameters
-) => { call(arg?: CallOptions): Promise<CallPromiseResolveType> };
-
-type Request = [string, number, string];
-type Concat<T extends unknown[], I extends unknown[]> = [...T, ...I];
-type ExtendsRequest = Concat<Request, [...unknown[]]>;
-type MintOrRedeemRequest = Concat<Request, [[number], [number]]>;
-type ExchangeRequest = Concat<Request, [string, [number], [number]]>;
+type ApproveRejectMethod = (
+  id: string | number[],
+) => NonPayableTransactionObject<void>;
+type MintOrRedeemRequest = [string, string, string, [string], [string]];
+type ExchangeRequest = [
+  string,
+  string,
+  string,
+  string,
+  [string],
+  [string],
+  [string],
+];
 
 type OHLC = {
   c: [number] | [];
 };
 
-type TIC = GenericContract<{
-  getMintRequests: ContractMethod<MintOrRedeemRequest[]>;
-  getRedeemRequests: ContractMethod<MintOrRedeemRequest[]>;
-  getExchangeRequests: ContractMethod<ExchangeRequest[]>;
-  collateralToken: ContractMethod;
-  approveMint: ContractMethod<string, [string]>;
-  rejectMint: ContractMethod<string, [string]>;
-  approveRedeem: ContractMethod<string, [string]>;
-  rejectRedeem: ContractMethod<string, [string]>;
-  approveExchange: ContractMethod<string, [string]>;
-  rejectExchange: ContractMethod<string, [string]>;
-}>;
-
-type CollateralTokenContract = GenericContract<{
-  allowance: ContractMethod<number, [string, string]>;
-  balanceOf: ContractMethod<number, [string]>;
-}>;
-
-type SyntheticTokenContract = GenericContract<{
-  allowance: ContractMethod<number, [string, string]>;
-
-  balanceOf: ContractMethod<number, [string]>;
-}>;
-
 interface SyntheticInfo {
   symbol: string;
   priceFeed: string;
   ticAddress: string;
-  tic: TIC;
+  tic: TICInterface;
   collateralTokenAddress: string;
-  collateralToken: CollateralTokenContract;
+  collateralToken: ERC20;
+  collateralDecimals: number;
   syntheticTokenAddress: string;
-  syntheticToken: SyntheticTokenContract;
+  syntheticToken: ERC20;
+  syntheticDecimals: number;
 }
 
 export default class SynFiatKeeper {
@@ -93,7 +75,7 @@ export default class SynFiatKeeper {
     );
 
     // 1) Obtain TICFactory instace
-    let factory = await this.getContract(
+    let factory = await this.getContract<TICFactory>(
       ticConfig.factory_address,
       'TICFactory',
     );
@@ -102,21 +84,20 @@ export default class SynFiatKeeper {
       ticConfig.synthetics.map(async ({ symbol, price_feed: priceFeed }) => {
         // 2) Get TIC instance for jEUR
         let ticAddress = await factory.methods.symbolToTIC(symbol).call();
-        // const tic: TIC = await this.getContract(ticAddress, 'TIC');
-        const tic = await this.getContract(ticAddress, 'TIC');
+        const tic = await this.getContract<TICInterface>(ticAddress, 'TIC');
         // 3) Get the collateral token for jEUR:
         const collateralTokenAddress = await tic.methods
           .collateralToken()
           .call();
 
-        const collateralToken = await this.getContract(
+        const collateralToken = await this.getContract<ERC20>(
           collateralTokenAddress,
           'IERC20',
         );
         // 4) Get actual synthetic token jEUR:
         const syntheticTokenAddress = await tic.methods.syntheticToken().call();
 
-        const syntheticToken = await this.getContract(
+        const syntheticToken = await this.getContract<ERC20>(
           syntheticTokenAddress,
           'IERC20',
         );
@@ -128,8 +109,16 @@ export default class SynFiatKeeper {
           ticAddress,
           syntheticToken,
           syntheticTokenAddress,
+          syntheticDecimals: parseInt(
+            await syntheticToken.methods.decimals().call(),
+            10,
+          ),
           collateralToken,
           collateralTokenAddress,
+          collateralDecimals: parseInt(
+            await collateralToken.methods.decimals().call(),
+            10,
+          ),
         };
 
         return info;
@@ -163,22 +152,25 @@ export default class SynFiatKeeper {
     clearInterval(this.interval);
   }
 
-  async getContract(address: string, contractName: string): Promise<Contract> {
-    return await this.web3.getContract(address, {
+  async getContract<T extends BaseContract>(
+    address: string,
+    contractName: string,
+  ): Promise<T> {
+    return await this.web3.getContract<T>(address, {
       type: 'build-artifact',
       contractName: contractName,
     });
   }
 
-  private async checkRequests<T extends ExtendsRequest>(
+  private async checkRequests<T extends [string, string, string, ...unknown[]]>(
     info: SyntheticInfo,
-    getRequestsMethod: ContractMethod<T[]>,
-    approveRequestMethod: ContractMethod<string, [string]>,
-    rejectRequestMethod: ContractMethod<string, [string]>,
+    getRequestsMethod: () => NonPayableTransactionObject<T[]>,
+    approveRequestMethod: ApproveRejectMethod,
+    rejectRequestMethod: ApproveRejectMethod,
     callback: (
       request: T,
       price: number,
-      requestTime: number,
+      requestTime: string,
     ) => Promise<boolean>,
   ) {
     const requests = await getRequestsMethod().call({
@@ -219,25 +211,29 @@ export default class SynFiatKeeper {
       info.tic.methods.approveMint,
       info.tic.methods.rejectMint,
       async (request, price) => {
-        const collateral = request[3][0];
-        const tokens = request[4][0];
+        const collateral = parseTokens(request[3][0], info.collateralDecimals);
+        const tokens = parseTokens(request[4][0], info.syntheticDecimals);
 
         this.logger.info(
           `Minting ${tokens} tokens with ${collateral} collateral`,
         );
 
-        if (collateral < tokens * price * (1 - this.maxSlippage)) {
+        if (collateral < scale(tokens, price * (1 - this.maxSlippage))) {
           this.logger.info(`Mint request ${request[0]} is undercollateralized`);
           return false;
         }
 
         const sender = request[2];
-        const allowance = await info.collateralToken.methods
-          .allowance(sender, info.tic.options.address)
-          .call();
-        let balance = await info.collateralToken.methods
-          .balanceOf(sender)
-          .call();
+        const allowance = parseTokens(
+          await info.collateralToken.methods
+            .allowance(sender, info.tic.options.address)
+            .call(),
+          info.collateralDecimals,
+        );
+        const balance = parseTokens(
+          await info.collateralToken.methods.balanceOf(sender).call(),
+          info.collateralDecimals,
+        );
 
         if (balance < collateral) {
           this.logger.info(
@@ -266,27 +262,31 @@ export default class SynFiatKeeper {
       info.tic.methods.approveRedeem,
       info.tic.methods.rejectRedeem,
       async (request, price) => {
-        const collateral = request[3][0];
-        const tokens = request[4][0];
+        const collateral = parseTokens(request[3][0], info.collateralDecimals);
+        const tokens = parseTokens(request[4][0], info.syntheticDecimals);
 
         this.logger.info(
           `Redeeming ${tokens} tokens with ${collateral} collateral`,
         );
 
-        if (collateral > tokens * price * (1 + this.maxSlippage)) {
+        if (collateral > scale(tokens, price * (1 + this.maxSlippage))) {
           this.logger.info(
             `Redeem request ${request[0]} is undercollateralized`,
           );
           return false;
         }
 
-        let sender = request[2];
-        let allowance = await info.syntheticToken.methods
-          .allowance(sender, info.tic.options.address)
-          .call();
-        let balance = await info.syntheticToken.methods
-          .balanceOf(sender)
-          .call();
+        const sender = request[2];
+        const allowance = parseTokens(
+          await info.syntheticToken.methods
+            .allowance(sender, info.tic.options.address)
+            .call(),
+          info.syntheticDecimals,
+        );
+        const balance = parseTokens(
+          await info.syntheticToken.methods.balanceOf(sender).call(),
+          info.syntheticDecimals,
+        );
 
         if (balance < tokens) {
           this.logger.info(
@@ -314,7 +314,7 @@ export default class SynFiatKeeper {
       info.tic.methods.approveExchange,
       info.tic.methods.rejectExchange,
       async (request, price, requestTime) => {
-        let destTic = request[3];
+        const destTic = request[3];
         let destinationInfo: SyntheticInfo;
 
         for (const currentInfo of this.syntheticInfos) {
@@ -329,8 +329,8 @@ export default class SynFiatKeeper {
           return false;
         }
 
-        let destinationPriceFeed = destinationInfo.priceFeed;
-        let destinationOhlc = await this.getPriceFeedOhlc(
+        const { priceFeed: destinationPriceFeed } = destinationInfo;
+        const destinationOhlc = await this.getPriceFeedOhlc(
           destinationPriceFeed,
           requestTime,
         );
@@ -343,29 +343,36 @@ export default class SynFiatKeeper {
         const destPrice =
           destinationPriceFeed === 'USDCHF'
             ? 1 / destinationOhlc['c'][0]
-            : destinationOhlc['c'][0];
+            : destinationOhlc['c'][0]; // TODO: Remove
 
         this.logger.info(
           `${destinationInfo.symbol} was ${destPrice} for exchange request ${request[0]}`,
         );
 
-        let tokens = request[4][0];
-        let destTokens = request[5][0];
+        let tokens = parseTokens(request[4][0], info.syntheticDecimals);
+        let destTokens = parseTokens(request[5][0], info.syntheticDecimals);
 
-        if (tokens * price < destTokens * destPrice * (1 - this.maxSlippage)) {
+        if (
+          scale(tokens, price) <
+          scale(destTokens, destPrice * (1 - this.maxSlippage))
+        ) {
           this.logger.info(
             `Exchange request ${request[0]} transfers too many destination tokens`,
           );
           return false;
         }
 
-        let sender = request[2];
-        let allowance = await info.syntheticToken.methods
-          .allowance(sender, info.tic.options.address)
-          .call();
-        let balance = await info.syntheticToken.methods
-          .balanceOf(sender)
-          .call();
+        const sender = request[2];
+        const allowance = parseTokens(
+          await info.syntheticToken.methods
+            .allowance(sender, info.tic.options.address)
+            .call(),
+          info.syntheticDecimals,
+        );
+        const balance = parseTokens(
+          await info.syntheticToken.methods.balanceOf(sender).call(),
+          info.syntheticDecimals,
+        );
         if (balance < tokens) {
           this.logger.info(
             `Exchange request ${request[0]} is not covered by user's ${info.symbol} balance`,
@@ -385,32 +392,33 @@ export default class SynFiatKeeper {
     );
   }
 
-  async getPriceFeedOhlc(
-    priceFeed: string,
-    requestTime: number,
-  ): Promise<OHLC> {
+  async getPriceFeedOhlc(priceFeed: string, requestTime: string) {
     const endpoint = 'https://data.jarvis.exchange/jarvis/prices/history';
 
     const query = new URLSearchParams({
       symbol: priceFeed,
       resolution: '1',
-      from: (requestTime - 60).toString(),
-      to: requestTime.toString(),
+      from: (parseInt(requestTime, 10) - 60).toString(),
+      to: requestTime,
     });
-    return await axios.get(`${endpoint}${query.toString()}`);
+    const { data } = await axios.get<OHLC>(`${endpoint}?${query.toString()}`);
+    // TODO: Invert USDCHF
+    // TODO: Return c
+    return data;
   }
 
   async finishRequest(
     requestId: string,
-    resolveCallback: ContractMethod<string, [string]>,
+    resolveCallback: ApproveRejectMethod,
     resolveLabel: string,
   ) {
     try {
-      const txHash = await resolveCallback(requestId).call({
-        from: this.web3.getDefaultAccount(),
-      });
+      // const txHash = await resolveCallback(requestId).call({
+      //   from: this.web3.getDefaultAccount(),
+      // });
       // const txReceipt = await this.web3.getTransactionReceipt(txHash);
 
+      const txHash: null = null;
       this.logger.info(
         `${resolveLabel} request ${requestId} in transaction ${txHash}`,
       );
