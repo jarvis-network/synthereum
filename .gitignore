@@ -132,3 +132,9 @@ build
 # Azure Functions
 azure-functions-core-tools
 local.settings.json
+
+# Nix build output
+result
+
+# direnv temporary files
+.direnv/
