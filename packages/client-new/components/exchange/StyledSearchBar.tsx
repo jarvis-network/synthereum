@@ -23,6 +23,9 @@ export const StyledSearchBar = styled(SearchBar)`
     & > div:first-child {
       padding-left: 30px;
     }
+    & > div:nth-child(3) {
+      padding-right: 30px;
+    }
     border: none;
     border-bottom: 1px solid ${props => props.theme.border.secondary};
   }

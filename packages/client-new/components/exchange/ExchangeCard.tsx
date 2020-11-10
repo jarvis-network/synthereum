@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 
-import { styled, ColumnType, DataGrid } from '@jarvis-network/ui';
+import { styled, ColumnType, DataGrid, Icon } from '@jarvis-network/ui';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 import { MainForm } from '@/components/exchange/MainForm';
 import {
@@ -63,6 +63,22 @@ const GridContainer = styled.div`
   overflow: auto;
 `;
 
+const ClearButton = styled.button`
+  border: none;
+  background: none;
+  padding: 0;
+  outline: none !important;
+
+  i {
+    color: ${props => props.theme.text.secondary}!important;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+`;
+
 const createPairs = (list: Asset[]): AssetPair[] => {
   return list.reduce<AssetPair[]>((result, input) => {
     result.push(
@@ -89,6 +105,7 @@ export const ExchangeCard: React.FC = () => {
   const pairsList = useMemo(() => createPairs(list), [list]);
 
   const [query, setQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   if (chooseAsset) {
     return <ChooseAsset onBack={() => dispatch(setChooseAsset(null))} />;
@@ -98,6 +115,12 @@ export const ExchangeCard: React.FC = () => {
     dispatch(setPayAsset(pair.input.symbol));
     dispatch(setReceiveAsset(pair.output.symbol));
     setQuery('');
+    setSearchOpen(false);
+  };
+
+  const handleCloseClick = () => {
+    setQuery('');
+    setSearchOpen(false);
   };
 
   const searchBarProps: React.ComponentProps<typeof StyledSearchBar> = {
@@ -107,11 +130,14 @@ export const ExchangeCard: React.FC = () => {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
     },
+    onFocus: (event: React.FocusEvent<HTMLInputElement>) => {
+      setSearchOpen(true);
+    },
     value: query,
-    open: Boolean(query),
+    open: searchOpen,
   };
 
-  if (query) {
+  if (searchOpen) {
     searchBarProps.render = data => {
       const getTrProps = (state, rowInfo) => ({
         onClick: () => handleSelected(rowInfo.original),
@@ -133,10 +159,17 @@ export const ExchangeCard: React.FC = () => {
     };
   }
 
+  const suffix = searchOpen && (
+    <ClearButton onClick={handleCloseClick}>
+      {/* @ts-ignore */}
+      <Icon icon="IoMdClose" />
+    </ClearButton>
+  );
+
   return (
     <StyledCard title="Exchange">
-      <StyledSearchBar {...searchBarProps} />
-      {!query && <MainForm />}
+      <StyledSearchBar {...searchBarProps} suffix={suffix} />
+      {!searchOpen && <MainForm />}
     </StyledCard>
   );
 };
