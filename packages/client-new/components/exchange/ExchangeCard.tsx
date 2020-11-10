@@ -153,6 +153,7 @@ export const ExchangeCard: React.FC = () => {
             data={data.filteredData}
             showPagination={false}
             getTrProps={getTrProps}
+            pageSize={data.filteredData.length}
           />
         </GridContainer>
       );

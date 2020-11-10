@@ -197,6 +197,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
                 data={owned}
                 showPagination={false}
                 getTrProps={getTrProps}
+                pageSize={owned.length}
               />
             </>
           ) : null;
@@ -209,6 +210,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
                 data={other}
                 showPagination={false}
                 getTrProps={getTrProps}
+                pageSize={other.length}
               />
             </>
           ) : null;
