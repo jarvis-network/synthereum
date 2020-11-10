@@ -26,7 +26,7 @@ const ExchangeBox = styled.div<{ error: boolean }>`
   border: 1px solid
     ${props =>
       !props.error ? props.theme.border.secondary : props.theme.border.invalid};
-  padding: 5px 10px 5px 15px;
+  padding: 5px 10px 12px 15px;
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
