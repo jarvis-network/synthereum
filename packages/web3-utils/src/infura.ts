@@ -19,6 +19,6 @@ export function getInfuraEndpoint(network: Network) {
     network in networkNames
       ? networkNames[network as keyof typeof networkNames]
       : network;
-  const projectId = process.env.INFURA_KEY;
+  const projectId = process.env.INFURA_PROJECT_ID;
   return `https://${networkName}.infura.io/v3/${projectId}`;
 }

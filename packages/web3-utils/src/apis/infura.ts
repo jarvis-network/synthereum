@@ -5,7 +5,7 @@ import { env } from '../config';
 
 export function getInfuraEndpoint(network: Network) {
   const networkName = isNumber(network) ? networkNames[network] : network;
-  const projectId = env.apiKeys.infura;
+  const projectId = env.infuraProjectId;
   return `https://${networkName}.infura.io/v3/${projectId}`;
 }
 

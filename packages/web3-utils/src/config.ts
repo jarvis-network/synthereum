@@ -1,8 +1,4 @@
-const {
-  INFURA_PROJECT_ID,
-  DEV_MNEMONIC,
-  ETHERSCAN_API_KEY,
-} = process.env;
+const { INFURA_PROJECT_ID, DEV_MNEMONIC, ETHERSCAN_API_KEY } = process.env;
 
 export const env = {
   constants: {
@@ -11,8 +7,8 @@ export const env = {
   secrets: {
     DEV_MNEMONIC,
   },
+  infuraProjectId: INFURA_PROJECT_ID,
   apiKeys: {
-    infura: INFURA_PROJECT_ID,
     etherscan: ETHERSCAN_API_KEY,
   },
 };
