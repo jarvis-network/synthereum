@@ -144,6 +144,12 @@ export const MainForm: React.FC<Props> = () => {
             updateBase('pay');
             updatePay(e.target.value);
           }}
+          onBlur={e => {
+            if (!e.target.value) {
+              updatePay('0');
+            }
+          }}
+          disabled={!payAsset}
         />
         <Asset type="pay" />
         <ErrorMessage>
@@ -161,6 +167,12 @@ export const MainForm: React.FC<Props> = () => {
             updateBase('receive');
             updateReceive(e.target.value);
           }}
+          onBlur={e => {
+            if (!e.target.value) {
+              updateReceive('0');
+            }
+          }}
+          disabled={!receiveAsset}
         />
         <Asset type="receive" />
       </ExchangeBox>
