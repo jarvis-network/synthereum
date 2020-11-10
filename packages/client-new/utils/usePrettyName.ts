@@ -4,7 +4,7 @@ import { ENSContext } from '@/components/auth/AuthProvider';
 
 const noop = () => undefined;
 
-const usePrettyName = (address: string) => {
+export const usePrettyName = (address: string) => {
   const [name, setName] = useState<string>(null);
   const ens = useContext(ENSContext);
 
@@ -33,5 +33,3 @@ const usePrettyName = (address: string) => {
 
   return name;
 };
-
-export default usePrettyName;

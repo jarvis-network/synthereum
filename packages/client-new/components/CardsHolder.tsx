@@ -1,6 +1,6 @@
 import { styled } from '@jarvis-network/ui';
 
-const CardsHolder = styled.div`
+export const CardsHolder = styled.div`
   padding-top: calc(118px - 50px);
   height: 506px;
   display: flex;
@@ -13,5 +13,3 @@ const CardsHolder = styled.div`
     }
   }
 `;
-
-export default CardsHolder;

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import initialState from '@/state/initialState';
+import { initialState } from '@/state/initialState';
 
 const walletSlice = createSlice({
   name: 'wallet',
@@ -8,4 +8,4 @@ const walletSlice = createSlice({
   reducers: {},
 });
 
-export default walletSlice.reducer;
+export const { reducer } = walletSlice;

@@ -1,8 +1,6 @@
 import { styled } from '@jarvis-network/ui';
-import Card from '@/components/Card';
+import { Card } from '@/components/Card';
 
-const StyledCard = styled(Card)`
+export const StyledCard = styled(Card)`
   width: 306px;
 `;
-
-export default StyledCard;

@@ -2,7 +2,7 @@ import blockies from 'ethereum-blockies';
 
 const cache = new Map<string, string>();
 
-const avatar = (seed: string): string => {
+export const avatar = (seed: string): string => {
   if (typeof window === 'undefined') {
     return '';
   }
@@ -21,5 +21,3 @@ const avatar = (seed: string): string => {
   cache.set(seed, icon.toDataURL('image/png'));
   return cache.get(seed);
 };
-
-export default avatar;

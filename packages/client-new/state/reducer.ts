@@ -1,12 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import theme from '@/state/slices/theme';
-import auth from '@/state/slices/auth';
-import assets from '@/state/slices/assets';
-import exchange from '@/state/slices/exchange';
-import wallet from '@/state/slices/wallet';
+import { reducer as theme } from '@/state/slices/theme';
+import { reducer as auth } from '@/state/slices/auth';
+import { reducer as assets } from '@/state/slices/assets';
+import { reducer as exchange } from '@/state/slices/exchange';
+import { reducer as wallet } from '@/state/slices/wallet';
 
-const reducer = combineReducers({
+export const reducer = combineReducers({
   theme,
   auth,
   assets,
@@ -15,5 +15,3 @@ const reducer = combineReducers({
 });
 
 export type RootState = ReturnType<typeof reducer>;
-
-export default reducer;

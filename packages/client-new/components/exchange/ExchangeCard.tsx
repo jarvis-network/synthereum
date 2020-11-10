@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 
 import { styled, ColumnType, DataGrid } from '@jarvis-network/ui';
-import ChooseAsset from '@/components/exchange/ChooseAsset';
-import MainForm from '@/components/exchange/MainForm';
+import { ChooseAsset } from '@/components/exchange/ChooseAsset';
+import { MainForm } from '@/components/exchange/MainForm';
 import {
   setChooseAsset,
   setPayAsset,
@@ -14,9 +14,9 @@ import { Asset, AssetPair } from '@/data/assets';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import StyledCard from './StyledCard';
-import StyledSearchBar from './StyledSearchBar';
-import FlagsPair from './FlagsPair';
+import { StyledCard } from './StyledCard';
+import { StyledSearchBar } from './StyledSearchBar';
+import { FlagsPair } from './FlagsPair';
 
 const grid = {
   columns: [
@@ -78,7 +78,7 @@ const createPairs = (list: Asset[]): AssetPair[] => {
   }, []);
 };
 
-const ExchangeCard: React.FC = () => {
+export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
   const chooseAsset = useReduxSelector(
     state => state.exchange.chooseAssetActive,
@@ -139,5 +139,3 @@ const ExchangeCard: React.FC = () => {
     </StyledCard>
   );
 };
-
-export default ExchangeCard;

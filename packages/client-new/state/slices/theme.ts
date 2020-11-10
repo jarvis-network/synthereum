@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import initialState, { State } from '@/state/initialState';
+import { initialState, State } from '@/state/initialState';
 
 interface SetThemeAction {
   payload: {
@@ -19,5 +19,4 @@ const themeSlice = createSlice({
 });
 
 export const { setTheme } = themeSlice.actions;
-
-export default themeSlice.reducer;
+export const { reducer } = themeSlice;

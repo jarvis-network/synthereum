@@ -3,12 +3,12 @@ import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 import { ColumnType, DataGrid, Flag, styled, Tabs } from '@jarvis-network/ui';
 
-import StyledCard from '@/components/exchange/StyledCard';
+import { StyledCard } from '@/components/exchange/StyledCard';
 import { Asset } from '@/data/assets';
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import StyledSearchBar from './StyledSearchBar';
+import { StyledSearchBar } from './StyledSearchBar';
 
 interface Props {
   onBack: () => void;
@@ -129,7 +129,7 @@ const ScrollableTabs = styled(StyledTabs)`
   height: auto;
 `;
 
-const ChooseAsset: React.FC<Props> = ({ onBack }) => {
+export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
   const asset = useReduxSelector(state => state.exchange.chooseAssetActive);
@@ -207,5 +207,3 @@ const ChooseAsset: React.FC<Props> = ({ onBack }) => {
     </ScrollableCard>
   );
 };
-
-export default ChooseAsset;

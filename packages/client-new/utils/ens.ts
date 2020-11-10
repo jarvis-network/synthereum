@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import namehash from 'eth-ens-namehash';
 
-class ENSHelper {
+export class ENSHelper {
   private web3: Web3;
 
   private prettyCache: Map<string, string> = new Map();
@@ -47,5 +47,3 @@ class ENSHelper {
     return this.prettyCache.get(address);
   };
 }
-
-export default ENSHelper;

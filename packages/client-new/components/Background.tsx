@@ -1,6 +1,6 @@
 import { styled } from '@jarvis-network/ui';
 
-const Background = styled.div<{ image: string }>`
+export const Background = styled.div<{ image: string }>`
   height: 100%;
   background-repeat: no-repeat;
   background-color: ${props => props.theme.background.secondary};
@@ -11,5 +11,3 @@ const Background = styled.div<{ image: string }>`
     background-position: center 118px;
   }
 `;
-
-export default Background;

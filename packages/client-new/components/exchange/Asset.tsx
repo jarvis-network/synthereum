@@ -66,7 +66,7 @@ interface Props {
   type: AssetType;
 }
 
-const Asset: React.FC<Props> = ({ type }) => {
+export const Asset: React.FC<Props> = ({ type }) => {
   const dispatch = useDispatch();
 
   const assetSymbol = useReduxSelector(state =>
@@ -101,5 +101,3 @@ const Asset: React.FC<Props> = ({ type }) => {
     </Container>
   );
 };
-
-export default Asset;

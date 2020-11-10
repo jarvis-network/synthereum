@@ -5,22 +5,22 @@ import Web3 from 'web3';
 import { API } from 'bnc-onboard/dist/src/interfaces';
 
 import { setLoginState } from '@/state/slices/auth';
-import ENSHelper from '@/utils/ens';
+import { ENSHelper } from '@/utils/ens';
 
 interface AuthMethods {
   login: (wallet?: string) => Promise<boolean>;
   logout: () => void;
 }
 
-const OnboardContext = createContext<API>(null);
-const Web3Context = createContext<Web3>(null);
-const AuthContext = createContext<AuthMethods>(null);
-const ENSContext = createContext<ENSHelper>(null);
+export const OnboardContext = createContext<API>(null);
+export const Web3Context = createContext<Web3>(null);
+export const AuthContext = createContext<AuthMethods>(null);
+export const ENSContext = createContext<ENSHelper>(null);
 
 const NETWORK_ID = 42;
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
 
-const AuthProvider: React.FC = ({ children }) => {
+export const AuthProvider: React.FC = ({ children }) => {
   const [ens, setEns] = useState<ENSHelper>();
   const [web3, setWeb3] = useState<Web3>();
   const [onboard, setOnboard] = useState<API>();
@@ -93,7 +93,3 @@ const AuthProvider: React.FC = ({ children }) => {
     </OnboardContext.Provider>
   );
 };
-
-export default AuthProvider;
-
-export { OnboardContext, Web3Context, AuthContext, ENSContext };

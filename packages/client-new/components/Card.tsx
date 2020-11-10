@@ -51,7 +51,7 @@ const IconButton = styled.button`
   }
 `;
 
-const Card: React.FC<Props> = ({
+export const Card: React.FC<Props> = ({
   className,
   title,
   mode = 'tab',
@@ -85,5 +85,3 @@ const Card: React.FC<Props> = ({
     </Container>
   );
 };
-
-export default Card;

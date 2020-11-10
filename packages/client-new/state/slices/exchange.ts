@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import initialState, { State } from '@/state/initialState';
+import { initialState, State } from '@/state/initialState';
 
 interface SetChooseAssetAction {
   payload: State['exchange']['chooseAssetActive'];
@@ -71,4 +71,4 @@ export const {
   invertRateInfo,
 } = exchangeSlice.actions;
 
-export default exchangeSlice.reducer;
+export const { reducer } = exchangeSlice;

@@ -2,11 +2,11 @@ import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AccountDropdown, styled } from '@jarvis-network/ui';
 
-import SignInUpButton from '@/components/header/SignInUpButton';
+import { SignInUpButton } from '@/components/header/SignInUpButton';
 import { AuthContext } from '@/components/auth/AuthProvider';
 import { setTheme } from '@/state/slices/theme';
-import avatar from '@/utils/avatar';
-import usePrettyName from '@/utils/usePrettyName';
+import { avatar } from '@/utils/avatar';
+import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 const noop = () => undefined;
@@ -88,4 +88,4 @@ const render = () => {
 };
 
 const rightRenderer = { render };
-export default rightRenderer;
+export { rightRenderer };

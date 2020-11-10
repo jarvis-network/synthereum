@@ -11,13 +11,13 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 
-import ExchangeRate from '@/components/exchange/ExchangeRate';
-import useRate from '@/utils/useRate';
+import { ExchangeRate } from '@/components/exchange/ExchangeRate';
+import { useRate } from '@/utils/useRate';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import Asset from './Asset';
-import Max from './Max';
+import { Asset } from './Asset';
+import { Max } from './Max';
 
 interface Props {}
 
@@ -83,7 +83,7 @@ const ErrorMessage = styled.div`
   left: 0;
 `;
 
-const MainForm: React.FC<Props> = () => {
+export const MainForm: React.FC<Props> = () => {
   const dispatch = useDispatch();
   const { base, pay, receive, payAsset, receiveAsset } = useReduxSelector(
     state => state.exchange,
@@ -168,5 +168,3 @@ const MainForm: React.FC<Props> = () => {
     </>
   );
 };
-
-export default MainForm;

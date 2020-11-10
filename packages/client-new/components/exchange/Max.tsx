@@ -18,7 +18,7 @@ const Container = styled.button`
   cursor: pointer;
 `;
 
-const Max: React.FC = () => {
+export const Max: React.FC = () => {
   const dispatch = useDispatch();
 
   const max = useReduxSelector(state => {
@@ -43,5 +43,3 @@ const Max: React.FC = () => {
   };
   return <Container onClick={handleClick}>Max: {max}</Container>;
 };
-
-export default Max;

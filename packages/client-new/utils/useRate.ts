@@ -1,7 +1,10 @@
 import { Rate } from '@/state/initialState';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-const useRate = (paySymbol: string, receiveSymbol: string): Rate | null => {
+export const useRate = (
+  paySymbol: string,
+  receiveSymbol: string,
+): Rate | null => {
   return useReduxSelector(state => {
     if (!paySymbol || !receiveSymbol) {
       return null;
@@ -29,5 +32,3 @@ const useRate = (paySymbol: string, receiveSymbol: string): Rate | null => {
     return null;
   });
 };
-
-export default useRate;

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import initialState from '@/state/initialState';
+import { initialState } from '@/state/initialState';
 
 const assetsSlice = createSlice({
   name: 'assets',
@@ -8,4 +8,4 @@ const assetsSlice = createSlice({
   reducers: {},
 });
 
-export default assetsSlice.reducer;
+export const { reducer } = assetsSlice;

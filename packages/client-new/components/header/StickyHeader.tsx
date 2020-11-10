@@ -1,8 +1,8 @@
 import React from 'react';
 import { Header, styled } from '@jarvis-network/ui';
 
-import NextLinkAdapter from '@/components/NextLink';
-import rightRenderer from '@/components/header/rightRenderer';
+import { NextLinkAdapter } from '@/components/NextLink';
+import { rightRenderer } from '@/components/header/rightRenderer';
 
 const Container = styled.div`
   height: 100%;
@@ -39,7 +39,7 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const StickyHeader = ({ children }) => {
+export const StickyHeader = ({ children }) => {
   return (
     <Container>
       <HeaderContainer>
@@ -54,5 +54,3 @@ const StickyHeader = ({ children }) => {
     </Container>
   );
 };
-
-export default StickyHeader;

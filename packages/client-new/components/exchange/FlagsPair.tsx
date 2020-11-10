@@ -30,7 +30,7 @@ const Container = styled.div`
   }
 `;
 
-const FlagsPair: React.FC<Props> = ({ assetPair }) => {
+export const FlagsPair: React.FC<Props> = ({ assetPair }) => {
   const firstFlag = assetPair.input.icon ? (
     <Flag flag={assetPair.input.icon} className="first" />
   ) : null;
@@ -45,5 +45,3 @@ const FlagsPair: React.FC<Props> = ({ assetPair }) => {
     </Container>
   );
 };
-
-export default FlagsPair;

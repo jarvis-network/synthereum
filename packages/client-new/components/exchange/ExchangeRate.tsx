@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '@jarvis-network/ui';
 
-import ExchangeRateIcon from '@/components/exchange/ExchangeRateIcon';
-import useRate from '@/utils/useRate';
+import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
+import { useRate } from '@/utils/useRate';
 import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
@@ -57,5 +57,3 @@ const ExchangeRate = props => {
     </Container>
   );
 };
-
-export default ExchangeRate;

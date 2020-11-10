@@ -1,6 +1,6 @@
 import { SearchBar, styled } from '@jarvis-network/ui';
 
-const StyledSearchBar = styled(SearchBar)`
+export const StyledSearchBar = styled(SearchBar)`
   input::placeholder,
   .icon {
     color: ${props => props.theme.text.secondary}!important;
@@ -34,5 +34,3 @@ const StyledSearchBar = styled(SearchBar)`
 
   ${props => (props.open ? 'height: 100%;' : '')};
 `;
-
-export default StyledSearchBar;

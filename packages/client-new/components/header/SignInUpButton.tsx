@@ -21,8 +21,6 @@ const Button = styled.button`
   outline: none;
 `;
 
-const SignInUpButton: React.FC<Props> = ({ onClick }) => {
+export const SignInUpButton: React.FC<Props> = ({ onClick }) => {
   return <Button onClick={onClick}>Sign in / Sign up</Button>;
 };
-
-export default SignInUpButton;

@@ -1,7 +1,7 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
-import assets, { Asset } from '@/data/assets';
+import { assets, Asset } from '@/data/assets';
 import fakeRates from '@/data/fakeRates.json';
 import fakeWallet from '@/data/fakeWallet.json';
 
@@ -42,7 +42,7 @@ export interface State {
   };
 }
 
-const initialState: State = {
+export const initialState: State = {
   theme: 'light',
   auth: {
     address: null,
@@ -67,5 +67,4 @@ const initialState: State = {
   wallet: fakeWallet as { [key: string]: WalletInfo },
 };
 
-export default initialState;
 export type AssetType = Values;

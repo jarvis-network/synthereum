@@ -16,7 +16,7 @@ interface AssetPairType {
   name: string; // used for easier filtering
 }
 
-const assets: Asset[] = [
+export const assets: Asset[] = [
   {
     name: 'Jarvis Synthetic Euro',
     symbol: 'jEUR',
@@ -96,6 +96,5 @@ const assets: Asset[] = [
   },
 ];
 
-export default assets;
 export type Asset = AssetType;
 export type AssetPair = AssetPairType;
