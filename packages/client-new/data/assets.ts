@@ -3,7 +3,7 @@ interface AssetType {
   symbol: string;
   icon: 'eur' | 'chf' | 'gbp' | 'us';
   price: number;
-  type: 'forex' | 'asset';
+  type: 'forex' | 'crypto';
 }
 
 interface AssetPairType {
@@ -17,7 +17,7 @@ export const stableCoin: Asset = {
   symbol: 'USDC',
   icon: 'us',
   price: 1,
-  type: 'forex',
+  type: 'crypto',
 };
 
 export interface AssetWithWalletInfo extends Asset {
@@ -53,28 +53,28 @@ export const assets: Asset[] = [
     symbol: 'jXAU',
     icon: null,
     price: 4.4,
-    type: 'asset',
+    type: 'forex',
   },
   {
     name: 'Jarvis Synthetic S&P500',
     symbol: 'jSPX',
     icon: null,
     price: 3.13,
-    type: 'asset',
+    type: 'forex',
   },
   {
     name: 'Jarvis Synthetic Crude Oil',
     symbol: 'jXTI',
     icon: null,
     price: 21.15,
-    type: 'asset',
+    type: 'forex',
   },
   {
     name: 'Jarvis Synthetic Silver',
     symbol: 'jXAG',
     icon: null,
     price: 0.55,
-    type: 'asset',
+    type: 'forex',
   },
 ];
 

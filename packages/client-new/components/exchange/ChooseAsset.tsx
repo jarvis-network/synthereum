@@ -24,8 +24,8 @@ const tabsList = [
     filterValue: 'forex',
   },
   {
-    title: 'Asset',
-    filterValue: 'asset',
+    title: 'Crypto',
+    filterValue: 'crypto',
   },
 ];
 
