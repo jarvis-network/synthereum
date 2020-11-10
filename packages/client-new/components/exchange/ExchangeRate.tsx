@@ -28,7 +28,7 @@ const Assets = styled.div`
   justify-self: end;
 `;
 
-const ExchangeRate = props => {
+export const ExchangeRate: React.FC = () => {
   const dispatch = useDispatch();
   const { payAsset, receiveAsset, invertRateInfo } = useReduxSelector(
     state => state.exchange,
