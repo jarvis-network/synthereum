@@ -22,7 +22,7 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^3.0.0",
+    "@openzeppelin/contracts": "3.0.0",
     "@openzeppelin/test-helpers": "^0.5.9",
     "@truffle/hdwallet-provider": "^1.2.0",
     "dotenv": "^8.2.0",

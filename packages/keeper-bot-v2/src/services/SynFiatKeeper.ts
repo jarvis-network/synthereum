@@ -92,14 +92,14 @@ export default class SynFiatKeeper {
 
         const collateralToken = await this.getContract<ERC20>(
           collateralTokenAddress,
-          'IERC20',
+          'ERC20',
         );
         // 4) Get actual synthetic token jEUR:
         const syntheticTokenAddress = await tic.methods.syntheticToken().call();
 
         const syntheticToken = await this.getContract<ERC20>(
           syntheticTokenAddress,
-          'IERC20',
+          'ERC20',
         );
 
         const info: SyntheticInfo = {
