@@ -13,7 +13,7 @@ const Button = styled.button`
   color: ${props => props.theme.text.primary};
   font-weight: 700;
   text-align: left;
-  font-size: 15px;
+  font-size: 14px;
   height: 36px;
   width: 195px;
   font-family: inherit;
