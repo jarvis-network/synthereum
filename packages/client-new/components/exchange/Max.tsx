@@ -8,7 +8,7 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 const Container = styled.button`
   grid-area: max;
   justify-self: end;
-  font-size: 8px;
+  font-size: 10px;
   color: ${props => props.theme.text.secondary};
   border: none;
   padding: 0;
