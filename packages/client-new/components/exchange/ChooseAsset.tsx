@@ -120,6 +120,21 @@ const ScrollableSearchBar = styled(StyledSearchBar)`
   display: flex;
   flex-direction: column;
   height: calc(100% - 51px);
+
+  > :nth-child(2) > :first-child {
+    padding-left: 0;
+
+    [role='button'] {
+      div {
+        font-weight: 300;
+        font-size: 13px;
+
+        :empty {
+          display: none;
+        }
+      }
+    }
+  }
 `;
 
 const ScrollableContents = styled.div`
