@@ -17,7 +17,7 @@ const HeaderContainer = styled.div`
   border-bottom-width: 1px;
 
   img[alt='Logo'] {
-    height: 30px;
+    height: 25px;
     margin-left: 15px;
   }
 
