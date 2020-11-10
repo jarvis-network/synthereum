@@ -2,7 +2,6 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 import { assets, Asset } from '@/data/assets';
-import fakeRates from '@/data/fakeRates.json';
 import fakeWallet from '@/data/fakeWallet.json';
 
 type Values = 'pay' | 'receive';
@@ -20,9 +19,6 @@ export interface State {
   auth: Omit<UserState, 'wallet'>;
   assets: {
     list: Asset[];
-    rates: {
-      [key: string]: Rate;
-    };
   };
   exchange: {
     // pay/receive are stored as string to allow incomplete input fills while
@@ -53,7 +49,6 @@ export const initialState: State = {
   },
   assets: {
     list: assets,
-    rates: fakeRates,
   },
   exchange: {
     pay: '0',

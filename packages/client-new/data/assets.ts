@@ -1,12 +1,8 @@
 interface AssetType {
   name: string;
   symbol: string;
-  priceFeed: string;
-  uiFeed: string;
-  icon: 'eur' | 'chf' | 'gbp';
+  icon: 'eur' | 'chf' | 'gbp' | 'us';
   price: number;
-  collateral: number;
-  totalTokens: number;
   type: 'forex' | 'asset';
 }
 
@@ -16,82 +12,68 @@ interface AssetPairType {
   name: string; // used for easier filtering
 }
 
+export const stableCoin: Asset = {
+  name: 'USDC',
+  symbol: 'USDC',
+  icon: 'us',
+  price: 1,
+  type: 'forex',
+};
+
+export interface AssetWithWalletInfo extends Asset {
+  stableCoinValue: number;
+  ownedAmount: number;
+}
+
 export const assets: Asset[] = [
+  stableCoin,
   {
     name: 'Jarvis Synthetic Euro',
     symbol: 'jEUR',
-    priceFeed: 'EURUSD',
-    uiFeed: 'EURUSD',
     icon: 'eur',
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 1.2, // @TODO remove all fake prices
     type: 'forex',
   },
   {
     name: 'Jarvis Synthetic Swiss Franc',
     symbol: 'jCHF',
-    priceFeed: 'USDCHF',
-    uiFeed: 'CHFUSD',
     icon: 'chf',
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 1.4,
     type: 'forex',
   },
   {
     name: 'Jarvis Synthetic British Pound',
     symbol: 'jGBP',
-    priceFeed: 'GBPUSD',
-    uiFeed: 'GBPUSD',
     icon: 'gbp',
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 1.5,
     type: 'forex',
   },
   {
     name: 'Jarvis Synthetic Gold',
     symbol: 'jXAU',
-    priceFeed: 'XAUUSD',
-    uiFeed: 'XAUUSD',
     icon: null,
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 4.4,
     type: 'asset',
   },
   {
     name: 'Jarvis Synthetic S&P500',
     symbol: 'jSPX',
-    priceFeed: 'SPXUSD',
-    uiFeed: 'SPXUSD',
     icon: null,
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 3.13,
     type: 'asset',
   },
   {
     name: 'Jarvis Synthetic Crude Oil',
     symbol: 'jXTI',
-    priceFeed: 'XTIUSD',
-    uiFeed: 'XTIUSD',
     icon: null,
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 21.15,
     type: 'asset',
   },
   {
     name: 'Jarvis Synthetic Silver',
     symbol: 'jXAG',
-    priceFeed: 'XAGUSD',
-    uiFeed: 'XAGUSD',
     icon: null,
-    price: 0,
-    collateral: 0,
-    totalTokens: 0,
+    price: 0.55,
     type: 'asset',
   },
 ];

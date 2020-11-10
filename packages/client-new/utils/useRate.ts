@@ -2,33 +2,40 @@ import { Rate } from '@/state/initialState';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 export const useRate = (
-  paySymbol: string,
-  receiveSymbol: string,
+  inputSymbol: string,
+  outputSymbol: string,
 ): Rate | null => {
   return useReduxSelector(state => {
-    if (!paySymbol || !receiveSymbol) {
+    if (!inputSymbol || !outputSymbol) {
       return null;
     }
 
-    if (paySymbol === receiveSymbol) {
+    if (inputSymbol === outputSymbol) {
+      // should not happen, but left just in case, to avoid crashing UI
       return {
         rate: 1,
       };
     }
 
-    const rate = state.assets.rates[`${paySymbol}/${receiveSymbol}`];
-    if (rate) {
-      return rate;
+    const inputAsset = state.assets.list.find(
+      asset => asset.symbol === inputSymbol,
+    );
+    const outputAsset = state.assets.list.find(
+      asset => asset.symbol === outputSymbol,
+    );
+
+    // asset not found or price not yet loaded
+    if (
+      !inputAsset ||
+      !outputAsset ||
+      !inputAsset.price ||
+      !outputAsset.price
+    ) {
+      return null;
     }
 
-    const invertedRate = state.assets.rates[`${receiveSymbol}/${paySymbol}`];
-    if (invertedRate) {
-      return {
-        ...invertedRate,
-        rate: 1 / invertedRate.rate,
-      };
-    }
-
-    return null;
+    return {
+      rate: outputAsset.price / inputAsset.price,
+    };
   });
 };

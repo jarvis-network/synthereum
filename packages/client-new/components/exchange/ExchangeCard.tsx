@@ -38,7 +38,8 @@ const grid = {
       key: 'value',
       type: ColumnType.CustomCell,
       cell: ({ original }: CellInfo) => {
-        return '1.23456';
+        const o = original as AssetPair;
+        return o.output.price / o.input.price;
       },
     },
   ],

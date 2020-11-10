@@ -4,7 +4,7 @@ import { CellInfo } from 'react-table';
 import { ColumnType, DataGrid, Flag, styled, Tabs } from '@jarvis-network/ui';
 
 import { StyledCard } from '@/components/exchange/StyledCard';
-import { Asset } from '@/data/assets';
+import { Asset, AssetWithWalletInfo } from '@/data/assets';
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
@@ -52,11 +52,12 @@ const grid = {
       key: 'value',
       type: ColumnType.CustomCell,
       className: 'number',
-      cell: () => {
+      cell: ({ original }: CellInfo) => {
+        const o = original as AssetWithWalletInfo;
         return (
           <>
-            <div className="value">10.23</div>
-            <div className="dollars">2.03203 $</div>
+            <div className="value">{o.ownedAmount}</div>
+            <div className="dollars">{o.stableCoinValue} $</div>
           </>
         );
       },
@@ -131,8 +132,27 @@ const ScrollableTabs = styled(StyledTabs)`
 
 export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const dispatch = useDispatch();
-  const list = useReduxSelector(state => state.assets.list);
+  const list = useReduxSelector(state => {
+    return state.assets.list.map(
+      (asset): AssetWithWalletInfo => {
+        const ownedAmount = state.wallet[asset.symbol]?.amount || 0;
+
+        return {
+          ...asset,
+          stableCoinValue: ownedAmount * asset.price,
+          ownedAmount,
+        };
+      },
+    );
+  });
   const asset = useReduxSelector(state => state.exchange.chooseAssetActive);
+  const ownedAssets = useReduxSelector(state => {
+    return Object.entries(state.wallet)
+      .filter(([key, value]) => {
+        return value.amount > 0;
+      })
+      .map(([symbol]) => symbol);
+  });
 
   const [selected, setSelected] = useState(0);
 
@@ -162,8 +182,12 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
         queryFilterProp="symbol"
         placeholder={'Try "jEUR"'}
         render={data => {
-          const owned = data.filteredData.filter(row => row.owned);
-          const other = data.filteredData.filter(row => !row.owned);
+          const owned = data.filteredData.filter(row =>
+            ownedAssets.includes(row.symbol),
+          );
+          const other = data.filteredData.filter(
+            row => !ownedAssets.includes(row.symbol),
+          );
 
           const ownedSection = owned.length ? (
             <>
