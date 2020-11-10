@@ -65,6 +65,11 @@ const IconButton = styled.button`
   cursor: pointer;
   margin-left: 50px;
   outline: none !important;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 `;
 
 const SwapButton = styled(Button)`
