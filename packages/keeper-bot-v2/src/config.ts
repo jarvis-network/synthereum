@@ -1,7 +1,6 @@
 import { NetworkName } from '@jarvis/web3-utils';
 
 const {
-  RPC_HOST,
   FREQUENCY,
   PRIVATE_KEY,
   MAX_SLIPPAGE,
@@ -10,7 +9,6 @@ const {
 } = process.env;
 
 export interface ENV {
-  RPC_HOST: string;
   FREQUENCY: string;
   PRIVATE_KEY: string;
   MAX_SLIPPAGE: string;
@@ -19,7 +17,6 @@ export interface ENV {
 }
 
 export const env: ENV = {
-  RPC_HOST,
   FREQUENCY,
   PRIVATE_KEY,
   MAX_SLIPPAGE,

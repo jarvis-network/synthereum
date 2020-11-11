@@ -167,6 +167,7 @@ export default class SynFiatKeeper {
     getRequestsMethod: () => NonPayableTransactionObject<T[]>,
     approveRequestMethod: ApproveRejectMethod,
     rejectRequestMethod: ApproveRejectMethod,
+    type: 'mint' | 'redeem' | 'exchange', // Used for logging
     callback: (
       request: T,
       price: number,
@@ -177,7 +178,9 @@ export default class SynFiatKeeper {
       from: this.web3.getDefaultAccount(),
     });
 
-    this.logger.info(`Found ${requests.length} request(s)`);
+    this.logger.info(
+      `Found ${requests.length} ${type} request(s) for ${info.symbol}`,
+    );
 
     for (const request of requests) {
       const { priceFeed } = info;
@@ -188,7 +191,7 @@ export default class SynFiatKeeper {
         const price = priceFeed === 'USDCHF' ? 1 / ohlc['c'][0] : ohlc['c'][0];
 
         this.logger.info(
-          `${info.symbol} was ${price} for request ${request[0]}`,
+          `${info.symbol} was ${price} for ${type} request ${request[0]}`,
         );
 
         approve = await callback(request, price, requestTime);
@@ -199,7 +202,7 @@ export default class SynFiatKeeper {
       await this.finishRequest(
         request[0],
         approve ? approveRequestMethod : rejectRequestMethod,
-        approve ? 'Approved' : 'Rejected',
+        `${approve ? 'Approved' : 'Rejected'} ${type}`,
       );
     }
   }
@@ -210,6 +213,7 @@ export default class SynFiatKeeper {
       info.tic.methods.getMintRequests,
       info.tic.methods.approveMint,
       info.tic.methods.rejectMint,
+      'mint',
       async (request, price) => {
         const collateral = parseTokens(request[3][0], info.collateralDecimals);
         const tokens = parseTokens(request[4][0], info.syntheticDecimals);
@@ -261,6 +265,7 @@ export default class SynFiatKeeper {
       info.tic.methods.getRedeemRequests,
       info.tic.methods.approveRedeem,
       info.tic.methods.rejectRedeem,
+      'redeem',
       async (request, price) => {
         const collateral = parseTokens(request[3][0], info.collateralDecimals);
         const tokens = parseTokens(request[4][0], info.syntheticDecimals);
@@ -313,6 +318,7 @@ export default class SynFiatKeeper {
       info.tic.methods.getExchangeRequests,
       info.tic.methods.approveExchange,
       info.tic.methods.rejectExchange,
+      'exchange',
       async (request, price, requestTime) => {
         const destTic = request[3];
         let destinationInfo: SyntheticInfo;
@@ -413,22 +419,34 @@ export default class SynFiatKeeper {
     resolveLabel: string,
   ) {
     try {
-      // const txHash = await resolveCallback(requestId).call({
-      //   from: this.web3.getDefaultAccount(),
-      // });
-      // const txReceipt = await this.web3.getTransactionReceipt(txHash);
+      const from = this.web3.getDefaultAccount();
 
-      const txHash: null = null;
+      const gasPrice = await this.web3.web3.eth.getGasPrice();
+      const gas = await resolveCallback(requestId).estimateGas({ from });
+
+      const transaction = await resolveCallback(requestId).send({
+        from,
+        gasPrice,
+        gas,
+      });
+      // Wait for the transaction to be mined
+      const receipt = await this.web3.getTransactionReceipt(
+        transaction.transactionHash,
+      );
+
       this.logger.info(
-        `${resolveLabel} request ${requestId} in transaction ${txHash}`,
+        `${resolveLabel} request ${requestId} in transaction ${transaction.transactionHash}`,
       );
     } catch (error) {
-      if (error.message.contains('BlockNotFound')) this.logger.warn(error);
-      if (error.message.contains('ValueError')) {
+      if (error.message.includes('BlockNotFound')) {
+        this.logger.warn(error);
+      } else if (error.message.includes('ValueError')) {
         this.logger.warn(error);
         this.logger.warn(
           `Make sure there the LP has deposited enough the excess collateral required for the ${resolveLabel} request`,
         );
+      } else {
+        this.logger.error(error);
       }
     }
   }
