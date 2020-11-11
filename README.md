@@ -83,6 +83,48 @@ installing the software listed above.
 
 </details>
 
+## Project structure
+
+```txt
+jarvis/network/exchange/mono-repo/
+├── packages/                | source code
+│   ├── balance-notify/      | source code | utility azure function
+│   ├── client/              | source code | *old* front-end
+│   ├── client-new/          | source code | Jarvis Exchange front-end React.js app
+│   ├── contracts/           | source code | synthereum Solidity implementation
+│   ├── keeper-bot/          | source code | *old* validator node
+│   └── keeper-bot-v2/       | source code | Synthereum validator node
+│
+├── scripts/                 | scripts | development utility scripts
+│   └── prepare-release.bash | scripts | release management script
+│
+├── docs/                    | docs
+│   └── install-nix.md       | docs
+├── README.md                | docs
+│
+├── .gitignore               | git | list of files untracked (ignored) by git
+├── LICENSE                  | git | MIT license file
+├── CODEOWNERS               | gitlab | GitLab merge request approvals config
+├── .gitlab-ci.yml           | gitlab | configuration for GitLab CI/CD
+│
+├── netlify.toml             | netlify
+│
+├── .editorconfig            | code style
+├── .prettierrc              | code style
+│
+├── .envrc                   | nix | direnv configration file; takes care of sourcing nix dev env variables
+├── flake.nix                | nix | Nix Flake file
+├── flake.lock               | nix | Nix Flake lock file
+├── shell.nix                | nix | Nix build-inputs (system dependencies) file
+│
+├── package.json             | yarn
+├── yarn.lock                | yarn
+├── .yarnrc                  | yarn
+├── lerna.json               | yarn
+│
+└── tsconfig.json            | typescript | global (project-level) TypeScript configuration
+```
+
 ### Configure networks
 
 The configuration is specified in `truffle-config.js`.
