@@ -4,6 +4,8 @@ import { Header, styled } from '@jarvis-network/ui';
 import { NextLinkAdapter } from '@/components/NextLink';
 import { rightRenderer } from '@/components/header/rightRenderer';
 
+import { AccountOverviewModal } from './AccountOverviewModal';
+
 const Container = styled.div`
   height: 100%;
   display: flex;
@@ -51,6 +53,7 @@ export const StickyHeader = ({ children }) => {
         />
       </HeaderContainer>
       <Content className="content">{children}</Content>
+      <AccountOverviewModal />
     </Container>
   );
 };
