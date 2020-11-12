@@ -2880,10 +2880,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@jarvis-network/ui@^0.6.5":
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.6.5.tgz#7d9bef2602739072d06cb94476c887b955dc8a4f"
-  integrity sha512-wUgOSFIyQhqoNjS+7rBwAEOTHNQToLBE6CK5KO9MtMqdJUa4qDzz3442gojcg9yDSf4SELNJyCH0sv1gehezaQ==
+"@jarvis-network/ui@^0.6.6":
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.6.6.tgz#a9534a52b0d19b8657ffd7cd569a04255bac8bb5"
+  integrity sha512-WQx5AT4sbseAqnrFqmHgLL2I/1uE9mvPZ20sJnHzVEKuZIEqAVImmq5ZDBgkVPOsRH0AvKTQ1notqeSGbtyjkw==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"
@@ -2892,6 +2892,7 @@
     framer-motion "^2.0.0-beta.52"
     lodash "^4.17.15"
     react-icons "^3.11.0"
+    react-number-format "^4.4.1"
     react-select "^3.1.0"
     react-table "^6.8.6"
 
@@ -18542,6 +18543,13 @@ react-load-script@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/react-load-script/-/react-load-script-0.0.6.tgz#db6851236aaa25bb622677a2eb51dad4f8d2c258"
   integrity sha512-aRGxDGP9VoLxcsaYvKWIW+LRrMOzz2eEcubTS4NvQPPugjk2VvMhow0wWTkSl7RxookomD1MwcP4l5UStg5ShQ==
+
+react-number-format@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-4.4.1.tgz#d5614dd25edfc21ed48b97356213440081437a94"
+  integrity sha512-ZGFMXZ0U7DcmQ3bSZY3FULOA1mfqreT9NIMYZNoa/ouiSgiTQiYA95Uj2KN8ge6BRr+ghA5vraozqWqsHZQw3Q==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-redux@^7.2.1:
   version "7.2.1"

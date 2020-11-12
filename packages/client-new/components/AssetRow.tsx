@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
-import { styled, Flag } from '@jarvis-network/ui';
-import { FlagKeys } from '@jarvis-network/ui/dist/Flag/files';
+import { styled, Flag, FlagKeys } from '@jarvis-network/ui';
 
 import { formatTokenPrice } from '@/utils/format';
 

@@ -13,7 +13,7 @@
     "format:fix": "prettier --write \"**/*.+(json|yml|yaml|md)\""
   },
   "dependencies": {
-    "@jarvis-network/ui": "^0.6.5",
+    "@jarvis-network/ui": "^0.6.6",
     "@reduxjs/toolkit": "^1.4.0",
     "bnc-onboard": "^1.14.0",
     "eth-ens-namehash": "^2.0.8",

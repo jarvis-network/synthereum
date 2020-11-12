@@ -1,4 +1,4 @@
-import { FlagKeys } from '@jarvis-network/ui/dist/Flag/files';
+import { FlagKeys } from '@jarvis-network/ui';
 
 interface AssetType {
   name: string;

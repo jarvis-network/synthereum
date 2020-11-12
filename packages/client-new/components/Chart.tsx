@@ -9,8 +9,7 @@ import {
   PriceScaleOptions,
   TimeScaleOptions,
 } from 'lightweight-charts';
-import { ThemeConfig } from '@jarvis-network/ui/dist/Theme/types';
-import { useTheme } from '@jarvis-network/ui';
+import { useTheme, ThemeConfig } from '@jarvis-network/ui';
 
 type CandleStickChartProps = {
   width?: number;
