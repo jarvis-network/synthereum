@@ -16,6 +16,9 @@ export interface Rate {
 
 export interface State {
   theme: ThemeNameType;
+  app: {
+    isAccountOverviewModalVisible: boolean;
+  };
   auth: Omit<UserState, 'wallet'>;
   assets: {
     list: Asset[];
@@ -40,6 +43,9 @@ export interface State {
 
 export const initialState: State = {
   theme: 'light',
+  app: {
+    isAccountOverviewModalVisible: false,
+  },
   auth: {
     address: null,
     network: null,
