@@ -138,3 +138,6 @@ result
 
 # direnv temporary files
 .direnv/
+
+# NODE_PREFIX so all globally installed packages are inside the repo
+.nix-node/
