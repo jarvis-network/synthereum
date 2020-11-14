@@ -1,7 +1,88 @@
-import { FC } from 'react';
+import React, { FC, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { styled, ModalContent } from '@jarvis-network/ui';
 
-interface AccountOverviewModalProps {}
+import { AssetRow, AssetRowProps } from '@/components/AssetRow';
+import { useReduxSelector } from '@/state/useReduxSelector';
+import { setAccountOverviewModalVisible } from '@/state/slices/app';
+import { formatFIATPrice } from '@/utils/format';
+import { arraySum } from '@/utils/math';
 
-export const AccountOverviewModal: FC<AccountOverviewModalProps> = () => {
-  return null;
+interface BalanceProps {
+  total: number;
+}
+
+interface AssetsProps {
+  items: AssetRowProps[];
+}
+
+const Block = styled.div``;
+
+const Heading = styled.h4`
+  padding: 0;
+  margin: 0;
+`;
+
+const Content = styled.div`
+  padding: 16px 0;
+  font-size: ${props => props.theme.font.sizes.l};
+`;
+
+const Balance: FC<BalanceProps> = ({ total }) => (
+  <Block>
+    <Heading>Balance</Heading>
+    <Content>{formatFIATPrice(total)}</Content>
+  </Block>
+);
+
+const Assets: FC<AssetsProps> = ({ items }) => (
+  <Block>
+    <Heading>Assets</Heading>
+    {items.map(item => (
+      <AssetRow {...item} key={item.title} />
+    ))}
+  </Block>
+);
+
+export const AccountOverviewModal: FC = () => {
+  const dispatch = useDispatch();
+  const isVisible = useReduxSelector(
+    state => state.app.isAccountOverviewModalVisible,
+  );
+  const wallet = useReduxSelector(state => state.wallet);
+  const assets = useReduxSelector(state => state.assets.list);
+
+  const handleClose = () => {
+    dispatch(setAccountOverviewModalVisible(false));
+  };
+
+  const items: AssetRowProps[] = useMemo(() => {
+    return Object.keys(wallet).map(token => {
+      const { amount } = wallet[token];
+      const { icon, price } =
+        assets.find(_asset => _asset.symbol === token) || {};
+
+      return {
+        flag: icon,
+        title: token,
+        amount,
+        value: price * amount,
+      };
+    });
+  }, [wallet, assets]);
+
+  const total = useMemo(() => {
+    return arraySum(items.map(_item => _item.value));
+  }, [items]);
+
+  return (
+    <ModalContent
+      isOpened={isVisible}
+      onClose={handleClose}
+      title="Account Overview"
+    >
+      <Balance total={total} />
+      <Assets items={items} />
+    </ModalContent>
+  );
 };
