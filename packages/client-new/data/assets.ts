@@ -1,7 +1,9 @@
+import { FlagKeys } from '@jarvis-network/ui/dist/Flag/files';
+
 interface AssetType {
   name: string;
   symbol: string;
-  icon: 'eur' | 'chf' | 'gbp' | 'us';
+  icon: FlagKeys | null;
   price: number;
   type: 'forex' | 'crypto';
 }
@@ -12,7 +14,7 @@ interface AssetPairType {
   name: string; // used for easier filtering
 }
 
-export const stableCoin: Asset = {
+export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
   symbol: 'USDC',
   icon: 'us',
@@ -26,7 +28,7 @@ export interface AssetWithWalletInfo extends Asset {
 }
 
 export const assets: Asset[] = [
-  stableCoin,
+  PRIMARY_STABLE_COIN,
   {
     name: 'Jarvis Synthetic Euro',
     symbol: 'jEUR',
