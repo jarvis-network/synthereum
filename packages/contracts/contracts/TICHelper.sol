@@ -85,22 +85,24 @@ library TICHelper {
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) public returns (bytes32) {
-    bytes32 mintID = keccak256(
-      abi.encodePacked(
-        msg.sender,
-        collateralAmount.rawValue,
-        numTokens.rawValue,
-        now
-      )
-    );
+    bytes32 mintID =
+      keccak256(
+        abi.encodePacked(
+          msg.sender,
+          collateralAmount.rawValue,
+          numTokens.rawValue,
+          now
+        )
+      );
 
-    TICInterface.MintRequest memory mint = TICInterface.MintRequest(
-      mintID,
-      now,
-      msg.sender,
-      collateralAmount,
-      numTokens
-    );
+    TICInterface.MintRequest memory mint =
+      TICInterface.MintRequest(
+        mintID,
+        now,
+        msg.sender,
+        collateralAmount,
+        numTokens
+      );
 
     self.mintRequestSet.insert(mintID);
     self.mintRequests[mintID] = mint;
@@ -116,14 +118,14 @@ library TICHelper {
    * @param mintID The ID of the mint request
    */
   function approveMint(TIC.Storage storage self, bytes32 mintID) public {
-    FixedPoint.Unsigned memory globalCollateralization = self
-      .getGlobalCollateralizationRatio();
+    FixedPoint.Unsigned memory globalCollateralization =
+      self.getGlobalCollateralizationRatio();
 
     // Target the starting collateralization ratio if there is no global ratio
-    FixedPoint.Unsigned memory targetCollateralization = globalCollateralization
-      .isGreaterThan(0)
-      ? globalCollateralization
-      : self.startingCollateralization;
+    FixedPoint.Unsigned memory targetCollateralization =
+      globalCollateralization.isGreaterThan(0)
+        ? globalCollateralization
+        : self.startingCollateralization;
 
     require(self.mintRequestSet.exists(mintID), 'Mint request does not exist');
     TICInterface.MintRequest memory mint = self.mintRequests[mintID];
@@ -143,9 +145,8 @@ library TICHelper {
     delete self.mintRequests[mintID];
 
     // Calculate fees
-    FixedPoint.Unsigned memory feeTotal = mint.collateralAmount.mul(
-      self.fee.feePercentage
-    );
+    FixedPoint.Unsigned memory feeTotal =
+      mint.collateralAmount.mul(self.fee.feePercentage);
 
     // Pull user's collateral and mint fee into the TIC
     self.pullCollateral(mint.sender, mint.collateralAmount.add(feeTotal));
@@ -215,14 +216,14 @@ library TICHelper {
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) public {
-    FixedPoint.Unsigned memory globalCollateralization = self
-      .getGlobalCollateralizationRatio();
+    FixedPoint.Unsigned memory globalCollateralization =
+      self.getGlobalCollateralizationRatio();
 
     // Target the starting collateralization ratio if there is no global ratio
-    FixedPoint.Unsigned memory targetCollateralization = globalCollateralization
-      .isGreaterThan(0)
-      ? globalCollateralization
-      : self.startingCollateralization;
+    FixedPoint.Unsigned memory targetCollateralization =
+      globalCollateralization.isGreaterThan(0)
+        ? globalCollateralization
+        : self.startingCollateralization;
 
     // Check that LP collateral can support the tokens to be minted
     require(
@@ -269,9 +270,10 @@ library TICHelper {
     //       86d8ffcd694bbed40140dede179692e7036f2996
     self.derivative.withdrawPassedRequest();
 
-    FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
-    );
+    FixedPoint.Unsigned memory amountWithdrawn =
+      FixedPoint.Unsigned(
+        self.collateralToken.balanceOf(address(this)).sub(prevBalance)
+      );
     require(amountWithdrawn.isGreaterThan(0), 'No tokens were redeemed');
     require(
       self.collateralToken.transfer(msg.sender, amountWithdrawn.rawValue)
@@ -293,22 +295,24 @@ library TICHelper {
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) public returns (bytes32) {
-    bytes32 redeemID = keccak256(
-      abi.encodePacked(
-        msg.sender,
-        collateralAmount.rawValue,
-        numTokens.rawValue,
-        now
-      )
-    );
+    bytes32 redeemID =
+      keccak256(
+        abi.encodePacked(
+          msg.sender,
+          collateralAmount.rawValue,
+          numTokens.rawValue,
+          now
+        )
+      );
 
-    TICInterface.RedeemRequest memory redeem = TICInterface.RedeemRequest(
-      redeemID,
-      now,
-      msg.sender,
-      collateralAmount,
-      numTokens
-    );
+    TICInterface.RedeemRequest memory redeem =
+      TICInterface.RedeemRequest(
+        redeemID,
+        now,
+        msg.sender,
+        collateralAmount,
+        numTokens
+      );
 
     self.redeemRequestSet.insert(redeemID);
     self.redeemRequests[redeemID] = redeem;
@@ -365,16 +369,16 @@ library TICHelper {
     // Redeem the synthetic tokens for RToken collateral
     self.derivative.redeem(redeem.numTokens);
 
-    FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
-    );
+    FixedPoint.Unsigned memory amountWithdrawn =
+      FixedPoint.Unsigned(
+        self.collateralToken.balanceOf(address(this)).sub(prevBalance)
+      );
 
     require(amountWithdrawn.isGreaterThan(redeem.collateralAmount));
 
     // Calculate fees
-    FixedPoint.Unsigned memory feeTotal = redeem.collateralAmount.mul(
-      self.fee.feePercentage
-    );
+    FixedPoint.Unsigned memory feeTotal =
+      redeem.collateralAmount.mul(self.fee.feePercentage);
 
     //Send net amount of dai to the user that submit redeem request
     self.collateralToken.transfer(
@@ -410,9 +414,8 @@ library TICHelper {
   function settleExpired(TIC.Storage storage self) public {
     IERC20 tokenCurrency = self.derivative.tokenCurrency();
 
-    FixedPoint.Unsigned memory numTokens = FixedPoint.Unsigned(
-      tokenCurrency.balanceOf(msg.sender)
-    );
+    FixedPoint.Unsigned memory numTokens =
+      FixedPoint.Unsigned(tokenCurrency.balanceOf(msg.sender));
 
     // Make sure there is something for the user to settle
     require(
@@ -446,9 +449,10 @@ library TICHelper {
     //       86d8ffcd694bbed40140dede179692e7036f2996
     self.derivative.settleExpired();
 
-    FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
-    );
+    FixedPoint.Unsigned memory amountWithdrawn =
+      FixedPoint.Unsigned(
+        self.collateralToken.balanceOf(address(this)).sub(prevBalance)
+      );
     // TODO: May need to allow LPs to continue despite noting being withdrawn
     require(amountWithdrawn.isGreaterThan(0), 'No collateral was withdrawn');
 
@@ -497,25 +501,27 @@ library TICHelper {
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory destNumTokens
   ) public returns (bytes32) {
-    bytes32 exchangeID = keccak256(
-      abi.encodePacked(
-        msg.sender,
-        address(destTIC),
-        numTokens.rawValue,
-        destNumTokens.rawValue,
-        now
-      )
-    );
+    bytes32 exchangeID =
+      keccak256(
+        abi.encodePacked(
+          msg.sender,
+          address(destTIC),
+          numTokens.rawValue,
+          destNumTokens.rawValue,
+          now
+        )
+      );
 
-    TICInterface.ExchangeRequest memory exchange = TICInterface.ExchangeRequest(
-      exchangeID,
-      now,
-      msg.sender,
-      destTIC,
-      numTokens,
-      collateralAmount,
-      destNumTokens
-    );
+    TICInterface.ExchangeRequest memory exchange =
+      TICInterface.ExchangeRequest(
+        exchangeID,
+        now,
+        msg.sender,
+        destTIC,
+        numTokens,
+        collateralAmount,
+        destNumTokens
+      );
 
     self.exchangeRequestSet.insert(exchangeID);
     self.exchangeRequests[exchangeID] = exchange;
@@ -536,8 +542,8 @@ library TICHelper {
       self.exchangeRequestSet.exists(exchangeID),
       'Exchange request does not exist'
     );
-    TICInterface.ExchangeRequest memory exchange = self
-      .exchangeRequests[exchangeID];
+    TICInterface.ExchangeRequest memory exchange =
+      self.exchangeRequests[exchangeID];
 
     self.exchangeRequestSet.remove(exchangeID);
     delete self.exchangeRequests[exchangeID];
@@ -549,9 +555,10 @@ library TICHelper {
     //       86d8ffcd694bbed40140dede179692e7036f2996
     self.redeemForCollateral(exchange.sender, exchange.numTokens);
 
-    FixedPoint.Unsigned memory amountWithdrawn = FixedPoint.Unsigned(
-      self.collateralToken.balanceOf(address(this)).sub(prevBalance)
-    );
+    FixedPoint.Unsigned memory amountWithdrawn =
+      FixedPoint.Unsigned(
+        self.collateralToken.balanceOf(address(this)).sub(prevBalance)
+      );
 
     require(
       amountWithdrawn.isGreaterThan(exchange.collateralAmount),
@@ -559,15 +566,13 @@ library TICHelper {
     );
 
     // Calculate fees
-    FixedPoint.Unsigned memory feeTotal = exchange.collateralAmount.mul(
-      self.fee.feePercentage
-    );
+    FixedPoint.Unsigned memory feeTotal =
+      exchange.collateralAmount.mul(self.fee.feePercentage);
 
     self.sendFee(feeTotal);
 
-    FixedPoint.Unsigned memory destinationCollateral = amountWithdrawn.sub(
-      feeTotal
-    );
+    FixedPoint.Unsigned memory destinationCollateral =
+      amountWithdrawn.sub(feeTotal);
 
     require(
       self.collateralToken.approve(
@@ -618,9 +623,8 @@ library TICHelper {
     view
     returns (TICInterface.MintRequest[] memory)
   {
-
-      TICInterface.MintRequest[] memory mintRequests
-     = new TICInterface.MintRequest[](self.mintRequestSet.count());
+    TICInterface.MintRequest[] memory mintRequests =
+      new TICInterface.MintRequest[](self.mintRequestSet.count());
 
     for (uint256 i = 0; i < self.mintRequestSet.count(); i++) {
       mintRequests[i] = self.mintRequests[self.mintRequestSet.keyAtIndex(i)];
@@ -638,14 +642,13 @@ library TICHelper {
     view
     returns (TICInterface.RedeemRequest[] memory)
   {
-
-      TICInterface.RedeemRequest[] memory redeemRequests
-     = new TICInterface.RedeemRequest[](self.redeemRequestSet.count());
+    TICInterface.RedeemRequest[] memory redeemRequests =
+      new TICInterface.RedeemRequest[](self.redeemRequestSet.count());
 
     for (uint256 i = 0; i < self.redeemRequestSet.count(); i++) {
-      redeemRequests[i] = self.redeemRequests[self.redeemRequestSet.keyAtIndex(
-        i
-      )];
+      redeemRequests[i] = self.redeemRequests[
+        self.redeemRequestSet.keyAtIndex(i)
+      ];
     }
 
     return redeemRequests;
@@ -660,14 +663,13 @@ library TICHelper {
     view
     returns (TICInterface.ExchangeRequest[] memory)
   {
-
-      TICInterface.ExchangeRequest[] memory exchangeRequests
-     = new TICInterface.ExchangeRequest[](self.exchangeRequestSet.count());
+    TICInterface.ExchangeRequest[] memory exchangeRequests =
+      new TICInterface.ExchangeRequest[](self.exchangeRequestSet.count());
 
     for (uint256 i = 0; i < self.exchangeRequestSet.count(); i++) {
-      exchangeRequests[i] = self.exchangeRequests[self
-        .exchangeRequestSet
-        .keyAtIndex(i)];
+      exchangeRequests[i] = self.exchangeRequests[
+        self.exchangeRequestSet.keyAtIndex(i)
+      ];
     }
 
     return exchangeRequests;
@@ -831,9 +833,8 @@ library TICHelper {
     view
     returns (FixedPoint.Unsigned memory)
   {
-    FixedPoint.Unsigned memory totalTokensOutstanding = FixedPoint.Unsigned(
-      self.derivative.totalTokensOutstanding()
-    );
+    FixedPoint.Unsigned memory totalTokensOutstanding =
+      FixedPoint.Unsigned(self.derivative.totalTokensOutstanding());
 
     if (totalTokensOutstanding.isGreaterThan(0)) {
       return
@@ -860,9 +861,10 @@ library TICHelper {
     FixedPoint.Unsigned memory numTokens
   ) internal view returns (bool) {
     // Collateral ratio possible for new tokens accounting for LP collateral
-    FixedPoint.Unsigned memory newCollateralization = collateralAmount
-      .add(FixedPoint.Unsigned(self.collateralToken.balanceOf(address(this))))
-      .div(numTokens);
+    FixedPoint.Unsigned memory newCollateralization =
+      collateralAmount
+        .add(FixedPoint.Unsigned(self.collateralToken.balanceOf(address(this))))
+        .div(numTokens);
 
     // Check that LP collateral can support the tokens to be minted
     return newCollateralization.isGreaterThanOrEqual(globalCollateralization);

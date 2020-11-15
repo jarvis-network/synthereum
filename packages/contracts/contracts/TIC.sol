@@ -152,10 +152,11 @@ contract TIC is TICInterface, ReentrancyGuard {
     override
     nonReentrant
   {
-    bytes32 mintID = ticStorage.mintRequest(
-      FixedPoint.Unsigned(collateralAmount),
-      FixedPoint.Unsigned(numTokens)
-    );
+    bytes32 mintID =
+      ticStorage.mintRequest(
+        FixedPoint.Unsigned(collateralAmount),
+        FixedPoint.Unsigned(numTokens)
+      );
 
     emit MintRequested(mintID, now, msg.sender, collateralAmount, numTokens);
   }
@@ -282,10 +283,11 @@ contract TIC is TICInterface, ReentrancyGuard {
     override
     nonReentrant
   {
-    bytes32 redeemID = ticStorage.redeemRequest(
-      FixedPoint.Unsigned(collateralAmount),
-      FixedPoint.Unsigned(numTokens)
-    );
+    bytes32 redeemID =
+      ticStorage.redeemRequest(
+        FixedPoint.Unsigned(collateralAmount),
+        FixedPoint.Unsigned(numTokens)
+      );
 
     emit RedeemRequested(
       redeemID,
@@ -358,12 +360,13 @@ contract TIC is TICInterface, ReentrancyGuard {
     uint256 collateralAmount,
     uint256 destNumTokens
   ) external override nonReentrant {
-    bytes32 exchangeID = ticStorage.exchangeRequest(
-      destTIC,
-      FixedPoint.Unsigned(numTokens),
-      FixedPoint.Unsigned(collateralAmount),
-      FixedPoint.Unsigned(destNumTokens)
-    );
+    bytes32 exchangeID =
+      ticStorage.exchangeRequest(
+        destTIC,
+        FixedPoint.Unsigned(numTokens),
+        FixedPoint.Unsigned(collateralAmount),
+        FixedPoint.Unsigned(destNumTokens)
+      );
 
     emit ExchangeRequested(
       exchangeID,
@@ -420,7 +423,7 @@ contract TIC is TICInterface, ReentrancyGuard {
    * @notice Get the derivative contract
    * @return The `ExpiringMultiParty` derivative contract
    */
-  function derivative() external override view returns (IExpiringMultiParty) {
+  function derivative() external view override returns (IExpiringMultiParty) {
     return ticStorage.derivative;
   }
 
@@ -428,7 +431,7 @@ contract TIC is TICInterface, ReentrancyGuard {
    * @notice Get the collateral token
    * @return The ERC20 collateral token
    */
-  function collateralToken() external override view returns (IERC20) {
+  function collateralToken() external view override returns (IERC20) {
     return ticStorage.collateralToken;
   }
 
@@ -436,7 +439,7 @@ contract TIC is TICInterface, ReentrancyGuard {
    * @notice Get the synthetic token from the derivative contract
    * @return The ERC20 synthetic token
    */
-  function syntheticToken() external override view returns (IERC20) {
+  function syntheticToken() external view override returns (IERC20) {
     return ticStorage.derivative.tokenCurrency();
   }
 
@@ -446,8 +449,8 @@ contract TIC is TICInterface, ReentrancyGuard {
    */
   function calculateFee(uint256 collateralAmount)
     external
-    override
     view
+    override
     returns (uint256)
   {
     return
@@ -463,8 +466,8 @@ contract TIC is TICInterface, ReentrancyGuard {
    */
   function getMintRequests()
     external
-    override
     view
+    override
     returns (MintRequest[] memory)
   {
     return ticStorage.getMintRequests();
@@ -476,8 +479,8 @@ contract TIC is TICInterface, ReentrancyGuard {
    */
   function getRedeemRequests()
     external
-    override
     view
+    override
     returns (RedeemRequest[] memory)
   {
     return ticStorage.getRedeemRequests();
@@ -489,8 +492,8 @@ contract TIC is TICInterface, ReentrancyGuard {
    */
   function getExchangeRequests()
     external
-    override
     view
+    override
     returns (ExchangeRequest[] memory)
   {
     return ticStorage.getExchangeRequests();
