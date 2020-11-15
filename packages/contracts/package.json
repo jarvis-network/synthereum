@@ -31,6 +31,7 @@
   "devDependencies": {
     "ganache-time-traveler": "^1.0.14",
     "husky": "^4.2.3",
+    "prettier-plugin-solidity": "^1.0.0-alpha.60",
     "truffle": "^5.1.45",
     "truffle-plugin-verify": "^0.4.0"
   }
