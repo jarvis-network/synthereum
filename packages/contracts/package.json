@@ -10,6 +10,7 @@
     "dist"
   ],
   "scripts": {
+    "format": "prettier --write './contracts/*.sol'",
     "build": "yarn build:solidity",
     "build:solidity": "truffle compile && mkdir -p dist/abi && cp ./build/contracts/*.json ./dist/abi/",
     "migrate:kovan": "truffle migrate --network kovan -f 1 --to 4 --skip-dry-run",
