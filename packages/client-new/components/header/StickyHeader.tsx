@@ -5,6 +5,7 @@ import { NextLinkAdapter } from '@/components/NextLink';
 import { rightRenderer } from '@/components/header/rightRenderer';
 
 import { AccountOverviewModal } from './AccountOverviewModal';
+import { RecentActivityModal } from './RecentActivityModal';
 
 const Container = styled.div`
   height: 100%;
@@ -54,6 +55,7 @@ export const StickyHeader = ({ children }) => {
       </HeaderContainer>
       <Content className="content">{children}</Content>
       <AccountOverviewModal />
+      <RecentActivityModal />
     </Container>
   );
 };

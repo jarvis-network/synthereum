@@ -5,7 +5,10 @@ import { AccountDropdown, styled } from '@jarvis-network/ui';
 import { SignInUpButton } from '@/components/header/SignInUpButton';
 import { AuthContext } from '@/components/auth/AuthProvider';
 import { setTheme } from '@/state/slices/theme';
-import { setAccountOverviewModalVisible } from '@/state/slices/app';
+import {
+  setAccountOverviewModalVisible,
+  setRecentActivityModalVisible,
+} from '@/state/slices/app';
 import { avatar } from '@/utils/avatar';
 import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
@@ -51,6 +54,10 @@ const render = () => {
     dispatch(setAccountOverviewModalVisible(true));
   };
 
+  const handleRecentActivityOpen = () => {
+    dispatch(setRecentActivityModalVisible(true));
+  };
+
   const links = [
     {
       name: 'Account',
@@ -60,8 +67,7 @@ const render = () => {
     {
       name: 'Activity',
       key: 'Activity',
-      // eslint-disable-next-line no-alert
-      onClick: () => alert('Activity'),
+      onClick: handleRecentActivityOpen,
     },
     {
       name: 'Help',
