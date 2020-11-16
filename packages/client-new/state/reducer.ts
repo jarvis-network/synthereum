@@ -6,6 +6,7 @@ import { reducer as auth } from '@/state/slices/auth';
 import { reducer as assets } from '@/state/slices/assets';
 import { reducer as exchange } from '@/state/slices/exchange';
 import { reducer as wallet } from '@/state/slices/wallet';
+import { reducer as transactions } from '@/state/slices/transactions';
 
 export const reducer = combineReducers({
   theme,
@@ -14,6 +15,7 @@ export const reducer = combineReducers({
   assets,
   exchange,
   wallet,
+  transactions,
 });
 
 export type RootState = ReturnType<typeof reducer>;

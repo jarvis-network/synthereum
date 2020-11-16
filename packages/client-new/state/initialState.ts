@@ -2,6 +2,7 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 import { assets, Asset } from '@/data/assets';
+import { transactions, Transaction } from '@/data/transactions';
 import fakeWallet from '@/data/fakeWallet.json';
 
 type Values = 'pay' | 'receive';
@@ -18,6 +19,7 @@ export interface State {
   theme: ThemeNameType;
   app: {
     isAccountOverviewModalVisible: boolean;
+    isRecentActivityModalVisible: boolean;
   };
   auth: Omit<UserState, 'wallet'>;
   assets: {
@@ -39,12 +41,16 @@ export interface State {
   wallet: {
     [key: string]: WalletInfo;
   };
+  transactions: {
+    list: Transaction[];
+  };
 }
 
 export const initialState: State = {
   theme: 'light',
   app: {
     isAccountOverviewModalVisible: false,
+    isRecentActivityModalVisible: false,
   },
   auth: {
     address: null,
@@ -66,6 +72,9 @@ export const initialState: State = {
     chooseAssetActive: null,
   },
   wallet: fakeWallet as { [key: string]: WalletInfo },
+  transactions: {
+    list: transactions,
+  },
 };
 
 export type AssetType = Values;

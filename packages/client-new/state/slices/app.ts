@@ -16,8 +16,17 @@ const appSlice = createSlice({
         isAccountOverviewModalVisible: action.payload,
       };
     },
+    setRecentActivityModalVisible(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isRecentActivityModalVisible: action.payload,
+      };
+    },
   },
 });
 
-export const { setAccountOverviewModalVisible } = appSlice.actions;
+export const {
+  setAccountOverviewModalVisible,
+  setRecentActivityModalVisible,
+} = appSlice.actions;
 export const { reducer } = appSlice;
