@@ -1,6 +1,8 @@
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 import { TransactionIO } from '@/data/transactions';
 
+const MonthsLabelMap = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
 export const formatTokenAmount = (value: number) => value.toFixed(0);
 
 export const formatTokenPrice = (value: number) =>
@@ -17,4 +19,9 @@ export function formatTransactionIO({ asset, amount }: TransactionIO) {
   const decimalPart = rawStr.slice(-decimals).padStart(decimals, '0');
 
   return `${integerPart}.${decimalPart} ${asset.symbol}`;
+}
+
+export function formatDayLabel(timestamp: number) {
+  const date = new Date(timestamp);
+  return `${MonthsLabelMap[date.getMonth()]} ${date.getDate()}`;
 }

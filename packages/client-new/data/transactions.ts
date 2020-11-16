@@ -19,7 +19,7 @@ export interface TransactionIO {
 
 // Base interface for any kind of transaction
 interface TransactionBase {
-  timestamp: Date;
+  timestamp: number; // we can't store Date in Redux
   txHash: string;
   type: TransactionType;
   status: TransactionStatus;
@@ -46,7 +46,7 @@ export type Transaction = SynthereumTransaction;
 
 export const transactions: Transaction[] = [
   {
-    timestamp: new Date('2020-11-11 01:00:00'),
+    timestamp: new Date('2020-11-11 05:00:00').getTime(),
     txHash: '',
     type: 'exchange',
     status: 'pending',
@@ -61,7 +61,7 @@ export const transactions: Transaction[] = [
     },
   },
   {
-    timestamp: new Date('2020-11-11 00:00:00'),
+    timestamp: new Date('2020-11-11 04:00:00').getTime(),
     txHash: '',
     type: 'mint',
     status: 'success',
@@ -76,7 +76,7 @@ export const transactions: Transaction[] = [
     },
   },
   {
-    timestamp: new Date('2020-11-10 00:00:00'),
+    timestamp: new Date('2020-11-10 04:00:00').getTime(),
     txHash: '',
     type: 'redeem',
     status: 'failure',
