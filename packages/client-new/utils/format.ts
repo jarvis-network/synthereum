@@ -1,8 +1,9 @@
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
-import { TransactionIO } from '@/data/transactions';
+import { TransactionIO, TransactionStatus, TransactionType } from '@/data/transactions';
 
-const MonthsLabelMap = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+export const toUpperFirst = (str: string) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 
+// Prices
 export const formatTokenAmount = (value: number) => value.toFixed(0);
 
 export const formatTokenPrice = (value: number) =>
@@ -21,14 +22,33 @@ export function formatTransactionIO({ asset, amount }: TransactionIO) {
   return `${integerPart}.${decimalPart} ${asset.symbol}`;
 }
 
+// Dates
+const MonthsLabelMap = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
 export function formatDayLabel(timestamp: number) {
   const date = new Date(timestamp);
   return `${MonthsLabelMap[date.getMonth()]} ${date.getDate()}`;
 }
 
+export function formatTimestamp(timestamp: number) {
+  const date = new Date(timestamp);
+  return date.toLocaleString('en-US');
+}
+
+// Transactions
+export function formatTransactionType(type: TransactionType) {
+  if (type === 'sendToSelf') {
+    return 'Send to Self';
+  }
+
+  return toUpperFirst(type);
+}
+
+export const formatTransactionStatus = (status: TransactionStatus) => toUpperFirst(status);
+
+// Wallet
 export const formatWalletAddress = (address: string) => {
   const start = address.substr(0, 6);
   const end = address.substr(address.length - 4);
-
   return `${start}...${end}`;
 };
