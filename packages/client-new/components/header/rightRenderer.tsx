@@ -1,37 +1,26 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AccountDropdown, styled } from '@jarvis-network/ui';
+import { AccountDropdown } from '@jarvis-network/ui';
 
 import { SignInUpButton } from '@/components/header/SignInUpButton';
 import { AuthContext } from '@/components/auth/AuthProvider';
 import { setTheme } from '@/state/slices/theme';
 import {
+  setAccountDropdownExpanded,
   setAccountOverviewModalVisible,
   setRecentActivityModalVisible,
 } from '@/state/slices/app';
 import { avatar } from '@/utils/avatar';
+import { formatWalletAddress } from '@/utils/format';
 import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 const noop = () => undefined;
 
-const cutWalletAddress = (address: string) => {
-  const start = address.substr(0, 6);
-  const end = address.substr(address.length - 4);
-
-  return `${start}...${end}`;
-};
-
-// @TODO move to ui lib
-const StyledAccountDropdown = styled(AccountDropdown)`
-  > :last-child {
-    z-index: 3;
-  }
-`;
-
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
+  const isAccountDropdownExpanded = useReduxSelector(state => state.app.isAccountDropdownExpanded);
   const authLogin = useContext(AuthContext);
   const name = usePrettyName(auth.address);
 
@@ -52,10 +41,16 @@ const render = () => {
 
   const handleAccountOverviewOpen = () => {
     dispatch(setAccountOverviewModalVisible(true));
+    dispatch(setAccountDropdownExpanded(false));
   };
 
   const handleRecentActivityOpen = () => {
     dispatch(setRecentActivityModalVisible(true));
+    dispatch(setAccountDropdownExpanded(false));
+  };
+
+  const handleSetExpanded = (value: boolean) => {
+    dispatch(setAccountDropdownExpanded(value));
   };
 
   const links = [
@@ -78,9 +73,9 @@ const render = () => {
   ];
 
   if (auth.address) {
-    const addr = cutWalletAddress(auth.address);
+    const addr = formatWalletAddress(auth.address);
     return (
-      <StyledAccountDropdown
+      <AccountDropdown
         width="195px"
         links={links}
         position="absolute"
@@ -91,6 +86,8 @@ const render = () => {
         onThemeChange={handleSetTheme}
         mode="demo"
         image={avatar(auth.address)}
+        isExpanded={isAccountDropdownExpanded}
+        setExpanded={handleSetExpanded}
       />
     );
   }

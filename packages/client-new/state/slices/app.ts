@@ -22,11 +22,18 @@ const appSlice = createSlice({
         isRecentActivityModalVisible: action.payload,
       };
     },
+    setAccountDropdownExpanded(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isAccountDropdownExpanded: action.payload,
+      };
+    },
   },
 });
 
 export const {
   setAccountOverviewModalVisible,
   setRecentActivityModalVisible,
+  setAccountDropdownExpanded
 } = appSlice.actions;
 export const { reducer } = appSlice;

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { initialState } from '@/state/initialState';
 
 const transactionsSlice = createSlice({
-  name: 'assets',
+  name: 'transactions',
   initialState: initialState.transactions,
   reducers: {},
 });
