@@ -1,11 +1,11 @@
 const web3Utils = require('web3-utils');
 
 const config = require('../truffle-config.js');
-const contracts = require('../contract-dependencies.json');
-const assets = require('../synthetic-assets.json');
-const TICConfig = require('../tic-config.json');
-const feeConfig = require('../fees.json');
-const rolesConfig = require('../roles.json');
+const contracts = require('../src/config/contract-dependencies.json');
+const assets = require('../src/config/synthetic-assets.json');
+const TICConfig = require('../src/config/tic-config.json');
+const feeConfig = require('../src/config/fees.json');
+const rolesConfig = require('../src/config/roles.json');
 
 var TICFactory = artifacts.require('TICFactory');
 

@@ -1,9 +1,9 @@
 const ERC20 = artifacts.require('ERC20');
 const TIC = artifacts.require('TIC');
 const TICFactory = artifacts.require('TICFactory');
-const assets = require('../fund-assets.json');
-const contracts = require('../contract-dependencies.json');
-const rolesConfig = require('../roles.json');
+const assets = require('../src/config/fund-assets.json');
+const contracts = require('../src/config/contract-dependencies.json');
+const rolesConfig = require('../src/config/roles.json');
 
 module.exports = function (deployer, network, accounts) {
   async function fund() {

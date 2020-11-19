@@ -1,8 +1,8 @@
 const { constants } = require('@openzeppelin/test-helpers');
 const config = require('../truffle-config.js');
-const contracts = require('../contract-dependencies.json');
+const contracts = require('../src/config/contract-dependencies.json');
 var TICFactory = artifacts.require('TICFactory');
-const rolesConfig = require('../roles.json');
+const rolesConfig = require('../src/config/roles.json');
 
 module.exports = function (deployer, network) {
   let ExpiringMultiPartyCreatorAddr = constants.ZERO_ADDRESS;
