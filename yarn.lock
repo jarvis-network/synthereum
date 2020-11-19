@@ -2880,10 +2880,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@jarvis-network/ui@^0.6.6":
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.6.6.tgz#a9534a52b0d19b8657ffd7cd569a04255bac8bb5"
-  integrity sha512-WQx5AT4sbseAqnrFqmHgLL2I/1uE9mvPZ20sJnHzVEKuZIEqAVImmq5ZDBgkVPOsRH0AvKTQ1notqeSGbtyjkw==
+"@jarvis-network/ui@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.npmjs.org/@jarvis-network/ui/-/ui-0.7.0.tgz#28ef5e7b42f38f71fe8568ee54c1893b58fd11e5"
+  integrity sha512-NQhT0+5YtTDRRt+FppJv/BIM90p/8/IFks8IFwDHYhTpeda3BH7Z58kzJ5dXrJkp7JOpFNOZLoQ8+NwRG+/duA==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"

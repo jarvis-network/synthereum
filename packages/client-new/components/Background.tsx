@@ -1,5 +1,4 @@
-import { styled } from '@jarvis-network/ui';
-import { themeValue } from '@/utils/themeValue';
+import { styled, themeValue } from '@jarvis-network/ui';
 
 export const Background = styled.div<{ image: string }>`
   height: 100%;

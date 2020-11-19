@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Icon, styled } from '@jarvis-network/ui';
+import { Button, Icon, styled, themeValue } from '@jarvis-network/ui';
 
 import { State } from '@/state/initialState';
 import {
@@ -10,13 +10,11 @@ import {
   setReceive,
   setReceiveAsset,
 } from '@/state/slices/exchange';
-
-import { ExchangeRate } from '@/components/exchange/ExchangeRate';
-import { useRate } from '@/utils/useRate';
-
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import { themeValue } from '@/utils/themeValue';
+import { ExchangeRate } from '@/components/exchange/ExchangeRate';
+import { Fees } from '@/components/exchange/Fees';
+import { useRate } from '@/utils/useRate';
 
 import { Asset } from './Asset';
 import { Max } from './Max';
@@ -80,6 +78,7 @@ const IconButton = styled.button`
   cursor: pointer;
   margin-left: 50px;
   outline: none !important;
+  align-self: flex-start;
 
   svg {
     width: 24px;
@@ -94,6 +93,11 @@ const SwapButton = styled(Button)`
   width: 100%;
   text-align: center;
   margin-top: 25px;
+  box-shadow: ${props => props.theme.shadow.small};
+
+  &:disabled {
+    box-shadow: none;
+  }
 `;
 
 const ErrorMessage = styled.div`
@@ -149,6 +153,8 @@ export const MainForm: React.FC<Props> = () => {
   const swapDisabled =
     !Number(payValue) || !Number(receiveValue) || insufficientBalance;
 
+  const fees = (!swapDisabled || true) && <Fees />;
+
   return (
     <>
       <ExchangeBox error={insufficientBalance}>
@@ -200,6 +206,7 @@ export const MainForm: React.FC<Props> = () => {
           Swap
         </SwapButton>
       </Footer>
+      {fees}
     </>
   );
 };

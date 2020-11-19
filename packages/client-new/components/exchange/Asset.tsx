@@ -1,11 +1,11 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Flag, Icon, styled } from '@jarvis-network/ui';
-import { AssetType } from '@/state/initialState';
+import { Flag, Icon, styled, themeValue } from '@jarvis-network/ui';
+
 import { Asset as AssetItemType } from '@/data/assets';
+import { AssetType } from '@/state/initialState';
 import { setChooseAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.div`
   grid-area: asset;

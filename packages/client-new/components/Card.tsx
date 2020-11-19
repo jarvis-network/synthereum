@@ -1,8 +1,7 @@
 import React from 'react';
-import { Icon, styled, Tabs } from '@jarvis-network/ui';
+import { Icon, styled, Tabs, themeValue } from '@jarvis-network/ui';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { themeValue } from '@/utils/themeValue';
 
 interface Props {
   className?: string;
@@ -43,6 +42,12 @@ const ColoredTabs = styled(Tabs)`
 
   [role='button'] > div:nth-child(2) {
     z-index: 2;
+  }
+
+  > div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
 `;
 

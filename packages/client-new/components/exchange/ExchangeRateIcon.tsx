@@ -1,6 +1,5 @@
-import { Icon, styled } from '@jarvis-network/ui';
 import React, { MouseEvent } from 'react';
-import { themeValue } from '@/utils/themeValue';
+import { Icon, styled, themeValue } from '@jarvis-network/ui';
 
 const Container = styled.button`
   position: relative;

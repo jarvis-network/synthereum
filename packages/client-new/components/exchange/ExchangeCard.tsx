@@ -1,22 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
+import {
+  styled,
+  ColumnType,
+  DataGrid,
+  Icon,
+  themeValue,
+} from '@jarvis-network/ui';
 
-import { styled, ColumnType, DataGrid, Icon } from '@jarvis-network/ui';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 import { MainForm } from '@/components/exchange/MainForm';
+
 import {
   setChooseAsset,
   setPayAsset,
   setReceiveAsset,
 } from '@/state/slices/exchange';
-import { Asset, AssetPair } from '@/data/assets';
-import { formatRate } from '@/utils/format';
-
 import { useReduxSelector } from '@/state/useReduxSelector';
-
+import { formatRate } from '@/utils/format';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-import { themeValue } from '@/utils/themeValue';
+import { Asset, AssetPair } from '@/data/assets';
 
 import { StyledCard } from './StyledCard';
 import { StyledSearchBar } from './StyledSearchBar';
@@ -176,7 +180,13 @@ export const ExchangeCard: React.FC = () => {
   const searchBarProps: React.ComponentProps<typeof StyledSearchBar> = {
     placeholder: 'Try "jEUR"',
     data: pairsList,
-    queryFilterProp: 'name',
+    filter: (data: any[], { query: searchQuery }: { query: string }) => {
+      const q = searchQuery.toLowerCase().replace(/\//g, '');
+
+      return data.filter(item => {
+        return item.name.toLowerCase().replace(/\//g, '').includes(q);
+      });
+    },
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
     },
@@ -212,7 +222,6 @@ export const ExchangeCard: React.FC = () => {
 
   const suffix = searchOpen && (
     <ClearButton onClick={handleCloseClick}>
-      {/* @ts-ignore */}
       <Icon icon="IoMdClose" />
     </ClearButton>
   );

@@ -1,13 +1,12 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { styled } from '@jarvis-network/ui';
+import { styled, themeValue } from '@jarvis-network/ui';
 
 import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
 import { useRate } from '@/utils/useRate';
+import { formatRate } from '@/utils/format';
 import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { formatRate } from '@/utils/format';
-import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.div`
   display: grid;

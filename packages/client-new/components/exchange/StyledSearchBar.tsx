@@ -1,5 +1,4 @@
-import { SearchBar, styled } from '@jarvis-network/ui';
-import { themeValue } from '@/utils/themeValue';
+import { SearchBar, styled, themeValue } from '@jarvis-network/ui';
 
 export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   input::placeholder,
@@ -35,8 +34,6 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
     border: none;
     border-bottom: 1px solid ${props => props.theme.border.secondary};
   }
-
-  margin-bottom: 10px;
 
   display: flex;
   flex-direction: column;

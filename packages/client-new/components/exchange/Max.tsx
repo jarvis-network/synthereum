@@ -1,10 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { styled } from '@jarvis-network/ui';
+import { styled, themeValue } from '@jarvis-network/ui';
 
-import { setPay } from '@/state/slices/exchange';
+import { setBase, setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.button`
   grid-area: max;
@@ -46,6 +45,7 @@ export const Max: React.FC = () => {
 
   const handleClick = () => {
     dispatch(setPay(String(max)));
+    dispatch(setBase('pay'));
   };
   return <Container onClick={handleClick}>Max: {max}</Container>;
 };

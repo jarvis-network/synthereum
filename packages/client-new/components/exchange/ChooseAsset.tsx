@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
-import { ColumnType, DataGrid, Flag, styled, Tabs } from '@jarvis-network/ui';
+import {
+  ColumnType,
+  DataGrid,
+  Flag,
+  styled,
+  Tabs,
+  themeValue,
+} from '@jarvis-network/ui';
 
 import { StyledCard } from '@/components/exchange/StyledCard';
 import { Asset, AssetWithWalletInfo } from '@/data/assets';
@@ -76,6 +83,15 @@ const StyledTabs = styled(Tabs)`
     padding-left: 30px;
     box-sizing: border-box;
   }
+
+  [role='button'] > div:first-child:not(.active) {
+    color: ${themeValue(
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.medium,
+    )};
+  }
 `;
 
 const StyledHeader = styled.b`
@@ -133,7 +149,12 @@ const StyledGrid = styled(DataGrid)`
   }
 
   .dollars {
-    color: ${props => props.theme.text.secondary};
+    color: ${themeValue(
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.medium,
+    )};
   }
 
   ${noColorGrid()}
