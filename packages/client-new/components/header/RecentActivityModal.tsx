@@ -38,6 +38,17 @@ function groupTransactionsByDay(items: Transaction[]) {
     .sort((a, b) => getTimestamp(b[0]) - getTimestamp(a[0]));
 }
 
+const Block = styled.div`
+  margin-top: 20px;
+`;
+
+const Heading = styled.h4`
+  padding: 0;
+  margin: 0;
+  font-size: ${props => props.theme.font.sizes.l};
+  margin-bottom: 10px;
+`;
+
 const Link = styled.a`
   color: ${props => props.theme.text.secondary};
   font-size: ${props => props.theme.font.sizes.xl};
@@ -100,15 +111,15 @@ export const RecentActivityModal: FC = () => {
     <ModalContent
       isOpened={isVisible}
       onClose={handleClose}
-      title='Recent Activity'
+      title='Activity'
     >
       {groupedTransactions.map(transactions => (
-        <div key={getFullDaysInTimestamp(transactions[0])}>
-          <h5>{formatDayLabel(transactions[0].timestamp)}</h5>
+        <Block key={getFullDaysInTimestamp(transactions[0])}>
+          <Heading>{formatDayLabel(transactions[0].timestamp)}</Heading>
           {transactions.map(transaction => (
             <ActivityRow {...transaction} />
           ))}
-        </div>
+        </Block>
       ))}
     </ModalContent>
   );
