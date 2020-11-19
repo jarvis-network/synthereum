@@ -16,16 +16,21 @@ interface AssetsProps {
   items: AssetRowProps[];
 }
 
-const Block = styled.div``;
+const Wrapper = styled.div``;
+
+const Block = styled.div`
+  margin-top: 20px;
+`;
 
 const Heading = styled.h4`
   padding: 0;
   margin: 0;
+  font-size: ${props => props.theme.font.sizes.l};
 `;
 
 const Content = styled.div`
-  padding: 16px 0;
-  font-size: ${props => props.theme.font.sizes.l};
+  padding: ${props => props.theme.font.sizes.m} 0;
+  font-size: ${props => props.theme.font.sizes.m};
 `;
 
 const Balance: FC<BalanceProps> = ({ total }) => (
@@ -79,10 +84,12 @@ export const AccountOverviewModal: FC = () => {
     <ModalContent
       isOpened={isVisible}
       onClose={handleClose}
-      title="Account Overview"
+      title='Account'
     >
-      <Balance total={total} />
-      <Assets items={items} />
+      <Wrapper>
+        <Balance total={total} />
+        <Assets items={items} />
+      </Wrapper>
     </ModalContent>
   );
 };
