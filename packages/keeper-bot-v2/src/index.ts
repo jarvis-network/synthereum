@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import SynFiatKeeper from './services/SynFiatKeeper';
-import { Web3Service } from '@jarvis/web3-utils';
+import { Web3Service } from '@jarvis-network/web3-utils';
 require('dotenv').config();
 import { env } from './config';
 

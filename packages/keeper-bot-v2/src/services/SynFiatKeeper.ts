@@ -9,10 +9,10 @@ import {
   BaseContract,
   NonPayableTransactionObject,
   Web3Service,
-} from '@jarvis/web3-utils';
-import type { TICInterface } from '@jarvis/synthereum-contracts/src/contracts/TICInterface';
-import type { TICFactory } from '@jarvis/synthereum-contracts/src/contracts/TICFactory';
-import type { ERC20 } from '@jarvis/synthereum-contracts/src/contracts/ERC20';
+} from '@jarvis-network/web3-utils';
+import type { TICInterface } from '@jarvis-network/synthereum-contracts/src/contracts/TICInterface';
+import type { TICFactory } from '@jarvis-network/synthereum-contracts/src/contracts/TICFactory';
+import type { ERC20 } from '@jarvis-network/synthereum-contracts/src/contracts/ERC20';
 import { parseTokens, scale } from './maths';
 
 type ApproveRejectMethod = (

@@ -1,8 +1,8 @@
 import { Context } from '@azure/functions';
-import constracts from '@jarvis/synthereum-contracts/contract-dependencies.json';
-import iRTokenABI from '@jarvis/synthereum-contracts/dist/abi/IRToken.json';
-import tICTokenABI from '@jarvis/synthereum-contracts/dist/abi/TICFactory.json';
-import assets from '@jarvis/synthereum-contracts/synthetic-assets.json';
+import constracts from '@jarvis-network/synthereum-contracts/contract-dependencies.json';
+import iRTokenABI from '@jarvis-network/synthereum-contracts/dist/abi/IRToken.json';
+import tICTokenABI from '@jarvis-network/synthereum-contracts/dist/abi/TICFactory.json';
+import assets from '@jarvis-network/synthereum-contracts/synthetic-assets.json';
 import axios from 'axios';
 import BN from 'bn.js';
 import _ from 'lodash';

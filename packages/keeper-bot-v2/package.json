@@ -1,5 +1,5 @@
 {
-  "name": "@jarvis/keeper-bot-v2",
+  "name": "@jarvis-network/keeper-bot-v2",
   "version": "0.1.0",
   "description": "",
   "bin": {
@@ -20,8 +20,8 @@
   "author": "Edi Sinovcic",
   "license": "MIT",
   "dependencies": {
-    "@jarvis/web3-utils": "0.1.0",
-    "@jarvis/synthereum-contracts": "*",
+    "@jarvis-network/web3-utils": "*",
+    "@jarvis-network/synthereum-contracts": "*",
     "@makerdao/dai": "^0.32.5",
     "axios": "^0.20.0",
     "bunyan": "^1.8.14",

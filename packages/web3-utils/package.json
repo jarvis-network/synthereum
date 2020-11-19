@@ -1,5 +1,5 @@
 {
-  "name": "@jarvis/web3-utils",
+  "name": "@jarvis-network/web3-utils",
   "version": "0.1.0",
   "description": "",
   "main": "src/index.ts",

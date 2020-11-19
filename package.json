@@ -1,5 +1,5 @@
 {
-  "name": "@jarvis/synthereum",
+  "name": "@jarvis-network/synthereum",
   "version": "1.1.0",
   "description": "Synthereum is Jarvis Network's synthetic asset protocol",
   "repository": "https://gitlab.com/jarvis-network/smart-contracts/synthereum",
@@ -10,25 +10,25 @@
     "install": "lerna bootstrap -- --ignore-optional",
     "format": "prettier --write '*/**/*.{js,jsx,ts,tsx}'",
     "build": "yarn build:client",
-    "build:client": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client' build",
-    "build:client-new": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client-new' build",
-    "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-contracts' build",
-    "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis/balance-notify' build",
-    "start:client-new": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client-new' start",
-    "build:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis/keeper-bot-v2' build",
-    "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis/web3-utils' build",
-    "start:client": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis/synthereum-client' start",
+    "build:client": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client' build",
+    "build:client-new": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client-new' build",
+    "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' build",
+    "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build",
+    "start:client-new": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client-new' start",
+    "build:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis-network/keeper-bot-v2' build",
+    "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis-network/web3-utils' build",
+    "start:client": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client' start",
     "start:bot": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
-    "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis/balance-notify' start",
-    "start:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis/keeper-bot-v2' start",
-    "verify": "lerna run --stream --include-dependencies --scope '@jarvis/synthereum-contracts' verify-contract:kovan"
+    "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' start",
+    "start:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis-network/keeper-bot-v2' start",
+    "verify": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' verify-contract:kovan"
   },
   "workspaces": {
     "packages": [
       "packages/*"
     ],
     "nohoist": [
-      "@jarvis/synthereum-contracts/@openzeppelin/**"
+      "@jarvis-network/synthereum-contracts/@openzeppelin/**"
     ]
   },
   "devDependencies": {

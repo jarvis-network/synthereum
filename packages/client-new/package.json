@@ -1,5 +1,5 @@
 {
-  "name": "@jarvis/synthereum-client-new",
+  "name": "@jarvis-network/synthereum-client-new",
   "version": "0.1.0",
   "private": true,
   "scripts": {

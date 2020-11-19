@@ -1,4 +1,4 @@
-import { NetworkName } from '@jarvis/web3-utils';
+import { NetworkName } from '@jarvis-network/web3-utils';
 
 const {
   FREQUENCY,
