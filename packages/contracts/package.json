@@ -23,6 +23,7 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
+    "@jarvis-network/web3-utils": "*",
     "@openzeppelin/contracts": "3.0.0",
     "@openzeppelin/test-helpers": "^0.5.9",
     "@truffle/hdwallet-provider": "^1.2.0",
@@ -31,8 +32,8 @@
   },
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",
-    "ganache-time-traveler": "^1.0.15",
     "ganache-cli": "^6.12.1",
+    "ganache-time-traveler": "^1.0.15",
     "truffle": "5.1.49",
     "truffle-plugin-verify": "^0.4.0",
     "typechain": "^4.0.0"
