@@ -15,6 +15,8 @@ import { formatRate } from '@/utils/format';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
+import { styledScrollbars } from '@/utils/styleMixins';
+
 import { StyledCard } from './StyledCard';
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
@@ -61,7 +63,7 @@ const StyledGrid = styled(DataGrid)`
 `;
 
 const GridContainer = styled.div`
-  overflow: auto;
+  ${props => styledScrollbars(props.theme)}
 `;
 
 const ClearButton = styled.button`

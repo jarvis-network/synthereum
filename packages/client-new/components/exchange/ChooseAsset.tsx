@@ -8,6 +8,8 @@ import { Asset, AssetWithWalletInfo } from '@/data/assets';
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
+import { styledScrollbars } from '@/utils/styleMixins';
+
 import { StyledSearchBar } from './StyledSearchBar';
 
 interface Props {
@@ -144,7 +146,7 @@ const ComingSoon = styled.div`
 `;
 
 const ScrollableContents = styled.div`
-  overflow: auto;
+  ${props => styledScrollbars(props.theme)}
 `;
 
 const ScrollableTabs = styled(StyledTabs)`
