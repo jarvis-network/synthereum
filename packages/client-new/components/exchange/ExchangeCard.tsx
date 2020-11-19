@@ -11,6 +11,7 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { Asset, AssetPair } from '@/data/assets';
+import { formatRate } from '@/utils/format';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
@@ -39,7 +40,7 @@ const grid = {
       type: ColumnType.CustomCell,
       cell: ({ original }: CellInfo) => {
         const o = original as AssetPair;
-        return o.output.price / o.input.price;
+        return formatRate(o.input.price / o.output.price);
       },
     },
   ],
