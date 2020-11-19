@@ -22,7 +22,7 @@ const cutWalletAddress = (address: string) => {
 // @TODO move to ui lib
 const StyledAccountDropdown = styled(AccountDropdown)`
   > :last-child {
-    z-index: 1;
+    z-index: 3;
   }
 `;
 

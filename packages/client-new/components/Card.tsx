@@ -26,6 +26,10 @@ const ColoredTabs = styled(Tabs)`
   > :first-child {
     background: ${props => props.theme.background.secondary};
   }
+
+  [role='button'] > div:nth-child(2) {
+    z-index: 2;
+  }
 `;
 
 const Header = styled.div`
