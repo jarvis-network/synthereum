@@ -13,6 +13,7 @@
     "build": "yarn build:solidity && yarn build:contracts-ts",
     "build:solidity": "truffle compile && mkdir -p dist/abi && cp ./build/contracts/*.json ./dist/abi/",
     "build:contracts-ts": "typechain --target web3-v1 --outDir ./src/contracts/ './build/contracts/*.json'",
+    "truffle:kovan": "truffle console --network kovan",
     "migrate:kovan": "truffle migrate --network kovan -f 1 --to 4 --skip-dry-run",
     "run:deposit": "truffle migrate --network kovan -f 6 --to 6 --skip-dry-run",
     "run:withdraw": "truffle migrate --network kovan -f 7 --to 7 --skip-dry-run",
