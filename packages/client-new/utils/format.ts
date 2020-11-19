@@ -32,7 +32,14 @@ export function formatDayLabel(timestamp: number) {
 
 export function formatTimestamp(timestamp: number) {
   const date = new Date(timestamp);
-  return date.toLocaleString('en-US');
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour12: true,
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 // Transactions
@@ -44,7 +51,17 @@ export function formatTransactionType(type: TransactionType) {
   return toUpperFirst(type);
 }
 
-export const formatTransactionStatus = (status: TransactionStatus) => toUpperFirst(status);
+export const formatTransactionStatus = (status: TransactionStatus) => {
+  if (status === 'failure') {
+    return 'Failed';
+  }
+
+  if (status === 'success') {
+    return 'Approved';
+  }
+
+  return 'Pending';
+}
 
 // Wallet
 export const formatWalletAddress = (address: string) => {
