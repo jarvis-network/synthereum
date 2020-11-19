@@ -15,7 +15,8 @@ import { formatRate } from '@/utils/format';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import { styledScrollbars } from '@/utils/styleMixins';
+import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
+import { themeValue } from '@/utils/themeValue';
 
 import { StyledCard } from './StyledCard';
 import { StyledSearchBar } from './StyledSearchBar';
@@ -40,6 +41,7 @@ const grid = {
     {
       key: 'value',
       type: ColumnType.CustomCell,
+      className: 'number',
       cell: ({ original }: CellInfo) => {
         const o = original as AssetPair;
         return formatRate(o.input.price / o.output.price);
@@ -55,11 +57,39 @@ const StyledGrid = styled(DataGrid)`
   }
   .number {
     text-align: right;
-    padding-right: 30px !important;
+    padding-right: 23px !important; // 30 - 7 for slim scrollbar
   }
   .flag {
     padding-left: 30px !important;
+    padding-right: 7px !important;
+    flex-grow: 0 !important;
+    width: auto !important;
   }
+  .text,
+  .number {
+    color: ${props => props.theme.text.primary};
+  }
+  .text {
+    font-size: 12px;
+    padding-left: 0 !important;
+  }
+
+  .rt-tbody .rt-tr-group:first-child {
+    border-top: none !important;
+  }
+
+  .rt-tbody .rt-tr-group {
+    border-color: ${props => props.theme.border.secondary}!important;
+  }
+
+  .rt-table {
+    overflow: hidden;
+    .rt-tr {
+      align-items: center;
+    }
+  }
+
+  ${noColorGrid()}
 `;
 
 const GridContainer = styled.div`
@@ -71,9 +101,15 @@ const ClearButton = styled.button`
   background: none;
   padding: 0;
   outline: none !important;
+  cursor: pointer;
 
   i {
-    color: ${props => props.theme.text.secondary}!important;
+    color: ${themeValue(
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.medium,
+    )}!important;
 
     svg {
       width: 15px;

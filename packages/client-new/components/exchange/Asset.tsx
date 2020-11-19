@@ -5,6 +5,7 @@ import { AssetType } from '@/state/initialState';
 import { Asset as AssetItemType } from '@/data/assets';
 import { setChooseAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.div`
   grid-area: asset;
@@ -44,16 +45,30 @@ const AssetChangeButton = styled.button`
 const AssetSelectButton = styled.button`
   background: red;
   border: none;
-  padding: 4px 5px;
+  padding: 0 6px;
+  height: 26px;
   font-size: 12px;
-  color: ${props => props.theme.text.secondary};
+  color: ${themeValue(
+    {
+      light: theme => theme.text.secondary,
+    },
+    theme => theme.text.primary,
+  )};
   background: ${props => props.theme.background.disabled};
   outline: none !important;
   margin-right: -5px;
   cursor: pointer;
+  font-family: Krub;
+  font-weight: 300;
 
   i {
-    color: ${props => props.theme.text.secondary}!important;
+    color: ${themeValue(
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.primary,
+    )}!important;
+    vertical-align: middle;
 
     svg {
       width: 11px;

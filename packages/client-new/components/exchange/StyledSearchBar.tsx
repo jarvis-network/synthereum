@@ -1,9 +1,15 @@
 import { SearchBar, styled } from '@jarvis-network/ui';
+import { themeValue } from '@/utils/themeValue';
 
-export const StyledSearchBar = styled(SearchBar)`
+export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   input::placeholder,
   .icon {
-    color: ${props => props.theme.text.secondary}!important;
+    color: ${themeValue(
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.medium,
+    )}!important;
   }
 
   // https://styled-components.com/docs/faqs#how-can-i-override-styles-with-higher-specificity

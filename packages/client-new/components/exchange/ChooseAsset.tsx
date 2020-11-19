@@ -8,7 +8,8 @@ import { Asset, AssetWithWalletInfo } from '@/data/assets';
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import { styledScrollbars } from '@/utils/styleMixins';
+import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
+import { formatFIATPrice } from '@/utils/format';
 
 import { StyledSearchBar } from './StyledSearchBar';
 
@@ -59,7 +60,7 @@ const grid = {
         return (
           <>
             <div className="value">{o.ownedAmount}</div>
-            <div className="dollars">{o.stableCoinValue} $</div>
+            <div className="dollars">{formatFIATPrice(o.stableCoinValue)}</div>
           </>
         );
       },
@@ -69,8 +70,9 @@ const grid = {
 
 const StyledTabs = styled(Tabs)`
   & > *:first-child {
-    border-top: 1px solid ${props => props.theme.border.primary};
-    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-top: none;
+    border-bottom: 1px solid ${props => props.theme.border.secondary};
+    background: none;
     padding-left: 30px;
     box-sizing: border-box;
   }
@@ -78,13 +80,15 @@ const StyledTabs = styled(Tabs)`
 
 const StyledHeader = styled.b`
   padding-left: 30px;
-  margin-top: 50px;
+  margin-top: 30px;
+  margin-bottom: 10px;
   display: block;
   font-size: 10px;
 `;
 
 const StyledGrid = styled(DataGrid)`
   .text,
+  .asset,
   .flag {
     text-align: left;
   }
@@ -102,14 +106,37 @@ const StyledGrid = styled(DataGrid)`
 
   .flag {
     padding-left: 30px !important;
-    width: 32px !important;
+    flex-grow: 0 !important;
+    width: auto !important;
+    padding-right: 0 !important;
+  }
+
+  .asset {
+    padding: 0 0 4px 30px !important;
   }
 
   .rt-tbody {
     .rt-tr-group:first-child {
       border-top: none !important;
     }
+
+    .rt-tr-group {
+      border-color: ${props => props.theme.border.secondary}!important;
+    }
   }
+
+  .rt-table {
+    overflow: hidden;
+    .rt-tr {
+      align-items: center;
+    }
+  }
+
+  .dollars {
+    color: ${props => props.theme.text.secondary};
+  }
+
+  ${noColorGrid()}
 `;
 
 const ScrollableCard = styled(StyledCard)`

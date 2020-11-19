@@ -16,6 +16,8 @@ import { useRate } from '@/utils/useRate';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
+import { themeValue } from '@/utils/themeValue';
+
 import { Asset } from './Asset';
 import { Max } from './Max';
 
@@ -34,6 +36,10 @@ const ExchangeBox = styled.div<{ error: boolean }>`
     'title max'
     'amount asset';
   position: relative;
+
+  &:nth-child(2) {
+    margin-top: 20px;
+  }
 `;
 
 const Title = styled.div`
@@ -46,12 +52,21 @@ const Amount = styled.input`
   border: none;
   padding: none;
   background: none;
-  color: ${props => props.theme.text.secondary};
+  color: ${themeValue(
+    {
+      light: theme => theme.text.secondary,
+    },
+    theme => theme.text.medium,
+  )};
   font-size: 14px;
   width: 50%;
   outline: none !important;
   margin-top: 5px;
   font-family: Krub;
+
+  &::placeholder {
+    color: currentColor;
+  }
 `;
 
 const Footer = styled.div`
@@ -69,6 +84,7 @@ const IconButton = styled.button`
   svg {
     width: 24px;
     height: 24px;
+    fill: ${props => props.theme.text.primary};
   }
 `;
 

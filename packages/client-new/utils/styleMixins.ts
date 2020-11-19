@@ -39,3 +39,21 @@ export const styledScrollbars = (theme: ThemeConfig) => `
     border-right-width: 5px;
   }
 `;
+
+export const noColorGrid = () => `
+  background: none!important;
+
+  .rt-tbody {
+    background: none!important;
+
+    .rt-tr-group {
+      .rt-tr {
+        background: none!important;
+
+        &:hover {
+          background: ${props => props.theme.background.secondary} !important;
+        }
+      }
+    }
+  }
+`;

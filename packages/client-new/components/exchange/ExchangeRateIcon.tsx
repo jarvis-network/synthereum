@@ -1,5 +1,6 @@
 import { Icon, styled } from '@jarvis-network/ui';
 import React, { MouseEvent } from 'react';
+import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.button`
   position: relative;
@@ -15,7 +16,12 @@ const Container = styled.button`
   background: none;
 
   i {
-    color: ${props => props.theme.text.secondary}!important;
+    color: ${themeValue(
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.medium,
+    )}!important;
     position: absolute;
     left: 0;
 

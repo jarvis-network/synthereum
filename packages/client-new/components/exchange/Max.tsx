@@ -4,12 +4,18 @@ import { styled } from '@jarvis-network/ui';
 
 import { setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.button`
   grid-area: max;
   justify-self: end;
   font-size: 10px;
-  color: ${props => props.theme.text.secondary};
+  color: ${themeValue(
+    {
+      light: theme => theme.text.secondary,
+    },
+    theme => theme.text.medium,
+  )};
   border: none;
   padding: 0;
   background: none;

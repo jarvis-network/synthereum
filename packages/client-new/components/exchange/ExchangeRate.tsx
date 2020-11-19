@@ -7,6 +7,7 @@ import { useRate } from '@/utils/useRate';
 import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { formatRate } from '@/utils/format';
+import { themeValue } from '@/utils/themeValue';
 
 const Container = styled.div`
   display: grid;
@@ -14,7 +15,12 @@ const Container = styled.div`
   grid-template-rows: auto;
   grid-template-areas: 'rate assets';
 
-  color: ${props => props.theme.text.secondary};
+  color: ${themeValue(
+    {
+      light: theme => theme.text.secondary,
+    },
+    theme => theme.text.medium,
+  )};
   font-size: 12px;
   padding-left: 15px;
   padding-right: 10px;
