@@ -107,6 +107,22 @@ export const ExchangeCard: React.FC = () => {
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
 
+  const handleCloseClick = () => {
+    setQuery('');
+    setSearchOpen(false);
+  };
+
+  useEffect(() => {
+    const callback = event => {
+      if (event.key === 'Escape') {
+        handleCloseClick();
+      }
+    };
+    document.addEventListener('keydown', callback);
+
+    return () => document.removeEventListener('keydown', callback);
+  }, []);
+
   if (chooseAsset) {
     return <ChooseAsset onBack={() => dispatch(setChooseAsset(null))} />;
   }
@@ -114,11 +130,6 @@ export const ExchangeCard: React.FC = () => {
   const handleSelected = (pair: AssetPair) => {
     dispatch(setPayAsset(pair.input.symbol));
     dispatch(setReceiveAsset(pair.output.symbol));
-    setQuery('');
-    setSearchOpen(false);
-  };
-
-  const handleCloseClick = () => {
     setQuery('');
     setSearchOpen(false);
   };
