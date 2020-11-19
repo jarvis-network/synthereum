@@ -47,10 +47,18 @@ const exchangeSlice = createSlice({
       state.receive = action.payload;
     },
     setPayAsset(state, action: SetPayAssetAction) {
+      if (action.payload === state.receiveAsset) {
+        // eslint-disable-next-line no-param-reassign
+        state.receiveAsset = state.payAsset;
+      }
       // eslint-disable-next-line no-param-reassign
       state.payAsset = action.payload;
     },
     setReceiveAsset(state, action: SetReceiveAssetAction) {
+      if (action.payload === state.payAsset) {
+        // eslint-disable-next-line no-param-reassign
+        state.payAsset = state.receiveAsset;
+      }
       // eslint-disable-next-line no-param-reassign
       state.receiveAsset = action.payload;
     },
