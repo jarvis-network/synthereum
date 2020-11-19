@@ -137,6 +137,12 @@ const ScrollableSearchBar = styled(StyledSearchBar)`
   }
 `;
 
+const ComingSoon = styled.div`
+  text-align: center;
+  margin-top: 1em;
+  font-weight: 500;
+`;
+
 const ScrollableContents = styled.div`
   overflow: auto;
 `;
@@ -196,6 +202,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
         data={list}
         queryFilterProp="symbol"
         placeholder={'Try "jEUR"'}
+        autoFocus
         render={data => {
           const owned = data.filteredData.filter(row =>
             ownedAssets.includes(row.symbol),
@@ -203,6 +210,10 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
           const other = data.filteredData.filter(
             row => !ownedAssets.includes(row.symbol),
           );
+
+          const comingSoon = !owned.length &&
+            !other.length &&
+            selected === 2 && <ComingSoon>Coming soon!</ComingSoon>;
 
           const ownedSection = owned.length ? (
             <>
@@ -240,6 +251,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
               <ScrollableContents>
                 {ownedSection}
                 {otherSection}
+                {comingSoon}
               </ScrollableContents>
             </>
           );

@@ -19,7 +19,7 @@ export const PRIMARY_STABLE_COIN: Asset = {
   symbol: 'USDC',
   icon: 'us',
   price: 1,
-  type: 'crypto',
+  type: 'forex',
 };
 
 export interface AssetWithWalletInfo extends Asset {
