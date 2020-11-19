@@ -25,17 +25,25 @@ const mainContentBackground = {
   light: '#fff',
 };
 
-const chartGridConfig: GridOptions = {
-  vertLines: {
-    color: '#f2f6f9',
-    style: LineStyle.Solid,
-    visible: false,
-  },
-  horzLines: {
-    color: '#f2f6f9',
-    style: LineStyle.Solid,
-    visible: true,
-  },
+const chartLinesColors = {
+  light: '#f2f6f9',
+  dark: '#7E7E7E',
+  night: '#63758d',
+};
+
+const chartGridConfig = (theme: ThemeConfig): GridOptions => {
+  return {
+    vertLines: {
+      color: chartLinesColors[theme.name],
+      style: LineStyle.Solid,
+      visible: false,
+    },
+    horzLines: {
+      color: chartLinesColors[theme.name],
+      style: LineStyle.Solid,
+      visible: true,
+    },
+  };
 };
 
 const chartPriceAxisConfig: Partial<PriceScaleOptions> = {
@@ -132,7 +140,7 @@ const Chart: FC<CandleStickChartProps> = ({
         width: autoWidth ? chartRef.current.parentNode.clientWidth : width,
         height: autoHeight ? chartRef.current.parentNode.clientHeight : height,
         layout: chartLayoutConfig,
-        grid: chartGridConfig,
+        grid: chartGridConfig(theme),
         priceScale: chartPriceAxisConfig,
         timeScale: chartTimeScaleConfig,
       };
