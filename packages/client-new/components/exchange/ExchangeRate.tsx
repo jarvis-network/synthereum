@@ -6,6 +6,7 @@ import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
 import { useRate } from '@/utils/useRate';
 import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { formatRate } from '@/utils/format';
 
 const Container = styled.div`
   display: grid;
@@ -48,7 +49,7 @@ export const ExchangeRate: React.FC = () => {
 
   return (
     <Container>
-      <Rate>{rate.rate}</Rate>
+      <Rate>{formatRate(rate.rate)}</Rate>
       <Assets>
         {invertRateInfo ? payAsset : receiveAsset} per{' '}
         {invertRateInfo ? receiveAsset : payAsset}
