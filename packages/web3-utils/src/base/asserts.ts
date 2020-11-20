@@ -4,6 +4,10 @@ export function isString(x: unknown): x is string {
   return typeof x === 'string';
 }
 
+export function isInteger(x: unknown): x is number {
+  return Number.isInteger(x);
+}
+
 export function assertIsAddress(x: unknown): string {
   return isString(x) && isAddress(x)
     ? x

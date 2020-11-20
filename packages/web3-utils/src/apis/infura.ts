@@ -1,15 +1,21 @@
 import Web3 from 'web3';
-import { isNumber } from 'lodash';
-import { networkNames, Network } from '../networks';
+import { Network, toNetworkName } from '../eth/networks';
 import { env } from '../config';
 
-export function getInfuraEndpoint(network: Network) {
-  const networkName = isNumber(network) ? networkNames[network] : network;
-  const projectId = env.infuraProjectId;
-  return `https://${networkName}.infura.io/v3/${projectId}`;
+enum Protocol {
+  wss = "wss:",
+  https = "https:"
 }
 
-export function getInfuraWeb3(network: Network): Web3 {
+export function getInfuraEndpoint(network: Network, protocol: Protocol = Protocol.https) {
+  const networkName = toNetworkName(network);
+  const projectId = env.infuraProjectId;
+  return `${protocol}//${networkName}.infura.io/v3/${projectId}`;
+}
+
+export function getInfuraWeb3(network: Network, protocol: Protocol = Protocol.https): Web3 {
   const url = getInfuraEndpoint(network);
-  return new Web3(new Web3.providers.HttpProvider(url));
+  return protocol === Protocol.https
+    ? new Web3(new Web3.providers.HttpProvider(url))
+    : new Web3(new Web3.providers.WebsocketProvider(url));
 }

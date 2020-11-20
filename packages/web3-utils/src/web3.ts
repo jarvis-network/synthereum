@@ -1,23 +1,21 @@
 import BN from 'bn.js';
 import Web3 from 'web3';
+import { toBN, toWei } from 'web3-utils';
+import { PromiEvent, TransactionReceipt } from 'web3-core';
 import {
   getContractAbi,
   getContractTxs,
   getEthUsdBtcPrice,
 } from './apis/etherscan';
-import { getInfuraWeb3 } from './apis/infura';
-import { Network } from './networks';
 import { fromBNToDecimalString } from './base/big-number';
-import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { toBN, toWei } from 'web3-utils';
 import type {
   NonPayableTransactionObject,
   BaseContract,
 } from './contracts/types';
 import { EventEmitter } from 'events';
-const abiDecoder = require('abi-decoder');
+import { getWeb3, Web3Source } from './eth/web3-instance';
 
-export type Web3Source = Web3 | Network;
+const abiDecoder = require('abi-decoder');
 
 type MethodDecodeResult<C extends BaseContract> = {
   name: keyof C['methods'];
@@ -30,12 +28,6 @@ export function decodeMethod<C extends BaseContract>(
 ): MethodDecodeResult<C> {
   abiDecoder.addABI(contract.options.jsonInterface);
   return abiDecoder.decodeMethod(input) as typeof contract['methods'];
-}
-
-export function getWeb3(web3OrNetwork: Web3Source): Web3 {
-  return web3OrNetwork instanceof Web3
-    ? web3OrNetwork
-    : getInfuraWeb3(web3OrNetwork);
 }
 
 export type AbiSource =

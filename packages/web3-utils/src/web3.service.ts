@@ -1,6 +1,5 @@
 import type Web3 from 'web3';
-import type { Contract } from 'web3-eth-contract';
-import { getWeb3, Web3Source } from './infura';
+import { getWeb3, Web3Source } from './eth/web3-instance';
 import { getContract, AbiSource } from './web3';
 import type { BaseContract } from './contracts/types';
 
