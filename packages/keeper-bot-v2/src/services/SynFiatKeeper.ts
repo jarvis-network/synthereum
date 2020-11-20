@@ -1,7 +1,6 @@
 import { Logger } from '../logger';
 import * as bunyan from 'bunyan';
 import { performance } from 'perf_hooks';
-import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
 import type { ENV } from '../config';
@@ -14,6 +13,7 @@ import type { TICInterface } from '@jarvis-network/synthereum-contracts/src/cont
 import type { TICFactory } from '@jarvis-network/synthereum-contracts/src/contracts/TICFactory';
 import type { ERC20 } from '@jarvis-network/synthereum-contracts/src/contracts/ERC20';
 import { parseTokens, scale } from './maths';
+import { getPriceFeedOhlc } from '../api/jarvis_market_price_feed';
 import { base } from '@jarvis-network/web3-utils';
 
 type ApproveRejectMethod = (
@@ -29,10 +29,6 @@ type ExchangeRequest = [
   [string],
   [string],
 ];
-
-type OHLC = {
-  c: [number] | [];
-};
 
 interface SyntheticInfo {
   symbol: string;
@@ -186,19 +182,18 @@ export default class SynFiatKeeper {
     for (const request of requests) {
       const { priceFeed } = info;
       const requestTime = request[1];
-      const ohlc = await this.getPriceFeedOhlc(priceFeed, requestTime);
-      let approve = false;
-      if (ohlc['c'].length > 0) {
-        const price = priceFeed === 'USDCHF' ? 1 / ohlc['c'][0] : ohlc['c'][0];
+      const price = await getPriceFeedOhlc(priceFeed, requestTime);
 
-        this.logger.info(
-          `${info.symbol} was ${price} for ${type} request ${request[0]}`,
-        );
-
-        approve = await callback(request, price, requestTime);
-      } else {
+      if (!price) {
         this.logger.info('Forex is closed');
+        continue;
       }
+
+      this.logger.info(
+        `${info.symbol} was ${price} for ${type} request ${request[0]}`,
+      );
+
+      const approve = await callback(request, price, requestTime);
 
       await this.finishRequest(
         request[0],
@@ -322,38 +317,25 @@ export default class SynFiatKeeper {
       'exchange',
       async (request, price, requestTime) => {
         const destTic = request[3];
-        let destinationInfo: SyntheticInfo;
-
-        for (const currentInfo of this.syntheticInfos) {
-          if (currentInfo.tic.options.address === destTic) {
-            destinationInfo = currentInfo;
-            break;
-          }
-        }
-
-        if (!info) {
-          this.logger.warn(`No TIC configured for address ${request[3]}`);
+        const destinationInfo = this.syntheticInfos.find(x => x.tic.options.address === destTic);
+        if (!destinationInfo) {
+          this.logger.warn(`No TIC configured for address ${destTic}`);
           return false;
         }
 
-        const { priceFeed: destinationPriceFeed } = destinationInfo;
-        const destinationOhlc = await this.getPriceFeedOhlc(
+        const { priceFeed: destinationPriceFeed, symbol } = destinationInfo;
+        const destPrice = await getPriceFeedOhlc(
           destinationPriceFeed,
           requestTime,
         );
 
-        if (destinationOhlc['c'].length === 0) {
+        if (!destPrice) {
           this.logger.info('Forex is closed');
           return false;
         }
 
-        const destPrice =
-          destinationPriceFeed === 'USDCHF'
-            ? 1 / destinationOhlc['c'][0]
-            : destinationOhlc['c'][0]; // TODO: Remove
-
         this.logger.info(
-          `${destinationInfo.symbol} was ${destPrice} for exchange request ${request[0]}`,
+          `${symbol} was ${destPrice} for exchange request ${request[0]}`,
         );
 
         let tokens = parseTokens(request[4][0], info.syntheticDecimals);
@@ -399,20 +381,6 @@ export default class SynFiatKeeper {
     );
   }
 
-  async getPriceFeedOhlc(priceFeed: string, requestTime: string) {
-    const endpoint = 'https://data.jarvis.exchange/jarvis/prices/history';
-
-    const query = new URLSearchParams({
-      symbol: priceFeed,
-      resolution: '1',
-      from: (parseInt(requestTime, 10) - 60).toString(),
-      to: requestTime,
-    });
-    const { data } = await axios.get<OHLC>(`${endpoint}?${query.toString()}`);
-    // TODO: Invert USDCHF
-    // TODO: Return c
-    return data;
-  }
 
   async finishRequest(
     requestId: string,
