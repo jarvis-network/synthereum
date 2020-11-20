@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "prebulishOnly": "npm ci && npm run build",
-    "clean": "rimraf ./dist",
+    "clean": "rm -rvf $PWD./dist",
     "lint": "tslint -p tsconfig.json",
     "prebuild": "yarn run clean",
     "build": "tsc",
