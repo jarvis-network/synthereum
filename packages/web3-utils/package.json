@@ -8,11 +8,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prebulishOnly": "npm ci && npm run build",
     "clean": "rimraf ./dist",
     "lint": "tslint -p tsconfig.json",
-    "prebuild": "yarn run clean",
-    "build": "tsc -p ./tsconfig.json"
+    "build": "tsc -p ./tsconfig.json",
+    "prebulishOnly": "npm ci && npm run build"
   },
   "dependencies": {
     "lodash": "^4.17.20",
