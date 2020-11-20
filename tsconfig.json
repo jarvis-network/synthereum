@@ -1,25 +1,36 @@
 {
+  // For reference, see: https://www.typescriptlang.org/tsconfig
   "compilerOptions": {
+    // Core config:
+    "target": "es2018",
     "module": "commonjs",
-    "target": "es2017",
-    "typeRoots": ["./node_modules/@types"],
-    "sourceMap": true,
-    "allowJs": false,
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "removeComments": true,
-    "strictFunctionTypes": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "declaration": true,
     "skipLibCheck": true,
-    "incremental": true,
-    "baseUrl": "./"
-  }
+
+    // Output config:
+    "incremental": false,
+    "sourceMap": true,
+    "declaration": true,
+    "removeComments": false,
+
+    // Strict and linter checks:
+    "strict": true,
+    "allowJs": false,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    //"noUncheckedIndexedAccess": true, TS 4.1.0
+    // The following checks are disabled as they're just annoying:
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+
+    // Limit recursive search for type declarations:
+    "typeRoots": ["./node_modules/@types"]
+  },
+  // Set to an empty array, to prevent compilation from the root
+  "files": []
 }

@@ -9,6 +9,7 @@ import {
   getEthUsdBtcPrice,
 } from '../apis/etherscan';
 import { fromBNToDecimalString } from '../base/big-number';
+import { assertIsFiniteNumber, assertIsString } from '../base/asserts';
 import type {
   NonPayableTransactionObject,
   BaseContract,
@@ -116,7 +117,7 @@ export function once<T>(
         function onConfirm(
           confirmations: number,
           receipt: TransactionReceipt,
-          blockHash: string,
+          blockHash?: string,
         ) {
           if (confirmations == maxConfirmations) {
             resolve([confirmations, receipt, blockHash]);
@@ -178,9 +179,11 @@ export interface FeeEstimation {
 export async function estimateFee(
   contract: BaseContract,
 ): Promise<FeeEstimation> {
-  const { gas, gasPrice } = contract.options;
+  const { gas : gas_, gasPrice: gasPrice_ } = contract.options;
+  const gas = assertIsFiniteNumber(gas_);
+  const gasPrice = assertIsString(gasPrice_);
   const gasPriceBn = toBN(gasPrice);
-  const maxFeeWei = toBN(gas).mul(gasPriceBn);
+  const maxFeeWei = toBN(assertIsFiniteNumber(gas)).mul(gasPriceBn);
   const { ethusd, ethusd_timestamp } = await getEthUsdBtcPrice();
   const ethUsdBn = toBN(toWei(ethusd));
   const maxFeeEth = fromBNToDecimalString(maxFeeWei);
