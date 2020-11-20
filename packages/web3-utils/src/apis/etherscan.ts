@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { encode, ParsedUrlQueryInput } from 'querystring';
-import type { BlockNumber } from 'web3-core/types';
-import { AbiItem } from 'web3-utils';
+import type { BlockNumber } from 'web3-core';
+import type { AbiItem } from 'web3-utils';
 import { env } from '../config';
-import { assertIsAddress } from '../utils';
+import { assertIsAddress } from '../base/asserts';
 
 export interface EtherscanTxInfo {
   blockNumber: string;

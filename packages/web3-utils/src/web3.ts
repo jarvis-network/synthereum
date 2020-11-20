@@ -7,7 +7,7 @@ import {
 } from './apis/etherscan';
 import { getInfuraWeb3 } from './apis/infura';
 import { Network } from './networks';
-import { loadJSON, fromBNToDecimalString } from './utils';
+import { fromBNToDecimalString } from './base/big-number';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { toBN, toWei } from 'web3-utils';
 import type {
@@ -56,9 +56,9 @@ export function getContractAbiFromArtifacts(
   relativePath?: string,
 ) {
   if (relativePath) {
-    return loadJSON(`${relativePath}/${contractName}.json`);
+    return require(`${relativePath}/${contractName}.json`);
   }
-  return loadJSON(
+  return require(
     `../../../packages/contracts/build/contracts/${contractName}.json`,
   ).abi;
 }
