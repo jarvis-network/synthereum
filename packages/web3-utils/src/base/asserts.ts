@@ -28,6 +28,11 @@ export function isBoolean(x: unknown): x is boolean {
   return x === true || x === false;
 }
 
+export function assertNotNull<T>(x: T | null | undefined): T {
+  assert(x !== null && x !== void 0);
+  return x;
+}
+
 export function assertIsString(x: unknown, minLength = 1): string {
   return isString(x) && x.length >= minLength
     ? x
@@ -38,6 +43,11 @@ export function assertIsString(x: unknown, minLength = 1): string {
 
 export function assertIsNumber(x: unknown): number {
   return typeof x === 'number' ? x : throwError(`value=${x} is not a number.`);
+}
+
+export function assertIsInteger(x: unknown): number {
+  assert(isInteger(x), `value=${x} is not a number.`);
+  return x;
 }
 
 export function coerceToFiniteFloatOrUndefined(x: unknown): number | undefined {
