@@ -1,5 +1,13 @@
 import { isAddress } from 'web3-utils';
 
+type AssertFunc = (value: any, message?: string) => asserts value;
+
+export const assert: AssertFunc = process.env.app_env !== 'browser'
+  ? require('assert').strict
+  : (value: any, message?: string) => {
+      if (!value) throw new Error(message);
+    };
+
 export function isString(x: unknown): x is string {
   return typeof x === 'string';
 }
@@ -87,6 +95,6 @@ export function assertIsArray(x: unknown): unknown[] {
     : throwError(`'${JSON.stringify(x)}' is not an array.`);
 }
 
-export function throwError(message: string): never {
-  throw new Error(message);
+export function throwError(errorMessage: string): never {
+  throw new Error(errorMessage);
 }
