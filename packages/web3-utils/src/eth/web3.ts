@@ -1,3 +1,4 @@
+import type { EventEmitter } from 'events';
 import BN from 'bn.js';
 import Web3 from 'web3';
 import { toBN, toWei } from 'web3-utils';
@@ -6,14 +7,13 @@ import {
   getContractAbi,
   getContractTxs,
   getEthUsdBtcPrice,
-} from './apis/etherscan';
-import { fromBNToDecimalString } from './base/big-number';
+} from '../apis/etherscan';
+import { fromBNToDecimalString } from '../base/big-number';
 import type {
   NonPayableTransactionObject,
   BaseContract,
-} from './contracts/types';
-import { EventEmitter } from 'events';
-import { getWeb3, Web3Source } from './eth/web3-instance';
+} from '../contracts/types';
+import { getWeb3, Web3Source } from '../eth/web3-instance';
 
 const abiDecoder = require('abi-decoder');
 
