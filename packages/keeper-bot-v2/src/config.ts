@@ -1,4 +1,6 @@
-import { NetworkName } from '@jarvis-network/web3-utils';
+import { base } from '@jarvis-network/web3-utils';
+import { eth } from '@jarvis-network/web3-utils';
+const { assertIsString, parseInteger, parseFiniteFloat } = base.asserts;
 
 const {
   FREQUENCY,
@@ -9,17 +11,17 @@ const {
 } = process.env;
 
 export interface ENV {
-  FREQUENCY: string;
+  FREQUENCY: number;
   PRIVATE_KEY: string;
-  MAX_SLIPPAGE: string;
+  MAX_SLIPPAGE: number;
   LOG_LEVEL: string;
-  NETWORK_ID: NetworkName;
+  NETWORK_ID: eth.networks.NetworkId;
 }
 
 export const env: ENV = {
-  FREQUENCY,
-  PRIVATE_KEY,
-  MAX_SLIPPAGE,
-  LOG_LEVEL,
-  NETWORK_ID: NETWORK_ID as NetworkName, // TODO: validate input
+  FREQUENCY: parseInteger(FREQUENCY),
+  PRIVATE_KEY: assertIsString(PRIVATE_KEY),
+  MAX_SLIPPAGE: parseFiniteFloat(MAX_SLIPPAGE),
+  LOG_LEVEL: assertIsString(LOG_LEVEL),
+  NETWORK_ID: eth.networks.assertIsNetworkId(parseInteger(NETWORK_ID)),
 };

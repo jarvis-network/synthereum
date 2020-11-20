@@ -14,6 +14,7 @@ import type { TICInterface } from '@jarvis-network/synthereum-contracts/src/cont
 import type { TICFactory } from '@jarvis-network/synthereum-contracts/src/contracts/TICFactory';
 import type { ERC20 } from '@jarvis-network/synthereum-contracts/src/contracts/ERC20';
 import { parseTokens, scale } from './maths';
+import { base } from '@jarvis-network/web3-utils';
 
 type ApproveRejectMethod = (
   id: string | number[],
@@ -57,8 +58,8 @@ export default class SynFiatKeeper {
     env: ENV,
     private logger: bunyan = Logger('KeeperBot', 'logging', 'info'),
   ) {
-    this.frequency = Number.parseInt(env.FREQUENCY);
-    this.maxSlippage = Number.parseFloat(env.MAX_SLIPPAGE);
+    this.frequency = env.FREQUENCY;
+    this.maxSlippage = env.MAX_SLIPPAGE;
   }
 
   async loadContracts() {
@@ -149,7 +150,7 @@ export default class SynFiatKeeper {
   }
 
   stop() {
-    clearInterval(this.interval);
+    clearInterval(base.asserts.assertNotNull(this.interval));
   }
 
   async getContract<T extends BaseContract>(
@@ -175,7 +176,7 @@ export default class SynFiatKeeper {
     ) => Promise<boolean>,
   ) {
     const requests = await getRequestsMethod().call({
-      from: this.web3.getDefaultAccount(),
+      from: base.asserts.assertNotNull(this.web3.getDefaultAccount()),
     });
 
     this.logger.info(
@@ -419,7 +420,7 @@ export default class SynFiatKeeper {
     resolveLabel: string,
   ) {
     try {
-      const from = this.web3.getDefaultAccount();
+      const from = base.asserts.assertNotNull(this.web3.getDefaultAccount());
 
       const gasPrice = await this.web3.web3.eth.getGasPrice();
       const gas = await resolveCallback(requestId).estimateGas({ from });
