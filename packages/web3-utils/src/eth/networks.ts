@@ -1,4 +1,4 @@
-import { isInteger, isString } from '../base/asserts';
+import { assert, isInteger, isString, throwError } from '../base/asserts';
 import type { InverseOf } from '../base/meta';
 
 export const networkIdToName = {
@@ -25,8 +25,18 @@ export function isNetworkId(x: unknown): x is NetworkId {
   return isInteger(x) && x in networkIdToName;
 }
 
+export function assertIsNetworkId(x: unknown): NetworkId {
+  assert(isNetworkId(x));
+  return x;
+}
+
 export function isNetworkName(x: unknown): x is NetworkName {
   return isString(x) && x in networkNameToId;
+}
+
+export function assertIsNetworkName(x: unknown): NetworkName {
+  assert(isNetworkName(x));
+  return x;
 }
 
 export function toNetworkId(network: Network): NetworkId {
