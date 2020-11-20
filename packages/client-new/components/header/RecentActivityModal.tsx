@@ -117,7 +117,7 @@ export const RecentActivityModal: FC = () => {
         <Block key={getFullDaysInTimestamp(transactions[0])}>
           <Heading>{formatDayLabel(transactions[0].timestamp)}</Heading>
           {transactions.map(transaction => (
-            <ActivityRow {...transaction} />
+            <ActivityRow key={transaction.txHash} {...transaction} />
           ))}
         </Block>
       ))}
