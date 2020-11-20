@@ -225,28 +225,3 @@ export async function estimateFee(
     },
   };
 }
-
-export async function getBlockTimestamp(
-  web3: Web3,
-  blockNumber: number,
-): Promise<number> {
-  const timestamp = (await web3.eth.getBlock(blockNumber)).timestamp;
-  return typeof timestamp === 'string' ? Number.parseInt(timestamp) : timestamp;
-}
-
-export async function getBlockAverageTime(
-  web3: Web3,
-  blockNumber: number,
-  span: number,
-): Promise<number> {
-  const times = [];
-  const firstBlock = await web3.eth.getBlock(blockNumber - span);
-  let prevTimestamp = firstBlock.timestamp;
-  for (let i = blockNumber - span + 1; i <= blockNumber; i++) {
-    const block = await web3.eth.getBlock(i);
-    let time = toBN(block.timestamp).sub(toBN(prevTimestamp));
-    prevTimestamp = block.timestamp;
-    times.push(parseInt(time.toString()));
-  }
-  return Math.round(times.reduce((a, b) => a + b) / times.length);
-}
