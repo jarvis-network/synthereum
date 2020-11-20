@@ -20,7 +20,9 @@ const noop = () => undefined;
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
-  const isAccountDropdownExpanded = useReduxSelector(state => state.app.isAccountDropdownExpanded);
+  const isAccountDropdownExpanded = useReduxSelector(
+    state => state.app.isAccountDropdownExpanded,
+  );
   const authLogin = useContext(AuthContext);
   const name = usePrettyName(auth.address);
 

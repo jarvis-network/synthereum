@@ -1,37 +1,55 @@
 import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { ModalContent, Icon, AssetsRowExpand, AssetProps, styled } from '@jarvis-network/ui';
+import {
+  ModalContent,
+  Icon,
+  AssetsRowExpand,
+  AssetProps,
+  styled,
+} from '@jarvis-network/ui';
 
 import { setRecentActivityModalVisible } from '@/state/slices/app';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Transaction, TransactionIO } from '@/data/transactions';
-import { formatDayLabel, formatTimestamp, formatTransactionStatus, formatTransactionType } from '@/utils/format';
+import {
+  formatDayLabel,
+  formatTimestamp,
+  formatTransactionStatus,
+  formatTransactionType,
+} from '@/utils/format';
 import { getEtherscanTransactionURL } from '@/utils/url';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 const getTimestamp = (item: Transaction) => item.timestamp; // helper for case if we will change timestamp value type
 
-const getFullDaysInTimestamp = (transaction: Transaction) => Math.floor(getTimestamp(transaction) / DAY_IN_MS);
+const getFullDaysInTimestamp = (transaction: Transaction) =>
+  Math.floor(getTimestamp(transaction) / DAY_IN_MS);
 
-const mapTransactionToAssetRow = (io: TransactionIO, isFrom?: boolean): AssetProps => ({
+const mapTransactionToAssetRow = (
+  io: TransactionIO,
+  isFrom?: boolean,
+): AssetProps => ({
   flag: io.asset?.icon,
   name: io.asset?.symbol || '',
-  value: isFrom ? -parseFloat(io.amount) : parseFloat(io.amount)
-})
+  value: isFrom ? -parseFloat(io.amount) : parseFloat(io.amount),
+});
 
 function groupTransactionsByDay(items: Transaction[]) {
-  const result: { [key: number]: Transaction[] } = items.reduce((accumulator, transaction) => {
-    const fullDaysInTimestamp = getFullDaysInTimestamp(transaction);
+  const result: { [key: number]: Transaction[] } = items.reduce(
+    (accumulator, transaction) => {
+      const fullDaysInTimestamp = getFullDaysInTimestamp(transaction);
 
-    if (!accumulator[fullDaysInTimestamp]) {
-      accumulator[fullDaysInTimestamp] = [];
-    }
+      if (!accumulator[fullDaysInTimestamp]) {
+        accumulator[fullDaysInTimestamp] = [];
+      }
 
-    accumulator[fullDaysInTimestamp].push(transaction);
+      accumulator[fullDaysInTimestamp].push(transaction);
 
-    return accumulator;
-  }, {});
+      return accumulator;
+    },
+    {},
+  );
 
   return Object.values(result)
     .map(list => list.sort((a, b) => getTimestamp(b) - getTimestamp(a)))
@@ -58,45 +76,62 @@ const Link = styled.a`
   }
 `;
 
+const Wrapper = styled.div`
+  margin-left: -24px;
+  margin-right: -24px;
+  border-bottom: 1px solid ${props => props.theme.background.medium};
+`;
+
 const EtherscanLink: FC<Pick<Transaction, 'txHash'>> = ({ txHash }) => (
   <Link
     href={getEtherscanTransactionURL(txHash)}
-    target='_blank'
-    rel='noopener noreferrer'
+    target="_blank"
+    rel="noopener noreferrer"
   >
     <Icon icon="IoMdOpen" style={{ justifyContent: 'flex-start' }} />
   </Link>
-)
+);
 
-const ActivityRow: FC<Transaction> = ({ input, output, type, timestamp, txHash, status }) => (
-  <AssetsRowExpand
-    from={mapTransactionToAssetRow(input, true)}
-    to={mapTransactionToAssetRow(output)}
-    descriptions={[
-      {
-        label: 'Type',
-        value: formatTransactionType(type),
-      },
-      {
-        label: 'Timestamp',
-        value: formatTimestamp(timestamp),
-      },
-      {
-        label: 'See on Etherscan',
-        value: <EtherscanLink txHash={txHash} />
-      },
-      {
-        label: 'Status',
-        value: formatTransactionStatus(status)
-      },
-    ]}
-  />
-)
+const ActivityRow: FC<Transaction> = ({
+  input,
+  output,
+  type,
+  timestamp,
+  txHash,
+  status,
+}) => (
+  <Wrapper>
+    <AssetsRowExpand
+      from={mapTransactionToAssetRow(input, true)}
+      to={mapTransactionToAssetRow(output)}
+      descriptions={[
+        {
+          label: 'Type',
+          value: formatTransactionType(type),
+        },
+        {
+          label: 'Timestamp',
+          value: formatTimestamp(timestamp),
+        },
+        {
+          label: 'See on Etherscan',
+          value: <EtherscanLink txHash={txHash} />,
+        },
+        {
+          label: 'Status',
+          value: formatTransactionStatus(status),
+        },
+      ]}
+    />
+  </Wrapper>
+);
 
 export const RecentActivityModal: FC = () => {
   const dispatch = useDispatch();
 
-  const isVisible = useReduxSelector(state => state.app.isRecentActivityModalVisible);
+  const isVisible = useReduxSelector(
+    state => state.app.isRecentActivityModalVisible,
+  );
   const rowTransactions = useReduxSelector(state => state.transactions.list);
 
   const handleClose = () => {
@@ -108,11 +143,7 @@ export const RecentActivityModal: FC = () => {
   }, [rowTransactions]);
 
   return (
-    <ModalContent
-      isOpened={isVisible}
-      onClose={handleClose}
-      title='Activity'
-    >
+    <ModalContent isOpened={isVisible} onClose={handleClose} title="Activity">
       {groupedTransactions.map(transactions => (
         <Block key={getFullDaysInTimestamp(transactions[0])}>
           <Heading>{formatDayLabel(transactions[0].timestamp)}</Heading>

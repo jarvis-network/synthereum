@@ -34,6 +34,6 @@ const appSlice = createSlice({
 export const {
   setAccountOverviewModalVisible,
   setRecentActivityModalVisible,
-  setAccountDropdownExpanded
+  setAccountDropdownExpanded,
 } = appSlice.actions;
 export const { reducer } = appSlice;

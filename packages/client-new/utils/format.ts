@@ -1,7 +1,12 @@
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
-import { TransactionIO, TransactionStatus, TransactionType } from '@/data/transactions';
+import {
+  TransactionIO,
+  TransactionStatus,
+  TransactionType,
+} from '@/data/transactions';
 
-export const toUpperFirst = (str: string) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+export const toUpperFirst = (str: string) =>
+  `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 
 // Prices
 export const formatTokenAmount = (value: number) => value.toFixed(0);
@@ -23,7 +28,20 @@ export function formatTransactionIO({ asset, amount }: TransactionIO) {
 }
 
 // Dates
-const MonthsLabelMap = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+const MonthsLabelMap = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const;
 
 export function formatDayLabel(timestamp: number) {
   const date = new Date(timestamp);
@@ -61,7 +79,7 @@ export const formatTransactionStatus = (status: TransactionStatus) => {
   }
 
   return 'Pending';
-}
+};
 
 // Wallet
 export const formatWalletAddress = (address: string) => {

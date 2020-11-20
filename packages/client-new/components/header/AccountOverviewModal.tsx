@@ -81,11 +81,7 @@ export const AccountOverviewModal: FC = () => {
   }, [items]);
 
   return (
-    <ModalContent
-      isOpened={isVisible}
-      onClose={handleClose}
-      title='Account'
-    >
+    <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
       <Wrapper>
         <Balance total={total} />
         <Assets items={items} />
