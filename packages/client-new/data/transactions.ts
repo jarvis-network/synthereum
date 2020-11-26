@@ -1,9 +1,11 @@
+import BN from 'bn.js';
+
 import { Asset, assets } from './assets';
 
 // @todo After TS library will be implemented:
 // move all this types to the library and prepare transformers for frontend
 
-type RawAmount = string; // originally biging native ECMAScript 2020 type or polyfill like 'BN.js'
+type RawAmount = BN;
 
 export type TransactionType =
   | 'mint'
@@ -57,11 +59,11 @@ export const transactions: Transaction[] = [
     ticPoolAddress: '',
     input: {
       asset: assets.find(_i => _i.symbol === 'jEUR'),
-      amount: '1000',
+      amount: new BN('1000'),
     },
     output: {
       asset: assets.find(_i => _i.symbol === 'jGBP'),
-      amount: '700',
+      amount: new BN('700'),
     },
   },
   {
@@ -73,11 +75,11 @@ export const transactions: Transaction[] = [
     ticPoolAddress: '',
     input: {
       asset: assets.find(_i => _i.symbol === 'USDC'),
-      amount: '1000',
+      amount: new BN('1000'),
     },
     output: {
       asset: assets.find(_i => _i.symbol === 'jEUR'),
-      amount: '999',
+      amount: new BN('999'),
     },
   },
   {
@@ -89,11 +91,11 @@ export const transactions: Transaction[] = [
     ticPoolAddress: '',
     input: {
       asset: assets.find(_i => _i.symbol === 'jGBP'),
-      amount: '1000',
+      amount: new BN('1000'),
     },
     output: {
       asset: assets.find(_i => _i.symbol === 'USDC'),
-      amount: '999',
+      amount: new BN('999'),
     },
   },
 ];

@@ -7,6 +7,8 @@ import { initialState, State } from '@/state/initialState';
 let cachedStore;
 
 function initStore(preloadedState: State = initialState) {
+  // If you are going to load preloaded state from serialized data somewhere
+  // here, make sure to convert all needed values from strings to BN
   return configureStore({ reducer, preloadedState });
 }
 

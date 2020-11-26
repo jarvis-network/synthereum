@@ -1,15 +1,17 @@
 import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, ModalContent } from '@jarvis-network/ui';
+import BN from 'bn.js';
 
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
-import { formatFIATPrice } from '@/utils/format';
-import { arraySum } from '@/utils/math';
+import { formatBN } from '@/utils/format';
+import { arraySumBN } from '@/utils/math';
+import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 interface BalanceProps {
-  total: number;
+  total: BN;
 }
 
 interface AssetsProps {
@@ -36,7 +38,7 @@ const Content = styled.div`
 const Balance: FC<BalanceProps> = ({ total }) => (
   <Block>
     <Heading>Balance</Heading>
-    <Content>{formatFIATPrice(total)}</Content>
+    <Content>$ {formatBN(total, PRIMARY_STABLE_COIN.decimals)}</Content>
   </Block>
 );
 
@@ -44,7 +46,7 @@ const Assets: FC<AssetsProps> = ({ items }) => (
   <Block>
     <Heading>Assets</Heading>
     {items.map(item => (
-      <AssetRow {...item} key={item.title} />
+      <AssetRow {...item} key={item.asset.symbol} />
     ))}
   </Block>
 );
@@ -64,20 +66,20 @@ export const AccountOverviewModal: FC = () => {
   const items: AssetRowProps[] = useMemo(() => {
     return Object.keys(wallet).map(token => {
       const { amount } = wallet[token];
-      const { icon, price } =
-        assets.find(_asset => _asset.symbol === token) || {};
+      const asset = assets.find(_asset => _asset.symbol === token) || null;
 
       return {
-        flag: icon,
-        title: token,
+        asset,
         amount,
-        value: price * amount,
+        value: amount
+          .mul(new BN(asset.price * 10 ** asset.decimals))
+          .div(new BN(10 ** asset.decimals)),
       };
     });
   }, [wallet, assets]);
 
   const total = useMemo(() => {
-    return arraySum(items.map(_item => _item.value));
+    return arraySumBN(items.map(_item => _item.value));
   }, [items]);
 
   return (

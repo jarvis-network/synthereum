@@ -180,7 +180,7 @@ export const ExchangeCard: React.FC = () => {
   const searchBarProps: React.ComponentProps<typeof StyledSearchBar> = {
     placeholder: 'Try "jEUR"',
     data: pairsList,
-    filter: (data: any[], { query: searchQuery }: { query: string }) => {
+    filter: (data: AssetPair[], { query: searchQuery }: { query: string }) => {
       const q = searchQuery.toLowerCase().replace(/\//g, '');
 
       return data.filter(item => {

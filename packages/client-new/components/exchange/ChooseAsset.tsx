@@ -9,14 +9,15 @@ import {
   Tabs,
   themeValue,
 } from '@jarvis-network/ui';
+import BN from 'bn.js';
 
 import { StyledCard } from '@/components/exchange/StyledCard';
-import { Asset, AssetWithWalletInfo } from '@/data/assets';
+import { Asset, AssetWithWalletInfo, PRIMARY_STABLE_COIN } from '@/data/assets';
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-import { formatFIATPrice } from '@/utils/format';
+import { formatBN } from '@/utils/format';
 
 import { StyledSearchBar } from './StyledSearchBar';
 
@@ -66,8 +67,10 @@ const grid = {
         const o = original as AssetWithWalletInfo;
         return (
           <>
-            <div className="value">{o.ownedAmount}</div>
-            <div className="dollars">{formatFIATPrice(o.stableCoinValue)}</div>
+            <div className="value">{formatBN(o.ownedAmount, o.decimals)}</div>
+            <div className="dollars">
+              $ {formatBN(o.stableCoinValue, PRIMARY_STABLE_COIN.decimals)}
+            </div>
           </>
         );
       },
@@ -206,11 +209,13 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const list = useReduxSelector(state => {
     return state.assets.list.map(
       (asset): AssetWithWalletInfo => {
-        const ownedAmount = state.wallet[asset.symbol]?.amount || 0;
+        const ownedAmount = state.wallet[asset.symbol]?.amount || new BN('0');
 
         return {
           ...asset,
-          stableCoinValue: ownedAmount * asset.price,
+          stableCoinValue: ownedAmount
+            .mul(new BN(asset.price * 10 ** asset.decimals))
+            .div(new BN(10 ** asset.decimals)),
           ownedAmount,
         };
       },
@@ -220,7 +225,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const ownedAssets = useReduxSelector(state => {
     return Object.entries(state.wallet)
       .filter(([key, value]) => {
-        return value.amount > 0;
+        return value.amount.gt(new BN('0'));
       })
       .map(([symbol]) => symbol);
   });

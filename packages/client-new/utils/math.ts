@@ -1,2 +1,4 @@
-export const arraySum = (values: number[]) =>
-  values.reduce((result, value) => result + value, 0);
+import BN from 'bn.js';
+
+export const arraySumBN = (values: BN[]) =>
+  values.reduce((result, value) => result.add(value), new BN('0'));

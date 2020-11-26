@@ -1,16 +1,18 @@
 import { FlagKeys } from '@jarvis-network/ui';
+import BN from 'bn.js';
 
-interface AssetType {
+export interface Asset {
   name: string;
   symbol: string;
   icon: FlagKeys | null;
   price: number;
+  decimals: number;
   type: 'forex' | 'crypto';
 }
 
-interface AssetPairType {
-  input: AssetType;
-  output: AssetType;
+export interface AssetPair {
+  input: Asset;
+  output: Asset;
   name: string; // used for easier filtering
 }
 
@@ -19,12 +21,13 @@ export const PRIMARY_STABLE_COIN: Asset = {
   symbol: 'USDC',
   icon: 'us',
   price: 1,
+  decimals: 2,
   type: 'forex',
 };
 
 export interface AssetWithWalletInfo extends Asset {
-  stableCoinValue: number;
-  ownedAmount: number;
+  stableCoinValue: BN;
+  ownedAmount: BN;
 }
 
 export const assets: Asset[] = [
@@ -34,6 +37,7 @@ export const assets: Asset[] = [
     symbol: 'jEUR',
     icon: 'eur',
     price: 1.2, // @TODO remove all fake prices
+    decimals: 2,
     type: 'forex',
   },
   {
@@ -41,6 +45,7 @@ export const assets: Asset[] = [
     symbol: 'jCHF',
     icon: 'chf',
     price: 1.4,
+    decimals: 1,
     type: 'forex',
   },
   {
@@ -48,6 +53,7 @@ export const assets: Asset[] = [
     symbol: 'jGBP',
     icon: 'gbp',
     price: 1.5,
+    decimals: 2,
     type: 'forex',
   },
   {
@@ -55,6 +61,7 @@ export const assets: Asset[] = [
     symbol: 'jXAU',
     icon: null,
     price: 4.4,
+    decimals: 2,
     type: 'forex',
   },
   {
@@ -62,6 +69,7 @@ export const assets: Asset[] = [
     symbol: 'jSPX',
     icon: null,
     price: 3.13,
+    decimals: 2,
     type: 'forex',
   },
   {
@@ -69,6 +77,7 @@ export const assets: Asset[] = [
     symbol: 'jXTI',
     icon: null,
     price: 21.15,
+    decimals: 2,
     type: 'forex',
   },
   {
@@ -76,9 +85,7 @@ export const assets: Asset[] = [
     symbol: 'jXAG',
     icon: null,
     price: 0.55,
+    decimals: 2,
     type: 'forex',
   },
 ];
-
-export type Asset = AssetType;
-export type AssetPair = AssetPairType;

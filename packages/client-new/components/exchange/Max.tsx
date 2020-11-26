@@ -4,6 +4,7 @@ import { styled, themeValue } from '@jarvis-network/ui';
 
 import { setBase, setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { formatBN } from '@/utils/format';
 
 const Container = styled.button`
   grid-area: max;
@@ -26,12 +27,18 @@ const Container = styled.button`
 export const Max: React.FC = () => {
   const dispatch = useDispatch();
 
+  const { payAsset, asset } = useReduxSelector(state => {
+    return {
+      asset: state.assets.list.find(a => a.symbol === state.exchange.payAsset),
+      payAsset: state.exchange.payAsset,
+    };
+  });
+
   const max = useReduxSelector(state => {
-    const asset = state.exchange.payAsset;
-    if (!asset) {
+    if (!payAsset) {
       return null;
     }
-    const wallet = state.wallet[asset];
+    const wallet = state.wallet[payAsset];
     if (!wallet) {
       return null;
     }
@@ -43,9 +50,11 @@ export const Max: React.FC = () => {
     return null;
   }
 
+  const formattedMax = formatBN(max, asset.decimals);
+
   const handleClick = () => {
-    dispatch(setPay(String(max)));
+    dispatch(setPay(formattedMax));
     dispatch(setBase('pay'));
   };
-  return <Container onClick={handleClick}>Max: {max}</Container>;
+  return <Container onClick={handleClick}>Max: {formattedMax}</Container>;
 };

@@ -18,6 +18,7 @@ import {
   formatTransactionType,
 } from '@/utils/format';
 import { getEtherscanTransactionURL } from '@/utils/url';
+import BN from 'bn.js';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -32,7 +33,10 @@ const mapTransactionToAssetRow = (
 ): AssetProps => ({
   flag: io.asset?.icon,
   name: io.asset?.symbol || '',
-  value: isFrom ? -parseFloat(io.amount) : parseFloat(io.amount),
+  // @ts-ignore
+  value: isFrom
+    ? io.amount.mul(new BN('-1')).toString(10)
+    : io.amount.toString(10),
 });
 
 function groupTransactionsByDay(items: Transaction[]) {

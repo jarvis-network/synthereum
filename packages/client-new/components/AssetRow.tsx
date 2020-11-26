@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
-import { styled, Flag, FlagKeys } from '@jarvis-network/ui';
+import { styled, Flag } from '@jarvis-network/ui';
+import BN from 'bn.js';
 
-import { formatTokenPrice } from '@/utils/format';
+import { formatBN } from '@/utils/format';
+import { Asset, PRIMARY_STABLE_COIN } from '@/data/assets';
 
 export interface AssetRowProps {
-  flag: FlagKeys | null;
-  title: string;
-  amount: number;
-  value: number;
+  asset: Asset;
+  amount: BN;
+  value: BN;
 }
 
 const Container = styled.div`
@@ -49,15 +50,17 @@ const Value = styled(Amount)`
   color: ${props => props.theme.text.secondary};
 `;
 
-export const AssetRow: FC<AssetRowProps> = ({ flag, title, amount, value }) => (
+export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value }) => (
   <Container>
     <Information>
-      {flag && <Flag flag={flag} />}
-      <Title>{title}</Title>
+      {asset.icon && <Flag flag={asset.icon} />}
+      <Title>{asset.symbol}</Title>
     </Information>
     <Details>
-      <Amount>{amount}</Amount>
-      <Value>{formatTokenPrice(value)}</Value>
+      <Amount>{formatBN(amount, asset.decimals)}</Amount>
+      <Value>
+        {formatBN(value, asset.decimals)} {PRIMARY_STABLE_COIN.symbol}
+      </Value>
     </Details>
   </Container>
 );
