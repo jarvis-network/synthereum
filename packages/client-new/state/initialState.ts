@@ -68,7 +68,7 @@ export const initialState: State = {
     pay: '0',
     receive: '0',
     base: 'pay',
-    payAsset: null, // @TODO set as USDC
+    payAsset: 'USDC',
     receiveAsset: null,
     invertRateInfo: false,
     chooseAssetActive: null,
