@@ -4,11 +4,19 @@ let
 in
 mkShell {
   buildInputs = [
-    nodejs-14_x
-    (yarn.override { nodejs = nodejs-14_x; })
-    python3
+    fish
+    git
     docker
     docker-compose
+    nodejs-14_x
+    (yarn.override { nodejs = nodejs-14_x; })
+    gnumake
+    python3
+    gccStdenv
+    eudev
+    libusb1.dev
+    pkg-config
+    which
   ];
 
   shellHook = ''
