@@ -9,7 +9,7 @@ import {TIC} from './TIC.sol';
 import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
 import {
   ExpiringMultiPartyCreator
-} from './uma-contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol';
+} from '@jarvis-network/uma-core/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol';
 
 contract TICFactory is AccessControl, ReentrancyGuard {
   //----------------------------------------

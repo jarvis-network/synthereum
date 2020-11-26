@@ -23,12 +23,12 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
+    "@jarvis-network/uma-core": "1.1.0",
     "@jarvis-network/web3-utils": "*",
     "@openzeppelin/contracts": "3.0.0",
     "@openzeppelin/test-helpers": "^0.5.9",
     "@truffle/hdwallet-provider": "^1.2.0",
-    "dotenv": "^8.2.0",
-    "protocol": "github:UMAprotocol/protocol#dfb07c3288c96b6ddf8853093f9479d01dd0043b"
+    "dotenv": "^8.2.0"
   },
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",

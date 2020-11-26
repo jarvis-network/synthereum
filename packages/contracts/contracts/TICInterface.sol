@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import {FixedPoint} from './uma-contracts/common/implementation/FixedPoint.sol';
+import {FixedPoint} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
 
