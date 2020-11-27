@@ -36,6 +36,7 @@
     "ganache-time-traveler": "^1.0.15",
     "truffle": "5.1.49",
     "truffle-plugin-verify": "^0.4.0",
+    "ts-node": "^9.0.0",
     "typechain": "^4.0.0"
   }
 }
