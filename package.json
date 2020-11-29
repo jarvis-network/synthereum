@@ -26,7 +26,8 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "packages/*/dist"
     ],
     "nohoist": [
       "@jarvis-network/synthereum-contracts/@openzeppelin/**"
