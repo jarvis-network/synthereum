@@ -10,6 +10,7 @@ mkShell {
     docker-compose
     nodejs-14_x
     (yarn.override { nodejs = nodejs-14_x; })
+    nodePackages.lerna
     gnumake
     python3
     gccStdenv
