@@ -3,7 +3,7 @@ import { encode, ParsedUrlQueryInput } from 'querystring';
 import type { BlockNumber } from 'web3-core';
 import type { AbiItem } from 'web3-utils';
 import { env } from '../config';
-import { assertIsAddress } from '../base/asserts';
+import { assertIsAddress } from '../eth/address';
 
 export interface EtherscanTxInfo {
   blockNumber: string;

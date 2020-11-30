@@ -1,12 +1,11 @@
-import { isAddress } from 'web3-utils';
-
 type AssertFunc = (value: any, message?: string) => asserts value;
 
-export const assert: AssertFunc = process.env.app_env !== 'browser'
-  ? require('assert').strict
-  : (value: any, message?: string) => {
-      if (!value) throw new Error(message);
-    };
+export const assert: AssertFunc =
+  process.env.app_env !== 'browser'
+    ? require('assert').strict
+    : (value: any, message?: string) => {
+        if (!value) throw new Error(message);
+      };
 
 export function isString(x: unknown): x is string {
   return typeof x === 'string';
@@ -87,16 +86,6 @@ export function assertIsObject(x: unknown): Object {
 
 export function assertIsBoolean(x: unknown): boolean {
   return isBoolean(x) ? x : throwError(`value='${x}' is not boolean.`);
-}
-
-export function isAddressZero(address: string) {
-  return /^(0x)?0{40}$/.test(address);
-}
-
-export function assertIsAddress(x: unknown): string {
-  return isString(x) && isAddress(x)
-    ? x
-    : throwError(`value='${x}' is not a valid Ethereum address.`);
 }
 
 export function assertIsArray(x: unknown): unknown[] {
