@@ -1,7 +1,17 @@
 import BN from 'bn.js';
 import { fromWei, toWei } from 'web3-utils';
 import { mapReduce } from './array-fp-utils';
-import { isObject } from './asserts';
+import { assertIsNumericString, isObject } from './asserts';
+import { Tagged } from './tagged-type';
+import { Unit } from 'web3-utils';
+
+export type AmountOf<U extends Unit> = Tagged<string, U>;
+export type Amount = AmountOf<'wei'>;
+
+export function wei(str: string): Amount {
+  assertIsNumericString(str);
+  return str as Amount;
+}
 
 export const zero = new BN(0);
 export const one = new BN(1);
