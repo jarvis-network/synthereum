@@ -161,7 +161,7 @@ function mkJsonExport(
   asType?: WrappableString,
   maxLength = 80,
 ): string {
-  const start = `export const ${name} = require('${filename}.json')`;
+  const start = `export const ${name} = require('${filename}.json').abi`;
   maxLength -= 4 + start.length + 1;
   return start + (asType ? ` as ${asType(maxLength)};\n` : ';\n');
 }
