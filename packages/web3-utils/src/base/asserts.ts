@@ -11,6 +11,15 @@ export function isString(x: unknown): x is string {
   return typeof x === 'string';
 }
 
+export function isNumericString(str: string) {
+  return /^-?\d+$/.test(str);
+}
+
+export function assertIsNumericString(x: string): string {
+  assert(isNumericString(x));
+  return x;
+}
+
 export function isNumber(x: unknown): x is number {
   return typeof x === 'number';
 }
