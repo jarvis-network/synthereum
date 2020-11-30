@@ -190,9 +190,6 @@ export interface Liquidatable extends BaseContract {
      */
     cancelWithdrawal(): NonPayableTransactionObject<void>;
 
-    /**
-     * **************************************      FEE PAYER DATA STRUCTURES       ****************************************
-     */
     collateralCurrency(): NonPayableTransactionObject<string>;
 
     collateralRequirement(): NonPayableTransactionObject<string>;

@@ -40,9 +40,6 @@ export interface FeePayer extends BaseContract {
   ): FeePayer;
   clone(): FeePayer;
   methods: {
-    /**
-     * **************************************      FEE PAYER DATA STRUCTURES       ****************************************
-     */
     collateralCurrency(): NonPayableTransactionObject<string>;
 
     cumulativeFeeMultiplier(): NonPayableTransactionObject<string>;

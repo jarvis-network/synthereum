@@ -128,9 +128,6 @@ export interface PricelessPositionManager extends BaseContract {
   ): PricelessPositionManager;
   clone(): PricelessPositionManager;
   methods: {
-    /**
-     * **************************************      FEE PAYER DATA STRUCTURES       ****************************************
-     */
     collateralCurrency(): NonPayableTransactionObject<string>;
 
     contractState(): NonPayableTransactionObject<string>;
