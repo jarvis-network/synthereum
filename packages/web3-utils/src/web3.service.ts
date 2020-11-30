@@ -1,14 +1,9 @@
-import type Web3 from 'web3';
-import { getWeb3, Web3Source } from './eth/web3-instance';
-import { getContract, AbiSource } from './eth/web3';
 import type { BaseContract } from './contracts/types';
+import type { NetworkName, TaggedWeb3 } from './eth/web3-instance';
+import { getContract, AbiSource } from './eth/web3';
 
-export class Web3Service {
-  public readonly web3: Web3;
-
-  constructor(web3OrNetwork: Web3Source) {
-    this.web3 = getWeb3(web3OrNetwork);
-  }
+export class Web3Service<Net extends NetworkName> {
+  constructor(public readonly web3: TaggedWeb3<Net>) {}
 
   async getContract<T extends BaseContract>(
     address: string,
@@ -18,7 +13,7 @@ export class Web3Service {
       gasPrice: string;
     },
   ): Promise<T> {
-    return await getContract<T>(address, this.web3, abiSource, gas);
+    return await getContract(this.web3, address, abiSource, gas);
   }
 
   getDefaultAccount() {

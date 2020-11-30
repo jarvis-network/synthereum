@@ -1,8 +1,7 @@
 import type { EventEmitter } from 'events';
 import BN from 'bn.js';
-import Web3 from 'web3';
 import { toBN, toWei } from 'web3-utils';
-import { PromiEvent, TransactionReceipt } from 'web3-core';
+import { PromiEvent, Transaction, TransactionReceipt } from 'web3-core';
 import {
   getContractAbi,
   getContractTxs,
@@ -14,7 +13,7 @@ import type {
   NonPayableTransactionObject,
   BaseContract,
 } from '../contracts/types';
-import { getWeb3, Web3Source } from '../eth/web3-instance';
+import { TaggedWeb3, NetworkName } from './web3-instance';
 
 export type AbiSource =
   | {
@@ -41,16 +40,15 @@ export function getContractAbiFromArtifacts(
   ).abi;
 }
 
-export async function getContract<T extends BaseContract>(
+export async function getContract<T extends BaseContract, Net extends NetworkName>(
+  web3: TaggedWeb3<Net>,
   address: string,
-  web3OrNetwork: Web3Source = 'mainnet',
   abiSource: AbiSource = { type: 'etherscan' },
   gas?: {
     gasLimit: number;
     gasPrice: string;
   },
 ): Promise<T> {
-  const web3 = getWeb3(web3OrNetwork);
   let abi: any = null;
   if (abiSource.type === 'direct') {
     abi = abiSource.abi;
@@ -65,11 +63,10 @@ export async function getContract<T extends BaseContract>(
   }) as unknown) as T;
 }
 
-export async function getContractTransactions(
+export async function getContractTransactions<Net extends NetworkName>(
+  web3: TaggedWeb3<Net>,
   address: string,
-  web3OrNetwork: Web3Source = 'mainnet',
-) {
-  const web3 = getWeb3(web3OrNetwork);
+): Promise<Transaction[]> {
   return await Promise.all(
     (await getContractTxs(address)).map(
       async tx => await web3.eth.getTransaction(tx.hash),
@@ -134,8 +131,8 @@ export function once<T>(
   });
 }
 
-export async function logTransactionStatus<T>(
-  web3: Web3,
+export async function logTransactionStatus<T, Net extends NetworkName>(
+  web3: TaggedWeb3<Net>,
   promiEvent: PromiEvent<T>,
 ) {
   await once(promiEvent, 'sending');

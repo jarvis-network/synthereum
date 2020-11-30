@@ -1,17 +1,17 @@
-import Web3 from "web3";
-import { toBN } from "web3-utils";
-import { isString, throwError } from "../base/asserts";
+import { toBN } from 'web3-utils';
+import { isString, throwError } from '../base/asserts';
+import { TaggedWeb3, NetworkName } from './web3-instance';
 
-export async function getBlockTimestamp(
-  web3: Web3,
+export async function getBlockTimestamp<Net extends NetworkName>(
+  web3: TaggedWeb3<Net>,
   blockNumber: number,
 ): Promise<number> {
   const timestamp = (await web3.eth.getBlock(blockNumber)).timestamp;
   return isString(timestamp) ? Number.parseInt(timestamp) : timestamp;
 }
 
-export async function getBlockAverageTime(
-  web3: Web3,
+export async function getBlockAverageTime<Net extends NetworkName>(
+  web3: TaggedWeb3<Net>,
   blockNumber: number,
   span: number,
 ): Promise<number> {
@@ -27,8 +27,8 @@ export async function getBlockAverageTime(
   return Math.round(times.reduce((a, b) => a + b) / times.length);
 }
 
-export async function getClosestBlock(
-  web3: Web3,
+export async function getClosestBlock<Net extends NetworkName>(
+  web3: TaggedWeb3<Net>,
   initBlock: number,
   endingTimestamp: number,
 ): Promise<number> {
@@ -58,5 +58,5 @@ export async function getClosestBlock(
       lastBlockNumber = candidateBlock;
     }
   }
-  throwError("Not found");
+  throwError('Not found');
 }
