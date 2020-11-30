@@ -9,10 +9,13 @@
     "src"
   ],
   "scripts": {
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
     "format": "prettier --write './contracts/*.sol'",
-    "build": "yarn build:solidity && yarn build:contracts-ts",
-    "build:solidity": "truffle compile && mkdir -p dist/abi && cp ./build/contracts/*.json ./dist/abi/",
-    "build:contracts-ts": "typechain --target web3-v1 --outDir ./src/contracts/ './build/contracts/*.json'",
+    "build": "yarn build:scripts && yarn build:solidity && yarn build:typechain && yarn build:typechain-index",
+    "build:scripts": "tsc -p ./scripts/tsconfig.json",
+    "build:solidity": "truffle compile && cp ./build/contracts/*.json ./src/contracts/abi",
+    "build:typechain": "typechain --target web3-v1 --outDir ./src/contracts/typechain './build/contracts/*.json'",
+    "build:typechain-index": "node ./dist/scripts/generate_typechain_header.js ./src/contracts",
     "truffle:kovan": "truffle console --network kovan",
     "migrate:kovan": "truffle migrate --network kovan -f 1 --to 4 --skip-dry-run",
     "run:deposit": "truffle migrate --network kovan -f 6 --to 6 --skip-dry-run",
