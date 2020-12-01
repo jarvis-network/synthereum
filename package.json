@@ -8,8 +8,8 @@
   "private": true,
   "scripts": {
     "clean": "git clean -fdx -e .env -- .",
-    "install": "yarn run bootstrap",
-    "bootstrap": "lerna bootstrap -- --ignore-optional",
+    "i": "lerna bootstrap -- --ignore-optional",
+    "install": "yarn run i",
     "format": "prettier --write '*/**/*.{js,jsx,ts,tsx}'",
     "build": "yarn build:client",
     "build:client": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client' build",
