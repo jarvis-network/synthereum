@@ -3,9 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
 import {TICInterface} from './TICInterface.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
 import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
 import {FixedPoint} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';

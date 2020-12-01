@@ -2,14 +2,10 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
-import {
-  ReentrancyGuard
-} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {TIC} from './TIC.sol';
 import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
-import {
-  ExpiringMultiPartyCreator
-} from '@jarvis-network/uma-core/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol';
+import '@jarvis-network/uma-core/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol';
 
 contract TICFactory is AccessControl, ReentrancyGuard {
   //----------------------------------------
