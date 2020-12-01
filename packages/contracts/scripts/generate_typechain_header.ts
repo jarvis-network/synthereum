@@ -2,6 +2,7 @@ import { promises as fs, readFileSync, lstatSync } from 'fs';
 import { basename, normalize, resolve } from 'path';
 import { strict as assert } from 'assert';
 import { merge as _merge } from 'lodash';
+import { DeepPartial } from '@jarvis-network/web3-utils/base/meta';
 
 main()
   .then(() => process.exit(0))
@@ -335,7 +336,3 @@ async function execTask(msg: string, task: Promise<void>) {
 function logSeparate(msg: string) {
   console.log(`-------------------\n${msg}`);
 }
-
-type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
-};

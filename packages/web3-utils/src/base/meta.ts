@@ -15,3 +15,7 @@ export type InverseOf<T extends Record<PropertyKey, PropertyKey>> = {
 };
 
 export type KeysToKeys<T> = { [P in keyof T]: P };
+
+export type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
