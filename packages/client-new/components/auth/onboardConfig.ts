@@ -1,0 +1,100 @@
+const MAIN_NETWORK_ID = 1;
+const NETWORK_ID = Number(process.env.NEXT_PUBLIC_NETWORK_ID) || 42;
+const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
+
+// Note: UI crashes instantly when walletConnect is used without an key
+// Others will just fail on selecting them.
+
+const getWalletConnect = () => {
+  if (!process.env.NEXT_PUBLIC_INFURA_API_KEY) {
+    return null;
+  }
+  return {
+    walletName: 'walletConnect',
+    infuraKey: process.env.NEXT_PUBLIC_INFURA_API_KEY,
+  };
+};
+
+const getPortis = () => {
+  if (!process.env.NEXT_PUBLIC_PORTIS_API_KEY) {
+    return null;
+  }
+
+  return {
+    walletName: 'portis',
+    apiKey: process.env.NEXT_PUBLIC_PORTIS_API_KEY,
+  };
+};
+
+const getFortmatic = () => {
+  const KEY =
+    NETWORK_ID === MAIN_NETWORK_ID
+      ? process.env.NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET
+      : process.env.NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET;
+  if (!KEY) {
+    return null;
+  }
+  return {
+    walletName: 'fortmatic',
+    apiKey: KEY,
+  };
+};
+
+const getSquareLink = () => {
+  if (!process.env.NEXT_PUBLIC_SQUARELINK_API_KEY) {
+    return null;
+  }
+  return {
+    walletName: 'squarelink',
+    apiKey: process.env.NEXT_PUBLIC_SQUARELINK_API_KEY,
+  };
+};
+
+const getWalletLink = () => {
+  if (!process.env.NEXT_PUBLIC_INFURA_API_KEY) {
+    return null;
+  }
+  return {
+    walletName: 'walletLink',
+    rpcUrl: process.env.NEXT_PUBLIC_INFURA_API_KEY,
+  };
+};
+
+const getLedger = () => {
+  if (!process.env.NEXT_PUBLIC_INFURA_API_KEY) {
+    return null;
+  }
+  return {
+    walletName: 'ledger',
+    rpcUrl: process.env.NEXT_PUBLIC_INFURA_API_KEY,
+  };
+};
+
+const getOnboardConfig = () => {
+  return {
+    dappId: ONBOARD_API_KEY,
+    networkId: NETWORK_ID,
+    walletSelect: {
+      wallets: [
+        { walletName: 'metamask' },
+        getWalletConnect(),
+        { walletName: 'unilogin' },
+        getPortis(),
+        getFortmatic(),
+        getSquareLink(),
+        { walletName: 'dapper' },
+        { walletName: 'authereum' },
+        { walletName: 'trust' },
+        { walletName: 'opera' },
+        { walletName: 'coinbase' },
+        { walletName: 'operaTouch' },
+        { walletName: 'status' },
+        { walletName: 'torus' },
+        getWalletLink(),
+        getLedger(),
+      ].filter(Boolean),
+    },
+  };
+};
+
+export { getOnboardConfig };

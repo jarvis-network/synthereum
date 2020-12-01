@@ -6,6 +6,7 @@ import { API } from 'bnc-onboard/dist/src/interfaces';
 
 import { setLoginState } from '@/state/slices/auth';
 import { ENSHelper } from '@/utils/ens';
+import { getOnboardConfig } from '@/components/auth/onboardConfig';
 
 interface AuthMethods {
   login: (wallet?: string) => Promise<boolean>;
@@ -17,9 +18,6 @@ export const Web3Context = createContext<Web3>(null);
 export const AuthContext = createContext<AuthMethods>(null);
 export const ENSContext = createContext<ENSHelper>(null);
 
-const NETWORK_ID = 42;
-const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
-
 export const AuthProvider: React.FC = ({ children }) => {
   const [ens, setEns] = useState<ENSHelper>();
   const [web3, setWeb3] = useState<Web3>();
@@ -30,8 +28,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     const onboardInstance = Onboard({
-      dappId: ONBOARD_API_KEY,
-      networkId: NETWORK_ID,
+      ...getOnboardConfig(),
       subscriptions: {
         wallet: wallet => {
           const web3instance = new Web3(wallet.provider);
