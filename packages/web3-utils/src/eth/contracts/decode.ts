@@ -1,4 +1,4 @@
-import { BaseContract } from "../contracts/types";
+import { BaseContract } from "./types";
 const abiDecoder = require('abi-decoder');
 
 type MethodDecodeResult<C extends BaseContract> = {

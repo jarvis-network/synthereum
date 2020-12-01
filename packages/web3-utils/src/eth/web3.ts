@@ -12,7 +12,7 @@ import { assertIsFiniteNumber, assertIsString } from '../base/asserts';
 import type {
   NonPayableTransactionObject,
   BaseContract,
-} from '../contracts/types';
+} from './contracts/types';
 import { TaggedWeb3, NetworkName } from './web3-instance';
 
 export type AbiSource =
