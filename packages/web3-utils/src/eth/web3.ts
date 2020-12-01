@@ -3,7 +3,6 @@ import BN from 'bn.js';
 import { toBN, toWei } from 'web3-utils';
 import { PromiEvent, Transaction, TransactionReceipt } from 'web3-core';
 import {
-  getContractAbi,
   getContractTxs,
   getEthUsdBtcPrice,
 } from '../apis/etherscan';
@@ -14,54 +13,7 @@ import type {
   BaseContract,
 } from './contracts/types';
 import { TaggedWeb3, NetworkName } from './web3-instance';
-
-export type AbiSource =
-  | {
-      type: 'etherscan';
-    }
-  | {
-      type: 'build-artifact';
-      contractName: string;
-    }
-  | {
-      type: 'direct';
-      abi: {};
-    };
-
-export function getContractAbiFromArtifacts(
-  contractName: string,
-  relativePath?: string,
-) {
-  if (relativePath) {
-    return require(`${relativePath}/${contractName}.json`);
-  }
-  return require(
-    `../../../packages/contracts/build/contracts/${contractName}.json`,
-  ).abi;
-}
-
-export async function getContract<T extends BaseContract, Net extends NetworkName>(
-  web3: TaggedWeb3<Net>,
-  address: string,
-  abiSource: AbiSource = { type: 'etherscan' },
-  gas?: {
-    gasLimit: number;
-    gasPrice: string;
-  },
-): Promise<T> {
-  let abi: any = null;
-  if (abiSource.type === 'direct') {
-    abi = abiSource.abi;
-  } else if (abiSource.type === 'etherscan') {
-    abi = await getContractAbi(address);
-  } else {
-    abi = getContractAbiFromArtifacts(abiSource.contractName);
-  }
-  return (new web3.eth.Contract(abi, address, {
-    gas: gas?.gasLimit,
-    gasPrice: gas?.gasPrice,
-  }) as unknown) as T;
-}
+import { Tagged } from '../base/tagged-type';
 
 export async function getContractTransactions<Net extends NetworkName>(
   web3: TaggedWeb3<Net>,

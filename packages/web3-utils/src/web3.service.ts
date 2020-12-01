@@ -1,19 +1,20 @@
 import type { BaseContract } from './eth/contracts/types';
 import type { NetworkName, TaggedWeb3 } from './eth/web3-instance';
-import { getContract, AbiSource } from './eth/web3';
+import { getContract } from './eth/contracts/get-contract';
+import { AbiFor } from './eth/contracts/get-contract';
 
 export class Web3Service<Net extends NetworkName> {
   constructor(public readonly web3: TaggedWeb3<Net>) {}
 
-  async getContract<T extends BaseContract>(
+  getContract<Contract extends BaseContract>(
     address: string,
-    abiSource: AbiSource = { type: 'etherscan' },
+    abi: AbiFor<Contract>,
     gas?: {
       gasLimit: number;
       gasPrice: string;
     },
-  ): Promise<T> {
-    return await getContract(this.web3, address, abiSource, gas);
+  ): Contract {
+    return getContract<Contract, Net>(this.web3, abi, address, gas);
   }
 
   getDefaultAccount() {
