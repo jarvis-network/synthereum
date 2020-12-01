@@ -1,9 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es2020",
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["src/**/*"]
+  // Intentionally exclude ./scripts/ as we want to build them separately,
+  // before the rest of the package (this):
+  "include": ["src/**/*", "examples/**/*"]
 }
