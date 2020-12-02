@@ -12,6 +12,10 @@ export type PerNetwork<Config> = {
   [network in NetworkId]?: Config;
 };
 
+export type PerAsset<Config> = {
+  [sym in SyntheticSymbol]?: Config;
+};
+
 export interface ContractDependencies {
   expiringMultiPartyCreator: Address;
   tokenFactoryAddress: Address;
@@ -24,14 +28,11 @@ export interface ContractDependencies {
 
 export interface Fees {
   feePercentage: number; // Example: 0.001,
-  feeRecipients: Address[]; // Example: ["0xCc3528125499d168ADFB5Ef99895c98a7C430ed4"]
-  feeProportions: number[]; // Example: [50, 50]
+  readonly feeRecipients: Readonly<Address[]>; // Example: ["0xCc3528125499d168ADFB5Ef99895c98a7C430ed4"]
+  readonly feeProportions: Readonly<number[]>; // Example: [50, 50]
 }
 
-export interface FundAssets {
-  syntheticSymbol: SyntheticSymbol; // Example: 'jEUR'
-  amount: Amount; // Example: "100000000"
-}
+export type AssetFundingConfig = PerAsset<Amount>;
 
 export interface SyntheticTokenConfig {
   syntheticName: string; /// Example: "Jarvis Synthetic Euro",

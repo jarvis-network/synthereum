@@ -1,7 +1,7 @@
-import { SyntheticTokenConfig } from '../types';
+import { PerAsset, SyntheticTokenConfig } from '../types';
 
-export const syntheticTokens = [
-  {
+export const allSyntheticTokensMap: PerAsset<SyntheticTokenConfig> = {
+  jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
     syntheticSymbol: 'jEUR',
     priceFeedIdentifier: 'EUR/USD',
@@ -9,7 +9,7 @@ export const syntheticTokens = [
     startingCollateralization: '1527000',
     minSponsorTokens: { rawValue: '1000000000000000000' },
   },
-  {
+  jCHF: {
     syntheticName: 'Jarvis Synthetic Swiss Franc',
     syntheticSymbol: 'jCHF',
     priceFeedIdentifier: 'CHF/USD',
@@ -17,7 +17,7 @@ export const syntheticTokens = [
     startingCollateralization: '1415000',
     minSponsorTokens: { rawValue: '1000000000000000000' },
   },
-  {
+  jGBP: {
     syntheticName: 'Jarvis Synthetic British Pound',
     syntheticSymbol: 'jGBP',
     priceFeedIdentifier: 'GBP/USD',
@@ -25,7 +25,7 @@ export const syntheticTokens = [
     startingCollateralization: '1676000',
     minSponsorTokens: { rawValue: '1000000000000000000' },
   },
-  {
+  jXAU: {
     syntheticName: 'Jarvis Synthetic Gold',
     syntheticSymbol: 'jXAU',
     priceFeedIdentifier: 'XAU/USD',
@@ -33,7 +33,7 @@ export const syntheticTokens = [
     startingCollateralization: '2866000000',
     minSponsorTokens: { rawValue: '500000000000000' },
   },
-  {
+  jSPX: {
     syntheticName: 'Jarvis Synthetic S&P500',
     syntheticSymbol: 'jSPX',
     priceFeedIdentifier: 'SPX/USD',
@@ -43,7 +43,7 @@ export const syntheticTokens = [
     startingCollateralization: '5068000000',
     minSponsorTokens: { rawValue: '300000000000000' },
   },
-  {
+  jXTI: {
     syntheticName: 'Jarvis Synthetic Crude Oil',
     syntheticSymbol: 'jXTI',
     priceFeedIdentifier: 'XTI/USD',
@@ -53,7 +53,7 @@ export const syntheticTokens = [
     startingCollateralization: '58170000',
     minSponsorTokens: { rawValue: '25000000000000000' },
   },
-  {
+  jXAG: {
     syntheticName: 'Jarvis Synthetic Silver',
     syntheticSymbol: 'jXAG',
     priceFeedIdentifier: 'XAG/USD',
@@ -63,10 +63,6 @@ export const syntheticTokens = [
     startingCollateralization: '36090000',
     minSponsorTokens: { rawValue: '45000000000000000' },
   },
-] as const;
+}
 
-export type AllSyntheticTokens = typeof syntheticTokens;
-
-// Ensure that the object literal above has compatible type with what we expect.
-// Mark it as export to prevent TS from warning that it is not used:
-export const __typeCheck: Readonly<SyntheticTokenConfig[]> = syntheticTokens;
+export const syntheticTokens = Object.values(allSyntheticTokensMap);
