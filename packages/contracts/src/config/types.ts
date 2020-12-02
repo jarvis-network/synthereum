@@ -1,10 +1,8 @@
-import { Tagged } from '@jarvis-network/web3-utils/base/tagged-type';
-import { NetworkId } from '@jarvis-network/web3-utils/eth/networks';
-import { Address } from '@jarvis-network/web3-utils/eth/address';
-import { Amount } from '@jarvis-network/web3-utils/base/big-number';
-
-import type { AllSyntheticTokens } from './data/synthetic-assets';
-export type SyntheticSymbol = AllSyntheticTokens[number]['syntheticSymbol'];
+import type { NetworkId } from '@jarvis-network/web3-utils/eth/networks';
+import type { Address } from '@jarvis-network/web3-utils/eth/address';
+import type { Amount } from '@jarvis-network/web3-utils/base/big-number';
+import type { SyntheticSymbol } from './data/all-synthetic-asset-symbols';
+export type { SyntheticSymbol };
 
 export interface FixedPointNumber {
   rawValue: string;
