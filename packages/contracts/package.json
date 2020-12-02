@@ -2,12 +2,10 @@
   "name": "@jarvis-network/synthereum-contracts",
   "version": "1.0.0",
   "description": "",
-  "directories": {
-    "test": "test"
-  },
-  "files": [
-    "src"
+  "files" : [
+    "dist"
   ],
+  "types": "dist",
   "scripts": {
     "clean": "git clean -fdx -e .env -e node_modules -- .",
     "format": "prettier --write './contracts/*.sol'",
