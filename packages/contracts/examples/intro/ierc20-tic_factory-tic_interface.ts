@@ -1,25 +1,17 @@
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { Tagged, TagOf } from '@jarvis-network/web3-utils/base/tagged-type';
+import BN from 'bn.js';
+import { formatBN } from '@jarvis-network/web3-utils/base/big-number';
 import {
   Address,
   assertIsAddress,
 } from '@jarvis-network/web3-utils/eth/address';
-import BN from 'bn.js';
-import { IERC20, TIC, TICFactory } from '../../src/contracts/abi';
-import {
-  IERC20 as IERC20_Type,
-  TIC as TIC_Type,
-  TICFactory as TICFactory_Type,
-} from '../../src/contracts/typechain';
-
+import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
-import { formatBN, toBN } from '@jarvis-network/web3-utils/base/big-number';
 import {
-  NetworkName,
-  TaggedWeb3,
-} from '@jarvis-network/web3-utils/eth/web3-instance';
-import { BaseContract } from '../../src/contracts/typechain/types';
-import type { AbiItem } from 'web3-utils';
+  IERC20_Abi,
+  TICFactory_Abi,
+  TICInterface_Abi,
+} from '../../src/contracts/abi';
+import { IERC20 } from '../../src/contracts/typechain';
 
 /**
  * Frontend needs to work with 3 contracts:
@@ -33,29 +25,39 @@ export async function example() {
 
   // Example: IERC20
   // 1. Get Contract instances:
-  const usdcInstance = getContract(web3, IERC20, '0x1'); // TODO: Use the correct address
-  const jEURInstance = getContract(web3, IERC20, '0x2');
+  const usdcInstance = getContract(web3, IERC20_Abi, '0x1'); // TODO: Use the correct address
+  const jEURInstance = getContract(web3, IERC20_Abi, '0x2');
 
   // 2. Use this to get the balance of the user
   const usersUsdcBalance = await getErc20Balance(
     usdcInstance,
     assertIsAddress('0x123123'),
   );
+  console.log(`USDC balance: ${formatBN(usersUsdcBalance)}`);
 
   // 3. Use this to get his transactions of the same asset type: USDC <-> USDC
   // Get past ERC20 transfer events for USDC:
   // const allTransferEvents = getAllTransferEvents(usdcInstance, '0x23234');
 
   // TICFactory produces TIC instances with the symbolToTIC(string)
-  const ticFactory = makeTicFactory(web3, TICFactory);
-  const factory = ticFactory(assertIsAddress('0x12213123')); // TODO: Use the correct address
-  const jEurTicInstance = ((await factory.methods.symbolToTIC(
-    'jEUR',
-  )) as unknown) as TIC_Type; // TODO: fix wrapper to have better return type
+  const ticFactory = getContract(web3, TICFactory_Abi, '0x12213123' as Address); // TODO: Use the correct address
+  const jEurTicInstanceAddress = await ticFactory.methods
+    .symbolToTIC('jEUR')
+    .call();
+  const jEurTicInstance = getContract(
+    web3,
+    TICInterface_Abi,
+    jEurTicInstanceAddress,
+  );
 
-  const jChfTicInstance = ((await factory.methods.symbolToTIC(
-    'jCHF',
-  )) as unknown) as TIC_Type;
+  const jChfTicInstanceAddress = await ticFactory.methods
+    .symbolToTIC('jEUR')
+    .call();
+  const jChfTicInstance = getContract(
+    web3,
+    TICInterface_Abi,
+    jChfTicInstanceAddress,
+  );
 
   // In the UI we have 3 basic operation in Synthereum:
   //   * mint()     convert stable coin into j Asset: USDC -> jEUR | USDC -> jGBP
@@ -65,7 +67,7 @@ export async function example() {
   /* --------------------------------- Minting -------------------------------- */
   const userCollateralInUsdc = 123; // TODO: Use BN
   const jEurTokensToMint = 567;
-  const mintRequestTxResult = await jEurTicInstance.methods.mintRequest(
+  await jEurTicInstance.methods.mintRequest(
     userCollateralInUsdc,
     jEurTokensToMint,
   );
@@ -96,17 +98,11 @@ export async function example() {
   );
 
   const uiText = `The user's USDC balance is ${formatBN(usersjEURBalance)}`;
-}
-
-function makeTicFactory<Net extends NetworkName, C extends BaseContract>(
-  web3: TaggedWeb3<Net>,
-  abi: Tagged<AbiItem[], C>,
-) {
-  return (address: Address) => getContract(web3, abi, address);
+  return uiText;
 }
 
 export async function getErc20Balance(
-  contract: TagOf<typeof IERC20>,
+  contract: IERC20,
   address: Address,
 ): Promise<BN> {
   const balance = await contract.methods.balanceOf(address).call();

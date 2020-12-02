@@ -148,10 +148,10 @@ function mkAbiJsonExport(name: string) {
   return (
     mkImport({
       module: `../typechain/${name}`,
-      types: [`${name} as ${name}_Type`],
+      types: [name],
     }) +
-    mkJsonExport(name, `./${name}`, max =>
-      mkGenericTypeInstance('Tagged', ['AbiItem[]', `${name}_Type`], max),
+    mkJsonExport(`${name}_Abi`, `./${name}`, max =>
+      mkGenericTypeInstance('Tagged', ['AbiItem[]', name], max),
     )
   );
 }
