@@ -1,7 +1,8 @@
 import { ContractDependencies, PerNetwork } from '../types';
 import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
+import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 
-export const contractDependencies = {
+export const contractDependencies = typeCheck<PerNetwork<ContractDependencies>>()({
   '42': {
     expiringMultiPartyCreator: A('0xF763D367E1302A16716b6c40783A17c1aC754F2E'),
     tokenFactoryAddress: A('0xe7e87f89e3D15617261Fd52188Ca64803165f8Af'),
@@ -11,8 +12,4 @@ export const contractDependencies = {
     collateralAddress: A('0xe22da380ee6B445bb8273C81944ADEB6E8450422'),
     ticFactory: A('0x176cEC0432834BaD10118902FcbfbfCe21E6b44F'),
   },
-} as const; // Mark as const so TS can know what networks are actually defined
-
-// Ensure that the object literal above has compatible type with what we expect.
-// Mark it as export to prevent TS from warning that it is not used:
-export const __typecheck: PerNetwork<ContractDependencies> = contractDependencies;
+} as const); // Mark as const so TS can know what networks are actually defined

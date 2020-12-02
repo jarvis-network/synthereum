@@ -19,3 +19,9 @@ export type KeysToKeys<T> = { [P in keyof T]: P };
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
+
+export function typeCheck<Expected>() {
+  return function <Actual extends Readonly<Expected>>(value: Actual): Actual {
+    return value;
+  };
+}
