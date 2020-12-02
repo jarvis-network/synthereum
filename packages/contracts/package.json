@@ -27,7 +27,7 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
-    "@jarvis-network/uma-core": "1.1.0",
+    "@jarvis-network/uma-core": "0.1.0",
     "@jarvis-network/web3-utils": "*",
     "@openzeppelin/contracts": "3.0.0",
     "@openzeppelin/test-helpers": "^0.5.9",
