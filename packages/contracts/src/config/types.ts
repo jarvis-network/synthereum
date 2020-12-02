@@ -1,19 +1,24 @@
-import type { NetworkId } from '@jarvis-network/web3-utils/eth/networks';
 import type { Address } from '@jarvis-network/web3-utils/eth/address';
 import type { Amount } from '@jarvis-network/web3-utils/base/big-number';
 import type { SyntheticSymbol } from './data/all-synthetic-asset-symbols';
+import type { NetworkId, ToNetworkName } from '@jarvis-network/web3-utils/eth/networks';
 export type { SyntheticSymbol };
+import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 
 export interface FixedPointNumber {
   rawValue: string;
 }
 
+export const supportedNetworkIds = typeCheck<NetworkId[]>()([42] as const);
+export type SupportedNetworkId = typeof supportedNetworkIds[number];
+export type SupportedNetworkName = ToNetworkName<SupportedNetworkId>;
+
 export type PerNetwork<Config> = {
-  [network in NetworkId]?: Config;
+  [network in SupportedNetworkId]: Config;
 };
 
 export type PerAsset<Config> = {
-  [sym in SyntheticSymbol]?: Config;
+  [sym in SyntheticSymbol]: Config;
 };
 
 export interface ContractDependencies {
