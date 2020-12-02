@@ -5,13 +5,9 @@ import {
   assertIsAddress,
 } from '@jarvis-network/web3-utils/eth/address';
 import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
-import {
-  IERC20_Abi,
-  TICFactory_Abi,
-  TICInterface_Abi,
-} from '../../src/contracts/abi';
 import { IERC20 } from '../../src/contracts/typechain';
+import { loadRealm } from '../../src/core/load-realm';
+import { SupportedNetworkId } from '../../src/config/types';
 
 /**
  * Frontend needs to work with 3 contracts:
@@ -20,18 +16,20 @@ import { IERC20 } from '../../src/contracts/typechain';
  * * TICInstance
  */
 export async function example() {
-  // Get Web3 instance:
-  const web3 = getInfuraWeb3(42);
+  // Get Web3 instance (but make sure you're connecting to a supported network):
+  const netId: SupportedNetworkId = 42;
+  const web3 = getInfuraWeb3(netId);
+  const realm = await loadRealm(web3, netId);
 
   // Example: IERC20
-  // 1. Get Contract instances:
-  const usdcInstance = getContract(web3, IERC20_Abi, '0x1'); // TODO: Use the correct address
-  const jEURInstance = getContract(web3, IERC20_Abi, '0x2');
+  // 1. Get Contract instances from the Synthereum Realm loaded above:
+  const usdcInstance = realm.collateralToken.instance;
+  const jEURInstance = realm.ticInstances.jEUR.syntheticToken.instance;
 
   // 2. Use this to get the balance of the user
   const usersUsdcBalance = await getErc20Balance(
     usdcInstance,
-    assertIsAddress('0x123123'),
+    assertIsAddress('0x123123'), // TODO use correct address
   );
   console.log(`USDC balance: ${formatBN(usersUsdcBalance)}`);
 
@@ -39,25 +37,9 @@ export async function example() {
   // Get past ERC20 transfer events for USDC:
   // const allTransferEvents = getAllTransferEvents(usdcInstance, '0x23234');
 
-  // TICFactory produces TIC instances with the symbolToTIC(string)
-  const ticFactory = getContract(web3, TICFactory_Abi, '0x12213123' as Address); // TODO: Use the correct address
-  const jEurTicInstanceAddress = await ticFactory.methods
-    .symbolToTIC('jEUR')
-    .call();
-  const jEurTicInstance = getContract(
-    web3,
-    TICInterface_Abi,
-    jEurTicInstanceAddress,
-  );
-
-  const jChfTicInstanceAddress = await ticFactory.methods
-    .symbolToTIC('jEUR')
-    .call();
-  const jChfTicInstance = getContract(
-    web3,
-    TICInterface_Abi,
-    jChfTicInstanceAddress,
-  );
+  // However we don't need to load them manually, as this is handled for us:
+  const jEurTicInstance = realm.ticInstances.jEUR.instance;
+  const jChfTicInstance = realm.ticInstances.jCHF.instance;
 
   // In the UI we have 3 basic operation in Synthereum:
   //   * mint()     convert stable coin into j Asset: USDC -> jEUR | USDC -> jGBP
@@ -75,7 +57,7 @@ export async function example() {
   // /* ------------------------------- Exchanging ------------------------------- */
   const jChfToEarnFromExchange = 678;
   jEurTicInstance.methods.exchangeRequest(
-    (jChfTicInstance as any)['address'](),
+    jChfTicInstance.options.address,
     jEurTokensToMint / 2,
     userCollateralInUsdc,
     jChfToEarnFromExchange,
