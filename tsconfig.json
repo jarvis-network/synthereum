@@ -3,6 +3,7 @@
   "compilerOptions": {
     // Core config:
     "target": "es2018",
+    "lib": ["ES2019"],
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
