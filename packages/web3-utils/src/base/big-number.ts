@@ -5,12 +5,19 @@ import { assertIsNumericString, isObject } from './asserts';
 import { Tagged } from './tagged-type';
 import { Unit } from 'web3-utils';
 
-export type AmountOf<U extends Unit> = Tagged<string, U>;
+export type AmountOf<U extends Unit> = Tagged<BN, U>;
 export type Amount = AmountOf<'wei'>;
 
-export function wei(str: string): Amount {
+export type StringAmountOf<U extends Unit> = Tagged<string, U>;
+export type StringAmount = StringAmountOf<'wei'>;
+
+export function weiString(str: string): StringAmount {
   assertIsNumericString(str);
-  return str as Amount;
+  return str as StringAmount;
+}
+
+export function wei(str: string | number): Amount {
+  return new BN(str, 10) as Amount;
 }
 
 export const zero = new BN(0);
