@@ -1,4 +1,4 @@
-import { BaseContract } from "./types";
+import { BaseContract } from "./typechain/types";
 const abiDecoder = require('abi-decoder');
 
 type MethodDecodeResult<C extends BaseContract> = {

@@ -1,4 +1,4 @@
-import { BaseContract } from './types';
+import { BaseContract } from './typechain/types';
 import { TaggedWeb3, NetworkName } from '../web3-instance';
 import type { AbiItem } from 'web3-utils';
 import { Tagged } from '../../base/tagged-type';

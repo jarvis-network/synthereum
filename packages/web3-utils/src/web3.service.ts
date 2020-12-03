@@ -1,4 +1,4 @@
-import type { BaseContract } from './eth/contracts/types';
+import type { BaseContract } from './eth/contracts/typechain/types';
 import type { NetworkName, TaggedWeb3 } from './eth/web3-instance';
 import { getContract } from './eth/contracts/get-contract';
 import { AbiFor } from './eth/contracts/get-contract';

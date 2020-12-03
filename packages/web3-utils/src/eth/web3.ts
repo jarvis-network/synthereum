@@ -11,7 +11,7 @@ import { assertIsFiniteNumber, assertIsString } from '../base/asserts';
 import type {
   NonPayableTransactionObject,
   BaseContract,
-} from './contracts/types';
+} from './contracts/typechain/types';
 import { TaggedWeb3, NetworkName } from './web3-instance';
 import { Tagged } from '../base/tagged-type';
 
