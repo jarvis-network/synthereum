@@ -1,10 +1,10 @@
 import { isAddress as isAddress_ } from 'web3-utils';
 import { isString, throwError } from '../base/asserts';
-import { NetworkName } from './networks';
+import { Network, ValueOnNetwork } from './networks';
 import { Tagged } from '../base/tagged-type';
 
 export type Address = Tagged<string, 'EthereumAddress'>;
-export type AddressOn<Net extends NetworkName> = Tagged<Address, Net>;
+export type AddressOn<Net extends Network> = ValueOnNetwork<Address, Net>;
 
 export function isAddress(x: string): x is Address {
   return isAddress_(x);
