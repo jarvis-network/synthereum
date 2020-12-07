@@ -1,14 +1,19 @@
 import BN from 'bn.js';
 
-import { Amount } from '@jarvis-network/web3-utils/base/big-number';
+import { Amount, maxUint256 } from '@jarvis-network/web3-utils/base/big-number';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
-import { getTokenBalance } from '@jarvis-network/web3-utils/eth/contracts/erc20';
+import {
+  getTokenAllowance,
+  getTokenBalance,
+  setTokenAllowance,
+} from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
 import { SynthereumRealm } from './types';
 import { SyntheticSymbol } from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config/types';
 import { NonPayableTransactionObject } from '../contracts/typechain';
+import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 
 export interface GasOptions {
   gasLimit?: BN;
@@ -59,9 +64,13 @@ export class RealmAgent<Net extends SupportedNetworkName> {
     outputSynth,
     txOptions = {},
   }: MintParams) {
-    const tx = this.realm.ticInstances[
-      outputSynth
-    ].instance.methods.mintRequest(
+    const tic = this.realm.ticInstances[outputSynth];
+    // TODO: Should we return both promises separately?
+    await this.ensureSufficientAllowanceFor(
+      this.realm.collateralToken,
+      tic.address,
+    );
+    const tx = tic.instance.methods.mintRequest(
       collateral.toString(10),
       outputAmount.toString(10),
     );
@@ -76,9 +85,14 @@ export class RealmAgent<Net extends SupportedNetworkName> {
     outputAmount,
     txOptions = {},
   }: ExchangeParams) {
-    const sourceTic = this.realm.ticInstances[inputSynth].instance;
+    const inputTic = this.realm.ticInstances[inputSynth];
     const destinationTicAddress = this.realm.ticInstances[outputSynth].address;
-    const tx = sourceTic.methods.exchangeRequest(
+    // TODO: Should we return both promises separately?
+    await this.ensureSufficientAllowanceFor(
+      inputTic.syntheticToken,
+      inputTic.address,
+    );
+    const tx = inputTic.instance.methods.exchangeRequest(
       destinationTicAddress,
       inputAmount.toString(10),
       collateral.toString(10),
@@ -93,13 +107,36 @@ export class RealmAgent<Net extends SupportedNetworkName> {
     collateral,
     txOptions = {},
   }: RedeemParams) {
-    const tx = this.realm.ticInstances[
-      inputSynth
-    ].instance.methods.redeemRequest(
+    const inputTic = this.realm.ticInstances[inputSynth];
+    // TODO: Should we return both promises separately?
+    await this.ensureSufficientAllowanceFor(
+      inputTic.syntheticToken,
+      inputTic.address,
+    );
+    const tx = inputTic.instance.methods.redeemRequest(
       collateral.toString(10),
       inputAmount.toString(10),
     );
     return await this.sendTx(tx, txOptions);
+  }
+
+  private async ensureSufficientAllowanceFor(
+    tokenInfo: TokenInfo<Net>,
+    spender: AddressOn<Net>,
+    necessaryAllowance: Amount = maxUint256 as Amount,
+  ) {
+    const allowance = await getTokenAllowance(
+      tokenInfo,
+      this.agentAddress,
+      spender,
+    );
+    if (allowance.lt(necessaryAllowance)) {
+      await setTokenAllowance(
+        tokenInfo,
+        spender,
+        necessaryAllowance,
+      );
+    }
   }
 
   private sendTx<T>(tx: NonPayableTransactionObject<T>, txOptions: GasOptions) {
