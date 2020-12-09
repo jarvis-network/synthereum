@@ -14,6 +14,8 @@
     "clean": "git clean -fdx -e .env -e node_modules -- ../",
     "lint": "tslint -p ../tsconfig.json",
     "build": "tsc -p ../tsconfig.json",
+    "start": "yarn build",
+    "watch": "tsc -p ../tsconfig.json -w --preserveWatchOutput",
     "prebulishOnly": "npm ci && npm run build"
   },
   "dependencies": {
