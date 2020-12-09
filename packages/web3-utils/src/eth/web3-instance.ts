@@ -1,7 +1,7 @@
-import Web3 from 'web3';
-import { NetworkName } from './networks';
-import { Tagged, TagOf } from '../base/tagged-type';
+import type Web3 from 'web3';
+import type { Network, NetworkName, ValueOnNetwork } from './networks';
+import type { TagOf } from '../base/tagged-type';
 
-export type TaggedWeb3<Net extends NetworkName> = Tagged<Web3, Net>;
-export type NetworkOf<Web3 extends TaggedWeb3<NetworkName>> = TagOf<Web3>;
+export type Web3On<Net extends Network> = ValueOnNetwork<Web3, Net>;
+export type NetworkOf<Web3 extends Web3On<NetworkName>> = TagOf<Web3>;
 export type { NetworkName };

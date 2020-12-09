@@ -2,21 +2,17 @@ import type { EventEmitter } from 'events';
 import BN from 'bn.js';
 import { toBN, toWei } from 'web3-utils';
 import { PromiEvent, Transaction, TransactionReceipt } from 'web3-core';
-import {
-  getContractTxs,
-  getEthUsdBtcPrice,
-} from '../apis/etherscan';
+import { getContractTxs, getEthUsdBtcPrice } from '../apis/etherscan';
 import { fromBNToDecimalString } from '../base/big-number';
 import { assertIsFiniteNumber, assertIsString } from '../base/asserts';
 import type {
   NonPayableTransactionObject,
   BaseContract,
 } from './contracts/typechain/types';
-import { TaggedWeb3, NetworkName } from './web3-instance';
-import { Tagged } from '../base/tagged-type';
+import { NetworkName, Web3On } from './web3-instance';
 
 export async function getContractTransactions<Net extends NetworkName>(
-  web3: TaggedWeb3<Net>,
+  web3: Web3On<Net>,
   address: string,
 ): Promise<Transaction[]> {
   return await Promise.all(
@@ -84,7 +80,7 @@ export function once<T>(
 }
 
 export async function logTransactionStatus<T, Net extends NetworkName>(
-  web3: TaggedWeb3<Net>,
+  web3: Web3On<Net>,
   promiEvent: PromiEvent<T>,
 ) {
   await once(promiEvent, 'sending');
@@ -128,7 +124,7 @@ export interface FeeEstimation {
 export async function estimateFee(
   contract: BaseContract,
 ): Promise<FeeEstimation> {
-  const { gas : gas_, gasPrice: gasPrice_ } = contract.options;
+  const { gas: gas_, gasPrice: gasPrice_ } = contract.options;
   const gas = assertIsFiniteNumber(gas_);
   const gasPrice = assertIsString(gasPrice_);
   const gasPriceBn = toBN(gasPrice);

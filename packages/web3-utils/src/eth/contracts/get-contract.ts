@@ -1,5 +1,5 @@
 import { BaseContract } from './typechain/types';
-import { TaggedWeb3, NetworkName } from '../web3-instance';
+import { NetworkName, Web3On } from '../web3-instance';
 import type { AbiItem } from 'web3-utils';
 import { Tagged } from '../../base/tagged-type';
 
@@ -9,7 +9,7 @@ export function getContract<
   Contract extends BaseContract,
   Net extends NetworkName
 >(
-  web3: TaggedWeb3<Net>,
+  web3: Web3On<Net>,
   abi: AbiFor<Contract>,
   address: string,
   gas?: {

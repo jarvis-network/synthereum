@@ -6,7 +6,7 @@ import {
   ValueOnNetwork,
 } from '../eth/networks';
 import { env } from '../config';
-import { Tagged } from '../base/tagged-type';
+import type { Web3On } from '../eth/web3-instance';
 
 enum Protocol {
   wss = 'wss:',
@@ -28,11 +28,11 @@ export function getInfuraEndpoint<Net extends Network>(
 export function getInfuraWeb3<Net extends Network>(
   network: Net,
   protocol: Protocol = Protocol.https,
-) {
+): Web3On<Net> {
   const url = getInfuraEndpoint(network);
   const result =
     protocol === Protocol.https
       ? new Web3(new Web3.providers.HttpProvider(url))
       : new Web3(new Web3.providers.WebsocketProvider(url));
-  return result as Tagged<Web3, ToNetworkName<Net>>;
+  return result as Web3On<Net>;
 }

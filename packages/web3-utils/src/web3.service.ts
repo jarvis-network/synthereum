@@ -1,10 +1,10 @@
 import type { BaseContract } from './eth/contracts/typechain/types';
-import type { NetworkName, TaggedWeb3 } from './eth/web3-instance';
+import type { NetworkName, Web3On } from './eth/web3-instance';
 import { getContract } from './eth/contracts/get-contract';
 import { AbiFor } from './eth/contracts/get-contract';
 
 export class Web3Service<Net extends NetworkName> {
-  constructor(public readonly web3: TaggedWeb3<Net>) {}
+  constructor(public readonly web3: Web3On<Net>) {}
 
   getContract<Contract extends BaseContract>(
     address: string,

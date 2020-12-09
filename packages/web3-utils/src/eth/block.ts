@@ -1,9 +1,9 @@
 import { toBN } from 'web3-utils';
 import { isString, throwError } from '../base/asserts';
-import { TaggedWeb3, NetworkName } from './web3-instance';
+import { NetworkName, Web3On } from './web3-instance';
 
 export async function getBlockTimestamp<Net extends NetworkName>(
-  web3: TaggedWeb3<Net>,
+  web3: Web3On<Net>,
   blockNumber: number,
 ): Promise<number> {
   const timestamp = (await web3.eth.getBlock(blockNumber)).timestamp;
@@ -11,7 +11,7 @@ export async function getBlockTimestamp<Net extends NetworkName>(
 }
 
 export async function getBlockAverageTime<Net extends NetworkName>(
-  web3: TaggedWeb3<Net>,
+  web3: Web3On<Net>,
   blockNumber: number,
   span: number,
 ): Promise<number> {
@@ -28,7 +28,7 @@ export async function getBlockAverageTime<Net extends NetworkName>(
 }
 
 export async function getClosestBlock<Net extends NetworkName>(
-  web3: TaggedWeb3<Net>,
+  web3: Web3On<Net>,
   initBlock: number,
   endingTimestamp: number,
 ): Promise<number> {
