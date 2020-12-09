@@ -17,7 +17,7 @@ import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-import { formatBN } from '@/utils/format';
+import { formatAmount } from '@jarvis-network/web3-utils/base/big-number';
 
 import { StyledSearchBar } from './StyledSearchBar';
 
@@ -67,9 +67,9 @@ const grid = {
         const o = original as AssetWithWalletInfo;
         return (
           <>
-            <div className="value">{formatBN(o.ownedAmount, o.decimals)}</div>
+            <div className="value">{formatAmount(o.ownedAmount, o.decimals)}</div>
             <div className="dollars">
-              $ {formatBN(o.stableCoinValue, PRIMARY_STABLE_COIN.decimals)}
+              $ {formatAmount(o.stableCoinValue, PRIMARY_STABLE_COIN.decimals)}
             </div>
           </>
         );

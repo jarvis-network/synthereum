@@ -11,7 +11,7 @@ import { arraySumBN } from '@/utils/math';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 interface BalanceProps {
-  total: BN;
+  total: Amount;
 }
 
 interface AssetsProps {
@@ -38,7 +38,7 @@ const Content = styled.div`
 const Balance: FC<BalanceProps> = ({ total }) => (
   <Block>
     <Heading>Balance</Heading>
-    <Content>$ {formatBN(total, PRIMARY_STABLE_COIN.decimals)}</Content>
+    <Content>$ {formatAmount(total, PRIMARY_STABLE_COIN.decimals)}</Content>
   </Block>
 );
 

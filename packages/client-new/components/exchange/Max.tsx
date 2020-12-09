@@ -4,7 +4,7 @@ import { styled, themeValue } from '@jarvis-network/ui';
 
 import { setBase, setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { formatBN } from '@/utils/format';
+import { formatAmount } from '@jarvis-network/web3-utils/base/big-number';
 
 const Container = styled.button`
   grid-area: max;
@@ -50,7 +50,7 @@ export const Max: React.FC = () => {
     return null;
   }
 
-  const formattedMax = formatBN(max, asset.decimals);
+  const formattedMax = formatAmount(max, asset.decimals);
 
   const handleClick = () => {
     dispatch(setPay(formattedMax));

@@ -1,14 +1,16 @@
 import React, { FC } from 'react';
 import { styled, Flag } from '@jarvis-network/ui';
-import BN from 'bn.js';
 
-import { formatBN } from '@/utils/format';
+import {
+  Amount,
+  formatAmount,
+} from '@jarvis-network/web3-utils/base/big-number';
 import { Asset, PRIMARY_STABLE_COIN } from '@/data/assets';
 
 export interface AssetRowProps {
   asset: Asset;
-  amount: BN;
-  value: BN;
+  amount: Amount;
+  value: Amount;
 }
 
 const Container = styled.div`
@@ -57,9 +59,9 @@ export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value }) => (
       <Title>{asset.symbol}</Title>
     </Information>
     <Details>
-      <Amount>{formatBN(amount, asset.decimals)}</Amount>
+      <Amount>{formatAmount(amount, asset.decimals)}</Amount>
       <Value>
-        {formatBN(value, asset.decimals)} {PRIMARY_STABLE_COIN.symbol}
+        {formatAmount(value, asset.decimals)} {PRIMARY_STABLE_COIN.symbol}
       </Value>
     </Details>
   </Container>
