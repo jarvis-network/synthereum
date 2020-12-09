@@ -4,6 +4,7 @@ import { ERC20 } from "./typechain/ERC20";
 import { BaseContract } from "./typechain/types";
 
 export interface TokenInfo<Net extends NetworkName> extends ContractInfo<Net, ERC20> {
+  symbol: string;
   decimals: number;
 }
 

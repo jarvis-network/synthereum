@@ -87,10 +87,12 @@ async function getTokenInfo<Net extends NetworkName>(
   address: AddressOn<Net>,
 ): Promise<TokenInfo<Net>> {
   const instance = getContract(web3, ERC20_Abi, address);
+  const symbol = await instance.methods.symbol().call();
   const decimals = parseInteger(await instance.methods.decimals().call());
   return {
     address,
     instance,
+    symbol,
     decimals,
   };
 }
