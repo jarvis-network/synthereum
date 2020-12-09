@@ -4,18 +4,26 @@ import { Network, ValueOnNetwork } from './networks';
 import { Tagged } from '../base/tagged-type';
 
 export type Address = Tagged<string, 'EthereumAddress'>;
-export type AddressOn<Net extends Network> = ValueOnNetwork<Address, Net>;
+export type AddressOn<Net extends Network | undefined> = Net extends Network
+  ? ValueOnNetwork<Address, Net>
+  : Address;
 
-export function isAddress(x: string): x is Address {
+export function isAddress<Net extends Network | undefined = undefined>(
+  x: string,
+): x is AddressOn<Net> {
   return isAddress_(x);
 }
 
-export function isAddressZero(address: string): address is Address {
+export function isAddressZero<Net extends Network | undefined = undefined>(
+  address: string,
+): address is AddressOn<Net> {
   return /^(0x)?0{40}$/.test(address);
 }
 
-export function assertIsAddress(x: unknown): Address {
-  return isString(x) && isAddress(x)
+export function assertIsAddress<Net extends Network | undefined = undefined>(
+  x: unknown,
+): AddressOn<Net> {
+  return isString(x) && isAddress<Net>(x)
     ? x
     : throwError(`value='${x}' is not a valid Ethereum address.`);
 }
