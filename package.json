@@ -7,22 +7,27 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "clean": "git clean -fdx -e .env -- .",
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
+    "clean:all": "git clean -fdx -e .env -- .",
     "i": "lerna bootstrap -- --ignore-optional",
     "install": "yarn run i",
     "format": "prettier --write '*/**/*.{js,jsx,ts,tsx}'",
-    "build": "yarn build:client",
-    "build:client": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client' build",
-    "build:client-new": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client-new' build",
-    "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' build",
-    "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build",
-    "start:client-new": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client-new' start",
-    "build:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis-network/keeper-bot-v2' build",
-    "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis-network/web3-utils' build",
+
+    "start": "yarn start:client-new",
+    "start:client-new": "FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client-new' start",
     "start:client": "CI=true FORCE_COLOR=1 lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client' start",
     "start:bot": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
     "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' start",
     "start:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis-network/keeper-bot-v2' start",
+
+    "build": "yarn build:client-new",
+    "build:client": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client' build",
+    "build:client-new": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-client-new' build",
+    "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' build",
+    "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build",
+    "build:keeper-bot": "lerna run --stream --include-dependencies --scope '@jarvis-network/keeper-bot-v2' build",
+    "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis-network/web3-utils' build",
+
     "verify": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' verify-contract:kovan"
   },
   "workspaces": {
