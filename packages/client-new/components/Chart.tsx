@@ -107,7 +107,7 @@ const Chart: FC<CandleStickChartProps> = ({
 
   // import createChart function
   const importCreateChartFunction = async () => {
-    return (await import('lightweight-charts/index')).createChart;
+    return (await import('lightweight-charts')).createChart;
   };
 
   // ----- USEEFFECT HOOKS -----

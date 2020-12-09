@@ -1,4 +1,6 @@
-import blockies from 'ethereum-blockies';
+import { getOrCreateElement } from '@jarvis-network/web3-utils/base/optional';
+
+const blockies = require('ethereum-blockies');
 
 const cache = new Map<string, string>();
 
