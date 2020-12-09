@@ -1,16 +1,16 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState, Wallet } from 'bnc-onboard/dist/src/interfaces';
-import BN from 'bn.js';
 
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
 import { fakeWallet } from '@/data/fakeWallet.ts';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
+import { Amount } from '@jarvis-network/web3-utils/base/big-number';
 
 type Values = 'pay' | 'receive';
 
 export interface WalletInfo {
-  amount: BN;
+  amount: Amount;
 }
 
 export interface Rate {

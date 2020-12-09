@@ -17,7 +17,10 @@ import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-import { formatAmount } from '@jarvis-network/web3-utils/base/big-number';
+import {
+  Amount,
+  formatAmount,
+} from '@jarvis-network/web3-utils/base/big-number';
 
 import type { RowInfo } from 'react-table';
 
@@ -219,7 +222,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
           ...asset,
           stableCoinValue: ownedAmount
             .mul(new BN(asset.price * 10 ** asset.decimals))
-            .div(new BN(10 ** asset.decimals)),
+            .div(new BN(10 ** asset.decimals)) as Amount,
           ownedAmount,
         };
       },

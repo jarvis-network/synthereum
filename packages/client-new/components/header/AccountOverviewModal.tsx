@@ -6,7 +6,11 @@ import BN from 'bn.js';
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
-import { formatBN } from '@/utils/format';
+import {
+  Amount,
+  formatAmount,
+  mapSumBN,
+} from '@jarvis-network/web3-utils/base/big-number';
 import { arraySumBN } from '@/utils/math';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
@@ -73,13 +77,13 @@ export const AccountOverviewModal: FC = () => {
         amount,
         value: amount
           .mul(new BN(asset.price * 10 ** asset.decimals))
-          .div(new BN(10 ** asset.decimals)),
+          .div(new BN(10 ** asset.decimals)) as Amount,
       };
     });
   }, [wallet, assets]);
 
   const total = useMemo(() => {
-    return arraySumBN(items.map(_item => _item.value));
+    return mapSumBN(items, _item => _item.value);
   }, [items]);
 
   return (

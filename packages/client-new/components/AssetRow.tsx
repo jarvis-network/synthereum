@@ -2,15 +2,15 @@ import React, { FC } from 'react';
 import { styled, Flag } from '@jarvis-network/ui';
 
 import {
-  Amount,
+  Amount as BNAmount,
   formatAmount,
 } from '@jarvis-network/web3-utils/base/big-number';
 import { Asset, PRIMARY_STABLE_COIN } from '@/data/assets';
 
 export interface AssetRowProps {
   asset: Asset;
-  amount: Amount;
-  value: Amount;
+  amount: BNAmount;
+  value: BNAmount;
 }
 
 const Container = styled.div`

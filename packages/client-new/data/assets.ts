@@ -1,4 +1,5 @@
 import { FlagKeys } from '@jarvis-network/ui';
+import { Amount } from '@jarvis-network/web3-utils/base/big-number';
 import BN from 'bn.js';
 
 export interface Asset {
@@ -26,8 +27,8 @@ export const PRIMARY_STABLE_COIN: Asset = {
 };
 
 export interface AssetWithWalletInfo extends Asset {
-  stableCoinValue: BN;
-  ownedAmount: BN;
+  stableCoinValue: Amount;
+  ownedAmount: Amount;
 }
 
 export const assets: Asset[] = [
