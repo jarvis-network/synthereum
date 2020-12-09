@@ -1,14 +1,14 @@
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import {
   formatBN,
+  mapSumBN,
   sumBN,
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
 import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { allSymbols as allSyntheticAssets } from '../../src/config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkId } from '../../src/config/types';
 import { loadRealm } from '../../src/core/load-realm';
-import { RealmAgent } from '../../src/core/realm-agent';
+import { getAllBalances, RealmAgent } from '../../src/core/realm-agent';
 
 /**
  * Apps building on top of Synthereum need to work with a single class - the
@@ -44,20 +44,11 @@ export async function example() {
   );
 
   /// Get all balances in one promise:
-  function getAllBalances(realmAgent: RealmAgent<'kovan'>) {
-    const usdcBalancePromise = realmAgent.collateralBalance();
-    const allSyntheticTokenBalancePromises = allSyntheticAssets.map(asset =>
-      realmAgent.syntheticTokenBalanceOf(asset),
-    );
-    const allBalances = Promise.all([
-      usdcBalancePromise,
-      ...allSyntheticTokenBalancePromises,
-    ]);
-    return allBalances;
-  }
+
 
   // TODO: multiply each balance by its price:
-  const totalBalance = sumBN(await getAllBalances(realmAgent));
+  const balances = await getAllBalances(realmAgent);
+  const totalBalance = mapSumBN(balances, x => x[1]);
   console.log(`total balance: ${formatBN(totalBalance)}`);
 
   // TODO: Get past ERC20 transfer events:

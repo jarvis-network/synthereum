@@ -10,10 +10,11 @@ import {
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
 import { SynthereumRealm } from './types';
-import { SyntheticSymbol } from '../config/data/all-synthetic-asset-symbols';
+import { allSymbols as allSyntheticAssets, SyntheticSymbol } from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config/types';
 import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
+import { t } from '@jarvis-network/web3-utils/base/meta';
 
 export interface GasOptions {
   gasLimit?: BN;
@@ -131,11 +132,7 @@ export class RealmAgent<Net extends SupportedNetworkName> {
       spender,
     );
     if (allowance.lt(necessaryAllowance)) {
-      await setTokenAllowance(
-        tokenInfo,
-        spender,
-        necessaryAllowance,
-      );
+      await setTokenAllowance(tokenInfo, spender, necessaryAllowance);
     }
   }
 
@@ -147,4 +144,16 @@ export class RealmAgent<Net extends SupportedNetworkName> {
       gasPrice: txOptions?.gasPrice?.toString(10),
     });
   }
+}
+
+export async function getAllBalances(realmAgent: RealmAgent<'kovan'>) {
+  const usdcBalancePromise = t(realmAgent.realm.collateralToken.symbol, await realmAgent.collateralBalance());
+  const allSyntheticTokenBalancePromises = allSyntheticAssets.map(async asset =>
+    t(asset, await realmAgent.syntheticTokenBalanceOf(asset)),
+  );
+  const allBalances = Promise.all([
+    usdcBalancePromise,
+    ...allSyntheticTokenBalancePromises,
+  ]);
+  return allBalances;
 }
