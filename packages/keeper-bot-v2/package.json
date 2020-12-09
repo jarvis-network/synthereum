@@ -1,5 +1,5 @@
 {
-  "name": "@jarvis-network/keeper-bot-v2",
+  "name": "@jarvis-network/synthereum-validator",
   "version": "0.1.0",
   "description": "",
   "bin": {

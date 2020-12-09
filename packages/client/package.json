@@ -1,5 +1,5 @@
 {
-  "name": "@jarvis-network/synthereum-client",
+  "name": "@jarvis-network/synthereum-old-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
