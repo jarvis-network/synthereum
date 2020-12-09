@@ -16,6 +16,10 @@ export function wei(str: string): Amount {
 export const zero = new BN(0);
 export const one = new BN(1);
 export const negativeOne = new BN(-1);
+export const maxUint256 = new BN(
+  'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+  'hex',
+);
 
 export function mapSumBN<T>(array: T[], getter: (elem: T) => BN) {
   return mapReduce(array, zero, getter, (curr, next) => curr.add(next));
@@ -48,8 +52,7 @@ export function toBN(str: string) {
 export function replaceBN(obj: unknown) {
   if (BN.isBN(obj)) {
     return formatBN(obj);
-  }
-  else if (!isObject(obj)) {
+  } else if (!isObject(obj)) {
     return obj;
   }
   const result: any = {};
