@@ -3,6 +3,7 @@ import {
   Network,
   ToNetworkName,
   toNetworkName,
+  ValueOnNetwork,
 } from '../eth/networks';
 import { env } from '../config';
 import { Tagged } from '../base/tagged-type';
@@ -15,12 +16,12 @@ enum Protocol {
 export function getInfuraEndpoint<Net extends Network>(
   network: Net,
   protocol: Protocol = Protocol.https,
-): Tagged<string, ToNetworkName<Net>> {
+): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
   const projectId = env.infuraProjectId;
-  return `${protocol}//${networkName}.infura.io/v3/${projectId}` as Tagged<
+  return `${protocol}//${networkName}.infura.io/v3/${projectId}` as ValueOnNetwork<
     string,
-    ToNetworkName<Net>
+    Net
   >;
 }
 

@@ -1,5 +1,6 @@
 import { assert, isInteger, isString } from '../base/asserts';
 import type { InverseOf, KeysToKeys } from '../base/meta';
+import { Tagged } from '../base/tagged-type';
 
 export const networkIdToName = {
   1: 'mainnet',
@@ -20,6 +21,11 @@ export const networkNameToId: InverseOf<typeof networkIdToName> = {
 export type NetworkId = keyof typeof networkIdToName;
 export type NetworkName = typeof networkIdToName[NetworkId];
 export type Network = NetworkId | NetworkName;
+
+export type ValueOnNetwork<Value, Net extends Network> = Tagged<
+  Value,
+  { network: ToNetworkName<Net> }
+>;
 
 const networkIdToId: KeysToKeys<typeof networkIdToName> = {
   1: 1,
@@ -70,9 +76,7 @@ export function toNetworkId(network: Network): NetworkId {
 }
 
 export function toNetworkName<Name extends NetworkName>(network: Name): Name;
-export function toNetworkName<Id extends NetworkId>(
-  id: Id,
-): ToNetworkName<Id>;
+export function toNetworkName<Id extends NetworkId>(id: Id): ToNetworkName<Id>;
 export function toNetworkName(network: Network): NetworkName;
 export function toNetworkName(network: Network): NetworkName {
   return isNetworkId(network) ? networkIdToName[network] : network;
