@@ -39,7 +39,7 @@ interface RegularTransaction extends TransactionBase {
   input: TransactionIO;
 }
 
-interface SynthereumTransaction extends TransactionBase {
+export interface SynthereumTransaction extends TransactionBase {
   type: 'mint' | 'exchange' | 'redeem';
   ticPoolAddress: string;
   input: TransactionIO;

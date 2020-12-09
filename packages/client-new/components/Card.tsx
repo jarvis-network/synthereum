@@ -3,7 +3,7 @@ import { Icon, styled, Tabs, themeValue } from '@jarvis-network/ui';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-interface Props {
+export interface Props {
   className?: string;
   title: string;
   mode?: 'tab' | 'back';
