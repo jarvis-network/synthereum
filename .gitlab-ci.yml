@@ -14,7 +14,7 @@ stages:
     - dev
     - production
 
-build_frontend_new:
+build-frontend:
   <<: *enabled-branches
   stage: build
   variables:
@@ -27,12 +27,12 @@ build_frontend_new:
       - node_modules
   script:
     - yarn install
-    - yarn build:client-new
+    - yarn build:frontend
   artifacts:
     paths:
       - packages/client-new/out
 
-build_frontend:
+build-old-frontend:
   <<: *enabled-branches
   stage: build
   variables:
@@ -45,7 +45,7 @@ build_frontend:
       - node_modules
   script:
     - yarn install
-    - yarn build
+    - yarn build:frontend-old
   artifacts:
     paths:
       - packages/client/build
@@ -59,7 +59,7 @@ build_frontend:
     esac
     ACR_IMAGE_FULL_NAME="${ACR_URL}/${CI_PROJECT_PATH}:${ACR_IMAGE_TAG}"
 
-build_keeper_bot:
+build-old-validator:
   <<: *enabled-branches
   image: docker:latest
   services:
@@ -73,59 +73,59 @@ build_keeper_bot:
     - docker build --pull -t "$ACR_IMAGE_FULL_NAME" ./packages/keeper-bot
     - docker push "$ACR_IMAGE_FULL_NAME"
 
-.deploy-frontend-default: &deploy-frontend-default
+.frontend-deploy-default: &frontend-deploy-default
   stage: deploy
   needs:
-    - job: build_frontend
-      artifacts: true
-  variables:
-    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
-  before_script:
-    - yarn global add netlify-cli
-
-deploy-preview-to-netlify:
-  <<: *deploy-frontend-default
-  only:
-    - merge_requests
-    - dev
-  script:
-    - netlify deploy --dir ./packages/client/build
-
-deploy-production-to-netlify:
-  <<: *deploy-frontend-default
-  only:
-    - production
-  script:
-    - netlify deploy --prod --dir ./packages/client/build
-
-.deploy-frontend-new-default: &deploy-frontend-new-default
-  <<: *deploy-frontend-default
-  needs:
-    - job: build_frontend_new
+    - job: build-frontend
       artifacts: true
   variables:
     NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
+    OUT_DIR: './packages/client-new/out/'
+  before_script:
+    - yarn global add netlify-cli
+  script:
+    - netlify deploy ${PROD:-} --dir "$OUT_DIR"
 
-deploy-preview-new-to-netlify:
-  <<: *deploy-frontend-new-default
+frontend-netlify:
+  <<: *frontend-deploy-default
   only:
     - merge_requests
     - dev
-  script:
-    - netlify deploy --dir ./packages/client-new/out
 
-deploy-production-new-to-netlify:
-  <<: *deploy-frontend-new-default
+frontend-prod-netlify:
+  <<: *frontend-deploy-default
   only:
     - production
-  script:
-    - netlify deploy --prod --dir ./packages/client-new/out
+  variables:
+    PROD: '--prod'
+
+.old-frontend-deploy-default: &old-frontend-deploy-default
+  <<: *frontend-deploy-default
+  needs:
+    - job: build-old-frontend
+      artifacts: true
+  variables:
+    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
+    OUT_DIR: './packages/client/build/'
+
+old-frontend-netlify:
+  <<: *old-frontend-deploy-default
+  only:
+    - merge_requests
+    - dev
+
+old-frontend-prod-netlify:
+  <<: *old-frontend-deploy-default
+  only:
+    - production
+  variables:
+    PROD: '--prod'
 
 .deploy-keeper-bot-default: &deploy-keeper-bot-default
   image: mcr.microsoft.com/azure-cli
   stage: deploy
   needs:
-    - job: build_keeper_bot
+    - job: build-old-validator
       artifacts: true
   script:
     - *acr_path_script
@@ -154,7 +154,7 @@ deploy-production-new-to-netlify:
   image: mcr.microsoft.com/azure-cli
   stage: delete
   needs:
-    - job: build_keeper_bot
+    - job: build-old-validator
       artifacts: true
   script:
     - *acr_path_script
