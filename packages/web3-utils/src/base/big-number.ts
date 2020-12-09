@@ -28,11 +28,21 @@ export const maxUint256 = new BN(
   'hex',
 );
 
-export function mapSumBN<T>(array: T[], getter: (elem: T) => BN) {
-  return mapReduce(array, zero, getter, (curr, next) => curr.add(next));
+export function mapSumBN<T, U extends Unit>(
+  array: T[],
+  getter: (elem: T) => AmountOf<U>,
+): AmountOf<U> {
+  return mapReduce(
+    array,
+    zero as AmountOf<U>,
+    getter,
+    (curr, next) => curr.add(next) as AmountOf<U>,
+  );
 }
 
-export function sumBN(listOfNumbers: BN[]) {
+export function sumBN<U extends Unit>(
+  listOfNumbers: AmountOf<U>[],
+): AmountOf<U> {
   return mapSumBN(listOfNumbers, x => x);
 }
 
@@ -44,8 +54,12 @@ export function fromBNToDecimalString(bn: BN) {
   return fromWei(bn);
 }
 
-export function formatBN(bn: BN) {
-  return fromBNToNumber(bn).toFixed(2);
+export function formatAmount(amount: Amount, decimals = 2) {
+  const rawStr = amount.toString(10);
+  const nativeNumDecimals = 18;
+  const integerPart = rawStr.slice(0, -nativeNumDecimals).padStart(1, '0');
+  const decimalPart = rawStr.slice(-nativeNumDecimals).padStart(nativeNumDecimals, '0');
+  return `${integerPart}.${decimalPart.slice(0, decimals)}`;
 }
 
 export function fromBNToNumber(bn: BN) {
@@ -58,7 +72,7 @@ export function toBN(str: string) {
 
 export function replaceBN(obj: unknown) {
   if (BN.isBN(obj)) {
-    return formatBN(obj);
+    return formatAmount(obj as Amount);
   } else if (!isObject(obj)) {
     return obj;
   }

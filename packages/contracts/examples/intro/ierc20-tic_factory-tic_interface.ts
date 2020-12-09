@@ -1,8 +1,7 @@
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import {
-  formatBN,
+  formatAmount,
   mapSumBN,
-  sumBN,
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
 import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
@@ -35,21 +34,20 @@ export async function example() {
 
   // Example: IERC20 Balances:
   console.log(
-    `USDC balance: ${formatBN(await realmAgent.collateralBalance())}`,
+    `USDC balance: ${formatAmount(await realmAgent.collateralBalance())}`,
   );
   console.log(
-    `jEUR balance: ${formatBN(
+    `jEUR balance: ${formatAmount(
       await realmAgent.syntheticTokenBalanceOf('jEUR'),
     )}`,
   );
 
+
   /// Get all balances in one promise:
-
-
-  // TODO: multiply each balance by its price:
   const balances = await getAllBalances(realmAgent);
+  // TODO: multiply each balance by its price:
   const totalBalance = mapSumBN(balances, x => x[1]);
-  console.log(`total balance: ${formatBN(totalBalance)}`);
+  console.log(`total balance: ${formatAmount(totalBalance)}`);
 
   // TODO: Get past ERC20 transfer events:
   // const allTransferEvents = getAllTransferEvents(usdcInstance, '0x23234');
@@ -104,5 +102,5 @@ export async function example() {
 
   // Update the user's balance:
   const usersjEURBalance = await realmAgent.syntheticTokenBalanceOf('jEUR');
-  return `The user's USDC balance is ${formatBN(usersjEURBalance)}`;
+  return `The user's USDC balance is ${formatAmount(usersjEURBalance)}`;
 }
