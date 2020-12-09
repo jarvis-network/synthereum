@@ -53,10 +53,10 @@ export function once<T>(
     promiEvent.once('error', reject);
     switch (type) {
       case 'sending':
-        promiEvent.once(type, () => resolve());
+        promiEvent.once(type, resolve);
         break;
       case 'sent':
-        promiEvent.once(type, () => resolve());
+        promiEvent.once(type, resolve);
         break;
       case 'transactionHash':
       case 'receipt':
