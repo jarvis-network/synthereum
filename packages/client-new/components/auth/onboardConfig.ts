@@ -1,3 +1,6 @@
+import { Initialization } from 'bnc-onboard/dist/src/interfaces';
+import { filterEmpty } from '@jarvis-network/web3-utils/base/optional';
+
 const MAIN_NETWORK_ID = 1;
 const NETWORK_ID = Number(process.env.NEXT_PUBLIC_NETWORK_ID) || 42;
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
@@ -70,12 +73,17 @@ const getLedger = () => {
   };
 };
 
-const getOnboardConfig = () => {
+type OnboardConfig = Pick<
+  Initialization,
+  'dappId' | 'networkId' | 'walletSelect'
+>;
+
+const getOnboardConfig = (): OnboardConfig => {
   return {
     dappId: ONBOARD_API_KEY,
     networkId: NETWORK_ID,
     walletSelect: {
-      wallets: [
+      wallets: filterEmpty([
         { walletName: 'metamask' },
         getWalletConnect(),
         { walletName: 'unilogin' },
@@ -92,7 +100,7 @@ const getOnboardConfig = () => {
         { walletName: 'torus' },
         getWalletLink(),
         getLedger(),
-      ].filter(Boolean),
+      ]),
     },
   };
 };
