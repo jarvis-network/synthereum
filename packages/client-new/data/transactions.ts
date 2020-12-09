@@ -58,11 +58,11 @@ export const transactions: Transaction[] = [
     status: 'pending',
     ticPoolAddress: '',
     input: {
-      asset: assets.find(_i => _i.symbol === 'jEUR'),
+      asset: assets.find(_i => _i.symbol === 'jEUR')!,
       amount: new BN('1000'),
     },
     output: {
-      asset: assets.find(_i => _i.symbol === 'jGBP'),
+      asset: assets.find(_i => _i.symbol === 'jGBP')!,
       amount: new BN('700'),
     },
   },
@@ -74,11 +74,11 @@ export const transactions: Transaction[] = [
     status: 'success',
     ticPoolAddress: '',
     input: {
-      asset: assets.find(_i => _i.symbol === 'USDC'),
+      asset: assets.find(_i => _i.symbol === 'USDC')!,
       amount: new BN('1000'),
     },
     output: {
-      asset: assets.find(_i => _i.symbol === 'jEUR'),
+      asset: assets.find(_i => _i.symbol === 'jEUR')!,
       amount: new BN('999'),
     },
   },
@@ -90,11 +90,11 @@ export const transactions: Transaction[] = [
     status: 'failure',
     ticPoolAddress: '',
     input: {
-      asset: assets.find(_i => _i.symbol === 'jGBP'),
+      asset: assets.find(_i => _i.symbol === 'jGBP')!,
       amount: new BN('1000'),
     },
     output: {
-      asset: assets.find(_i => _i.symbol === 'USDC'),
+      asset: assets.find(_i => _i.symbol === 'USDC')!,
       amount: new BN('999'),
     },
   },

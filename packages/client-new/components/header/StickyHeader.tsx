@@ -42,7 +42,7 @@ const Content = styled.div`
   flex: 1;
 `;
 
-export const StickyHeader = ({ children }) => {
+export const StickyHeader: React.FC = ({ children }) => {
   return (
     <Container>
       <HeaderContainer>

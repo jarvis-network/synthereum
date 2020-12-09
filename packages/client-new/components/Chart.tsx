@@ -69,8 +69,8 @@ const Chart: FC<CandleStickChartProps> = ({
   autoHeight,
   data,
 }) => {
-  const chartRef = useRef(null);
-  const [chart, setChart] = useState<IChartApi>(null);
+  const chartRef = useRef<HTMLDivElement | null>(null);
+  const [chart, setChart] = useState<IChartApi | null>(null);
   const theme: ThemeConfig = useTheme();
 
   const chartLayoutConfig: Partial<LayoutOptions> = {
@@ -81,6 +81,7 @@ const Chart: FC<CandleStickChartProps> = ({
   };
 
   const initializeCandleStickChart = () => {
+    if (!chart) return;
     const candleStickSeries: ISeriesApi<'Candlestick'> = chart.addCandlestickSeries(
       candleStickSeriesConfig,
     );
@@ -92,13 +93,10 @@ const Chart: FC<CandleStickChartProps> = ({
   };
 
   const resizeHandler = () => {
-    if (chartRef.current) {
-      const chartWidth = autoWidth
-        ? chartRef.current.parentNode.clientWidth
-        : width;
-      const chartHeight = autoHeight
-        ? chartRef.current.parentNode.clientHeight
-        : height;
+    if (chart && chartRef.current) {
+      const parent = chartRef.current.parentNode as Element;
+      const chartWidth = autoWidth ? parent.clientWidth : width ?? 400;
+      const chartHeight = autoHeight ? parent.clientHeight : height ?? 300;
 
       chart.resize(chartWidth, chartHeight);
       chart.timeScale().fitContent();
@@ -117,13 +115,13 @@ const Chart: FC<CandleStickChartProps> = ({
     if (chartRef && !chart) {
       importCreateChartFunction()
         .then(createChart => {
-          setChart(createChart(chartRef.current));
+          setChart(createChart(chartRef.current!));
         })
         // eslint-disable-next-line no-console
         .catch(e => console.error(e));
     }
 
-    return () => chart && chart.remove();
+    return () => chart?.remove();
   }, []);
 
   // 2. add candle series
@@ -137,8 +135,12 @@ const Chart: FC<CandleStickChartProps> = ({
   useEffect(() => {
     if (chart) {
       const options = {
-        width: autoWidth ? chartRef.current.parentNode.clientWidth : width,
-        height: autoHeight ? chartRef.current.parentNode.clientHeight : height,
+        width: autoWidth
+          ? (chartRef.current!.parentNode! as Element).clientWidth
+          : width,
+        height: autoHeight
+          ? (chartRef.current!.parentNode! as Element).clientHeight
+          : height,
         layout: chartLayoutConfig,
         grid: chartGridConfig(theme),
         priceScale: chartPriceAxisConfig,

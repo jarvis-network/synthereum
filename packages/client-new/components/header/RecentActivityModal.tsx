@@ -31,8 +31,8 @@ const mapTransactionToAssetRow = (
   io: TransactionIO,
   isFrom?: boolean,
 ): AssetProps => ({
-  flag: io.asset?.icon,
-  name: io.asset?.symbol || '',
+  flag: io.asset.icon ?? undefined,
+  name: io.asset.symbol,
   // @ts-ignore
   value: isFrom
     ? io.amount.mul(new BN('-1')).toString(10)
@@ -40,20 +40,18 @@ const mapTransactionToAssetRow = (
 });
 
 function groupTransactionsByDay(items: Transaction[]) {
-  const result: { [key: number]: Transaction[] } = items.reduce(
-    (accumulator, transaction) => {
-      const fullDaysInTimestamp = getFullDaysInTimestamp(transaction);
+  type Result = { [key: number]: Transaction[] };
+  const result = items.reduce<Result>((accumulator, transaction) => {
+    const fullDaysInTimestamp = getFullDaysInTimestamp(transaction);
 
-      if (!accumulator[fullDaysInTimestamp]) {
-        accumulator[fullDaysInTimestamp] = [];
-      }
+    if (!accumulator[fullDaysInTimestamp]) {
+      accumulator[fullDaysInTimestamp] = [];
+    }
 
-      accumulator[fullDaysInTimestamp].push(transaction);
+    accumulator[fullDaysInTimestamp].push(transaction);
 
-      return accumulator;
-    },
-    {},
-  );
+    return accumulator;
+  }, {});
 
   return Object.values(result)
     .map(list => list.sort((a, b) => getTimestamp(b) - getTimestamp(a)))

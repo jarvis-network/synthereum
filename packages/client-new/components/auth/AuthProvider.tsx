@@ -13,10 +13,10 @@ interface AuthMethods {
   logout: () => void;
 }
 
-export const OnboardContext = createContext<API>(null);
-export const Web3Context = createContext<Web3>(null);
-export const AuthContext = createContext<AuthMethods>(null);
-export const ENSContext = createContext<ENSHelper>(null);
+export const OnboardContext = createContext<API | undefined>(undefined);
+export const Web3Context = createContext<Web3 | undefined>(undefined);
+export const AuthContext = createContext<AuthMethods | undefined>(undefined);
+export const ENSContext = createContext<ENSHelper | undefined>(undefined);
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [ens, setEns] = useState<ENSHelper>();
@@ -53,20 +53,17 @@ export const AuthProvider: React.FC = ({ children }) => {
           return false;
         }
         const check = await onboard.walletCheck();
-        if (check) {
-          const onboardState = onboard.getState();
+        const onboardState = onboard.getState();
+        if (check && onboardState.wallet.name) {
           localStorage.setItem('jarvis/autologin', onboardState.wallet.name);
-
-          const state = { ...onboardState };
-          delete state.wallet;
+          const { wallet: _, ...state } = onboardState;
           dispatch(setLoginState(state));
         }
         return check;
       },
       logout() {
         onboard.walletReset();
-        const state = { ...onboard.getState() };
-        delete state.wallet;
+        const { wallet: _, ...state } = onboard.getState();
         localStorage.removeItem('jarvis/autologin');
 
         dispatch(setLoginState(state));

@@ -14,6 +14,8 @@ import { avatar } from '@/utils/avatar';
 import { formatWalletAddress } from '@/utils/format';
 import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { State } from '@/state/initialState';
+import { Address } from '@jarvis-network/web3-utils/eth/address';
 
 const noop = () => undefined;
 
@@ -24,20 +26,20 @@ const render = () => {
     state => state.app.isAccountDropdownExpanded,
   );
   const authLogin = useContext(AuthContext);
-  const name = usePrettyName(auth.address);
+  const name = usePrettyName((auth?.address ?? null) as Address | null);
 
   const logIn = async () => {
-    await authLogin.login();
+    await authLogin?.login();
   };
 
   useEffect(() => {
     const autoLoginWallet = localStorage.getItem('jarvis/autologin');
     if (autoLoginWallet) {
-      authLogin.login(autoLoginWallet).catch(noop);
+      authLogin?.login(autoLoginWallet).catch(noop);
     }
   }, []);
 
-  const handleSetTheme = theme => {
+  const handleSetTheme = (theme: State['theme']) => {
     dispatch(setTheme({ theme }));
   };
 
@@ -74,7 +76,7 @@ const render = () => {
     },
   ];
 
-  if (auth.address) {
+  if (auth && auth.address) {
     const addr = formatWalletAddress(auth.address);
     return (
       <AccountDropdown
@@ -83,7 +85,7 @@ const render = () => {
         position="absolute"
         name={name || ''}
         wallet={addr}
-        onLogout={authLogin.logout}
+        onLogout={authLogin!.logout}
         onModeChange={() => null}
         onThemeChange={handleSetTheme}
         mode="demo"

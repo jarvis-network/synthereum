@@ -66,7 +66,7 @@ export const AccountOverviewModal: FC = () => {
   const items: AssetRowProps[] = useMemo(() => {
     return Object.keys(wallet).map(token => {
       const { amount } = wallet[token];
-      const asset = assets.find(_asset => _asset.symbol === token) || null;
+      const asset = assets.find(_asset => _asset.symbol === token)!;
 
       return {
         asset,

@@ -87,8 +87,8 @@ export const Asset: React.FC<Props> = ({ type }) => {
   const assetSymbol = useReduxSelector(state =>
     type === 'pay' ? state.exchange.payAsset : state.exchange.receiveAsset,
   );
-  const asset: AssetItemType = useReduxSelector(state =>
-    state.assets.list.find(a => a.symbol === assetSymbol),
+  const asset: AssetItemType = useReduxSelector(
+    state => state.assets.list.find(a => a.symbol === assetSymbol)!,
   );
 
   const handleChooseAsset = () => dispatch(setChooseAsset(type));

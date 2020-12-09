@@ -29,7 +29,7 @@ export const Max: React.FC = () => {
 
   const { payAsset, asset } = useReduxSelector(state => {
     return {
-      asset: state.assets.list.find(a => a.symbol === state.exchange.payAsset),
+      asset: state.assets.list.find(a => a.symbol === state.exchange.payAsset)!,
       payAsset: state.exchange.payAsset,
     };
   });

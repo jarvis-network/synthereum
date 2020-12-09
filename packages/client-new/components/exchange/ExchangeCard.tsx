@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { CellInfo } from 'react-table';
+import type { CellInfo, RowInfo } from 'react-table';
 import {
   styled,
   ColumnType,
@@ -156,7 +156,7 @@ export const ExchangeCard: React.FC = () => {
   };
 
   useEffect(() => {
-    const callback = event => {
+    const callback = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleCloseClick();
       }
@@ -199,8 +199,8 @@ export const ExchangeCard: React.FC = () => {
 
   if (searchOpen) {
     searchBarProps.render = data => {
-      const getTrProps = (state, rowInfo) => ({
-        onClick: () => handleSelected(rowInfo.original),
+      const getTrProps = (_: any, rowInfo?: RowInfo) => ({
+        onClick: () => handleSelected(rowInfo!.original),
         style: {
           cursor: 'pointer',
         },

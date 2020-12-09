@@ -19,6 +19,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import { formatAmount } from '@jarvis-network/web3-utils/base/big-number';
 
+import type { RowInfo } from 'react-table';
+
 import { StyledSearchBar } from './StyledSearchBar';
 
 interface Props {
@@ -67,7 +69,9 @@ const grid = {
         const o = original as AssetWithWalletInfo;
         return (
           <>
-            <div className="value">{formatAmount(o.ownedAmount, o.decimals)}</div>
+            <div className="value">
+              {formatAmount(o.ownedAmount, o.decimals)}
+            </div>
             <div className="dollars">
               $ {formatAmount(o.stableCoinValue, PRIMARY_STABLE_COIN.decimals)}
             </div>
@@ -243,8 +247,8 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
     filterProp: 'type',
   };
 
-  const getTrProps = (state, rowInfo) => ({
-    onClick: () => handleSelected(rowInfo.original.symbol),
+  const getTrProps = (_: any, rowInfo?: RowInfo) => ({
+    onClick: () => handleSelected(rowInfo!.original.symbol),
     style: {
       cursor: 'pointer',
     },

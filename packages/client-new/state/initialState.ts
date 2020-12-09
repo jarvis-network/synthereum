@@ -1,10 +1,11 @@
 import { ThemeNameType } from '@jarvis-network/ui';
-import { UserState } from 'bnc-onboard/dist/src/interfaces';
+import { UserState, Wallet } from 'bnc-onboard/dist/src/interfaces';
 import BN from 'bn.js';
 
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
 import { fakeWallet } from '@/data/fakeWallet.ts';
+import { Address } from '@jarvis-network/web3-utils/eth/address';
 
 type Values = 'pay' | 'receive';
 
@@ -16,6 +17,15 @@ export interface Rate {
   rate: number;
 }
 
+export interface Auth {
+  address: Address;
+  network: number;
+  balance: string;
+  wallet: Wallet;
+  mobileDevice: boolean;
+  appNetworkId: number;
+}
+
 export interface State {
   theme: ThemeNameType;
   app: {
@@ -23,7 +33,7 @@ export interface State {
     isRecentActivityModalVisible: boolean;
     isAccountDropdownExpanded: boolean;
   };
-  auth: Omit<UserState, 'wallet'>;
+  auth: Omit<UserState, 'wallet'> | null;
   assets: {
     list: Asset[];
   };
@@ -38,7 +48,7 @@ export interface State {
     payAsset: string;
     receiveAsset: string;
     invertRateInfo: boolean;
-    chooseAssetActive: Values;
+    chooseAssetActive: Values | null;
   };
   wallet: {
     [key: string]: WalletInfo;
@@ -55,13 +65,7 @@ export const initialState: State = {
     isRecentActivityModalVisible: false,
     isAccountDropdownExpanded: false,
   },
-  auth: {
-    address: null,
-    network: null,
-    balance: null,
-    mobileDevice: null,
-    appNetworkId: null,
-  },
+  auth: null,
   assets: {
     list: assets,
   },
@@ -70,7 +74,7 @@ export const initialState: State = {
     receive: '0',
     base: 'pay',
     payAsset: 'USDC',
-    receiveAsset: null,
+    receiveAsset: 'jEUR',
     invertRateInfo: false,
     chooseAssetActive: null,
   },

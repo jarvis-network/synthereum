@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Store } from '@reduxjs/toolkit';
 
 import { reducer } from '@/state/reducer';
 import { initialState, State } from '@/state/initialState';
 
-let cachedStore;
+let cachedStore: Store | undefined;
 
 function initStore(preloadedState: State = initialState) {
   // If you are going to load preloaded state from serialized data somewhere
@@ -12,7 +12,7 @@ function initStore(preloadedState: State = initialState) {
   return configureStore({ reducer, preloadedState });
 }
 
-export const initializeStore = preloadedState => {
+export const initializeStore = (preloadedState: State) => {
   let store = cachedStore ?? initStore(preloadedState);
 
   // After navigating to a page with an initial Redux state, merge that state
@@ -35,6 +35,6 @@ export const initializeStore = preloadedState => {
   return store;
 };
 
-export function useStore(state) {
+export function useStore(state: State) {
   return useMemo(() => initializeStore(state), [state]);
 }
