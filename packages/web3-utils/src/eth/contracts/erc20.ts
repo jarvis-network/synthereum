@@ -1,10 +1,13 @@
 import BN from 'bn.js';
-import { sorting } from '../../base';
+
+import { t } from '../../base/meta';
 import { assert } from '../../base/asserts';
+import { SortedArray } from '../../base/sorting';
 import { Amount, maxUint256 } from '../../base/big-number';
 import { AddressOn } from '../address';
-import { NetworkName } from '../web3-instance';
-import { TokenInfo } from './types';
+import { NetworkName, Web3On } from '../web3-instance';
+import { TokenInfo, TimestampedTransferEvent } from './types';
+import { getBlockTimestamp } from '../block';
 
 /**
  * Gets the balance of `account` on an ERC20 token in units of `wei`.
@@ -91,4 +94,89 @@ type WeiToTokenAmountParams = {
 function weiToTokenAmount({ wei, decimals }: WeiToTokenAmountParams): string {
   const scaleFactor = new BN(10).pow(new BN(18 - decimals));
   return wei.div(scaleFactor).toString();
+}
+
+export async function getAllTransferEvents<Net extends NetworkName>(
+  { instance }: TokenInfo<Net>,
+  address?: string,
+  fromBlock = 0,
+  toBlock: number | 'latest' = 'latest',
+) {
+  return instance.getPastEvents('Transfer', {
+    address,
+    fromBlock,
+    toBlock,
+  });
+}
+
+export async function getAllTransferTransactions<Net extends NetworkName>(
+  web3: Web3On<Net>,
+  contract: TokenInfo<Net>,
+  address?: string,
+  fromBlock = 0,
+  toBlock: number | 'latest' = 'latest',
+) {
+  const events = await getAllTransferEvents(
+    contract,
+    address,
+    fromBlock,
+    toBlock,
+  );
+
+  const txs = await Promise.all(
+    events.map(async ({ transactionHash }) =>
+      t(transactionHash, await web3.eth.getTransaction(transactionHash)),
+    )
+  );
+
+  const sorted = SortedArray.createFromUnsorted(
+    txs,
+    (a, b) => a[0].localeCompare(b[0]),
+    tx => tx[0],
+  );
+
+  return sorted.uniq().array;
+}
+
+export async function getAllTransferInfo<Net extends NetworkName>(
+  web3: Web3On<Net>,
+  contract: TokenInfo<Net>,
+  address?: string,
+  fromBlock = 0,
+  toBlock: number | 'latest' = 'latest',
+) {
+  const events = await getAllTransferEvents(
+    contract,
+    address,
+    fromBlock,
+    toBlock,
+  );
+
+  const eventsWithTimestamp: TimestampedTransferEvent[] = [];
+
+  for (const { transactionHash, returnValues } of events) {
+    const { blockNumber } = await web3.eth.getTransaction(transactionHash);
+
+    if (!blockNumber) {
+      continue;
+    }
+
+    const blockTimestamp = await getBlockTimestamp(web3, blockNumber);
+
+    eventsWithTimestamp.push({
+      from: returnValues.from,
+      to: returnValues.to,
+      value: returnValues.value,
+      blockNumber,
+      blockTimestamp
+    });
+  }
+
+  const sorted = SortedArray.createFromSortedUnsafe(
+    eventsWithTimestamp,
+    (a, b) => a.blockTimestamp - b.blockTimestamp,
+    tx => tx.blockTimestamp,
+  );
+
+  return sorted;
 }

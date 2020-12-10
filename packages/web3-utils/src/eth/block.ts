@@ -20,7 +20,7 @@ export async function getBlockAverageTime<Net extends NetworkName>(
   let prevTimestamp = firstBlock.timestamp;
   for (let i = blockNumber - span + 1; i <= blockNumber; i++) {
     const block = await web3.eth.getBlock(i);
-    let time = toBN(block.timestamp).sub(toBN(prevTimestamp));
+    const time = toBN(block.timestamp).sub(toBN(prevTimestamp));
     prevTimestamp = block.timestamp;
     times.push(parseInt(time.toString()));
   }

@@ -12,3 +12,11 @@ export interface ContractInfo<Net extends NetworkName, Contract extends BaseCont
   address: AddressOn<Net>;
   instance: Contract;
 }
+
+export type TimestampedTransferEvent = {
+  blockNumber: number,
+  blockTimestamp: number
+  from: string,
+  to: string,
+  value: string,
+};
