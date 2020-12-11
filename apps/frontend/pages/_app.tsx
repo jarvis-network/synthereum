@@ -7,6 +7,7 @@ import { styled } from '@jarvis-network/ui';
 import { useStore } from '@/state/store';
 import { AppThemeProvider } from '@/components/AppThemeProvider';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import { FullScreenLoader } from '@/components/FullScreenLoader';
 
 import './_app.css';
 import 'react-table/react-table.css';
@@ -26,6 +27,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AppThemeProvider>
         <AuthProvider>
           <MainWrapper>
+            <FullScreenLoader />
             <Component {...pageProps} />
           </MainWrapper>
         </AuthProvider>

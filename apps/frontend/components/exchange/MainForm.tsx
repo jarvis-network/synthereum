@@ -12,11 +12,14 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { setFullScreenLoaderVisible } from '@/state/slices/app';
 import { Asset as AssetType } from '@/data/assets.ts';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { Fees } from '@/components/exchange/Fees';
 import { useExchangeValues } from '@/utils/useExchangeValues';
+
+import { useSwap } from '@/components/exchange/useSwap';
 
 import { Asset } from './Asset';
 import { Max } from './Max';
@@ -145,6 +148,8 @@ export const MainForm: React.FC<Props> = () => {
     receiveString,
   } = useExchangeValues();
 
+  const swap = useSwap();
+
   const wallet = useReduxSelector(state => state.wallet[paySymbol] || null);
 
   const balance = wallet ? wallet.amount : new FPN(0);
@@ -179,7 +184,17 @@ export const MainForm: React.FC<Props> = () => {
   const swapDisabled =
     !Number(payString) || !Number(receiveString) || insufficientBalance;
 
-  const fees = (!swapDisabled || true) && <Fees />;
+  const fees = !swapDisabled && <Fees />;
+
+  const doSwap = async () => {
+    dispatch(setFullScreenLoaderVisible(true));
+    try {
+      await swap?.();
+    } catch (e) {
+      console.error(e); // @TODO needs proper error handler
+    }
+    dispatch(setFullScreenLoaderVisible(false));
+  };
 
   return (
     <>
@@ -230,7 +245,7 @@ export const MainForm: React.FC<Props> = () => {
       </ExchangeBox>
       <Footer>
         <ExchangeRate />
-        <SwapButton disabled={swapDisabled} type="success">
+        <SwapButton disabled={swapDisabled} type="success" onClick={doSwap}>
           Swap
         </SwapButton>
       </Footer>

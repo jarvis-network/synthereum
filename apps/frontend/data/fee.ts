@@ -3,5 +3,6 @@ import { fees } from '@jarvis-network/synthereum-contracts/dist/src/config/data/
 
 // FIXME: the fee should be calculated per realm:
 const FEE = new FPN(fees[42].feePercentage);
+// const FEE = new FPN(0.002);
 
 export { FEE };

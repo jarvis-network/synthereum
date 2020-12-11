@@ -23,25 +23,69 @@ export const useExchangeValues = () => {
 
   const rate = useRate(paySymbol, receiveSymbol);
 
-  const payValue =
-    base === 'pay'
-      ? new FPN(pay)
-      : rate
-      ? new FPN(receive)
-          .div(rate.rate)
-          .add(new FPN(receive).div(rate.rate).mul(FEE))
-      : null;
-  const payString = payValue ? payValue.format() : '';
+  let fee = null;
+  let payValue = null;
+  let receiveValue = null;
+  let netCollateral = null;
+  let grossCollateral = null;
+  let transactionCollateral = null;
 
-  const receiveValue =
-    base === 'receive'
-      ? new FPN(receive)
-      : rate
-      ? new FPN(pay).mul(rate.rate).sub(new FPN(pay).mul(rate.rate).mul(FEE))
-      : null;
-  const receiveString = receiveValue ? receiveValue.format() : '';
+  // eslint-disable-next-line no-empty
+  if (paySymbol === receiveSymbol || !assetPay?.price || !assetReceive?.price) {
+  } else if (paySymbol === 'USDC') {
+    // mint
+    if (base === 'pay') {
+      payValue = new FPN(pay);
+      grossCollateral = payValue;
+      netCollateral = grossCollateral.div(new FPN(1).add(FEE));
+      transactionCollateral = netCollateral;
+      receiveValue = netCollateral.mul(assetReceive.price);
+    } else {
+      receiveValue = new FPN(receive);
+      netCollateral = receiveValue.div(assetReceive.price);
+      grossCollateral = netCollateral.mul(new FPN(1).add(FEE));
+      transactionCollateral = netCollateral;
+      payValue = grossCollateral;
+    }
+  } else if (receiveSymbol === 'USDC') {
+    // redeem
+    if (base === 'pay') {
+      payValue = new FPN(pay);
+      grossCollateral = payValue.div(assetPay.price);
+      netCollateral = grossCollateral.mul(new FPN(1).sub(FEE));
+      transactionCollateral = grossCollateral;
+      receiveValue = netCollateral;
+    } else {
+      receiveValue = new FPN(receive);
+      netCollateral = receiveValue;
+      grossCollateral = netCollateral.div(new FPN(1).sub(FEE));
+      transactionCollateral = grossCollateral;
+      payValue = grossCollateral.mul(assetPay.price);
+    }
+  } else {
+    // exchange
+    // eslint-disable-next-line no-lonely-if
+    if (base === 'pay') {
+      payValue = new FPN(pay);
+      grossCollateral = payValue.div(assetPay.price);
+      netCollateral = grossCollateral.mul(new FPN(1).sub(FEE));
+      transactionCollateral = grossCollateral;
+      receiveValue = netCollateral.mul(assetReceive.price);
+    } else {
+      receiveValue = new FPN(receive);
+      netCollateral = receiveValue.div(assetReceive.price);
+      grossCollateral = netCollateral.div(new FPN(1).sub(FEE));
+      transactionCollateral = grossCollateral;
+      payValue = grossCollateral.mul(assetPay.price);
+    }
+  }
 
-  const fee = payValue ? payValue.mul(FEE) : null;
+  if (grossCollateral && netCollateral) {
+    fee = grossCollateral.sub(netCollateral);
+  }
+
+  const payString = payValue?.format() || '';
+  const receiveString = receiveValue?.format() || '';
 
   return {
     fee,
@@ -57,5 +101,6 @@ export const useExchangeValues = () => {
     payString,
     receiveValue,
     receiveString,
+    transactionCollateral,
   };
 };

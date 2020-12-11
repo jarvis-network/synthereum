@@ -4,6 +4,7 @@ import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { FEE } from '@/data/fee';
+import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 const Container = styled.div`
   display: flex;
@@ -65,7 +66,7 @@ export const Fees: React.FC = props => {
           </Tooltip>
         </Key>
         <Value>
-          {fee?.format(5)} {paySymbol}
+          {fee?.format(5)} {PRIMARY_STABLE_COIN.symbol}
         </Value>
       </Line>
     </Container>

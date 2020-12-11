@@ -38,6 +38,7 @@ export interface State {
     isAccountOverviewModalVisible: boolean;
     isRecentActivityModalVisible: boolean;
     isAccountDropdownExpanded: boolean;
+    isFullScreenLoaderVisible: boolean;
   };
   auth: Omit<UserState, 'wallet'> | null;
   assets: {
@@ -74,6 +75,7 @@ export const initialState: State = {
     isAccountOverviewModalVisible: false,
     isRecentActivityModalVisible: false,
     isAccountDropdownExpanded: false,
+    isFullScreenLoaderVisible: false,
   },
   auth: null,
   assets: {
