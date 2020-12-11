@@ -3034,10 +3034,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@jarvis-network/ui@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.npmjs.org/@jarvis-network/ui/-/ui-0.7.0.tgz#28ef5e7b42f38f71fe8568ee54c1893b58fd11e5"
-  integrity sha512-NQhT0+5YtTDRRt+FppJv/BIM90p/8/IFks8IFwDHYhTpeda3BH7Z58kzJ5dXrJkp7JOpFNOZLoQ8+NwRG+/duA==
+"@jarvis-network/ui@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.npmjs.org/@jarvis-network/ui/-/ui-0.7.1.tgz#fcc103419cc0b57d05dee52460b1f2bf47cd8f64"
+  integrity sha512-vUxwd+B6fD/tWOIy6CSzTB50JMic6I0SVe3KvkviyRCzDkygdrjWL92sH7GwsLGBakjh+JjmG+Bm1/op+oGkbA==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"
@@ -7500,7 +7500,7 @@ bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.10.0, bn.js@^4.11.0, bn.js@^4.11.1, bn.js@^
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.9.tgz#26d556829458f9d1e81fc48952493d0ba3507828"
   integrity sha512-E6QoYqCKZfgatHTdHzs1RRKP7ip4vvm+EyRUeE2RF0NblwVvb0p6jSVeNTOFxPn26QXN2o6SMfNxKp6kU8zQaw==
 
-bn.js@^5.1.2, bn.js@^5.1.3:
+bn.js@^5.1.2:
   version "5.1.3"
   resolved "https://registry.npmjs.org/bn.js/-/bn.js-5.1.3.tgz#beca005408f642ebebea80b042b4d18d2ac0ee6b"
   integrity sha512-GkTiFpjFtUzU9CbMeJ5iazkCzGL3jrhzerzZIuqLABjbwRaFt33I9tUdSNryIptM+RxDet6OKm2WnLXzW51KsQ==
