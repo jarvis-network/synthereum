@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
-import { styled, Tooltip, Switcher, themeValue } from '@jarvis-network/ui';
+import React from 'react';
+import { styled, Tooltip, themeValue } from '@jarvis-network/ui';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+
+import { useExchangeValues } from '@/utils/useExchangeValues';
+import { FEE } from '@/data/fee';
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  margin-top: 5px;
+  justify-content: flex-end;
+`;
+
+const Line = styled.div`
   background: ${themeValue(
     { dark: '#272727', night: '#29303c' },
     theme => theme.border.secondary,
   )};
-  margin-top: 5px;
-  padding: 0 30px;
-`;
-
-const Line = styled.div`
+  padding: 5px 30px;
   display: flex;
   font-size: 10px;
   justify-content: space-between;
@@ -40,39 +47,26 @@ const QuestionMark = styled.span`
   }
 `;
 
-const speedItems = ['Normal', 'Fast', 'Instant'];
-
-const slippageText = 'lorem ipsum';
+const feeText =
+  `A ${FEE.mul(new FPN(100)).format()}% protocol fee is taken on every` +
+  ` transaction. The funds are after that evenly split between the Liquidity` +
+  ` provider and the Jarvis DAO`;
 
 export const Fees: React.FC = props => {
-  const [selected, setSelected] = useState(0);
+  const { paySymbol, fee } = useExchangeValues();
 
   return (
     <Container>
       <Line>
         <Key>
-          Slippage
-          <Tooltip tooltip={slippageText}>
+          Protocol Fee
+          <Tooltip tooltip={feeText}>
             <QuestionMark />
           </Tooltip>
         </Key>
-        <Value>0%</Value>
-      </Line>
-      <Line>
-        <Key>Fee</Key>
-        <Value>0.003 USDC</Value>
-      </Line>
-      <Line>
-        <Key>Network fee</Key>
-        <Value>0.03 ETH</Value>
-      </Line>
-      <Line>
-        <Key>Transaction speed</Key>
-        <Switcher
-          items={speedItems}
-          onChange={value => setSelected(speedItems.indexOf(value))}
-          selected={selected}
-        />
+        <Value>
+          {fee?.format(5)} {paySymbol}
+        </Value>
       </Line>
     </Container>
   );
