@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, themeValue } from '@jarvis-network/ui';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { State } from '@/state/initialState';
 import {
@@ -11,6 +12,7 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { Asset as AssetType } from '@/data/assets.ts';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { Fees } from '@/components/exchange/Fees';
@@ -108,22 +110,55 @@ const ErrorMessage = styled.div`
   left: 0;
 `;
 
+const allowedKeys = [...'0123456789.'.split('')];
+
+const handleKeyPress = (
+  e: React.KeyboardEvent<HTMLInputElement>,
+  asset: AssetType,
+) => {
+  if (e.currentTarget.selectionStart !== e.currentTarget.selectionEnd) {
+    return;
+  }
+
+  const parts = e.currentTarget.value.split('.');
+  const decimals = parts[1] || '';
+
+  if (
+    !allowedKeys.includes(e.key) ||
+    (e.key === '.' && e.currentTarget.value.includes('.')) ||
+    decimals.length >= asset.decimals
+  ) {
+    e.preventDefault();
+  }
+};
+
 export const MainForm: React.FC<Props> = () => {
   const dispatch = useDispatch();
   const { base, pay, receive, payAsset, receiveAsset } = useReduxSelector(
     state => state.exchange,
   );
+  const { assetPay, assetReceive } = useReduxSelector(state => {
+    return {
+      assetPay: state.assets.list.find(a => a.symbol === payAsset),
+      assetReceive: state.assets.list.find(a => a.symbol === receiveAsset),
+    };
+  });
   const wallet = useReduxSelector(state => state.wallet[payAsset] || null);
   const rate = useRate(payAsset, receiveAsset);
 
-  const balance = wallet ? wallet.amount : 0;
+  const balance = wallet ? wallet.amount : new FPN(0);
 
   const payValue =
-    base === 'pay' ? pay : rate ? String(Number(receive) / rate.rate) : '';
-  const receiveValue =
-    base === 'receive' ? receive : rate ? String(Number(pay) * rate.rate) : '';
+    base === 'pay' ? pay : rate ? new FPN(receive).div(rate.rate).format() : '';
 
-  const insufficientBalance = Number(payValue) > balance;
+  const receiveValue =
+    base === 'receive'
+      ? receive
+      : rate
+      ? new FPN(pay).mul(rate.rate).format()
+      : '';
+
+  const insufficientBalance = new FPN(pay).gt(balance);
 
   const updateBase = (baseValue: State['exchange']['base']) => {
     dispatch(setBase(baseValue));
@@ -162,6 +197,7 @@ export const MainForm: React.FC<Props> = () => {
         <Max />
         <Amount
           value={payValue}
+          onKeyPress={e => handleKeyPress(e, assetPay!)}
           onChange={e => {
             updateBase('pay');
             updatePay(e.target.value);
@@ -171,7 +207,7 @@ export const MainForm: React.FC<Props> = () => {
               updatePay('');
             }
           }}
-          disabled={!payAsset}
+          disabled={!assetPay}
           placeholder="0"
         />
         <Asset type="pay" />
@@ -186,6 +222,7 @@ export const MainForm: React.FC<Props> = () => {
         <Title>You receive</Title>
         <Amount
           value={receiveValue}
+          onKeyPress={e => handleKeyPress(e, assetReceive!)}
           onChange={e => {
             updateBase('receive');
             updateReceive(e.target.value);
@@ -195,7 +232,7 @@ export const MainForm: React.FC<Props> = () => {
               updateReceive('');
             }
           }}
-          disabled={!receiveAsset}
+          disabled={!assetReceive}
           placeholder="0"
         />
         <Asset type="receive" />

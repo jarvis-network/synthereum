@@ -10,13 +10,6 @@ export const useRate = (
       return null;
     }
 
-    if (inputSymbol === outputSymbol) {
-      // should not happen, but left just in case, to avoid crashing UI
-      return {
-        rate: 1,
-      };
-    }
-
     const inputAsset = state.assets.list.find(
       asset => asset.symbol === inputSymbol,
     );
@@ -35,7 +28,7 @@ export const useRate = (
     }
 
     return {
-      rate: outputAsset.price / inputAsset.price,
+      rate: outputAsset.price.div(inputAsset.price),
     };
   });
 };

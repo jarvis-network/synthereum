@@ -18,7 +18,6 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { formatRate } from '@/utils/format';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import { Asset, AssetPair } from '@/data/assets';
 
@@ -48,7 +47,7 @@ const grid = {
       className: 'number',
       cell: ({ original }: CellInfo) => {
         const o = original as AssetPair;
-        return formatRate(o.input.price / o.output.price);
+        return o.input.price.div(o.output.price).format(5);
       },
     },
   ],

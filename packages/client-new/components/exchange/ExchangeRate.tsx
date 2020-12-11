@@ -4,7 +4,6 @@ import { styled, themeValue } from '@jarvis-network/ui';
 
 import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
 import { useRate } from '@/utils/useRate';
-import { formatRate } from '@/utils/format';
 import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
@@ -54,7 +53,7 @@ export const ExchangeRate: React.FC = () => {
 
   return (
     <Container>
-      <Rate>{formatRate(rate.rate)}</Rate>
+      <Rate>{rate.rate.format(5)}</Rate>
       <Assets>
         {invertRateInfo ? payAsset : receiveAsset} per{' '}
         {invertRateInfo ? receiveAsset : payAsset}

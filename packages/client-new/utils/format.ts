@@ -1,18 +1,7 @@
-import { PRIMARY_STABLE_COIN } from '@/data/assets';
-import {
-  TransactionIO,
-  TransactionStatus,
-  TransactionType,
-} from '@/data/transactions';
-import BN from 'bn.js';
+import { TransactionStatus, TransactionType } from '@/data/transactions';
 
 export const toUpperFirst = (str: string) =>
   `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
-
-export const formatTokenPriceBN = (value: BN) =>
-  `${value.toString(10)} ${PRIMARY_STABLE_COIN.name}`;
-
-export const formatRate = (value: number) => value.toFixed(5);
 
 // Dates
 const MonthsLabelMap = [

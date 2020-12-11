@@ -9,18 +9,14 @@ import {
   Tabs,
   themeValue,
 } from '@jarvis-network/ui';
-import BN from 'bn.js';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { StyledCard } from '@/components/exchange/StyledCard';
-import { Asset, AssetWithWalletInfo, PRIMARY_STABLE_COIN } from '@/data/assets';
+import { Asset, AssetWithWalletInfo } from '@/data/assets';
 import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-import {
-  Amount,
-  formatAmount,
-} from '@jarvis-network/web3-utils/base/big-number';
 
 import type { RowInfo } from 'react-table';
 
@@ -72,12 +68,8 @@ const grid = {
         const o = original as AssetWithWalletInfo;
         return (
           <>
-            <div className="value">
-              {formatAmount(o.ownedAmount, o.decimals)}
-            </div>
-            <div className="dollars">
-              $ {formatAmount(o.stableCoinValue, PRIMARY_STABLE_COIN.decimals)}
-            </div>
+            <div className="value">{o.ownedAmount.format(5)}</div>
+            <div className="dollars">$ {o.stableCoinValue.format(2)}</div>
           </>
         );
       },
@@ -216,13 +208,11 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const list = useReduxSelector(state => {
     return state.assets.list.map(
       (asset): AssetWithWalletInfo => {
-        const ownedAmount = state.wallet[asset.symbol]?.amount || new BN('0');
+        const ownedAmount = state.wallet[asset.symbol]?.amount || new FPN('0');
 
         return {
           ...asset,
-          stableCoinValue: ownedAmount
-            .mul(new BN(asset.price * 10 ** asset.decimals))
-            .div(new BN(10 ** asset.decimals)) as Amount,
+          stableCoinValue: ownedAmount.mul(asset.price),
           ownedAmount,
         };
       },
@@ -232,7 +222,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const ownedAssets = useReduxSelector(state => {
     return Object.entries(state.wallet)
       .filter(([key, value]) => {
-        return value.amount.gt(new BN('0'));
+        return value.amount.gt(new FPN('0'));
       })
       .map(([symbol]) => symbol);
   });

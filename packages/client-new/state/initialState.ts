@@ -1,29 +1,19 @@
 import { ThemeNameType } from '@jarvis-network/ui';
-import { UserState, Wallet } from 'bnc-onboard/dist/src/interfaces';
+import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
 import { fakeWallet } from '@/data/fakeWallet.ts';
-import { Address } from '@jarvis-network/web3-utils/eth/address';
-import { Amount } from '@jarvis-network/web3-utils/base/big-number';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 type Values = 'pay' | 'receive';
 
 export interface WalletInfo {
-  amount: Amount;
+  amount: FPN;
 }
 
 export interface Rate {
-  rate: number;
-}
-
-export interface Auth {
-  address: Address;
-  network: number;
-  balance: string;
-  wallet: Wallet;
-  mobileDevice: boolean;
-  appNetworkId: number;
+  rate: FPN;
 }
 
 export interface State {
@@ -41,7 +31,7 @@ export interface State {
     // pay/receive are stored as string to allow incomplete input fills while
     // typing ie. "1." (mind the dot) - forcing a number instantly will cause
     // dot to be removed as typed
-    // these values should be casted to number when needed
+    // these values should be casted/converted when needed
     pay: string;
     receive: string;
     base: Values;

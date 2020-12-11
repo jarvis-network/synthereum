@@ -1,16 +1,13 @@
 import React, { FC } from 'react';
 import { styled, Flag } from '@jarvis-network/ui';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
-import {
-  Amount as BNAmount,
-  formatAmount,
-} from '@jarvis-network/web3-utils/base/big-number';
 import { Asset, PRIMARY_STABLE_COIN } from '@/data/assets';
 
 export interface AssetRowProps {
   asset: Asset;
-  amount: BNAmount;
-  value: BNAmount;
+  amount: FPN;
+  value: FPN;
 }
 
 const Container = styled.div`
@@ -59,9 +56,9 @@ export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value }) => (
       <Title>{asset.symbol}</Title>
     </Information>
     <Details>
-      <Amount>{formatAmount(amount, asset.decimals)}</Amount>
+      <Amount>{amount.format(2)}</Amount>
       <Value>
-        {formatAmount(value, asset.decimals)} {PRIMARY_STABLE_COIN.symbol}
+        {value.format(2)} {PRIMARY_STABLE_COIN.symbol}
       </Value>
     </Details>
   </Container>

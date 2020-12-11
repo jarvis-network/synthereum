@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
 import React, { FC, useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, ModalContent } from '@jarvis-network/ui';
-import BN from 'bn.js';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
@@ -11,17 +10,10 @@ import { setWalletBalance } from '@/state/slices/wallet';
 
 import { getAllBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
-import {
-  Amount,
-  formatAmount,
-  mapSumBN,
-} from '@jarvis-network/web3-utils/base/big-number';
-import { PRIMARY_STABLE_COIN } from '@/data/assets';
-
 import { RealmAgentContext } from '../auth/AuthProvider';
 
 interface BalanceProps {
-  total: Amount;
+  total: FPN;
 }
 
 interface AssetsProps {
@@ -48,7 +40,7 @@ const Content = styled.div`
 const Balance: FC<BalanceProps> = ({ total }) => (
   <Block>
     <Heading>Balance</Heading>
-    <Content>$ {formatAmount(total, PRIMARY_STABLE_COIN.decimals)}</Content>
+    <Content>$ {total.format(2)}</Content>
   </Block>
 );
 
@@ -81,15 +73,13 @@ export const AccountOverviewModal: FC = () => {
       return {
         asset,
         amount,
-        value: amount
-          .mul(new BN(asset.price * 10 ** asset.decimals))
-          .div(new BN(10 ** asset.decimals)) as Amount,
+        value: amount.mul(asset.price),
       };
     });
   }, [wallet, assets]);
 
   const total = useMemo(() => {
-    return mapSumBN(items, _item => _item.value);
+    return FPN.sum(items.map(_item => _item.value));
   }, [items]);
 
   const realmAgent = useContext(RealmAgentContext);
@@ -98,7 +88,10 @@ export const AccountOverviewModal: FC = () => {
       if (!realmAgent) return;
 
       const balances = await getAllBalances(realmAgent);
-      const newWallet = balances.map(([asset, amount]) => [asset, { amount }]);
+      const newWallet = balances.map(([asset, amount]) => [
+        asset,
+        { amount: FPN.fromWei(amount) },
+      ]);
       dispatch(setWalletBalance(Object.fromEntries(newWallet)));
       console.log(`Balance updated:`, newWallet);
     })();
