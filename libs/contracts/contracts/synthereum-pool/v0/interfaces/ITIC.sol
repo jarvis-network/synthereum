@@ -1,18 +1,22 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {
   FixedPoint
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   IDerivative
 } from '../../../derivative/common/interfaces/IDerivative.sol';
+import {
+  ISynthereumPoolDeployment
+} from '../../common/interfaces/IPoolDeployment.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
-interface SynthereumTICInterface {
+interface SynthereumTICInterface is ISynthereumPoolDeployment {
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and excahnges tokens
@@ -112,10 +116,6 @@ interface SynthereumTICInterface {
   //----------------------------------------
 
   function derivative() external view returns (IDerivative);
-
-  function collateralToken() external view returns (ERC20);
-
-  function syntheticToken() external view returns (ERC20);
 
   function calculateFee(uint256 collateralAmount)
     external

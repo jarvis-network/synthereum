@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
@@ -10,9 +11,10 @@ import {
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {SynthereumTICHelper} from './TICHelper.sol';
-import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 
+import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 
 /**
@@ -47,12 +49,13 @@ contract SynthereumTIC is
   using SynthereumTICHelper for Storage;
 
   struct Storage {
+    ISynthereumFinder finder;
     uint8 version;
     IDerivative derivative;
     FixedPoint.Unsigned startingCollateralization;
     address liquidityProvider;
     address validator;
-    ERC20 collateralToken;
+    IERC20 collateralToken;
     Fee fee;
     // Used with individual proportions to scale values
     uint256 totalFeeProportions;
@@ -114,6 +117,7 @@ contract SynthereumTIC is
    *      by the collateral requirement. The degree to which it is greater should be based on
    *      the expected asset volatility.
    * @param _derivative The `ExpiringMultiParty`
+   * @param _finder The Synthereum finder
    * @param _version Synthereum version
    * @param _roles The addresses of admin, maintainer, liquidity provider and validator
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
@@ -121,6 +125,7 @@ contract SynthereumTIC is
    */
   constructor(
     IDerivative _derivative,
+    ISynthereumFinder _finder,
     uint8 _version,
     Roles memory _roles,
     uint256 _startingCollateralization,
@@ -136,6 +141,7 @@ contract SynthereumTIC is
     _setupRole(VALIDATOR_ROLE, _roles.validator);
     ticStorage.initialize(
       _derivative,
+      _finder,
       _version,
       _roles.liquidityProvider,
       _roles.validator,
@@ -479,10 +485,23 @@ contract SynthereumTIC is
   //----------------------------------------
 
   /**
+   * @notice Get Synthereum finder of the pool
+   * @return finder Returns finder contract
+   */
+  function synthereumFinder()
+    external
+    view
+    override
+    returns (ISynthereumFinder finder)
+  {
+    finder = ticStorage.finder;
+  }
+
+  /**
    * @notice Get Synthereum version
    * @return poolVersion Returns the version of this Synthereum pool
    */
-  function version() external view returns (uint8 poolVersion) {
+  function version() external view override returns (uint8 poolVersion) {
     poolVersion = ticStorage.version;
   }
 
@@ -498,7 +517,7 @@ contract SynthereumTIC is
    * @notice Get the collateral token
    * @return The ERC20 collateral token
    */
-  function collateralToken() external view override returns (ERC20) {
+  function collateralToken() external view override returns (IERC20) {
     return ticStorage.collateralToken;
   }
 
@@ -506,15 +525,20 @@ contract SynthereumTIC is
    * @notice Get the synthetic token from the derivative contract
    * @return The ERC20 synthetic token
    */
-  function syntheticToken() external view override returns (ERC20) {
-    return ERC20(address(ticStorage.derivative.tokenCurrency()));
+  function syntheticToken() external view override returns (IERC20) {
+    return ticStorage.derivative.tokenCurrency();
   }
 
   /**
    * @notice Get the synthetic token symbol associated to this pool
    * @return symbol The ERC20 synthetic token symbol
    */
-  function syntheticTokenSymbol() external view returns (string memory symbol) {
+  function syntheticTokenSymbol()
+    external
+    view
+    override
+    returns (string memory symbol)
+  {
     symbol = IStandardERC20(address(ticStorage.derivative.tokenCurrency()))
       .symbol();
   }
