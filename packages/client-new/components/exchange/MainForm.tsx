@@ -16,7 +16,7 @@ import { Asset as AssetType } from '@/data/assets.ts';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { Fees } from '@/components/exchange/Fees';
-import { useRate } from '@/utils/useRate';
+import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { Asset } from './Asset';
 import { Max } from './Max';
@@ -110,23 +110,21 @@ const ErrorMessage = styled.div`
   left: 0;
 `;
 
-const allowedKeys = [...'0123456789.'.split('')];
+const allowedKeys = '0123456789.'.split('');
 
 const handleKeyPress = (
   e: React.KeyboardEvent<HTMLInputElement>,
   asset: AssetType,
 ) => {
-  if (e.currentTarget.selectionStart !== e.currentTarget.selectionEnd) {
-    return;
-  }
-
+  const somethingSelected =
+    e.currentTarget.selectionStart !== e.currentTarget.selectionEnd;
   const parts = e.currentTarget.value.split('.');
   const decimals = parts[1] || '';
 
   if (
     !allowedKeys.includes(e.key) ||
     (e.key === '.' && e.currentTarget.value.includes('.')) ||
-    decimals.length >= asset.decimals
+    (decimals.length >= asset.decimals && !somethingSelected)
   ) {
     e.preventDefault();
   }
@@ -134,29 +132,22 @@ const handleKeyPress = (
 
 export const MainForm: React.FC<Props> = () => {
   const dispatch = useDispatch();
-  const { base, pay, receive, payAsset, receiveAsset } = useReduxSelector(
-    state => state.exchange,
-  );
-  const { assetPay, assetReceive } = useReduxSelector(state => {
-    return {
-      assetPay: state.assets.list.find(a => a.symbol === payAsset),
-      assetReceive: state.assets.list.find(a => a.symbol === receiveAsset),
-    };
-  });
-  const wallet = useReduxSelector(state => state.wallet[payAsset] || null);
-  const rate = useRate(payAsset, receiveAsset);
+
+  const {
+    base,
+    pay,
+    receive,
+    paySymbol,
+    receiveSymbol,
+    assetPay,
+    assetReceive,
+    payString,
+    receiveString,
+  } = useExchangeValues();
+
+  const wallet = useReduxSelector(state => state.wallet[paySymbol] || null);
 
   const balance = wallet ? wallet.amount : new FPN(0);
-
-  const payValue =
-    base === 'pay' ? pay : rate ? new FPN(receive).div(rate.rate).format() : '';
-
-  const receiveValue =
-    base === 'receive'
-      ? receive
-      : rate
-      ? new FPN(pay).mul(rate.rate).format()
-      : '';
 
   const insufficientBalance = new FPN(pay).gt(balance);
 
@@ -173,20 +164,20 @@ export const MainForm: React.FC<Props> = () => {
   };
 
   const flipValues = () => {
-    dispatch(setPayAsset(receiveAsset));
-    dispatch(setReceiveAsset(payAsset));
+    dispatch(setPayAsset(receiveSymbol));
+    dispatch(setReceiveAsset(paySymbol));
 
     if (base === 'pay') {
       updateBase('receive');
-      updateReceive(payValue);
+      updateReceive(payString);
       return;
     }
     updateBase('pay');
-    updatePay(receiveValue);
+    updatePay(receiveString);
   };
 
   const swapDisabled =
-    !Number(payValue) || !Number(receiveValue) || insufficientBalance;
+    !Number(payString) || !Number(receiveString) || insufficientBalance;
 
   const fees = (!swapDisabled || true) && <Fees />;
 
@@ -196,14 +187,14 @@ export const MainForm: React.FC<Props> = () => {
         <Title>You pay</Title>
         <Max />
         <Amount
-          value={payValue}
+          value={base === 'pay' ? pay : payString}
           onKeyPress={e => handleKeyPress(e, assetPay!)}
           onChange={e => {
             updateBase('pay');
             updatePay(e.target.value);
           }}
           onFocus={e => {
-            if (!Number(payValue) && payValue.length) {
+            if (!Number(payString) && payString.length) {
               updatePay('');
             }
           }}
@@ -221,14 +212,14 @@ export const MainForm: React.FC<Props> = () => {
       <ExchangeBox error={false}>
         <Title>You receive</Title>
         <Amount
-          value={receiveValue}
+          value={base === 'pay' ? receiveString : receive}
           onKeyPress={e => handleKeyPress(e, assetReceive!)}
           onChange={e => {
             updateBase('receive');
             updateReceive(e.target.value);
           }}
           onFocus={e => {
-            if (!Number(receiveValue) && receiveValue.length) {
+            if (!Number(receiveString) && receiveString.length) {
               updateReceive('');
             }
           }}
