@@ -2,7 +2,7 @@ import { Initialization } from 'bnc-onboard/dist/src/interfaces';
 import { filterEmpty } from '@jarvis-network/web3-utils/base/optional';
 
 const MAIN_NETWORK_ID = 1;
-const NETWORK_ID = Number(process.env.NEXT_PUBLIC_NETWORK_ID) || 42;
+export const NETWORK_ID = Number(process.env.NEXT_PUBLIC_NETWORK_ID) || 42;
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
 
 // Note: UI crashes instantly when walletConnect is used without an key

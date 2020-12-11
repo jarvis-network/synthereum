@@ -9,14 +9,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
 import { setWalletBalance } from '@/state/slices/wallet';
 
-import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
-import {
-  getAllBalances,
-  RealmAgent,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { getAllBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
-import { isAddress } from '@jarvis-network/web3-utils/eth/address';
 import {
   Amount,
   formatAmount,
@@ -24,7 +18,7 @@ import {
 } from '@jarvis-network/web3-utils/base/big-number';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
-import { Web3Context } from '../auth/AuthProvider';
+import { RealmAgentContext } from '../auth/AuthProvider';
 
 interface BalanceProps {
   total: Amount;
@@ -98,24 +92,17 @@ export const AccountOverviewModal: FC = () => {
     return mapSumBN(items, _item => _item.value);
   }, [items]);
 
-  const web3 = useContext(Web3Context) as Web3On<'kovan'>; // FIXME
-  const address = useReduxSelector(state => state.auth?.address) ?? '';
+  const realmAgent = useContext(RealmAgentContext);
   useEffect(() => {
     (async () => {
-      if (!web3 || !isAddress<'kovan'>(address)) return;
-      console.log('Loading Realm');
-      const realm = await loadRealm(web3, 42);
-      if (!address) return;
-      console.log(`Creating Realm Agent for address: '${address}'`);
-      const agent = new RealmAgent(realm, 42, address);
-      console.log('Getting Collateral Balance');
+      if (!realmAgent) return;
 
-      const balances = await getAllBalances(agent);
+      const balances = await getAllBalances(realmAgent);
       const newWallet = balances.map(([asset, amount]) => [asset, { amount }]);
       dispatch(setWalletBalance(Object.fromEntries(newWallet)));
-      console.log(`Balance updated: ${newWallet}`);
+      console.log(`Balance updated:`, newWallet);
     })();
-  }, [web3, address]);
+  }, [realmAgent]);
 
   return (
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
