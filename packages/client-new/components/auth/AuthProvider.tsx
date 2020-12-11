@@ -9,7 +9,7 @@ import { ENSHelper } from '@/utils/ens';
 import { getOnboardConfig, NETWORK_ID } from '@/components/auth/onboardConfig';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/types';
+import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';

@@ -11,7 +11,7 @@ import {
 
 import { SynthereumRealm } from './types';
 import { allSymbols as allSyntheticAssets, SyntheticSymbol } from '../config/data/all-synthetic-asset-symbols';
-import { SupportedNetworkName } from '../config/types';
+import { SupportedNetworkName } from '../config';
 import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { t } from '@jarvis-network/web3-utils/base/meta';

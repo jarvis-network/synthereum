@@ -1,4 +1,4 @@
-import { PerAsset, SyntheticTokenConfig } from '../types';
+import { PerAsset, SyntheticTokenConfig } from '..';
 
 export const allSyntheticTokensMap: PerAsset<SyntheticTokenConfig> = {
   jEUR: {

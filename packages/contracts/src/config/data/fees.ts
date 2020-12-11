@@ -1,6 +1,6 @@
 import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
-import { Fees, PerNetwork } from '../types';
+import { Fees, PerNetwork } from '..';
 
 export const fees = typeCheck<PerNetwork<Fees>>()({
   '42': {

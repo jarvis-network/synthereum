@@ -1,4 +1,4 @@
-import { Roles, PerNetwork } from '../types';
+import { Roles, PerNetwork } from '..';
 import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
 import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 

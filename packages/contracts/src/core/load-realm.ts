@@ -22,7 +22,7 @@ import type {
   PerAsset,
   SupportedNetworkId,
   SupportedNetworkName,
-} from '../config/types';
+} from '../config';
 import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 
 /**

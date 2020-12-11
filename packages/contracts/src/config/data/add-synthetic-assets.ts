@@ -1,4 +1,4 @@
-import { SyntheticTokenConfig } from '../types';
+import { SyntheticTokenConfig } from '..';
 
 export const addSyntheticAssets: SyntheticTokenConfig[] = [
   {

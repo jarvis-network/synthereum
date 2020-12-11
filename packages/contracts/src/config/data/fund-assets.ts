@@ -1,5 +1,5 @@
 import { wei } from '@jarvis-network/web3-utils/base/big-number';
-import { AssetFundingConfig } from '../types';
+import { AssetFundingConfig } from '..';
 
 export const fundAssets: AssetFundingConfig = {
   jEUR: wei('100000000'),

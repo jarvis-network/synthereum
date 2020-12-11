@@ -1,4 +1,4 @@
-import { TicConfig } from '../types';
+import { TicConfig } from '..';
 
 export const ticConfig: TicConfig = {
   expirationTimestamp: 1625097600,

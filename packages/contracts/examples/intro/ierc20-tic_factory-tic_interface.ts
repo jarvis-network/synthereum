@@ -5,7 +5,7 @@ import {
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
 import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { SupportedNetworkId } from '../../src/config/types';
+import { SupportedNetworkId } from '../../src/config';
 import { loadRealm } from '../../src/core/load-realm';
 import { getAllBalances, RealmAgent } from '../../src/core/realm-agent';
 

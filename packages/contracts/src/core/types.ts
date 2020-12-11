@@ -1,4 +1,4 @@
-import { PerAsset, SupportedNetworkName } from '../config/types';
+import { PerAsset, SupportedNetworkName } from '../config';
 import { TICFactory, TIC } from '../contracts/typechain';
 import { TokenInfo, ContractInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 
