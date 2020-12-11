@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
@@ -9,8 +10,8 @@ import {
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
 
 /**
  * @notice TIC implementation is stored here to reduce deployment costs
@@ -39,6 +40,7 @@ library SynthereumTICHelper {
    *      the expected asset volatility.
    * @param self Data type the library is attached to
    * @param _derivative The `ExpiringMultiParty`
+   * @param _finder The Synthereum finder
    * @param _version Synthereum version
    * @param _liquidityProvider The liquidity provider
    * @param _validator The address that validates mint and exchange requests
@@ -47,17 +49,21 @@ library SynthereumTICHelper {
   function initialize(
     SynthereumTIC.Storage storage self,
     IDerivative _derivative,
+    ISynthereumFinder _finder,
     uint8 _version,
     address _liquidityProvider,
     address _validator,
     FixedPoint.Unsigned memory _startingCollateralization
   ) public {
     self.derivative = _derivative;
+    self.finder = _finder;
     self.version = _version;
     self.liquidityProvider = _liquidityProvider;
     self.validator = _validator;
     self.startingCollateralization = _startingCollateralization;
-    self.collateralToken = ERC20(address(self.derivative.collateralCurrency()));
+    self.collateralToken = IERC20(
+      address(self.derivative.collateralCurrency())
+    );
   }
 
   /**
