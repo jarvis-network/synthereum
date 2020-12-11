@@ -1,6 +1,6 @@
 {
   "name": "@jarvis-network/synthereum-validator",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "",
   "bin": {
     "synfiat-keeper": "./dist/index.js"
@@ -9,36 +9,23 @@
     "dist"
   ],
   "scripts": {
-    "prebulishOnly": "npm ci && npm run build",
-    "clean": "rm -rvf $PWD./dist",
-    "lint": "tslint -p tsconfig.json",
-    "prebuild": "yarn run clean",
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
+    "lint": "echo 'ESLint not configured yet!' && exit 13",
     "build": "tsc",
-    "start": "ts-node dist/index.js",
-    "start:dev": "nodemon src/index.ts | bunyan -o short"
+    "start": "yarn build",
+    "watch": "ts-node src/index.ts | bunyan -o short",
+    "start:prod": "node dist/index.js | bunyan -o short"
   },
-  "author": "Edi Sinovcic",
   "license": "MIT",
   "dependencies": {
-    "@jarvis-network/web3-utils": "*",
     "@jarvis-network/synthereum-contracts": "*",
-    "@makerdao/dai": "^0.32.5",
+    "@jarvis-network/web3-utils": "*",
     "axios": "^0.20.0",
     "bunyan": "^1.8.14",
-    "chalk": "^4.1.0",
-    "dotenv": "^8.2.0",
-    "ts-node": "^9.0.0",
-    "web3": "^1.3.0",
-    "workspace": "^0.0.1-preview.1",
-    "yargs": "^16.0.3"
+    "web3": "^1.3.0"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.6",
-    "@types/node": "^14.14.2",
-    "@types/yargs": "^15.0.7",
-    "nodemon": "2.0.4",
-    "ts-node": "^9.0.0",
-    "tslint": "^6.1.3",
-    "typescript": "^4.0.5"
+    "@types/node": "^14.14.2"
   }
 }
