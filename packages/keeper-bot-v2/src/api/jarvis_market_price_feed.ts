@@ -1,5 +1,6 @@
+import { URLSearchParams } from 'url';
 import axios from 'axios';
-import { base } from "@jarvis-network/web3-utils";
+import { isFinite } from "@jarvis-network/web3-utils/base/asserts";
 
 export type OHLC = {
   o: [number] | [];
@@ -21,7 +22,7 @@ export async function getPriceFeedOhlc(priceFeed: string, requestTime: string) {
     `${endpoint}?${query.toString()}`,
   );
   const price = ohlc?.c?.[0];
-  return base.asserts.isFinite(price)
+  return isFinite(price)
     ? priceFeed === 'USDCHF'
       ? 1 / price
       : price
