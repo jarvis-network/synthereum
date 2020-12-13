@@ -96,7 +96,6 @@ export const AuthProvider: React.FC = ({ children }) => {
 
       const rlmAgent = new RealmAgent<'kovan'>(
         realm,
-        NETWORK_ID as SupportedNetworkId,
         address as AddressOn<typeof netId>,
       );
       setRealmAgent(rlmAgent);

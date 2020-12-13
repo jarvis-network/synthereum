@@ -9,7 +9,7 @@ import {
   setTokenAllowance,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
-import { SynthereumRealm } from './types';
+import { SynthereumRealmWithWeb3 } from './types';
 import { allSymbols as allSyntheticAssets, SyntheticSymbol } from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config';
 import { NonPayableTransactionObject } from '../contracts/typechain';
@@ -45,8 +45,7 @@ interface RedeemParams extends BaseTxParams {
 
 export class RealmAgent<Net extends SupportedNetworkName> {
   constructor(
-    public readonly realm: SynthereumRealm<Net>,
-    public readonly netId: ToNetworkId<Net>,
+    public readonly realm: SynthereumRealmWithWeb3<Net>,
     public readonly agentAddress: AddressOn<Net>,
   ) {}
 
@@ -139,7 +138,7 @@ export class RealmAgent<Net extends SupportedNetworkName> {
   private sendTx<T>(tx: NonPayableTransactionObject<T>, txOptions: GasOptions) {
     return tx.send({
       from: this.agentAddress,
-      chainId: this.netId,
+      chainId: this.realm.netId,
       gas: txOptions?.gasLimit?.toString(10),
       gasPrice: txOptions?.gasPrice?.toString(10),
     });

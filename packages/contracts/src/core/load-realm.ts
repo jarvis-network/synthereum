@@ -11,7 +11,7 @@ import type {
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 
-import type { SynthereumPool, SynthereumRealm } from './types';
+import type { SynthereumPool, SynthereumRealmWithWeb3 } from './types';
 
 import { TICFactory_Abi, TIC_Abi, ERC20_Abi } from '../contracts/abi';
 
@@ -33,11 +33,11 @@ import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 export async function loadRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
-): Promise<SynthereumRealm<Net>> {
+): Promise<SynthereumRealmWithWeb3<Net>> {
   const config: ContractDependencies =
     contractDependencies[netId as SupportedNetworkId];
 
-  return loadCustomRealm(web3, config);
+  return loadCustomRealm(web3, netId, config);
 }
 
 /**
@@ -47,8 +47,9 @@ export async function loadRealm<Net extends SupportedNetworkName>(
  */
 export async function loadCustomRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
+  netId: ToNetworkId<Net>,
   config: ContractDependencies,
-): Promise<SynthereumRealm<Net>> {
+): Promise<SynthereumRealmWithWeb3<Net>> {
   let ticFactory = getContract(web3, TICFactory_Abi, config.ticFactory);
 
   const pools = await Promise.all(
@@ -75,6 +76,8 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   );
 
   return {
+    web3,
+    netId,
     ticFactory,
     ticInstances: Object.fromEntries(pools) as PerAsset<SynthereumPool<Net>>,
     // Assume the same collateral token for all synthetics:
