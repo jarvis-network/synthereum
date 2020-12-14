@@ -19,7 +19,7 @@
     "build:typechain-index": "node ./dist/scripts/generate_typechain_header.js ./src/contracts",
     "build:tsc": "tsc -p ./tsconfig.json",
     "truffle:kovan": "truffle console --network kovan",
-    "verify-contract:kovan": "truffle run verify TICFactory --network kovan"
+    "migrate-infrastructure:kovan": "truffle migrate --network kovan_mnemonic -f 2 --to 4"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
