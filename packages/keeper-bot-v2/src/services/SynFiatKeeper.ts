@@ -1,20 +1,26 @@
 import { Logger } from '../logger';
 import * as bunyan from 'bunyan';
 import { performance } from 'perf_hooks';
-import path from 'path';
-import fs from 'fs';
 import type { ENV } from '../config';
-import {
-  BaseContract,
-  NonPayableTransactionObject,
-  Web3Service,
-} from '@jarvis-network/web3-utils';
-import type { TICInterface } from '@jarvis-network/synthereum-contracts/src/contracts/TICInterface';
-import type { TICFactory } from '@jarvis-network/synthereum-contracts/src/contracts/TICFactory';
-import type { ERC20 } from '@jarvis-network/synthereum-contracts/src/contracts/ERC20';
-import { parseTokens, scale } from './maths';
+import { NonPayableTransactionObject } from '@jarvis-network/web3-utils';
+
+import { scale } from '@jarvis-network/web3-utils/base/big-number';
 import { getPriceFeedOhlc } from '../api/jarvis_market_price_feed';
 import { base } from '@jarvis-network/web3-utils';
+import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
+import {
+  SynthereumPool,
+  SynthereumRealmWithWeb3,
+} from '@jarvis-network/synthereum-contracts/dist/src/core/types';
+import {
+  AddressOn,
+  assertIsAddress,
+} from '@jarvis-network/web3-utils/eth/address';
+import {
+  getTokenAllowance,
+  getTokenBalance,
+  scaleTokenAmountToWei,
+} from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
 type ApproveRejectMethod = (
   id: string | number[],
@@ -29,98 +35,22 @@ type ExchangeRequest = [
   [string],
   [string],
 ];
-
-interface SyntheticInfo {
-  symbol: string;
-  priceFeed: string;
-  ticAddress: string;
-  tic: TICInterface;
-  collateralTokenAddress: string;
-  collateralToken: ERC20;
-  collateralDecimals: number;
-  syntheticTokenAddress: string;
-  syntheticToken: ERC20;
-  syntheticDecimals: number;
-}
-
-export default class SynFiatKeeper {
+export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   interval?: ReturnType<typeof setInterval>;
   maxSlippage: number;
-  syntheticInfos: SyntheticInfo[] = [];
   frequency: number;
 
   constructor(
-    private web3: Web3Service,
-    env: ENV,
-    private logger: bunyan = Logger('KeeperBot', 'logging', 'info'),
+    private readonly realm: SynthereumRealmWithWeb3<Net>,
+    { FREQUENCY, MAX_SLIPPAGE }: ENV,
+    private readonly logger: bunyan = Logger('KeeperBot', 'logging', 'info'),
   ) {
-    this.frequency = env.FREQUENCY;
-    this.maxSlippage = env.MAX_SLIPPAGE;
+    this.frequency = FREQUENCY;
+    this.maxSlippage = MAX_SLIPPAGE;
   }
 
-  async loadContracts() {
-    const ticConfig: {
-      factory_address: string;
-      synthetics: {
-        symbol: string;
-        price_feed: string;
-      }[];
-    } = JSON.parse(
-      fs
-        .readFileSync(path.resolve(__dirname, '..', '..', 'config', 'tic.json'))
-        .toString(),
-    );
-
-    // 1) Obtain TICFactory instace
-    let factory = await this.getContract<TICFactory>(
-      ticConfig.factory_address,
-      'TICFactory',
-    );
-
-    this.syntheticInfos = await Promise.all(
-      ticConfig.synthetics.map(async ({ symbol, price_feed: priceFeed }) => {
-        // 2) Get TIC instance for jEUR
-        let ticAddress = await factory.methods.symbolToTIC(symbol).call();
-        const tic = await this.getContract<TICInterface>(ticAddress, 'TIC');
-        // 3) Get the collateral token for jEUR:
-        const collateralTokenAddress = await tic.methods
-          .collateralToken()
-          .call();
-
-        const collateralToken = await this.getContract<ERC20>(
-          collateralTokenAddress,
-          'ERC20',
-        );
-        // 4) Get actual synthetic token jEUR:
-        const syntheticTokenAddress = await tic.methods.syntheticToken().call();
-
-        const syntheticToken = await this.getContract<ERC20>(
-          syntheticTokenAddress,
-          'ERC20',
-        );
-
-        const info: SyntheticInfo = {
-          symbol,
-          priceFeed,
-          tic,
-          ticAddress,
-          syntheticToken,
-          syntheticTokenAddress,
-          syntheticDecimals: parseInt(
-            await syntheticToken.methods.decimals().call(),
-            10,
-          ),
-          collateralToken,
-          collateralTokenAddress,
-          collateralDecimals: parseInt(
-            await collateralToken.methods.decimals().call(),
-            10,
-          ),
-        };
-
-        return info;
-      }),
-    );
+  get defaultAccount(): AddressOn<Net> {
+    return this.realm.web3.defaultAccount as AddressOn<Net>;
   }
 
   start() {
@@ -128,7 +58,7 @@ export default class SynFiatKeeper {
       let started: number = performance.now();
 
       Promise.all(
-        this.syntheticInfos.map(info =>
+        Object.values(this.realm.ticInstances).map(info =>
           Promise.all([
             this.checkMintRequests(info),
             this.checkRedeemRequests(info),
@@ -149,18 +79,8 @@ export default class SynFiatKeeper {
     clearInterval(base.asserts.assertNotNull(this.interval));
   }
 
-  async getContract<T extends BaseContract>(
-    address: string,
-    contractName: string,
-  ): Promise<T> {
-    return await this.web3.getContract<T>(address, {
-      type: 'build-artifact',
-      contractName: contractName,
-    });
-  }
-
   private async checkRequests<T extends [string, string, string, ...unknown[]]>(
-    info: SyntheticInfo,
+    info: SynthereumPool<Net>,
     getRequestsMethod: () => NonPayableTransactionObject<T[]>,
     approveRequestMethod: ApproveRejectMethod,
     rejectRequestMethod: ApproveRejectMethod,
@@ -172,7 +92,7 @@ export default class SynFiatKeeper {
     ) => Promise<boolean>,
   ) {
     const requests = await getRequestsMethod().call({
-      from: base.asserts.assertNotNull(this.web3.getDefaultAccount()),
+      from: this.defaultAccount,
     });
 
     this.logger.info(
@@ -203,37 +123,40 @@ export default class SynFiatKeeper {
     }
   }
 
-  private async checkMintRequests(info: SyntheticInfo) {
+  private async checkMintRequests(info: SynthereumPool<Net>) {
     await this.checkRequests<MintOrRedeemRequest>(
       info,
-      info.tic.methods.getMintRequests,
-      info.tic.methods.approveMint,
-      info.tic.methods.rejectMint,
+      info.instance.methods.getMintRequests,
+      info.instance.methods.approveMint,
+      info.instance.methods.rejectMint,
       'mint',
       async (request, price) => {
-        const collateral = parseTokens(request[3][0], info.collateralDecimals);
-        const tokens = parseTokens(request[4][0], info.syntheticDecimals);
+        const collateral = scaleTokenAmountToWei({
+          amount: request[3][0],
+          decimals: info.collateralToken.decimals,
+        });
+        const tokens = scaleTokenAmountToWei({
+          amount: request[4][0],
+          decimals: info.syntheticToken.decimals,
+        });
+        // const tokens = parseTokens(request[4][0], info.syntheticToken.decimals);
 
         this.logger.info(
           `Minting ${tokens} tokens with ${collateral} collateral`,
         );
 
-        if (collateral < scale(tokens, price * (1 - this.maxSlippage))) {
+        if (collateral.lt(scale(tokens, price * (1 - this.maxSlippage)))) {
           this.logger.info(`Mint request ${request[0]} is undercollateralized`);
           return false;
         }
 
-        const sender = request[2];
-        const allowance = parseTokens(
-          await info.collateralToken.methods
-            .allowance(sender, info.tic.options.address)
-            .call(),
-          info.collateralDecimals,
+        const sender = assertIsAddress<Net>(request[2]);
+        const allowance = await getTokenAllowance(
+          info.collateralToken,
+          sender,
+          info.address,
         );
-        const balance = parseTokens(
-          await info.collateralToken.methods.balanceOf(sender).call(),
-          info.collateralDecimals,
-        );
+        const balance = await getTokenBalance(info.collateralToken, sender);
 
         if (balance < collateral) {
           this.logger.info(
@@ -255,16 +178,22 @@ export default class SynFiatKeeper {
     );
   }
 
-  private async checkRedeemRequests(info: SyntheticInfo) {
+  private async checkRedeemRequests(info: SynthereumPool<Net>) {
     await this.checkRequests<MintOrRedeemRequest>(
       info,
-      info.tic.methods.getRedeemRequests,
-      info.tic.methods.approveRedeem,
-      info.tic.methods.rejectRedeem,
+      info.instance.methods.getRedeemRequests,
+      info.instance.methods.approveRedeem,
+      info.instance.methods.rejectRedeem,
       'redeem',
       async (request, price) => {
-        const collateral = parseTokens(request[3][0], info.collateralDecimals);
-        const tokens = parseTokens(request[4][0], info.syntheticDecimals);
+        const collateral = scaleTokenAmountToWei({
+          amount: request[3][0],
+          decimals: info.collateralToken.decimals,
+        });
+        const tokens = scaleTokenAmountToWei({
+          amount: request[4][0],
+          decimals: info.syntheticToken.decimals,
+        });
 
         this.logger.info(
           `Redeeming ${tokens} tokens with ${collateral} collateral`,
@@ -277,26 +206,22 @@ export default class SynFiatKeeper {
           return false;
         }
 
-        const sender = request[2];
-        const allowance = parseTokens(
-          await info.syntheticToken.methods
-            .allowance(sender, info.tic.options.address)
-            .call(),
-          info.syntheticDecimals,
+        const sender = assertIsAddress<Net>(request[2]);
+        const allowance = await getTokenAllowance(
+          info.syntheticToken,
+          sender,
+          info.address,
         );
-        const balance = parseTokens(
-          await info.syntheticToken.methods.balanceOf(sender).call(),
-          info.syntheticDecimals,
-        );
+        const balance = await getTokenBalance(info.syntheticToken, sender);
 
-        if (balance < tokens) {
+        if (balance.lt(tokens)) {
           this.logger.info(
             `Redeem request ${request[0]} is not covered by user's ${info.symbol} balance`,
           );
           return false;
         }
 
-        if (allowance < tokens) {
+        if (allowance.lt(tokens)) {
           this.logger.info(
             `Unable to approve redeem request ${request[0]} until TIC is given an allowance to transfer the user's collateral`,
           );
@@ -308,16 +233,18 @@ export default class SynFiatKeeper {
     );
   }
 
-  private async checkExchangeRequests(info: SyntheticInfo) {
+  private async checkExchangeRequests(info: SynthereumPool<Net>) {
     await this.checkRequests<ExchangeRequest>(
       info,
-      info.tic.methods.getExchangeRequests,
-      info.tic.methods.approveExchange,
-      info.tic.methods.rejectExchange,
+      info.instance.methods.getExchangeRequests,
+      info.instance.methods.approveExchange,
+      info.instance.methods.rejectExchange,
       'exchange',
       async (request, price, requestTime) => {
         const destTic = request[3];
-        const destinationInfo = this.syntheticInfos.find(x => x.tic.options.address === destTic);
+        const destinationInfo = Object.values(this.realm.ticInstances).find(
+          pool => pool.address === destTic,
+        );
         if (!destinationInfo) {
           this.logger.warn(`No TIC configured for address ${destTic}`);
           return false;
@@ -338,8 +265,14 @@ export default class SynFiatKeeper {
           `${symbol} was ${destPrice} for exchange request ${request[0]}`,
         );
 
-        let tokens = parseTokens(request[4][0], info.syntheticDecimals);
-        let destTokens = parseTokens(request[5][0], info.syntheticDecimals);
+        const tokens = scaleTokenAmountToWei({
+          amount: request[4][0],
+          decimals: info.syntheticToken.decimals,
+        });
+        const destTokens = scaleTokenAmountToWei({
+          amount: request[5][0],
+          decimals: info.syntheticToken.decimals,
+        });
 
         if (
           scale(tokens, price) <
@@ -351,17 +284,14 @@ export default class SynFiatKeeper {
           return false;
         }
 
-        const sender = request[2];
-        const allowance = parseTokens(
-          await info.syntheticToken.methods
-            .allowance(sender, info.tic.options.address)
-            .call(),
-          info.syntheticDecimals,
+        const sender = assertIsAddress<Net>(request[2]);
+        const allowance = await getTokenAllowance(
+          info.syntheticToken,
+          sender,
+          info.address,
         );
-        const balance = parseTokens(
-          await info.syntheticToken.methods.balanceOf(sender).call(),
-          info.syntheticDecimals,
-        );
+        const balance = await getTokenBalance(info.syntheticToken, sender);
+
         if (balance < tokens) {
           this.logger.info(
             `Exchange request ${request[0]} is not covered by user's ${info.symbol} balance`,
@@ -381,16 +311,15 @@ export default class SynFiatKeeper {
     );
   }
 
-
   async finishRequest(
     requestId: string,
     resolveCallback: ApproveRejectMethod,
     resolveLabel: string,
   ) {
     try {
-      const from = base.asserts.assertNotNull(this.web3.getDefaultAccount());
+      const from = this.defaultAccount;
 
-      const gasPrice = await this.web3.web3.eth.getGasPrice();
+      const gasPrice = await this.realm.web3.eth.getGasPrice();
       const gas = await resolveCallback(requestId).estimateGas({ from });
 
       const transaction = await resolveCallback(requestId).send({
@@ -399,7 +328,7 @@ export default class SynFiatKeeper {
         gas,
       });
       // Wait for the transaction to be mined
-      const receipt = await this.web3.getTransactionReceipt(
+      const receipt = await this.realm.web3.eth.getTransactionReceipt(
         transaction.transactionHash,
       );
 
