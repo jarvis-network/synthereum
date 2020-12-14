@@ -5,7 +5,9 @@ import {TIC} from './TIC.sol';
 import {TICInterface} from './TICInterface.sol';
 
 import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
-import {FixedPoint} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {
+  FixedPoint
+} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
