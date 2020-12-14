@@ -16,7 +16,6 @@ import type { SynthereumPool, SynthereumRealmWithWeb3 } from './types';
 import { TICFactory_Abi, TICInterface_Abi, ERC20_Abi } from '../contracts/abi';
 
 import { contractDependencies } from '../config/data/contract-dependencies';
-import { syntheticTokens } from '../config/data/all-synthetic-assets';
 import type {
   ContractDependencies,
   PerAsset,
@@ -24,6 +23,8 @@ import type {
   SupportedNetworkName,
 } from '../config';
 import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
+import { priceFeed } from '../config/data/price-feed';
+import { allSymbols } from '../config/data/all-synthetic-asset-symbols';
 
 /**
  * Load the default Synthereum Realm.
@@ -53,7 +54,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   let ticFactory = getContract(web3, TICFactory_Abi, config.ticFactory);
 
   const pools = await Promise.all(
-    syntheticTokens.map(async ({ syntheticSymbol: symbol }) => {
+    allSymbols.map(async symbol => {
       const ticAddress = assertIsAddress(
         await ticFactory.methods.symbolToTIC(symbol).call(),
       ) as AddressOn<Net>;
@@ -65,6 +66,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
         await ticInstance.methods.syntheticToken().call(),
       ) as AddressOn<Net>;
       const info: SynthereumPool<Net> = {
+        priceFeed: priceFeed[symbol],
         symbol,
         address: ticAddress,
         instance: ticInstance,

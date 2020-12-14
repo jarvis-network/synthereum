@@ -1,4 +1,4 @@
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config/types';
+import { SyntheticSymbol } from '..';
 import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 
 export type PriceFeed = {

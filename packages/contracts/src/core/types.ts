@@ -22,6 +22,7 @@ export interface SynthereumRealm<Net extends SupportedNetworkName> {
 export interface SynthereumPool<Net extends SupportedNetworkName>
   extends ContractInfo<Net, TICInterface> {
   symbol: string;
+  priceFeed: string;
   collateralToken: TokenInfo<Net>;
   syntheticToken: TokenInfo<Net>;
 }
