@@ -77,7 +77,7 @@ type TokenAmountToWeiParams = {
   decimals: number;
 };
 
-function scaleTokenAmountToWei({ amount, decimals }: TokenAmountToWeiParams) {
+export function scaleTokenAmountToWei({ amount, decimals }: TokenAmountToWeiParams) {
   assert(
     decimals > 0 && decimals <= 18,
     `Unexpected number of decimals: ${decimals}`,
@@ -91,7 +91,7 @@ type WeiToTokenAmountParams = {
   decimals: number;
 };
 
-function weiToTokenAmount({ wei, decimals }: WeiToTokenAmountParams): string {
+export function weiToTokenAmount({ wei, decimals }: WeiToTokenAmountParams): string {
   const scaleFactor = new BN(10).pow(new BN(18 - decimals));
   return wei.div(scaleFactor).toString();
 }
