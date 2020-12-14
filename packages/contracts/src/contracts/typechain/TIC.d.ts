@@ -95,6 +95,14 @@ export type RedeemRequested = ContractEventLog<{
   3: string;
   4: string;
 }>;
+export type RoleAdminChanged = ContractEventLog<{
+  role: string;
+  previousAdminRole: string;
+  newAdminRole: string;
+  0: string;
+  1: string;
+  2: string;
+}>;
 export type RoleGranted = ContractEventLog<{
   role: string;
   account: string;
@@ -442,6 +450,12 @@ export interface TIC extends BaseContract {
       cb?: Callback<RedeemRequested>
     ): EventEmitter;
 
+    RoleAdminChanged(cb?: Callback<RoleAdminChanged>): EventEmitter;
+    RoleAdminChanged(
+      options?: EventOptions,
+      cb?: Callback<RoleAdminChanged>
+    ): EventEmitter;
+
     RoleGranted(cb?: Callback<RoleGranted>): EventEmitter;
     RoleGranted(
       options?: EventOptions,
@@ -530,6 +544,13 @@ export interface TIC extends BaseContract {
     event: "RedeemRequested",
     options: EventOptions,
     cb: Callback<RedeemRequested>
+  ): void;
+
+  once(event: "RoleAdminChanged", cb: Callback<RoleAdminChanged>): void;
+  once(
+    event: "RoleAdminChanged",
+    options: EventOptions,
+    cb: Callback<RoleAdminChanged>
   ): void;
 
   once(event: "RoleGranted", cb: Callback<RoleGranted>): void;

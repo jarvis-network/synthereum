@@ -39,10 +39,12 @@ export type KnownContract =
 import type { AccessControl } from './AccessControl';
 export type { AccessControl };
 import type {
+  RoleAdminChanged as AccessControl_RoleAdminChanged,
   RoleGranted as AccessControl_RoleGranted,
   RoleRevoked as AccessControl_RoleRevoked,
 } from './AccessControl';
 export namespace AccessControl_Events {
+  export type RoleAdminChanged = AccessControl_RoleAdminChanged;
   export type RoleGranted = AccessControl_RoleGranted;
   export type RoleRevoked = AccessControl_RoleRevoked;
 }
@@ -372,6 +374,7 @@ import type {
   RedeemApproved as TIC_RedeemApproved,
   RedeemRejected as TIC_RedeemRejected,
   RedeemRequested as TIC_RedeemRequested,
+  RoleAdminChanged as TIC_RoleAdminChanged,
   RoleGranted as TIC_RoleGranted,
   RoleRevoked as TIC_RoleRevoked,
   SetFeePercentage as TIC_SetFeePercentage,
@@ -387,6 +390,7 @@ export namespace TIC_Events {
   export type RedeemApproved = TIC_RedeemApproved;
   export type RedeemRejected = TIC_RedeemRejected;
   export type RedeemRequested = TIC_RedeemRequested;
+  export type RoleAdminChanged = TIC_RoleAdminChanged;
   export type RoleGranted = TIC_RoleGranted;
   export type RoleRevoked = TIC_RoleRevoked;
   export type SetFeePercentage = TIC_SetFeePercentage;
@@ -396,10 +400,12 @@ export namespace TIC_Events {
 import type { TICFactory } from './TICFactory';
 export type { TICFactory };
 import type {
+  RoleAdminChanged as TICFactory_RoleAdminChanged,
   RoleGranted as TICFactory_RoleGranted,
   RoleRevoked as TICFactory_RoleRevoked,
 } from './TICFactory';
 export namespace TICFactory_Events {
+  export type RoleAdminChanged = TICFactory_RoleAdminChanged;
   export type RoleGranted = TICFactory_RoleGranted;
   export type RoleRevoked = TICFactory_RoleRevoked;
 }

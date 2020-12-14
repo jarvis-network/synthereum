@@ -21,6 +21,14 @@ interface EventOptions {
   topics?: string[];
 }
 
+export type RoleAdminChanged = ContractEventLog<{
+  role: string;
+  previousAdminRole: string;
+  newAdminRole: string;
+  0: string;
+  1: string;
+  2: string;
+}>;
 export type RoleGranted = ContractEventLog<{
   role: string;
   account: string;
@@ -101,6 +109,12 @@ export interface AccessControl extends BaseContract {
     ): NonPayableTransactionObject<void>;
   };
   events: {
+    RoleAdminChanged(cb?: Callback<RoleAdminChanged>): EventEmitter;
+    RoleAdminChanged(
+      options?: EventOptions,
+      cb?: Callback<RoleAdminChanged>
+    ): EventEmitter;
+
     RoleGranted(cb?: Callback<RoleGranted>): EventEmitter;
     RoleGranted(
       options?: EventOptions,
@@ -115,6 +129,13 @@ export interface AccessControl extends BaseContract {
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "RoleAdminChanged", cb: Callback<RoleAdminChanged>): void;
+  once(
+    event: "RoleAdminChanged",
+    options: EventOptions,
+    cb: Callback<RoleAdminChanged>
+  ): void;
 
   once(event: "RoleGranted", cb: Callback<RoleGranted>): void;
   once(

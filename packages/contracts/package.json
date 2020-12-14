@@ -39,7 +39,7 @@
     "@nomiclabs/hardhat-etherscan": "^2.1.0",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
-    "@openzeppelin/contracts": "3.0.0",
+    "@openzeppelin/contracts": "3.3.0",
     "@openzeppelin/test-helpers": "^0.5.9",
     "@truffle/hdwallet-provider": "^1.2.0",
     "@typechain/web3-v1": "^1.0.0",
