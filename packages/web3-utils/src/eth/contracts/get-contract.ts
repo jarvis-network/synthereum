@@ -11,7 +11,7 @@ export function getContract<
 >(
   web3: Web3On<Net>,
   abi: AbiFor<Contract>,
-  address: string,
+  address?: string,
   gas?: {
     gasLimit: number;
     gasPrice: string;
