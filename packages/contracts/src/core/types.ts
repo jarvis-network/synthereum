@@ -1,5 +1,5 @@
 import { PerAsset, SupportedNetworkName } from '../config';
-import { TICFactory, TIC } from '../contracts/typechain';
+import { TICFactory, TICInterface } from '../contracts/typechain';
 import {
   TokenInfo,
   ContractInfo,
@@ -20,7 +20,7 @@ export interface SynthereumRealm<Net extends SupportedNetworkName> {
 }
 
 export interface SynthereumPool<Net extends SupportedNetworkName>
-  extends ContractInfo<Net, TIC> {
+  extends ContractInfo<Net, TICInterface> {
   symbol: string;
   collateralToken: TokenInfo<Net>;
   syntheticToken: TokenInfo<Net>;
