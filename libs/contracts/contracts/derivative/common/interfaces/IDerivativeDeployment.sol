@@ -1,4 +1,4 @@
-// SPDX-License-Identifier
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
@@ -31,15 +31,15 @@ interface IDerivativeDeployment {
   function tokenCurrency() external view returns (IERC20 syntheticCurrency);
 
   /**
-   * @notice Accessor method for the list of members with admin role
-   * @return array of addresses with admin role
+   * @notice Accessor method for the list of member with admin role
+   * @return array of address with admin role
    */
 
   function getAdminMembers() external view returns (address[] memory);
 
   /**
-   * @notice Accessor method for the list of members with pool role
-   * @return array of addresses with pool role
+   * @notice Accessor method for the list of member with pool role
+   * @return array of address with pool role
    */
 
   function getPoolMembers() external view returns (address[] memory);
