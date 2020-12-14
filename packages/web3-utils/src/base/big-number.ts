@@ -20,6 +20,15 @@ export function wei(str: string | number): Amount {
   return new BN(str, 10) as Amount;
 }
 
+export function numberToWei(n: number) {
+  return new BN(toWei(n.toFixed(18)));
+}
+
+export function scale(a: BN, b: number): BN {
+  return (a.mul(numberToWei(b))).div(ether);
+}
+
+const ether = new BN(10).pow(new BN(18));
 export const zero = new BN(0);
 export const one = new BN(1);
 export const negativeOne = new BN(-1);
