@@ -3,6 +3,13 @@ export const t = <T extends any[]>(...args: T): T => args;
 
 export type KeysOf<T> = keyof T;
 export type ValuesOf<T> = T[KeysOf<T>];
+export type Entries<T> = {
+    [K in keyof T]: [K, T[K]];
+}[keyof T][];
+
+export function entriesOf<T extends object>(obj: T): Entries<T> {
+  return Object.entries(obj) as Entries<T>;
+}
 
 /**
  * Gets the object representation of a type. Useful for "flattening" interesction types.
@@ -40,4 +47,19 @@ export function typeCheck<Expected>() {
   return function <Actual extends Readonly<Expected>>(value: Actual): Actual {
     return value;
   };
+}
+
+export type PerTupleElement<Tuple extends readonly any[], T> = {
+  [key in Tuple[number]]: T;
+};
+
+export function mapTupleToObject<
+  Tuple extends readonly any[],
+  F extends (elem: Tuple[number]) => T,
+  T
+>(tuple: Tuple, mapFun: F): PerTupleElement<Tuple, T> {
+  const result: Record<Tuple[number], T> = Object.fromEntries(
+    tuple.map(elem => t(elem, mapFun(elem))),
+  );
+  return result;
 }
