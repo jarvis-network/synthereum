@@ -3050,10 +3050,10 @@
     react-select "^3.1.0"
     react-table "^6.8.6"
 
-"@jarvis-network/uma-common@^0.1.0":
-  version "0.1.0"
-  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-common/-/@jarvis-network/uma-common-0.1.0.tgz#a6b1de349efab9c2284679173eb274c709d2f815"
-  integrity sha1-prHeNJ76ucIoRnkXPrJ0xwnS+BU=
+"@jarvis-network/uma-common@^0.2.0":
+  version "0.2.0"
+  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-common/-/@jarvis-network/uma-common-0.2.0.tgz#258ce93e70532e88dcbb950e081e3e94ef1b29e6"
+  integrity sha1-JYzpPnBTLojcu5UOCB4+lO8bKeY=
   dependencies:
     "@ethersproject/bignumber" "^5.0.5"
     "@google-cloud/kms" "^0.3.0"
@@ -3071,12 +3071,12 @@
     truffle-deploy-registry "^0.5.1"
     web3 "1.2.7"
 
-"@jarvis-network/uma-core@0.1.0":
-  version "0.1.0"
-  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-core/-/@jarvis-network/uma-core-0.1.0.tgz#f2c8d146af9c245bf7858c1aa7ce231735758008"
-  integrity sha1-8sjRRq+cJFv3hYwap84jFzV1gAg=
+"@jarvis-network/uma-core@0.2.0":
+  version "0.2.0"
+  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-core/-/@jarvis-network/uma-core-0.2.0.tgz#a4941b69207ff6c06c83b395db90ee8534d30d77"
+  integrity sha1-pJQbaSB/9sBsg7OV25DuhTTTDXc=
   dependencies:
-    "@jarvis-network/uma-common" "^0.1.0"
+    "@jarvis-network/uma-common" "^0.2.0"
     "@truffle/contract" "^4.2.20"
 
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
