@@ -9,7 +9,8 @@ import {
 } from '@jarvis-network/web3-utils/eth/networks';
 
 export const supportedNetworkIds = typeCheck<NetworkId[]>()([42] as const);
-export type SupportedNetworkId = typeof supportedNetworkIds[number];
+export type SupportedNetworkIds = typeof supportedNetworkIds;
+export type SupportedNetworkId = SupportedNetworkIds[number];
 export type SupportedNetworkName = ToNetworkName<SupportedNetworkId>;
 
 export function parseSupportedNetworkId(x: unknown): SupportedNetworkId {

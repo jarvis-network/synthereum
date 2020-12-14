@@ -1,21 +1,35 @@
 import type { Address } from '@jarvis-network/web3-utils/eth/address';
 import type { Amount } from '@jarvis-network/web3-utils/base/big-number';
-import type { SupportedNetworkId, SupportedNetworkName } from './supported-networks';
+import type {
+  SupportedNetworkIds,
+  SupportedNetworkId,
+  SupportedNetworkName,
+} from './supported-networks';
 export type { SupportedNetworkId, SupportedNetworkName };
-import type { SyntheticSymbol } from './data/all-synthetic-asset-symbols';
+import {
+  allSymbols,
+  SyntheticSymbols,
+  SyntheticSymbol,
+} from './data/all-synthetic-asset-symbols';
 export type { SyntheticSymbol };
+import {
+  mapTupleToObject,
+  PerTupleElement,
+} from '@jarvis-network/web3-utils/base/meta';
 
 export interface FixedPointNumber {
   rawValue: string;
 }
 
-export type PerNetwork<Config> = {
-  [network in SupportedNetworkId]: Config;
-};
+export type PerNetwork<Config> = PerTupleElement<SupportedNetworkIds, Config>;
 
-export type PerAsset<Config> = {
-  [sym in SyntheticSymbol]: Config;
-};
+export type PerAsset<Config> = PerTupleElement<SyntheticSymbols, Config>;
+
+export function mapAsset<F extends (sym: SyntheticSymbol) => T, T>(
+  mapFun: F,
+): PerAsset<T> {
+  return mapTupleToObject(allSymbols, mapFun);
+}
 
 export interface ContractDependencies {
   expiringMultiPartyCreator: Address;
@@ -64,4 +78,3 @@ export interface AssetFunding {
   syntheticSymbol: SyntheticSymbol;
   amount: Amount;
 }
-

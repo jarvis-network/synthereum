@@ -8,4 +8,5 @@ export const allSymbols = [
   'jXAG',
 ] as const;
 
-export type SyntheticSymbol = typeof allSymbols[number];
+export type SyntheticSymbols = typeof allSymbols;
+export type SyntheticSymbol = SyntheticSymbols[number];
