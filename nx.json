@@ -25,6 +25,10 @@
   "projects": {
     "web3-utils": {
       "tags": []
+    },
+    "contracts": {
+      "tags": [],
+      "implicitDependencies": ["web3-utils"]
     }
   },
   "workspaceLayout": {

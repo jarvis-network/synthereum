@@ -31,6 +31,54 @@
           }
         }
       }
+    },
+    "contracts": {
+      "root": "libs/contracts",
+      "sourceRoot": "libs/contracts/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/contracts/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/contracts/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "parallel": false,
+            "cwd": "./libs/contracts",
+            "color": true
+          }
+        },
+        "build-solidity": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build:solidity"],
+            "parallel": false,
+            "cwd": "./libs/contracts",
+            "color": true
+          }
+        },
+        "build-contracts-ts": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build:contracts-ts"],
+            "parallel": false,
+            "cwd": "./libs/contracts",
+            "color": true
+          }
+        }
+      }
     }
   },
   "cli": {
