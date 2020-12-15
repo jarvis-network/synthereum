@@ -10,8 +10,10 @@
     "i": "lerna bootstrap -- --ignore-optional",
     "install": "yarn run i",
 
-    "clean": "git clean -fdx -e .env -e node_modules -- .",
-    "clean:all": "git clean -fdx -e .env -- .",
+    "clean": "yarn clean:build-artifacts-only",
+    "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- .",
+    "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
+    "clean:all": "git clean -fdx -e .env -e hush -- .",
 
     "format": "prettier --write .",
 
