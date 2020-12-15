@@ -72,7 +72,7 @@ contract SynthereumFinder is ISynthereumFinder, AccessControl {
   /**
    * @notice Gets the address of the contract that implements the given `interfaceName`.
    * @param interfaceName queried interface.
-   * @return implementationAddress address of the defined interface.
+   * @return implementationAddress Address of the defined interface.
    */
   function getImplementationAddress(bytes32 interfaceName)
     external

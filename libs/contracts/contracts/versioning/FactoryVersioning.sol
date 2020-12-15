@@ -85,7 +85,7 @@ contract SynthereumFactoryVersioning is
   }
 
   /**
-   * @notice Remove the address of a version of a pool factory
+   * @notice Removes the address of a version of a pool factory
    * @param version uint8 of the version index
    */
   function removePoolFactory(uint8 version) external override onlyMaintainer {
@@ -111,7 +111,7 @@ contract SynthereumFactoryVersioning is
   }
 
   /**
-   * @notice Remove the address of a version of a perpetual derivative factory
+   * @notice Removes the address of a version of a perpetual derivative factory
    * @param version uint8 of the version index
    */
   function removeDerivativeFactory(uint8 version)
@@ -131,7 +131,7 @@ contract SynthereumFactoryVersioning is
   //----------------------------------------
 
   /**
-   * @notice Returns the address of a version of pool factory if exists, otherwise it reverts
+   * @notice Returns the address of a version of pool factory if it exists, otherwise reverts
    * @param version uint8 of the version index
    */
   function getPoolFactoryVersion(uint8 version)
@@ -156,7 +156,7 @@ contract SynthereumFactoryVersioning is
   }
 
   /**
-   * @notice Returns the address of a version of perpetual derivative factory if exists, otherwise it reverts
+   * @notice Returns the address of a version of perpetual derivative factory if it exists, otherwise reverts
    * @param version uint8 of the version index
    */
   function getDerivativeFactoryVersion(uint8 version)

@@ -23,7 +23,7 @@ import {
 interface ISynthereumPool is ISynthereumPoolDeployment {
   // Describe fee structure
   struct Fee {
-    // Fees charged when a user mints, redeem and excahnges tokens
+    // Fees charged when a user mints, redeem and exchanges tokens
     FixedPoint.Unsigned feePercentage;
     address[] feeRecipients;
     uint32[] feeProportions;
@@ -59,9 +59,9 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
     address sender;
     // Address of the derivative to use for redeeming
     address derivativeAddr;
-    // The amount of collateral to redeem tokens for
+    // The amount of collateral to redeem for tokens
     uint256 collateralAmount;
-    // The number of tokens to redeem
+    // The number of tokens to burn
     uint256 numTokens;
     // Fee percentage on collateral amount to pay
     uint256 feePercentage;
@@ -144,7 +144,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
     returns (uint256 feePaid);
 
   /**
-   * @notice Submit a request to redeem tokens
+   * @notice Submit a request to redeem collateral
    * @notice This requires the meta-signature of a validator
    * @notice User must approve synthetic token transfer for the redeem request to succeed
    * @param redeemMetaTx Meta-tx containing redeem parameters
@@ -157,7 +157,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
   ) external returns (uint256 feePaid);
 
   /**
-   * @notice Submit a request to exchange tokens with other synthetic tokens
+   * @notice Submit a request to exchange synthetic tokens for other synthetic tokens
    * @notice This requires the meta-signature of a validator
    * @notice User must approve synthetic token transfer for the exchange request to succeed
    * @param exchangeMetaTx Meta-tx containing exchange parameters
@@ -192,7 +192,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice Move collateral from TIC to its derivative in order to increase GCR
-   * @param derivative Derivative on which deposit collateral
+   * @param derivative Derivative on which to deposit collateral
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
@@ -203,15 +203,15 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
   /**
    * @notice Start a slow withdrawal request
    * @notice Collateral can be withdrawn once the liveness period has elapsed
-   * @param derivative Derivative from which request collateral withdrawal
-   * @param collateralAmount The amount of short margin to withdraw
+   * @param derivative Derivative from which collateral withdrawal is requested
+   * @param collateralAmount The amount of excess collateral to withdraw
    */
   function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
     external;
 
   /**
    * @notice Withdraw collateral after a withdraw request has passed it's liveness period
-   * @param derivative Derivative from which collateral withdrawal was requested
+   * @param derivative Derivative from which collateral withdrawal is requested
    * @return amountWithdrawn Amount of collateral withdrawn by slow withdrawal
    */
   function slowWithdrawPassedRequest(IDerivative derivative)
@@ -220,8 +220,8 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice Withdraw collateral immediately if the remaining collateral is above GCR
-   * @param derivative Derivative from which fast withdrawal was requested
-   * @param collateralAmount The amount of short margin to withdraw
+   * @param derivative Derivative from which fast withdrawal is requested
+   * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
   function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
@@ -230,7 +230,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
-   * @param derivative Derivative on which call emergency shutdown
+   * @param derivative Derivative on which the emergency shutdown is called
    */
   function emergencyShutdown(IDerivative derivative) external;
 
@@ -256,9 +256,9 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
   function setFeePercentage(uint256 _feePercentage) external;
 
   /**
-   * @notice Update the percentage of the fee
-   * @param _feeRecipients The percentage of new fee
-   * @param _feeProportions The percentage of new fee
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @param _feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param _feeProportions An array of the proportions of fees generated each recipient will receive
    */
   function setFeeRecipients(
     address[] memory _feeRecipients,
@@ -274,7 +274,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice Add a role into derivative to another contract
-   * @param derivative Derivative in which adding role
+   * @param derivative Derivative in which a role is added
    * @param derivativeRole Role to add
    * @param addressToAdd address of EOA or smart contract to add with a role in derivative
    */
@@ -286,7 +286,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice This pool renounce a role in the derivative
-   * @param derivative Derivative in which renounce role
+   * @param derivative Derivative in which a role is renounced
    * @param derivativeRole Role to renounce
    */
   function renounceRoleInDerivative(
@@ -296,7 +296,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice Add a role into synthetic token to another contract
-   * @param derivative Derivative in which adding role
+   * @param derivative Derivative in which a role is added
    * @param synthTokenRole Role to add
    * @param addressToAdd address of EOA or smart contract to add with a role in derivative
    */
@@ -308,7 +308,7 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice A derivative renounces a role into synthetic token
-   * @param derivative Derivative in which renounce role
+   * @param derivative Derivative in which a role is renounced
    * @param synthTokenRole Role to renounce
    */
   function renounceRoleInSynthToken(
@@ -329,9 +329,9 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
   function getAllDerivatives() external view returns (IDerivative[] memory);
 
   /**
-   * @notice Check if a derivative is in the withelist of this pool
+   * @notice Check if a derivative is in the whitelist of this pool
    * @param derivative Perpetual derivative
-   * @return isAdmitted Return true if in the withelist otherwise false
+   * @return isAdmitted Return true if in the whitelist, otherwise false
    */
   function isDerivativeAdmitted(IDerivative derivative)
     external
@@ -367,8 +367,8 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   /**
    * @notice Calculate the fees a user will have to pay to mint tokens with their collateral
-   * @param collateralAmount Amount of collateral on which calculate fee
-   * @return fee Amount of fee must have paid
+   * @param collateralAmount Amount of collateral on which fees are calculated
+   * @return fee Amount of fee that must be paid by the user
    */
   function calculateFee(uint256 collateralAmount)
     external

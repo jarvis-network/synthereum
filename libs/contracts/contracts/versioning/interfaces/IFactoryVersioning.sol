@@ -33,7 +33,7 @@ interface ISynthereumFactoryVersioning {
   function removeDerivativeFactory(uint8 version) external;
 
   /**
-   * @notice Returns the address of a version of pool factory if exists, otherwise it reverts
+   * @notice Returns the address of a version of pool factory if exists, otherwise revert
    * @param version uint8 of the version index
    */
   function getPoolFactoryVersion(uint8 version) external view returns (address);
@@ -44,7 +44,7 @@ interface ISynthereumFactoryVersioning {
   function numberOfVerisonsOfPoolFactory() external view returns (uint256);
 
   /**
-   * @notice Returns the address of a version of perpetual derivative factory if exists, otherwise it reverts
+   * @notice Returns the address of a version of perpetual derivative factory if exists, otherwise revert
    * @param version uint8 of the version index
    */
   function getDerivativeFactoryVersion(uint8 version)

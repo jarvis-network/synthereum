@@ -66,8 +66,8 @@ interface IDerivative is IDerivativeDeployment {
   }
 
   /**
-   * @notice Get data of feePayerPoopParty contract that is based contract of perpetual derivative
-   * @return data Data of feePayerPoopParty contract
+   * @notice Get data of feePayerPoolParty contract that is based contract of perpetual derivative
+   * @return data Data of feePayerPoolParty contract
    */
   function feePayerData() external view returns (FeePayerData memory data);
 
@@ -82,7 +82,7 @@ interface IDerivative is IDerivativeDeployment {
 
   /**
    * @notice Get global position data of perpetual derivative
-   * @return data Data of feePayerPoopParty contract
+   * @return data Data of feePayerPoolParty contract
    */
   function globalPositionData()
     external
@@ -183,7 +183,7 @@ interface IDerivative is IDerivativeDeployment {
 
   /**
    * @notice If the contract is emergency shutdown then all token holders and sponsors can redeem their tokens or
-   * remaining collateral for underlying at the prevailing price defined by a DVM vote.
+   * remaining collateral for the underlying asset at the prevailing price defined by a DVM vote.
    * @dev This burns all tokens from the caller of `tokenCurrency` and sends back the resolved settlement value of
    * `feePayerData.collateralCurrency`. Might not redeem the full proportional amount of collateral in order to account for
    * precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.
@@ -297,7 +297,7 @@ interface IDerivative is IDerivativeDeployment {
    * @dev This is necessary because the struct returned by the positions() method shows
    * rawCollateral, which isn't a user-readable value.
    * @param sponsor address whose collateral amount is retrieved.
-   * @return collateralAmount amount of collateral within a sponsors position.
+   * @return collateralAmount Amount of collateral within a sponsors position.
    */
   function getCollateral(address sponsor)
     external
@@ -306,7 +306,7 @@ interface IDerivative is IDerivativeDeployment {
 
   /**
    * @notice Accessor method for the total collateral stored within the PerpetualPositionManager.
-   * @return totalCollateral amount of all collateral within the position manager.
+   * @return totalCollateral Amount of all collateral within the position manager.
    */
   function totalPositionCollateral()
     external

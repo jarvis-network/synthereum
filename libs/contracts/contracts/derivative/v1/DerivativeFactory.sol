@@ -47,7 +47,7 @@ contract SynthereumDerivativeFactory is
   }
 
   /**
-   * @notice Check the sender is the deployer and deplot a perpetual derivative
+   * @notice Check if the sender is the deployer and deploy a perpetual derivative
    * @param params input parameters of perpetual derivative
    * @return derivative address of the derivative created
    */
