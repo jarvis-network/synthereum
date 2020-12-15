@@ -1,28 +1,27 @@
 {
   "version": 2,
-
   "projects": {
     "web3-utils": {
       "root": "libs/web3-utils",
       "sourceRoot": "libs/web3-utils/src/",
       "projectType": "library",
       "schematics": {},
-      "architect": {
+      "targets": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/web3-utils/**/*.ts"]
           }
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/web3-utils/jest.config.js",
             "passWithNoTests": true
           }
         },
         "build": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn --cwd ./dist run build"],
             "parallel": false,
@@ -37,22 +36,22 @@
       "sourceRoot": "libs/contracts/src",
       "projectType": "library",
       "schematics": {},
-      "architect": {
+      "targets": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/contracts/**/*.ts"]
           }
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/contracts/jest.config.js",
             "passWithNoTests": true
           }
         },
         "build": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
             "parallel": false,
@@ -61,7 +60,7 @@
           }
         },
         "build-solidity": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build:solidity"],
             "parallel": false,
@@ -70,7 +69,7 @@
           }
         },
         "build-contracts-ts": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build:contracts-ts"],
             "parallel": false,
@@ -86,9 +85,9 @@
       "projectType": "application",
       "prefix": "validator",
       "schematics": {},
-      "architect": {
+      "targets": {
         "build": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
             "parallel": false,
@@ -97,7 +96,7 @@
           }
         },
         "serve": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run start"],
             "parallel": false,
@@ -106,7 +105,7 @@
           }
         },
         "serve-dev": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run start:dev"],
             "parallel": false,
@@ -115,13 +114,13 @@
           }
         },
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/validator/**/*.ts"]
           }
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/validator/jest.config.js",
             "passWithNoTests": true
@@ -134,9 +133,9 @@
       "sourceRoot": "apps/frontend",
       "projectType": "application",
       "schematics": {},
-      "architect": {
+      "targets": {
         "build": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
             "parallel": false,
@@ -145,7 +144,7 @@
           }
         },
         "serve": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn start"],
             "parallel": false,
@@ -154,7 +153,7 @@
           }
         },
         "start:server": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn start-dev"],
             "parallel": false,
@@ -163,13 +162,13 @@
           }
         },
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/frontend/**/*.{ts,tsx}"]
           }
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/frontend/jest.config.js",
             "passWithNoTests": true
