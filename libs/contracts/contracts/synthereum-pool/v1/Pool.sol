@@ -23,9 +23,7 @@ import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
 
 /**
  * @title Token Issuer Contract
- * @notice Collects margin, issues synthetic assets, and distributes accrued interest
- * @dev Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent
- *      to the `ExpiringMultiParty` contract.
+ * @notice Collects collateral and issues synthetic assets
  */
 contract SynthereumPool is
   AccessControl,
@@ -129,7 +127,7 @@ contract SynthereumPool is
   //----------------------------------------
 
   /**
-   * @notice The derivative's margin currency must be an ERC20
+   * @notice The derivative's collateral currency must be an ERC20
    * @notice The validator will generally be an address owned by the LP
    * @notice `_startingCollateralization should be greater than the expected asset price multiplied
    *      by the collateral requirement. The degree to which it is greater should be based on
@@ -225,7 +223,7 @@ contract SynthereumPool is
    * @notice User must approve collateral transfer for the mint request to succeed
    * @param mintMetaTx Meta-tx containing mint parameters
    * @param signature Validator signature
-   * @return feePaid Amount of collateral paid by minter as fee
+   * @return feePaid Amount of collateral paid by the minter as fee
    */
   function mint(MintParameters memory mintMetaTx, Signature memory signature)
     external
@@ -268,7 +266,7 @@ contract SynthereumPool is
   }
 
   /**
-   * @notice Submit a request to exchange tokens with other synthetic tokens
+   * @notice Submit a request to exchange tokens for other synthetic tokens
    * @notice This requires the meta-signature of a validator
    * @notice User must approve synthetic token transfer for the exchange request to succeed
    * @param exchangeMetaTx Meta-tx containing exchange parameters
@@ -313,8 +311,8 @@ contract SynthereumPool is
   }
 
   /**
-   * @notice Liquidity provider withdraw margin from the pool
-   * @param collateralAmount The amount of margin to withdraw
+   * @notice Liquidity provider withdraw collateral from the pool
+   * @param collateralAmount The amount of collateral to withdraw
    */
   function withdrawFromPool(uint256 collateralAmount)
     external
@@ -327,7 +325,7 @@ contract SynthereumPool is
 
   /**
    * @notice Move collateral from TIC to its derivative in order to increase GCR
-   * @param derivative Derivative on which deposit collateral
+   * @param derivative Derivative on which to deposit collateral
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
@@ -343,8 +341,8 @@ contract SynthereumPool is
   /**
    * @notice Start a slow withdrawal request
    * @notice Collateral can be withdrawn once the liveness period has elapsed
-   * @param derivative Derivative from which request collateral withdrawal
-   * @param collateralAmount The amount of short margin to withdraw
+   * @param derivative Derivative from which the collateral withdrawal is requested
+   * @param collateralAmount The amount of excess collateral to withdraw
    */
   function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
     external
@@ -376,7 +374,7 @@ contract SynthereumPool is
   /**
    * @notice Withdraw collateral immediately if the remaining collateral is above GCR
    * @param derivative Derivative from which fast withdrawal was requested
-   * @param collateralAmount The amount of short margin to withdraw
+   * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
   function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
@@ -394,7 +392,7 @@ contract SynthereumPool is
 
   /**
    * @notice Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
-   * @param derivative Derivative on which call emergency shutdown
+   * @param derivative Derivative on which emergency shutdown is called
    */
   function emergencyShutdown(IDerivative derivative)
     external
@@ -406,7 +404,7 @@ contract SynthereumPool is
   }
 
   /**
-   * @notice Redeem tokens after contract emergency shutdown
+   * @notice Redeem tokens after derivative emergency shutdown
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
    */
@@ -436,9 +434,9 @@ contract SynthereumPool is
   }
 
   /**
-   * @notice Update the percentage of the fee
-   * @param _feeRecipients The percentage of new fee
-   * @param _feeProportions The percentage of new fee
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @param _feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param _feeProportions An array of the proportions of fees generated each recipient will receive
    */
   function setFeeRecipients(
     address[] calldata _feeRecipients,
@@ -464,7 +462,7 @@ contract SynthereumPool is
 
   /**
    * @notice Add a role into derivative to another contract
-   * @param derivative Derivative in which adding role
+   * @param derivative Derivative in which a role is being added
    * @param derivativeRole Role to add
    * @param addressToAdd address of EOA or smart contract to add with a role in derivative
    */
@@ -477,8 +475,8 @@ contract SynthereumPool is
   }
 
   /**
-   * @notice This pool renounce arole in the derivative
-   * @param derivative Derivative in which remove role
+   * @notice Removing a role from a derivative contract
+   * @param derivative Derivative in which to remove a role
    * @param derivativeRole Role to remove
    */
   function renounceRoleInDerivative(
@@ -546,7 +544,7 @@ contract SynthereumPool is
 
   /**
    * @notice Get Synthereum version
-   * @return poolVersion Returns the version of this Synthereum pool
+   * @return poolVersion Returns the version of the Synthereum pool
    */
   function version() external view override returns (uint8 poolVersion) {
     poolVersion = poolStorage.version;
@@ -668,8 +666,8 @@ contract SynthereumPool is
 
   /**
    * @notice Calculate the fees a user will have to pay to mint tokens with their collateral
-   * @param collateralAmount Amount of collateral on which calculate fee
-   * @return fee Amount of fee must have paid
+   * @param collateralAmount Amount of collateral on which fee is calculated
+   * @return fee Amount of fee that must be paid
    */
   function calculateFee(uint256 collateralAmount)
     external
@@ -701,8 +699,8 @@ contract SynthereumPool is
   //----------------------------------------
 
   /**
-   * @notice Returns the chanId of the this blockchain network
-   * @return id of the network
+   * @notice Returns the chanId of this blockchain network
+   * @return id ID of the network
    */
   function getChainID() private pure returns (uint256) {
     uint256 id;

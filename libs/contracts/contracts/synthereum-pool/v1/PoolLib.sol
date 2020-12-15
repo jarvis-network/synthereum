@@ -95,7 +95,7 @@ library SynthereumPoolLib {
 
   /**
    * @notice Initializes a fresh TIC
-   * @notice The derivative's margin currency must be a RToken
+   * @notice The derivative's collateral currency must be a Collateral Token
    * @notice The validator will generally be an address owned by the LP
    * @notice `_startingCollateralization should be greater than the expected asset price multiplied
    *      by the collateral requirement. The degree to which it is greater should be based on
@@ -126,7 +126,7 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Add a derivate to be controlled by this pool
+   * @notice Add a derivate to be linked to this pool
    * @param self Data type the library is attached to
    * @param derivative A perpetual derivative
    */
@@ -150,7 +150,7 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Remove a derivate controlled by this pool
+   * @notice Remove a derivate linked to this pool
    * @param self Data type the library is attached to
    * @param derivative A perpetual derivative
    */
@@ -167,7 +167,7 @@ library SynthereumPoolLib {
 
   /**
    * @notice Mint tokens using collateral
-   * @notice This require the meta-signature of a keeper-bot
+   * @notice This require the meta-signature of a validator
    * @notice User must approve collateral transfer for the mint request to succeed
    * @param self Data type the library is attached to
    * @param mintMetaTx Meta-tx containing mint parameters
@@ -229,14 +229,14 @@ library SynthereumPoolLib {
     // Pull user's collateral and mint fee into the pool
     self.pullCollateral(mintMetaTx.sender, collateralAmount.add(feeTotal));
 
-    // Mint synthetic asset with margin from user and provider
+    // Mint synthetic asset with collateral from user and liquidity provider
     self.mintSynTokens(
       derivative,
       numTokens.mulCeil(targetCollateralization),
       numTokens
     );
 
-    // Transfer synthetic asset to the user
+    // Transfer synthetic assets to the user
     self.transferSynTokens(mintMetaTx.sender, numTokens);
 
     // Send fees
@@ -308,7 +308,7 @@ library SynthereumPoolLib {
       redeemMetaTx.sender,
       netReceivedCollateral
     );
-
+    // Send fees collected
     self.sendFee(feeTotal);
 
     feePaid = feeTotal.rawValue;
@@ -323,13 +323,13 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Submit a request to exchange tokens with other synthetic tokens
+   * @notice Submit a request to exchange tokens for other synthetic tokens
    * @notice This requires the meta-signature of a validator
    * @notice User must approve synthetic token transfer for the exchange request to succeed
    * @param self Data type the library is attached to
    * @param exchangeMetaTx Meta-tx containing exchange parameters
    * @param signatureVerificationParams Parameters needed for signature verification
-   * @return feePaid Amount of collateral paid by exchanger as fee
+   * @return feePaid Amount of collateral paid by user as fee
    */
   function exchange(
     ISynthereumPoolStorage.Storage storage self,
@@ -451,7 +451,7 @@ library SynthereumPoolLib {
       'Insufficient collateral available from Liquidity Provider'
     );
 
-    // Pull RToken collateral from calling TIC contract
+    // Pull Collateral Tokens from calling TIC contract
     self.pullCollateral(msg.sender, collateralAmount);
 
     // Mint new tokens with the collateral
@@ -466,9 +466,9 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Liquidity provider withdraw margin from the pool
+   * @notice Liquidity provider withdraw collateral from the pool
    * @param self Data type the library is attached to
-   * @param collateralAmount The amount of margin to withdraw
+   * @param collateralAmount The amount of collateral to withdraw
    */
   function withdrawFromPool(
     ISynthereumPoolStorage.Storage storage self,
@@ -481,7 +481,7 @@ library SynthereumPoolLib {
   /**
    * @notice Move collateral from TIC to its derivative in order to increase GCR
    * @param self Data type the library is attached to
-   * @param derivative Derivative on which deposit collateral
+   * @param derivative Derivative on which to deposit collateral
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
@@ -538,7 +538,7 @@ library SynthereumPoolLib {
    * @notice Withdraw collateral immediately if the remaining collateral is above GCR
    * @param self Data type the library is attached to
    * @param derivative Derivative from which fast withdrawal was requested
-   * @param collateralAmount The amount of short margin to withdraw
+   * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
   function fastWithdraw(
@@ -562,7 +562,7 @@ library SynthereumPoolLib {
   /**
    * @notice Actiavte emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
    * @param self Data type the library is attached to
-   * @param derivative Derivative on which call emergency shutdown
+   * @param derivative Derivative on which emergency shutdown is called
    */
   function emergencyShutdown(
     ISynthereumPoolStorage.Storage storage self,
@@ -572,7 +572,7 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Redeem tokens after contract emergency shutdown
+   * @notice Redeem tokens after derivative emergency shutdown
    * @param self Data type the library is attached to
    * @param derivative Derivative for which settlement is requested
    * @param liquidity_provider_role Lp role
@@ -637,7 +637,7 @@ library SynthereumPoolLib {
       );
     }
     amountSettled = totalToRedeem.rawValue;
-    // Redeem the collateral for the underlying and transfer to the user
+    // Redeem the collateral for the underlying asset and transfer to the user
     collateralToken.safeTransfer(msg.sender, amountSettled);
 
     emit Settlement(
@@ -666,10 +666,10 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Update the fee recipients and recipient proportions
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
    * @param self Data type the library is attached to
-   * @param _feeRecipients Array of the new fee recipients
-   * @param _feeProportions Array of the new fee recipient proportions
+   * @param _feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param _feeProportions An array of the proportions of fees generated each recipient will receive
    */
   function setFeeRecipients(
     ISynthereumPoolStorage.Storage storage self,
@@ -705,7 +705,7 @@ library SynthereumPoolLib {
   /**
    * @notice Add a role into derivative to another contract
    * @param self Data type the library is attached to
-   * @param derivative Derivative in which adding role
+   * @param derivative Derivative in which a role is being added
    * @param derivativeRole Role to add
    * @param addressToAdd address of EOA or smart contract to add with a role in derivative
    */
@@ -758,9 +758,9 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice This pool renounce arole in the derivative
+   * @notice Removing a role from a derivative contract
    * @param self Data type the library is attached to
-   * @param derivative Derivative in which remove role
+   * @param derivative Derivative in which to remove a role
    * @param derivativeRole Role to remove
    */
   function renounceRoleInDerivative(
@@ -900,7 +900,7 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Mints synthetic tokens with the available margin
+   * @notice Mints synthetic tokens with the available collateral
    * @param self Data type the library is attached to
    * @param collateralAmount The amount of collateral to send
    * @param numTokens The number of tokens to mint
@@ -936,7 +936,7 @@ library SynthereumPoolLib {
   /**
    * @notice Redeem synthetic tokens for collateral from the derivative
    * @param tokenHolder Address of the user that redeems
-   * @param derivative Derivative used to redeem
+   * @param derivative Derivative from which collateral is redeemed
    * @param numTokens The number of tokens to redeem
    * @return amountWithdrawn Collateral amount withdrawn by redeem execution
    */
@@ -961,12 +961,12 @@ library SynthereumPoolLib {
     // Allow the derivative to transfer tokens from the TIC
     tokenCurrency.safeApprove(address(derivative), numTokens.rawValue);
 
-    // Redeem the synthetic tokens for RToken collateral
+    // Redeem the synthetic tokens for Collateral tokens
     amountWithdrawn = derivative.redeem(numTokens);
   }
 
   /**
-   * @notice Send collateral withdrawn by the derivative to a LP
+   * @notice Send collateral withdrawn by the derivative to the LP
    * @param self Data type the library is attached to
    * @param collateralAmount Amount of collateral to send to the LP
    * @param recipient Address of a LP
@@ -992,7 +992,7 @@ library SynthereumPoolLib {
     FixedPoint.Unsigned memory _feeAmount
   ) internal {
     // Distribute fees
-    // TODO: Consider using the withdrawal pattern for fees
+    // TODO Consider using the withdrawal pattern for fees
     for (uint256 i = 0; i < self.fee.feeRecipients.length; i++) {
       require(
         self.collateralToken.transfer(
@@ -1027,7 +1027,7 @@ library SynthereumPoolLib {
   /**
    * @notice Get the global collateralization ratio of the derivative
    * @param derivative Perpetual derivative contract
-   * @return The collateralization ratio
+   * @return The global collateralization ratio
    */
   function getGlobalCollateralizationRatio(IDerivative derivative)
     internal
@@ -1070,7 +1070,7 @@ library SynthereumPoolLib {
   }
 
   /**
-   * @notice Check if sender or receiver pool is a corrrect regitered pool
+   * @notice Check if sender or receiver pool is a correct registered pool
    * @param self Data type the library is attached to
    * @param poolToCheck Pool that should be compared with this pool
    * @param derivativeToCheck Derivative of poolToCheck
