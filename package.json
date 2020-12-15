@@ -7,7 +7,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-
     "nx": "nx",
     "start": "nx serve",
     "test": "nx test",
@@ -30,6 +29,7 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "clean": "yarn clean:build-artifacts-only",
+    "init:commitizen": "commitizen init cz-ccgls  --yarn --dev --exact --ignore-workspace-root-check --force",
     "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- .",
     "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
     "clean:all": "git clean -fdx -e .env -e hush -- .",
@@ -38,35 +38,123 @@
     "start:validator-old": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
     "build:frontend-old": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-old-frontend' build",
     "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build",
-    "verify-contracts:kovan": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' verify-contract:kovan"
+    "verify-contracts:kovan": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' verify-contract:kovan",
+    "semantic-release": "multi-semantic-release"
   },
   "workspaces": {
     "packages": [
       "packages/frontend-old",
       "apps/*",
       "libs/*",
-      "libs/*/dist"
+      "libs/**/dist"
     ],
     "nohoist": [
       "@jarvis-network/synthereum-contracts/@openzeppelin/**"
     ]
   },
-  "resolutions": {
-    "**/@umaprotocol/truffle-ledger-provider": "npm:@jarvis-network/ledger-web3-provider"
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "pretty-quick --staged",
+      "post-commit": "git update-index --again"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-ccgls"
+    },
+    "cz-ccgls": {
+      "useEmojis": true,
+      "additionalEmojis": [
+        {
+          "emoji": "🐳",
+          "code": ":whale:",
+          "description": "Docker"
+        },
+        {
+          "emoji": "💧",
+          "code": ":droplet:",
+          "description": "Kubernetes"
+        },
+        {
+          "emoji": "💎",
+          "code": ":gem:",
+          "description": "Gem"
+        }
+      ],
+      "scopes": [
+        "validator",
+        "frontend",
+        "web3-utils",
+        "contracts",
+        "package.json",
+        "docker",
+        "k8s",
+        "ci"
+      ]
+    }
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^11.0.0",
+    "@nomiclabs/hardhat-etherscan": "^2.1.0",
+    "@nomiclabs/hardhat-truffle5": "^2.0.0",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
     "@nrwl/cli": "^11.0.15",
+    "@nrwl/node": "^11.0.15",
+    "@nrwl/react": "^11.0.15",
     "@nrwl/tao": "^11.0.15",
+    "@nrwl/web": "^11.0.15",
     "@nrwl/workspace": "^11.0.15",
+    "@openzeppelin/contracts": "3.3.0",
+    "@openzeppelin/test-helpers": "^0.5.9",
+    "@truffle/hdwallet-provider": "^1.2.0",
+    "@typechain/web3-v1": "^1.0.0",
+    "@types/bunyan": "^1.8.6",
+    "@types/chai": "^4.2.14",
+    "@types/chalk-pipe": "^2.0.0",
+    "@types/jest": "26.0.8",
+    "@types/lodash": "^4.14.162",
+    "@types/milliseconds": "^0.0.30",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^14.14.10",
+    "@types/react-redux": "^7.1.11",
+    "@types/react": "^16.9.49",
+    "@types/yargs": "^15.0.7",
+    "chai": "^4.2.0",
+    "chalk-pipe": "^4.0.0",
     "chokidar-cli": "^2.1.0",
+    "commitizen": "^4.2.2",
+    "commitlint": "^11.0.0",
     "concurrently": "^5.3.0",
     "copyfiles": "^2.4.1",
+    "cz-ccgls": "0.2.3",
     "dotenv": "8.2.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier-react": "^0.0.24",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-html": "^5.0.3",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react-hooks": "^1.3.0",
+    "eslint-plugin-react": "^7.20.0",
     "eslint": "^7.16.0",
+    "ganache-cli": "^6.12.1",
+    "ganache-time-traveler": "^1.0.15",
+    "hardhat-gas-reporter": "^1.0.1",
+    "hardhat": "^2.0.4",
     "husky": "^4.3.6",
+    "jest": "24.9.0",
+    "nodemon": "2.0.4",
     "prettier-plugin-solidity": "^1.0.0-beta.2",
     "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
+    "solidity-coverage": "^0.7.12",
+    "truffle-plugin-verify": "^0.4.0",
+    "truffle": "5.1.49",
     "ts-node": "^9.1.1",
+    "typechain": "^4.0.1",
     "typescript": "^4.1.3"
   }
 }

@@ -23,9 +23,9 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn --cwd ./dist run build"],
+            "commands": ["yarn run build"],
             "parallel": false,
-            "cwd": "./libs/web3-utils",
+            "cwd": "./libs/web3-utils/dist",
             "color": true
           }
         }
