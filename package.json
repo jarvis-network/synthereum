@@ -47,6 +47,9 @@
       "@jarvis-network/synthereum-contracts/@openzeppelin/**"
     ]
   },
+  "resolutions": {
+    "**/@umaprotocol/truffle-ledger-provider": "npm:@jarvis-network/ledger-web3-provider"
+  },
   "devDependencies": {
     "chokidar-cli": "^2.1.0",
     "concurrently": "^5.3.0",
