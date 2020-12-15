@@ -33,6 +33,10 @@
     "validator": {
       "tags": [],
       "implicitDependencies": ["contracts"]
+    },
+    "frontend": {
+      "tags": [],
+      "implicitDependencies": ["contracts"]
     }
   },
   "workspaceLayout": {
