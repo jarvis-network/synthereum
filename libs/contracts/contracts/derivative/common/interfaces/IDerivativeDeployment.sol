@@ -31,15 +31,15 @@ interface IDerivativeDeployment {
   function tokenCurrency() external view returns (IERC20 syntheticCurrency);
 
   /**
-   * @notice Accessor method for the list of member with admin role
-   * @return array of address with admin role
+   * @notice Accessor method for the list of members with admin role
+   * @return array of addresses with admin role
    */
 
   function getAdminMembers() external view returns (address[] memory);
 
   /**
-   * @notice Accessor method for the list of member with pool role
-   * @return array of address with pool role
+   * @notice Accessor method for the list of members with pool role
+   * @return array of addresses with pool role
    */
 
   function getPoolMembers() external view returns (address[] memory);

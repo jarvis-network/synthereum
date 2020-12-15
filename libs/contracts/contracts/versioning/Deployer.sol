@@ -93,7 +93,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   //----------------------------------------
 
   /**
-   * @notice Deploy derivative and pool linking the contracts together
+   * @notice Deploys derivative and pool linking the contracts together
    * @param derivativeVersion Version of derivative contract
    * @param poolVersion Version of the pool contract
    * @param derivativeParamsData Input params of derivative constructor
@@ -142,7 +142,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   /**
-   * @notice Deploy pool and links it with an already existing derivative
+   * @notice Deploys a pool and links it with an already existing derivative
    * @param poolVersion Version of the pool contract
    * @param poolParamsData Input params of pool constructor
    * @param derivative Existing derivative contract to link with the new pool
@@ -176,7 +176,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   /**
-   * @notice Deploy derivative and links it with an already existing pool
+   * @notice Deploys a derivative and links it with an already existing pool
    * @param derivativeVersion Version of the derivative contract
    * @param derivativeParamsData Input params of derivative constructor
    * @param pool Existing pool contract to link with the new derivative
@@ -219,7 +219,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
    * @param collateral ERC20 contract of collateral currency
    * @param poolVersion Version of the pool
    * @param pool Contract of the pool to check
-   * @return isDeployed Returns truei f a particular pool exists otherwiise false
+   * @return isDeployed Returns true if a particular pool exists, otherwiise false
    */
   function isPoolDeployed(
     string calldata poolSymbol,
@@ -259,11 +259,11 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   //----------------------------------------
 
   /**
-   * @notice Deploy a derivative contract of a particular version
+   * @notice Deploys a derivative contract of a particular version
    * @param factoryVersioning factory versioning contract
    * @param derivativeVersion Version of derivate contract to deploy
    * @param derivativeParamsData Input parameters of constructor of derivative
-   * @return derivative derivative deployed
+   * @return derivative Derivative deployed
    */
   function deployDerivative(
     ISynthereumFactoryVersioning factoryVersioning,
@@ -286,11 +286,11 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   /**
-   * @notice Deploy a pool contract of a particular version
+   * @notice Deploys a pool contract of a particular version
    * @param factoryVersioning factory versioning contract
    * @param poolVersion Version of pool contract to deploy
    * @param poolParamsData Input parameters of constructor of the pool
-   * @return pool pool deployed
+   * @return pool Pool deployed
    */
   function deployPool(
     ISynthereumFactoryVersioning factoryVersioning,
@@ -380,7 +380,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   /**
    * @notice Check correct finder and version of the deployed pool
    * @param pool Contract pool to check
-   * @param pool Pool version to check
+   * @param version Pool version to check
    */
   function checkPoolDeployment(ISynthereumPoolDeployment pool, uint8 version)
     internal

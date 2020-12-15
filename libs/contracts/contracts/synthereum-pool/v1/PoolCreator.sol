@@ -14,7 +14,7 @@ contract SynthereumPoolCreator is Lockable {
   //----------------------------------------
 
   /**
-   * @notice The derivative's margin currency must be an ERC20
+   * @notice The derivative's collateral currency must be an ERC20
    * @notice The validator will generally be an address owned by the LP
    * @notice `startingCollateralization should be greater than the expected asset price multiplied
    *      by the collateral requirement. The degree to which it is greater should be based on
