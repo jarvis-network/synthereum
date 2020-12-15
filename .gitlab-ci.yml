@@ -30,7 +30,7 @@ build-frontend:
     - yarn build:frontend
   artifacts:
     paths:
-      - packages/client-new/out
+      - apps/frontend/out
 
 build-old-frontend:
   <<: *enabled-branches
@@ -48,7 +48,7 @@ build-old-frontend:
     - yarn build:frontend-old
   artifacts:
     paths:
-      - packages/client/build
+      - packages/frontend-old/build
 
 .acr_path:
   - &acr_path_script |
@@ -80,7 +80,7 @@ build-old-validator:
       artifacts: true
   variables:
     NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
-    OUT_DIR: './packages/client-new/out/'
+    OUT_DIR: './apps/frontend/out/'
   before_script:
     - yarn global add netlify-cli
   script:
@@ -106,7 +106,7 @@ frontend-prod-netlify:
       artifacts: true
   variables:
     NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
-    OUT_DIR: './packages/client/build/'
+    OUT_DIR: './packages/frontend-old/build/'
 
 old-frontend-netlify:
   <<: *old-frontend-deploy-default

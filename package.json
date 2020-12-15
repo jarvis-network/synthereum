@@ -38,8 +38,10 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*",
-      "packages/*/dist"
+      "packages/frontend-old",
+      "apps/*",
+      "libs/*",
+      "libs/*/dist"
     ],
     "nohoist": [
       "@jarvis-network/synthereum-contracts/@openzeppelin/**"

@@ -152,4 +152,7 @@ result
 # folders to allow natural importing from sub folders:
 # e.g.: @jarvis-network/web3-utils/eth/networks
 **/dist/*
-!packages/*/dist/package.json
+!libs/*/dist/package.json
+
+# Frontend assets
+apps/frontend/public/assets
