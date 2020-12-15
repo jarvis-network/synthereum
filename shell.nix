@@ -14,11 +14,10 @@ mkShell {
     gnumake
     python3
     gccStdenv
-    eudev
     libusb1.dev
     pkg-config
     which
-  ];
+  ] ++ lib.optional (! stdenv.isDarwin) [ eudev ];
 
   shellHook = ''
     echo "Welcome to Jarvis"
