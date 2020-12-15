@@ -1,0 +1,39 @@
+{
+  "version": 2,
+
+  "projects": {
+    "web3-utils": {
+      "root": "libs/web3-utils",
+      "sourceRoot": "libs/web3-utils/src/",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/web3-utils/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/web3-utils/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn --cwd ./dist run build"],
+            "parallel": false,
+            "cwd": "./libs/web3-utils",
+            "color": true
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/workspace"
+  }
+}
