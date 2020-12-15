@@ -79,6 +79,55 @@
           }
         }
       }
+    },
+    "validator": {
+      "root": "apps/validator",
+      "sourceRoot": "apps/validator/src",
+      "projectType": "application",
+      "prefix": "validator",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "parallel": false,
+            "cwd": "./apps/validator",
+            "color": true
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run start"],
+            "parallel": false,
+            "cwd": "./apps/validator",
+            "color": true
+          }
+        },
+        "serve-dev": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run start:dev"],
+            "parallel": false,
+            "cwd": "./apps/validator",
+            "color": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/validator/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/validator/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

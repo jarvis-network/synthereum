@@ -29,6 +29,10 @@
     "contracts": {
       "tags": [],
       "implicitDependencies": ["web3-utils"]
+    },
+    "validator": {
+      "tags": [],
+      "implicitDependencies": ["contracts"]
     }
   },
   "workspaceLayout": {
