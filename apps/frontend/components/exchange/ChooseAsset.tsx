@@ -67,10 +67,14 @@ const grid = {
       className: 'number',
       cell: ({ original }: CellInfo) => {
         const o = original as AssetWithWalletInfo;
+
+        const stableValue = o.stableCoinValue && (
+          <div className="dollars">$ {o.stableCoinValue.format(2)}</div>
+        );
         return (
           <>
             <div className="value">{o.ownedAmount.format(5)}</div>
-            <div className="dollars">$ {o.stableCoinValue.format(2)}</div>
+            {stableValue}
           </>
         );
       },
@@ -213,7 +217,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
 
         return {
           ...asset,
-          stableCoinValue: ownedAmount.mul(asset.price),
+          stableCoinValue: asset.price ? ownedAmount.mul(asset.price) : null,
           ownedAmount,
         };
       },

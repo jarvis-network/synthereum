@@ -7,7 +7,7 @@ import { Asset, PRIMARY_STABLE_COIN } from '@/data/assets';
 export interface AssetRowProps {
   asset: Asset;
   amount: FPN;
-  value: FPN;
+  value: FPN | null;
 }
 
 const Container = styled.div`
@@ -49,17 +49,23 @@ const Value = styled(Amount)`
   color: ${props => props.theme.text.secondary};
 `;
 
-export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value }) => (
-  <Container>
-    <Information>
-      {asset.icon && <Flag flag={asset.icon} />}
-      <Title>{asset.symbol}</Title>
-    </Information>
-    <Details>
-      <Amount>{amount.format(2)}</Amount>
-      <Value>
-        {value.format(2)} {PRIMARY_STABLE_COIN.symbol}
-      </Value>
-    </Details>
-  </Container>
-);
+export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value }) => {
+  const valueElem = value && (
+    <Value>
+      {value.format(2)} {PRIMARY_STABLE_COIN.symbol}
+    </Value>
+  );
+
+  return (
+    <Container>
+      <Information>
+        {asset.icon && <Flag flag={asset.icon} />}
+        <Title>{asset.symbol}</Title>
+      </Information>
+      <Details>
+        <Amount>{amount.format(2)}</Amount>
+        {valueElem}
+      </Details>
+    </Container>
+  );
+};

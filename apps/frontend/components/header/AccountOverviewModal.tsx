@@ -73,13 +73,13 @@ export const AccountOverviewModal: FC = () => {
       return {
         asset,
         amount,
-        value: amount.mul(asset.price),
+        value: asset.price ? amount.mul(asset.price) : null,
       };
     });
   }, [wallet, assets]);
 
   const total = useMemo(() => {
-    return FPN.sum(items.map(_item => _item.value));
+    return FPN.sum(items.map(_item => _item.value).filter(Boolean) as FPN[]);
   }, [items]);
 
   return (

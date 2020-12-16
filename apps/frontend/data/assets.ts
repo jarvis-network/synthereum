@@ -14,7 +14,7 @@ export interface Asset {
   symbol: SyntheticSymbol | PrimaryStableCoin;
   pair: SubscriptionPair | null;
   icon: FlagKeys | null;
-  price: FPN;
+  price: FPN | null;
   decimals: number;
   type: 'forex' | 'crypto';
 }
@@ -36,7 +36,7 @@ export const PRIMARY_STABLE_COIN: Asset = {
 };
 
 export interface AssetWithWalletInfo extends Asset {
-  stableCoinValue: FPN;
+  stableCoinValue: FPN | null;
   ownedAmount: FPN;
 }
 

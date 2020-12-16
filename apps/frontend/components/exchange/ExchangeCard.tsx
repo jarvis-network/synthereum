@@ -47,7 +47,11 @@ const grid = {
       className: 'number',
       cell: ({ original }: CellInfo) => {
         const o = original as AssetPair;
-        return o.input.price.div(o.output.price).format(5);
+
+        if (o.input.price && o.output.price) {
+          return o.input.price.div(o.output.price).format(5);
+        }
+        return null;
       },
     },
   ],
