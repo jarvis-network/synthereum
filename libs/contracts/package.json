@@ -31,7 +31,7 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "dependencies": {
-    "@jarvis-network/uma-core": "0.2.0",
+    "@jarvis-network/uma-core": "0.3.0",
     "@jarvis-network/web3-utils": "*",
     "web3": "^1.3.0"
   },
