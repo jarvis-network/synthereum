@@ -2,29 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import Web3Provider from 'web3-react';
-import { Connectors } from 'web3-react';
+import { Web3ReactProvider } from '@web3-react/core';
 import Web3 from 'web3';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from './theme';
 
-const { InjectedConnector, NetworkOnlyConnector } = Connectors;
-
-const MetaMask = new InjectedConnector();
-const Infura = new NetworkOnlyConnector({
-  providerURL: 'https://mainnet.infura.io/v3/e8d0916e2d8f4a57b5dd4545bd33b982',
-});
-
-const connectors = { MetaMask, Infura };
+function getLibrary(provider, _connector) {
+  return new Web3(provider);
+}
 
 ReactDOM.render(
-  <Web3Provider connectors={connectors} libraryName="web3.js" web3Api={Web3}>
+  <Web3ReactProvider getLibrary={getLibrary}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <App />
     </ThemeProvider>
-  </Web3Provider>,
+  </Web3ReactProvider>,
   document.getElementById('root'),
 );
 

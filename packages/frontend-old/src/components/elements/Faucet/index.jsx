@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useWeb3Context } from 'web3-react';
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardContent,
-  Table,
-  TableRow,
-  TableBody,
-  TableCell,
-} from '@material-ui/core';
+import { useWeb3React } from '@web3-react/core';
 import Typography from '@material-ui/core/Typography';
 import useStyles from './styles';
 
@@ -40,16 +30,10 @@ async function postData(url = '', data = {}) {
   }
 }
 
-export default function Faucet({
-  assets,
-  syntheticTokens,
-  token,
-  dai,
-  lastTx,
-}) {
+export default function Faucet() {
   const classes = useStyles();
 
-  const context = useWeb3Context();
+  const context = useWeb3React();
 
   const [status, setStatus] = useState('redeemed');
 
@@ -127,10 +111,10 @@ export default function Faucet({
             <Typography variant="h6">
               In order to showcase the potential of our protocol we invite you
               to test it in demo. To do so you will need some USDC and ETH on
-              test net environment, which are called kovan USDC and kovan ETH. So
-              before you can play a bit with the awesome features that this
-              protocol offers make sure to Redeem some kUSDC and kETH by clicking
-              the button below.
+              test net environment, which are called kovan USDC and kovan ETH.
+              So before you can play a bit with the awesome features that this
+              protocol offers make sure to Redeem some kUSDC and kETH by
+              clicking the button below.
             </Typography>
             <br />
             <Typography variant="h6">

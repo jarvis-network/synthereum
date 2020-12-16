@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useWeb3Context } from 'web3-react';
+import { useWeb3React } from '@web3-react/core';
 
 import { jarvisExchangeRate } from '../../../jarvisAPI.js';
 
@@ -22,7 +22,7 @@ import useStyles from './styles';
 export default function Wallet({ setLoading }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const context = useWeb3Context();
+  const context = useWeb3React();
 
   const [assets, setAssets] = useState(defaultAssets);
   const [syntheticTokens, setSyntheticTokens] = useState([]);
@@ -43,7 +43,7 @@ export default function Wallet({ setLoading }) {
 
       const factory = new Contract(
         TICFactory.abi,
-        TICFactory.networks[context.networkId].address,
+        TICFactory.networks[context.chainId].address,
       );
 
       let newAssets = [...assets];
@@ -132,7 +132,10 @@ export default function Wallet({ setLoading }) {
       });
 
       setCollateral(
-        new Contract(ERC20.abi, collateralToken.networks[context.networkId].address),
+        new Contract(
+          ERC20.abi,
+          collateralToken.networks[context.chainId].address,
+        ),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

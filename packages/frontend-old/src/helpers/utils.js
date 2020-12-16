@@ -1,10 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useWeb3Context } from 'web3-react';
-import { fromWei, toWei} from 'web3-utils'
-
-
-
-
+import { fromWei, toWei } from 'web3-utils';
 
 export function toFixedNumber(amount, numberOfDecimals) {
   const stringAmount = amount.toString();
@@ -31,15 +25,16 @@ function removeZeros(stringAmount) {
 }
 
 export function fromScaledWei(amount, decimals) {
-   console.log(amount);
-   console.log(decimals);
-   let scaledAmount = 0;
-   if(decimals == 6) {
-    scaledAmount = fromWei(amount, 'mwei') ;
-   } else if (decimals == 18) {
-    scaledAmount = fromWei(amount) ;
-   }
-  return scaledAmount }
+  console.log(amount);
+  console.log(decimals);
+  let scaledAmount = 0;
+  if (decimals == 6) {
+    scaledAmount = fromWei(amount, 'mwei');
+  } else if (decimals == 18) {
+    scaledAmount = fromWei(amount);
+  }
+  return scaledAmount;
+}
 
 export function toScaledWei(amount, decimals) {
   console.log(amount);
@@ -47,16 +42,14 @@ export function toScaledWei(amount, decimals) {
   console.log(toWei(amount) );
   console.log(10**(18 - decimals));*/
   let scaledAmount = 0;
-  if(decimals == 6) {
-   scaledAmount = toWei(amount, 'mwei') ;
-   console.log('RESULT SIX');
-   console.log(scaledAmount);
+  if (decimals == 6) {
+    scaledAmount = toWei(amount, 'mwei');
+    console.log('RESULT SIX');
+    console.log(scaledAmount);
   } else if (decimals == 18) {
-   scaledAmount = toWei(amount) ;
-   console.log('RESULT');
-   console.log(scaledAmount);
+    scaledAmount = toWei(amount);
+    console.log('RESULT');
+    console.log(scaledAmount);
   }
- return scaledAmount
+  return scaledAmount;
 }
-
-

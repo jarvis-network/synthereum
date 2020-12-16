@@ -9,12 +9,12 @@ import Box from '@material-ui/core/Box';
 import { useLocation } from 'react-router-dom';
 
 import { DashboardPages, SupportPages } from '../../../helpers/pages';
-import { useWeb3Context } from 'web3-react';
+import { useWeb3React } from '@web3-react/core';
 
 import useStyles from './styles';
 
 const Header = ({ open, handleDrawerToggle }) => {
-  const context = useWeb3Context();
+  const context = useWeb3React();
   const { account } = context;
 
   const classes = useStyles();

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useWeb3Context } from 'web3-react';
+import { useWeb3React } from '@web3-react/core';
+import { InjectedConnector } from '@web3-react/injected-connector'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -11,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import Wallet from './components/layout/Wallet';
 
 import { BrowserRouter as Router } from 'react-router-dom';
+
+const injected = new InjectedConnector({ supportedChainIds: [42] })
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -29,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 export default function App() {
   const classes = useStyles();
 
-  const context = useWeb3Context();
+  const context = useWeb3React();
 
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +44,7 @@ export default function App() {
 
   useEffect(() => {
     if (!context.active) {
-      context.setFirstValidConnector(['MetaMask', 'Infura']);
+      context.activate(injected)
     }
   }, [context]);
 
@@ -59,7 +62,7 @@ export default function App() {
     );
   } else if (context.error) {
     return <div>Error</div>;
-  } else if (context.networkId !== 42) {
+  } else if (context.chainId !== 42) {
     return (
       <div className="App">
         <Container maxWidth="md">

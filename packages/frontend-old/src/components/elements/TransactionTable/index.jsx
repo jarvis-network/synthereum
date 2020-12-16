@@ -12,10 +12,10 @@ import {
 } from '@material-ui/core';
 import StatusLabel from './StatusLabel';
 import useStyles from './styles';
-import { useWeb3Context } from 'web3-react';
+import { useWeb3React } from '@web3-react/core';
 import * as icons from '../../../assets/icons';
 import Loader from '../Loader';
-import { toFixedNumber, fromScaledWei, toScaledWei } from '../../../helpers/utils.js';
+import { toFixedNumber, fromScaledWei } from '../../../helpers/utils.js';
 
 const getStatus = (ev, approvedEvents, rejectedEvents, idField) => {
   let status = 'pending';
@@ -40,9 +40,9 @@ const getStatus = (ev, approvedEvents, rejectedEvents, idField) => {
   };
 };
 
-const TransactionTable = ({ assets, collateral,token }) => {
+const TransactionTable = ({ assets, collateral, token }) => {
   const classes = useStyles();
-  const context = useWeb3Context();
+  const context = useWeb3React();
   const { fromWei } = context.library.utils;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -206,15 +206,14 @@ const TransactionTable = ({ assets, collateral,token }) => {
                           src={icons[ev.fromAsset]}
                         />
                         {`-${toFixedNumber(
-                          ev.event === 'RedeemRequested' ?
-                          fromScaledWei(
-                            ev.returnValues['numTokens'],
-                              18
-                             ): fromScaledWei(
-                            ev.returnValues['collateralAmount'],
-                            decimals),
+                          ev.event === 'RedeemRequested'
+                            ? fromScaledWei(ev.returnValues['numTokens'], 18)
+                            : fromScaledWei(
+                                ev.returnValues['collateralAmount'],
+                                decimals,
+                              ),
 
-                          5
+                          5,
                         )}`}
                       </Box>
                     </TableCell>
@@ -244,13 +243,13 @@ const TransactionTable = ({ assets, collateral,token }) => {
                           height="28"
                           src={icons[ev.toAsset]}
                         />
-                        {`+${toFixedNumber(ev.event === 'RedeemRequested' ?
-                          fromScaledWei(
-                            ev.returnValues['collateralAmount'],
-                              decimals
-                             ): fromScaledWei(
-                            ev.returnValues['numTokens'],
-                            18),
+                        {`+${toFixedNumber(
+                          ev.event === 'RedeemRequested'
+                            ? fromScaledWei(
+                                ev.returnValues['collateralAmount'],
+                                decimals,
+                              )
+                            : fromScaledWei(ev.returnValues['numTokens'], 18),
                           5,
                         )}`}
                       </Box>

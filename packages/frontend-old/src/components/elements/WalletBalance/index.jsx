@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useWeb3Context } from 'web3-react';
+import { useWeb3React } from '@web3-react/core';
 
 import {
   Box,
@@ -17,7 +17,7 @@ import * as icons from '../../../assets/icons';
 
 import useStyles from './styles';
 import CollateralBar from '../CollateralBar';
-import { toFixedNumber, fromScaledWei, toScaledWei } from '../../../helpers/utils.js';
+import { toFixedNumber, fromScaledWei } from '../../../helpers/utils.js';
 
 export default function WalletBalance({
   assets,
@@ -28,7 +28,7 @@ export default function WalletBalance({
 }) {
   const classes = useStyles();
 
-  const context = useWeb3Context();
+  const context = useWeb3React();
 
   const [synBalances, setSynBalances] = useState(
     Array(syntheticTokens.length).fill('0'),
@@ -37,7 +37,7 @@ export default function WalletBalance({
 
   const [decimals, setDecimals] = useState('0');
 
-  const [collateralSymbol,setCollateralSymbol] = useState('');
+  const [collateralSymbol, setCollateralSymbol] = useState('');
 
   const { fromWei } = context.library.utils;
 
@@ -97,7 +97,6 @@ export default function WalletBalance({
     }
   }, [context, context.active, collateral, lastTx]);
 
-
   useEffect(() => {
     if (context.active && collateral) {
       collateral.methods
@@ -106,7 +105,6 @@ export default function WalletBalance({
         .then(balance => setBalance(balance));
     }
   }, [context, context.active, collateral, lastTx]);
-
 
   return (
     <Card className={classes.Paper}>
@@ -120,7 +118,10 @@ export default function WalletBalance({
           <TableBody>
             {assets.map((asset, index) => {
               const value = asset.price * fromWei(asset.totalTokens.toString());
-              const total = fromScaledWei(asset.collateral.toString(),decimals);
+              const total = fromScaledWei(
+                asset.collateral.toString(),
+                decimals,
+              );
               return (
                 <TableRow key={index}>
                   <TableCell className={classes.TokenIconCell}>
@@ -162,7 +163,7 @@ export default function WalletBalance({
               </TableCell>
               <TableCell colSpan="2">
                 <Typography variant="h6" display="block">
-                 {collateralSymbol}
+                  {collateralSymbol}
                 </Typography>
               </TableCell>
               <TableCell align="right">
