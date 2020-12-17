@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState, useMemo } from 'react';
+import { useTheme, ThemeConfig } from '@jarvis-network/ui';
 import {
   CandlestickSeriesPartialOptions,
   GridOptions,
@@ -8,15 +9,19 @@ import {
   LineStyle,
   PriceScaleOptions,
   TimeScaleOptions,
+  WhitespaceData,
 } from 'lightweight-charts';
-import { useTheme, ThemeConfig } from '@jarvis-network/ui';
+
+import { PricePoint } from '@/state/initialState';
+
+export type DataItem = PricePoint | (WhitespaceData & { history?: boolean });
 
 type CandleStickChartProps = {
   width?: number;
   height?: number;
   autoWidth?: boolean;
   autoHeight?: boolean;
-  data?: any;
+  data?: DataItem[];
 };
 
 const mainContentBackground = {
@@ -29,21 +34,6 @@ const chartLinesColors = {
   light: '#f2f6f9',
   dark: '#7E7E7E',
   night: '#63758d',
-};
-
-const chartGridConfig = (theme: ThemeConfig): GridOptions => {
-  return {
-    vertLines: {
-      color: chartLinesColors[theme.name],
-      style: LineStyle.Solid,
-      visible: false,
-    },
-    horzLines: {
-      color: chartLinesColors[theme.name],
-      style: LineStyle.Solid,
-      visible: true,
-    },
-  };
 };
 
 const chartPriceAxisConfig: Partial<PriceScaleOptions> = {
@@ -62,6 +52,19 @@ const candleStickSeriesConfig: CandlestickSeriesPartialOptions = {
   borderVisible: false,
 };
 
+const chartGridConfig = (theme: ThemeConfig): GridOptions => ({
+  vertLines: {
+    color: chartLinesColors[theme.name],
+    style: LineStyle.Solid,
+    visible: false,
+  },
+  horzLines: {
+    color: chartLinesColors[theme.name],
+    style: LineStyle.Solid,
+    visible: true,
+  },
+});
+
 const Chart: FC<CandleStickChartProps> = ({
   width,
   height,
@@ -70,8 +73,26 @@ const Chart: FC<CandleStickChartProps> = ({
   data,
 }) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
-  const [chart, setChart] = useState<IChartApi | null>(null);
   const theme: ThemeConfig = useTheme();
+
+  const historicalData = useMemo(() => (data || []).filter(i => i.history), [
+    data,
+  ]);
+  const dynamicData = useMemo(() => (data || []).filter(i => !i.history), [
+    data,
+  ]);
+
+  const [chartInstance, setChartInstance] = useState<IChartApi | null>(null);
+
+  const [
+    historicalCandlesticks,
+    setHistoricalCandlesticks,
+  ] = useState<ISeriesApi<'Candlestick'> | null>(null);
+
+  const [
+    dynamicCandlesticks,
+    setDynamicCandlesticks,
+  ] = useState<ISeriesApi<'Candlestick'> | null>(null);
 
   const chartLayoutConfig: Partial<LayoutOptions> = {
     backgroundColor: mainContentBackground[theme.name],
@@ -80,85 +101,157 @@ const Chart: FC<CandleStickChartProps> = ({
     fontSize: 8,
   };
 
-  const initializeCandleStickChart = () => {
-    if (!chart) return;
-    const candleStickSeries: ISeriesApi<'Candlestick'> = chart.addCandlestickSeries(
-      candleStickSeriesConfig,
-    );
+  // ----- HELPERS -----
 
-    if (data) {
-      candleStickSeries.setData(data);
-      chart.timeScale().fitContent();
-    }
-  };
-
-  const resizeHandler = () => {
-    if (chart && chartRef.current) {
-      const parent = chartRef.current.parentNode as Element;
-      const chartWidth = autoWidth ? parent.clientWidth : width ?? 400;
-      const chartHeight = autoHeight ? parent.clientHeight : height ?? 300;
-
-      chart.resize(chartWidth, chartHeight);
-      chart.timeScale().fitContent();
-    }
-  };
-
-  // import createChart function
   const importCreateChartFunction = async () => {
     return (await import('lightweight-charts')).createChart;
   };
 
+  const resizeHandler = () => {
+    if (!chartInstance || !chartRef.current) {
+      return;
+    }
+
+    const parent = chartRef.current.parentNode as Element;
+    const chartWidth = autoWidth ? parent.clientWidth : width ?? 400;
+    const chartHeight = autoHeight ? parent.clientHeight : height ?? 300;
+
+    chartInstance.resize(chartWidth, chartHeight);
+    chartInstance.timeScale().fitContent();
+  };
+
+  const createCandleSticksSerie = (
+    serieData: DataItem[],
+    options?: CandlestickSeriesPartialOptions,
+  ): ISeriesApi<'Candlestick'> | null => {
+    if (!chartInstance) {
+      return null;
+    }
+
+    // Clone data, as chart mutates the source data and it will cause a redux update bypass dispatcher
+    const clonedData = serieData.map(({ history, ...i }) => ({ ...i }));
+
+    // Create new serie with cloned data
+    const serie: ISeriesApi<'Candlestick'> = chartInstance.addCandlestickSeries(
+      {
+        ...candleStickSeriesConfig,
+        ...(options || {}),
+      },
+    );
+
+    // Set serie and fit chart
+    serie.setData(clonedData);
+    chartInstance.timeScale().fitContent();
+
+    return serie;
+  };
+
+  const initializeDynamicCandleStickSerie = () => {
+    if (!chartInstance) {
+      return;
+    }
+
+    // Remove old candlestick serie
+    if (dynamicCandlesticks) {
+      chartInstance.removeSeries(dynamicCandlesticks);
+      setDynamicCandlesticks(null);
+    }
+
+    // Create and set new candlestick serie
+    setDynamicCandlesticks(
+      createCandleSticksSerie(dynamicData, {
+        priceLineVisible: true,
+        lastValueVisible: true,
+      }),
+    );
+  };
+
+  const initializeHistoricalCandleStickSerie = () => {
+    if (!chartInstance) {
+      return;
+    }
+
+    // Remove old candlestick serie
+    if (historicalCandlesticks) {
+      chartInstance.removeSeries(historicalCandlesticks);
+      setHistoricalCandlesticks(null);
+    }
+
+    // Create and set new candlestick serie
+    setHistoricalCandlesticks(
+      createCandleSticksSerie(historicalData, {
+        priceLineVisible: false,
+        lastValueVisible: false,
+      }),
+    );
+  };
+
   // ----- USEEFFECT HOOKS -----
 
-  // 1. create chart
+  // create chart on initial run
   useEffect(() => {
-    if (chartRef && !chart) {
-      importCreateChartFunction()
-        .then(createChart => {
-          setChart(createChart(chartRef.current!));
-        })
-        // eslint-disable-next-line no-console
-        .catch(e => console.error(e));
+    importCreateChartFunction()
+      .then(createChart => setChartInstance(createChart(chartRef.current!)))
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+
+    if (!chartInstance) {
+      return;
     }
 
-    return () => chart?.remove();
+    // eslint-disable-next-line consistent-return
+    return () => chartInstance && chartInstance.remove();
   }, []);
 
-  // 2. add candle series
+  // apply new options for chart instance on options change
   useEffect(() => {
-    if (chart) {
-      initializeCandleStickChart();
-    }
-  }, [chart]);
-
-  // 3. update chart
-  useEffect(() => {
-    if (chart) {
-      const options = {
-        width: autoWidth
-          ? (chartRef.current!.parentNode! as Element).clientWidth
-          : width,
-        height: autoHeight
-          ? (chartRef.current!.parentNode! as Element).clientHeight
-          : height,
-        layout: chartLayoutConfig,
-        grid: chartGridConfig(theme),
-        priceScale: chartPriceAxisConfig,
-        timeScale: chartTimeScaleConfig,
-      };
-
-      chart.applyOptions(options);
-      chart.timeScale().fitContent();
-
-      if (autoHeight || autoWidth) {
-        window.addEventListener('resize', resizeHandler);
-      }
+    if (!chartInstance || !chartRef.current || !chartInstance) {
+      return;
     }
 
+    const parent = chartRef.current.parentNode as Element;
+    const chartWidth = autoWidth ? parent.clientWidth : width ?? 400;
+    const chartHeight = autoHeight ? parent.clientHeight : height ?? 300;
+
+    const options = {
+      width: chartWidth,
+      height: chartHeight,
+      layout: chartLayoutConfig,
+      grid: chartGridConfig(theme),
+      rightPriceScale: chartPriceAxisConfig,
+      timeScale: chartTimeScaleConfig,
+    };
+
+    chartInstance.applyOptions(options);
+    chartInstance.timeScale().fitContent();
+
+    if (autoHeight || autoWidth) {
+      window.addEventListener('resize', resizeHandler);
+    }
+
+    // eslint-disable-next-line consistent-return
     return () => {
       window.removeEventListener('resize', resizeHandler);
     };
-  }, [chart, chartLayoutConfig]);
+  }, [chartInstance, chartLayoutConfig]);
+
+  // set historical candlesticks series on historical data change
+  useEffect(() => {
+    if (!chartInstance) {
+      return;
+    }
+
+    initializeHistoricalCandleStickSerie();
+  }, [chartInstance, historicalData]);
+
+  // set dynamic candlesticks series on dynamic data change
+  useEffect(() => {
+    if (!chartInstance) {
+      return;
+    }
+
+    initializeDynamicCandleStickSerie();
+  }, [chartInstance, dynamicData]);
 
   return <div ref={chartRef} />;
 };
