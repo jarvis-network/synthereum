@@ -2,3 +2,16 @@
 **/packages/keeper-bot
 **/packages/client
 **/packages/balance-notify
+.cache
+.nix-node
+apps/**/node_modules
+libs/**/node_modules
+apps/**/dist
+libs/**/dist
+libs/**/build
+!libs/web3-utils/dist/package.json
+.next
+**/.next
+**/out
+packages/*
+!packages/frontend-old
