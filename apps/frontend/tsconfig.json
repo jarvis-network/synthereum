@@ -5,7 +5,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
     "jsx": "preserve",
-
+    "downlevelIteration": true,
     "baseUrl": ".",
     "paths": {
       "@/components/*": ["components/*"],
