@@ -51,7 +51,7 @@ export type AssetFundingConfig = PerAsset<Amount>;
 
 export interface SyntheticTokenConfig {
   syntheticName: string; /// Example: "Jarvis Synthetic Euro",
-  syntheticSymbol: string; /// Example: "jEUR",
+  syntheticSymbol: SyntheticSymbol; /// Example: "jEUR",
   priceFeedIdentifier: string; /// Example: "EUR/USD",
   collateralRequirement: FixedPointNumber; /// Example: { "rawValue": "1100000000000000000" },
   startingCollateralization: string; /// Example: "1527000",
