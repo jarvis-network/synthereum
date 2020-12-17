@@ -7,7 +7,6 @@ import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src
 
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
-import { fakeWallet } from '@/data/fakeWallet.ts';
 import { SubscriptionPair } from '@/utils/priceFeed';
 
 type Values = 'pay' | 'receive';
@@ -58,7 +57,7 @@ export interface State {
     chooseAssetActive: Values | null;
   };
   wallet: {
-    [key: string]: WalletInfo;
+    [key in SyntheticSymbol | PrimaryStableCoin]?: WalletInfo;
   };
   transactions: {
     list: Transaction[];
@@ -89,7 +88,7 @@ export const initialState: State = {
     invertRateInfo: false,
     chooseAssetActive: null,
   },
-  wallet: fakeWallet as { [key: string]: WalletInfo },
+  wallet: {},
   transactions: {
     list: transactions,
   },
