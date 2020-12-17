@@ -7,6 +7,7 @@ import { reducer as assets } from '@/state/slices/assets';
 import { reducer as exchange } from '@/state/slices/exchange';
 import { reducer as wallet } from '@/state/slices/wallet';
 import { reducer as transactions } from '@/state/slices/transactions';
+import { reducer as prices } from '@/state/slices/prices';
 
 export const reducer = combineReducers({
   theme,
@@ -16,6 +17,7 @@ export const reducer = combineReducers({
   exchange,
   wallet,
   transactions,
+  prices,
 });
 
 export type RootState = ReturnType<typeof reducer>;

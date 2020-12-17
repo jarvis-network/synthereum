@@ -1,10 +1,14 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
 import { fakeWallet } from '@/data/fakeWallet.ts';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { SubscriptionPair } from '@/utils/priceFeed';
 
 type Values = 'pay' | 'receive';
 
@@ -14,6 +18,19 @@ export interface WalletInfo {
 
 export interface Rate {
   rate: FPN;
+}
+
+export interface PricePoint {
+  time: string; // in format YYYY-MM-DD
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  history: boolean;
+}
+
+export interface PricePointsMap {
+  [pair: string]: PricePoint[];
 }
 
 export interface State {
@@ -35,8 +52,8 @@ export interface State {
     pay: string;
     receive: string;
     base: Values;
-    payAsset: string;
-    receiveAsset: string;
+    payAsset: SyntheticSymbol | PrimaryStableCoin;
+    receiveAsset: SyntheticSymbol | PrimaryStableCoin;
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
   };
@@ -45,6 +62,10 @@ export interface State {
   };
   transactions: {
     list: Transaction[];
+  };
+  prices: {
+    persistedPairs: SubscriptionPair[];
+    feed: PricePointsMap;
   };
 }
 
@@ -71,6 +92,10 @@ export const initialState: State = {
   wallet: fakeWallet as { [key: string]: WalletInfo },
   transactions: {
     list: transactions,
+  },
+  prices: {
+    persistedPairs: [],
+    feed: {},
   },
 };
 

@@ -1,15 +1,40 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { configureStore, Store } from '@reduxjs/toolkit';
+import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 
-import { reducer } from '@/state/reducer';
-import { initialState, State } from '@/state/initialState';
+import { getPriceFeedRoot } from '@/utils/environment';
+import { cache } from '@/utils/cache';
+import { PriceFeed } from '@/utils/priceFeed';
+import { Dependencies } from '@/utils/epics';
+import { State, initialState } from '@/state/initialState';
+import { reducer, RootState } from '@/state/reducer';
+import { saveCachedHistory } from '@/state/slices/prices';
+import { epic } from '@/state/epic';
 
 let cachedStore: Store | undefined;
 
-function initStore(preloadedState: State = initialState) {
+function initStore(preloadedState: State = initialState) {  // Create redux-observable middleware
+  const epicMiddleware: EpicMiddleware<
+    any,
+    any,
+    any,
+    Dependencies
+  > = createEpicMiddleware({
+    dependencies: {
+      priceFeed: new PriceFeed(getPriceFeedRoot()), // @TODO connect with price feed or mock proxy
+    },
+  });
+
+  const middleware = [epicMiddleware];
+
   // If you are going to load preloaded state from serialized data somewhere
   // here, make sure to convert all needed values from strings to BN
-  return configureStore({ reducer, preloadedState });
+  const store = configureStore({ reducer, preloadedState, middleware });
+
+  // Initialize react-observable
+  epicMiddleware.run(epic);
+
+  return store;
 }
 
 export const initializeStore = (preloadedState: State) => {
@@ -36,5 +61,17 @@ export const initializeStore = (preloadedState: State) => {
 };
 
 export function useStore(state: State) {
-  return useMemo(() => initializeStore(state), [state]);
+  const store = useMemo(() => initializeStore(state), [state]);
+
+  useEffect(() => {
+    if (!cache) {
+      return;
+    }
+
+    cache
+      .get<RootState['prices']>('prices')
+      .then(prices => store.dispatch(saveCachedHistory(prices)));
+  }, []);
+
+  return store;
 }
