@@ -10,6 +10,7 @@ import {
   themeValue,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { StyledCard } from '@/components/exchange/StyledCard';
 import { Asset, AssetWithWalletInfo } from '@/data/assets';
@@ -229,7 +230,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
 
   const [selected, setSelected] = useState(0);
 
-  const handleSelected = (symbol: string) => {
+  const handleSelected = (symbol: SyntheticSymbol) => {
     dispatch(asset === 'pay' ? setPayAsset(symbol) : setReceiveAsset(symbol));
     onBack();
   };
@@ -241,7 +242,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   };
 
   const getTrProps = (_: any, rowInfo?: RowInfo) => ({
-    onClick: () => handleSelected(rowInfo!.original.symbol),
+    onClick: () => handleSelected(rowInfo!.original.symbol as SyntheticSymbol),
     style: {
       cursor: 'pointer',
     },

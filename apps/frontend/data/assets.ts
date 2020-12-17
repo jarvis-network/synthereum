@@ -1,9 +1,18 @@
 import { FlagKeys } from '@jarvis-network/ui';
+import {
+  PerAsset,
+  SyntheticSymbol,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+import { syntheticTokens } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-assets';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+
+import { SubscriptionPair } from '@/utils/priceFeed';
 
 export interface Asset {
   name: string;
-  symbol: string;
+  symbol: SyntheticSymbol | PrimaryStableCoin;
+  pair: SubscriptionPair | null;
   icon: FlagKeys | null;
   price: FPN;
   decimals: number;
@@ -19,6 +28,7 @@ export interface AssetPair {
 export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
   symbol: 'USDC',
+  pair: null,
   icon: 'us',
   price: new FPN(1),
   decimals: 6,
@@ -32,62 +42,24 @@ export interface AssetWithWalletInfo extends Asset {
 
 export const PRICE_DECIMALS = 5;
 
-export const assets: Asset[] = [
-  PRIMARY_STABLE_COIN,
-  {
-    name: 'Jarvis Synthetic Euro',
-    symbol: 'jEUR',
-    icon: 'eur',
-    price: new FPN(1.21), // @TODO remove all fake prices
-    decimals: 18,
-    type: 'forex',
-  },
-  {
-    name: 'Jarvis Synthetic Swiss Franc',
-    symbol: 'jCHF',
-    icon: 'chf',
-    price: new FPN(1.4),
-    decimals: 18,
-    type: 'forex',
-  },
-  {
-    name: 'Jarvis Synthetic British Pound',
-    symbol: 'jGBP',
-    icon: 'gbp',
-    price: new FPN(1.5),
-    decimals: 18,
-    type: 'forex',
-  },
-  {
-    name: 'Jarvis Synthetic Gold',
-    symbol: 'jXAU',
-    icon: null,
-    price: new FPN(4.4),
-    decimals: 18,
-    type: 'forex',
-  },
-  {
-    name: 'Jarvis Synthetic S&P500',
-    symbol: 'jSPX',
-    icon: null,
-    price: new FPN(3.13),
-    decimals: 18,
-    type: 'forex',
-  },
-  {
-    name: 'Jarvis Synthetic Crude Oil',
-    symbol: 'jXTI',
-    icon: null,
-    price: new FPN(21.15),
-    decimals: 18,
-    type: 'forex',
-  },
-  {
-    name: 'Jarvis Synthetic Silver',
-    symbol: 'jXAG',
-    icon: null,
-    price: new FPN(0.55),
-    decimals: 18,
-    type: 'forex',
-  },
-];
+const assetIconMap: PerAsset<FlagKeys | null> = {
+  jEUR: 'eur',
+  jGBP: 'gbp',
+  jCHF: 'chf',
+  jXAU: null,
+  jSPX: null,
+  jXTI: null,
+  jXAG: null,
+} as const;
+
+const syntheticAssets: Asset[] = syntheticTokens.map(token => ({
+  name: token.syntheticName,
+  symbol: token.syntheticSymbol,
+  pair: token.priceFeedIdentifier.replace('/', '') as SubscriptionPair,
+  icon: assetIconMap[token.syntheticSymbol],
+  price: new FPN(1),
+  decimals: 18,
+  type: 'forex',
+}));
+
+export const assets: Asset[] = [PRIMARY_STABLE_COIN, ...syntheticAssets];
