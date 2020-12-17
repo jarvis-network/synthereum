@@ -22,6 +22,7 @@ const noop = () => undefined;
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
+  const transactions = useReduxSelector(state => state.transactions.list);
   const isAccountDropdownExpanded = useReduxSelector(
     state => state.app.isAccountDropdownExpanded,
   );
@@ -62,19 +63,20 @@ const render = () => {
       name: 'Account',
       key: 'Account',
       onClick: handleAccountOverviewOpen,
-    },
-    {
+    }
+  ];
+
+  // Fallback for initial release
+  // If no transactions in state do not show Acitity item in top menu
+  // It is because we probably will not implement backend logic for that
+  // @todo Remove after transactions backend will be done
+  if (transactions.length) {
+    links.push({
       name: 'Activity',
       key: 'Activity',
       onClick: handleRecentActivityOpen,
-    },
-    {
-      name: 'Help',
-      key: 'Help',
-      // eslint-disable-next-line no-alert
-      onClick: () => alert('Help'),
-    },
-  ];
+    });
+  }
 
   if (auth && auth.address) {
     const addr = formatWalletAddress(auth.address);
