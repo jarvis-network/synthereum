@@ -30,6 +30,7 @@
     "build:validator": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-validator' build",
     "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' build",
     "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis-network/web3-utils' build",
+    "build:cli": "lerna run --stream --include-dependencies --scope '@jarvis-network/cli' build",
 
     "build:frontend-old": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-old-frontend' build",
     "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build",
