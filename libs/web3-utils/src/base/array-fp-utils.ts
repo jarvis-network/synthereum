@@ -9,3 +9,15 @@ export function mapReduce<T, U, R>(
     initialValue,
   );
 }
+
+export function unique<T = any>(array: T[]): T[] {
+  return [...new Set(array)];
+}
+
+export function lastInArray<T = any>(array: T[]): T {
+  return array[array.length - 1];
+}
+
+export function indexOfMaxValue(array: number[]): number {
+  return array.indexOf(Math.max(...array));
+}
