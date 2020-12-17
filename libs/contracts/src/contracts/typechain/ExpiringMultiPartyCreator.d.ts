@@ -69,6 +69,10 @@ export interface ExpiringMultiPartyCreator extends BaseContract {
         string
       ]
     ): NonPayableTransactionObject<string>;
+
+    _getSyntheticDecimals(
+      _collateralAddress: string
+    ): NonPayableTransactionObject<string>;
   };
   events: {
     CreatedExpiringMultiParty(

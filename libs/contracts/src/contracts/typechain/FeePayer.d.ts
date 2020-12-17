@@ -44,12 +44,23 @@ export interface FeePayer extends BaseContract {
 
     cumulativeFeeMultiplier(): NonPayableTransactionObject<string>;
 
+    /**
+     * Initiates the shutdown process, in case of an emergency.
+     */
+    emergencyShutdown(): NonPayableTransactionObject<void>;
+
     finder(): NonPayableTransactionObject<string>;
 
     /**
      * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
      */
     getCurrentTime(): NonPayableTransactionObject<string>;
+
+    /**
+     * It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract.
+     * A core contract method called independently or as a part of other financial contract transactions.
+     */
+    remargin(): NonPayableTransactionObject<void>;
 
     /**
      * Will revert if not running in test mode.

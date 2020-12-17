@@ -10,12 +10,15 @@ export type KnownContract =
   | Tagged<ERC20, 'ERC20'>
   | Tagged<ExpandedERC20, 'ExpandedERC20'>
   | Tagged<ExpandedIERC20, 'ExpandedIERC20'>
+  | Tagged<ExpiringContractInterface, 'ExpiringContractInterface'>
   | Tagged<ExpiringMultiParty, 'ExpiringMultiParty'>
   | Tagged<ExpiringMultiPartyCreator, 'ExpiringMultiPartyCreator'>
   | Tagged<FeePayer, 'FeePayer'>
+  | Tagged<FinancialProductLibrary, 'FinancialProductLibrary'>
   | Tagged<FinderInterface, 'FinderInterface'>
   | Tagged<HitchensUnorderedKeySet, 'HitchensUnorderedKeySet'>
   | Tagged<IERC20, 'IERC20'>
+  | Tagged<IERC20Standard, 'IERC20Standard'>
   | Tagged<IExpiringMultiParty, 'IExpiringMultiParty'>
   | Tagged<IdentifierWhitelistInterface, 'IdentifierWhitelistInterface'>
   | Tagged<Liquidatable, 'Liquidatable'>
@@ -107,6 +110,9 @@ export namespace ExpandedIERC20_Events {
   export type Transfer = ExpandedIERC20_Transfer;
 }
 
+import type { ExpiringContractInterface } from './ExpiringContractInterface';
+export type { ExpiringContractInterface };
+
 import type { ExpiringMultiParty } from './ExpiringMultiParty';
 export type { ExpiringMultiParty };
 import type {
@@ -174,6 +180,9 @@ export namespace FeePayer_Events {
   export type RegularFeesPaid = FeePayer_RegularFeesPaid;
 }
 
+import type { FinancialProductLibrary } from './FinancialProductLibrary';
+export type { FinancialProductLibrary };
+
 import type { FinderInterface } from './FinderInterface';
 export type { FinderInterface };
 
@@ -193,6 +202,17 @@ import type {
 export namespace IERC20_Events {
   export type Approval = IERC20_Approval;
   export type Transfer = IERC20_Transfer;
+}
+
+import type { IERC20Standard } from './IERC20Standard';
+export type { IERC20Standard };
+import type {
+  Approval as IERC20Standard_Approval,
+  Transfer as IERC20Standard_Transfer,
+} from './IERC20Standard';
+export namespace IERC20Standard_Events {
+  export type Approval = IERC20Standard_Approval;
+  export type Transfer = IERC20Standard_Transfer;
 }
 
 import type { IExpiringMultiParty } from './IExpiringMultiParty';

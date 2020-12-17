@@ -21,27 +21,15 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface OracleInterfaces extends BaseContract {
+export interface ExpiringContractInterface extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): OracleInterfaces;
-  clone(): OracleInterfaces;
+  ): ExpiringContractInterface;
+  clone(): ExpiringContractInterface;
   methods: {
-    CollateralWhitelist(): NonPayableTransactionObject<string>;
-
-    FinancialContractsAdmin(): NonPayableTransactionObject<string>;
-
-    IdentifierWhitelist(): NonPayableTransactionObject<string>;
-
-    OptimisticOracle(): NonPayableTransactionObject<string>;
-
-    Oracle(): NonPayableTransactionObject<string>;
-
-    Registry(): NonPayableTransactionObject<string>;
-
-    Store(): NonPayableTransactionObject<string>;
+    expirationTimestamp(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

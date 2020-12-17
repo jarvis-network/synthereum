@@ -140,6 +140,8 @@ export interface PricelessPositionManager extends BaseContract {
 
     expiryPrice(): NonPayableTransactionObject<string>;
 
+    financialProductLibrary(): NonPayableTransactionObject<string>;
+
     finder(): NonPayableTransactionObject<string>;
 
     /**
@@ -251,7 +253,7 @@ export interface PricelessPositionManager extends BaseContract {
     redeem(numTokens: [number | string]): NonPayableTransactionObject<[string]>;
 
     /**
-     * This burns all tokens from the caller of `tokenCurrency` and sends back the proportional amount of `collateralCurrency`. Might not redeem the full proportional amount of collateral in order to account for precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.
+     * This burns all tokens from the caller of `tokenCurrency` and sends back the proportional amount of `collateralCurrency`. Might not redeem the full proportional amount of collateral in order to account for precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.This contract must have the Burner role for the `tokenCurrency`.
      * After a contract has passed expiry all token holders can redeem their tokens for underlying at the prevailing price defined by the DVM from the `expire` function.
      */
     settleExpired(): NonPayableTransactionObject<[string]>;
@@ -282,7 +284,7 @@ export interface PricelessPositionManager extends BaseContract {
     trimExcess(token: string): NonPayableTransactionObject<[string]>;
 
     /**
-     * This is necessary because the struct returned by the positions() method shows rawCollateral, which isn't a user-readable value.
+     * This is necessary because the struct returned by the positions() method shows rawCollateral, which isn't a user-readable value.TODO: This method does not account for any pending regular fees that have not yet been withdrawn from this contract, for example if the `lastPaymentTime != currentTime`. Future work should be to add logic to this method to account for any such pending fees.
      * Accessor method for a sponsor's collateral.
      * @param sponsor address whose collateral amount is retrieved.
      */
@@ -292,6 +294,24 @@ export interface PricelessPositionManager extends BaseContract {
      * Accessor method for the total collateral stored within the PricelessPositionManager.
      */
     totalPositionCollateral(): NonPayableTransactionObject<[string]>;
+
+    transformPrice(
+      price: [number | string],
+      requestTime: number | string
+    ): NonPayableTransactionObject<[string]>;
+
+    /**
+     * This method should never revert.
+     * Accessor method to compute a transformed price identifier using the finanicalProductLibrary specified at contract deployment. If no library was provided then no modification to the identifier is done.
+     * @param requestTime timestamp the identifier is to be used at.
+     */
+    transformPriceIdentifier(
+      requestTime: number | string
+    ): NonPayableTransactionObject<string>;
+
+    _getSyntheticDecimals(
+      _collateralAddress: string
+    ): NonPayableTransactionObject<string>;
   };
   events: {
     ContractExpired(cb?: Callback<ContractExpired>): EventEmitter;

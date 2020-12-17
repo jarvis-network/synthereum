@@ -38,13 +38,13 @@ export type Transfer = ContractEventLog<{
   2: string;
 }>;
 
-export interface ExpandedIERC20 extends BaseContract {
+export interface IERC20Standard extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): ExpandedIERC20;
-  clone(): ExpandedIERC20;
+  ): IERC20Standard;
+  clone(): IERC20Standard;
   methods: {
     /**
      * Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default. This value changes when {approve} or {transferFrom} are called.
@@ -90,25 +90,9 @@ export interface ExpandedIERC20 extends BaseContract {
     ): NonPayableTransactionObject<boolean>;
 
     /**
-     * Only burns the caller's tokens, so it is safe to leave this method permissionless.
-     * Burns a specific amount of the caller's tokens.
+     * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
      */
-    burn(value: number | string): NonPayableTransactionObject<void>;
-
-    /**
-     * This method should be permissioned to only allow designated parties to mint tokens.
-     * Mints tokens and adds them to the balance of the `to` address.
-     */
-    mint(
-      to: string,
-      value: number | string
-    ): NonPayableTransactionObject<boolean>;
-
-    addMinter(account: string): NonPayableTransactionObject<void>;
-
-    addBurner(account: string): NonPayableTransactionObject<void>;
-
-    resetOwner(account: string): NonPayableTransactionObject<void>;
+    decimals(): NonPayableTransactionObject<string>;
   };
   events: {
     Approval(cb?: Callback<Approval>): EventEmitter;
