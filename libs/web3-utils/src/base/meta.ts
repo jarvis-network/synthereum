@@ -4,7 +4,7 @@ export const t = <T extends any[]>(...args: T): T => args;
 export type KeysOf<T> = keyof T;
 export type ValuesOf<T> = T[KeysOf<T>];
 export type Entries<T> = {
-    [K in keyof T]: [K, T[K]];
+  [K in keyof T]: [K, T[K]];
 }[keyof T][];
 
 export function entriesOf<T extends object>(obj: T): Entries<T> {
@@ -55,11 +55,11 @@ export type PerTupleElement<Tuple extends readonly any[], T> = {
 
 export function mapTupleToObject<
   Tuple extends readonly any[],
-  F extends (elem: Tuple[number]) => T,
+  F extends (elem: Tuple[number], index: number) => T,
   T
 >(tuple: Tuple, mapFun: F): PerTupleElement<Tuple, T> {
   const result: Record<Tuple[number], T> = Object.fromEntries(
-    tuple.map(elem => t(elem, mapFun(elem))),
+    tuple.map((elem, i) => t(elem, mapFun(elem, i))),
   );
   return result;
 }
