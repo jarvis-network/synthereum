@@ -223,7 +223,7 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   const ownedAssets = useReduxSelector(state => {
     return Object.entries(state.wallet)
       .filter(([key, value]) => {
-        return value.amount.gt(new FPN('0'));
+        return value && value.amount.gt(new FPN('0'));
       })
       .map(([symbol]) => symbol);
   });

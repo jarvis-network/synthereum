@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+
 import { initialState } from '@/state/initialState';
 import { Transaction } from '@/data/transactions';
 
@@ -9,7 +11,7 @@ interface Action<T> {
 
 export const fetchTransactionsHistory = createAsyncThunk(
   'transactions/fetch',
-  (): Promise<Transaction[]> => {
+  (realmAgent: RealmAgent<'kovan'>): Promise<Transaction[]> => {
     // @todo some logic here
     return Promise.resolve([]);
   },
@@ -17,9 +19,9 @@ export const fetchTransactionsHistory = createAsyncThunk(
 
 export const subscribeTransactionsHistory = createAsyncThunk(
   'transactions/subscribe',
-  async (_, thunkAPI): Promise<void> => {
+  async (realmAgent: RealmAgent<'kovan'>, thunkAPI): Promise<void> => {
     setInterval(() => {
-      thunkAPI.dispatch(fetchTransactionsHistory());
+      thunkAPI.dispatch(fetchTransactionsHistory(realmAgent));
     }, 5000);
   },
 );
