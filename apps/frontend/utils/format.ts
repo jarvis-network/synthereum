@@ -36,6 +36,18 @@ export function formatTimestamp(timestamp: number) {
   });
 }
 
+export function formatDate(timestamp: number) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  const formatedMonth = month < 10 ? `0${month}` : month;
+  const formatedDay = day < 10 ? `0${day}` : day;
+
+  return `${year}-${formatedMonth}-${formatedDay}`;
+}
+
 // Transactions
 export function formatTransactionType(type: TransactionType) {
   if (type === 'sendToSelf') {
