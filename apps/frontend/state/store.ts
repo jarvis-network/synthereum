@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { configureStore, Store } from '@reduxjs/toolkit';
+import { configureStore, Store, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 
 import { getPriceFeedRoot } from '@/utils/environment';
@@ -25,7 +25,10 @@ function initStore(preloadedState: State = initialState) {  // Create redux-obse
     },
   });
 
-  const middleware = [epicMiddleware];
+  const middleware = [
+    ...getDefaultMiddleware(),
+    epicMiddleware
+  ];
 
   // If you are going to load preloaded state from serialized data somewhere
   // here, make sure to convert all needed values from strings to BN
