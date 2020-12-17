@@ -31,7 +31,7 @@ export class PriceFeed {
 
   constructor(protected path: string) { }
 
-  private connect(): WebSocket {
+  private connect = (): WebSocket => {
     this.socket = new WebSocket(`${this.path}/subscribe`);
 
     this.socket.addEventListener('open', this.sendQueueMessages);
@@ -43,18 +43,18 @@ export class PriceFeed {
     return this.socket;
   }
 
-  private reconnect(): WebSocket {
+  private reconnect = (): WebSocket => {
     this.subscriptions.forEach(this.resubscribePair);
 
     return this.connect();
   }
 
-  private buildOptions(options?: Options): Object | void {
+  private buildOptions = (options?: Options): Object | void => {
     if (!options) {
       return;
     }
 
-    const data: { [key: string]: string | number } = {}
+    const data: { [key: string]: string } = {}
 
     if (options.includeHistory) {
       data.to = formatDate(Date.now());
@@ -75,7 +75,7 @@ export class PriceFeed {
     this.queue = [];
   }
 
-  private sendMessage(type: 'subscribe' | 'unsubscribe', pair: SubscriptionPair, options?: Options): WebSocket {
+  private sendMessage = (type: 'subscribe' | 'unsubscribe', pair: SubscriptionPair, options?: Options): WebSocket => {
     // Prepare message
     const message = JSON.stringify({
       type,
@@ -94,19 +94,19 @@ export class PriceFeed {
     return this.socket || this.connect();
   }
 
-  private unsubscribePair(pair: SubscriptionPair): WebSocket {
+  private unsubscribePair = (pair: SubscriptionPair): WebSocket => {
     return this.sendMessage('unsubscribe', pair);
   }
 
-  private subscribePair(pair: SubscriptionPair, options: Options): WebSocket {
+  private subscribePair = (pair: SubscriptionPair, options: Options): WebSocket => {
     return this.sendMessage('subscribe', pair, options);
   }
 
-  private resubscribePair(pair: SubscriptionPair): WebSocket {
+  private resubscribePair = (pair: SubscriptionPair): WebSocket => {
     return this.subscribePair(pair, {});
   }
 
-  subscribe(asset: SyntheticSymbol, options: Options): WebSocket {
+  subscribe = (asset: SyntheticSymbol, options: Options): WebSocket => {
     // Get subscription pair
     const pair: SubscriptionPair = priceFeedPairsMap[asset];
 
@@ -122,12 +122,12 @@ export class PriceFeed {
     return this.subscribePair(pair, options);
   }
 
-  subscribeMany(assets: SyntheticSymbol[], options: Options): WebSocket {
+  subscribeMany = (assets: SyntheticSymbol[], options: Options): WebSocket => {
     // Return last subscription result
     return assets.map(asset => this.subscribe(asset, options))[assets.length - 1];
   }
 
-  unsubscribe(asset: SyntheticSymbol): WebSocket {
+  unsubscribe = (asset: SyntheticSymbol): WebSocket => {
     // Get subscription pair
     const pair: SubscriptionPair = priceFeedPairsMap[asset];
 
@@ -143,12 +143,12 @@ export class PriceFeed {
     return this.unsubscribePair(pair);
   }
 
-  unsubscribeMany(assets: SyntheticSymbol[]): WebSocket {
+  unsubscribeMany = (assets: SyntheticSymbol[]): WebSocket => {
     // Return last unsubscription result
     return assets.map(asset => this.unsubscribe(asset))[assets.length - 1];
   }
 
-  closeConnection() {
+  closeConnection = () => {
     // Unsubscribe
     if (this.subscriptions && this.subscriptions.length) {
       this.subscriptions.forEach(this.unsubscribePair);
