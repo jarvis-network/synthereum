@@ -4,9 +4,9 @@ import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/c
 import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { getAllBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
 import { initialState, State } from '@/state/initialState';
-
 
 interface Action<T> {
   payload: T;
@@ -19,9 +19,13 @@ export interface WalletBalance {
 
 export const fetchWalletBalances = createAsyncThunk(
   'wallet/fetch',
-  (realmAgent: RealmAgent<'kovan'>): Promise<WalletBalance[]> => {
-    // @todo some logic here
-    return Promise.resolve([]);
+  async (realmAgent: RealmAgent<'kovan'>): Promise<WalletBalance[]> => {
+    const balances = await getAllBalances(realmAgent);
+
+    return balances.map(([asset, amount]) => ({
+      asset: asset as SyntheticSymbol | PrimaryStableCoin,
+      amount: FPN.fromWei(amount)
+    }));
   }
 );
 

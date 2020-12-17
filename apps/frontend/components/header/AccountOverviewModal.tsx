@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, ModalContent } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
@@ -6,11 +6,9 @@ import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
-import { setWalletBalance } from '@/state/slices/wallet';
 
-import { getAllBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-
-import { RealmAgentContext } from '../auth/AuthProvider';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
 
 interface BalanceProps {
   total: FPN;
@@ -66,8 +64,10 @@ export const AccountOverviewModal: FC = () => {
   };
 
   const items: AssetRowProps[] = useMemo(() => {
-    return Object.keys(wallet).map(token => {
-      const { amount } = wallet[token];
+    const keys = Object.keys(wallet) as (SyntheticSymbol | PrimaryStableCoin)[];
+
+    return keys.map(token => {
+      const { amount } = wallet[token]!;
       const asset = assets.find(_asset => _asset.symbol === token)!;
 
       return {
@@ -81,21 +81,6 @@ export const AccountOverviewModal: FC = () => {
   const total = useMemo(() => {
     return FPN.sum(items.map(_item => _item.value));
   }, [items]);
-
-  const realmAgent = useContext(RealmAgentContext);
-  useEffect(() => {
-    (async () => {
-      if (!realmAgent) return;
-
-      const balances = await getAllBalances(realmAgent);
-      const newWallet = balances.map(([asset, amount]) => [
-        asset,
-        { amount: FPN.fromWei(amount) },
-      ]);
-      dispatch(setWalletBalance(Object.fromEntries(newWallet)));
-      console.log(`Balance updated:`, newWallet);
-    })();
-  }, [realmAgent]);
 
   return (
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
