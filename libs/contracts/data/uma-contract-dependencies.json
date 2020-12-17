@@ -1,0 +1,8 @@
+{
+  "42": {
+    "identifierWhitelist": "0xeF9c374b7976941fCAf5e501eaB531E430463fC6",
+    "finderAddress": "0xeD0169a88d267063184b0853BaAAAe66c3c154B2",
+    "storeAddress": "0x41AF40Eb92Bec4dD8DA77103597838b3dBBD3B6f",
+    "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422"
+  }
+}
