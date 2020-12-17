@@ -15,12 +15,12 @@ export const persistMiddleware = (store: Store) => (next: Function) => (
   const result = next(action);
   const reducersToPersist = ActionsToPersist[action.type];
 
-  if (reducersToPersist) {
+  if (cache && reducersToPersist) {
     const appState = store.getState();
 
     requestIdleCallback(() => {
       reducersToPersist.forEach(
-        reducerName => cache && cache.set(reducerName, appState[reducerName]),
+        reducerName => cache?.set(reducerName, appState[reducerName]),
       );
     });
   }

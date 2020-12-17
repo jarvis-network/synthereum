@@ -57,7 +57,7 @@ const syntheticAssets: Asset[] = syntheticTokens.map(token => ({
   symbol: token.syntheticSymbol,
   pair: token.priceFeedIdentifier.replace('/', '') as SubscriptionPair,
   icon: assetIconMap[token.syntheticSymbol],
-  price: new FPN(1),
+  price: new FPN(1), // @TODO Make initial values nullable
   decimals: 18,
   type: 'forex',
 }));
