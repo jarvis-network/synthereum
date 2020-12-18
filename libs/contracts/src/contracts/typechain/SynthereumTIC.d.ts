@@ -130,13 +130,13 @@ export type SetFeeRecipients = ContractEventLog<{
   1: string[];
 }>;
 
-export interface TIC extends BaseContract {
+export interface SynthereumTIC extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TIC;
-  clone(): TIC;
+  ): SynthereumTIC;
+  clone(): SynthereumTIC;
   methods: {
     DEFAULT_ADMIN_ROLE(): NonPayableTransactionObject<string>;
 
@@ -295,9 +295,14 @@ export interface TIC extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     /**
-     * Redeem tokens after contract expiryAfter derivative expiry, an LP should use this instead of `withdrawRequest` to         retrieve their collateral.
+     * Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
      */
-    settleExpired(): NonPayableTransactionObject<void>;
+    emergencyShutdown(): NonPayableTransactionObject<void>;
+
+    /**
+     * Redeem tokens after contract emergency shutdownAfter derivative shutdown, an LP should use this instead of `withdrawRequest` to         retrieve their collateral.
+     */
+    settleEmergencyShutdown(): NonPayableTransactionObject<void>;
 
     /**
      * The number of destination tokens needs to be calculated relative to the value of the      source tokens and the destination's collateral ratio. If too many destination tokens      are requested the transaction will fail.
@@ -331,6 +336,11 @@ export interface TIC extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     /**
+     * Get Synthereum version
+     */
+    version(): NonPayableTransactionObject<string>;
+
+    /**
      * Get the derivative contract
      */
     derivative(): NonPayableTransactionObject<string>;
@@ -344,6 +354,11 @@ export interface TIC extends BaseContract {
      * Get the synthetic token from the derivative contract
      */
     syntheticToken(): NonPayableTransactionObject<string>;
+
+    /**
+     * Get the synthetic token symbol associated to this pool
+     */
+    syntheticTokenSymbol(): NonPayableTransactionObject<string>;
 
     /**
      * Calculate the fees a user will have to pay to mint tokens with their collateral

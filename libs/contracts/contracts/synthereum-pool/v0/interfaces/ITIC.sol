@@ -4,13 +4,15 @@ pragma experimental ABIEncoderV2;
 import {
   FixedPoint
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
+import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import {
+  IDerivative
+} from '../../../derivative/common/interfaces/IDerivative.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
-interface TICInterface {
+interface SynthereumTICInterface {
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and excahnges tokens
@@ -39,7 +41,7 @@ interface TICInterface {
     bytes32 exchangeID;
     uint256 timestamp;
     address sender;
-    TICInterface destTIC;
+    SynthereumTICInterface destTIC;
     FixedPoint.Unsigned numTokens;
     FixedPoint.Unsigned collateralAmount;
     FixedPoint.Unsigned destNumTokens;
@@ -81,10 +83,12 @@ interface TICInterface {
 
   function rejectRedeem(bytes32 redeemID) external;
 
-  function settleExpired() external;
+  function emergencyShutdown() external;
+
+  function settleEmergencyShutdown() external;
 
   function exchangeRequest(
-    TICInterface destTIC,
+    SynthereumTICInterface destTIC,
     uint256 numTokens,
     uint256 collateralAmount,
     uint256 destNumTokens
@@ -107,11 +111,11 @@ interface TICInterface {
   // External views
   //----------------------------------------
 
-  function derivative() external view returns (IExpiringMultiParty);
+  function derivative() external view returns (IDerivative);
 
-  function collateralToken() external view returns (IERC20);
+  function collateralToken() external view returns (ERC20);
 
-  function syntheticToken() external view returns (IERC20);
+  function syntheticToken() external view returns (ERC20);
 
   function calculateFee(uint256 collateralAmount)
     external

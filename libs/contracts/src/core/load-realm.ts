@@ -13,7 +13,11 @@ import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 
 import type { Pools, SynthereumPool, SynthereumRealmWithWeb3 } from './types';
 
-import { TICFactory_Abi, TICInterface_Abi, ERC20_Abi } from '../contracts/abi';
+import {
+  TICCreator_Abi,
+  SynthereumTICInterface_Abi,
+  ERC20_Abi,
+} from '../contracts/abi';
 
 import { contractDependencies } from '../config/data/contract-dependencies';
 import type {
@@ -50,14 +54,18 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   netId: ToNetworkId<Net>,
   config: ContractDependencies,
 ): Promise<SynthereumRealmWithWeb3<Net>> {
-  let ticFactory = getContract(web3, TICFactory_Abi, config.ticFactory);
+  let ticFactory = getContract(web3, TICCreator_Abi, config.ticFactory);
 
   const pools = await Promise.all(
     allSupportedSymbols.map(async symbol => {
       const ticAddress = assertIsAddress(
         await ticFactory.methods.symbolToTIC(symbol).call(),
       ) as AddressOn<Net>;
-      const ticInstance = getContract(web3, TICInterface_Abi, ticAddress);
+      const ticInstance = getContract(
+        web3,
+        SynthereumTICInterface_Abi,
+        ticAddress,
+      );
       const collateralTokenAddress = assertIsAddress(
         await ticInstance.methods.collateralToken().call(),
       ) as AddressOn<Net>;

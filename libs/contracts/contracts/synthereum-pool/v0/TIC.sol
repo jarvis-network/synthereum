@@ -1,18 +1,19 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
-import {TICInterface} from './TICInterface.sol';
+import {SynthereumTICInterface} from './interfaces/ITIC.sol';
 import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
-
 import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
 import {
   FixedPoint
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
-import {TICHelper} from './TICHelper.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
+import {SynthereumTICHelper} from './TICHelper.sol';
+import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+
+import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 
 /**
  * @title Token Issuer Contract
@@ -20,7 +21,11 @@ import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
  * @dev Collateral is wrapped by an `RToken` to accrue and distribute interest before being sent
  *      to the `ExpiringMultiParty` contract.
  */
-contract TIC is AccessControl, TICInterface, ReentrancyGuard {
+contract SynthereumTIC is
+  AccessControl,
+  SynthereumTICInterface,
+  ReentrancyGuard
+{
   //----------------------------------------
   // Constants
   //----------------------------------------
@@ -39,15 +44,15 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
-  using TICHelper for Storage;
+  using SynthereumTICHelper for Storage;
 
   struct Storage {
-    IExpiringMultiParty derivative;
+    uint8 version;
+    IDerivative derivative;
     FixedPoint.Unsigned startingCollateralization;
     address liquidityProvider;
     address validator;
-    IERC20 collateralToken;
-    uint256 hatID;
+    ERC20 collateralToken;
     Fee fee;
     // Used with individual proportions to scale values
     uint256 totalFeeProportions;
@@ -109,12 +114,14 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    *      by the collateral requirement. The degree to which it is greater should be based on
    *      the expected asset volatility.
    * @param _derivative The `ExpiringMultiParty`
+   * @param _version Synthereum version
    * @param _roles The addresses of admin, maintainer, liquidity provider and validator
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
    * @param _fee The fee structure
    */
   constructor(
-    IExpiringMultiParty _derivative,
+    IDerivative _derivative,
+    uint8 _version,
     Roles memory _roles,
     uint256 _startingCollateralization,
     Fee memory _fee
@@ -129,6 +136,7 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
     _setupRole(VALIDATOR_ROLE, _roles.validator);
     ticStorage.initialize(
       _derivative,
+      _version,
       _roles.liquidityProvider,
       _roles.validator,
       FixedPoint.Unsigned(_startingCollateralization)
@@ -380,12 +388,19 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
   }
 
   /**
-   * @notice Redeem tokens after contract expiry
-   * @notice After derivative expiry, an LP should use this instead of `withdrawRequest` to
+   * @notice Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
+   */
+  function emergencyShutdown() external override onlyMaintainer nonReentrant {
+    ticStorage.emergencyShutdown();
+  }
+
+  /**
+   * @notice Redeem tokens after contract emergency shutdown
+   * @notice After derivative shutdown, an LP should use this instead of `withdrawRequest` to
    *         retrieve their collateral.
    */
-  function settleExpired() external override nonReentrant {
-    ticStorage.settleExpired();
+  function settleEmergencyShutdown() external override nonReentrant {
+    ticStorage.settleEmergencyShutdown();
   }
 
   /**
@@ -399,7 +414,7 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    * @param destNumTokens The number of destination tokens the swap attempts to procure
    */
   function exchangeRequest(
-    TICInterface destTIC,
+    SynthereumTICInterface destTIC,
     uint256 numTokens,
     uint256 collateralAmount,
     uint256 destNumTokens
@@ -464,10 +479,18 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
   //----------------------------------------
 
   /**
+   * @notice Get Synthereum version
+   * @return poolVersion Returns the version of this Synthereum pool
+   */
+  function version() external view returns (uint8 poolVersion) {
+    poolVersion = ticStorage.version;
+  }
+
+  /**
    * @notice Get the derivative contract
    * @return The `ExpiringMultiParty` derivative contract
    */
-  function derivative() external view override returns (IExpiringMultiParty) {
+  function derivative() external view override returns (IDerivative) {
     return ticStorage.derivative;
   }
 
@@ -475,7 +498,7 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    * @notice Get the collateral token
    * @return The ERC20 collateral token
    */
-  function collateralToken() external view override returns (IERC20) {
+  function collateralToken() external view override returns (ERC20) {
     return ticStorage.collateralToken;
   }
 
@@ -483,8 +506,17 @@ contract TIC is AccessControl, TICInterface, ReentrancyGuard {
    * @notice Get the synthetic token from the derivative contract
    * @return The ERC20 synthetic token
    */
-  function syntheticToken() external view override returns (IERC20) {
-    return ticStorage.derivative.tokenCurrency();
+  function syntheticToken() external view override returns (ERC20) {
+    return ERC20(address(ticStorage.derivative.tokenCurrency()));
+  }
+
+  /**
+   * @notice Get the synthetic token symbol associated to this pool
+   * @return symbol The ERC20 synthetic token symbol
+   */
+  function syntheticTokenSymbol() external view returns (string memory symbol) {
+    symbol = IStandardERC20(address(ticStorage.derivative.tokenCurrency()))
+      .symbol();
   }
 
   /**

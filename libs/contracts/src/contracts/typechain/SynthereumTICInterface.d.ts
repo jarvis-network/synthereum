@@ -21,13 +21,13 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICInterface extends BaseContract {
+export interface SynthereumTICInterface extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICInterface;
-  clone(): TICInterface;
+  ): SynthereumTICInterface;
+  clone(): SynthereumTICInterface;
   methods: {
     mintRequest(
       collateralAmount: number | string,
@@ -74,7 +74,9 @@ export interface TICInterface extends BaseContract {
       redeemID: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    settleExpired(): NonPayableTransactionObject<void>;
+    emergencyShutdown(): NonPayableTransactionObject<void>;
+
+    settleEmergencyShutdown(): NonPayableTransactionObject<void>;
 
     exchangeRequest(
       destTIC: string,

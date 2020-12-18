@@ -1,5 +1,5 @@
 import { SupportedNetworkName } from '../config';
-import { TICFactory, TICInterface } from '../contracts/typechain';
+import { TICCreator, SynthereumTICInterface } from '../contracts/typechain';
 import {
   TokenInfo,
   ContractInfo,
@@ -24,14 +24,14 @@ export interface SynthereumRealm<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
   collateralToken: TokenInfo<Net>;
-  ticFactory: TICFactory;
+  ticFactory: TICCreator;
   ticInstances: Pools<Net>;
 }
 
 export interface SynthereumPool<
   Net extends SupportedNetworkName = SupportedNetworkName,
   Symbol extends SyntheticSymbol = SyntheticSymbol
-> extends ContractInfo<Net, TICInterface> {
+> extends ContractInfo<Net, SynthereumTICInterface> {
   symbol: Symbol;
   priceFeed: typeof priceFeed[Symbol];
   collateralToken: TokenInfo<Net>;

@@ -1,22 +1,22 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {TIC} from './TIC.sol';
-import {TICInterface} from './TICInterface.sol';
-
+import {SynthereumTIC} from './TIC.sol';
+import {SynthereumTICInterface} from './interfaces/ITIC.sol';
 import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
 import {
   FixedPoint
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IExpiringMultiParty} from './IExpiringMultiParty.sol';
+import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 
 /**
  * @notice TIC implementation is stored here to reduce deployment costs
  * @dev Before refactoring implementation into a library, deploying TICs exceeded gas limits
  */
-library TICHelper {
+library SynthereumTICHelper {
   //----------------------------------------
   // Type definitions
   //----------------------------------------
@@ -24,7 +24,7 @@ library TICHelper {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
-  using TICHelper for TIC.Storage;
+  using SynthereumTICHelper for SynthereumTIC.Storage;
 
   //----------------------------------------
   // Public functions
@@ -39,24 +39,25 @@ library TICHelper {
    *      the expected asset volatility.
    * @param self Data type the library is attached to
    * @param _derivative The `ExpiringMultiParty`
+   * @param _version Synthereum version
    * @param _liquidityProvider The liquidity provider
    * @param _validator The address that validates mint and exchange requests
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
    */
   function initialize(
-    TIC.Storage storage self,
-    IExpiringMultiParty _derivative,
+    SynthereumTIC.Storage storage self,
+    IDerivative _derivative,
+    uint8 _version,
     address _liquidityProvider,
     address _validator,
     FixedPoint.Unsigned memory _startingCollateralization
   ) public {
     self.derivative = _derivative;
+    self.version = _version;
     self.liquidityProvider = _liquidityProvider;
     self.validator = _validator;
     self.startingCollateralization = _startingCollateralization;
-    self.collateralToken = IERC20(
-      address(self.derivative.collateralCurrency())
-    );
+    self.collateralToken = ERC20(address(self.derivative.collateralCurrency()));
   }
 
   /**
@@ -80,7 +81,7 @@ library TICHelper {
            the LP to provide all the extra.
    */
   function mintRequest(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) public returns (bytes32) {
@@ -94,8 +95,8 @@ library TICHelper {
         )
       );
 
-    TICInterface.MintRequest memory mint =
-      TICInterface.MintRequest(
+    SynthereumTICInterface.MintRequest memory mint =
+      SynthereumTICInterface.MintRequest(
         mintID,
         now,
         msg.sender,
@@ -116,7 +117,9 @@ library TICHelper {
    * @param self Data type the library is attached to
    * @param mintID The ID of the mint request
    */
-  function approveMint(TIC.Storage storage self, bytes32 mintID) public {
+  function approveMint(SynthereumTIC.Storage storage self, bytes32 mintID)
+    public
+  {
     FixedPoint.Unsigned memory globalCollateralization =
       self.getGlobalCollateralizationRatio();
 
@@ -127,7 +130,7 @@ library TICHelper {
         : self.startingCollateralization;
 
     require(self.mintRequestSet.exists(mintID), 'Mint request does not exist');
-    TICInterface.MintRequest memory mint = self.mintRequests[mintID];
+    SynthereumTICInterface.MintRequest memory mint = self.mintRequests[mintID];
 
     // Check that LP collateral can support the tokens to be minted
     require(
@@ -168,7 +171,9 @@ library TICHelper {
    * @param self Data type the library is attached to
    * @param mintID The ID of the mint request
    */
-  function rejectMint(TIC.Storage storage self, bytes32 mintID) public {
+  function rejectMint(SynthereumTIC.Storage storage self, bytes32 mintID)
+    public
+  {
     require(self.mintRequestSet.exists(mintID), 'Mint request does not exist');
     self.mintRequestSet.remove(mintID);
     delete self.mintRequests[mintID];
@@ -180,7 +185,7 @@ library TICHelper {
    * @param collateralAmount The amount of margin supplied
    */
   function deposit(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount
   ) public {
     // Pull LP's collateral into the TIC
@@ -193,7 +198,7 @@ library TICHelper {
    * @param collateralAmount The amount of margin to withdraw
    */
   function withdraw(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount
   ) public {
     // Redeem the RToken collateral for the underlying and transfer to the user
@@ -211,7 +216,7 @@ library TICHelper {
    * @param numTokens The number of new tokens to mint
    */
   function exchangeMint(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) public {
@@ -250,10 +255,10 @@ library TICHelper {
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount
   ) public {
-    IExpiringMultiParty derivative = self.derivative;
+    IDerivative derivative = self.derivative;
     self.collateralToken.approve(
       address(derivative),
       collateralAmount.rawValue
@@ -268,7 +273,7 @@ library TICHelper {
    * @param collateralAmount The amount of short margin to withdraw
    */
   function withdrawRequest(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount
   ) public {
     self.derivative.requestWithdrawal(collateralAmount);
@@ -279,7 +284,7 @@ library TICHelper {
    * TODO: `derivative.withdrawPassedRequest` gets an `amountWithdrawn` return value in commit
    *       86d8ffcd694bbed40140dede179692e7036f2996
    */
-  function withdrawPassedRequest(TIC.Storage storage self) public {
+  function withdrawPassedRequest(SynthereumTIC.Storage storage self) public {
     uint256 prevBalance = self.collateralToken.balanceOf(address(this));
 
     // TODO: This will return the amount withdrawn after commit
@@ -307,7 +312,7 @@ library TICHelper {
    * @return The redeem request ID
    */
   function redeemRequest(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) public returns (bytes32) {
@@ -321,8 +326,8 @@ library TICHelper {
         )
       );
 
-    TICInterface.RedeemRequest memory redeem =
-      TICInterface.RedeemRequest(
+    SynthereumTICInterface.RedeemRequest memory redeem =
+      SynthereumTICInterface.RedeemRequest(
         redeemID,
         now,
         msg.sender,
@@ -342,12 +347,15 @@ library TICHelper {
    * @notice User needs to have approved the transfer of synthetic tokens
    * @param redeemID The ID of the redeem request
    */
-  function approveRedeem(TIC.Storage storage self, bytes32 redeemID) public {
+  function approveRedeem(SynthereumTIC.Storage storage self, bytes32 redeemID)
+    public
+  {
     require(
       self.redeemRequestSet.exists(redeemID),
       'Redeem request does not exist'
     );
-    TICInterface.RedeemRequest memory redeem = self.redeemRequests[redeemID];
+    SynthereumTICInterface.RedeemRequest memory redeem =
+      self.redeemRequests[redeemID];
 
     require(redeem.numTokens.isGreaterThan(0));
 
@@ -410,7 +418,9 @@ library TICHelper {
    * @notice This will typically be done with a keeper bot
    * @param redeemID The ID of the redeem request
    */
-  function rejectRedeem(TIC.Storage storage self, bytes32 redeemID) public {
+  function rejectRedeem(SynthereumTIC.Storage storage self, bytes32 redeemID)
+    public
+  {
     require(
       self.redeemRequestSet.exists(redeemID),
       'Mint request does not exist'
@@ -420,14 +430,22 @@ library TICHelper {
   }
 
   /**
+   * @notice Actiavte emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
+   * @param self Data type the library is attached to
+   */
+  function emergencyShutdown(SynthereumTIC.Storage storage self) external {
+    self.derivative.emergencyShutdown();
+  }
+
+  /**
    * @notice Redeem tokens after contract expiry
    * @notice After derivative expiry, an LP should use this instead of `withdrawRequest` to
    *         retrieve their collateral.
-   * TODO: `derivative.settleExpired` gets an `amountWithdrawn` return value in commit
+   * TODO: `derivative.settleEmergencyShutdown` gets an `amountWithdrawn` return value in commit
    *       86d8ffcd694bbed40140dede179692e7036f2996
    * TODO: Revert function if DVM does not have a price available
    */
-  function settleExpired(TIC.Storage storage self) public {
+  function settleEmergencyShutdown(SynthereumTIC.Storage storage self) public {
     IERC20 tokenCurrency = self.derivative.tokenCurrency();
 
     FixedPoint.Unsigned memory numTokens =
@@ -463,7 +481,7 @@ library TICHelper {
     // Redeem the synthetic tokens for RToken collateral
     // TODO: This will return the amount withdrawn after commit
     //       86d8ffcd694bbed40140dede179692e7036f2996
-    self.derivative.settleExpired();
+    self.derivative.settleEmergencyShutdown();
 
     FixedPoint.Unsigned memory amountWithdrawn =
       FixedPoint.Unsigned(
@@ -478,16 +496,14 @@ library TICHelper {
     // If the user is the LP, send redeemed token collateral plus excess collateral
     if (msg.sender == self.liquidityProvider) {
       // Redeem LP collateral held in TIC pool
-      // Includes excess collateral withdrawn by a user previously calling `settleExpired`
+      // Includes excess collateral withdrawn by a user previously calling `settleEmergencyShutdown`
       totalToRedeem = FixedPoint.Unsigned(
         self.collateralToken.balanceOf(address(this))
       );
     } else {
       // Otherwise, separate excess collateral from redeemed token value
-      // Must be called after `derivative.settleExpired` to make sure expiryPrice is set
-      totalToRedeem = numTokens.mul(
-        FixedPoint.Unsigned(self.derivative.expiryPrice())
-      );
+      // Must be called after `derivative.settleEmergencyShutdown` to make sure expiryPrice is set
+      totalToRedeem = numTokens.mul(self.derivative.emergencyShutdownPrice());
       require(
         amountWithdrawn.isGreaterThanOrEqual(totalToRedeem),
         'Insufficient collateral withdrawn to redeem tokens'
@@ -511,8 +527,8 @@ library TICHelper {
    * @return The exchange request ID
    */
   function exchangeRequest(
-    TIC.Storage storage self,
-    TICInterface destTIC,
+    SynthereumTIC.Storage storage self,
+    SynthereumTICInterface destTIC,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory destNumTokens
@@ -528,8 +544,8 @@ library TICHelper {
         )
       );
 
-    TICInterface.ExchangeRequest memory exchange =
-      TICInterface.ExchangeRequest(
+    SynthereumTICInterface.ExchangeRequest memory exchange =
+      SynthereumTICInterface.ExchangeRequest(
         exchangeID,
         now,
         msg.sender,
@@ -551,14 +567,15 @@ library TICHelper {
    * @notice User needs to have approved the transfer of synthetic tokens
    * @param exchangeID The ID of the exchange request
    */
-  function approveExchange(TIC.Storage storage self, bytes32 exchangeID)
-    public
-  {
+  function approveExchange(
+    SynthereumTIC.Storage storage self,
+    bytes32 exchangeID
+  ) public {
     require(
       self.exchangeRequestSet.exists(exchangeID),
       'Exchange request does not exist'
     );
-    TICInterface.ExchangeRequest memory exchange =
+    SynthereumTICInterface.ExchangeRequest memory exchange =
       self.exchangeRequests[exchangeID];
 
     self.exchangeRequestSet.remove(exchangeID);
@@ -617,7 +634,10 @@ library TICHelper {
    * @notice This will typically be done with a keeper bot
    * @param exchangeID The ID of the exchange request
    */
-  function rejectExchange(TIC.Storage storage self, bytes32 exchangeID) public {
+  function rejectExchange(
+    SynthereumTIC.Storage storage self,
+    bytes32 exchangeID
+  ) public {
     require(
       self.exchangeRequestSet.exists(exchangeID),
       'Exchange request does not exist'
@@ -632,7 +652,7 @@ library TICHelper {
    * @param _feePercentage The new fee percentage
    */
   function setFeePercentage(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory _feePercentage
   ) public {
     self.fee.feePercentage = _feePercentage;
@@ -645,7 +665,7 @@ library TICHelper {
    * @param _feeProportions Array of the new fee recipient proportions
    */
   function setFeeRecipients(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     address[] memory _feeRecipients,
     uint32[] memory _feeProportions
   ) public {
@@ -674,13 +694,13 @@ library TICHelper {
    * @notice Get all open mint requests
    * @return An array of mint requests
    */
-  function getMintRequests(TIC.Storage storage self)
+  function getMintRequests(SynthereumTIC.Storage storage self)
     public
     view
-    returns (TICInterface.MintRequest[] memory)
+    returns (SynthereumTICInterface.MintRequest[] memory)
   {
-    TICInterface.MintRequest[] memory mintRequests =
-      new TICInterface.MintRequest[](self.mintRequestSet.count());
+    SynthereumTICInterface.MintRequest[] memory mintRequests =
+      new SynthereumTICInterface.MintRequest[](self.mintRequestSet.count());
 
     for (uint256 i = 0; i < self.mintRequestSet.count(); i++) {
       mintRequests[i] = self.mintRequests[self.mintRequestSet.keyAtIndex(i)];
@@ -693,13 +713,13 @@ library TICHelper {
    * @notice Get all open mint requests
    * @return An array of mint requests
    */
-  function getRedeemRequests(TIC.Storage storage self)
+  function getRedeemRequests(SynthereumTIC.Storage storage self)
     public
     view
-    returns (TICInterface.RedeemRequest[] memory)
+    returns (SynthereumTICInterface.RedeemRequest[] memory)
   {
-    TICInterface.RedeemRequest[] memory redeemRequests =
-      new TICInterface.RedeemRequest[](self.redeemRequestSet.count());
+    SynthereumTICInterface.RedeemRequest[] memory redeemRequests =
+      new SynthereumTICInterface.RedeemRequest[](self.redeemRequestSet.count());
 
     for (uint256 i = 0; i < self.redeemRequestSet.count(); i++) {
       redeemRequests[i] = self.redeemRequests[
@@ -714,13 +734,15 @@ library TICHelper {
    * @notice Get all open exchange requests
    * @return An array of exchange requests
    */
-  function getExchangeRequests(TIC.Storage storage self)
+  function getExchangeRequests(SynthereumTIC.Storage storage self)
     public
     view
-    returns (TICInterface.ExchangeRequest[] memory)
+    returns (SynthereumTICInterface.ExchangeRequest[] memory)
   {
-    TICInterface.ExchangeRequest[] memory exchangeRequests =
-      new TICInterface.ExchangeRequest[](self.exchangeRequestSet.count());
+    SynthereumTICInterface.ExchangeRequest[] memory exchangeRequests =
+      new SynthereumTICInterface.ExchangeRequest[](
+        self.exchangeRequestSet.count()
+      );
 
     for (uint256 i = 0; i < self.exchangeRequestSet.count(); i++) {
       exchangeRequests[i] = self.exchangeRequests[
@@ -742,7 +764,7 @@ library TICHelper {
    * @return `true` if the transfer succeeded, otherwise `false`
    */
   function pullCollateral(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     address from,
     FixedPoint.Unsigned memory numTokens
   ) internal returns (bool) {
@@ -761,7 +783,7 @@ library TICHelper {
    * @param numTokens The number of tokens to mint
    */
   function mintSynTokens(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) internal {
@@ -782,7 +804,7 @@ library TICHelper {
    * @param numTokens The number of tokens to send
    */
   function transferSynTokens(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     address recipient,
     FixedPoint.Unsigned memory numTokens
   ) internal {
@@ -797,7 +819,7 @@ library TICHelper {
    * @param _feeAmount Amount of fee to send
    */
   function sendFee(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory _feeAmount
   ) internal {
     // Distribute fees
@@ -824,7 +846,7 @@ library TICHelper {
    *       86d8ffcd694bbed40140dede179692e7036f2996
    */
   function redeemForCollateral(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     address tokenHolder,
     FixedPoint.Unsigned memory numTokens
   ) internal {
@@ -863,13 +885,13 @@ library TICHelper {
    * @param self Data type the library is attached to
    * @return The collateralization ratio
    */
-  function getGlobalCollateralizationRatio(TIC.Storage storage self)
+  function getGlobalCollateralizationRatio(SynthereumTIC.Storage storage self)
     internal
     view
     returns (FixedPoint.Unsigned memory)
   {
     FixedPoint.Unsigned memory totalTokensOutstanding =
-      FixedPoint.Unsigned(self.derivative.totalTokensOutstanding());
+      self.derivative.globalPositionData().totalTokensOutstanding;
 
     if (totalTokensOutstanding.isGreaterThan(0)) {
       return
@@ -890,7 +912,7 @@ library TICHelper {
    * @return `true` if there is sufficient collateral
    */
   function checkCollateralizationRatio(
-    TIC.Storage storage self,
+    SynthereumTIC.Storage storage self,
     FixedPoint.Unsigned memory globalCollateralization,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens

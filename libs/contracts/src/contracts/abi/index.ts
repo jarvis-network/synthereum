@@ -9,70 +9,10 @@ export const AccessControl_Abi = require('./AccessControl.json').abi as Tagged<
   AccessControl
 >;
 
-import type { AddressWhitelist } from '../typechain/AddressWhitelist';
-export const AddressWhitelist_Abi = require('./AddressWhitelist.json').abi as Tagged<
-  AbiItem[],
-  AddressWhitelist
->;
-
-import type { AdministrateeInterface } from '../typechain/AdministrateeInterface';
-export const AdministrateeInterface_Abi = require('./AdministrateeInterface.json').abi as Tagged<
-  AbiItem[],
-  AdministrateeInterface
->;
-
-import type { ContractCreator } from '../typechain/ContractCreator';
-export const ContractCreator_Abi = require('./ContractCreator.json').abi as Tagged<
-  AbiItem[],
-  ContractCreator
->;
-
 import type { ERC20 } from '../typechain/ERC20';
 export const ERC20_Abi = require('./ERC20.json').abi as Tagged<
   AbiItem[],
   ERC20
->;
-
-import type { ExpandedERC20 } from '../typechain/ExpandedERC20';
-export const ExpandedERC20_Abi = require('./ExpandedERC20.json').abi as Tagged<
-  AbiItem[],
-  ExpandedERC20
->;
-
-import type { ExpandedIERC20 } from '../typechain/ExpandedIERC20';
-export const ExpandedIERC20_Abi = require('./ExpandedIERC20.json').abi as Tagged<
-  AbiItem[],
-  ExpandedIERC20
->;
-
-import type { ExpiringContractInterface } from '../typechain/ExpiringContractInterface';
-export const ExpiringContractInterface_Abi = require('./ExpiringContractInterface.json').abi as Tagged<
-  AbiItem[],
-  ExpiringContractInterface
->;
-
-import type { ExpiringMultiParty } from '../typechain/ExpiringMultiParty';
-export const ExpiringMultiParty_Abi = require('./ExpiringMultiParty.json').abi as Tagged<
-  AbiItem[],
-  ExpiringMultiParty
->;
-
-import type { ExpiringMultiPartyCreator } from '../typechain/ExpiringMultiPartyCreator';
-export const ExpiringMultiPartyCreator_Abi = require('./ExpiringMultiPartyCreator.json').abi as Tagged<
-  AbiItem[],
-  ExpiringMultiPartyCreator
->;
-
-import type { FeePayer } from '../typechain/FeePayer';
-export const FeePayer_Abi = require('./FeePayer.json').abi as Tagged<
-  AbiItem[],
-  FeePayer
->;
-
-import type { FinancialProductLibrary } from '../typechain/FinancialProductLibrary';
-export const FinancialProductLibrary_Abi = require('./FinancialProductLibrary.json').abi as Tagged<
-  AbiItem[],
-  FinancialProductLibrary
 >;
 
 import type { FinderInterface } from '../typechain/FinderInterface';
@@ -87,34 +27,28 @@ export const HitchensUnorderedKeySet_Abi = require('./HitchensUnorderedKeySet.js
   HitchensUnorderedKeySet
 >;
 
+import type { IDerivative } from '../typechain/IDerivative';
+export const IDerivative_Abi = require('./IDerivative.json').abi as Tagged<
+  AbiItem[],
+  IDerivative
+>;
+
+import type { IDerivativeDeployment } from '../typechain/IDerivativeDeployment';
+export const IDerivativeDeployment_Abi = require('./IDerivativeDeployment.json').abi as Tagged<
+  AbiItem[],
+  IDerivativeDeployment
+>;
+
 import type { IERC20 } from '../typechain/IERC20';
 export const IERC20_Abi = require('./IERC20.json').abi as Tagged<
   AbiItem[],
   IERC20
 >;
 
-import type { IERC20Standard } from '../typechain/IERC20Standard';
-export const IERC20Standard_Abi = require('./IERC20Standard.json').abi as Tagged<
+import type { IStandardERC20 } from '../typechain/IStandardERC20';
+export const IStandardERC20_Abi = require('./IStandardERC20.json').abi as Tagged<
   AbiItem[],
-  IERC20Standard
->;
-
-import type { IExpiringMultiParty } from '../typechain/IExpiringMultiParty';
-export const IExpiringMultiParty_Abi = require('./IExpiringMultiParty.json').abi as Tagged<
-  AbiItem[],
-  IExpiringMultiParty
->;
-
-import type { IdentifierWhitelistInterface } from '../typechain/IdentifierWhitelistInterface';
-export const IdentifierWhitelistInterface_Abi = require('./IdentifierWhitelistInterface.json').abi as Tagged<
-  AbiItem[],
-  IdentifierWhitelistInterface
->;
-
-import type { Liquidatable } from '../typechain/Liquidatable';
-export const Liquidatable_Abi = require('./Liquidatable.json').abi as Tagged<
-  AbiItem[],
-  Liquidatable
+  IStandardERC20
 >;
 
 import type { Migrations } from '../typechain/Migrations';
@@ -123,95 +57,20 @@ export const Migrations_Abi = require('./Migrations.json').abi as Tagged<
   Migrations
 >;
 
-import type { MultiRole } from '../typechain/MultiRole';
-export const MultiRole_Abi = require('./MultiRole.json').abi as Tagged<
+import type { SynthereumTIC } from '../typechain/SynthereumTIC';
+export const SynthereumTIC_Abi = require('./SynthereumTIC.json').abi as Tagged<
   AbiItem[],
-  MultiRole
+  SynthereumTIC
 >;
 
-import type { OptimisticOracleInterface } from '../typechain/OptimisticOracleInterface';
-export const OptimisticOracleInterface_Abi = require('./OptimisticOracleInterface.json').abi as Tagged<
+import type { SynthereumTICInterface } from '../typechain/SynthereumTICInterface';
+export const SynthereumTICInterface_Abi = require('./SynthereumTICInterface.json').abi as Tagged<
   AbiItem[],
-  OptimisticOracleInterface
+  SynthereumTICInterface
 >;
 
-import type { OracleInterface } from '../typechain/OracleInterface';
-export const OracleInterface_Abi = require('./OracleInterface.json').abi as Tagged<
+import type { TICCreator } from '../typechain/TICCreator';
+export const TICCreator_Abi = require('./TICCreator.json').abi as Tagged<
   AbiItem[],
-  OracleInterface
->;
-
-import type { OracleInterfaces } from '../typechain/OracleInterfaces';
-export const OracleInterfaces_Abi = require('./OracleInterfaces.json').abi as Tagged<
-  AbiItem[],
-  OracleInterfaces
->;
-
-import type { Ownable } from '../typechain/Ownable';
-export const Ownable_Abi = require('./Ownable.json').abi as Tagged<
-  AbiItem[],
-  Ownable
->;
-
-import type { PricelessPositionManager } from '../typechain/PricelessPositionManager';
-export const PricelessPositionManager_Abi = require('./PricelessPositionManager.json').abi as Tagged<
-  AbiItem[],
-  PricelessPositionManager
->;
-
-import type { Registry } from '../typechain/Registry';
-export const Registry_Abi = require('./Registry.json').abi as Tagged<
-  AbiItem[],
-  Registry
->;
-
-import type { RegistryInterface } from '../typechain/RegistryInterface';
-export const RegistryInterface_Abi = require('./RegistryInterface.json').abi as Tagged<
-  AbiItem[],
-  RegistryInterface
->;
-
-import type { StoreInterface } from '../typechain/StoreInterface';
-export const StoreInterface_Abi = require('./StoreInterface.json').abi as Tagged<
-  AbiItem[],
-  StoreInterface
->;
-
-import type { SyntheticToken } from '../typechain/SyntheticToken';
-export const SyntheticToken_Abi = require('./SyntheticToken.json').abi as Tagged<
-  AbiItem[],
-  SyntheticToken
->;
-
-import type { TIC } from '../typechain/TIC';
-export const TIC_Abi = require('./TIC.json').abi as Tagged<AbiItem[], TIC>;
-
-import type { TICFactory } from '../typechain/TICFactory';
-export const TICFactory_Abi = require('./TICFactory.json').abi as Tagged<
-  AbiItem[],
-  TICFactory
->;
-
-import type { TICInterface } from '../typechain/TICInterface';
-export const TICInterface_Abi = require('./TICInterface.json').abi as Tagged<
-  AbiItem[],
-  TICInterface
->;
-
-import type { Testable } from '../typechain/Testable';
-export const Testable_Abi = require('./Testable.json').abi as Tagged<
-  AbiItem[],
-  Testable
->;
-
-import type { Timer } from '../typechain/Timer';
-export const Timer_Abi = require('./Timer.json').abi as Tagged<
-  AbiItem[],
-  Timer
->;
-
-import type { TokenFactory } from '../typechain/TokenFactory';
-export const TokenFactory_Abi = require('./TokenFactory.json').abi as Tagged<
-  AbiItem[],
-  TokenFactory
+  TICCreator
 >;
