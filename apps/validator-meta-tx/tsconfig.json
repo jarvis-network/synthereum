@@ -1,5 +1,11 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "rootDir": "."
+  },
   "files": [],
   "include": [],
   "references": [
