@@ -9,10 +9,13 @@ import { ENSHelper } from '@/utils/ens';
 import { getOnboardConfig, NETWORK_ID } from '@/components/auth/onboardConfig';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
+import {
+  parseSupportedNetworkId,
+  SupportedNetworkName,
+} from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 
 interface AuthMethods {
   login: (wallet?: string) => Promise<boolean>;
@@ -23,7 +26,7 @@ export const OnboardContext = createContext<API | undefined>(undefined);
 export const Web3Context = createContext<Web3 | undefined>(undefined);
 export const AuthContext = createContext<AuthMethods | undefined>(undefined);
 export const ENSContext = createContext<ENSHelper | undefined>(undefined);
-export const RealmAgentContext = createContext<RealmAgent<'kovan'> | undefined>(
+export const RealmAgentContext = createContext<RealmAgent | undefined>(
   undefined,
 );
 
@@ -32,7 +35,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   const [web3, setWeb3] = useState<Web3>();
   const [onboard, setOnboard] = useState<API>();
   const [auth, setAuth] = useState<AuthMethods>();
-  const [realmAgent, setRealmAgent] = useState<RealmAgent<'kovan'>>();
+  const [realmAgent, setRealmAgent] = useState<RealmAgent>();
 
   const address = useReduxSelector(state => state.auth?.address);
 
@@ -90,11 +93,14 @@ export const AuthProvider: React.FC = ({ children }) => {
     }
 
     (async () => {
-      const netId = NETWORK_ID as SupportedNetworkId;
+      const netId = parseSupportedNetworkId(NETWORK_ID);
 
-      const realm = await loadRealm(web3 as Web3On<'kovan'>, netId);
+      const realm = await loadRealm(
+        web3 as Web3On<SupportedNetworkName>,
+        netId,
+      );
 
-      const rlmAgent = new RealmAgent<'kovan'>(
+      const rlmAgent = new RealmAgent(
         realm,
         address as AddressOn<typeof netId>,
       );

@@ -19,19 +19,19 @@ export interface WalletBalance {
 
 export const fetchWalletBalances = createAsyncThunk(
   'wallet/fetch',
-  async (realmAgent: RealmAgent<'kovan'>): Promise<WalletBalance[]> => {
+  async (realmAgent: RealmAgent): Promise<WalletBalance[]> => {
     const balances = await getAllBalances(realmAgent);
 
     return balances.map(([asset, amount]) => ({
       asset: asset as SyntheticSymbol | PrimaryStableCoin,
-      amount: FPN.fromWei(amount)
+      amount: FPN.fromWei(amount),
     }));
-  }
+  },
 );
 
 export const subscribeWalletBalances = createAsyncThunk(
   'wallet/subscribe',
-  (realmAgent: RealmAgent<'kovan'>, thunkAPI): void => {
+  (realmAgent: RealmAgent, thunkAPI): void => {
     const callback = () => thunkAPI.dispatch(fetchWalletBalances(realmAgent));
     setInterval(callback, 5000);
     callback();

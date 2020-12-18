@@ -11,7 +11,7 @@ interface Action<T> {
 
 export const fetchTransactionsHistory = createAsyncThunk(
   'transactions/fetch',
-  (realmAgent: RealmAgent<'kovan'>): Promise<Transaction[]> => {
+  (realmAgent: RealmAgent): Promise<Transaction[]> => {
     // @todo some logic here
     return Promise.resolve([]);
   },
@@ -19,8 +19,9 @@ export const fetchTransactionsHistory = createAsyncThunk(
 
 export const subscribeTransactionsHistory = createAsyncThunk(
   'transactions/subscribe',
-  (realmAgent: RealmAgent<'kovan'>, thunkAPI): void => {
-    const callback = () => thunkAPI.dispatch(fetchTransactionsHistory(realmAgent));
+  (realmAgent: RealmAgent, thunkAPI): void => {
+    const callback = () =>
+      thunkAPI.dispatch(fetchTransactionsHistory(realmAgent));
     setInterval(callback, 5000);
     callback();
   },
