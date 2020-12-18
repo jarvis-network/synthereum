@@ -4,7 +4,7 @@ import { Fees, PerNetwork } from '..';
 
 export const fees = typeCheck<PerNetwork<Fees>>()({
   '42': {
-    feePercentage: 0.001,
+    feePercentage: 0.002,
     feeRecipients: [
       A('0xCc3528125499d168ADFB5Ef99895c98a7C430ed4'),
       A('0xCc3528125499d168ADFB5Ef99895c98a7C430ed4'),
