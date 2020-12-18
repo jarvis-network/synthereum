@@ -2,8 +2,12 @@
   "name": "@jarvis-network/validator-meta-tx",
   "version": "0.1.0",
   "description": "",
-  "bin": {
-    "synfiat-keeper": "./dist/index.js"
+  "private": true,
+  "scripts": {
+    "prebuild": "rimraf dist && rm -rf *.tsbuildinfo",
+    "start": "nest start",
+    "start:dev": " rm -rf *.tsbuildinfo && nest start --watch",
+    "build": "nest build"
   },
   "files": [
     "dist"
@@ -14,10 +18,17 @@
     "@jarvis-network/synthereum-contracts": "*",
     "@jarvis-network/validator-lib": "*",
     "@jarvis-network/web3-utils": "*",
+    "@nestjs/cli": "^7.5.3",
+    "@nestjs/common": "^7.4.4",
+    "@nestjs/core": "^7.4.4",
+    "@nestjs/microservices": "^7.5.2",
+    "@nestjs/platform-express": "^7.5.2",
+    "@nestjs/terminus": "^7.0.1",
+    "async-exit-hook": "^2.0.1",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
-    "@nestjs/common": "^7.0.0",
-    "@nestjs/core": "^7.0.0",
-    "@nestjs/platform-express": "^7.0.0",
+    "cors": "^2.8.5",
+    "nestjs-flub": "^0.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0"
