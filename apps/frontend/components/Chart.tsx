@@ -129,7 +129,7 @@ const Chart: FC<CandleStickChartProps> = ({
     }
 
     // Clone data, as chart mutates the source data and it will cause a redux update bypass dispatcher
-    const clonedData = serieData.map(({ history, ...i }) => i);
+    const clonedData = serieData.map(({ history, ...i }) => i).filter(Boolean);
 
     // Create new serie with cloned data
     const serie: ISeriesApi<'Candlestick'> = chartInstance.addCandlestickSeries(
