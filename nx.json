@@ -45,6 +45,9 @@
     "frontend": {
       "tags": [],
       "implicitDependencies": ["contracts"]
+    },
+    "validator-meta-tx": {
+      "tags": []
     }
   },
   "workspaceLayout": {

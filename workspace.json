@@ -235,9 +235,61 @@
           }
         }
       }
+    },
+    "validator-meta-tx": {
+      "root": "apps/validator-meta-tx",
+      "sourceRoot": "apps/validator-meta-tx/src",
+      "projectType": "application",
+      "prefix": "validator-meta-tx",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/validator-meta-tx",
+            "main": "apps/validator-meta-tx/src/main.ts",
+            "tsConfig": "apps/validator-meta-tx/tsconfig.app.json",
+            "assets": ["apps/validator-meta-tx/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/validator-meta-tx/src/environments/environment.ts",
+                  "with": "apps/validator-meta-tx/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "validator-meta-tx:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/validator-meta-tx/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/validator-meta-tx"],
+          "options": {
+            "jestConfig": "apps/validator-meta-tx/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  }
+    "defaultCollection": "@nrwl/nest"
+  },
+  "defaultProject": "validator-meta-tx"
 }
