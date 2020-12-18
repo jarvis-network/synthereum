@@ -9,9 +9,17 @@
 /CODEOWNERS @PetarKirov
 
 ### Packages
-/packages/balance-notify/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
-/packages/client/ @PetarKirov @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/packages/client-new/ @PetarKirov @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
-/packages/contracts/contracts @Aleione
-/packages/keeper-bot/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
-/packages/web3-utils/ @jarvis-network/apps/exchange
+
+/apps/frontend/ @jarvis-network/teams/developers/maintainers/frontend
+/packages/frontend-old/ @jarvis-network/teams/developers/maintainers/frontend
+
+/apps/validator/ @jarvis-network/teams/developers/maintainers/backend
+/packages/keeper-bot/ @jarvis-network/teams/developers/maintainers/backend
+
+/apps/cli/ @jarvis-network/apps/exchange
+/libs/web3-utils/ @jarvis-network/teams/developers/maintainers/backend
+/libs/contracts/ @jarvis-network/teams/developers/maintainers/backend
+/packages/balance-notify/ @jarvis-network/teams/developers/maintainers/backend
+
+/libs/contracts/contracts/ @jarvis-network/teams/developers/maintainers/blockchain
+/libs/contracts/migrations/ @jarvis-network/teams/developers/maintainers/blockchain
