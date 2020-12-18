@@ -58,6 +58,7 @@ RUN yarn nx build contracts
 RUN mkdir -p /out
 RUN cp -r libs/contracts/dist /out
 
+
 FROM install as build-validator-lib
 WORKDIR /src
 COPY libs/validator-lib libs/validator-lib
@@ -67,10 +68,24 @@ RUN yarn nx build validator-lib
 RUN mkdir -p /out
 RUN cp -r libs/validator-lib/dist/* /out
 
+
+
+FROM install as build-meta-tx-lib
+WORKDIR /src
+COPY libs/meta-tx-lib libs/meta-tx-lib
+COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
+COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
+RUN yarn nx build meta-tx-lib
+RUN mkdir -p /out
+RUN cp -r libs/meta-tx-lib/dist/* /out
+
+
 FROM install as build-libs
 COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 COPY --from=build-validator-lib /out node_modules/@jarvis-network/validator-lib
+COPY --from=build-meta-tx-lib /out node_modules/@jarvis-network/meta-tx-lib
+
 
 # ------------------------------ Build Validator ----------------------------- #
 FROM build-libs as build-validator
