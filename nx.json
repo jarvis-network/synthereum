@@ -38,6 +38,10 @@
       "tags": [],
       "implicitDependencies": ["contracts"]
     },
+    "meta-tx-lib": {
+      "tags": [],
+      "implicitDependencies": ["validator-lib"]
+    },
     "frontend": {
       "tags": [],
       "implicitDependencies": ["contracts"]
