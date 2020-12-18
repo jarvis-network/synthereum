@@ -81,6 +81,11 @@
           "emoji": "💎",
           "code": ":gem:",
           "description": "Gem"
+        },
+        {
+          "emoji": "🏹",
+          "code": ":bow_and_arrow:",
+          "description": "Bow"
         }
       ],
       "scopes": [
