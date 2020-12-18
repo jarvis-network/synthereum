@@ -69,17 +69,38 @@ installing the software listed above.
             nix develop
             ```
 
-    2. Install `Node.js` dependencies using `Yarn`:
+    2. Install `Node.js` dependencies via `Yarn` (**`npm` is not supported**)
+    using our custom install script `i` (defined in the root `package.json`):
 
         ```sh
-        yarn install
+        yarn i
         ```
 
-    3. Build the whole project:
+    3. Build the part of the project that you're interested in:
 
-        ```sh
-        yarn build
-        ```
+        * Frontend:
+
+            ```sh
+            yarn build:frontend
+            ```
+
+        * Validator:
+
+            ```sh
+            yarn build:validator
+            ```
+
+        * CLI utils:
+
+            ```sh
+            yarn build:cli
+            ```
+
+        * Or build everything:
+
+            ```sh
+            yarn build:all
+            ```
 
 </details>
 

@@ -25,7 +25,8 @@
     "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' start",
     "start:validator-old": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
 
-    "build": "yarn build:frontend",
+    "build": "echo 'Please review the README file for the correct command.'; exit 1",
+    "build:all": "yarn build:frontend && yarn build:validator && yarn build:cli",
     "build:frontend": "lerna run --stream --include-dependencies --scope '@jarvis-network/exchange-frontend' build",
     "build:validator": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-validator' build",
     "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' build",
