@@ -16,7 +16,7 @@ export type OHLC = [open: number, high: number, low: number, close: number];
 
 export type PricesMap = { [key in SubscriptionPair]: number };
 
-export type PriceUpdate = PricesMap & { t: number };
+export type PriceUpdate = PricesMap & { t: string | number }; // @TODO Leave only single type for t after we decide
 
 export type HistoricalPrices = { [key in SubscriptionPair]: OHLC[] } & {
   t: string[];
