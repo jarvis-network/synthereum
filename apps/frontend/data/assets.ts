@@ -8,6 +8,7 @@ import { syntheticTokens } from '@jarvis-network/synthereum-contracts/dist/src/c
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
+import { getFrontendSupportedAssets } from '@/utils/environment';
 
 export interface Asset {
   name: string;
@@ -52,14 +53,21 @@ const assetIconMap: PerAsset<FlagKeys | null> = {
   jXAG: null,
 } as const;
 
-const syntheticAssets: Asset[] = syntheticTokens.map(token => ({
+const supportedAssets = getFrontendSupportedAssets();
+let syntheticAssets: Asset[] = syntheticTokens.map(token => ({
   name: token.syntheticName,
   symbol: token.syntheticSymbol,
   pair: token.priceFeedIdentifier.replace('/', '') as SubscriptionPair,
   icon: assetIconMap[token.syntheticSymbol],
-  price: new FPN(1), // @TODO Make initial values nullable
+  price: null,
   decimals: 18,
   type: 'forex',
 }));
+
+if (supportedAssets) {
+  syntheticAssets = syntheticAssets.filter(asset =>
+    supportedAssets.includes(asset.symbol),
+  );
+}
 
 export const assets: Asset[] = [PRIMARY_STABLE_COIN, ...syntheticAssets];

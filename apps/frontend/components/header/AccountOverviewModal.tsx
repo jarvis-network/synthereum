@@ -67,15 +67,20 @@ export const AccountOverviewModal: FC = () => {
     const keys = Object.keys(wallet) as (SyntheticSymbol | PrimaryStableCoin)[];
 
     return keys.map(token => {
-      const { amount } = wallet[token]!;
-      const asset = assets.find(_asset => _asset.symbol === token)!;
+        const { amount } = wallet[token]!;
+        const asset = assets.find(_asset => _asset.symbol === token);
 
-      return {
-        asset,
-        amount,
-        value: asset.price ? amount.mul(asset.price) : null,
-      };
-    });
+        if (!asset) {
+          return null;
+        }
+
+        return {
+          asset,
+          amount,
+          value: asset.price ? amount.mul(asset.price) : null,
+        };
+      })
+      .filter(Boolean) as AssetRowProps[];
   }, [wallet, assets]);
 
   const total = useMemo(() => {
