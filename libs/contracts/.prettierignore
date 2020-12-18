@@ -1,0 +1,9 @@
+.next
+node_modules
+public
+build
+dist
+out
+src/contracts/abi/**/*
+src/contracts/typechain/**/*
+*.md

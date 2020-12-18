@@ -8,7 +8,8 @@
   "types": "dist",
   "scripts": {
     "clean": "git clean -fdx -e .env -e node_modules -- .",
-    "format": "prettier --write './contracts/*.sol'",
+    "format": "prettier --write .",
+    "format:sol": "prettier --write './contracts/**/*.sol'",
     "start": "yarn build",
     "watch:tsc": "tsc -p ./tsconfig.json -w --preserveWatchOutput",
     "build": "yarn build:scripts && yarn build:solidity && yarn build:typechain && yarn build:typechain-index && yarn build:tsc && yarn build:copy-dts-files",
