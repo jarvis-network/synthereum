@@ -205,7 +205,7 @@ const Chart: FC<CandleStickChartProps> = ({
 
   // apply new options for chart instance on options change
   useEffect(() => {
-    if (!chartInstance || !chartRef.current || !chartInstance) {
+    if (!chartInstance || !chartRef.current) {
       return;
     }
 
