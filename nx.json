@@ -49,6 +49,10 @@
     "cli": {
       "tags": [],
       "implicitDependencies": ["contracts"]
+	},
+    "validator-meta-tx": {
+      "tags": [],
+ 	  "implicitDependencies": ["meta-tx-lib"]
     }
   },
   "workspaceLayout": {

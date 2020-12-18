@@ -86,6 +86,7 @@
       "scopes": [
         "gitlab",
         "validator",
+        "validator-meta-tx",
         "frontend",
         "web3-utils",
         "contracts",
@@ -108,6 +109,8 @@
     "@nrwl/tao": "^11.0.15",
     "@nrwl/web": "^11.0.15",
     "@nrwl/workspace": "^11.0.15",
+    "@nrwl/eslint-plugin-nx": "11.0.15",
+    "@nrwl/nest": "^11.0.15",
     "@openzeppelin/contracts": "3.3.0",
     "@openzeppelin/test-helpers": "^0.5.9",
     "@truffle/hdwallet-provider": "^1.2.0",
