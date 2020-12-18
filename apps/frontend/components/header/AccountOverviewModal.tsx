@@ -66,7 +66,8 @@ export const AccountOverviewModal: FC = () => {
   const items: AssetRowProps[] = useMemo(() => {
     const keys = Object.keys(wallet) as (SyntheticSymbol | PrimaryStableCoin)[];
 
-    return keys.map(token => {
+    return keys
+      .map(token => {
         const { amount } = wallet[token]!;
         const asset = assets.find(_asset => _asset.symbol === token);
 

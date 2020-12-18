@@ -3,7 +3,10 @@ import {
   PerAsset,
   SyntheticSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+import {
+  PrimaryStableCoin,
+  PRIMARY_STABLE_COIN as PRIMARY_STABLE_COIN_SYMBOL,
+} from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
 import { syntheticTokens } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-assets';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
@@ -28,7 +31,7 @@ export interface AssetPair {
 
 export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
-  symbol: 'USDC',
+  symbol: PRIMARY_STABLE_COIN_SYMBOL,
   pair: null,
   icon: 'us',
   price: new FPN(1),
@@ -40,8 +43,6 @@ export interface AssetWithWalletInfo extends Asset {
   stableCoinValue: FPN | null;
   ownedAmount: FPN;
 }
-
-export const PRICE_DECIMALS = 5;
 
 const assetIconMap: PerAsset<FlagKeys | null> = {
   jEUR: 'eur',

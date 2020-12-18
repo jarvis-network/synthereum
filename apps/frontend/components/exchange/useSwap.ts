@@ -3,6 +3,7 @@ import { RealmAgentContext } from '@/components/auth/AuthProvider';
 import { wei } from '@jarvis-network/web3-utils/base/big-number';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 export const useSwap = () => {
   const agent = useContext(RealmAgentContext);
@@ -19,7 +20,7 @@ export const useSwap = () => {
     return null;
   }
 
-  if (paySymbol === 'USDC') {
+  if (paySymbol === PRIMARY_STABLE_COIN.symbol) {
     // mint
     return async () => {
       try {
@@ -44,7 +45,7 @@ export const useSwap = () => {
       }
     };
   }
-  if (receiveSymbol === 'USDC') {
+  if (receiveSymbol === PRIMARY_STABLE_COIN.symbol) {
     // redeem
     return async () => {
       try {
