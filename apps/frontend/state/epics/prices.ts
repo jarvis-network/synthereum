@@ -2,7 +2,7 @@ import { Epic, ofType } from 'redux-observable';
 import { fromEvent, iif, of } from 'rxjs';
 import { map, mergeMap, concatMap } from 'rxjs/operators';
 
-import { indexOfMaxValue } from '@jarvis-network/web3-utils/base/array-fp-utils';
+import { indexOfMaxLexicographicalValue } from '@jarvis-network/web3-utils/base/array-fp-utils';
 import { syntheticTokens } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-assets';
 
 import { Dependencies } from '@/utils/epics';
@@ -29,7 +29,10 @@ function getPricesMapFromHistoricalPrices({
   t,
   ...data
 }: HistoricalPrices): PricesMap {
-  const maxTimeIndex = indexOfMaxValue(t);
+  const maxTimeIndex = indexOfMaxLexicographicalValue(t);
+  if (maxTimeIndex === -1) {
+    throw new Error('maxTimeIndex === -1');
+  }
   const keys = Object.keys(data) as SubscriptionPair[];
 
   return keys.reduce((result, key) => {

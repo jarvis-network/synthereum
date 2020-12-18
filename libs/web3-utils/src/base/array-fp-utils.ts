@@ -21,3 +21,7 @@ export function lastInArray<T = any>(array: T[]): T {
 export function indexOfMaxValue(array: number[]): number {
   return array.indexOf(Math.max(...array));
 }
+
+export function indexOfMaxLexicographicalValue(array: string[]): number {
+  return array.indexOf(array.sort()[array.length - 1]);
+}

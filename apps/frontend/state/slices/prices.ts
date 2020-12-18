@@ -45,7 +45,7 @@ const pricesSlice = createSlice({
         // Sort t to check lower timestamp earlier to not sort values later
         for (const index in t) {
           const [open, high, low, close] = values[index];
-          const time = formatDate(t[index]);
+          const time = t[index];
 
           // Build time point value
           const timeValue: PricePoint = {
