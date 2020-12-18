@@ -2,7 +2,9 @@ import { ContractDependencies, PerNetwork } from '..';
 import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
 import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 
-export const contractDependencies = typeCheck<PerNetwork<ContractDependencies>>()({
+export const contractDependencies = typeCheck<
+  PerNetwork<ContractDependencies>
+>()({
   '42': {
     expiringMultiPartyCreator: A('0xF763D367E1302A16716b6c40783A17c1aC754F2E'),
     tokenFactoryAddress: A('0xe7e87f89e3D15617261Fd52188Ca64803165f8Af'),

@@ -1,13 +1,13 @@
 import { URLSearchParams } from 'url';
 import axios from 'axios';
-import { isFinite } from "@jarvis-network/web3-utils/base/asserts";
+import { isFinite } from '@jarvis-network/web3-utils/base/asserts';
 
 export type OHLC = {
   o: [number] | [];
   h: [number] | [];
   l: [number] | [];
   c: [number] | [];
-}
+};
 
 export async function getPriceFeedOhlc(priceFeed: string, requestTime: string) {
   const endpoint = 'https://data.jarvis.exchange/jarvis/prices/history';
@@ -22,9 +22,5 @@ export async function getPriceFeedOhlc(priceFeed: string, requestTime: string) {
     `${endpoint}?${query.toString()}`,
   );
   const price = ohlc?.c?.[0];
-  return isFinite(price)
-    ? priceFeed === 'USDCHF'
-      ? 1 / price
-      : price
-    : null;
+  return isFinite(price) ? (priceFeed === 'USDCHF' ? 1 / price : price) : null;
 }

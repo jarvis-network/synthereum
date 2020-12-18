@@ -26,7 +26,6 @@ import { parseSupportedNetworkId } from '../../src/config/supported-networks';
  * synthetic tokens back to collateral tokens
  */
 export async function example() {
-
   // Use `parseSupportedNetworkId` to validate that a network id from the
   // outside environment is indeed supported. This function will throw an
   // exception if it isn't:
@@ -48,7 +47,6 @@ export async function example() {
       await realmAgent.syntheticTokenBalanceOf('jEUR'),
     )}`,
   );
-
 
   /// Get all balances in one promise:
   const balances = await getAllBalances(realmAgent);

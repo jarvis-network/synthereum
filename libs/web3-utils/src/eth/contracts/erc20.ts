@@ -59,7 +59,7 @@ export async function getTokenAllowance<Net extends NetworkName>(
 export async function setTokenAllowance<Net extends NetworkName>(
   { instance, decimals }: TokenInfo<Net>,
   spender: AddressOn<Net>,
-  allowance: Amount
+  allowance: Amount,
 ) {
   const amount = weiToTokenAmount({ wei: allowance, decimals });
   return await instance.methods.approve(spender, amount).call();
@@ -77,7 +77,10 @@ type TokenAmountToWeiParams = {
   decimals: number;
 };
 
-export function scaleTokenAmountToWei({ amount, decimals }: TokenAmountToWeiParams) {
+export function scaleTokenAmountToWei({
+  amount,
+  decimals,
+}: TokenAmountToWeiParams) {
   assert(
     decimals > 0 && decimals <= 18,
     `Unexpected number of decimals: ${decimals}`,
@@ -91,7 +94,10 @@ type WeiToTokenAmountParams = {
   decimals: number;
 };
 
-export function weiToTokenAmount({ wei, decimals }: WeiToTokenAmountParams): string {
+export function weiToTokenAmount({
+  wei,
+  decimals,
+}: WeiToTokenAmountParams): string {
   const scaleFactor = new BN(10).pow(new BN(18 - decimals));
   return wei.div(scaleFactor).toString();
 }
@@ -126,7 +132,7 @@ export async function getAllTransferTransactions<Net extends NetworkName>(
   const txs = await Promise.all(
     events.map(async ({ transactionHash }) =>
       t(transactionHash, await web3.eth.getTransaction(transactionHash)),
-    )
+    ),
   );
 
   const sorted = SortedArray.createFromUnsorted(
@@ -168,7 +174,7 @@ export async function getAllTransferInfo<Net extends NetworkName>(
       to: returnValues.to,
       value: returnValues.value,
       blockNumber,
-      blockTimestamp
+      blockTimestamp,
     });
   }
 

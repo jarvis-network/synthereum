@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-    enforceExtension: false
+    enforceExtension: false,
   },
   optimization: {
     minimize: false,

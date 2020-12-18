@@ -1,9 +1,11 @@
 import { sortedUniqBy } from 'lodash';
-import { assert } from './asserts'
+import { assert } from './asserts';
 
 export type CompareFunction<T> = (a: T, b: T) => number;
 export type LeftOuterJoinMapFunction<T, U> = (a: T, b: T | null) => U;
-export type MaybeSortedArray<T, K extends number | string> = T[] | SortedArray<T, K>;
+export type MaybeSortedArray<T, K extends number | string> =
+  | T[]
+  | SortedArray<T, K>;
 
 export class SortedArray<T, K extends number | string> {
   static createFromUnsorted<T, K extends number | string>(
@@ -42,17 +44,16 @@ export class SortedArray<T, K extends number | string> {
 
   closestValue(to: number) {
     const lowerBound = this.lowerBound(to);
-    if (lowerBound == 0)
-      return 0;
+    if (lowerBound == 0) return 0;
 
-    if (lowerBound >= this.array.length)
-      return this.array.length - 1;
+    if (lowerBound >= this.array.length) return this.array.length - 1;
 
     const before = this.key(this.array[lowerBound - 1]) as number;
     const at = this.key(this.array[lowerBound]) as number;
 
-    return Math.abs(to - at) < Math.abs(to - before) ?
-      lowerBound : lowerBound - 1;
+    return Math.abs(to - at) < Math.abs(to - before)
+      ? lowerBound
+      : lowerBound - 1;
   }
 
   lowerBound(key: number, first = 0, last = this.array.length) {
@@ -121,7 +122,11 @@ export class SortedArray<T, K extends number | string> {
   }
 }
 
-export function assertSorted<T, K extends number | string, CMP extends CompareFunction<T>>(
+export function assertSorted<
+  T,
+  K extends number | string,
+  CMP extends CompareFunction<T>
+>(
   array: MaybeSortedArray<T, K>,
   cmp: CMP,
   key: (x: T) => K,
@@ -132,10 +137,11 @@ export function assertSorted<T, K extends number | string, CMP extends CompareFu
     : array;
 }
 
-export function isSorted<T, K extends number | string, CMP extends CompareFunction<T>>(
-  array: MaybeSortedArray<T, K>,
-  cmp: CMP,
-): boolean {
+export function isSorted<
+  T,
+  K extends number | string,
+  CMP extends CompareFunction<T>
+>(array: MaybeSortedArray<T, K>, cmp: CMP): boolean {
   if (!Array.isArray(array)) {
     return array.cmp === cmp;
   }

@@ -25,7 +25,7 @@ export function numberToWei(n: number) {
 }
 
 export function scale(a: BN, b: number): BN {
-  return (a.mul(numberToWei(b))).div(ether);
+  return a.mul(numberToWei(b)).div(ether);
 }
 
 const ether = new BN(10).pow(new BN(18));
@@ -67,7 +67,9 @@ export function formatAmount(amount: Amount, decimals = 2) {
   const rawStr = amount.toString(10);
   const nativeNumDecimals = 18;
   const integerPart = rawStr.slice(0, -nativeNumDecimals).padStart(1, '0');
-  const decimalPart = rawStr.slice(-nativeNumDecimals).padStart(nativeNumDecimals, '0');
+  const decimalPart = rawStr
+    .slice(-nativeNumDecimals)
+    .padStart(nativeNumDecimals, '0');
   return `${integerPart}.${decimalPart.slice(0, decimals)}`;
 }
 

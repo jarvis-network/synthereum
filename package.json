@@ -9,22 +9,17 @@
   "scripts": {
     "i": "lerna bootstrap -- --ignore-optional",
     "install": "yarn run i",
-
     "clean": "yarn clean:build-artifacts-only",
     "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- .",
     "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
     "clean:all": "git clean -fdx -e .env -e hush -- .",
-
     "format": "prettier --write .",
-
     "start": "yarn start:frontend",
     "start:frontend": "lerna run --stream --include-dependencies --scope '@jarvis-network/exchange-frontend' start",
     "start:validator": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-validator' start",
-
     "start:frontend-old": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-old-frontend' start",
     "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' start",
     "start:validator-old": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
-
     "build": "echo 'Please review the README file for the correct command.'; exit 1",
     "build:all": "yarn build:frontend && yarn build:validator && yarn build:cli",
     "build:frontend": "lerna run --stream --include-dependencies --scope '@jarvis-network/exchange-frontend' build",
@@ -32,10 +27,8 @@
     "build:contracts": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' build",
     "build:web3-utils": "lerna run --stream --include-dependencies --scope '@jarvis-network/web3-utils' build",
     "build:cli": "lerna run --stream --include-dependencies --scope '@jarvis-network/cli' build",
-
     "build:frontend-old": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-old-frontend' build",
     "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build",
-
     "verify-contracts:kovan": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-contracts' verify-contract:kovan"
   },
   "workspaces": {

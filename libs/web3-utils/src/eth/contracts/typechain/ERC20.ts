@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { ContractOptions } from "web3-eth-contract";
-import type { EventLog } from "web3-core";
-import type { EventEmitter } from "events";
+import type { ContractOptions } from 'web3-eth-contract';
+import type { EventLog } from 'web3-core';
+import type { EventEmitter } from 'events';
 import type {
   Callback,
   PayableTransactionObject,
@@ -12,7 +12,7 @@ import type {
   BlockType,
   ContractEventLog,
   BaseContract,
-} from "./types";
+} from './types';
 
 interface EventOptions {
   filter?: object;
@@ -41,7 +41,7 @@ export interface ERC20 extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
-    options?: ContractOptions
+    options?: ContractOptions,
   ): ERC20;
   clone(): ERC20;
   methods: {
@@ -75,7 +75,7 @@ export interface ERC20 extends BaseContract {
      */
     transfer(
       recipient: string,
-      amount: number | string
+      amount: number | string,
     ): NonPayableTransactionObject<boolean>;
 
     /**
@@ -83,7 +83,7 @@ export interface ERC20 extends BaseContract {
      */
     allowance(
       owner: string,
-      spender: string
+      spender: string,
     ): NonPayableTransactionObject<string>;
 
     /**
@@ -91,7 +91,7 @@ export interface ERC20 extends BaseContract {
      */
     approve(
       spender: string,
-      amount: number | string
+      amount: number | string,
     ): NonPayableTransactionObject<boolean>;
 
     /**
@@ -100,7 +100,7 @@ export interface ERC20 extends BaseContract {
     transferFrom(
       sender: string,
       recipient: string,
-      amount: number | string
+      amount: number | string,
     ): NonPayableTransactionObject<boolean>;
 
     /**
@@ -108,7 +108,7 @@ export interface ERC20 extends BaseContract {
      */
     increaseAllowance(
       spender: string,
-      addedValue: number | string
+      addedValue: number | string,
     ): NonPayableTransactionObject<boolean>;
 
     /**
@@ -116,7 +116,7 @@ export interface ERC20 extends BaseContract {
      */
     decreaseAllowance(
       spender: string,
-      subtractedValue: number | string
+      subtractedValue: number | string,
     ): NonPayableTransactionObject<boolean>;
   };
   events: {
@@ -129,9 +129,9 @@ export interface ERC20 extends BaseContract {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: "Approval", cb: Callback<Approval>): void;
-  once(event: "Approval", options: EventOptions, cb: Callback<Approval>): void;
+  once(event: 'Approval', cb: Callback<Approval>): void;
+  once(event: 'Approval', options: EventOptions, cb: Callback<Approval>): void;
 
-  once(event: "Transfer", cb: Callback<Transfer>): void;
-  once(event: "Transfer", options: EventOptions, cb: Callback<Transfer>): void;
+  once(event: 'Transfer', cb: Callback<Transfer>): void;
+  once(event: 'Transfer', options: EventOptions, cb: Callback<Transfer>): void;
 }

@@ -10,7 +10,10 @@ import {
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
 import { SynthereumRealmWithWeb3 } from './types';
-import { allSymbols as allSyntheticAssets, SyntheticSymbol } from '../config/data/all-synthetic-asset-symbols';
+import {
+  allSymbols as allSyntheticAssets,
+  SyntheticSymbol,
+} from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config';
 import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
@@ -43,7 +46,9 @@ interface RedeemParams extends BaseTxParams {
   inputAmount: BN;
 }
 
-export class RealmAgent<Net extends SupportedNetworkName = SupportedNetworkName> {
+export class RealmAgent<
+  Net extends SupportedNetworkName = SupportedNetworkName
+> {
   constructor(
     public readonly realm: SynthereumRealmWithWeb3<Net>,
     public readonly agentAddress: AddressOn<Net>,
@@ -146,7 +151,10 @@ export class RealmAgent<Net extends SupportedNetworkName = SupportedNetworkName>
 }
 
 export async function getAllBalances(realmAgent: RealmAgent<'kovan'>) {
-  const usdcBalancePromise = t(realmAgent.realm.collateralToken.symbol, await realmAgent.collateralBalance());
+  const usdcBalancePromise = t(
+    realmAgent.realm.collateralToken.symbol,
+    await realmAgent.collateralBalance(),
+  );
   const allSyntheticTokenBalancePromises = allSyntheticAssets.map(async asset =>
     t(asset, await realmAgent.syntheticTokenBalanceOf(asset)),
   );

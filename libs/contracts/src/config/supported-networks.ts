@@ -17,7 +17,7 @@ export function parseSupportedNetworkId(x: unknown): SupportedNetworkId {
   const id = parseInteger(x);
   const supported = supportedNetworkIds as readonly number[];
   return supported.findIndex(s => id === s) !== -1
-    ? id as SupportedNetworkId
+    ? (id as SupportedNetworkId)
     : throwError(
         `${x} is not a supported networkId. Supported network ids are: ` +
           `[${supportedNetworkIds}]`,

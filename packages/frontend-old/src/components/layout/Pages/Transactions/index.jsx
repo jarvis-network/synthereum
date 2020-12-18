@@ -9,7 +9,7 @@ import TransactionTable from '../../../elements/TransactionTable';
 
 const Transactions = ({ assets, collateral }) => {
   const [token, setToken] = useState(0);
- console.log(assets);
+  console.log(assets);
   return (
     <Grid container spacing={4}>
       <Grid item md={2}>
@@ -30,7 +30,11 @@ const Transactions = ({ assets, collateral }) => {
         </FormControl>
       </Grid>
       <Grid item md={12}>
-        <TransactionTable assets={assets} collateral={collateral} token={token} />
+        <TransactionTable
+          assets={assets}
+          collateral={collateral}
+          token={token}
+        />
       </Grid>
     </Grid>
   );

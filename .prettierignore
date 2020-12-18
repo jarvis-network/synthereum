@@ -1,0 +1,11 @@
+.next
+node_modules
+public
+build
+dist
+out
+libs/contracts/src/contracts/abi/*
+libs/contracts/src/contracts/typechain/*
+packages/frontend-old/src/contracts/*.json
+packages/keeper-bot/lib/**/*
+*.md

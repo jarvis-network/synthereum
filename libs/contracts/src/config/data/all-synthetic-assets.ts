@@ -63,6 +63,6 @@ export const allSyntheticTokensMap: PerAsset<SyntheticTokenConfig> = {
     startingCollateralization: '36090000',
     minSponsorTokens: { rawValue: '45000000000000000' },
   },
-}
+};
 
 export const syntheticTokens = Object.values(allSyntheticTokensMap);

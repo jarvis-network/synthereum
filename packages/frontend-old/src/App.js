@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { InjectedConnector } from '@web3-react/injected-connector'
+import { InjectedConnector } from '@web3-react/injected-connector';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -13,7 +13,7 @@ import Wallet from './components/layout/Wallet';
 
 import { BrowserRouter as Router } from 'react-router-dom';
 
-const injected = new InjectedConnector({ supportedChainIds: [42] })
+const injected = new InjectedConnector({ supportedChainIds: [42] });
 
 const useStyles = makeStyles(theme => ({
   backdrop: {
@@ -44,7 +44,7 @@ export default function App() {
 
   useEffect(() => {
     if (!context.active) {
-      context.activate(injected)
+      context.activate(injected);
     }
   }, [context]);
 

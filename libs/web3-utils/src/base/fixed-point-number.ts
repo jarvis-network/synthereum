@@ -1,16 +1,16 @@
-import BN from "bn.js";
+import BN from 'bn.js';
 import { fromWei, toWei } from 'web3-utils';
 
 const prepareValue = (val: string | number | BN) => {
   const value = val instanceof BN ? val.toString() : String(val).trim();
   if (Number(value.match(/\./g)?.length) > 1) {
-    throw new TypeError("Number cannot contain more than one dot.");
+    throw new TypeError('Number cannot contain more than one dot.');
   }
-  if (value === "." || !value) {
-    return "0";
+  if (value === '.' || !value) {
+    return '0';
   }
   return value;
-}
+};
 
 class FixedPointNumber {
   private readonly number: BN;
@@ -24,14 +24,16 @@ class FixedPointNumber {
   }
 
   static fromWei(value: string | number | BN) {
-    return new FixedPointNumber(value, true)
+    return new FixedPointNumber(value, true);
   }
 
   static sum(values: FixedPointNumber[]) {
-    return values.reduce((total, current) => { return total.add(current) }, new FixedPointNumber(0))
+    return values.reduce((total, current) => {
+      return total.add(current);
+    }, new FixedPointNumber(0));
   }
 
-  toString(base?: number | "hex", length?: number) {
+  toString(base?: number | 'hex', length?: number) {
     return this.number.toString(base, length);
   }
 
@@ -42,19 +44,19 @@ class FixedPointNumber {
   format(decimals = Infinity) {
     if (decimals !== Infinity) {
       const n = fromWei(this.number);
-      let [whole, fraction] = n.split(".");
+      let [whole, fraction] = n.split('.');
       if (!decimals) {
         return whole;
       }
 
-      fraction = fraction || "";
-      return whole + "." + (fraction.padEnd(decimals, "0")).substr(0, decimals);
+      fraction = fraction || '';
+      return whole + '.' + fraction.padEnd(decimals, '0').substr(0, decimals);
     }
-    return fromWei(this.number)
+    return fromWei(this.number);
   }
 
   toNumber(decimals?: number) {
-    return Number(this.format(decimals))
+    return Number(this.format(decimals));
   }
 
   get bn() {
@@ -74,7 +76,9 @@ class FixedPointNumber {
   }
 
   mul(num: FixedPointNumber) {
-    return FixedPointNumber.fromWei(this.number.mul(num.bn)).decreasePrecision();
+    return FixedPointNumber.fromWei(
+      this.number.mul(num.bn),
+    ).decreasePrecision();
   }
 
   gt(num: FixedPointNumber) {
@@ -94,15 +98,15 @@ class FixedPointNumber {
   }
 
   increasePrecision(by = 18) {
-    return FixedPointNumber.fromWei(this.number.mul(
-      new BN(10).pow(new BN(by))
-    ));
+    return FixedPointNumber.fromWei(
+      this.number.mul(new BN(10).pow(new BN(by))),
+    );
   }
 
   decreasePrecision(by = 18) {
-    return FixedPointNumber.fromWei(this.number.div(
-      new BN(10).pow(new BN(by))
-    ));
+    return FixedPointNumber.fromWei(
+      this.number.div(new BN(10).pow(new BN(by))),
+    );
   }
 }
 

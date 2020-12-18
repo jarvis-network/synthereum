@@ -12,8 +12,8 @@ export async function getPoolBalances<Net extends SupportedNetworkName>(
   const balanceOf = (address: AddressOn<Net>) =>
     getTokenBalance(realm.collateralToken, address);
   const balances = await Promise.all(
-    allSymbols.map(
-      async symbol => t(symbol, await balanceOf(realm.ticInstances[symbol].address)),
+    allSymbols.map(async symbol =>
+      t(symbol, await balanceOf(realm.ticInstances[symbol].address)),
     ),
   );
 

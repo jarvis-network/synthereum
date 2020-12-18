@@ -1,6 +1,10 @@
-import { assertIsString, parseFiniteFloat, parseInteger } from "@jarvis-network/web3-utils/base/asserts";
+import {
+  assertIsString,
+  parseFiniteFloat,
+  parseInteger,
+} from '@jarvis-network/web3-utils/base/asserts';
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { SupportedNetworkId } from "@jarvis-network/synthereum-contracts/dist/src/config/supported-networks";
+import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 
 const {
   FREQUENCY,

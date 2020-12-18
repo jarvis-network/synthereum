@@ -15,7 +15,7 @@ async function main() {
       `${sym} pool balance`,
       `${formatAmount(bal)} USDC`,
     ]),
-  )
+  );
   console.log(result);
 }
 
@@ -24,4 +24,4 @@ main()
   .catch(err => {
     console.log(err);
     process.exit(1);
-  })
+  });

@@ -9,10 +9,8 @@
   "scripts": {
     "clean": "git clean -fdx -e .env -e node_modules -- .",
     "format": "prettier --write './contracts/*.sol'",
-
     "start": "yarn build",
     "watch:tsc": "tsc -p ./tsconfig.json -w --preserveWatchOutput",
-
     "build": "yarn build:scripts && yarn build:solidity && yarn build:typechain && yarn build:typechain-index && yarn build:tsc && yarn build:copy-dts-files",
     "build:scripts": "tsc -p ./scripts/tsconfig.json",
     "build:solidity": "truffle compile && cp ./build/contracts/*.json ./src/contracts/abi",
@@ -20,7 +18,6 @@
     "build:typechain-index": "node ./dist/scripts/generate_typechain_header.js ./src/contracts",
     "build:tsc": "tsc -p ./tsconfig.json",
     "build:copy-dts-files": "copyfiles -V 'src/**/*{.d.ts,.json}' dist",
-
     "truffle:kovan": "truffle console --network kovan",
     "migrate:kovan": "truffle migrate --network kovan -f 1 --to 4 --skip-dry-run",
     "run:deposit": "truffle migrate --network kovan -f 6 --to 6 --skip-dry-run",
