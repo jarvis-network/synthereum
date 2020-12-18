@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Usage:
-#   ./check_commit_range.bash <BASE_COMMIT>..<LAST_COMMIT> 'yarn build:contracts'
+#   ./check_commit_range.bash <BASE_COMMIT>..<LAST_COMMIT> './scripts/build_frontend.bash'
 #
 # Example 1 - verify all commits on the current branch, since the `dev` branch:
 #   ./check_commit_range.bash dev..HEAD 'yarn build:contracts'
