@@ -1,0 +1,26 @@
+{
+  "name": "@jarvis-network/validator-meta-tx",
+  "version": "0.1.0",
+  "description": "",
+  "bin": {
+    "synfiat-keeper": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Edi Sinovcic",
+  "license": "MIT",
+  "dependencies": {
+    "@jarvis-network/synthereum-contracts": "*",
+    "@jarvis-network/validator-lib": "*",
+    "@jarvis-network/web3-utils": "*",
+    "class-validator": "^0.12.2",
+    "@nestjs/common": "^7.0.0",
+    "@nestjs/core": "^7.0.0",
+    "@nestjs/platform-express": "^7.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "~6.5.5",
+    "tslib": "^2.0.0"
+  },
+  "devDependencies": {}
+}
