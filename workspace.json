@@ -24,7 +24,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "parallel": false,
             "cwd": "./libs/web3-utils/dist",
             "color": true
           }
@@ -54,7 +53,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "parallel": false,
             "cwd": "./libs/validator-lib",
             "color": true
           }
@@ -84,7 +82,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "parallel": false,
             "cwd": "./libs/contracts",
             "color": true
           }
@@ -93,7 +90,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build:solidity"],
-            "parallel": false,
             "cwd": "./libs/contracts",
             "color": true
           }
@@ -102,7 +98,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build:contracts-ts"],
-            "parallel": false,
             "cwd": "./libs/contracts",
             "color": true
           }
@@ -120,7 +115,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "parallel": false,
             "cwd": "./apps/validator",
             "color": true
           }
@@ -129,7 +123,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run start"],
-            "parallel": false,
             "cwd": "./apps/validator",
             "color": true
           }
@@ -138,7 +131,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run start:dev"],
-            "parallel": false,
             "cwd": "./apps/validator",
             "color": true
           }
@@ -168,7 +160,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "parallel": false,
             "cwd": "apps/frontend",
             "color": true
           }
@@ -177,7 +168,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn start"],
-            "parallel": false,
             "cwd": "apps/frontend",
             "color": true
           }
@@ -186,7 +176,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn start-dev"],
-            "parallel": false,
             "cwd": "apps/frontend",
             "color": true
           }
@@ -217,7 +206,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "parallel": false,
             "cwd": "./apps/cli",
             "color": true
           }
@@ -226,7 +214,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run start"],
-            "parallel": false,
             "cwd": "./apps/cli",
             "color": true
           }
