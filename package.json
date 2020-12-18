@@ -92,7 +92,8 @@
         "package.json",
         "docker",
         "k8s",
-        "validator-lib"
+        "validator-lib",
+        "meta-tx-lib"
       ]
     }
   },

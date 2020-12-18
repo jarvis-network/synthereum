@@ -1,0 +1,26 @@
+{
+  "name": "@jarvis-network/meta-tx-lib",
+  "author": "Asim Ashfaq",
+  "license": "MIT",
+  "version": "0.0.0",
+  "description": "",
+  "files": [
+    "src/**/*",
+    "dist/**/*"
+  ],
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "clean": "git clean -fdx -e .env -e node_modules -- ",
+    "lint": "tslint -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
+    "start": "yarn build",
+    "watch": "tsc -p tsconfig.json -w --preserveWatchOutput",
+    "prebulishOnly": "npm ci && npm run build"
+  },
+  "dependencies": {
+    "@jarvis-network/web3-utils": "*",
+    "@jarvis-network/synthereum-contracts": "*",
+    "@jarvis-network/validator-lib": "*"
+  }
+}
