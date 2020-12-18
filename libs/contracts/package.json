@@ -21,7 +21,8 @@
     "build:copy-dts-files": "copyfiles 'src/**/*{.d.ts,.json}' dist",
     "truffle:kovan": "truffle console --network kovan",
     "migrate-infrastructure:kovan": "truffle migrate --network kovan_mnemonic -f 2 --to 4",
-    "migrate-derivative-version:kovan": "truffle migrate --network kovan_mnemonic -f 5 --to 5"
+    "migrate-derivative-version:kovan": "truffle migrate --network kovan_mnemonic -f 5 --to 5",
+    "migrate-pool-version:kovan": "truffle migrate --network kovan_mnemonic -f 6 --to 6"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
