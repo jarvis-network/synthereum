@@ -1,2 +1,3 @@
-export * from './signature.interface';
-export * from './typehash.interface';
+export * from './exchange.interface';
+export * from './mint.interface';
+export * from './redeem.interface';
