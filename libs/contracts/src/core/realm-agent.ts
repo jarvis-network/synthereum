@@ -43,7 +43,7 @@ interface RedeemParams extends BaseTxParams {
   inputAmount: BN;
 }
 
-export class RealmAgent<Net extends SupportedNetworkName> {
+export class RealmAgent<Net extends SupportedNetworkName = SupportedNetworkName> {
   constructor(
     public readonly realm: SynthereumRealmWithWeb3<Net>,
     public readonly agentAddress: AddressOn<Net>,

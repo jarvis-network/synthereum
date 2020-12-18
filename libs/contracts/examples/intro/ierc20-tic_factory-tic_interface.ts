@@ -8,6 +8,7 @@ import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
 import { SupportedNetworkId } from '../../src/config';
 import { loadRealm } from '../../src/core/load-realm';
 import { getAllBalances, RealmAgent } from '../../src/core/realm-agent';
+import { parseSupportedNetworkId } from '../../src/config/supported-networks';
 
 /**
  * Apps building on top of Synthereum need to work with a single class - the
@@ -25,12 +26,18 @@ import { getAllBalances, RealmAgent } from '../../src/core/realm-agent';
  * synthetic tokens back to collateral tokens
  */
 export async function example() {
-  // Get Web3 instance (but make sure you're connecting to a supported network):
-  const netId: SupportedNetworkId = 42;
+
+  // Use `parseSupportedNetworkId` to validate that a network id from the
+  // outside environment is indeed supported. This function will throw an
+  // exception if it isn't:
+  const id: string = '42'; // a number would also work fine
+  const netId: SupportedNetworkId = parseSupportedNetworkId(id);
+
+  // Get a Web3 instance. We use Infura here for simplicity:
   const web3 = getInfuraWeb3(netId);
   const realm = await loadRealm(web3, netId);
   const myAddress = web3.defaultAccount as AddressOn<typeof netId>;
-  const realmAgent = new RealmAgent(realm, myAddress);
+  const realmAgent: RealmAgent = new RealmAgent(realm, myAddress);
 
   // Example: IERC20 Balances:
   console.log(
