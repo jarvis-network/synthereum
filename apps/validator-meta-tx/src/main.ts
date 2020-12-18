@@ -1,21 +1,52 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+// import exitHook from 'async-exit-hook';
+/* eslint-disable */
+import { createEverLogger } from '@jarvis-network/validator-lib';
+import 'dotenv/config';
+import 'reflect-metadata';
+import { AppDispatcher } from './dispatcher';
 
-import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+const log = createEverLogger({ name: 'uncaught' });
 
-import { AppModule } from './app/app.module';
+const dispatcher = new AppDispatcher();
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3333;
-  await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
+dispatcher
+  .dispatch()
+  .then(() => log.info('Everything up running'))
+  .catch(error => {
+    log.error(error.message, error.stack);
+    process.exit();
   });
-}
 
-bootstrap();
+// exitHook((callback) => {
+//   void dispatcher.shutdown().then(() => {
+//     log.info('Graceful shutdown the server');
+//     callback();
+//   });
+// });
+process.on('uncaughtException', error => {
+  try {
+    log.error(error, `Caught exception: ${error}`);
+  } catch (error_) {
+    try {
+      console.error("Can't write to log!!!!!!");
+      console.error(error_);
+    } catch {}
+  }
+
+  console.error(error);
+});
+
+process.on('unhandledRejection', error => {
+  try {
+    log.error(error, `Uncaught rejection: ${error}`);
+  } catch (error_) {
+    try {
+      console.error("Can't write to log!!!!!!");
+      console.error(error_);
+    } catch {}
+  }
+
+  console.error(error);
+});

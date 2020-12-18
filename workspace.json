@@ -276,32 +276,21 @@
       "prefix": "validator-meta-tx",
       "targets": {
         "build": {
-          "executor": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
+          "builder": "@nrwl/workspace:run-commands",
           "options": {
-            "outputPath": "dist/apps/validator-meta-tx",
-            "main": "apps/validator-meta-tx/src/main.ts",
-            "tsConfig": "apps/validator-meta-tx/tsconfig.app.json",
-            "assets": ["apps/validator-meta-tx/src/assets"]
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/validator-meta-tx/src/environments/environment.ts",
-                  "with": "apps/validator-meta-tx/src/environments/environment.prod.ts"
-                }
-              ]
-            }
+            "commands": ["yarn run build"],
+            "parallel": false,
+            "cwd": "./apps/validator-meta-tx",
+            "color": true
           }
         },
         "serve": {
-          "executor": "@nrwl/node:execute",
+          "builder": "@nrwl/workspace:run-commands",
           "options": {
-            "buildTarget": "validator-meta-tx:build"
+            "commands": ["yarn run start:dev"],
+            "parallel": false,
+            "cwd": "./apps/validator-meta-tx",
+            "color": true
           }
         },
         "lint": {

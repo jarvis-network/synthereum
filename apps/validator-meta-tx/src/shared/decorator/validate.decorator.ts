@@ -1,3 +1,4 @@
+import { assertIsSyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-asset-symbols';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import {
   assertIsNetworkId,
@@ -25,6 +26,21 @@ export function NetworkType(validationOptions?: ValidationOptions) {
   };
 }
 
+export function AssetName(validationOptions?: ValidationOptions) {
+  return (obj: object, propertyName: string) => {
+    registerDecorator({
+      name: 'AssetName',
+      target: obj.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          return !!assertIsSyntheticSymbol(value);
+        },
+      },
+    });
+  };
+}
 export function ETHAddressValidator(validationOptions?: ValidationOptions) {
   return (obj: object, propertyName: string) => {
     registerDecorator({
