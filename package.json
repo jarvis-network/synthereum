@@ -84,6 +84,7 @@
         }
       ],
       "scopes": [
+        "gitlab",
         "validator",
         "frontend",
         "web3-utils",
@@ -91,7 +92,7 @@
         "package.json",
         "docker",
         "k8s",
-        "gitlab"
+        "validator-lib"
       ]
     }
   },
