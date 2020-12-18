@@ -69,6 +69,7 @@ export async function example() {
   const tx = await realmAgent.mint({
     outputSynth: 'jEUR',
     // Mint 1000 wei of jEUR for 1100 wei of USDC | Assuming EUR/USD @ 1.10
+    // Read more about calculating values: /docs/fee-calculations.md
     collateral: wei(1100),
     outputAmount: wei(1000),
   });
@@ -85,11 +86,13 @@ export async function example() {
    **************************************************************************/
   realmAgent.exchange({
     // Redeem jEUR for USDC | Assuming EUR/USD is 1.10
+    // Read more about calculating values: /docs/fee-calculations.md
     inputSynth: 'jEUR',
     inputAmount: wei(100),
     collateral: wei(110),
 
     // Mint jGBP with USDC  | Assuming GBP/USD is 1.35
+    // Read more about calculating values: /docs/fee-calculations.md
     outputAmount: wei(148),
     outputSynth: 'jGBP',
   });
@@ -98,6 +101,7 @@ export async function example() {
   realmAgent.redeem({
     inputSynth: 'jGBP',
     // Redeem USDC from jGBP  | Assuming GBP/USD is 1.35
+    // Read more about calculating values: /docs/fee-calculations.md
     collateral: wei(135),
     inputAmount: wei(100),
   });
