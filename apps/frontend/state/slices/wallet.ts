@@ -31,10 +31,10 @@ export const fetchWalletBalances = createAsyncThunk(
 
 export const subscribeWalletBalances = createAsyncThunk(
   'wallet/subscribe',
-  async (realmAgent: RealmAgent<'kovan'>, thunkAPI): Promise<void> => {
-    setInterval(() => {
-      thunkAPI.dispatch(fetchWalletBalances(realmAgent));
-    }, 5000);
+  (realmAgent: RealmAgent<'kovan'>, thunkAPI): void => {
+    const callback = () => thunkAPI.dispatch(fetchWalletBalances(realmAgent));
+    setInterval(callback, 5000);
+    callback();
   },
 );
 

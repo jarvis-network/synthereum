@@ -19,10 +19,10 @@ export const fetchTransactionsHistory = createAsyncThunk(
 
 export const subscribeTransactionsHistory = createAsyncThunk(
   'transactions/subscribe',
-  async (realmAgent: RealmAgent<'kovan'>, thunkAPI): Promise<void> => {
-    setInterval(() => {
-      thunkAPI.dispatch(fetchTransactionsHistory(realmAgent));
-    }, 5000);
+  (realmAgent: RealmAgent<'kovan'>, thunkAPI): void => {
+    const callback = () => thunkAPI.dispatch(fetchTransactionsHistory(realmAgent));
+    setInterval(callback, 5000);
+    callback();
   },
 );
 
