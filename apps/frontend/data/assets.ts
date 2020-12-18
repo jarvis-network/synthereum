@@ -47,7 +47,7 @@ const assetIconMap: PerAsset<FlagKeys | null> = {
   jEUR: 'eur',
   jGBP: 'gbp',
   jCHF: 'chf',
-  jXAU: null,
+  jXAU: 'xau',
   jSPX: null,
   jXTI: null,
   jXAG: null,
