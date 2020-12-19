@@ -8,11 +8,11 @@ variables:
   DOCKER_TLS_CERTDIR: '/certs'
   NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
   TAG: mr-${CI_MERGE_REQUEST_ID}
-  REGISTRY: ${CI_REGISTRY}/jarvis-network/apps/exchange/mono-repo
+  REGISTRY: $ACR_CORE_URL/jarvis-network/apps/exchange/mono-repo
 before_script:
   - docker context create buildx-ctx
   - docker buildx create buildx-ctx --use
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
 
 .job-config: &job-config
   only:

@@ -2,7 +2,7 @@ variable "TAG" {
   default = "dev"
 }
 variable "REGISTRY_NAME" {
-  default = "registry.gitlab.com/jarvis-network/apps/exchange/mono-repo"
+  default = "jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo"
 }
 
 group "default" {
