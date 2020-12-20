@@ -21,8 +21,9 @@ import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import { Injectable } from '@nestjs/common';
 import { ENV, env } from '../config';
 import { ExchangeRequestDTO } from './dto/exchange.dto';
-import { MintRequestDTO } from './dto/mint.dto';
-import { RedeemRequestDTO } from './dto/redeem.dto';
+import { MintRequestParams } from './dto/mint.dto';
+import { RedeemRequestParams } from './dto/redeem.dto';
+
 @Injectable()
 export class MetaTransactionService {
   private logger = createEverLogger({
@@ -93,7 +94,7 @@ export class MetaTransactionService {
     return message;
   }
 
-  async redeemRequest(dto: RedeemRequestDTO): Promise<Uint8Array> {
+  async redeemRequest(dto: RedeemRequestParams): Promise<Uint8Array> {
     this.logger.info(
       `Validating the payload payload >> ${JSON.stringify(dto, null, ' ')}`,
     );
@@ -126,7 +127,7 @@ export class MetaTransactionService {
     return message;
   }
 
-  async mintRequest(dto: MintRequestDTO): Promise<Uint8Array> {
+  async mintRequest(dto: MintRequestParams): Promise<Uint8Array> {
     this.logger.info(
       `Validating the payload payload >> ${JSON.stringify(dto, null, ' ')}`,
     );
