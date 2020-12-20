@@ -28,10 +28,15 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "cors": "^2.8.5",
+    "http-json-errors": "^1.2.8",
     "nestjs-flub": "^0.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.5",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "yup": "^0.32.8"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/bunyan-prettystream": "^0.1.31",
+    "@types/yup": "^0.29.11"
+  }
 }
