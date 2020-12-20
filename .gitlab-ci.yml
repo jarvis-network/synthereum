@@ -1,54 +1,95 @@
-default:
-  image: 'registry.gitlab.com/jarvis-network/base/container-images/node-alpine-builder'
-  before_script:
-    - apk add g++ git make python3 linux-headers eudev-dev libusb-dev
+image: registry.gitlab.com/jarvis-network/base/container-images/docker-buildx:20.10
+services:
+  - name: docker:20.10-dind
+    entrypoint: ['env', '-u', 'DOCKER_HOST']
+    command: ['dockerd-entrypoint.sh']
+variables:
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: '/certs'
+  NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
+  TAG: mr-${CI_MERGE_REQUEST_ID}
+  REGISTRY: ${CI_REGISTRY}/jarvis-network/apps/exchange/mono-repo
+before_script:
+  - docker context create buildx-ctx
+  - docker buildx create buildx-ctx --use
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
 
-stages:
-  - build
-  - deploy
-  - delete
-
-.enabled-branches: &enabled-branches
+.job-config: &job-config
   only:
     - merge_requests
     - dev
     - production
-
-build-frontend:
-  <<: *enabled-branches
-  stage: build
-  variables:
-    CI: 'false'
-  cache:
-    key:
-      files:
-        - yarn.lock
-    paths:
-      - node_modules
   script:
-    - yarn install
-    - yarn build:frontend
-  artifacts:
-    paths:
-      - apps/frontend/out
+    - docker buildx bake $TARGET
 
-build-old-frontend:
-  <<: *enabled-branches
-  stage: build
+stages:
+  - base
+  - install and build dependencies
+  - build libs
+  - build and push images
+  - deploy
+  - delete
+
+# Jobs:
+
+🏗 prepare base image:
+  <<: *job-config
+  stage: base
   variables:
-    CI: 'false'
-  cache:
-    key:
-      files:
-        - yarn.lock
-    paths:
-      - node_modules
+    TARGET: base
+
+🏗 prepare install image:
+  <<: *job-config
+  stage: install and build dependencies
+  variables:
+    TARGET: install
+
+🏗 build libs:
+  <<: *job-config
+  stage: build libs
+  variables:
+    TARGET: libs
+
+🐳 build & push:
+  <<: *job-config
+  stage: build and push images
+  parallel:
+    matrix:
+      - TARGET: [validator, frontend, frontend-old]
+  dependencies:
+    - 🏗 build libs
+
+💎 deploy frontend:
+  <<: *job-config
+  stage: deploy
+  image: $REGISTRY/frontend:${TAG}
+  variables:
+    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
+    GIT_STRATEGY: none
+  before_script:
+    - npm install -g netlify-cli
   script:
-    - yarn install
-    - yarn build:frontend-old
-  artifacts:
-    paths:
-      - packages/frontend-old/build
+    - ls -la /src
+    - netlify deploy --dir /src/out
+  dependencies:
+    - 🐳 build & push
+
+# --------------------------------- Old Jobs --------------------------------- #
+
+💎 deploy old frontend:
+  <<: *job-config
+  stage: deploy
+  image: $REGISTRY/frontend-old:${TAG}
+  variables:
+    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
+    GIT_STRATEGY: none
+  before_script:
+    - npm install -g netlify-cli
+  script:
+    - ls -la /src
+    - netlify deploy --dir /src/build
+  dependencies:
+    - 🐳 build & push
 
 .acr_path:
   - &acr_path_script |
@@ -60,11 +101,9 @@ build-old-frontend:
     ACR_IMAGE_FULL_NAME="${ACR_URL}/${CI_PROJECT_PATH}:${ACR_IMAGE_TAG}"
 
 build-old-validator:
-  <<: *enabled-branches
+  <<: *job-config
   image: docker:latest
-  services:
-    - docker:dind
-  stage: build
+  stage: install and build dependencies
   before_script:
     - docker info
     - echo "$ACR_CI_PASSWORD" | docker login -u "$ACR_CI_USER" --password-stdin $ACR_URL
@@ -72,54 +111,6 @@ build-old-validator:
   script:
     - docker build --pull -t "$ACR_IMAGE_FULL_NAME" ./packages/keeper-bot
     - docker push "$ACR_IMAGE_FULL_NAME"
-
-.frontend-deploy-default: &frontend-deploy-default
-  stage: deploy
-  needs:
-    - job: build-frontend
-      artifacts: true
-  variables:
-    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
-    OUT_DIR: './apps/frontend/out/'
-  before_script:
-    - yarn global add netlify-cli
-  script:
-    - netlify deploy ${PROD:-} --dir "$OUT_DIR"
-
-frontend-netlify:
-  <<: *frontend-deploy-default
-  only:
-    - merge_requests
-    - dev
-
-frontend-prod-netlify:
-  <<: *frontend-deploy-default
-  only:
-    - production
-  variables:
-    PROD: '--prod'
-
-.old-frontend-deploy-default: &old-frontend-deploy-default
-  <<: *frontend-deploy-default
-  needs:
-    - job: build-old-frontend
-      artifacts: true
-  variables:
-    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
-    OUT_DIR: './packages/frontend-old/build/'
-
-old-frontend-netlify:
-  <<: *old-frontend-deploy-default
-  only:
-    - merge_requests
-    - dev
-
-old-frontend-prod-netlify:
-  <<: *old-frontend-deploy-default
-  only:
-    - production
-  variables:
-    PROD: '--prod'
 
 .deploy-keeper-bot-default: &deploy-keeper-bot-default
   image: mcr.microsoft.com/azure-cli
@@ -174,14 +165,9 @@ deploy-azure-stage:
   only:
     - merge_requests
     - dev
-
-deploy-azure-production:
-  <<: *deploy-keeper-bot-default
-  when: on_success
-  only:
     - production
 
 delete-azure:
-  <<: *enabled-branches
+  <<: *job-config
   <<: *delete-keeper-bot-default
   when: manual
