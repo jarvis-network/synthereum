@@ -3,9 +3,9 @@ import { INestApplicationContext, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import cors from 'cors';
-import { FlubErrorHandler } from 'nestjs-flub';
 import { AppModule } from './app.module';
 import { env } from './config';
+import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
 /**
  * Start and Stop the Application
  * @export
@@ -55,10 +55,11 @@ export class AppDispatcher {
     useContainer(this.app.select(AppModule), { fallbackOnErrors: true });
     this.app.use(cors());
     process.setMaxListeners(0);
-    this.app.useGlobalFilters(
-      new FlubErrorHandler({ theme: 'dark', quote: true }),
-    );
+    // this.app.useGlobalFilters(
+    //   new FlubErrorHandler({ theme: 'dark', quote: true }),
+    // );
     this.app.useGlobalPipes(new ValidationPipe());
+    this.app.useGlobalFilters(new HttpExceptionFilter());
 
     // await this.app.startAllMicroservicesAsync();
   }
