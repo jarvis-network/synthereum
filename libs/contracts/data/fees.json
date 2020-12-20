@@ -1,0 +1,10 @@
+{
+  "42": {
+    "feePercentage": 0.001,
+    "feeRecipients": [
+      "0xCc3528125499d168ADFB5Ef99895c98a7C430ed4",
+      "0x535aC9f9b46E515a3af364434061181a504D5bFb"
+    ],
+    "feeProportions": [50, 50]
+  }
+}

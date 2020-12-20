@@ -21,7 +21,8 @@
     "truffle:kovan": "truffle console --network kovan",
     "migrate-infrastructure:kovan": "truffle migrate --network kovan_mnemonic -f 2 --to 4",
     "migrate-derivative-version:kovan": "truffle migrate --network kovan_mnemonic -f 5 --to 5",
-    "migrate-pool-version:kovan": "truffle migrate --network kovan_mnemonic -f 6 --to 6"
+    "migrate-pool-version:kovan": "truffle migrate --network kovan_mnemonic -f 6 --to 6",
+    "add-pool-and-derivative:kovan": "truffle migrate --network kovan_mnemonic -f 7 --to 7 --skip-dry-run"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
