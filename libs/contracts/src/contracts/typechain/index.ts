@@ -24,6 +24,7 @@ export type KnownContract =
   | Tagged<Liquidatable, 'Liquidatable'>
   | Tagged<Migrations, 'Migrations'>
   | Tagged<MultiRole, 'MultiRole'>
+  | Tagged<OptimisticOracleInterface, 'OptimisticOracleInterface'>
   | Tagged<OracleInterface, 'OracleInterface'>
   | Tagged<OracleInterfaces, 'OracleInterfaces'>
   | Tagged<Ownable, 'Ownable'>
@@ -129,6 +130,7 @@ import type {
   PositionCreated as ExpiringMultiParty_PositionCreated,
   Redeem as ExpiringMultiParty_Redeem,
   RegularFeesPaid as ExpiringMultiParty_RegularFeesPaid,
+  Repay as ExpiringMultiParty_Repay,
   RequestTransferPosition as ExpiringMultiParty_RequestTransferPosition,
   RequestTransferPositionCanceled as ExpiringMultiParty_RequestTransferPositionCanceled,
   RequestTransferPositionExecuted as ExpiringMultiParty_RequestTransferPositionExecuted,
@@ -152,6 +154,7 @@ export namespace ExpiringMultiParty_Events {
   export type PositionCreated = ExpiringMultiParty_PositionCreated;
   export type Redeem = ExpiringMultiParty_Redeem;
   export type RegularFeesPaid = ExpiringMultiParty_RegularFeesPaid;
+  export type Repay = ExpiringMultiParty_Repay;
   export type RequestTransferPosition = ExpiringMultiParty_RequestTransferPosition;
   export type RequestTransferPositionCanceled = ExpiringMultiParty_RequestTransferPositionCanceled;
   export type RequestTransferPositionExecuted = ExpiringMultiParty_RequestTransferPositionExecuted;
@@ -237,6 +240,7 @@ import type {
   PositionCreated as Liquidatable_PositionCreated,
   Redeem as Liquidatable_Redeem,
   RegularFeesPaid as Liquidatable_RegularFeesPaid,
+  Repay as Liquidatable_Repay,
   RequestTransferPosition as Liquidatable_RequestTransferPosition,
   RequestTransferPositionCanceled as Liquidatable_RequestTransferPositionCanceled,
   RequestTransferPositionExecuted as Liquidatable_RequestTransferPositionExecuted,
@@ -260,6 +264,7 @@ export namespace Liquidatable_Events {
   export type PositionCreated = Liquidatable_PositionCreated;
   export type Redeem = Liquidatable_Redeem;
   export type RegularFeesPaid = Liquidatable_RegularFeesPaid;
+  export type Repay = Liquidatable_Repay;
   export type RequestTransferPosition = Liquidatable_RequestTransferPosition;
   export type RequestTransferPositionCanceled = Liquidatable_RequestTransferPositionCanceled;
   export type RequestTransferPositionExecuted = Liquidatable_RequestTransferPositionExecuted;
@@ -286,6 +291,9 @@ export namespace MultiRole_Events {
   export type ResetExclusiveMember = MultiRole_ResetExclusiveMember;
 }
 
+import type { OptimisticOracleInterface } from './OptimisticOracleInterface';
+export type { OptimisticOracleInterface };
+
 import type { OracleInterface } from './OracleInterface';
 export type { OracleInterface };
 
@@ -311,6 +319,7 @@ import type {
   PositionCreated as PricelessPositionManager_PositionCreated,
   Redeem as PricelessPositionManager_Redeem,
   RegularFeesPaid as PricelessPositionManager_RegularFeesPaid,
+  Repay as PricelessPositionManager_Repay,
   RequestTransferPosition as PricelessPositionManager_RequestTransferPosition,
   RequestTransferPositionCanceled as PricelessPositionManager_RequestTransferPositionCanceled,
   RequestTransferPositionExecuted as PricelessPositionManager_RequestTransferPositionExecuted,
@@ -330,6 +339,7 @@ export namespace PricelessPositionManager_Events {
   export type PositionCreated = PricelessPositionManager_PositionCreated;
   export type Redeem = PricelessPositionManager_Redeem;
   export type RegularFeesPaid = PricelessPositionManager_RegularFeesPaid;
+  export type Repay = PricelessPositionManager_Repay;
   export type RequestTransferPosition = PricelessPositionManager_RequestTransferPosition;
   export type RequestTransferPositionCanceled = PricelessPositionManager_RequestTransferPositionCanceled;
   export type RequestTransferPositionExecuted = PricelessPositionManager_RequestTransferPositionExecuted;

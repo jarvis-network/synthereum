@@ -78,10 +78,31 @@ export interface FeePayer extends BaseContract {
     payRegularFees(): NonPayableTransactionObject<[string]>;
 
     /**
+     * This returns 0 and exit early if there is no pfc, fees were already paid during the current block, or the fee rate is 0.
+     * Fetch any regular fees that the contract has pending but has not yet paid. If the fees to be paid are more than the total collateral within the contract then the totalPaid returned is full contract collateral amount.
+     */
+    getOutstandingRegularFees(
+      time: number | string
+    ): NonPayableTransactionObject<{
+      regularFee: [string];
+      latePenalty: [string];
+      totalPaid: [string];
+      0: [string];
+      1: [string];
+      2: [string];
+    }>;
+
+    /**
      * This is equivalent to the collateral pool available from which to pay fees. Therefore, derived contracts are expected to implement this so that pay-fee methods can correctly compute the owed fees as a % of PfC.
      * Gets the current profit from corruption for this contract in terms of the collateral currency.
      */
     pfc(): NonPayableTransactionObject<[string]>;
+
+    /**
+     * Multiplying the `cumulativeFeeMultiplier` by the ratio of non-PfC-collateral :: PfC-collateral effectively pays all sponsors a pro-rata portion of the excess collateral.This will revert if PfC is 0 and this contract's collateral balance > 0.
+     * Removes excess collateral balance not counted in the PfC by distributing it out pro-rata to all sponsors.
+     */
+    gulp(): NonPayableTransactionObject<void>;
   };
   events: {
     FinalFeesPaid(cb?: Callback<FinalFeesPaid>): EventEmitter;

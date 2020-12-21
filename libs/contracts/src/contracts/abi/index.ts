@@ -129,6 +129,12 @@ export const MultiRole_Abi = require('./MultiRole.json').abi as Tagged<
   MultiRole
 >;
 
+import type { OptimisticOracleInterface } from '../typechain/OptimisticOracleInterface';
+export const OptimisticOracleInterface_Abi = require('./OptimisticOracleInterface.json').abi as Tagged<
+  AbiItem[],
+  OptimisticOracleInterface
+>;
+
 import type { OracleInterface } from '../typechain/OracleInterface';
 export const OracleInterface_Abi = require('./OracleInterface.json').abi as Tagged<
   AbiItem[],

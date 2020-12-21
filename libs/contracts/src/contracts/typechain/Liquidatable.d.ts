@@ -129,6 +129,14 @@ export type RegularFeesPaid = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type Repay = ContractEventLog<{
+  sponsor: string;
+  numTokensRepaid: string;
+  newTokenCount: string;
+  0: string;
+  1: string;
+  2: string;
+}>;
 export type RequestTransferPosition = ContractEventLog<{
   oldSponsor: string;
   0: string;
@@ -220,17 +228,15 @@ export interface Liquidatable extends BaseContract {
       collateralAmount: [number | string]
     ): NonPayableTransactionObject<void>;
 
-    disputeBondPct(): NonPayableTransactionObject<string>;
+    disputeBondPercentage(): NonPayableTransactionObject<string>;
 
-    disputerDisputeRewardPct(): NonPayableTransactionObject<string>;
+    disputerDisputeRewardPercentage(): NonPayableTransactionObject<string>;
 
     /**
      * Only the governor can call this function as they are permissioned within the `FinancialContractAdmin`. Upon emergency shutdown, the contract settlement time is set to the shutdown time. This enables withdrawal to occur via the standard `settleExpired` function. Contract state is set to `ExpiredPriceRequested` which prevents re-entry into this function or the `expire` function. No fees are paid when calling `emergencyShutdown` as the governor who would call the function would also receive the fees.
      * Premature contract settlement under emergency circumstances.
      */
     emergencyShutdown(): NonPayableTransactionObject<void>;
-
-    excessTokenBeneficiary(): NonPayableTransactionObject<string>;
 
     expirationTimestamp(): NonPayableTransactionObject<string>;
 
@@ -247,7 +253,7 @@ export interface Liquidatable extends BaseContract {
     finder(): NonPayableTransactionObject<string>;
 
     /**
-     * This is necessary because the struct returned by the positions() method shows rawCollateral, which isn't a user-readable value.TODO: This method does not account for any pending regular fees that have not yet been withdrawn from this contract, for example if the `lastPaymentTime != currentTime`. Future work should be to add logic to this method to account for any such pending fees.
+     * This is necessary because the struct returned by the positions() method shows rawCollateral, which isn't a user-readable value.This method accounts for pending regular fees that have not yet been withdrawn from this contract, for example if the `lastPaymentTime != currentTime`.
      * Accessor method for a sponsor's collateral.
      * @param sponsor address whose collateral amount is retrieved.
      */
@@ -257,6 +263,27 @@ export interface Liquidatable extends BaseContract {
      * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
      */
     getCurrentTime(): NonPayableTransactionObject<string>;
+
+    /**
+     * This returns 0 and exit early if there is no pfc, fees were already paid during the current block, or the fee rate is 0.
+     * Fetch any regular fees that the contract has pending but has not yet paid. If the fees to be paid are more than the total collateral within the contract then the totalPaid returned is full contract collateral amount.
+     */
+    getOutstandingRegularFees(
+      time: number | string
+    ): NonPayableTransactionObject<{
+      regularFee: [string];
+      latePenalty: [string];
+      totalPaid: [string];
+      0: [string];
+      1: [string];
+      2: [string];
+    }>;
+
+    /**
+     * Multiplying the `cumulativeFeeMultiplier` by the ratio of non-PfC-collateral :: PfC-collateral effectively pays all sponsors a pro-rata portion of the excess collateral.This will revert if PfC is 0 and this contract's collateral balance > 0.
+     * Removes excess collateral balance not counted in the PfC by distributing it out pro-rata to all sponsors.
+     */
+    gulp(): NonPayableTransactionObject<void>;
 
     liquidationLiveness(): NonPayableTransactionObject<string>;
 
@@ -331,6 +358,8 @@ export interface Liquidatable extends BaseContract {
      */
     remargin(): NonPayableTransactionObject<void>;
 
+    repay(numTokens: [number | string]): NonPayableTransactionObject<void>;
+
     /**
      * The liveness length is the same as the withdrawal liveness.
      * Requests to transfer ownership of the caller's current position to a new sponsor address. Once the request liveness is passed, the sponsor can execute the transfer and specify the new sponsor.
@@ -354,13 +383,14 @@ export interface Liquidatable extends BaseContract {
      */
     settleExpired(): NonPayableTransactionObject<[string]>;
 
-    sponsorDisputeRewardPct(): NonPayableTransactionObject<string>;
+    sponsorDisputeRewardPercentage(): NonPayableTransactionObject<string>;
 
     timerAddress(): NonPayableTransactionObject<string>;
 
     tokenCurrency(): NonPayableTransactionObject<string>;
 
     /**
+     * This method accounts for pending regular fees that have not yet been withdrawn from this contract, for example if the `lastPaymentTime != currentTime`.
      * Accessor method for the total collateral stored within the PricelessPositionManager.
      */
     totalPositionCollateral(): NonPayableTransactionObject<[string]>;
@@ -390,13 +420,6 @@ export interface Liquidatable extends BaseContract {
       requestTime: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * This will drain down to the amount of tracked collateral and drain the full balance of any other token.
-     * Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
-     * @param token address of the ERC20 token whose excess balance should be drained.
-     */
-    trimExcess(token: string): NonPayableTransactionObject<[string]>;
-
     withdraw(
       collateralAmount: [number | string]
     ): NonPayableTransactionObject<[string]>;
@@ -425,7 +448,7 @@ export interface Liquidatable extends BaseContract {
     }>;
 
     /**
-     * Can only dispute a liquidation before the liquidation expires and if there are no other pending disputes. This contract must be approved to spend at least the dispute bond amount of `collateralCurrency`. This dispute bond amount is calculated from `disputeBondPct` times the collateral in the liquidation.
+     * Can only dispute a liquidation before the liquidation expires and if there are no other pending disputes. This contract must be approved to spend at least the dispute bond amount of `collateralCurrency`. This dispute bond amount is calculated from `disputeBondPercentage` times the collateral in the liquidation.
      * Disputes a liquidation, if the caller has enough collateral to post a dispute bond and pay a fixed final fee charged on each price request.
      * @param liquidationId of the disputed liquidation.
      * @param sponsor the address of the sponsor whose liquidation is being disputed.
@@ -543,6 +566,9 @@ export interface Liquidatable extends BaseContract {
       options?: EventOptions,
       cb?: Callback<RegularFeesPaid>
     ): EventEmitter;
+
+    Repay(cb?: Callback<Repay>): EventEmitter;
+    Repay(options?: EventOptions, cb?: Callback<Repay>): EventEmitter;
 
     RequestTransferPosition(
       cb?: Callback<RequestTransferPosition>
@@ -684,6 +710,9 @@ export interface Liquidatable extends BaseContract {
     options: EventOptions,
     cb: Callback<RegularFeesPaid>
   ): void;
+
+  once(event: "Repay", cb: Callback<Repay>): void;
+  once(event: "Repay", options: EventOptions, cb: Callback<Repay>): void;
 
   once(
     event: "RequestTransferPosition",
