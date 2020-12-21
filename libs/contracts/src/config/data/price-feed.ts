@@ -14,3 +14,7 @@ export const priceFeed = typeCheck<PriceFeed>()({
   jXTI: 'XTIUSD',
   jXAG: 'XAGUSD',
 } as const);
+
+export const reversedPriceFeedPairs: string[] = [
+  priceFeed.jCHF
+];

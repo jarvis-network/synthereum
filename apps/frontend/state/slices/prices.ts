@@ -1,5 +1,7 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
+import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
+
 import { initialState, PricePoint } from '@/state/initialState';
 import { formatDate } from '@/utils/format';
 import {
@@ -12,6 +14,8 @@ export interface SavePricePointsAction<T> {
   type: string;
   payload: T;
 }
+
+const isPairReversed = (pair: SubscriptionPair) => reversedPriceFeedPairs.includes(pair);
 
 const pricesSlice = createSlice({
   name: 'prices',
@@ -44,8 +48,9 @@ const pricesSlice = createSlice({
         // Iterate in t, each index describe time point for pair
         // Sort t to check lower timestamp earlier to not sort values later
         for (const index in t) {
-          const [open, high, low, close] = values[index];
+          const rawValue = values[index];
           const time = t[index];
+          const [open, high, low, close] = isPairReversed(pair) ? rawValue.map(v => 1 / v) : rawValue;
 
           // Build time point value
           const timeValue: PricePoint = {
@@ -88,7 +93,8 @@ const pricesSlice = createSlice({
         }
 
         // Latest value for pair
-        const value = map[pair];
+        const rawValue = map[pair];
+        const value = isPairReversed(pair) ? 1 / rawValue : rawValue;
 
         // Saved time point for pair
         const timeIndex = state.feed[pair].findIndex(_i => _i.time === time);

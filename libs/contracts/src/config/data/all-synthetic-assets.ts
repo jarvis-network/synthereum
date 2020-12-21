@@ -12,7 +12,7 @@ export const allSyntheticTokensMap: PerAsset<SyntheticTokenConfig> = {
   jCHF: {
     syntheticName: 'Jarvis Synthetic Swiss Franc',
     syntheticSymbol: 'jCHF',
-    priceFeedIdentifier: 'CHF/USD',
+    priceFeedIdentifier: 'USD/CHF',
     collateralRequirement: { rawValue: '1100000000000000000' },
     startingCollateralization: '1415000',
     minSponsorTokens: { rawValue: '1000000000000000000' },
