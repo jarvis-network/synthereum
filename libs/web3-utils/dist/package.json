@@ -2,7 +2,7 @@
   "name": "@jarvis-network/web3-utils",
   "author": "Petar Kirov",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "",
   "files": [
     "../src/**/*",
