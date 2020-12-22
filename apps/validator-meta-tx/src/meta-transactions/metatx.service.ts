@@ -20,6 +20,7 @@ import { PriceFeed } from '@jarvis-network/validator-lib/src/api/jarvis_market_p
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import { Injectable } from '@nestjs/common';
+import { DateTime } from 'luxon';
 import { ENV, env } from '../config';
 import { ExchangeRequestDTO } from './dto/exchange.dto';
 import { MintRequestParams } from './dto/mint.dto';
@@ -43,6 +44,7 @@ export class MetaTransactionService {
   }
   async init() {
     this.realm = await getSynthereumRealmWithInfuraWeb3();
+    this.logger.info(`Realm loaded >>`, this.realm.ticInstances);
     this.exchangeService = new ExchangeService();
     this.mintService = new MintService();
     this.redeemService = new RedeemService();
@@ -76,7 +78,7 @@ export class MetaTransactionService {
         collateral_amount: [dto.collateral_amount],
         num_tokens: [dto.num_tokens],
         dest_num_tokens: [dto.dest_num_tokens],
-        timestamp: 'noTimestamp',
+        timestamp: DateTime.local().toMillis().toString(),
         exchange_id: 'RandomRequestId',
       } as ExchangeRequest,
     );
@@ -97,7 +99,7 @@ export class MetaTransactionService {
       collateralAmount: new FPN(dto.collateral_amount),
       destNumTokens: new FPN(dto.dest_num_tokens),
       feePercentage: new FPN('100'),
-      expiry: '12',
+      expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
     } as IExchangeRequest);
     this.logger.info(`Generated payload >> ${message}`);
     return message;
@@ -113,7 +115,7 @@ export class MetaTransactionService {
         sender: dto.sender,
         collateral_amount: [dto.collateral_amount],
         num_tokens: [dto.num_tokens],
-        timestamp: 'noTimestamp',
+        timestamp: DateTime.local().toMillis().toString(),
         redeem_id: 'RandomRequestId',
       } as RedeemRequest,
     );
@@ -130,7 +132,7 @@ export class MetaTransactionService {
       collateralAmount: new FPN(dto.collateral_amount),
       feePercentage: new FPN('100'),
       nonce: new FPN('100'),
-      expiry: '12',
+      expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
     } as IExchangeRequest);
     this.logger.info(`Generated payload >> ${message}`);
     return message;
@@ -140,13 +142,14 @@ export class MetaTransactionService {
     this.logger.info(
       `Validating the payload payload >> ${JSON.stringify(dto, null, ' ')}`,
     );
+
     const isValid = await this.mintValidator.CheckRequest(
       this.realm.ticInstances[dto.asset],
       {
         sender: dto.sender,
         collateral_amount: [dto.collateral_amount],
         num_tokens: [dto.num_tokens],
-        timestamp: 'noTimestamp',
+        timestamp: DateTime.local().toMillis().toString(),
         mint_id: 'RandomRequestId',
       } as MintRequest,
     );
@@ -163,7 +166,7 @@ export class MetaTransactionService {
       collateralAmount: new FPN(dto.collateral_amount),
       feePercentage: new FPN('100'),
       nonce: new FPN('100'),
-      expiry: '12',
+      expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
     } as IExchangeRequest);
     this.logger.info(`Generated payload >> ${message}`);
     return message;
