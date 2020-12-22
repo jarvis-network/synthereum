@@ -39,10 +39,10 @@ export const useExchangeValues = () => {
       grossCollateral = payValue;
       netCollateral = grossCollateral.div(new FPN(1).add(FEE));
       transactionCollateral = netCollateral;
-      receiveValue = netCollateral.mul(assetReceive.price);
+      receiveValue = netCollateral.mul(new FPN(1).div(assetReceive.price));
     } else {
       receiveValue = new FPN(receive);
-      netCollateral = receiveValue.div(assetReceive.price);
+      netCollateral = receiveValue.mul(assetReceive.price);
       grossCollateral = netCollateral.mul(new FPN(1).add(FEE));
       transactionCollateral = netCollateral;
       payValue = grossCollateral;
@@ -51,7 +51,7 @@ export const useExchangeValues = () => {
     // redeem
     if (base === 'pay') {
       payValue = new FPN(pay);
-      grossCollateral = payValue.div(assetPay.price);
+      grossCollateral = payValue.mul(assetPay.price);
       netCollateral = grossCollateral.mul(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
       receiveValue = netCollateral;
@@ -60,23 +60,23 @@ export const useExchangeValues = () => {
       netCollateral = receiveValue;
       grossCollateral = netCollateral.div(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
-      payValue = grossCollateral.mul(assetPay.price);
+      payValue = grossCollateral.mul(new FPN(1).div(assetPay.price));
     }
   } else {
     // exchange
     // eslint-disable-next-line no-lonely-if
     if (base === 'pay') {
       payValue = new FPN(pay);
-      grossCollateral = payValue.div(assetPay.price);
+      grossCollateral = payValue.mul(assetPay.price);
       netCollateral = grossCollateral.mul(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
-      receiveValue = netCollateral.mul(assetReceive.price);
+      receiveValue = netCollateral.mul(new FPN(1).div(assetReceive.price));
     } else {
       receiveValue = new FPN(receive);
-      netCollateral = receiveValue.div(assetReceive.price);
+      netCollateral = receiveValue.mul(assetReceive.price);
       grossCollateral = netCollateral.div(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
-      payValue = grossCollateral.mul(assetPay.price);
+      payValue = grossCollateral.mul(new FPN(1).div(assetPay.price));
     }
   }
 

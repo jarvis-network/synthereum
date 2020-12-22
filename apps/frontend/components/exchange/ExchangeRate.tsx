@@ -40,8 +40,8 @@ export const ExchangeRate: React.FC = () => {
   );
 
   const rate = invertRateInfo
-    ? useRate(receiveAsset, payAsset)
-    : useRate(payAsset, receiveAsset);
+    ? useRate(payAsset, receiveAsset)
+    : useRate(receiveAsset, payAsset);
 
   if (!payAsset || !receiveAsset || !rate) {
     return null;
