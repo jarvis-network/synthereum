@@ -1,6 +1,6 @@
 {
   "name": "@jarvis-network/synthereum-validator",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "",
   "bin": {
     "synfiat-keeper": "./dist/index.js"
@@ -18,8 +18,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "*",
-    "@jarvis-network/web3-utils": "*",
+    "@jarvis-network/synthereum-contracts": "1.0.0",
+    "@jarvis-network/web3-utils": "1.0.0",
     "axios": "^0.20.0",
     "bunyan": "^1.8.14",
     "web3": "^1.3.0"
