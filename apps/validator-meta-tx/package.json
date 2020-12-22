@@ -29,6 +29,7 @@
     "class-validator": "^0.12.2",
     "cors": "^2.8.5",
     "http-json-errors": "^1.2.8",
+    "luxon": "^1.25.0",
     "nestjs-flub": "^0.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.5",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/bunyan-prettystream": "^0.1.31",
+    "@types/luxon": "^1.25.0",
     "@types/yup": "^0.29.11"
   }
 }

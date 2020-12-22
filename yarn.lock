@@ -5304,6 +5304,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/bunyan-prettystream@^0.1.31":
+  version "0.1.31"
+  resolved "https://registry.yarnpkg.com/@types/bunyan-prettystream/-/bunyan-prettystream-0.1.31.tgz#3864836abb907ab151f7edf7c64c323c9609e1d1"
+  integrity sha512-NE7fq2ZcX7OSMK+VhTNJkVEHlo+hm0uVXpuLeH1ifGm52Qwuo/kLD2GHo7UcEXMFu3duKver/AFo8C4TME93zw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/bunyan@^1.8.6":
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/@types/bunyan/-/bunyan-1.8.6.tgz#6527641cca30bedec5feb9ab527b7803b8000582"
@@ -5475,6 +5482,11 @@
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@types/lru-cache/-/lru-cache-5.1.0.tgz#57f228f2b80c046b4a1bd5cac031f81f207f4f03"
   integrity sha512-RaE0B+14ToE4l6UqdarKPnXwVDuigfFv+5j9Dze/Nqr23yyuqdNvzcZi3xB+3Agvi5R4EOgAksfv3lXX4vBt9w==
+
+"@types/luxon@^1.25.0":
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-1.25.0.tgz#3d6fe591fac874f48dd225cb5660b2b785a21a05"
+  integrity sha512-iIJp2CP6C32gVqI08HIYnzqj55tlLnodIBMCcMf28q9ckqMfMzocCmIzd9JWI/ALLPMUiTkCu1JGv3FFtu6t3g==
 
 "@types/milliseconds@^0.0.30":
   version "0.0.30"
@@ -17168,6 +17180,11 @@ ltgt@~2.2.0:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ltgt/-/ltgt-2.2.1.tgz#f35ca91c493f7b73da0e07495304f17b31f87ee5"
   integrity sha1-81ypHEk/e3PaDgdJUwTxezH4fuU=
+
+luxon@^1.25.0:
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-1.25.0.tgz#d86219e90bc0102c0eb299d65b2f5e95efe1fe72"
+  integrity sha512-hEgLurSH8kQRjY6i4YLey+mcKVAWXbDNlZRmM6AgWDJ1cY3atl8Ztf5wEY7VBReFbmGnwQPz7KYJblL8B2k0jQ==
 
 macos-release@^2.2.0:
   version "2.4.1"
