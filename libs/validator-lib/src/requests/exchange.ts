@@ -10,7 +10,7 @@ import {
   getTokenBalance,
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
-import { getPriceFeedOhlc } from '../api/jarvis_market_price_feed';
+import { PriceFeed } from '../api/jarvis-exchange-price-feed';
 import { ENV } from '../config';
 import { ExchangeRequest } from '../interfaces';
 import { createEverLogger } from '../log';
@@ -21,6 +21,7 @@ export class ExchangeRequestValidator {
   });
   maxSlippage: number;
   constructor(
+    private readonly priceFeed: PriceFeed,
     private readonly realm: SynthereumRealmWithWeb3<SupportedNetworkName>,
     { MAX_SLIPPAGE }: ENV,
   ) {
@@ -33,7 +34,7 @@ export class ExchangeRequestValidator {
   ): Promise<boolean> {
     const { priceFeed } = info;
     const requestTime = request.timestamp;
-    const price = await getPriceFeedOhlc(priceFeed, requestTime);
+    const price = await this.priceFeed.getPrice(priceFeed, requestTime);
     if (!price) {
       throw new Error('Forex is closed');
     }
@@ -51,7 +52,10 @@ export class ExchangeRequestValidator {
     }
 
     const { priceFeed: destinationPriceFeed, symbol } = destinationInfo;
-    const destPrice = await getPriceFeedOhlc(destinationPriceFeed, requestTime);
+    const destPrice = await this.priceFeed.getPrice(
+      destinationPriceFeed,
+      requestTime,
+    );
 
     if (!destPrice) {
       this.logger.info('Forex is closed');

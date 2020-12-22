@@ -32,7 +32,7 @@
     },
     "validator": {
       "tags": [],
-      "implicitDependencies": ["contracts"]
+      "implicitDependencies": ["validator-lib"]
     },
     "validator-lib": {
       "tags": [],
