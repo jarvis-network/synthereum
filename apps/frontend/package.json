@@ -1,6 +1,6 @@
 {
   "name": "@jarvis-network/exchange-frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start:server": "next start",
@@ -13,9 +13,9 @@
     "format:fix": "prettier --write \"**/*.+(json|yml|yaml|md)\""
   },
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "*",
+    "@jarvis-network/synthereum-contracts": "1.0.0",
     "@jarvis-network/ui": "^0.8.0",
-    "@jarvis-network/web3-utils": "*",
+    "@jarvis-network/web3-utils": "1.0.0",
     "@reduxjs/toolkit": "^1.4.0",
     "bnc-onboard": "^1.14.0",
     "eth-ens-namehash": "^2.0.8",
