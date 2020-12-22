@@ -1,6 +1,6 @@
 {
   "name": "@jarvis-network/cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A collection of CLI utilities for working with Synthereum",
   "main": "dist/index.js",
   "repository": "git@gitlab.com:jarvis-network/apps/exchange/mono-repo.git",
@@ -10,6 +10,6 @@
     "build": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "*"
+    "@jarvis-network/synthereum-contracts": "1.0.0"
   }
 }
