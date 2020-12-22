@@ -1,6 +1,6 @@
 {
   "name": "@jarvis-network/synthereum",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "Synthereum is Jarvis Network's synthetic asset protocol",
   "repository": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo",
   "author": "Jarvis Network Team",
@@ -202,5 +202,15 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/exec": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/gitlab": "^6.0.8",
+    "@semantic-release/npm": "^7.0.9",
+    "@semantic-release/release-notes-generator": "^9.0.1",
+    "multi-semantic-release": "^2.5.3"
   }
 }
