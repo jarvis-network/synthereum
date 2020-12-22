@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TerminusModule } from '@nestjs/terminus';
+import { Settings } from 'luxon';
 import { MetaTransactionModule } from './meta-transactions/metatx.module';
 import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
 import { TimeoutInterceptor } from './shared/interceptors/timeout.interceptors';
@@ -19,4 +20,8 @@ import { TimeoutInterceptor } from './shared/interceptors/timeout.interceptors';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    Settings.defaultZoneName = 'utc';
+  }
+}
