@@ -5,7 +5,7 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EUR/USD",
       "collateralRequirement": "1100000000000000000",
-      "startingCollateralization": "1586700",
+      "startingCollateralization": "1585500",
       "minSponsorTokens": "0",
       "isContractAllowed": false
     },
@@ -14,7 +14,7 @@
       "syntheticSymbol": "jCHF",
       "priceFeedIdentifier": "CHF/USD",
       "collateralRequirement": "1100000000000000000",
-      "startingCollateralization": "1461800",
+      "startingCollateralization": "1465100",
       "minSponsorTokens": "0",
       "isContractAllowed": false
     },
@@ -23,7 +23,7 @@
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBP/USD",
       "collateralRequirement": "1100000000000000000",
-      "startingCollateralization": "1761500",
+      "startingCollateralization": "1761300",
       "minSponsorTokens": "0",
       "isContractAllowed": false
     },
@@ -32,7 +32,7 @@
       "syntheticSymbol": "jXAU",
       "priceFeedIdentifier": "XAU/USD",
       "collateralRequirement": "1200000000000000000",
-      "startingCollateralization": "2819080000",
+      "startingCollateralization": "2755500000",
       "minSponsorTokens": "0",
       "isContractAllowed": false
     }

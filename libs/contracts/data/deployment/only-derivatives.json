@@ -3,13 +3,13 @@
     "isEnabled": true,
     "Derivative": 1,
     "Pools": {
-      "jEUR": "0x420E42be0B3bb8b4D9b8632153e251bB1A78Fe88"
+      "jEUR": "0x380152D9ffbC724ab11db127e62C62fb8f8c9aDf"
     },
     "SyntheticTokenAddress": {
-      "jEUR": "0xd8188Ee01978d0bbE750E146fA8BE38f9A93752A"
+      "jEUR": "0x3D51Da77faBD1F57c8C913e764f8Fbd4d9Ae5A52"
     },
     "DerivativeForAdding": {
-      "jEUR": "0x00fF7A4C42F7B2cdea7d660da59d92ecDD306EdC"
+      "jEUR": "0x029838f0f33AE950107806c4788a5cd1E1b63108"
     }
   }
 }
