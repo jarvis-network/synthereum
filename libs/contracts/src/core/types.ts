@@ -6,7 +6,11 @@ import {
 } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
 import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
+import { priceFeed } from '../config/data/price-feed';
 
+const pairs = Object.values(priceFeed);
+
+export type Pair = typeof pairs[0];
 export interface SynthereumRealmWithWeb3<Net extends SupportedNetworkName>
   extends SynthereumRealm<Net> {
   web3: Web3On<Net>;
@@ -22,7 +26,7 @@ export interface SynthereumRealm<Net extends SupportedNetworkName> {
 export interface SynthereumPool<Net extends SupportedNetworkName>
   extends ContractInfo<Net, TICInterface> {
   symbol: string;
-  priceFeed: string;
+  priceFeed: Pair;
   collateralToken: TokenInfo<Net>;
   syntheticToken: TokenInfo<Net>;
 }

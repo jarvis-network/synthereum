@@ -5,9 +5,10 @@ import {
 } from '@jarvis-network/synthereum-contracts/dist/src/core/types';
 import {
   createEverLogger,
-  ExchangeRequestService,
-  MintRequestService,
-  RedeemRequestService,
+  ExchangeRequestValidator,
+  MintRequestValidator,
+  RedeemRequestValidator,
+  PriceFeed,
 } from '@jarvis-network/validator-lib';
 import { base, NonPayableTransactionObject } from '@jarvis-network/web3-utils';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
@@ -30,9 +31,10 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   interval?: ReturnType<typeof setInterval>;
   maxSlippage: number;
   frequency: number;
-  exchangeService: ExchangeRequestService<Net>;
-  redeemService: RedeemRequestService<Net>;
-  mintService: MintRequestService<Net>;
+  exchangeService: ExchangeRequestValidator;
+  redeemService: RedeemRequestValidator;
+  mintService: MintRequestValidator;
+  priceFeed = new PriceFeed();
   private logger = createEverLogger({
     name: 'validator',
   });
@@ -42,15 +44,16 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   ) {
     this.frequency = FREQUENCY;
     this.maxSlippage = MAX_SLIPPAGE;
-    this.exchangeService = new ExchangeRequestService(this.realm, {
+    const _env = {
       MAX_SLIPPAGE,
-    } as ENV);
-    this.redeemService = new RedeemRequestService({
-      MAX_SLIPPAGE,
-    } as ENV);
-    this.mintService = new MintRequestService({
-      MAX_SLIPPAGE,
-    } as ENV);
+    } as ENV;
+    this.exchangeService = new ExchangeRequestValidator(
+      this.priceFeed,
+      this.realm,
+      _env,
+    );
+    this.redeemService = new RedeemRequestValidator(this.priceFeed, _env);
+    this.mintService = new MintRequestValidator(this.priceFeed, _env);
   }
 
   get defaultAccount(): AddressOn<Net> {
@@ -58,6 +61,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   }
 
   start() {
+    this.priceFeed.connect();
     this.logger.info('Synthereum - setting up timers');
     this.interval = setInterval(() => {
       let started: number = performance.now();
@@ -81,6 +85,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   }
 
   stop() {
+    this.priceFeed.disconnect();
     clearInterval(base.asserts.assertNotNull(this.interval));
   }
 

@@ -16,6 +16,7 @@ import {
   RedeemRequest,
   RedeemRequestValidator,
 } from '@jarvis-network/validator-lib';
+import { PriceFeed } from '@jarvis-network/validator-lib/src/api/jarvis_market_price_feed';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import { Injectable } from '@nestjs/common';
@@ -35,6 +36,7 @@ export class MetaTransactionService {
   mintValidator: MintRequestValidator;
   redeemValidator: RedeemRequestValidator;
   exchangeValidator: ExchangeRequestValidator;
+  priceFeed: PriceFeed;
   realm: SynthereumRealmWithWeb3<'kovan'>;
   constructor() {
     this.init();
@@ -44,15 +46,22 @@ export class MetaTransactionService {
     this.exchangeService = new ExchangeService();
     this.mintService = new MintService();
     this.redeemService = new RedeemService();
-    this.mintValidator = new MintRequestValidator({
+    this.priceFeed = new PriceFeed();
+    this.priceFeed.connect();
+    const _env = {
       MAX_SLIPPAGE: env.MAX_SLIPPAGE,
-    } as ENV);
-    this.redeemValidator = new RedeemRequestValidator({
-      MAX_SLIPPAGE: env.MAX_SLIPPAGE,
-    } as ENV);
-    this.exchangeValidator = new ExchangeRequestValidator(this.realm, {
-      MAX_SLIPPAGE: env.MAX_SLIPPAGE,
-    } as ENV);
+    } as ENV;
+    this.mintValidator = new MintRequestValidator(this.priceFeed, _env);
+    this.redeemValidator = new RedeemRequestValidator(this.priceFeed, _env);
+    this.exchangeValidator = new ExchangeRequestValidator(
+      this.priceFeed,
+      this.realm,
+      _env,
+    );
+  }
+
+  destroy() {
+    this.priceFeed.disconnect();
   }
 
   async exchangeRequest(dto: ExchangeRequestDTO): Promise<Uint8Array> {
