@@ -7,7 +7,7 @@ import {
   getTokenBalance,
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
-import { getPriceFeedOhlc } from '../api/jarvis_market_price_feed';
+import { PriceFeed } from '../api/jarvis_market_price_feed';
 import { ENV } from '../config';
 import { RedeemRequest } from '../interfaces';
 import { createEverLogger } from '../log';
@@ -17,7 +17,7 @@ export class RedeemRequestValidator {
     name: 'synthetic-contracts-redeem-request',
   });
   maxSlippage: number;
-  constructor({ MAX_SLIPPAGE }: ENV) {
+  constructor(private readonly priceFeed: PriceFeed, { MAX_SLIPPAGE }: ENV) {
     this.maxSlippage = MAX_SLIPPAGE;
   }
 
@@ -27,7 +27,7 @@ export class RedeemRequestValidator {
   ): Promise<boolean> {
     const { priceFeed } = info;
     const requestTime = request.timestamp;
-    const price = await getPriceFeedOhlc(priceFeed, requestTime);
+    const price = await this.priceFeed.getPrice(priceFeed, requestTime);
     if (price) {
       this.logger.info(
         `${info.symbol} was ${price} for redeem request ${request.redeem_id}`,
