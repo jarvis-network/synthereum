@@ -9,20 +9,20 @@ variables:
   NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
   TAG: mr-${CI_MERGE_REQUEST_ID}
   REGISTRY: $ACR_CORE_URL/jarvis-network/apps/exchange/mono-repo
-before_script:
-  - docker context create buildx-ctx
-  - docker buildx create buildx-ctx --use
-  - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
 
 .job-config: &job-config
   only:
     - merge_requests
-    - dev
     - production
   script:
     - docker buildx bake $TARGET
+  before_script:
+    - docker context create buildx-ctx
+    - docker buildx create buildx-ctx --use
+    - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
 
 stages:
+  - release
   - base
   - install and build dependencies
   - build libs
@@ -102,6 +102,10 @@ stages:
 
 build-old-validator:
   <<: *job-config
+  only:
+    - merge_requests
+    - dev
+    - production
   image: docker:latest
   stage: install and build dependencies
   before_script:
@@ -171,3 +175,14 @@ delete-azure:
   <<: *job-config
   <<: *delete-keeper-bot-default
   when: manual
+
+release:
+  image: registry.gitlab.com/jarvis-network/base/container-images/node-alpine-builder
+  stage: release
+  only:
+    refs:
+      - dev
+  script:
+    - apk add bash
+    - npm install -g multi-semantic-release @semantic-release/gitlab @semantic-release/exec @semantic-release/changelog @semantic-release/git @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/commit-analyzer
+    - multi-semantic-release -t "v\${version}-rc"
