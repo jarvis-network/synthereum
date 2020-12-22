@@ -26,9 +26,8 @@ export class MetaTransactionController {
       });
       this.logger.info(`Request Received >> ${JSON.stringify(dto, null, ' ')}`);
 
-      const message = { check: true };
-      // this.metaTxService.mintRequest(dto);
-      //this.logger.info(`Generated payload >> ${message}`);
+      const message = await this.metaTxService.mintRequest(dto);
+      this.logger.info(`Generated payload >> ${message}`);
       return message;
     } catch (error) {
       this.logger.error(error);
