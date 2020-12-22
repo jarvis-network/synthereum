@@ -23,6 +23,7 @@ before_script:
     - docker buildx bake $TARGET
 
 stages:
+  - release
   - base
   - install and build dependencies
   - build libs
@@ -171,3 +172,14 @@ delete-azure:
   <<: *job-config
   <<: *delete-keeper-bot-default
   when: manual
+
+release:
+  stage: release
+  only:
+    refs:
+      - master
+      - meta-tx-lib
+  script:
+    - apk add npm git bash
+    - npm install multi-semantic-release @semantic-release/gitlab @semantic-release/exec @semantic-release/changelog @semantic-release/git @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/commit-analyzer
+    - npx semantic-release -t "v\${version}-rc"
