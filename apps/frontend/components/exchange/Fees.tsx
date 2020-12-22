@@ -51,10 +51,10 @@ const QuestionMark = styled.span`
 const feeText =
   `A ${FEE.mul(new FPN(100)).format()}% protocol fee is taken on every` +
   ` transaction. The funds are after that evenly split between the Liquidity` +
-  ` provider and the Jarvis DAO`;
+  ` provider and the treasury`;
 
-export const Fees: React.FC = props => {
-  const { paySymbol, fee } = useExchangeValues();
+export const Fees: React.FC = () => {
+  const { fee } = useExchangeValues();
 
   return (
     <Container>
