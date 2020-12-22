@@ -51,7 +51,7 @@ export const mintRequestSchema = yup
     ErrorGenerator.NotValiad<MintRequestParams>('asset', 'type'),
     (value: MintRequestParams) => {
       try {
-        assertIsSyntheticSymbol(value.sender);
+        assertIsSyntheticSymbol(value.asset);
       } catch (error) {
         return false;
       }
