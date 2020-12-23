@@ -1,4 +1,4 @@
-export const getPriceFeedRoot = () =>
+export const getPriceFeedEndpoint = () =>
   process.env.NEXT_PUBLIC_PRICE_FEED_ROOT || 'ws://localhost:7770';
 
 export const getFrontendSupportedAssets = () => {

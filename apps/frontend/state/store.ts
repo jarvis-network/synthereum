@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { configureStore, Store, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 
-import { getPriceFeedRoot } from '@/utils/environment';
+import { getPriceFeedEndpoint } from '@/utils/environment';
 import { cache } from '@/utils/cache';
 import { PriceFeed } from '@/utils/priceFeed';
 import { Dependencies } from '@/utils/epics';
@@ -13,7 +13,8 @@ import { epic } from '@/state/epic';
 
 let cachedStore: Store | undefined;
 
-function initStore(preloadedState: State = initialState) {  // Create redux-observable middleware
+function initStore(preloadedState: State = initialState) {
+  // Create redux-observable middleware
   const epicMiddleware: EpicMiddleware<
     any,
     any,
@@ -21,14 +22,11 @@ function initStore(preloadedState: State = initialState) {  // Create redux-obse
     Dependencies
   > = createEpicMiddleware({
     dependencies: {
-      priceFeed: new PriceFeed(getPriceFeedRoot()), // @TODO connect with price feed or mock proxy
+      priceFeed: new PriceFeed(getPriceFeedEndpoint()), // @TODO connect with price feed or mock proxy
     },
   });
 
-  const middleware = [
-    ...getDefaultMiddleware(),
-    epicMiddleware
-  ];
+  const middleware = [...getDefaultMiddleware(), epicMiddleware];
 
   // If you are going to load preloaded state from serialized data somewhere
   // here, make sure to convert all needed values from strings to BN
