@@ -1,9 +1,10 @@
 import { Epic, ofType } from 'redux-observable';
-import { fromEvent, iif, of } from 'rxjs';
+import { fromEvent, of } from 'rxjs';
 import { map, mergeMap, concatMap } from 'rxjs/operators';
 
 import { indexOfMaxLexicographicalValue } from '@jarvis-network/web3-utils/base/array-fp-utils';
 import { syntheticTokens } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-assets';
+import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
 
 import { Dependencies } from '@/utils/epics';
 import {
@@ -21,8 +22,20 @@ import {
 } from '@/state/slices/prices';
 import { setAssetsPrice } from '@/state/slices/assets';
 
+const isPairReversed = (pair: SubscriptionPair) => reversedPriceFeedPairs.includes(pair);
+
 function getPricesMapFromPriceUpdate({ t, ...data }: PriceUpdate): PricesMap {
-  return data;
+  const keys = Object.keys(data) as SubscriptionPair[];
+
+  return keys.reduce((result, key) => {
+    const isReversed = isPairReversed(key);
+    const value = data[key];
+
+    return {
+      ...result,
+      [key]: isReversed ? 1 / value : value,
+    };
+  }, {} as PricesMap);
 }
 
 function getPricesMapFromHistoricalPrices({
@@ -36,11 +49,12 @@ function getPricesMapFromHistoricalPrices({
   const keys = Object.keys(data) as SubscriptionPair[];
 
   return keys.reduce((result, key) => {
+    const isReversed = isPairReversed(key);
     const [, , , close] = data[key][maxTimeIndex];
 
     return {
       ...result,
-      [key]: close,
+      [key]: isReversed ? 1 / close : close,
     };
   }, {} as PricesMap);
 }
