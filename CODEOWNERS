@@ -2,8 +2,8 @@
 * @PetarKirov
 
 ### Allow everyone to edit root files and docs
-/* @jarvis-network/apps/exchange
-/docs/ @jarvis-network/apps/exchange
+/* @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
+/docs/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
 
 ### ... except CODEOWNERS
 /CODEOWNERS @PetarKirov
@@ -16,10 +16,10 @@
 /apps/validator/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
 /packages/keeper-bot/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov
 
-/apps/cli/ @jarvis-network/apps/exchange
-/libs/web3-utils/ @jarvis-network/apps/exchange
-/libs/contracts/ @jarvis-network/apps/exchange
-/packages/balance-notify/ @jarvis-network/apps/exchange
+/apps/cli/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
+/libs/web3-utils/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
+/libs/contracts/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
+/packages/balance-notify/ @PetarKirov @Aleione @asim_jarvis @dimitar.nestorov @jacek.nowacki1 @jurijtokarski
 
 /libs/contracts/contracts/ @Aleione
 /libs/contracts/migrations/ @Aleione
