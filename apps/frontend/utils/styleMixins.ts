@@ -51,7 +51,8 @@ export const noColorGrid = () => `
         background: none!important;
 
         &:hover {
-          background: ${(props: any) => props.theme.background.secondary} !important;
+          background: ${(props: any) =>
+            props.theme.background.secondary} !important;
         }
       }
     }

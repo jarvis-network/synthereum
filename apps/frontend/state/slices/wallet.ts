@@ -3,8 +3,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-import { getAllBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import {
+  RealmAgent,
+  getAllBalances,
+} from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
 import { initialState, State } from '@/state/initialState';
 

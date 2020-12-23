@@ -28,7 +28,9 @@ export type Options = { includeHistory?: boolean };
 
 export class PriceFeed {
   private socket: WebSocket | null = null;
+
   private queue: string[] = [];
+
   private subscriptions: SubscriptionPair[] = [];
 
   constructor(protected path: string) {}
@@ -67,7 +69,7 @@ export class PriceFeed {
   };
 
   private sendQueueMessages = () => {
-    const socket = this.socket;
+    const { socket } = this;
 
     if (!socket) {
       return;

@@ -4,7 +4,7 @@
     "browser": true
   },
   "ignorePatterns": ["node_modules/"],
-  "plugins": ["@typescript-eslint", "prettier"],
+  "plugins": ["@typescript-eslint", "react", "prettier"],
   "parser": "@typescript-eslint/parser",
   "rules": {
     "no-confusing-arrow": "off",
@@ -27,12 +27,10 @@
       }
     ],
     "no-unused-vars": 0,
-    "no-use-before-define": [
-      "error",
-      {
-        "functions": false
-      }
-    ],
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error", {
+      "functions": false
+    }],
     "no-nested-ternary": "off",
     "global-require": 0,
     "react/prop-types": 0,

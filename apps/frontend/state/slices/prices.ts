@@ -15,7 +15,8 @@ export interface SavePricePointsAction<T> {
   payload: T;
 }
 
-const isPairReversed = (pair: SubscriptionPair) => reversedPriceFeedPairs.includes(pair);
+const isPairReversed = (pair: SubscriptionPair) =>
+  reversedPriceFeedPairs.includes(pair);
 
 const pricesSlice = createSlice({
   name: 'prices',
@@ -50,7 +51,9 @@ const pricesSlice = createSlice({
         for (const index in t) {
           const rawValue = values[index];
           const time = t[index];
-          const [open, high, low, close] = isPairReversed(pair) ? rawValue.map(v => 1 / v) : rawValue;
+          const [open, high, low, close] = isPairReversed(pair)
+            ? rawValue.map(v => 1 / v)
+            : rawValue;
 
           // Build time point value
           const timeValue: PricePoint = {
@@ -82,7 +85,7 @@ const pricesSlice = createSlice({
       const pairs = Object.keys(map) as SubscriptionPair[];
 
       // Build time based on timestamp value
-      const time = typeof t === "string" ? t : formatDate(t * 1000); // @TODO Leave only single var after we decide; if t is number it is timestamp in seconds
+      const time = typeof t === 'string' ? t : formatDate(t * 1000); // @TODO Leave only single var after we decide; if t is number it is timestamp in seconds
 
       // Iterate in pairs list to save new price point
       for (const pair of pairs) {

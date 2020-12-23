@@ -19,8 +19,8 @@ export const persistMiddleware = (store: Store) => (next: Function) => (
     const appState = store.getState();
 
     requestIdleCallback(() => {
-      reducersToPersist.forEach(
-        reducerName => cache?.set(reducerName, appState[reducerName]),
+      reducersToPersist.forEach(reducerName =>
+        cache?.set(reducerName, appState[reducerName]),
       );
     });
   }

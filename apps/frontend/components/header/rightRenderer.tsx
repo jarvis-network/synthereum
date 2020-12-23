@@ -63,7 +63,7 @@ const render = () => {
       name: 'Account',
       key: 'Account',
       onClick: handleAccountOverviewOpen,
-    }
+    },
   ];
 
   // Fallback for initial release
