@@ -6,3 +6,9 @@ html, body, #__next {
 .bn-onboard-modal {
     z-index: 3;
 }
+
+.modal-container.modal-container {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}

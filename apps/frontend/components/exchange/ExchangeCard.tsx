@@ -9,19 +9,13 @@ import {
   themeValue,
 } from '@jarvis-network/ui';
 
-import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 import { MainForm } from '@/components/exchange/MainForm';
 
-import {
-  setChooseAsset,
-  setPayAsset,
-  setReceiveAsset,
-} from '@/state/slices/exchange';
+import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import { Asset, AssetPair } from '@/data/assets';
 
-import { StyledCard } from './StyledCard';
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 
@@ -143,9 +137,6 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 
 export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
-  const chooseAsset = useReduxSelector(
-    state => state.exchange.chooseAssetActive,
-  );
   const list = useReduxSelector(state => state.assets.list);
 
   const pairsList = useMemo(() => createPairs(list), [list]);
@@ -168,10 +159,6 @@ export const ExchangeCard: React.FC = () => {
 
     return () => document.removeEventListener('keydown', callback);
   }, []);
-
-  if (chooseAsset) {
-    return <ChooseAsset onBack={() => dispatch(setChooseAsset(null))} />;
-  }
 
   const handleSelected = (pair: AssetPair) => {
     dispatch(setPayAsset(pair.input.symbol));
@@ -230,9 +217,9 @@ export const ExchangeCard: React.FC = () => {
   );
 
   return (
-    <StyledCard title="Exchange">
+    <>
       <StyledSearchBar {...searchBarProps} suffix={suffix} />
       {!searchOpen && <MainForm />}
-    </StyledCard>
+    </>
   );
 };

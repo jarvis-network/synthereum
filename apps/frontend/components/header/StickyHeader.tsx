@@ -19,14 +19,20 @@ const HeaderContainer = styled.div`
   border-width: 0;
   border-bottom-width: 1px;
 
-  img[alt='Logo'] {
+  .header-logo {
     height: 25px;
     margin-left: 15px;
   }
 
-  @media (max-width: 720px) {
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     order: 1;
     border-bottom-width: 0;
+    background: ${props => props.theme.background.secondary};
+
+    .account-button {
+      background: none;
+    }
   }
 `;
 

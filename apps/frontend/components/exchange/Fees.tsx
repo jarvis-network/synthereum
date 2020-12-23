@@ -61,7 +61,7 @@ export const Fees: React.FC = () => {
       <Line>
         <Key>
           Protocol Fee
-          <Tooltip tooltip={feeText}>
+          <Tooltip tooltip={feeText} position="top">
             <QuestionMark />
           </Tooltip>
         </Key>

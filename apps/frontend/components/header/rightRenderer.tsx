@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AccountDropdown } from '@jarvis-network/ui';
+import { AccountDropdown, styled } from '@jarvis-network/ui';
 
 import { SignInUpButton } from '@/components/header/SignInUpButton';
 import { AuthContext } from '@/components/auth/AuthProvider';
@@ -18,6 +18,19 @@ import { State } from '@/state/initialState';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
 
 const noop = () => undefined;
+
+const CustomAccountDropdown = styled(AccountDropdown)`
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    position: static;
+
+    .dropdown-content {
+      top: 0;
+      bottom: 51px;
+      z-index: 10;
+    }
+  }
+`;
 
 const render = () => {
   const dispatch = useDispatch();
@@ -81,7 +94,7 @@ const render = () => {
   if (auth && auth.address) {
     const addr = formatWalletAddress(auth.address);
     return (
-      <AccountDropdown
+      <CustomAccountDropdown
         width="195px"
         links={links}
         position="absolute"

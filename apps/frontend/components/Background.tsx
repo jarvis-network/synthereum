@@ -10,7 +10,8 @@ export const Background = styled.div<{ image: string }>`
   background-size: cover;
   background-image: url(${props => props.image});
 
-  @media (min-width: 721px) {
+  @media screen and (min-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex] + 1}px) {
     background-position: center 118px;
   }
 `;

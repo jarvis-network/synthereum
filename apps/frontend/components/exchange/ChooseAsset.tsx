@@ -14,7 +14,11 @@ import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/c
 
 import { StyledCard } from '@/components/exchange/StyledCard';
 import { Asset, AssetWithWalletInfo } from '@/data/assets';
-import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
+import {
+  setChooseAsset,
+  setPayAsset,
+  setReceiveAsset,
+} from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
@@ -22,10 +26,6 @@ import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import type { RowInfo } from 'react-table';
 
 import { StyledSearchBar } from './StyledSearchBar';
-
-interface Props {
-  onBack: () => void;
-}
 
 const tabsList = [
   {
@@ -208,7 +208,7 @@ const ScrollableTabs = styled(StyledTabs)`
   height: auto;
 `;
 
-export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
+export const ChooseAsset: React.FC = () => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => {
     return state.assets.list.map(
@@ -233,6 +233,8 @@ export const ChooseAsset: React.FC<Props> = ({ onBack }) => {
   });
 
   const [selected, setSelected] = useState(0);
+
+  const onBack = () => dispatch(setChooseAsset(null));
 
   const handleSelected = (symbol: SyntheticSymbol) => {
     dispatch(asset === 'pay' ? setPayAsset(symbol) : setReceiveAsset(symbol));

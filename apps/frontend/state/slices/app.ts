@@ -6,6 +6,10 @@ interface SetModalVisibilityAction {
   payload: boolean;
 }
 
+interface SetMobileTabAction {
+  payload: number;
+}
+
 const appSlice = createSlice({
   name: 'app',
   initialState: initialState.app,
@@ -34,6 +38,12 @@ const appSlice = createSlice({
         isFullScreenLoaderVisible: action.payload,
       };
     },
+    setMobileTab(state, action: SetMobileTabAction) {
+      return {
+        ...state,
+        mobileTab: action.payload,
+      };
+    },
   },
 });
 
@@ -42,5 +52,6 @@ export const {
   setRecentActivityModalVisible,
   setAccountDropdownExpanded,
   setFullScreenLoaderVisible,
+  setMobileTab,
 } = appSlice.actions;
 export const { reducer } = appSlice;

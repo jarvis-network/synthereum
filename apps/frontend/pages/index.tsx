@@ -13,10 +13,24 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
 import { subscribeTransactionsHistory } from '@/state/slices/transactions';
 import { subscribeWalletBalances } from '@/state/slices/wallet';
+import { ChartExchangeCards } from '@/components/ChartExchangeCards';
+import { OnMobile } from '@/components/OnMobile';
+import { OnDesktop } from '@/components/OnDesktop';
+import { styled } from '@jarvis-network/ui';
+import { Card } from '@/components/Card';
+import { ChooseAsset } from '@/components/exchange/ChooseAsset';
+import { StyledCard } from '@/components/exchange/StyledCard';
+
+const StyledChartCard = styled(Card)`
+  flex: 1;
+`;
 
 export default function Home() {
   const dispatch = useDispatch();
   const theme = useReduxSelector(state => state.theme);
+  const chooseAsset = useReduxSelector(
+    state => state.exchange.chooseAssetActive,
+  );
   const realmAgent = useContext(RealmAgentContext);
   const url = backgroundMap[theme];
 
@@ -40,12 +54,25 @@ export default function Home() {
 
   return (
     <StickyHeader>
-      <Background image={url}>
-        <CardsHolder>
-          <ChartCard />
-          <ExchangeCard />
-        </CardsHolder>
-      </Background>
+      <OnMobile>
+        {chooseAsset ? <ChooseAsset /> : <ChartExchangeCards />}
+      </OnMobile>
+      <OnDesktop>
+        <Background image={url}>
+          <CardsHolder>
+            <StyledChartCard title="Chart">
+              <ChartCard />
+            </StyledChartCard>
+            {chooseAsset ? (
+              <ChooseAsset />
+            ) : (
+              <StyledCard title="Exchange">
+                <ExchangeCard />
+              </StyledCard>
+            )}
+          </CardsHolder>
+        </Background>
+      </OnDesktop>
     </StickyHeader>
   );
 }
