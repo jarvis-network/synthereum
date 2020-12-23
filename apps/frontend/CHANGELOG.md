@@ -1,3 +1,12 @@
+## @jarvis-network/exchange-frontend [1.0.1](https://gitlab.com/jarvis-network/apps/exchange/mono-repo/compare/@jarvis-network/exchange-frontend@1.0.0...@jarvis-network/exchange-frontend@1.0.1) (2020-12-23)
+
+
+### Bug Fixes
+
+* **frontend:** :bug: Fixed inverted prices ([94d6d51](https://gitlab.com/jarvis-network/apps/exchange/mono-repo/commit/94d6d51911061d3daee2157c9b06fc309ff771f9))
+* **frontend:** :monocle_face: Change arithmetic from `a.mul(1.div(b))` to `a.div(b)` in `useExchangeValues` ([fc45091](https://gitlab.com/jarvis-network/apps/exchange/mono-repo/commit/fc45091975ece8aaccfb1ba00044385cf8f26b2c))
+* **frontend:** :wrench: Change default price feed endpoint url to pricefeed-dev.jarvis.exchange ([c9e2d99](https://gitlab.com/jarvis-network/apps/exchange/mono-repo/commit/c9e2d993a8f24b111004aee7598030a4ea0c0a06))
+
 # 1.0.0 (2020-12-22)
 
 
