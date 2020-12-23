@@ -11,7 +11,7 @@ const StyledCard = styled(Card)`
 
 export const ChartCard: React.FC = () => {
   const { payAsset, receiveAsset } = useReduxSelector(state => state.exchange);
-  const chartData = useFeedData(payAsset, receiveAsset);
+  const chartData = useFeedData(payAsset!, receiveAsset!); // @TODO handle currently impossible case when some asset is not selected
 
   return (
     <StyledCard title="Chart">

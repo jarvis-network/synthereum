@@ -2,8 +2,8 @@ import { Rate } from '@/state/initialState';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 export const useRate = (
-  inputSymbol: string,
-  outputSymbol: string,
+  inputSymbol: string | null,
+  outputSymbol: string | null,
 ): Rate | null => {
   return useReduxSelector(state => {
     if (!inputSymbol || !outputSymbol) {

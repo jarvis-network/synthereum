@@ -52,8 +52,8 @@ export interface State {
     pay: string;
     receive: string;
     base: Values;
-    payAsset: SyntheticSymbol | PrimaryStableCoin;
-    receiveAsset: SyntheticSymbol | PrimaryStableCoin;
+    payAsset: SyntheticSymbol | PrimaryStableCoin | null;
+    receiveAsset: SyntheticSymbol | PrimaryStableCoin | null;
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
   };

@@ -150,7 +150,9 @@ export const MainForm: React.FC<Props> = () => {
 
   const swap = useSwap();
 
-  const wallet = useReduxSelector(state => state.wallet[paySymbol] || null);
+  const wallet = useReduxSelector(
+    state => (paySymbol && state.wallet[paySymbol]) || null,
+  );
 
   const balance = wallet ? wallet.amount : new FPN(0);
 
