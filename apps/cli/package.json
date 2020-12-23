@@ -7,7 +7,8 @@
   "author": "Petar Kirov",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p ./tsconfig.json"
+    "build": "tsc -p ./tsconfig.json",
+    "start": "node dist/get-pool-balance.js"
   },
   "dependencies": {
     "@jarvis-network/synthereum-contracts": "1.0.0"

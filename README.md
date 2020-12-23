@@ -81,25 +81,39 @@ installing the software listed above.
         * Frontend:
 
             ```sh
-            yarn build:frontend
+            yarn build frontend
             ```
 
         * Validator:
 
             ```sh
-            yarn build:validator
+            yarn build validator
             ```
 
         * CLI utils:
 
             ```sh
-            yarn build:cli
+            yarn build cli
             ```
 
-        * Or build everything:
+    4. Start it:
+
+        * Frontend:
 
             ```sh
-            yarn build:all
+            yarn start frontend
+            ```
+
+        * Validator:
+
+            ```sh
+            yarn start validator
+            ```
+
+        * CLI utils:
+
+            ```sh
+            yarn start cli
             ```
 
 </details>

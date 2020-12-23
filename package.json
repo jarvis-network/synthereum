@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "nx": "nx",
-    "start": "nx serve",
+    "start": "nx start",
     "test": "nx test",
     "build": "nx build",
     "lint": "nx workspace-lint && nx lint",

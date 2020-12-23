@@ -12,9 +12,8 @@
     "clean": "git clean -fdx -e .env -e node_modules -- .",
     "lint": "echo 'ESLint not configured yet!' && exit 13",
     "build": "tsc",
-    "start": "yarn build",
     "watch": "ts-node src/index.ts | bunyan -o short",
-    "start:prod": "node dist/index.js | bunyan -o short"
+    "start": "node dist/index.js | bunyan -o short"
   },
   "license": "MIT",
   "dependencies": {
