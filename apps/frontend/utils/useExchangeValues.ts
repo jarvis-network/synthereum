@@ -39,7 +39,7 @@ export const useExchangeValues = () => {
       grossCollateral = payValue;
       netCollateral = grossCollateral.div(new FPN(1).add(FEE));
       transactionCollateral = netCollateral;
-      receiveValue = netCollateral.mul(new FPN(1).div(assetReceive.price));
+      receiveValue = netCollateral.div(assetReceive.price);
     } else {
       receiveValue = new FPN(receive);
       netCollateral = receiveValue.mul(assetReceive.price);
@@ -60,7 +60,7 @@ export const useExchangeValues = () => {
       netCollateral = receiveValue;
       grossCollateral = netCollateral.div(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
-      payValue = grossCollateral.mul(new FPN(1).div(assetPay.price));
+      payValue = grossCollateral.div(assetPay.price);
     }
   } else {
     // exchange
@@ -70,13 +70,13 @@ export const useExchangeValues = () => {
       grossCollateral = payValue.mul(assetPay.price);
       netCollateral = grossCollateral.mul(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
-      receiveValue = netCollateral.mul(new FPN(1).div(assetReceive.price));
+      receiveValue = netCollateral.div(assetReceive.price);
     } else {
       receiveValue = new FPN(receive);
       netCollateral = receiveValue.mul(assetReceive.price);
       grossCollateral = netCollateral.div(new FPN(1).sub(FEE));
       transactionCollateral = grossCollateral;
-      payValue = grossCollateral.mul(new FPN(1).div(assetPay.price));
+      payValue = grossCollateral.div(assetPay.price);
     }
   }
 
