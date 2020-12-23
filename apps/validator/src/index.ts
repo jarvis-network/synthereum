@@ -9,10 +9,17 @@ import SynFiatKeeper from './services/SynFiatKeeper';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
+process.on('unhandledRejection', (reason, p) => {
+  console.error('Unhandled promise rejection: ', p, 'reason:', reason);
+  process.exit(13);
+});
+
 main()
-  .then(() => process.exit(0))
+  .then(() => {
+    console.log('Synthereum Validator exiting');
+  })
   .catch(err => {
-    console.log(err);
+    console.error(err);
     process.exit(1);
   });
 
@@ -26,7 +33,9 @@ async function getSynthereumRealmWithInfuraWeb3(): Promise<
 }
 
 async function main() {
+  console.log('Synthereum Validator starting');
   const realm = await getSynthereumRealmWithInfuraWeb3();
+  console.log('Synthereum Realm loaded');
   const keeper = new SynFiatKeeper(realm, env);
   keeper.start();
   process.on('SIGINT', () => {

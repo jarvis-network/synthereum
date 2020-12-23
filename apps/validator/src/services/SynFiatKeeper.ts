@@ -54,6 +54,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   }
 
   start() {
+    this.logger.info('Synthereum - setting up timers');
     this.interval = setInterval(() => {
       let started: number = performance.now();
 
@@ -344,7 +345,8 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
           `Make sure there the LP has deposited enough the excess collateral required for the ${resolveLabel} request`,
         );
       } else {
-        this.logger.error(error);
+        this.logger.error(error.message);
+        this.logger.error(error.stack);
       }
     }
   }
