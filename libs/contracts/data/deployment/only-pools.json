@@ -1,0 +1,18 @@
+{
+  "42": {
+    "isEnabled": true,
+    "Pool": 0,
+    "Derivatives": {
+      "jEUR": "0xaF03a49c4C871d4A0aA8CEa5f1E8e2bc4D8558aA",
+      "jCHF": "0x310f5451Aa82a547eFEe4Ed04AA7601F868cBd00",
+      "jGBP": "0x92F0dC9aBA58B20d7E6468D079bd6bece25cd1B9",
+      "jXAU": "0xf3a0D963335D16926C026D554f60c80372f8E496"
+    },
+    "PoolForAdding": {
+      "jEUR": "0x32Cc80B47378E52C7B3dEeB882b5BC9878055597",
+      "jCHF": "0x687B4e306faFD4249cC04F7b7dbc7d3B3821aEBb",
+      "jGBP": "0x200f8b1ce5FADe02F8B456113BEb7306aa144Ed6",
+      "jXAU": "0x535118485E76168Fc5f44f8473b106D8c1e59f56"
+    }
+  }
+}
