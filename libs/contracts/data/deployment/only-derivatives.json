@@ -1,0 +1,15 @@
+{
+  "42": {
+    "isEnabled": true,
+    "Derivative": 1,
+    "Pools": {
+      "jEUR": "0x420E42be0B3bb8b4D9b8632153e251bB1A78Fe88"
+    },
+    "SyntheticTokenAddress": {
+      "jEUR": "0xd8188Ee01978d0bbE750E146fA8BE38f9A93752A"
+    },
+    "DerivativeForAdding": {
+      "jEUR": "0x00fF7A4C42F7B2cdea7d660da59d92ecDD306EdC"
+    }
+  }
+}
