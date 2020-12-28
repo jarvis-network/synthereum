@@ -10,7 +10,7 @@ import {
   getTokenBalance,
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
-import { PriceFeed } from '../api/jarvis_market_price_feed';
+import { PriceFeed } from '../api/jarvis_exchange_price_feed';
 import { ENV } from '../config';
 import { ExchangeRequest } from '../interfaces';
 import { createEverLogger } from '../log';

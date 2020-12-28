@@ -12,6 +12,7 @@ const {
   LOGS_PATH,
   PRIVATE_KEY,
   NETWORK_ID,
+  USE_OLD_PRICE_FEED,
 } = process.env;
 
 export interface ENV {
@@ -21,6 +22,7 @@ export interface ENV {
   PRIVATE_KEY: string;
   NETWORK_ID: SupportedNetworkId;
   LOGS_PATH: string;
+  USE_OLD_PRICE_FEED: boolean;
 }
 
 export const env: ENV = {
@@ -30,4 +32,5 @@ export const env: ENV = {
   PRIVATE_KEY: assertIsString(PRIVATE_KEY),
   NETWORK_ID: parseSupportedNetworkId(NETWORK_ID),
   LOGS_PATH: assertIsString(LOGS_PATH),
+  USE_OLD_PRICE_FEED: !!USE_OLD_PRICE_FEED,
 };
