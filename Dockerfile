@@ -42,12 +42,13 @@ COPY --from=config_files /out .
 # Not strictly necessary, but we do it to ensure that we get the same result as
 # if we had all config files:
 RUN yarn install --frozen-lock
+RUN mkdir -p /out
+
 
 # ----------------- Build @jarvis-network/web3-utils library ----------------- #
 FROM install as build-web3-utils
 COPY libs/web3-utils libs/web3-utils
 RUN yarn nx build web3-utils
-RUN mkdir -p /out
 RUN cp -r libs/web3-utils/dist/* /out
 
 # ------------ Build @jarvis-network/synthereum-contracts library ------------ #
@@ -55,28 +56,23 @@ FROM install as build-contract
 COPY libs/contracts libs/contracts
 COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 RUN yarn nx build contracts
-RUN mkdir -p /out
 RUN cp -r libs/contracts/dist /out
 
 
 FROM install as build-validator-lib
-WORKDIR /src
 COPY libs/validator-lib libs/validator-lib
 COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 RUN yarn nx build validator-lib
-RUN mkdir -p /out
 RUN cp -r libs/validator-lib/dist/* /out
 
 
 
 FROM install as build-meta-tx-lib
-WORKDIR /src
 COPY libs/meta-tx-lib libs/meta-tx-lib
 COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 RUN yarn nx build meta-tx-lib
-RUN mkdir -p /out
 RUN cp -r libs/meta-tx-lib/dist/* /out
 
 
@@ -85,27 +81,31 @@ COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 COPY --from=build-validator-lib /out node_modules/@jarvis-network/validator-lib
 COPY --from=build-meta-tx-lib /out node_modules/@jarvis-network/meta-tx-lib
+RUN cp -r node_modules/@jarvis-network /out
 
 
 # ------------------------------ Build Validator ----------------------------- #
 FROM build-libs as build-validator
 COPY apps/validator apps/validator
 RUN yarn nx build validator
-RUN mkdir -p /out
 RUN cp -r apps/validator/dist /out
+
+# ------------------------------ Build Validator-Meta-tx ----------------------------- #
+FROM build-libs as build-validator-meta-tx
+COPY apps/validator-meta-tx apps/validator-meta-tx
+RUN yarn nx build validator-meta-tx
+RUN cp -r apps/validator-meta-tx/dist /out
 
 # ------------------------------ Build Frontend ------------------------------ #
 FROM build-libs as build-frontend
 COPY apps/frontend apps/frontend
 RUN yarn nx build frontend
-RUN mkdir -p /out
 RUN cp -r apps/frontend/out /out
 
 # ---------------------------- Build Old Frontend ---------------------------- #
 FROM install as old-frontend
 COPY packages/frontend-old packages/frontend-old
 RUN yarn --cwd packages/frontend-old build
-RUN mkdir -p /out
 RUN cp -r packages/frontend-old/build /out
 
 # ---------------------------------------------------------------------------- #
@@ -131,5 +131,21 @@ COPY --from=install /production_modules node_modules
 COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 COPY --from=build-validator  /out .
+
+CMD ["node", "index.js"]
+
+
+# ---------------------------------------------------------------------------- #
+#                               Deploy Validator-meta-tx                               #
+# ---------------------------------------------------------------------------- #
+
+FROM node:${NODE_VERSION}-alpine as validator-meta-tx
+WORKDIR /app
+RUN  apk add --update --no-cache \
+    ca-certificates \
+    bash
+COPY --from=install /production_modules node_modules
+COPY --from=build-validator-meta-tx  /src/node_modules/@jarvis-network node_modules/@jarvis-network
+COPY --from=build-validator-meta-tx  /out .
 
 CMD ["node", "index.js"]
