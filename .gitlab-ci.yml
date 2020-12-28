@@ -8,19 +8,20 @@ variables:
   DOCKER_TLS_CERTDIR: '/certs'
   NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
   TAG: mr-${CI_MERGE_REQUEST_ID}
-  REGISTRY: $ACR_CORE_URL/jarvis-network/apps/exchange/mono-repo
-
+  REGISTRY: jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo
+  REGISTRY_USERNAME: asim_jarvis
+  REGISTRY_PASSWORD: ${GITLAB_TOKEN}
+before_script:
+  - docker context create buildx-ctx
+  - docker buildx create buildx-ctx --use
+  - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
 .job-config: &job-config
   only:
     - merge_requests
     - production
   script:
-    - docker buildx bake $TARGET
-  before_script:
-    - docker context create buildx-ctx
-    - docker buildx create buildx-ctx --use
-    - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
-
+    - docker buildx bake $TARGET --print
+    - docker buildx bake $TARGET  --progress=plain
 stages:
   - release
   - base
@@ -55,9 +56,22 @@ stages:
   stage: build and push images
   parallel:
     matrix:
-      - TARGET: [validator, frontend, frontend-old]
+      - TARGET: [validator, frontend, frontend-old, validator-meta-tx]
   dependencies:
     - 🏗 build libs
+
+🐳 release:
+  <<: *job-config
+  stage: build and push images
+  variables:
+    CTAG: latest
+  parallel:
+    matrix:
+      - TARGET: [base, install, libs, validator, validator-meta-tx, frontend]
+  script:
+    - docker buildx bake $TARGET --print
+    - docker buildx bake $TARGET
+  when: manual
 
 💎 deploy frontend:
   <<: *job-config
@@ -102,11 +116,6 @@ stages:
 
 build-old-validator:
   <<: *job-config
-  only:
-    - merge_requests
-    - dev
-    - production
-  image: docker:latest
   stage: install and build dependencies
   before_script:
     - docker info
@@ -177,12 +186,16 @@ delete-azure:
   when: manual
 
 release:
-  image: registry.gitlab.com/jarvis-network/base/container-images/node-alpine-builder
   stage: release
   only:
     refs:
-      - dev
+      - meta-tx-lib
+  variables:
+    CTAG: latest
   script:
-    - apk add bash
-    - npm install -g multi-semantic-release @semantic-release/gitlab @semantic-release/exec @semantic-release/changelog @semantic-release/git @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/commit-analyzer
-    - multi-semantic-release -t "v\${version}-rc"
+    - apk add bash npm git
+    - npm install -g yarn
+    - npm install -g semantic-release-commit-filter semantic-release @semantic-release/gitlab @semantic-release/exec @semantic-release/changelog @semantic-release/git @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/commit-analyzer
+    - yarn --cwd apps/validator-meta-tx semantic-release
+    - yarn --cwd apps/validator semantic-release
+    - yarn --cwd libs/web3-utils/dist semantic-release
