@@ -9,3 +9,4 @@ libs/contracts/src/contracts/typechain/*
 packages/frontend-old/src/contracts/*.json
 packages/keeper-bot/lib/**/*
 *.md
+helm/*
