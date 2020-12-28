@@ -1,3 +1,10 @@
+# [1.1.0](https://gitlab.com/jarvis-network/apps/exchange/mono-repo/compare/v1.0.0-vmt...v1.1.0-vmt) (2020-12-28)
+
+
+### Features
+
+* **validator-meta-tx:** :zap: Improve the error response and handle exceptions ([a01524f](https://gitlab.com/jarvis-network/apps/exchange/mono-repo/commit/a01524f1faf4019ef60f41543f5f367f01a3d101))
+
 # 1.0.0 (2020-12-28)
 
 
