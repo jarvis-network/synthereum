@@ -1,10 +1,15 @@
 import {
   ExchangeService,
+  IExchangeRequest,
   MintService,
   RedeemService,
 } from '@jarvis-network/meta-tx-lib';
-import { IExchangeRequest } from '@jarvis-network/meta-tx-lib/src/interfaces/exchange.interface';
-import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
+import { fees } from '@jarvis-network/synthereum-contracts/dist/src/config/data/fees';
+import {
+  parseSupportedNetworkId,
+  SupportedNetworkId,
+  SupportedNetworkName,
+} from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types';
 import {
   createEverLogger,
@@ -13,12 +18,14 @@ import {
   getSynthereumRealmWithInfuraWeb3,
   MintRequest,
   MintRequestValidator,
+  PriceFeed,
   RedeemRequest,
   RedeemRequestValidator,
 } from '@jarvis-network/validator-lib';
-import { PriceFeed } from '@jarvis-network/validator-lib/src/api/jarvis_market_price_feed';
+import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
+import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { ENV, env } from '../config';
@@ -39,17 +46,22 @@ export class MetaTransactionService {
   exchangeValidator: ExchangeRequestValidator;
   priceFeed: PriceFeed;
   realm: SynthereumRealmWithWeb3<'kovan'>;
+  web3: Web3On<SupportedNetworkName>;
   constructor() {
     this.init();
   }
   async init() {
     this.realm = await getSynthereumRealmWithInfuraWeb3();
-    this.logger.info(`Realm loaded >>`, this.realm.ticInstances);
+    this.logger.info(`Realm loaded`);
     this.exchangeService = new ExchangeService();
     this.mintService = new MintService();
     this.redeemService = new RedeemService();
     this.priceFeed = new PriceFeed();
     this.priceFeed.connect();
+    this.logger.info(`Connected to PriceFeed`);
+    const netId: SupportedNetworkId = parseSupportedNetworkId(env.NETWORK_ID);
+    this.web3 = getInfuraWeb3(netId);
+    this.logger.info(`Connected to Web3`);
     const _env = {
       MAX_SLIPPAGE: env.MAX_SLIPPAGE,
     } as ENV;
@@ -85,6 +97,8 @@ export class MetaTransactionService {
     if (!isValid) {
       throw new Error('Not valid request');
     }
+    const nonce = await this.web3.eth.getTransactionCount(dto.sender);
+
     this.logger.info(`Generating payload >> ${JSON.stringify(dto, null, ' ')}`);
     const message = this.exchangeService.createMessageBody({
       sender: assertIsAddress<SupportedNetworkName>(dto.sender),
@@ -98,7 +112,8 @@ export class MetaTransactionService {
       numTokens: new FPN(dto.num_tokens),
       collateralAmount: new FPN(dto.collateral_amount),
       destNumTokens: new FPN(dto.dest_num_tokens),
-      feePercentage: new FPN('100'),
+      feePercentage: new FPN(fees[42].feePercentage),
+      nonce: new FPN(nonce),
       expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
     } as IExchangeRequest);
     this.logger.info(`Generated payload >> ${message}`);
@@ -122,6 +137,8 @@ export class MetaTransactionService {
     if (!isValid) {
       throw new Error('Not valid request');
     }
+    const nonce = await this.web3.eth.getTransactionCount(dto.sender);
+
     this.logger.info(`Generating payload >> ${JSON.stringify(dto, null, ' ')}`);
     const message = this.exchangeService.createMessageBody({
       sender: assertIsAddress<SupportedNetworkName>(dto.sender),
@@ -130,8 +147,8 @@ export class MetaTransactionService {
       ),
       numTokens: new FPN(dto.num_tokens),
       collateralAmount: new FPN(dto.collateral_amount),
-      feePercentage: new FPN('100'),
-      nonce: new FPN('100'),
+      feePercentage: new FPN(fees[42].feePercentage),
+      nonce: new FPN(nonce),
       expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
     } as IExchangeRequest);
     this.logger.info(`Generated payload >> ${message}`);
@@ -156,6 +173,8 @@ export class MetaTransactionService {
     if (!isValid) {
       throw new Error('Not valid request');
     }
+    const nonce = await this.web3.eth.getTransactionCount(dto.sender);
+
     this.logger.info(`Generating payload >> ${JSON.stringify(dto, null, ' ')}`);
     const message = this.exchangeService.createMessageBody({
       sender: assertIsAddress<SupportedNetworkName>(dto.sender),
@@ -164,8 +183,8 @@ export class MetaTransactionService {
       ),
       numTokens: new FPN(dto.num_tokens),
       collateralAmount: new FPN(dto.collateral_amount),
-      feePercentage: new FPN('100'),
-      nonce: new FPN('100'),
+      feePercentage: new FPN(fees[42].feePercentage),
+      nonce: new FPN(nonce),
       expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
     } as IExchangeRequest);
     this.logger.info(`Generated payload >> ${message}`);
