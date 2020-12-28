@@ -17,7 +17,8 @@
     "start": "yarn build",
     "watch": "tsc -p ../tsconfig.json -w --preserveWatchOutput",
     "prebulishOnly": "npm ci && npm run build",
-    "test:watch": "nodemon"
+    "test:watch": "nodemon",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "abi-decoder": "2.3.0",
