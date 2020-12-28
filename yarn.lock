@@ -3352,10 +3352,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@jarvis-network/ui@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.8.0.tgz#73bc8fe14d91a45b789fc9a01e78f19af96449f1"
-  integrity sha512-Vb8N7IaOMNtuuAtDydtDLuDECyxdZExElvqZ991Xsd/jFznHEJZxKi8bw275N05Ux04k5Ixy3Afmt19hoS4pBA==
+"@jarvis-network/ui@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.8.2.tgz#74d6ba3fc50927e713ae72bc1084777f07b60f8e"
+  integrity sha512-gAjjk3j5IiJOwOP13xfsUWoHTKM/keQmGRTesJHtw54T/C9D7O0mEj+QZ2q0lepCYjIkldzZ4WBzsYOC77aE8w==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"
