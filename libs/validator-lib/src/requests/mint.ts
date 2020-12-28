@@ -8,6 +8,7 @@ import {
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { PriceFeed } from '../api/jarvis_exchange_price_feed';
+import { getPriceFeedOhlc } from '../api/jarvis_market_price_feed';
 import { ENV } from '../config';
 import { MintRequest } from '../interfaces';
 import { createEverLogger } from '../log';
@@ -24,10 +25,23 @@ export class MintRequestValidator {
   async CheckRequest(
     info: SynthereumPool<SupportedNetworkName>,
     request: MintRequest,
+    useOldPriceFeed: boolean = false,
   ): Promise<boolean> {
     const { priceFeed } = info;
     const requestTime = request.timestamp;
-    const price = await this.priceFeed.getPrice(priceFeed, requestTime);
+    let price = null;
+
+    try {
+      if (useOldPriceFeed) {
+        price = await getPriceFeedOhlc(priceFeed, requestTime);
+        this.logger.info('price-feed repsonse >>', price);
+      } else {
+        price = await this.priceFeed.getPrice(priceFeed, requestTime);
+        this.logger.info('price-feed repsonse >>', price);
+      }
+    } catch (err) {
+      throw new Error('Unable to get price info');
+    }
     if (price) {
       this.logger.info(
         `${info.symbol} was ${price} for mint request ${request.mint_id}`,
@@ -44,10 +58,9 @@ export class MintRequestValidator {
         `Minting ${tokens} tokens with ${collateral} collateral`,
       );
       if (collateral.lt(scale(tokens, price * (1 - this.maxSlippage)))) {
-        this.logger.info(
+        throw new Error(
           `Mint request ${request.mint_id} is undercollateralized`,
         );
-        return false;
       }
       const sender = assertIsAddress<SupportedNetworkName>(request.sender);
       const allowance = await getTokenAllowance(
@@ -57,23 +70,18 @@ export class MintRequestValidator {
       );
       const balance = await getTokenBalance(info.collateralToken, sender);
       if (balance < collateral) {
-        this.logger.info(
+        throw new Error(
           `Mint request ${request.mint_id} is not covered by user's collateral balance`,
         );
-        return false;
       }
 
       if (allowance < collateral) {
-        this.logger.info(
+        throw new Error(
           `Unable to approve mint request ${request.mint_id} until TIC is given an allowance to transfer the user's collateral`,
         );
-
-        return false;
       }
       return true;
-    } else {
-      this.logger.info('Forex is closed');
     }
-    return false;
+    throw new Error('Forex is closed');
   }
 }

@@ -11,6 +11,7 @@ import {
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { PriceFeed } from '../api/jarvis_exchange_price_feed';
+import { getPriceFeedOhlc } from '../api/jarvis_market_price_feed';
 import { ENV } from '../config';
 import { ExchangeRequest } from '../interfaces';
 import { createEverLogger } from '../log';
@@ -31,10 +32,22 @@ export class ExchangeRequestValidator {
   async CheckRequest(
     info: SynthereumPool<SupportedNetworkName>,
     request: ExchangeRequest,
+    useOldPriceFeed: boolean = false,
   ): Promise<boolean> {
     const { priceFeed } = info;
     const requestTime = request.timestamp;
-    const price = await this.priceFeed.getPrice(priceFeed, requestTime);
+    let price = null;
+    try {
+      if (useOldPriceFeed) {
+        price = await getPriceFeedOhlc(priceFeed, requestTime);
+        this.logger.info('price-feed repsonse >>', price);
+      } else {
+        price = await this.priceFeed.getPrice(priceFeed, requestTime);
+        this.logger.info('price-feed repsonse >>', price);
+      }
+    } catch (err) {
+      throw new Error('Unable to get price info');
+    }
     if (price) {
       this.logger.info(
         `${info.symbol} was ${price} for exchange request ${request.exchange_id}`,
@@ -50,10 +63,22 @@ export class ExchangeRequestValidator {
       }
 
       const { priceFeed: destinationPriceFeed, symbol } = destinationInfo;
-      const destPrice = await this.priceFeed.getPrice(
-        destinationPriceFeed,
-        requestTime,
-      );
+      let destPrice;
+
+      try {
+        if (useOldPriceFeed) {
+          destPrice = await this.priceFeed.getPrice(
+            destinationPriceFeed,
+            requestTime,
+          );
+          this.logger.info('destPrice repsonse >>', price);
+        } else {
+          destPrice = await getPriceFeedOhlc(destinationPriceFeed, requestTime);
+          this.logger.info('destPrice repsonse >>', price);
+        }
+      } catch (err) {
+        this.logger.error('Unable to get destPrice');
+      }
 
       if (!destPrice) {
         this.logger.info('Forex is closed');
@@ -76,10 +101,9 @@ export class ExchangeRequestValidator {
         scale(tokens, price) <
         scale(destTokens, destPrice * (1 - this.maxSlippage))
       ) {
-        this.logger.info(
+        throw new Error(
           `Exchange request ${request.exchange_id} transfers too many destination tokens`,
         );
-        return false;
       }
       const sender = assertIsAddress<SupportedNetworkName>(request.sender);
       const allowance = await getTokenAllowance(
@@ -90,21 +114,17 @@ export class ExchangeRequestValidator {
       const balance = await getTokenBalance(info.syntheticToken, sender);
 
       if (balance < tokens) {
-        this.logger.info(
+        throw new Error(
           `Exchange request ${request.exchange_id} is not covered by user's ${info.symbol} balance`,
         );
-        return false;
       }
       if (allowance < tokens) {
-        this.logger.info(
+        throw new Error(
           `Unable to approve exchange request ${request.exchange_id} until TIC is given an allowance to transfer the user's tokens`,
         );
-        return false;
       }
       return true;
-    } else {
-      this.logger.info('Forex is closed');
     }
-    return false;
+    throw new Error('Forex is closed');
   }
 }
