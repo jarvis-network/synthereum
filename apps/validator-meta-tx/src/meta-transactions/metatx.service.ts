@@ -29,6 +29,7 @@ import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { ENV, env } from '../config';
+import { PerConditionFailed } from '../erros/messages';
 import { ExchangeRequestDTO } from './dto/exchange.dto';
 import { MintRequestParams } from './dto/mint.dto';
 import { RedeemRequestParams } from './dto/redeem.dto';
@@ -56,9 +57,13 @@ export class MetaTransactionService {
     this.exchangeService = new ExchangeService();
     this.mintService = new MintService();
     this.redeemService = new RedeemService();
-    this.priceFeed = new PriceFeed();
-    this.priceFeed.connect();
-    this.logger.info(`Connected to PriceFeed`);
+    try {
+      this.priceFeed = new PriceFeed();
+      await this.priceFeed.connect();
+      this.logger.info(`Connected to PriceFeed`);
+    } catch (error) {
+      this.logger.info('Will use fallback price');
+    }
     const netId: SupportedNetworkId = parseSupportedNetworkId(env.NETWORK_ID);
     this.web3 = getInfuraWeb3(netId);
     this.logger.info(`Connected to Web3`);
@@ -82,112 +87,135 @@ export class MetaTransactionService {
     this.logger.info(
       `Validating the payload payload >> ${JSON.stringify(dto, null, ' ')}`,
     );
-    const isValid = await this.exchangeValidator.CheckRequest(
-      this.realm.ticInstances[dto.asset],
-      {
-        sender: dto.sender,
-        dest_tic: this.realm.ticInstances[dto.dest_asset].address,
-        collateral_amount: [dto.collateral_amount],
-        num_tokens: [dto.num_tokens],
-        dest_num_tokens: [dto.dest_num_tokens],
-        timestamp: DateTime.local().toMillis().toString(),
-        exchange_id: 'RandomRequestId',
-      } as ExchangeRequest,
-    );
-    if (!isValid) {
-      throw new Error('Not valid request');
-    }
-    const nonce = await this.web3.eth.getTransactionCount(dto.sender);
+    try {
+      const isValid = await this.exchangeValidator.CheckRequest(
+        this.realm.ticInstances[dto.asset],
+        {
+          sender: dto.sender,
+          dest_tic: this.realm.ticInstances[dto.dest_asset].address,
+          collateral_amount: [dto.collateral_amount],
+          num_tokens: [dto.num_tokens],
+          dest_num_tokens: [dto.dest_num_tokens],
+          timestamp: DateTime.local().toMillis().toString(),
+          exchange_id: 'RandomRequestId',
+        } as ExchangeRequest,
+        env.USE_OLD_PRICE_FEED,
+      );
+      if (!isValid) {
+        throw PerConditionFailed('Not valid request');
+      }
+      const nonce = await this.web3.eth.getTransactionCount(dto.sender);
 
-    this.logger.info(`Generating payload >> ${JSON.stringify(dto, null, ' ')}`);
-    const message = this.exchangeService.createMessageBody({
-      sender: assertIsAddress<SupportedNetworkName>(dto.sender),
-      derivativeAddr: assertIsAddress<SupportedNetworkName>(
-        this.realm.ticInstances[dto.asset].address,
-      ),
-      destPoolAddr: assertIsAddress<SupportedNetworkName>('SomePoolAddress'),
-      destDerivativeAddr: assertIsAddress<SupportedNetworkName>(
-        this.realm.ticInstances[dto.dest_asset].address,
-      ),
-      numTokens: new FPN(dto.num_tokens),
-      collateralAmount: new FPN(dto.collateral_amount),
-      destNumTokens: new FPN(dto.dest_num_tokens),
-      feePercentage: new FPN(fees[42].feePercentage),
-      nonce: new FPN(nonce),
-      expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
-    } as IExchangeRequest);
-    this.logger.info(`Generated payload >> ${message}`);
-    return message;
+      this.logger.info(
+        `Generating payload >> ${JSON.stringify(dto, null, ' ')}`,
+      );
+      const message = this.exchangeService.createMessageBody({
+        sender: assertIsAddress<SupportedNetworkName>(dto.sender),
+        derivativeAddr: assertIsAddress<SupportedNetworkName>(
+          this.realm.ticInstances[dto.asset].address,
+        ),
+        destPoolAddr: assertIsAddress<SupportedNetworkName>('SomePoolAddress'),
+        destDerivativeAddr: assertIsAddress<SupportedNetworkName>(
+          this.realm.ticInstances[dto.dest_asset].address,
+        ),
+        numTokens: new FPN(dto.num_tokens),
+        collateralAmount: new FPN(dto.collateral_amount),
+        destNumTokens: new FPN(dto.dest_num_tokens),
+        feePercentage: new FPN(fees[42].feePercentage),
+        nonce: new FPN(nonce),
+        expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
+      } as IExchangeRequest);
+      this.logger.info(`Generated payload >> ${message}`);
+      return message;
+    } catch (error) {
+      this.logger.info(error.message);
+      throw PerConditionFailed(error.message);
+    }
   }
 
   async redeemRequest(dto: RedeemRequestParams): Promise<Uint8Array> {
     this.logger.info(
       `Validating the payload payload >> ${JSON.stringify(dto, null, ' ')}`,
     );
-    const isValid = await this.redeemValidator.CheckRequest(
-      this.realm.ticInstances[dto.asset],
-      {
-        sender: dto.sender,
-        collateral_amount: [dto.collateral_amount],
-        num_tokens: [dto.num_tokens],
-        timestamp: DateTime.local().toMillis().toString(),
-        redeem_id: 'RandomRequestId',
-      } as RedeemRequest,
-    );
-    if (!isValid) {
-      throw new Error('Not valid request');
-    }
-    const nonce = await this.web3.eth.getTransactionCount(dto.sender);
+    try {
+      const isValid = await this.redeemValidator.CheckRequest(
+        this.realm.ticInstances[dto.asset],
+        {
+          sender: dto.sender,
+          collateral_amount: [dto.collateral_amount],
+          num_tokens: [dto.num_tokens],
+          timestamp: DateTime.local().toMillis().toString(),
+          redeem_id: 'RandomRequestId',
+        } as RedeemRequest,
+        env.USE_OLD_PRICE_FEED,
+      );
+      if (!isValid) {
+        throw PerConditionFailed('Not valid request');
+      }
+      const nonce = await this.web3.eth.getTransactionCount(dto.sender);
 
-    this.logger.info(`Generating payload >> ${JSON.stringify(dto, null, ' ')}`);
-    const message = this.exchangeService.createMessageBody({
-      sender: assertIsAddress<SupportedNetworkName>(dto.sender),
-      derivativeAddr: assertIsAddress<SupportedNetworkName>(
-        this.realm.ticInstances[dto.asset].address,
-      ),
-      numTokens: new FPN(dto.num_tokens),
-      collateralAmount: new FPN(dto.collateral_amount),
-      feePercentage: new FPN(fees[42].feePercentage),
-      nonce: new FPN(nonce),
-      expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
-    } as IExchangeRequest);
-    this.logger.info(`Generated payload >> ${message}`);
-    return message;
+      this.logger.info(
+        `Generating payload >> ${JSON.stringify(dto, null, ' ')}`,
+      );
+      const message = this.exchangeService.createMessageBody({
+        sender: assertIsAddress<SupportedNetworkName>(dto.sender),
+        derivativeAddr: assertIsAddress<SupportedNetworkName>(
+          this.realm.ticInstances[dto.asset].address,
+        ),
+        numTokens: new FPN(dto.num_tokens),
+        collateralAmount: new FPN(dto.collateral_amount),
+        feePercentage: new FPN(fees[42].feePercentage),
+        nonce: new FPN(nonce),
+        expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
+      } as IExchangeRequest);
+      this.logger.info(`Generated payload >> ${message}`);
+      return message;
+    } catch (error) {
+      this.logger.info(error.message);
+      throw PerConditionFailed(error.message);
+    }
   }
 
   async mintRequest(dto: MintRequestParams): Promise<Uint8Array> {
     this.logger.info(
       `Validating the payload payload >> ${JSON.stringify(dto, null, ' ')}`,
     );
+    try {
+      const isValid = await this.mintValidator.CheckRequest(
+        this.realm.ticInstances[dto.asset],
+        {
+          sender: dto.sender,
+          collateral_amount: [dto.collateral_amount],
+          num_tokens: [dto.num_tokens],
+          timestamp: DateTime.local().toMillis().toString(),
+          mint_id: 'RandomRequestId',
+        } as MintRequest,
+        env.USE_OLD_PRICE_FEED,
+      );
+      if (!isValid) {
+        throw PerConditionFailed('Not valid request');
+      }
+      const nonce = await this.web3.eth.getTransactionCount(dto.sender);
 
-    const isValid = await this.mintValidator.CheckRequest(
-      this.realm.ticInstances[dto.asset],
-      {
-        sender: dto.sender,
-        collateral_amount: [dto.collateral_amount],
-        num_tokens: [dto.num_tokens],
-        timestamp: DateTime.local().toMillis().toString(),
-        mint_id: 'RandomRequestId',
-      } as MintRequest,
-    );
-    if (!isValid) {
-      throw new Error('Not valid request');
+      this.logger.info(
+        `Generating payload >> ${JSON.stringify(dto, null, ' ')}`,
+      );
+      const message = this.exchangeService.createMessageBody({
+        sender: assertIsAddress<SupportedNetworkName>(dto.sender),
+        derivativeAddr: assertIsAddress<SupportedNetworkName>(
+          this.realm.ticInstances[dto.asset].address,
+        ),
+        numTokens: new FPN(dto.num_tokens),
+        collateralAmount: new FPN(dto.collateral_amount),
+        feePercentage: new FPN(fees[42].feePercentage),
+        nonce: new FPN(nonce),
+        expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
+      } as IExchangeRequest);
+      this.logger.info(`Generated payload >> ${message}`);
+      return message;
+    } catch (error) {
+      this.logger.info(error.message);
+      throw PerConditionFailed(error.message);
     }
-    const nonce = await this.web3.eth.getTransactionCount(dto.sender);
-
-    this.logger.info(`Generating payload >> ${JSON.stringify(dto, null, ' ')}`);
-    const message = this.exchangeService.createMessageBody({
-      sender: assertIsAddress<SupportedNetworkName>(dto.sender),
-      derivativeAddr: assertIsAddress<SupportedNetworkName>(
-        this.realm.ticInstances[dto.asset].address,
-      ),
-      numTokens: new FPN(dto.num_tokens),
-      collateralAmount: new FPN(dto.collateral_amount),
-      feePercentage: new FPN(fees[42].feePercentage),
-      nonce: new FPN(nonce),
-      expiry: DateTime.local().plus({ minutes: 5 }).toMillis().toString(),
-    } as IExchangeRequest);
-    this.logger.info(`Generated payload >> ${message}`);
-    return message;
   }
 }

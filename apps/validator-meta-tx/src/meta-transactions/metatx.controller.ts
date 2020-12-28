@@ -31,6 +31,9 @@ export class MetaTransactionController {
       return message;
     } catch (error) {
       this.logger.error(error);
+      if (error.title === 'PRE_CONDITION_FAILED_ERROR') {
+        return error;
+      }
       return ParseError(error, 'Validation Failed');
     }
   }
@@ -48,6 +51,9 @@ export class MetaTransactionController {
       return message;
     } catch (error) {
       this.logger.error(error);
+      if (error.title === 'PRE_CONDITION_FAILED_ERROR') {
+        return error;
+      }
       return ParseError(error, 'Validation Failed');
     }
   }
