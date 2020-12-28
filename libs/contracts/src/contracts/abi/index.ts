@@ -45,12 +45,6 @@ export const ExpandedIERC20_Abi = require('./ExpandedIERC20.json').abi as Tagged
   ExpandedIERC20
 >;
 
-import type { ExpiringContractInterface } from '../typechain/ExpiringContractInterface';
-export const ExpiringContractInterface_Abi = require('./ExpiringContractInterface.json').abi as Tagged<
-  AbiItem[],
-  ExpiringContractInterface
->;
-
 import type { ExpiringMultiParty } from '../typechain/ExpiringMultiParty';
 export const ExpiringMultiParty_Abi = require('./ExpiringMultiParty.json').abi as Tagged<
   AbiItem[],
@@ -69,12 +63,6 @@ export const FeePayer_Abi = require('./FeePayer.json').abi as Tagged<
   FeePayer
 >;
 
-import type { FinancialProductLibrary } from '../typechain/FinancialProductLibrary';
-export const FinancialProductLibrary_Abi = require('./FinancialProductLibrary.json').abi as Tagged<
-  AbiItem[],
-  FinancialProductLibrary
->;
-
 import type { FinderInterface } from '../typechain/FinderInterface';
 export const FinderInterface_Abi = require('./FinderInterface.json').abi as Tagged<
   AbiItem[],
@@ -91,12 +79,6 @@ import type { IERC20 } from '../typechain/IERC20';
 export const IERC20_Abi = require('./IERC20.json').abi as Tagged<
   AbiItem[],
   IERC20
->;
-
-import type { IERC20Standard } from '../typechain/IERC20Standard';
-export const IERC20Standard_Abi = require('./IERC20Standard.json').abi as Tagged<
-  AbiItem[],
-  IERC20Standard
 >;
 
 import type { IExpiringMultiParty } from '../typechain/IExpiringMultiParty';

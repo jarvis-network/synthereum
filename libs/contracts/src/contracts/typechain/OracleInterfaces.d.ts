@@ -35,8 +35,6 @@ export interface OracleInterfaces extends BaseContract {
 
     IdentifierWhitelist(): NonPayableTransactionObject<string>;
 
-    OptimisticOracle(): NonPayableTransactionObject<string>;
-
     Oracle(): NonPayableTransactionObject<string>;
 
     Registry(): NonPayableTransactionObject<string>;

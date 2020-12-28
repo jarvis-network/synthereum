@@ -103,12 +103,6 @@ export interface ExpandedIERC20 extends BaseContract {
       to: string,
       value: number | string
     ): NonPayableTransactionObject<boolean>;
-
-    addMinter(account: string): NonPayableTransactionObject<void>;
-
-    addBurner(account: string): NonPayableTransactionObject<void>;
-
-    resetOwner(account: string): NonPayableTransactionObject<void>;
   };
   events: {
     Approval(cb?: Callback<Approval>): EventEmitter;

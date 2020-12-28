@@ -219,27 +219,6 @@ export interface ExpandedERC20 extends BaseContract {
      * @param value amount of tokens to burn.
      */
     burn(value: number | string): NonPayableTransactionObject<void>;
-
-    /**
-     * The caller must have the Owner role.
-     * Add Minter role to account.
-     * @param account The address to which the Minter role is added.
-     */
-    addMinter(account: string): NonPayableTransactionObject<void>;
-
-    /**
-     * The caller must have the Owner role.
-     * Add Burner role to account.
-     * @param account The address to which the Burner role is added.
-     */
-    addBurner(account: string): NonPayableTransactionObject<void>;
-
-    /**
-     * The caller must have the Owner role.
-     * Reset Owner role to account.
-     * @param account The new holder of the Owner role.
-     */
-    resetOwner(account: string): NonPayableTransactionObject<void>;
   };
   events: {
     AddedSharedMember(cb?: Callback<AddedSharedMember>): EventEmitter;
