@@ -13,7 +13,8 @@
     "lint": "echo 'ESLint not configured yet!' && exit 13",
     "build": "tsc",
     "watch": "ts-node src/index.ts | bunyan -o short",
-    "start": "node dist/index.js | bunyan -o short"
+    "start": "node dist/index.js | bunyan -o short",
+    "semantic-release": "semantic-release"
   },
   "license": "MIT",
   "dependencies": {
