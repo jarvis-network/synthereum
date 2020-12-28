@@ -7,7 +7,8 @@
     "prebuild": "rimraf dist && rm -rf *.tsbuildinfo",
     "start": "nest start",
     "start:dev": " rm -rf *.tsbuildinfo && nest start --watch",
-    "build": "nest build"
+    "build": "nest build",
+    "semantic-release": "semantic-release"
   },
   "files": [
     "dist"
