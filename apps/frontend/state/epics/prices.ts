@@ -22,7 +22,8 @@ import {
 } from '@/state/slices/prices';
 import { setAssetsPrice } from '@/state/slices/assets';
 
-const isPairReversed = (pair: SubscriptionPair) => reversedPriceFeedPairs.includes(pair);
+const isPairReversed = (pair: SubscriptionPair) =>
+  reversedPriceFeedPairs.includes(pair);
 
 function getPricesMapFromPriceUpdate({ t, ...data }: PriceUpdate): PricesMap {
   const keys = Object.keys(data) as SubscriptionPair[];

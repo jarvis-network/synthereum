@@ -3,7 +3,11 @@ import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, themeValue } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
-import { State } from '@/state/initialState';
+import {
+  DEFAULT_PAY_ASSET,
+  DEFAULT_RECEIVE_ASSET,
+  State,
+} from '@/state/initialState';
 import {
   setBase,
   setPay,
@@ -183,6 +187,14 @@ export const MainForm: React.FC<Props> = () => {
     updatePay(receiveString);
   };
 
+  const reset = () => {
+    dispatch(setPayAsset(DEFAULT_PAY_ASSET));
+    dispatch(setReceiveAsset(DEFAULT_RECEIVE_ASSET));
+    dispatch(setBase('pay'));
+    dispatch(setPay('0'));
+    dispatch(setReceive('0'));
+  };
+
   const swapDisabled =
     !Number(payString) || !Number(receiveString) || insufficientBalance;
 
@@ -192,6 +204,7 @@ export const MainForm: React.FC<Props> = () => {
     dispatch(setFullScreenLoaderVisible(true));
     try {
       await swap?.();
+      reset();
     } catch (e) {
       console.error(e); // @TODO needs proper error handler
     }

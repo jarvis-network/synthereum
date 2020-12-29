@@ -32,6 +32,10 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
+export const DEFAULT_PAY_ASSET: SyntheticSymbol | PrimaryStableCoin = 'USDC';
+export const DEFAULT_RECEIVE_ASSET: SyntheticSymbol | PrimaryStableCoin =
+  'jEUR';
+
 export interface State {
   theme: ThemeNameType;
   app: {
@@ -85,8 +89,8 @@ export const initialState: State = {
     pay: '0',
     receive: '0',
     base: 'pay',
-    payAsset: 'USDC',
-    receiveAsset: 'jEUR',
+    payAsset: DEFAULT_PAY_ASSET,
+    receiveAsset: DEFAULT_RECEIVE_ASSET,
     invertRateInfo: false,
     chooseAssetActive: null,
   },
