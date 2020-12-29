@@ -4,6 +4,8 @@ import { Provider as StateProvider } from 'react-redux';
 
 import { styled } from '@jarvis-network/ui';
 
+import "@/utils/consoleErrorFilter";
+
 import { useStore } from '@/state/store';
 import { AppThemeProvider } from '@/components/AppThemeProvider';
 import { AuthProvider } from '@/components/auth/AuthProvider';
