@@ -47,9 +47,6 @@
       "apps/*",
       "libs/*",
       "libs/**/dist"
-    ],
-    "nohoist": [
-      "@jarvis-network/synthereum-contracts/@openzeppelin/**"
     ]
   },
   "resolutions": {
