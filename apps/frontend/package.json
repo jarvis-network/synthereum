@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start:server": "next start",
-    "build": "next build && next export",
-    "start": "next dev",
-    "postinstall": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/",
+    "build": "yarn prepare:assets && next build && next export",
+    "start": "yarn prepare:assets && next dev",
+    "prepare:assets": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/",
     "lint": "eslint '*/**/*.{ts,tsx}'",
     "lint:fix": "eslint '*/**/*.{ts,tsx}' --fix",
     "format": "prettier --check \"**/*.+(json|yml|yaml|md)\"",
