@@ -10,13 +10,12 @@ async function main() {
   const web3 = getInfuraWeb3(netId);
   const realm = await loadRealm(web3, netId);
   const balances = await getPoolBalances(realm);
-  const result = Object.fromEntries(
-    balances.map(([sym, bal]) => [
-      `${sym} pool balance`,
-      `${formatAmount(bal)} USDC`,
-    ]),
-  );
-  console.log(result);
+  const result = balances.map(([sym, bal]) => ({
+    Symbol: sym,
+    'Pool Balance': `${formatAmount(bal)} USDC`,
+    'Pool Address': realm.ticInstances[sym].address,
+  }));
+  console.table(result);
 }
 
 main()
