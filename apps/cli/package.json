@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
-    "start": "node dist/get-pool-balance.js"
+    "start": "./scripts/run.sh"
   },
   "dependencies": {
     "@jarvis-network/synthereum-contracts": "1.0.0"

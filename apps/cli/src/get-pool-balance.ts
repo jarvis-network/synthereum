@@ -4,8 +4,10 @@ import { getPoolBalances } from '@jarvis-network/synthereum-contracts/dist/src/c
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { formatAmount } from '@jarvis-network/web3-utils/base/big-number';
+import { basename } from 'path';
 
 async function main() {
+  console.log(`[${basename(__filename)}]: starting`);
   const netId = parseSupportedNetworkId(42);
   const web3 = getInfuraWeb3(netId);
   const realm = await loadRealm(web3, netId);

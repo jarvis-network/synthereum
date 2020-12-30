@@ -213,7 +213,7 @@
         "start": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run start"],
+            "commands": ["./scripts/run.sh {args.script}"],
             "cwd": "./apps/cli",
             "color": true
           }
