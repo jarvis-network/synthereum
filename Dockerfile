@@ -42,12 +42,13 @@ COPY --from=config_files /out .
 # Not strictly necessary, but we do it to ensure that we get the same result as
 # if we had all config files:
 RUN yarn install --frozen-lock
+RUN mkdir -p /out
+
 
 # ----------------- Build @jarvis-network/web3-utils library ----------------- #
 FROM install as build-web3-utils
 COPY libs/web3-utils libs/web3-utils
 RUN yarn nx build web3-utils
-RUN mkdir -p /out
 RUN cp -r libs/web3-utils/dist/* /out
 
 # ------------ Build @jarvis-network/synthereum-contracts library ------------ #
@@ -55,7 +56,6 @@ FROM install as build-contract
 COPY libs/contracts libs/contracts
 COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 RUN yarn nx build contracts
-RUN mkdir -p /out
 RUN cp -r libs/contracts/dist /out
 
 # ---------------------- Image containing all libraries ---------------------- #
@@ -67,21 +67,18 @@ COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contract
 FROM build-libs as build-validator
 COPY apps/validator apps/validator
 RUN yarn nx build validator
-RUN mkdir -p /out
 RUN cp -r apps/validator/dist /out
 
 # ------------------------------ Build Frontend ------------------------------ #
 FROM build-libs as build-frontend
 COPY apps/frontend apps/frontend
 RUN yarn nx build frontend
-RUN mkdir -p /out
 RUN cp -r apps/frontend/out /out
 
 # ---------------------------- Build Old Frontend ---------------------------- #
 FROM install as old-frontend
 COPY packages/frontend-old packages/frontend-old
 RUN yarn --cwd packages/frontend-old build
-RUN mkdir -p /out
 RUN cp -r packages/frontend-old/build /out
 
 # ---------------------------------------------------------------------------- #
