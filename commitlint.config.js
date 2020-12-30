@@ -9,5 +9,23 @@ module.exports = {
     'header-max-length': [ERROR, 'always', 130],
     'subject-empty': [WARNING, 'never'],
     'type-empty': [WARNING, 'never'],
+    'type-enum': [
+      WARNING,
+      'always',
+      [
+        'build',
+        'chore',
+        'imp',
+        'improvement',
+        'deploy',
+        'docs',
+        'feat',
+        'fix',
+        'perf',
+        'refactor',
+        'revert',
+        'test',
+      ],
+    ],
   },
 };
