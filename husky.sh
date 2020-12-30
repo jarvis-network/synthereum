@@ -1,7 +1,9 @@
-#!/bin/sh
-exit 0
-git --no-pager log -1 --format=oneline
+#!/usr/bin/env bash
 
-if git branch | grep -q 'no branch' && false; then
-  exec < /dev/tty && git cz --hook || true
+set -euo pipefail
+
+if git branch | grep -q 'no branch'; then
+    git --no-pager log -1 --format=oneline
+else
+    exec </dev/tty && git cz --hook
 fi

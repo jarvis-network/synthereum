@@ -2,12 +2,12 @@ variable "TAG" {
   default = "dev"
 }
 
-variable "REGISTRY_NAME" {
-  default = "jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo"
+variable "YARN_LOCK_SHA256" {
+  default = "ERROR"
 }
 
-group "default" {
-  targets = ["base","install", "web3-utils", "contracts", "validator"]
+variable "REGISTRY_NAME" {
+  default = "jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo"
 }
 
 target "base" {
@@ -19,10 +19,10 @@ target "base" {
   platforms = ["linux/amd64"]
   target = "install_dep"
   cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/base-cache:${TAG}"
+    "type=registry,ref=${REGISTRY_NAME}/base-cache:${YARN_LOCK_SHA256}"
   ]
   cache-to= [
-    "type=registry,ref=${REGISTRY_NAME}/base-cache:${TAG}"
+    "type=registry,ref=${REGISTRY_NAME}/base-cache:${YARN_LOCK_SHA256}"
   ]
 }
 
@@ -30,16 +30,16 @@ target "install" {
   dockerfile = "Dockerfile"
   output = ["type=registry"]
   tags = [
-    "${REGISTRY_NAME}/install:${TAG}"
+    "${REGISTRY_NAME}/install:${YARN_LOCK_SHA256}"
   ]
   platforms = ["linux/amd64"]
   target = "install"
   cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/base-cache:${TAG}",
-    "type=registry,ref=${REGISTRY_NAME}/install-cache:${TAG}"
+    "type=registry,ref=${REGISTRY_NAME}/base-cache:${YARN_LOCK_SHA256}",
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}"
   ]
   cache-to=[
-    "type=registry,ref=${REGISTRY_NAME}/install-cache:${TAG}"
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}"
   ]
 }
 
@@ -52,7 +52,7 @@ target "libs" {
   platforms = ["linux/amd64"]
   target = "build-libs"
   cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/install-cache:${TAG}",
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}",
     "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}"
   ]
   cache-to= [

@@ -21,6 +21,7 @@ before_script:
     - dev
     - production
   script:
+    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
     - docker buildx bake $TARGET --print
     - docker buildx bake $TARGET  --progress=plain
 stages:
@@ -65,7 +66,6 @@ stages:
   <<: *job-config
   stage: build and push images
   variables:
-    CTAG: latest
     GIT_STRATEGY: none
   parallel:
     matrix:
@@ -194,11 +194,8 @@ release:
   only:
     refs:
       - production
-  variables:
-    CTAG: latest
   script:
     - apk add bash npm git
     - npm install -g yarn
     - npm install -g semantic-release-commit-filter semantic-release @semantic-release/gitlab @semantic-release/exec @semantic-release/changelog @semantic-release/git @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/commit-analyzer
-    - yarn --cwd apps/validator semantic-release
     - yarn --cwd libs/web3-utils/dist semantic-release
