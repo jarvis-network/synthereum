@@ -11,14 +11,13 @@ import type {
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 
-import type { SynthereumPool, SynthereumRealmWithWeb3 } from './types';
+import type { Pools, SynthereumPool, SynthereumRealmWithWeb3 } from './types';
 
 import { TICFactory_Abi, TICInterface_Abi, ERC20_Abi } from '../contracts/abi';
 
 import { contractDependencies } from '../config/data/contract-dependencies';
 import type {
   ContractDependencies,
-  PerAsset,
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../config';
@@ -81,7 +80,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     web3,
     netId,
     ticFactory,
-    ticInstances: Object.fromEntries(pools) as PerAsset<SynthereumPool<Net>>,
+    ticInstances: Object.fromEntries(pools) as Pools<Net>,
     // Assume the same collateral token for all synthetics:
     collateralToken: pools[0][1].collateralToken,
   };

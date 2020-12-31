@@ -2,7 +2,7 @@ import { SyntheticTokenConfig } from '..';
 import { AnySyntheticSymbol } from './all-synthetic-asset-symbols';
 
 export const allSyntheticTokensMap: {
-  [Sym in AnySyntheticSymbol]: SyntheticTokenConfig<Sym>;
+  [Symbol in AnySyntheticSymbol]: SyntheticTokenConfig<Symbol>;
 } = {
   jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
