@@ -3,8 +3,29 @@ import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/di
 import {
   assertIsString,
   parseFiniteFloat,
+  throwError,
 } from '@jarvis-network/web3-utils/base/asserts';
-import { LogLevels, parseLogLevel } from './log';
+import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
+
+export type LogLevels = 'INFO' | 'DEBUG' | 'WARN' | 'ERROR' | 'FATAL' | 'TRACE';
+const supportedLevels = typeCheck<LogLevels[]>()([
+  'INFO',
+  'DEBUG',
+  'WARN',
+  'ERROR',
+  'FATAL',
+  'TRACE',
+] as const);
+
+export function parseLogLevel(x: unknown): LogLevels {
+  const levelName = assertIsString(x);
+  const supported = supportedLevels as readonly string[];
+  return supported.findIndex(s => levelName === s) !== -1
+    ? (levelName as LogLevels)
+    : throwError(
+        `${x} is not supported. Supported level ids are: ` + `[${supported}]`,
+      );
+}
 
 const {
   MAX_SLIPPAGE,
@@ -14,7 +35,6 @@ const {
   PRIVATE_KEY,
   NETWORK_ID,
 } = process.env;
-
 export interface ENV {
   MAX_SLIPPAGE: number;
   LOG_LEVEL: LogLevels;

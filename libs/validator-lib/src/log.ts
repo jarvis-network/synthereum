@@ -1,8 +1,3 @@
-import {
-  assertIsString,
-  throwError,
-} from '@jarvis-network/web3-utils/base/asserts';
-import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 import * as Bunyan from 'bunyan';
 import PrettyStream from 'bunyan-prettystream';
 import { existsSync } from 'fs';
@@ -14,7 +9,6 @@ export interface ILogArgs {
   // which file used to store logs
   name: string;
 }
-
 let isLogsFolderExists = env.LOGS_PATH ? existsSync(env.LOGS_PATH) : false;
 
 const prettyStdOut = new PrettyStream();
@@ -61,22 +55,3 @@ export const Log = (logArgs: ILogArgs): ClassDecorator => target => {
   target.prototype.logName = logArgs.name;
   target.prototype.log = createEverLogger(logArgs);
 };
-export type LogLevels = 'INFO' | 'DEBUG' | 'WARN' | 'ERROR' | 'FATAL' | 'TRACE';
-const supportedLevels = typeCheck<LogLevels[]>()([
-  'INFO',
-  'DEBUG',
-  'WARN',
-  'ERROR',
-  'FATAL',
-  'TRACE',
-] as const);
-
-export function parseLogLevel(x: unknown): LogLevels {
-  const levelName = assertIsString(x);
-  const supported = supportedLevels as readonly string[];
-  return supported.findIndex(s => levelName === s) !== -1
-    ? (levelName as LogLevels)
-    : throwError(
-        `${x} is not supported. Supported level ids are: ` + `[${supported}]`,
-      );
-}
