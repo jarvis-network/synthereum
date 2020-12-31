@@ -7,8 +7,8 @@ import {
   createEverLogger,
   ExchangeRequestValidator,
   MintRequestValidator,
-  RedeemRequestValidator,
   PriceFeed,
+  RedeemRequestValidator,
 } from '@jarvis-network/validator-lib';
 import { base, NonPayableTransactionObject } from '@jarvis-network/web3-utils';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
@@ -183,21 +183,30 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
     try {
       const from = this.defaultAccount;
       const gasPrice = await this.realm.web3.eth.getGasPrice();
-      const gas = await resolveCallback(requestId).estimateGas({ from });
+      this.logger.info(
+        `[1/5]: Preparing to respond to request from=${from} gasPrice=${gasPrice}`,
+      );
+      const tx = resolveCallback(requestId);
+      this.logger.info(`[2/5]: resolveCallback returned successfully`);
+      const gas = await tx.estimateGas({ from });
+      this.logger.info(`[3/5]: estimateGas returned gas=${gas}`);
       const transaction = await resolveCallback(requestId).send({
         from,
         gasPrice,
         gas,
       });
+      this.logger.info(
+        `[4/5]: resolveCallback returned txhash=${transaction.transactionHash}`,
+      );
       // Wait for the transaction to be mined
       const receipt = await this.realm.web3.eth.getTransactionReceipt(
         transaction.transactionHash,
       );
-
       this.logger.info(
-        `${resolveLabel} request ${requestId} in transaction ${transaction.transactionHash}`,
+        `[5/5] getTransactionReceipt succeeded for ${resolveLabel} request ${requestId} in transaction ${transaction.transactionHash}`,
       );
     } catch (error) {
+      this.logger.error('Unable to finishRequest', error);
       if (error.message.includes('BlockNotFound')) {
         this.logger.warn(error);
       } else if (error.message.includes('ValueError')) {
@@ -206,7 +215,6 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
           `Make sure there the LP has deposited enough the excess collateral required for the ${resolveLabel} request`,
         );
       } else {
-        this.logger.error(error.message);
         this.logger.error(error.stack);
       }
     }
