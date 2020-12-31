@@ -15,7 +15,7 @@ import './_app.css';
 import 'react-table/react-table.css';
 
 const MainWrapper = styled.div`
-  height: 100vh;
+  height: 100%;
   width: 100vw;
   background: ${props => props.theme.background.primary};
   color: ${props => props.theme.text.primary};

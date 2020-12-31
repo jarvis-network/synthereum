@@ -81,7 +81,7 @@ export const initialState: State = {
     isRecentActivityModalVisible: false,
     isAccountDropdownExpanded: false,
     isFullScreenLoaderVisible: false,
-    mobileTab: 0,
+    mobileTab: 1,
   },
   auth: null,
   assets: {
