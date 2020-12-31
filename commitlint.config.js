@@ -8,6 +8,7 @@ module.exports = {
     'footer-max-line-length': [ERROR, 'always', 80],
     'header-max-length': [ERROR, 'always', 130],
     'subject-empty': [WARNING, 'never'],
+    'subject-case': [ERROR, 'always', ['sentence-case']],
     'type-empty': [WARNING, 'never'],
     'type-enum': [
       WARNING,
@@ -15,8 +16,7 @@ module.exports = {
       [
         'build',
         'chore',
-        'imp',
-        'improvement',
+        'improve',
         'deploy',
         'docs',
         'feat',
