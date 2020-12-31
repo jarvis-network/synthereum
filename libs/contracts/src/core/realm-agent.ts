@@ -11,7 +11,7 @@ import {
 
 import { SynthereumRealmWithWeb3 } from './types';
 import {
-  allSymbols as allSyntheticAssets,
+  allSupportedSymbols,
   SyntheticSymbol,
 } from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config';
@@ -155,8 +155,8 @@ export async function getAllBalances(realmAgent: RealmAgent<'kovan'>) {
     realmAgent.realm.collateralToken.symbol,
     await realmAgent.collateralBalance(),
   );
-  const allSyntheticTokenBalancePromises = allSyntheticAssets.map(async asset =>
-    t(asset, await realmAgent.syntheticTokenBalanceOf(asset)),
+  const allSyntheticTokenBalancePromises = allSupportedSymbols.map(
+    async asset => t(asset, await realmAgent.syntheticTokenBalanceOf(asset)),
   );
   const allBalances = Promise.all([
     usdcBalancePromise,

@@ -6,7 +6,4 @@ export const fundAssets: AssetFundingConfig = {
   jGBP: wei('100000000'),
   jCHF: wei('100000000'),
   jXAU: wei('100000000'),
-  jSPX: wei('100000000'),
-  jXTI: wei('100000000'),
-  jXAG: wei('100000000'),
 };

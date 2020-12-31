@@ -133,7 +133,10 @@ export class PriceFeed {
     return this.subscribePair(pair, options);
   };
 
-  subscribeMany = (assets: SyntheticSymbol[], options: Options): WebSocket => {
+  subscribeMany = (
+    assets: readonly SyntheticSymbol[],
+    options: Options,
+  ): WebSocket => {
     // Return last subscription result
     return assets.map(asset => this.subscribe(asset, options))[
       assets.length - 1

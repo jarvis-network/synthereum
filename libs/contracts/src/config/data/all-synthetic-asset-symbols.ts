@@ -1,4 +1,4 @@
-export const allSymbols = [
+export type AnySyntheticSymbol = [
   'jEUR',
   'jGBP',
   'jCHF',
@@ -6,7 +6,9 @@ export const allSymbols = [
   'jSPX',
   'jXTI',
   'jXAG',
-] as const;
+][number];
 
-export type SyntheticSymbols = typeof allSymbols;
+export const allSupportedSymbols = ['jEUR', 'jGBP', 'jCHF', 'jXAU'] as const;
+
+export type SyntheticSymbols = typeof allSupportedSymbols;
 export type SyntheticSymbol = SyntheticSymbols[number];

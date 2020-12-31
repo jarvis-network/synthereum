@@ -7,9 +7,10 @@ import type {
 } from './supported-networks';
 export type { SupportedNetworkId, SupportedNetworkName };
 import {
-  allSymbols,
+  allSupportedSymbols,
   SyntheticSymbols,
   SyntheticSymbol,
+  AnySyntheticSymbol,
 } from './data/all-synthetic-asset-symbols';
 export type { SyntheticSymbol };
 import {
@@ -28,7 +29,7 @@ export type PerAsset<Config> = PerTupleElement<SyntheticSymbols, Config>;
 export function mapAsset<F extends (sym: SyntheticSymbol) => T, T>(
   mapFun: F,
 ): PerAsset<T> {
-  return mapTupleToObject(allSymbols, mapFun);
+  return mapTupleToObject(allSupportedSymbols, mapFun);
 }
 
 export interface ContractDependencies {
@@ -49,9 +50,11 @@ export interface Fees {
 
 export type AssetFundingConfig = PerAsset<Amount>;
 
-export interface SyntheticTokenConfig {
+export interface SyntheticTokenConfig<
+  Symbol extends AnySyntheticSymbol = SyntheticSymbol
+> {
   syntheticName: string; /// Example: "Jarvis Synthetic Euro",
-  syntheticSymbol: SyntheticSymbol; /// Example: "jEUR",
+  syntheticSymbol: Symbol; /// Example: "jEUR",
   priceFeedIdentifier: string; /// Example: "EUR/USD",
   collateralRequirement: FixedPointNumber; /// Example: { "rawValue": "1100000000000000000" },
   startingCollateralization: string; /// Example: "1527000",

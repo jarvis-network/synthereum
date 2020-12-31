@@ -1,6 +1,9 @@
-import { PerAsset, SyntheticTokenConfig } from '..';
+import { SyntheticTokenConfig } from '..';
+import { AnySyntheticSymbol } from './all-synthetic-asset-symbols';
 
-export const allSyntheticTokensMap: PerAsset<SyntheticTokenConfig> = {
+export const allSyntheticTokensMap: {
+  [Sym in AnySyntheticSymbol]: SyntheticTokenConfig<Sym>;
+} = {
   jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
     syntheticSymbol: 'jEUR',
