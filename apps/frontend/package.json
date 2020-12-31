@@ -5,6 +5,7 @@
   "scripts": {
     "start:server": "next start",
     "build": "yarn prepare:assets && next build && next export",
+    "build:withAnalyze": "yarn prepare:assets && ANALYZE=true next build && next export",
     "start": "yarn prepare:assets && next dev",
     "prepare:assets": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/",
     "lint": "eslint '*/**/*.{ts,tsx}'",
@@ -19,6 +20,7 @@
     "@jarvis-network/synthereum-contracts": "1.0.0",
     "@jarvis-network/ui": "^0.8.2",
     "@jarvis-network/web3-utils": "1.0.0",
+    "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
     "bnc-onboard": "^1.14.0",
     "eth-ens-namehash": "^2.0.8",
