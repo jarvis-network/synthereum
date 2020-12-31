@@ -1,13 +1,17 @@
-import {FPN} from "@jarvis-network/web3-utils/base/fixed-point-number";
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 (() => {
-    const err = console.error;
-    console.error = (...args: unknown[]) => {
-      if (typeof args[0] === "string" && args[0].startsWith("A non-serializable value was detected in") && args[1] instanceof FPN) {
-        return;
-      }
-      err(...args);
+  const err = console.error;
+  console.error = (...args: unknown[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].startsWith('A non-serializable value was detected in') &&
+      args[1] instanceof FPN
+    ) {
+      return;
     }
+    err(...args);
+  };
 })();
 
 export {};
