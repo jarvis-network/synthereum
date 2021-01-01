@@ -52,6 +52,9 @@
       "@jarvis-network/synthereum-contracts/@openzeppelin/**"
     ]
   },
+  "resolutions": {
+    "**/@truffle/hdwallet-provider": "^1.2.1"
+  },
   "husky": {
     "hooks": {
       "prepare-commit-msg": "sh husky.sh",
@@ -114,7 +117,7 @@
     "@nrwl/workspace": "^11.0.15",
     "@openzeppelin/contracts": "3.3.0",
     "@openzeppelin/test-helpers": "^0.5.9",
-    "@truffle/hdwallet-provider": "^1.2.0",
+    "@truffle/hdwallet-provider": "^1.2.1",
     "@typechain/web3-v1": "^1.0.0",
     "@types/bunyan": "^1.8.6",
     "@types/chai": "^4.2.14",
