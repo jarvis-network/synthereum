@@ -1,6 +1,6 @@
 import type Web3 from 'web3';
-import type { Network, NetworkName, ValueOnNetwork } from './networks';
 import type { TagKindOf } from '../base/tagged-type';
+import type { Network, NetworkName, ValueOnNetwork } from './networks';
 
 export type Web3On<Net extends Network> = ValueOnNetwork<Web3, Net>;
 export type NetworkOf<
@@ -21,4 +21,5 @@ export function setPrivateKey_DevelopmentOnly(web3: Web3, privateKey: string) {
   const account = web3.eth.accounts.privateKeyToAccount(privateKey);
   web3.eth.accounts.wallet.add(account);
   web3.eth.defaultAccount = account.address;
+  web3.defaultAccount = account.address;
 }
