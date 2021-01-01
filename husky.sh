@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
+#!/bin/sh
 
 if git branch | grep -q 'no branch'; then
     git --no-pager log -1 --format=oneline
