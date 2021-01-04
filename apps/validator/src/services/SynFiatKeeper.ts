@@ -12,6 +12,7 @@ import {
 } from '@jarvis-network/validator-lib';
 import { base, NonPayableTransactionObject } from '@jarvis-network/web3-utils';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+import Logger from 'bunyan';
 import { performance } from 'perf_hooks';
 import { ENV } from '../config';
 type ApproveRejectMethod = (
@@ -35,10 +36,8 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   redeemService: RedeemRequestValidator;
   mintService: MintRequestValidator;
   priceFeed = new PriceFeed();
-  private logger = createEverLogger({
-    name: 'validator',
-  });
   constructor(
+    private logger: Logger,
     private readonly realm: SynthereumRealmWithWeb3<Net>,
     { FREQUENCY, MAX_SLIPPAGE }: ENV,
   ) {
