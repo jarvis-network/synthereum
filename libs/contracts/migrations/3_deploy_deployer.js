@@ -1,20 +1,23 @@
-var tdr = require('truffle-deploy-registry');
 const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
 var SynthereumDeployer = artifacts.require('SynthereumDeployer');
 var SynthereumFinder = artifacts.require('SynthereumFinder');
+const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = config.networks[network.replace(/-fork$/, '')].network_id;
-  const admin = rolesConfig[networkId].admin || accounts[0];
-  const maintainer = rolesConfig[networkId].maintainer || accounts[1];
+  const networkId = await web3.eth.net.getId();
+  const admin = rolesConfig[networkId]?.admin ?? accounts[0];
+  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
   const synthereumFinderInstance = await SynthereumFinder.deployed();
-  await deployer.deploy(
+  const keys = getKeysForNetwork(network, accounts);
+  await deploy(
+    deployer,
+    network,
     SynthereumDeployer,
     synthereumFinderInstance.address,
     roles,
-    { from: accounts[0] },
+    { from: keys.deployer },
   );
   const synthereumDeployerInstance = await SynthereumDeployer.deployed();
   await synthereumFinderInstance.changeImplementationAddress(
@@ -22,7 +25,4 @@ module.exports = async function (deployer, network, accounts) {
     synthereumDeployerInstance.address,
     { from: maintainer },
   );
-  if (!tdr.isDryRunNetworkName(network)) {
-    return tdr.appendInstance(synthereumDeployerInstance);
-  }
 };

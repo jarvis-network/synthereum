@@ -6,6 +6,7 @@ const umaConfig = require('../data/uma-config.json');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 var SynthereumFinder = artifacts.require('SynthereumFinder');
 var SynthereumDeployer = artifacts.require('SynthereumDeployer');
+var TestnetERC20 = artifacts.require('TestnetERC20');
 var deployment = require('../data/deployment/derivatives-and-pools.json');
 var assets = require('../data/synthetic-assets.json');
 var derivativeVersions = require('../data/derivative-versions.json');
@@ -13,13 +14,16 @@ var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = config.networks[network.replace(/-fork$/, '')].network_id;
-  let admin = rolesConfig[networkId].admin || accounts[0];
-  let maintainer = rolesConfig[networkId].maintainer || accounts[1];
-  let liquidityProvider =
-    rolesConfig[networkId].liquidityProvider || accounts[2];
-  let validator = rolesConfig[networkId].validator || accounts[3];
+  const networkId = await web3.eth.net.getId();
+  const admin = rolesConfig[networkId]?.admin ?? accounts[0];
+  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
+  const liquidityProvider =
+    rolesConfig[networkId]?.liquidityProvider ?? accounts[2];
+  const validator = rolesConfig[networkId]?.validator ?? accounts[3];
   let txData = [];
+  collAddress =
+    umaContracts[networkId]?.collateralAddress ??
+    (await TestnetERC20.deployed()).address;
 
   if (deployment[networkId].isEnabled === true) {
     const synthereumFinderInstance = await SynthereumFinder.deployed();
@@ -67,8 +71,11 @@ module.exports = async function (deployer, network, accounts) {
           ],
           [
             {
-              collateralAddress: umaContracts[networkId].collateralAddress,
-              priceFeedIdentifier: web3Utils.toHex(asset.priceFeedIdentifier),
+              collateralAddress: collAddress,
+              priceFeedIdentifier: web3Utils.padRight(
+                web3Utils.toHex(asset.priceFeedIdentifier),
+                64,
+              ),
               syntheticName: asset.syntheticName,
               syntheticSymbol: asset.syntheticSymbol,
               syntheticToken: ZERO_ADDRESS,
