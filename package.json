@@ -29,7 +29,7 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "clean": "yarn clean:build-artifacts-only",
-    "init:commitizen": "commitizen init cz-ccgls  --yarn --dev --exact --ignore-workspace-root-check --force",
+    "init:commitizen": "commitizen init @jarvis-network/cz-ccgls --yarn --dev --exact --force",
     "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- .",
     "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
     "clean:all": "git clean -fdx -e .env -e hush -- .",
@@ -65,7 +65,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-ccgls"
+      "path": "./node_modules/@jarvis-network/cz-ccgls"
     },
     "cz-ccgls": {
       "useEmojis": true,
@@ -106,6 +106,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
+    "@jarvis-network/cz-ccgls": "0.3.1",
     "@nomiclabs/hardhat-etherscan": "^2.1.0",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
@@ -139,7 +140,6 @@
     "commitlint": "^11.0.0",
     "concurrently": "^5.3.0",
     "copyfiles": "^2.4.1",
-    "cz-ccgls": "0.2.3",
     "dotenv": "^8.2.0",
     "eslint": "^7.16.0",
     "eslint-config-airbnb": "^17.1.0",
