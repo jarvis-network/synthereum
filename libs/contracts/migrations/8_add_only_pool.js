@@ -14,12 +14,12 @@ var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = config.networks[network.replace(/-fork$/, '')].network_id;
-  let admin = rolesConfig[networkId].admin || accounts[0];
-  let maintainer = rolesConfig[networkId].maintainer || accounts[1];
-  let liquidityProvider =
-    rolesConfig[networkId].liquidityProvider || accounts[2];
-  let validator = rolesConfig[networkId].validator || accounts[3];
+  const networkId = await web3.eth.net.getId();
+  const admin = rolesConfig[networkId]?.admin ?? accounts[0];
+  const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
+  const liquidityProvider =
+    rolesConfig[networkId]?.liquidityProvider ?? accounts[2];
+  const validator = rolesConfig[networkId]?.validator ?? accounts[3];
   let txData = [];
   if (deployment[networkId].isEnabled === true) {
     const synthereumFinderInstance = await SynthereumFinder.deployed();
