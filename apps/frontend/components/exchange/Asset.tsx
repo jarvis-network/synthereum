@@ -26,8 +26,10 @@ const Container = styled.div`
   }
 
   .assetName {
-    display: inline-block;
+    display: inline-flex;
+    justify-content: space-between;
     vertical-align: middle;
+    width: 55px;
     margin-left: 7px;
   }
 `;
