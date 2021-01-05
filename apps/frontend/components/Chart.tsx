@@ -220,6 +220,9 @@ const Chart: FC<CandleStickChartProps> = ({
       grid: chartGridConfig(theme),
       rightPriceScale: chartPriceAxisConfig,
       timeScale: chartTimeScaleConfig,
+      localization: {
+        priceFormatter: (price: number) => price.toFixed(5)
+      },
     };
 
     chartInstance.applyOptions(options);
