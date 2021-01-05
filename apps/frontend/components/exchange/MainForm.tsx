@@ -211,13 +211,16 @@ export const MainForm: React.FC<Props> = () => {
     dispatch(setFullScreenLoaderVisible(false));
   };
 
+  const payFormatted = base === 'pay' ? pay : Number(payString).toFixed(5);
+  const receiveFormatted = base === 'pay' ? Number(receiveString).toFixed(5) : receive;
+
   return (
     <>
       <ExchangeBox error={insufficientBalance}>
         <Title>You pay</Title>
         <Max />
         <Amount
-          value={base === 'pay' ? pay : payString}
+          value={payFormatted}
           onKeyPress={e => handleKeyPress(e, assetPay!)}
           onChange={e => {
             updateBase('pay');
@@ -242,7 +245,7 @@ export const MainForm: React.FC<Props> = () => {
       <ExchangeBox error={false}>
         <Title>You receive</Title>
         <Amount
-          value={base === 'pay' ? receiveString : receive}
+          value={receiveFormatted}
           onKeyPress={e => handleKeyPress(e, assetReceive!)}
           onChange={e => {
             updateBase('receive');
