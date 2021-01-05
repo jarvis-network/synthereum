@@ -3375,10 +3375,10 @@
     rxjs "^6.6.3"
     wrap-ansi "^7.0.0"
 
-"@jarvis-network/ui@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.8.2.tgz#74d6ba3fc50927e713ae72bc1084777f07b60f8e"
-  integrity sha512-gAjjk3j5IiJOwOP13xfsUWoHTKM/keQmGRTesJHtw54T/C9D7O0mEj+QZ2q0lepCYjIkldzZ4WBzsYOC77aE8w==
+"@jarvis-network/ui@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.8.3.tgz#6186be37ebc5b8c97aaa5c3604516e8074048df9"
+  integrity sha512-5lpRLdA48gGMbQr/DDX0a7mBdK6Bjl1f/MXnMQji/ezyONvQBFH+FO6MF2AGEyOaKQFEkJ2wVxti41vcxz9wvQ==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"
@@ -3388,6 +3388,7 @@
     lodash "^4.17.15"
     react-icons "^3.11.0"
     react-number-format "^4.4.1"
+    react-router-dom "^5.1.2"
     react-select "^3.1.0"
     react-table "^6.8.6"
 
@@ -21942,7 +21943,7 @@ react-refresh@0.8.3:
   resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.8.3.tgz#721d4657672d400c5e3c75d063c4a85fb2d5d68f"
   integrity sha512-X8jZHc7nCMjaCqoU+V2I0cOhNW+QMBwSUkeXnTi8IPe6zaRWfn60ZzvFDZqWPfmSJfjub7dDW1SP0jaHWLu/hg==
 
-react-router-dom@^5.2.0:
+react-router-dom@^5.1.2, react-router-dom@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-5.2.0.tgz#9e65a4d0c45e13289e66c7b17c7e175d0ea15662"
   integrity sha512-gxAmfylo2QUjcwxI63RhQ5G85Qqt4voZpUXSEqCwykV0baaOTQDR1f0PmY8AELqIyVc0NEZUj0Gov5lNGcXgsA==
