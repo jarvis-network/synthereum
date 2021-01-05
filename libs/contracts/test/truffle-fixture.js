@@ -2,10 +2,10 @@ require('dotenv').config({ path: './.env.migration' });
 //Synthereum contracts to deploy Synthereum infrastructure for local hardhat test
 const deployFinder = require('../migrations/2_deploy_finder.js');
 const deployDeployer = require('../migrations/3_deploy_deployer.js');
-const deployFactoryVersioning = require('../migrations/4_deploy_factory_versioning.js');
-const deployDerivativeVersions = require('../migrations/5_deploy_derivative_versions.js');
-const deployPoolVersions = require('../migrations/6_deploy_pool_versions.js');
-const addPoolAndDerivative = require('../migrations/7_add_pool_and_derivative.js');
+const deployPoolRegistry = require('../migrations/4_deploy_pool_registry.js');
+const deployFactoryVersioning = require('../migrations/5_deploy_factory_versioning.js');
+const deployDerivativeVersions = require('../migrations/6_deploy_derivative_versions.js');
+const deployPoolVersions = require('../migrations/7_deploy_pool_versions.js');
 //Uma contracts to deploy Uma infrastructure for local hardhat test
 const umaDeployFinder = require('@jarvis-network/uma-core/migrations/2_deploy_finder.js');
 const umaDeployTimer = require('@jarvis-network/uma-core/migrations/3_deploy_timer.js');
@@ -39,8 +39,8 @@ module.exports = async ({ network, web3 }) => {
   }
   await deployFinder(null, network.name, accounts);
   await deployDeployer(null, network.name, accounts);
+  await deployPoolRegistry(null, network.name, accounts);
   await deployFactoryVersioning(null, network.name, accounts);
   await deployDerivativeVersions(null, network.name, accounts);
   await deployPoolVersions(null, network.name, accounts);
-  await addPoolAndDerivative(null, network.name, accounts);
 };
