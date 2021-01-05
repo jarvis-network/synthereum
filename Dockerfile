@@ -32,6 +32,8 @@ WORKDIR /src
 
 FROM base as install_dep
 COPY --from=yarn_lock /out .
+COPY --from=config_files /out .
+
 # Install only dependencies (no devDependencies)
 RUN yarn install --production --frozen-lock
 RUN mkdir -p /production_modules
@@ -109,9 +111,7 @@ WORKDIR /app
 RUN  apk add --update --no-cache \
     ca-certificates \
     bash
-COPY --from=install /production_modules node_modules
-COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
-COPY --from=build-validator  /out .
-
-CMD ["node", "index.js"]
+COPY --from=install /production_modules/* node_modules
+COPY --from=build-libs /src/node_modules/@jarvis-network node_modules/@jarvis-network
+COPY --from=build-validator  /out/ .
+CMD ["node", "dist/index.js"]
