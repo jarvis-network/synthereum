@@ -7,6 +7,7 @@ import {ISynthereumDeployer} from './interfaces/IDeployer.sol';
 import {
   ISynthereumFactoryVersioning
 } from './interfaces/IFactoryVersioning.sol';
+import {ISynthereumPoolRegistry} from './interfaces/IPoolRegistry.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
 import {
@@ -129,10 +130,13 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     checkPoolDeployment(pool, poolVersion);
     checkPoolAndDerivativeMatching(pool, derivative);
     setDerivativeRoles(derivative, pool);
-    symbolToPools[pool.syntheticTokenSymbol()][pool.collateralToken()][
-      poolVersion
-    ]
-      .add(address(pool));
+    ISynthereumPoolRegistry poolRegister = getPoolRegister();
+    poolRegister.registerPool(
+      pool.syntheticTokenSymbol(),
+      pool.collateralToken(),
+      poolVersion,
+      address(pool)
+    );
     emit PoolDeployed(poolVersion, address(derivative), address(pool));
     emit DerivativeDeployed(
       derivativeVersion,
@@ -168,10 +172,13 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
     checkPoolDeployment(pool, poolVersion);
     checkPoolAndDerivativeMatching(pool, derivative);
-    symbolToPools[pool.syntheticTokenSymbol()][pool.collateralToken()][
-      poolVersion
-    ]
-      .add(address(pool));
+    ISynthereumPoolRegistry poolRegister = getPoolRegister();
+    poolRegister.registerPool(
+      pool.syntheticTokenSymbol(),
+      pool.collateralToken(),
+      poolVersion,
+      address(pool)
+    );
     emit PoolDeployed(poolVersion, address(derivative), address(pool));
   }
 
@@ -207,51 +214,6 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
       address(pool),
       address(derivative)
     );
-  }
-
-  //----------------------------------------
-  // External view functions
-  //----------------------------------------
-
-  /**
-   * @notice Returns if a particular pool exists or not
-   * @param poolSymbol Synthetic token symbol of the pool
-   * @param collateral ERC20 contract of collateral currency
-   * @param poolVersion Version of the pool
-   * @param pool Contract of the pool to check
-   * @return isDeployed Returns true if a particular pool exists, otherwiise false
-   */
-  function isPoolDeployed(
-    string calldata poolSymbol,
-    IERC20 collateral,
-    uint8 poolVersion,
-    ISynthereumPoolDeployment pool
-  ) external view override nonReentrantView returns (bool isDeployed) {
-    isDeployed = symbolToPools[poolSymbol][collateral][poolVersion].contains(
-      address(pool)
-    );
-  }
-
-  /**
-   * @notice Returns all the pools with partcular symbol, collateral and verion
-   * @param poolSymbol Synthetic token symbol of the pool
-   * @param collateral ERC20 contract of collateral currency
-   * @param poolVersion Version of the pool
-   * @return List of all pools
-   */
-  function getPools(
-    string calldata poolSymbol,
-    IERC20 collateral,
-    uint8 poolVersion
-  ) external view override nonReentrantView returns (address[] memory) {
-    EnumerableSet.AddressSet storage poolSet =
-      symbolToPools[poolSymbol][collateral][poolVersion];
-    uint256 numberOfPools = poolSet.length();
-    address[] memory pools = new address[](numberOfPools);
-    for (uint256 j = 0; j < numberOfPools; j++) {
-      pools[j] = poolSet.at(j);
-    }
-    return pools;
   }
 
   //----------------------------------------
@@ -343,6 +305,22 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     factoryVersioning = ISynthereumFactoryVersioning(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.FactoryVersioning
+      )
+    );
+  }
+
+  /**
+   * @notice Get factory versioning contract from the finder
+   * @param poolRegister PoolRegister contract
+   */
+  function getPoolRegister()
+    internal
+    view
+    returns (ISynthereumPoolRegistry poolRegister)
+  {
+    poolRegister = ISynthereumPoolRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.PoolRegistry
       )
     );
   }

@@ -1,4 +1,3 @@
-var tdr = require('truffle-deploy-registry');
 const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
 var SynthereumFinder = artifacts.require('SynthereumFinder');

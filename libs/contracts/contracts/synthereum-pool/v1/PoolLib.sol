@@ -11,7 +11,9 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {IRole} from './interfaces/IRole.sol';
 import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
-import {ISynthereumDeployer} from '../../versioning/interfaces/IDeployer.sol';
+import {
+  ISynthereumPoolRegistry
+} from '../../versioning/interfaces/IPoolRegistry.sol';
 import {SynthereumInterfaces} from '../../versioning/Constants.sol';
 import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
@@ -719,33 +721,26 @@ library SynthereumPoolLib {
       derivative.addAdmin(addressToAdd);
     } else {
       ISynthereumPool pool = ISynthereumPool(addressToAdd);
-      ISynthereumDeployer deployer =
-        ISynthereumDeployer(
-          pool.synthereumFinder().getImplementationAddress(
-            SynthereumInterfaces.Deployer
-          )
-        );
+      IERC20 collateralToken = self.collateralToken;
       require(
-        ISynthereumDeployer(
-          self.finder.getImplementationAddress(SynthereumInterfaces.Deployer)
-        ) == deployer,
-        'Mismatch in deployer'
-      );
-      IERC20 collateralToken = pool.collateralToken();
-      require(
-        self.collateralToken == collateralToken,
+        collateralToken == pool.collateralToken(),
         'Collateral tokens do not match'
       );
-      IERC20 syntheticToken = pool.syntheticToken();
       require(
-        self.syntheticToken == syntheticToken,
+        self.syntheticToken == pool.syntheticToken(),
         'Synthetic tokens do not match'
       );
-      deployer.isPoolDeployed(
+      ISynthereumFinder finder = self.finder;
+      require(finder == pool.synthereumFinder(), 'Finders do not match');
+      ISynthereumPoolRegistry poolRegister =
+        ISynthereumPoolRegistry(
+          finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
+        );
+      poolRegister.isPoolDeployed(
         pool.syntheticTokenSymbol(),
         collateralToken,
         pool.version(),
-        pool
+        address(pool)
       );
       if (derivativeRole == ISynthereumPool.DerivativeRoles.POOL) {
         derivative.addPool(addressToAdd);
@@ -1084,28 +1079,23 @@ library SynthereumPoolLib {
       poolToCheck.isDerivativeAdmitted(derivativeToCheck),
       'Wrong derivative'
     );
-    ISynthereumDeployer deployer =
-      ISynthereumDeployer(
-        poolToCheck.synthereumFinder().getImplementationAddress(
-          SynthereumInterfaces.Deployer
-        )
-      );
+
+    IERC20 collateralToken = self.collateralToken;
     require(
-      ISynthereumDeployer(
-        self.finder.getImplementationAddress(SynthereumInterfaces.Deployer)
-      ) == deployer,
-      'Mismatch in deployer'
-    );
-    IERC20 collateralToken = poolToCheck.collateralToken();
-    require(
-      self.collateralToken == collateralToken,
+      collateralToken == poolToCheck.collateralToken(),
       'Collateral tokens do not match'
     );
-    deployer.isPoolDeployed(
+    ISynthereumFinder finder = self.finder;
+    require(finder == poolToCheck.synthereumFinder(), 'Finders do not match');
+    ISynthereumPoolRegistry poolRegister =
+      ISynthereumPoolRegistry(
+        finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
+      );
+    poolRegister.isPoolDeployed(
       poolToCheck.syntheticTokenSymbol(),
       collateralToken,
       poolToCheck.version(),
-      poolToCheck
+      address(poolToCheck)
     );
   }
 
