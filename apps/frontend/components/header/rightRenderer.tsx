@@ -71,6 +71,13 @@ const render = () => {
     dispatch(setAccountDropdownExpanded(value));
   };
 
+  const handleLogout = () => {
+    authLogin!.logout();
+
+    // @TODO Just clear data in Redux without hard-reload
+    window.location.reload();
+  }
+
   const links = [
     {
       name: 'Account',
@@ -100,7 +107,7 @@ const render = () => {
         position="absolute"
         name={name || ''}
         wallet={addr}
-        onLogout={authLogin!.logout}
+        onLogout={handleLogout}
         onModeChange={() => null}
         onThemeChange={handleSetTheme}
         mode="demo"
