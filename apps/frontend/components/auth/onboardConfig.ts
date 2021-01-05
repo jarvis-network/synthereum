@@ -86,7 +86,6 @@ const getOnboardConfig = (): OnboardConfig => {
       wallets: filterEmpty([
         { walletName: 'metamask' },
         getWalletConnect(),
-        { walletName: 'unilogin' },
         getPortis(),
         getFortmatic(),
         getSquareLink(),
