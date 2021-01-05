@@ -57,32 +57,4 @@ interface ISynthereumDeployer {
     bytes calldata derivativeParamsData,
     ISynthereumPoolDeployment pool
   ) external returns (IDerivativeDeployment derivative);
-
-  /**
-   * @notice Returns if a particular pool exists or not
-   * @param poolSymbol Synthetic token symbol of the pool
-   * @param collateral ERC20 contract of collateral currency
-   * @param poolVersion Version of the pool
-   * @param pool Contract of the pool to check
-   * @return isDeployed Returns true if a particular pool exists, otherwiise false
-   */
-  function isPoolDeployed(
-    string calldata poolSymbol,
-    IERC20 collateral,
-    uint8 poolVersion,
-    ISynthereumPoolDeployment pool
-  ) external view returns (bool isDeployed);
-
-  /**
-   * @notice Returns all the pools with partcular symbol, collateral and verion
-   * @param poolSymbol Synthetic token symbol of the pool
-   * @param collateral ERC20 contract of collateral currency
-   * @param poolVersion Version of the pool
-   * @return List of all pools
-   */
-  function getPools(
-    string calldata poolSymbol,
-    IERC20 collateral,
-    uint8 poolVersion
-  ) external view returns (address[] memory);
 }
