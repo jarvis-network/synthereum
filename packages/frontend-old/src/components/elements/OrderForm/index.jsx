@@ -67,6 +67,7 @@ export default function OrderForm({
   useEffect(() => {
     const setExtendedTokens = async function (collateral, assets) {
       console.log(assets);
+      if (!collateral) return;
       const collateralName = await collateral.methods.name().call();
       const collateralSymbol = await collateral.methods.symbol().call();
       const collateralDecimals = await collateral.methods.decimals().call();
@@ -114,8 +115,6 @@ export default function OrderForm({
         )
         .call()
         .then(response => {
-          console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
-          console.log(response);
           setFeeAmount(response);
         })
         .catch(e => console.log(e));
@@ -163,6 +162,7 @@ export default function OrderForm({
             notify.hash(hash);
           })
           .then(() => {
+            console.log(`Minting:`, { collateralAmount, orderAmountTKNbits });
             return assets[outputToken].contract.methods
               .mintRequest(collateralAmount, orderAmountTKNbits)
               .send({
@@ -197,6 +197,7 @@ export default function OrderForm({
         notify.hash(hash);
       })
       .then(() => {
+        console.log(`Redeeming:`, { collateralAmount, orderAmountTKNbits });
         return assets[inputToken].contract.methods
           .redeemRequest(collateralAmount, orderAmountTKNbits)
           .send({
@@ -234,6 +235,11 @@ export default function OrderForm({
         notify.hash(hash);
       })
       .then(() => {
+        console.log(`Exchanging:`, {
+          inputAmountTKNbits,
+          collateralAmountTKNbits,
+          outputAmountTKNbits,
+        });
         return assets[inputToken].contract.methods
           .exchangeRequest(
             assets[outputToken].contract.options.address,

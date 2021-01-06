@@ -25,8 +25,8 @@ function removeZeros(stringAmount) {
 }
 
 export function fromScaledWei(amount, decimals) {
-  console.log(amount);
-  console.log(decimals);
+  // console.log(amount);
+  // console.log(decimals);
   let scaledAmount = 0;
   if (decimals == 6) {
     scaledAmount = fromWei(amount, 'mwei');
@@ -37,19 +37,19 @@ export function fromScaledWei(amount, decimals) {
 }
 
 export function toScaledWei(amount, decimals) {
-  console.log(amount);
+  // console.log(amount);
   /*console.log(decimals);
   console.log(toWei(amount) );
   console.log(10**(18 - decimals));*/
   let scaledAmount = 0;
   if (decimals == 6) {
     scaledAmount = toWei(amount, 'mwei');
-    console.log('RESULT SIX');
-    console.log(scaledAmount);
+    // console.log('RESULT SIX');
+    // console.log(scaledAmount);
   } else if (decimals == 18) {
     scaledAmount = toWei(amount);
-    console.log('RESULT');
-    console.log(scaledAmount);
+    // console.log('RESULT');
+    // console.log(scaledAmount);
   }
   return scaledAmount;
 }
