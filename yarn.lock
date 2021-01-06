@@ -3303,10 +3303,10 @@
     react-select "^3.1.0"
     react-table "^6.8.6"
 
-"@jarvis-network/uma-common@0.3.10", "@jarvis-network/uma-common@^0.3.10":
-  version "0.3.10"
-  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-common/-/@jarvis-network/uma-common-0.3.10.tgz#0097ed6639b879edac37e60fdd3db394206d1156"
-  integrity sha1-AJftZjm4ee2sN+YP3T2zlCBtEVY=
+"@jarvis-network/uma-common@0.3.11", "@jarvis-network/uma-common@^0.3.11":
+  version "0.3.11"
+  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-common/-/@jarvis-network/uma-common-0.3.11.tgz#ec0f2eba50074acedf4874dbe7a9c2e6f3196eaf"
+  integrity sha1-7A8uulAHSs7fSHTb56nC5vMZbq8=
   dependencies:
     "@ethersproject/bignumber" "^5.0.5"
     "@nomiclabs/hardhat-etherscan" "^2.1.0"
@@ -3328,12 +3328,12 @@
   optionalDependencies:
     "@umaprotocol/truffle-ledger-provider" "npm:@jarvis-network/ledger-web3-provider@^2.0.1"
 
-"@jarvis-network/uma-core@0.3.10":
-  version "0.3.10"
-  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-core/-/@jarvis-network/uma-core-0.3.10.tgz#ef34753adfd5e82da4fd9fb6774ef4c274e53b9a"
-  integrity sha1-7zR1Ot/V6C2k/Z+2d070wnTlO5o=
+"@jarvis-network/uma-core@0.3.11":
+  version "0.3.11"
+  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-core/-/@jarvis-network/uma-core-0.3.11.tgz#627da6f5d517cad3a643182fbcbc1be3e2dc8a9a"
+  integrity sha1-Yn2m9dUXytOmQxgvvLwb4+Lcipo=
   dependencies:
-    "@jarvis-network/uma-common" "^0.3.10"
+    "@jarvis-network/uma-common" "^0.3.11"
     "@truffle/contract" "^4.2.20"
 
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
