@@ -59,13 +59,13 @@ export class RedeemRequestValidator {
     const balance = await getTokenBalance(info.syntheticToken, sender);
     if (balance.lt(tokens)) {
       throw new Error(
-        `Redeem request ${request.redeem_id} is not covered by user's ${info.symbol} balance`,
+        `Redeem request ${request.redeem_id} is not covered by user's ${info.symbol} balance ${balance} tokens ${tokens}`,
       );
     }
 
     if (allowance.lt(tokens)) {
       throw new Error(
-        `Unable to approve redeem request ${request.redeem_id} until TIC is given an allowance to transfer the user's collateral`,
+        `Unable to approve redeem request ${request.redeem_id} until TIC is given an allowance ${allowance} to transfer the user's collateral ${tokens}`,
       );
     }
     return true;

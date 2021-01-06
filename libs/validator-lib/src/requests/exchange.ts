@@ -90,14 +90,14 @@ export class ExchangeRequestValidator {
     );
     const balance = await getTokenBalance(info.syntheticToken, sender);
 
-    if (balance < tokens) {
+    if (balance.lt(tokens)) {
       throw new Error(
-        `Exchange request ${request.exchange_id} is not covered by user's ${info.symbol} balance`,
+        `Exchange request ${request.exchange_id} is not covered by user's ${info.symbol} balance ${balance} tokens ${tokens}`,
       );
     }
-    if (allowance < tokens) {
+    if (allowance.lt(tokens)) {
       throw new Error(
-        `Unable to approve exchange request ${request.exchange_id} until TIC is given an allowance to transfer the user's tokens`,
+        `Unable to approve exchange request ${request.exchange_id} until TIC is given an allowance ${allowance} to transfer the user's tokens ${tokens}`,
       );
     }
     return true;

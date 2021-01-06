@@ -52,16 +52,17 @@ export class MintRequestValidator {
       sender,
       info.address,
     );
+
     const balance = await getTokenBalance(info.collateralToken, sender);
-    if (balance < collateral) {
+    if (balance.lt(collateral)) {
       throw new Error(
-        `Mint request ${request.mint_id} is not covered by user's collateral balance`,
+        `Mint request ${request.mint_id} is not covered by user's collateral balance ${balance} collateral ${collateral}`,
       );
     }
 
-    if (allowance < collateral) {
+    if (allowance.lt(collateral)) {
       throw new Error(
-        `Unable to approve mint request ${request.mint_id} until TIC is given an allowance to transfer the user's collateral`,
+        `Unable to approve mint request ${request.mint_id} until TIC is given an allowance  ${allowance} to transfer the user's collateral ${collateral}`,
       );
     }
     return true;
