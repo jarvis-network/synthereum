@@ -10,9 +10,20 @@ var SynthereumPool = artifacts.require('SynthereumPool');
 var deployment = require('../data/deployment/only-derivatives.json');
 var assets = require('../data/synthetic-assets.json');
 var derivativeVersions = require('../data/derivative-versions.json');
+const { getDeploymentInstance } = require('../utils/deployment.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
+
+  const {
+    contractInstance: synthereumDeployerInstance,
+    isDeployed: isDeployedDeployer,
+  } = await getDeploymentInstance(
+    SynthereumDeployer,
+    'SynthereumDeployer',
+    networkId,
+  );
+
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const liquidityProvider =
@@ -21,8 +32,6 @@ module.exports = async function (deployer, network, accounts) {
   let txData = [];
 
   if (deployment[networkId].isEnabled === true) {
-    const synthereumFinderInstance = await SynthereumFinder.deployed();
-    const synthereumDeployerInstance = await SynthereumDeployer.deployed();
     assets[networkId].map(async asset => {
       let derivativeVersion = '';
       let derivativePayload = '';
@@ -69,6 +78,7 @@ module.exports = async function (deployer, network, accounts) {
               collateralAddress: umaContracts[networkId].collateralAddress,
               priceFeedIdentifier: web3Utils.padRight(
                 web3Utils.toHex(asset.priceFeedIdentifier),
+                64,
               ),
               syntheticName: asset.syntheticName,
               syntheticSymbol: asset.syntheticSymbol,
@@ -95,7 +105,11 @@ module.exports = async function (deployer, network, accounts) {
               liquidationLiveness: umaConfig[networkId].liquidationLiveness,
               excessTokenBeneficiary:
                 umaConfig[networkId].excessTokenBeneficiary,
-              admins: [synthereumDeployerInstance.address],
+              admins: [
+                isDeployedDeployer
+                  ? synthereumDeployerInstance.address
+                  : synthereumDeployerInstance.options.address,
+              ],
               pools: [],
             },
           ],
@@ -112,26 +126,51 @@ module.exports = async function (deployer, network, accounts) {
     for (let j = 0; j < txData.length; j++) {
       console.log(`   Deploying '${txData[j].asset} Derivative'`);
       console.log('   -------------------------------------');
-      const gasEstimation = await synthereumDeployerInstance.deployOnlyDerivative.estimateGas(
-        txData[j].derivativeVersion,
-        txData[j].derivativePayload,
-        txData[j].pool,
-        { from: maintainer },
-      );
+      const gasEstimation = isDeployedDeployer
+        ? await synthereumDeployerInstance.deployOnlyDerivative.estimateGas(
+            txData[j].derivativeVersion,
+            txData[j].derivativePayload,
+            txData[j].pool,
+            { from: maintainer },
+          )
+        : await synthereumDeployerInstance.methods
+            .deployOnlyDerivative(
+              txData[j].derivativeVersion,
+              txData[j].derivativePayload,
+              txData[j].pool,
+            )
+            .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
-        const derivativeToDeploy = await synthereumDeployerInstance.deployOnlyDerivative.call(
-          txData[j].derivativeVersion,
-          txData[j].derivativePayload,
-          txData[j].pool,
-          { from: maintainer },
-        );
-        const tx = await synthereumDeployerInstance.deployOnlyDerivative(
-          txData[j].derivativeVersion,
-          txData[j].derivativePayload,
-          txData[j].pool,
-          { from: maintainer },
-        );
-        console.log(`   > gas used: ${tx.receipt.gasUsed}`);
+        const derivativeToDeploy = isDeployedDeployer
+          ? await synthereumDeployerInstance.deployOnlyDerivative.call(
+              txData[j].derivativeVersion,
+              txData[j].derivativePayload,
+              txData[j].pool,
+              { from: maintainer },
+            )
+          : await synthereumDeployerInstance.methods
+              .deployOnlyDerivative(
+                txData[j].derivativeVersion,
+                txData[j].derivativePayload,
+                txData[j].pool,
+              )
+              .call({ from: maintainer });
+        const tx = isDeployedDeployer
+          ? await synthereumDeployerInstance.deployOnlyDerivative(
+              txData[j].derivativeVersion,
+              txData[j].derivativePayload,
+              txData[j].pool,
+              { from: maintainer },
+            )
+          : await synthereumDeployerInstance.methods
+              .deployOnlyDerivative(
+                txData[j].derivativeVersion,
+                txData[j].derivativePayload,
+                txData[j].pool,
+              )
+              .send({ from: maintainer });
+        const gasUsed = isDeployedDeployer ? tx.receipt.gasUsed : tx.gasUsed;
+        console.log(`   > gas used: ${gasUsed}`);
         console.log('\n');
         const poolInstance = await SynthereumPool.at(txData[j].pool);
         await poolInstance.addDerivative(derivativeToDeploy, {

@@ -81,6 +81,18 @@ export function parseInteger(x: unknown): number {
   return result;
 }
 
+export function parseBoolean(x: unknown): boolean | null {
+  return isBoolean(x)
+    ? x
+    : x === 'true'
+    ? true
+    : x === 'false'
+    ? false
+    : x === null || x === undefined
+    ? null
+    : throwError(`${x} is not a boolean`);
+}
+
 type Object = { [prop: string]: unknown } & { [prop: number]: unknown };
 
 export function isObject(x: unknown): x is object {

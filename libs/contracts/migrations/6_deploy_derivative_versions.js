@@ -1,6 +1,8 @@
 require('dotenv').config({ path: './.env.migration' });
+const { parseBoolean } = require('@jarvis-network/web3-utils/base/asserts');
 const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
+const { getDeploymentInstance } = require('../utils/deployment.js');
 const umaContracts = require('../data/uma-contract-dependencies.json');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 var SynthereumFinder = artifacts.require('SynthereumFinder');
@@ -41,19 +43,37 @@ const {
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
-  const newUmaDeployment = process.env.NEW_UMA_INFRASTRUCTURE ?? false;
+  const {
+    contractInstance: synthereumFactoryVersioningInstance,
+    isDeployed: isDeployedFactoryVersioning,
+  } = await getDeploymentInstance(
+    SynthereumFactoryVersioning,
+    'SynthereumFactoryVersioning',
+    networkId,
+  );
+  const {
+    contractInstance: synthereumFinderInstance,
+    isDeployed: isDeployedFinder,
+  } = await getDeploymentInstance(
+    SynthereumFinder,
+    'SynthereumFinder',
+    networkId,
+  );
+  const newUmaDeployment =
+    parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE) ?? false;
   const umaDeployment =
     (networkId != 1 && networkId != 3 && networkId != 4 && networkId != 42) ||
     newUmaDeployment;
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   if (derivativeVersions[networkId]?.DerivativeFactory?.isEnabled ?? true) {
-    const synthereumFinderInstance = await SynthereumFinder.deployed();
     const keys = getKeysForNetwork(network, accounts);
     await deploy(
       deployer,
       network,
       SynthereumSyntheticTokenFactory,
-      synthereumFinderInstance.address,
+      isDeployedFinder
+        ? synthereumFinderInstance.address
+        : synthereumFinderInstance.options.address,
       derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
       { from: keys.deployer },
     );
@@ -213,7 +233,9 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SynthereumDerivativeFactory,
-      synthereumFinderInstance.address,
+      isDeployedFinder
+        ? synthereumFinderInstance.address
+        : synthereumFinderInstance.options.address,
       umaDeployment
         ? (await UmaFinder.deployed()).address
         : umaContracts[networkId].finderAddress,
@@ -223,12 +245,19 @@ module.exports = async function (deployer, network, accounts) {
     );
 
     const derivativeFactoryInstance = await SynthereumDerivativeFactory.deployed();
-    const synthereumFactoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
-    await synthereumFactoryVersioningInstance.setDerivativeFactory(
-      derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
-      derivativeFactoryInstance.address,
-      { from: maintainer },
-    );
+    isDeployedFactoryVersioning
+      ? await synthereumFactoryVersioningInstance.setDerivativeFactory(
+          derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
+          derivativeFactoryInstance.address,
+          { from: maintainer },
+        )
+      : await synthereumFactoryVersioningInstance.methods
+          .setDerivativeFactory(
+            derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
+            derivativeFactoryInstance.address,
+          )
+          .send({ from: maintainer });
+    console.log('DerivativeFactory adeed to synthereumFactoryVersioning');
     if (umaDeployment == true) {
       const registryInstance = await Registry.deployed();
       await registryInstance.addMember(

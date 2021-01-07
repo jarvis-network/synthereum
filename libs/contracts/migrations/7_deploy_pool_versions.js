@@ -1,5 +1,6 @@
 const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
+const { getDeploymentInstance } = require('../utils/deployment.js');
 var SynthereumFinder = artifacts.require('SynthereumFinder');
 var SynthereumTICHelper = artifacts.require('SynthereumTICHelper');
 var SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
@@ -13,9 +14,23 @@ const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
+  const {
+    contractInstance: synthereumFactoryVersioningInstance,
+    isDeployed: isDeployedFactoryVersioning,
+  } = await getDeploymentInstance(
+    SynthereumFactoryVersioning,
+    'SynthereumFactoryVersioning',
+    networkId,
+  );
+  const {
+    contractInstance: synthereumFinderInstance,
+    isDeployed: isDeployedFinder,
+  } = await getDeploymentInstance(
+    SynthereumFinder,
+    'SynthereumFinder',
+    networkId,
+  );
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const synthereumFinderInstance = await SynthereumFinder.deployed();
-  const synthereumFactoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
   const keys = getKeysForNetwork(network, accounts);
   if (poolVersions[networkId]?.TICFactory?.isEnabled ?? true) {
     //hardat
@@ -45,15 +60,26 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SynthereumTICFactory,
-      synthereumFinderInstance.address,
+      isDeployedFinder
+        ? synthereumFinderInstance.address
+        : synthereumFinderInstance.options.address,
       { from: keys.deployer },
     );
     const synthereumTICFactoryInstance = await SynthereumTICFactory.deployed();
-    await synthereumFactoryVersioningInstance.setPoolFactory(
-      poolVersions[networkId]?.TICFactory?.version ?? 0,
-      synthereumTICFactoryInstance.address,
-      { from: maintainer },
-    );
+
+    isDeployedFactoryVersioning
+      ? await synthereumFactoryVersioningInstance.setPoolFactory(
+          poolVersions[networkId]?.TICFactory?.version ?? 0,
+          synthereumTICFactoryInstance.address,
+          { from: maintainer },
+        )
+      : await synthereumFactoryVersioningInstance.methods
+          .setPoolFactory(
+            poolVersions[networkId]?.TICFactory?.version ?? 0,
+            synthereumTICFactoryInstance.address,
+          )
+          .send({ from: maintainer });
+    console.log('TICFactory added to SynthereumFactoryVersioning');
   }
   if (poolVersions[networkId]?.PoolFactory?.isEnabled ?? true) {
     if (SynthereumPoolLib.setAsDeployed) {
@@ -82,14 +108,25 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SynthereumPoolFactory,
-      synthereumFinderInstance.address,
+      isDeployedFinder
+        ? synthereumFinderInstance.address
+        : synthereumFinderInstance.options.address,
       { from: keys.deployer },
     );
     const synthereumPoolFactoryInstance = await SynthereumPoolFactory.deployed();
-    await synthereumFactoryVersioningInstance.setPoolFactory(
-      poolVersions[networkId]?.PoolFactory?.version ?? 1,
-      synthereumPoolFactoryInstance.address,
-      { from: maintainer },
-    );
+
+    isDeployedFactoryVersioning
+      ? await synthereumFactoryVersioningInstance.setPoolFactory(
+          poolVersions[networkId]?.PoolFactory?.version ?? 1,
+          synthereumPoolFactoryInstance.address,
+          { from: maintainer },
+        )
+      : await synthereumFactoryVersioningInstance.methods
+          .setPoolFactory(
+            poolVersions[networkId]?.PoolFactory?.version ?? 1,
+            synthereumPoolFactoryInstance.address,
+          )
+          .send({ from: maintainer });
+    console.log('PoolFactory added to SynthereumFactoryVersioning');
   }
 };

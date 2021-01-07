@@ -12,9 +12,28 @@ var assets = require('../data/synthetic-assets.json');
 var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
+const { getDeploymentInstance } = require('../utils/deployment.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
+
+  const {
+    contractInstance: synthereumDeployerInstance,
+    isDeployed: isDeployedDeployer,
+  } = await getDeploymentInstance(
+    SynthereumDeployer,
+    'SynthereumDeployer',
+    networkId,
+  );
+  const {
+    contractInstance: synthereumFinderInstance,
+    isDeployed: isDeployedFinder,
+  } = await getDeploymentInstance(
+    SynthereumFinder,
+    'SynthereumFinder',
+    networkId,
+  );
+
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const liquidityProvider =
@@ -26,8 +45,6 @@ module.exports = async function (deployer, network, accounts) {
     (await TestnetERC20.deployed()).address;
 
   if (deployment[networkId].isEnabled === true) {
-    const synthereumFinderInstance = await SynthereumFinder.deployed();
-    const synthereumDeployerInstance = await SynthereumDeployer.deployed();
     assets[networkId].map(async asset => {
       let derivativeVersion = '';
       let poolVersion = '';
@@ -98,7 +115,11 @@ module.exports = async function (deployer, network, accounts) {
               liquidationLiveness: umaConfig[networkId].liquidationLiveness,
               excessTokenBeneficiary:
                 umaConfig[networkId].excessTokenBeneficiary,
-              admins: [synthereumDeployerInstance.address],
+              admins: [
+                isDeployedDeployer
+                  ? synthereumDeployerInstance.address
+                  : synthereumDeployerInstance.options.address,
+              ],
               pools: [],
             },
           ],
@@ -132,7 +153,9 @@ module.exports = async function (deployer, network, accounts) {
           ],
           [
             ZERO_ADDRESS,
-            synthereumFinderInstance.address,
+            isDeployedFinder
+              ? synthereumFinderInstance.address
+              : synthereumFinderInstance.options.address,
             poolVersion,
             {
               admin: admin,
@@ -182,7 +205,9 @@ module.exports = async function (deployer, network, accounts) {
           ],
           [
             ZERO_ADDRESS,
-            synthereumFinderInstance.address,
+            isDeployedFinder
+              ? synthereumFinderInstance.address
+              : synthereumFinderInstance.options.address,
             poolVersion,
             {
               admin: admin,
@@ -216,22 +241,42 @@ module.exports = async function (deployer, network, accounts) {
     for (let j = 0; j < txData.length; j++) {
       console.log(`   Deploying '${txData[j].asset}'`);
       console.log('   -------------------------------------');
-      const gasEstimation = await synthereumDeployerInstance.deployPoolAndDerivative.estimateGas(
-        txData[j].derivativeVersion,
-        txData[j].poolVersion,
-        txData[j].derivativePayload,
-        txData[j].poolPayload,
-        { from: maintainer },
-      );
+      const gasEstimation = isDeployedDeployer
+        ? await synthereumDeployerInstance.deployPoolAndDerivative.estimateGas(
+            txData[j].derivativeVersion,
+            txData[j].poolVersion,
+            txData[j].derivativePayload,
+            txData[j].poolPayload,
+            { from: maintainer },
+          )
+        : await synthereumDeployerInstance.methods
+            .deployPoolAndDerivative(
+              txData[j].derivativeVersion,
+              txData[j].poolVersion,
+              txData[j].derivativePayload,
+              txData[j].poolPayload,
+            )
+            .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
-        const tx = await synthereumDeployerInstance.deployPoolAndDerivative(
-          txData[j].derivativeVersion,
-          txData[j].poolVersion,
-          txData[j].derivativePayload,
-          txData[j].poolPayload,
-          { from: maintainer },
-        );
-        console.log(`   > gas used: ${tx.receipt.gasUsed}`);
+        const tx = isDeployedDeployer
+          ? await synthereumDeployerInstance.deployPoolAndDerivative(
+              txData[j].derivativeVersion,
+              txData[j].poolVersion,
+              txData[j].derivativePayload,
+              txData[j].poolPayload,
+              { from: maintainer },
+            )
+          : await synthereumDeployerInstance.methods
+              .deployPoolAndDerivative(
+                txData[j].derivativeVersion,
+                txData[j].poolVersion,
+                txData[j].derivativePayload,
+                txData[j].poolPayload,
+              )
+              .send({ from: maintainer });
+
+        const gasUsed = isDeployedDeployer ? tx.receipt.gasUsed : tx.gasUsed;
+        console.log(`   > gas used: ${gasUsed}`);
         console.log('\n');
       }
     }
