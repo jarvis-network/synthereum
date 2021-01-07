@@ -87,8 +87,8 @@ target "frontend" {
   platforms = ["linux/amd64"]
   target = "frontend"
   cache-from = [
-  "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}",
-  "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}"
+    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}",
+    "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
   ]
   cache-to= [
     "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
@@ -104,8 +104,8 @@ target "frontend-old" {
   platforms = ["linux/amd64"]
   target = "frontend-old"
   cache-from = [
-  "type=registry,ref=${REGISTRY_NAME}/frontend-old-cache:${TAG}",
-  "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}"
+    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}",
+    "type=registry,ref=${REGISTRY_NAME}/frontend-old-cache:${TAG}"
   ]
   cache-to= [
     "type=registry,ref=${REGISTRY_NAME}/frontend-old-cache:${TAG}"
