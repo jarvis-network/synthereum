@@ -4,6 +4,7 @@ let
 in
 mkShell {
   buildInputs = [
+    dmd
     fish
     git
     docker
