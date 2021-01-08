@@ -1,12 +1,17 @@
 import BN from 'bn.js';
 
-import { Amount, maxUint256 } from '@jarvis-network/web3-utils/base/big-number';
+import {
+  Amount,
+  formatAmount,
+  maxUint256,
+} from '@jarvis-network/web3-utils/base/big-number';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
-import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 import {
   getTokenAllowance,
   getTokenBalance,
+  scaleTokenAmountToWei,
   setTokenAllowance,
+  weiToTokenAmount,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
 import { SynthereumRealmWithWeb3 } from './types';
@@ -25,7 +30,7 @@ export interface GasOptions {
 }
 
 interface BaseTxParams {
-  collateral: BN;
+  collateral: Amount;
   txOptions?: GasOptions;
 }
 
@@ -36,14 +41,14 @@ interface MintParams extends BaseTxParams {
 
 interface ExchangeParams extends BaseTxParams {
   inputSynth: SyntheticSymbol;
-  inputAmount: BN;
+  inputAmount: Amount;
   outputSynth: SyntheticSymbol;
-  outputAmount: BN;
+  outputAmount: Amount;
 }
 
 interface RedeemParams extends BaseTxParams {
   inputSynth: SyntheticSymbol;
-  inputAmount: BN;
+  inputAmount: Amount;
 }
 
 export class RealmAgent<
@@ -71,14 +76,23 @@ export class RealmAgent<
   }: MintParams) {
     const tic = this.realm.ticInstances[outputSynth];
     // TODO: Should we return both promises separately?
-    await this.ensureSufficientAllowanceFor(
+    console.log(`Checking allowance...`);
+    const result = await this.ensureSufficientAllowanceFor(
       this.realm.collateralToken,
       tic.address,
+      collateral,
+      txOptions,
     );
+    console.log(`Allowance ok.`);
+    const inputCollateral = weiToTokenAmount({
+      wei: collateral,
+      decimals: tic.collateralToken.decimals,
+    }) as any;
     const tx = tic.instance.methods.mintRequest(
-      collateral.toString(10),
-      outputAmount.toString(10),
+      inputCollateral,
+      outputAmount as any,
     );
+    console.log(`Sending tx`);
     return await this.sendTx(tx, txOptions);
   }
 
@@ -92,16 +106,22 @@ export class RealmAgent<
   }: ExchangeParams) {
     const inputTic = this.realm.ticInstances[inputSynth];
     const destinationTicAddress = this.realm.ticInstances[outputSynth].address;
-    // TODO: Should we return both promises separately?
-    await this.ensureSufficientAllowanceFor(
+    const result = await this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,
+      inputAmount,
+      txOptions,
     );
+    console.log(`Allowance ok - ${result}`);
+    const inputCollateral = weiToTokenAmount({
+      wei: collateral,
+      decimals: inputTic.collateralToken.decimals,
+    });
     const tx = inputTic.instance.methods.exchangeRequest(
       destinationTicAddress,
-      inputAmount.toString(10),
-      collateral.toString(10),
-      outputAmount.toString(10),
+      inputAmount as any,
+      inputCollateral as any,
+      outputAmount as any,
     );
     return await this.sendTx(tx, txOptions);
   }
@@ -113,14 +133,19 @@ export class RealmAgent<
     txOptions = {},
   }: RedeemParams) {
     const inputTic = this.realm.ticInstances[inputSynth];
-    // TODO: Should we return both promises separately?
     await this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,
+      inputAmount,
+      txOptions,
     );
+    const outputCollateral = weiToTokenAmount({
+      wei: collateral,
+      decimals: inputTic.collateralToken.decimals,
+    });
     const tx = inputTic.instance.methods.redeemRequest(
-      collateral.toString(10),
-      inputAmount.toString(10),
+      outputCollateral as any,
+      inputAmount as any,
     );
     return await this.sendTx(tx, txOptions);
   }
@@ -128,19 +153,41 @@ export class RealmAgent<
   private async ensureSufficientAllowanceFor(
     tokenInfo: TokenInfo<Net>,
     spender: AddressOn<Net>,
-    necessaryAllowance: Amount = maxUint256 as Amount,
+    necessaryAllowance: Amount,
+    txOptions: GasOptions,
   ) {
+    console.log('Checking allowance...');
     const allowance = await getTokenAllowance(
       tokenInfo,
       this.agentAddress,
       spender,
     );
     if (allowance.lt(necessaryAllowance)) {
-      await setTokenAllowance(tokenInfo, spender, necessaryAllowance);
+      console.log(
+        `Allowance of ${spender} is ${formatAmount(
+          allowance,
+        )}, which is less than required ${formatAmount(necessaryAllowance)}`,
+      );
+      const max = scaleTokenAmountToWei({
+        amount: maxUint256,
+        decimals: tokenInfo.decimals,
+      });
+      const x = setTokenAllowance(tokenInfo, spender, max);
+      return await this.sendTx(x, txOptions);
+    } else {
+      console.log(
+        `Allowance of ${spender} is ${formatAmount(
+          allowance,
+        )}, which is sufficient`,
+      );
+      return true;
     }
   }
 
-  private sendTx<T>(tx: NonPayableTransactionObject<T>, txOptions: GasOptions) {
+  private sendTx<T>(
+    tx: NonPayableTransactionObject<T>,
+    txOptions?: GasOptions,
+  ) {
     return tx.send({
       from: this.agentAddress,
       chainId: this.realm.netId,

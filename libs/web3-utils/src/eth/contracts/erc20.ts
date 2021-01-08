@@ -31,7 +31,7 @@ export async function getTokenBalance<Net extends NetworkName>(
     decimals > 0 && decimals <= 18,
     `Unexpected number of decimals: ${decimals}`,
   );
-  return scaleTokenAmountToWei({ amount, decimals });
+  return scaleTokenAmountToWei({ amount: new BN(amount), decimals });
 }
 
 /**
@@ -53,27 +53,27 @@ export async function getTokenAllowance<Net extends NetworkName>(
   spender: AddressOn<Net>,
 ): Promise<Amount> {
   const amount = await instance.methods.allowance(account, spender).call();
-  return scaleTokenAmountToWei({ amount, decimals });
+  return scaleTokenAmountToWei({ amount: new BN(amount), decimals });
 }
 
-export async function setTokenAllowance<Net extends NetworkName>(
+export function setTokenAllowance<Net extends NetworkName>(
   { instance, decimals }: TokenInfo<Net>,
   spender: AddressOn<Net>,
   allowance: Amount,
 ) {
   const amount = weiToTokenAmount({ wei: allowance, decimals });
-  return await instance.methods.approve(spender, amount).call();
+  return instance.methods.approve(spender, amount.toString(10));
 }
 
-export async function setMaxTokenAllowance<Net extends NetworkName>(
+export function setMaxTokenAllowance<Net extends NetworkName>(
   info: TokenInfo<Net>,
   spender: AddressOn<Net>,
 ) {
-  return await setTokenAllowance(info, spender, maxUint256 as Amount);
+  return setTokenAllowance(info, spender, maxUint256 as Amount);
 }
 
 type TokenAmountToWeiParams = {
-  amount: string;
+  amount: BN;
   decimals: number;
 };
 
@@ -97,9 +97,9 @@ type WeiToTokenAmountParams = {
 export function weiToTokenAmount({
   wei,
   decimals,
-}: WeiToTokenAmountParams): string {
+}: WeiToTokenAmountParams): BN {
   const scaleFactor = new BN(10).pow(new BN(18 - decimals));
-  return wei.div(scaleFactor).toString();
+  return wei.div(scaleFactor);
 }
 
 export async function getAllTransferEvents<Net extends NetworkName>(

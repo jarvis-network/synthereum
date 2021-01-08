@@ -1,3 +1,4 @@
+import BN from 'bn.js';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types';
 import { scale } from '@jarvis-network/web3-utils/base/big-number';
@@ -35,11 +36,11 @@ export class RedeemRequestValidator {
       `${info.symbol} was ${price} for redeem request ${request.redeem_id}`,
     );
     const collateral = scaleTokenAmountToWei({
-      amount: request.collateral_amount[0],
+      amount: new BN(request.collateral_amount[0]),
       decimals: info.collateralToken.decimals,
     });
     const tokens = scaleTokenAmountToWei({
-      amount: request.num_tokens[0],
+      amount: new BN(request.num_tokens[0]),
       decimals: info.syntheticToken.decimals,
     });
     this.logger.info(

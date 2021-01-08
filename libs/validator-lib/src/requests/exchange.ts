@@ -1,3 +1,4 @@
+import BN from 'bn.js';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import {
   SynthereumPool,
@@ -66,11 +67,11 @@ export class ExchangeRequestValidator {
     );
 
     const tokens = scaleTokenAmountToWei({
-      amount: request.num_tokens[0],
+      amount: new BN(request.num_tokens[0]),
       decimals: info.syntheticToken.decimals,
     });
     const destTokens = scaleTokenAmountToWei({
-      amount: request.dest_num_tokens[0],
+      amount: new BN(request.dest_num_tokens[0]),
       decimals: info.syntheticToken.decimals,
     });
 
