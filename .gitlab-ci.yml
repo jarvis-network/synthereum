@@ -132,6 +132,7 @@ build-old-validator:
 .deploy-keeper-bot-default: &deploy-keeper-bot-default
   image: mcr.microsoft.com/azure-cli
   stage: deploy
+  when: manual
   needs:
     - job: build-old-validator
       artifacts: true
@@ -161,6 +162,7 @@ build-old-validator:
 .delete-keeper-bot-default: &delete-keeper-bot-default
   image: mcr.microsoft.com/azure-cli
   stage: delete
+  when: manual
   needs:
     - job: build-old-validator
       artifacts: true
