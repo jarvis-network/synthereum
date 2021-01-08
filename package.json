@@ -50,7 +50,8 @@
     ]
   },
   "resolutions": {
-    "**/@truffle/hdwallet-provider": "^1.2.1"
+    "**/@truffle/hdwallet-provider": "^1.2.1",
+    "**/@nomiclabs/hardhat-etherscan": "npm:@jarvis-network/hardhat-etherscan@0.1.0"
   },
   "husky": {
     "hooks": {
