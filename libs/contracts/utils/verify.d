@@ -55,6 +55,10 @@ void main(string[] args)
     {
         const contractName = info["contractName"].str;
         const contractAddress = info["address"].str;
+        enforce(contractAddress in allContractArgs,
+            "Missing contructor arguments for Contract '%s'"
+                .format(contractName)
+        );
         const contractArgs = allContractArgs[contractAddress];
         writefln("%s> [%s/%s] '%s' '%s'",
            indent,
@@ -64,10 +68,10 @@ void main(string[] args)
         writeArgumentsFile(tmpArgsFilepath, contractArgs);
         import std.file : remove;
         scope (success) remove(tmpArgsFilepath);
-        const cmd = `yarn hardhat verify --network %s --constructor-args ./tmp-arguments.js %s`
-            .format(network, contractAddress);
+        const newVerification = `yarn hardhat verify --network %s --constructor-args ./tmp-arguments.js %s`
+            .format(network, contractAddress)
+            .runVerify(alreadyVerified);
 
-        const newVerification = runVerify(cmd, alreadyVerified);
         writefln(
             "%s%s Contract '%s' %s: '%s'\n",
             indent,

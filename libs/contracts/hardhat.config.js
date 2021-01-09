@@ -3,7 +3,7 @@ const { getHardhatConfig } = require('@jarvis-network/uma-common');
 const configOverride = {
   paths: {
     root: '.',
-    sources: './contracts',
+    sources: './etherscan-verify/stripped',
     artifacts: './artifacts',
     cache: './cache',
     tests: './test',
