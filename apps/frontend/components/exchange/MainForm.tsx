@@ -211,8 +211,31 @@ export const MainForm: React.FC<Props> = () => {
     dispatch(setFullScreenLoaderVisible(false));
   };
 
-  const payFormatted = base === 'pay' ? pay : Number(payString).toFixed(5);
-  const receiveFormatted = base === 'pay' ? Number(receiveString).toFixed(5) : receive;
+  const getFormattedValue = (value: string) => {
+    const [, decimals] = value.split('.');
+
+    if (decimals && decimals.length > 5) {
+      return Number(value).toFixed(5);
+    }
+
+    return value;
+  }
+
+  const getFormattedPay = () => {
+    if (base === 'pay') {
+      return pay;
+    }
+
+    return getFormattedValue(payString);
+  }
+
+  const getFormattedReceive = () => {
+    if (base === 'receive') {
+      return receive;
+    }
+
+    return getFormattedValue(receiveString);
+  }
 
   return (
     <>
@@ -220,7 +243,7 @@ export const MainForm: React.FC<Props> = () => {
         <Title>You pay</Title>
         <Max />
         <Amount
-          value={payFormatted}
+          value={getFormattedPay()}
           onKeyPress={e => handleKeyPress(e, assetPay!)}
           onChange={e => {
             updateBase('pay');
@@ -245,7 +268,7 @@ export const MainForm: React.FC<Props> = () => {
       <ExchangeBox error={false}>
         <Title>You receive</Title>
         <Amount
-          value={receiveFormatted}
+          value={getFormattedReceive()}
           onKeyPress={e => handleKeyPress(e, assetReceive!)}
           onChange={e => {
             updateBase('receive');
