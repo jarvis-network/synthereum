@@ -40,6 +40,10 @@ const tabsList = [
     title: 'Crypto',
     filterValue: 'crypto',
   },
+  {
+    title: 'Commodities',
+    filterValue: 'commodities',
+  },
 ];
 
 const grid = {
@@ -194,10 +198,8 @@ const ScrollableSearchBar = styled(StyledSearchBar)`
   }
 `;
 
-const ComingSoon = styled.div`
-  text-align: center;
-  margin-top: 1em;
-  font-weight: 500;
+const ComingSoon = styled.img`
+  margin: 0 2em;
 `;
 
 const ScrollableContents = styled.div`
@@ -272,7 +274,7 @@ export const ChooseAsset: React.FC = () => {
 
           const comingSoon = !owned.length &&
             !other.length &&
-            selected === 2 && <ComingSoon>Coming soon!</ComingSoon>;
+            selected > 1 && <ComingSoon src="/images/coming-soon.svg" />;
 
           const ownedSection = owned.length ? (
             <>
