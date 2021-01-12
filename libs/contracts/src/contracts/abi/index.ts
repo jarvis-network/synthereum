@@ -4,73 +4,67 @@ import type { AbiItem } from 'web3-utils';
 import type { Tagged } from '@jarvis-network/web3-utils/base/tagged-type';
 
 import type { AccessControl } from '../typechain/AccessControl';
-export const AccessControl_Abi = require('./AccessControl.json').abi as Tagged<
+export const AccessControl_Abi = require('./AccessControl.json') as Tagged<
   AbiItem[],
   AccessControl
 >;
 
 import type { ERC20 } from '../typechain/ERC20';
-export const ERC20_Abi = require('./ERC20.json').abi as Tagged<
-  AbiItem[],
-  ERC20
->;
+export const ERC20_Abi = require('./ERC20.json') as Tagged<AbiItem[], ERC20>;
 
 import type { FinderInterface } from '../typechain/FinderInterface';
-export const FinderInterface_Abi = require('./FinderInterface.json').abi as Tagged<
+export const FinderInterface_Abi = require('./FinderInterface.json') as Tagged<
   AbiItem[],
   FinderInterface
 >;
 
 import type { HitchensUnorderedKeySet } from '../typechain/HitchensUnorderedKeySet';
-export const HitchensUnorderedKeySet_Abi = require('./HitchensUnorderedKeySet.json').abi as Tagged<
+export const HitchensUnorderedKeySet_Abi = require('./HitchensUnorderedKeySet.json') as Tagged<
   AbiItem[],
   HitchensUnorderedKeySet
 >;
 
 import type { IDerivative } from '../typechain/IDerivative';
-export const IDerivative_Abi = require('./IDerivative.json').abi as Tagged<
+export const IDerivative_Abi = require('./IDerivative.json') as Tagged<
   AbiItem[],
   IDerivative
 >;
 
 import type { IDerivativeDeployment } from '../typechain/IDerivativeDeployment';
-export const IDerivativeDeployment_Abi = require('./IDerivativeDeployment.json').abi as Tagged<
+export const IDerivativeDeployment_Abi = require('./IDerivativeDeployment.json') as Tagged<
   AbiItem[],
   IDerivativeDeployment
 >;
 
 import type { IERC20 } from '../typechain/IERC20';
-export const IERC20_Abi = require('./IERC20.json').abi as Tagged<
-  AbiItem[],
-  IERC20
->;
+export const IERC20_Abi = require('./IERC20.json') as Tagged<AbiItem[], IERC20>;
 
 import type { IStandardERC20 } from '../typechain/IStandardERC20';
-export const IStandardERC20_Abi = require('./IStandardERC20.json').abi as Tagged<
+export const IStandardERC20_Abi = require('./IStandardERC20.json') as Tagged<
   AbiItem[],
   IStandardERC20
 >;
 
 import type { Migrations } from '../typechain/Migrations';
-export const Migrations_Abi = require('./Migrations.json').abi as Tagged<
+export const Migrations_Abi = require('./Migrations.json') as Tagged<
   AbiItem[],
   Migrations
 >;
 
 import type { SynthereumTIC } from '../typechain/SynthereumTIC';
-export const SynthereumTIC_Abi = require('./SynthereumTIC.json').abi as Tagged<
+export const SynthereumTIC_Abi = require('./SynthereumTIC.json') as Tagged<
   AbiItem[],
   SynthereumTIC
 >;
 
 import type { SynthereumTICInterface } from '../typechain/SynthereumTICInterface';
-export const SynthereumTICInterface_Abi = require('./SynthereumTICInterface.json').abi as Tagged<
+export const SynthereumTICInterface_Abi = require('./SynthereumTICInterface.json') as Tagged<
   AbiItem[],
   SynthereumTICInterface
 >;
 
 import type { TICCreator } from '../typechain/TICCreator';
-export const TICCreator_Abi = require('./TICCreator.json').abi as Tagged<
+export const TICCreator_Abi = require('./TICCreator.json') as Tagged<
   AbiItem[],
   TICCreator
 >;

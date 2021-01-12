@@ -6,6 +6,7 @@
     "start:server": "next start",
     "build": "yarn prepare:assets && next build && next export",
     "build:withAnalyze": "yarn prepare:assets && ANALYZE=true next build && next export",
+    "start:analyze": "cd .next/analyze && npx http-server -p 6543 -o",
     "start": "yarn prepare:assets && next dev",
     "prepare:assets": "cp -r ../../node_modules/@jarvis-network/ui/dist/assets/ public/",
     "lint": "eslint '*/**/*.{ts,tsx}'",
