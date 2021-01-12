@@ -21,22 +21,18 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface IRole extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): IRole;
+  clone(): IRole;
   methods: {
-    createTIC(
-      derivative: string,
-      finder: string,
-      version: number | string,
-      roles: [string, string, string, string],
-      startingCollateralization: number | string,
-      fee: [[number | string], string[], (number | string)[]]
-    ): NonPayableTransactionObject<string>;
+    hasRole(
+      role: string | number[],
+      account: string
+    ): NonPayableTransactionObject<boolean>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

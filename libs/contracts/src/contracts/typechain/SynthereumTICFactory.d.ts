@@ -21,14 +21,21 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface SynthereumTICFactory extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): SynthereumTICFactory;
+  clone(): SynthereumTICFactory;
   methods: {
+    /**
+     * Returns the bytes4 signature of the function used for the deployment of a contract in a factory
+     */
+    deploymentSignature(): NonPayableTransactionObject<string>;
+
+    synthereumFinder(): NonPayableTransactionObject<string>;
+
     createTIC(
       derivative: string,
       finder: string,

@@ -336,6 +336,11 @@ export interface SynthereumTIC extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     /**
+     * Get Synthereum finder of the pool
+     */
+    synthereumFinder(): NonPayableTransactionObject<string>;
+
+    /**
      * Get Synthereum version
      */
     version(): NonPayableTransactionObject<string>;

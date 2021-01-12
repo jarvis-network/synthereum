@@ -21,21 +21,28 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface SynthereumSyntheticTokenFactory extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): SynthereumSyntheticTokenFactory;
+  clone(): SynthereumSyntheticTokenFactory;
   methods: {
-    createTIC(
-      derivative: string,
-      finder: string,
-      version: number | string,
-      roles: [string, string, string, string],
-      startingCollateralization: number | string,
-      fee: [[number | string], string[], (number | string)[]]
+    derivativeVersion(): NonPayableTransactionObject<string>;
+
+    synthereumFinder(): NonPayableTransactionObject<string>;
+
+    /**
+     * Check if the sender is a derivative Factory and deploy a new synthetic token
+     * @param tokenDecimals used to define the precision used in the token's numerical representation
+     * @param tokenName used to describe the new token
+     * @param tokenSymbol short ticker abbreviation of the name. Ideally < 5 chars
+     */
+    createToken(
+      tokenName: string,
+      tokenSymbol: string,
+      tokenDecimals: number | string
     ): NonPayableTransactionObject<string>;
   };
   events: {

@@ -21,19 +21,20 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface SynthereumPoolCreator extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): SynthereumPoolCreator;
+  clone(): SynthereumPoolCreator;
   methods: {
-    createTIC(
+    createPool(
       derivative: string,
       finder: string,
       version: number | string,
       roles: [string, string, string, string],
+      isContractAllowed: boolean,
       startingCollateralization: number | string,
       fee: [[number | string], string[], (number | string)[]]
     ): NonPayableTransactionObject<string>;

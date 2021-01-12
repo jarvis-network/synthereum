@@ -21,22 +21,27 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface Testable extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): Testable;
+  clone(): Testable;
   methods: {
-    createTIC(
-      derivative: string,
-      finder: string,
-      version: number | string,
-      roles: [string, string, string, string],
-      startingCollateralization: number | string,
-      fee: [[number | string], string[], (number | string)[]]
-    ): NonPayableTransactionObject<string>;
+    timerAddress(): NonPayableTransactionObject<string>;
+
+    /**
+     * Will revert if not running in test mode.
+     * Sets the current time.
+     * @param time timestamp to set current Testable time to.
+     */
+    setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
+
+    /**
+     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
+     */
+    getCurrentTime(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
