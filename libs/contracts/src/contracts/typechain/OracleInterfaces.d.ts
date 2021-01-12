@@ -21,22 +21,27 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface OracleInterfaces extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): OracleInterfaces;
+  clone(): OracleInterfaces;
   methods: {
-    createTIC(
-      derivative: string,
-      finder: string,
-      version: number | string,
-      roles: [string, string, string, string],
-      startingCollateralization: number | string,
-      fee: [[number | string], string[], (number | string)[]]
-    ): NonPayableTransactionObject<string>;
+    CollateralWhitelist(): NonPayableTransactionObject<string>;
+
+    FinancialContractsAdmin(): NonPayableTransactionObject<string>;
+
+    IdentifierWhitelist(): NonPayableTransactionObject<string>;
+
+    OptimisticOracle(): NonPayableTransactionObject<string>;
+
+    Oracle(): NonPayableTransactionObject<string>;
+
+    Registry(): NonPayableTransactionObject<string>;
+
+    Store(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

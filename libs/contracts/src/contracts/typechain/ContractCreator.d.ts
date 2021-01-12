@@ -21,23 +21,14 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface ContractCreator extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
-  methods: {
-    createTIC(
-      derivative: string,
-      finder: string,
-      version: number | string,
-      roles: [string, string, string, string],
-      startingCollateralization: number | string,
-      fee: [[number | string], string[], (number | string)[]]
-    ): NonPayableTransactionObject<string>;
-  };
+  ): ContractCreator;
+  clone(): ContractCreator;
+  methods: {};
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };

@@ -21,22 +21,18 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface TICCreator extends BaseContract {
+export interface IDeploymentSignature extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): TICCreator;
-  clone(): TICCreator;
+  ): IDeploymentSignature;
+  clone(): IDeploymentSignature;
   methods: {
-    createTIC(
-      derivative: string,
-      finder: string,
-      version: number | string,
-      roles: [string, string, string, string],
-      startingCollateralization: number | string,
-      fee: [[number | string], string[], (number | string)[]]
-    ): NonPayableTransactionObject<string>;
+    /**
+     * Returns the bytes4 signature of the function used for the deployment of a contract in a factory
+     */
+    deploymentSignature(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
