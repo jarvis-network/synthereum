@@ -250,6 +250,8 @@ export const MainForm: React.FC<Props> = () => {
             updatePay(e.target.value);
           }}
           onFocus={e => {
+            e.target.select();
+
             if (!Number(payString) && payString.length) {
               updatePay('');
             }
@@ -275,6 +277,8 @@ export const MainForm: React.FC<Props> = () => {
             updateReceive(e.target.value);
           }}
           onFocus={e => {
+            e.target.select();
+
             if (!Number(receiveString) && receiveString.length) {
               updateReceive('');
             }
