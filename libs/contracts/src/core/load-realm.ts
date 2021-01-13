@@ -1,9 +1,13 @@
 import {
   AddressOn,
   assertIsAddress,
+  isAddress,
 } from '@jarvis-network/web3-utils/eth/address';
 import { t } from '@jarvis-network/web3-utils/base/meta';
-import { parseInteger } from '@jarvis-network/web3-utils/base/asserts';
+import {
+  parseInteger,
+  throwError,
+} from '@jarvis-network/web3-utils/base/asserts';
 import type {
   NetworkName,
   Web3On,
@@ -11,13 +15,14 @@ import type {
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 
-import type { Pools, SynthereumPool, SynthereumRealmWithWeb3 } from './types';
+import type {
+  PoolsForVersion,
+  PoolVersion,
+  SynthereumPool,
+} from './types/pools';
+import type { SynthereumRealmWithWeb3 } from './types/realm';
 
-import {
-  TICCreator_Abi,
-  SynthereumTICInterface_Abi,
-  ERC20_Abi,
-} from '../contracts/abi';
+import { SynthereumPoolRegistry_Abi, ERC20_Abi } from '../contracts/abi';
 
 import { contractDependencies } from '../config/data/contract-dependencies';
 import type {
@@ -27,7 +32,12 @@ import type {
 } from '../config';
 import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { priceFeed } from '../config/data/price-feed';
-import { allSupportedSymbols } from '../config/data/all-synthetic-asset-symbols';
+import {
+  allSupportedSymbols,
+  SyntheticSymbol,
+} from '../config/data/all-synthetic-asset-symbols';
+import { getPool } from './pool-utils';
+import { SynthereumPoolRegistry } from '../contracts/typechain';
 
 /**
  * Load the default Synthereum Realm.
@@ -38,8 +48,9 @@ export async function loadRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
 ): Promise<SynthereumRealmWithWeb3<Net>> {
-  const config: ContractDependencies =
-    contractDependencies[netId as SupportedNetworkId];
+  const config = contractDependencies[
+    netId as SupportedNetworkId
+  ] as ContractDependencies<Net>;
 
   return loadCustomRealm(web3, netId, config);
 }
@@ -47,50 +58,109 @@ export async function loadRealm<Net extends SupportedNetworkName>(
 /**
  * Load a custom Synthereum Realm, identified by the `config` parameter.
  * @param web3 Web3 instance to connect to
- * @param config Configuration object containing all of the contract dependencies
+ * @param config Configuration object containing all of the contract
+ * dependencies
  */
 export async function loadCustomRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
-  config: ContractDependencies,
+  config: ContractDependencies<Net>,
 ): Promise<SynthereumRealmWithWeb3<Net>> {
-  let ticFactory = getContract(web3, TICCreator_Abi, config.ticFactory);
-
-  const pools = await Promise.all(
-    allSupportedSymbols.map(async symbol => {
-      const ticAddress = assertIsAddress(
-        await ticFactory.methods.symbolToTIC(symbol).call(),
-      ) as AddressOn<Net>;
-      const ticInstance = getContract(
-        web3,
-        SynthereumTICInterface_Abi,
-        ticAddress,
-      );
-      const collateralTokenAddress = assertIsAddress(
-        await ticInstance.methods.collateralToken().call(),
-      ) as AddressOn<Net>;
-      const syntheticTokenAddress = assertIsAddress(
-        await ticInstance.methods.syntheticToken().call(),
-      ) as AddressOn<Net>;
-      const info: SynthereumPool<Net> = {
-        priceFeed: priceFeed[symbol],
-        symbol,
-        address: ticAddress,
-        instance: ticInstance,
-        syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
-        collateralToken: await getTokenInfo(web3, collateralTokenAddress),
-      };
-      return t(symbol, info);
-    }),
+  let poolRegistry = getContract(
+    web3,
+    SynthereumPoolRegistry_Abi,
+    config.poolRegistry,
   );
+
+  const collateralAddress = config.collateralAddress;
+
+  const loadAllPools = async (version: PoolVersion) => {
+    const pairs = await Promise.all(
+      allSupportedSymbols.map(async symbol => {
+        const info = await loadPoolInfo(
+          web3,
+          poolRegistry,
+          collateralAddress,
+          version,
+          symbol,
+        );
+        return t(symbol, info);
+      }),
+    );
+
+    return Object.fromEntries(pairs);
+  };
 
   return {
     web3,
     netId,
-    ticFactory,
-    ticInstances: Object.fromEntries(pools) as Pools<Net>,
+    poolRegistry: poolRegistry,
+    pools: {
+      v1: (await loadAllPools('v1')) as PoolsForVersion<'v1', Net>,
+      v2: (await loadAllPools('v2')) as PoolsForVersion<'v2', Net>,
+    },
     // Assume the same collateral token for all synthetics:
-    collateralToken: pools[0][1].collateralToken,
+    collateralToken: await getTokenInfo(web3, collateralAddress),
+  };
+}
+
+function poolVersionId(version: PoolVersion) {
+  return version === 'v1'
+    ? 0
+    : version === 'v2'
+    ? 1
+    : throwError(`'${version}' is not a supported pool version`);
+}
+
+export async function loadPoolInfo<
+  Version extends PoolVersion,
+  Symbol extends SyntheticSymbol,
+  Net extends SupportedNetworkName
+>(
+  web3: Web3On<Net>,
+  poolRegistry: SynthereumPoolRegistry,
+  collateralAddress: AddressOn<Net>,
+  version: Version,
+  symbol: Symbol,
+): Promise<SynthereumPool<Version, Net, Symbol> | null> {
+  const versionId = poolVersionId(version);
+  const poolAddresses = await poolRegistry.methods
+    .getPools(symbol, collateralAddress, versionId)
+    .call();
+
+  // Assume the last address in the array is the one we should interact with
+  const lastPoolAddress = poolAddresses[poolAddresses.length - 1];
+
+  if (!isAddress(lastPoolAddress)) {
+    return null;
+  }
+
+  const poolAddress = assertIsAddress(lastPoolAddress) as AddressOn<Net>;
+
+  const poolInstance = getPool(web3, version, poolAddress);
+
+  const collateralTokenAddress = assertIsAddress(
+    await poolInstance.methods.collateralToken().call(),
+  ) as AddressOn<Net>;
+
+  if (collateralTokenAddress !== collateralAddress) {
+    throwError(
+      `Collateral token mismatch - expected: '${collateralAddress}', ` +
+        `got: '${collateralTokenAddress}'`,
+    );
+  }
+
+  const syntheticTokenAddress = assertIsAddress(
+    await poolInstance.methods.syntheticToken().call(),
+  ) as AddressOn<Net>;
+
+  return {
+    priceFeed: priceFeed[symbol],
+    symbol,
+    address: poolAddress,
+    instance: poolInstance,
+    syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
+    collateralToken: await getTokenInfo(web3, collateralTokenAddress),
   };
 }
 

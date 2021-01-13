@@ -15,7 +15,7 @@ async function main() {
   const result = balances.map(([sym, bal]) => ({
     Symbol: sym,
     'Pool Balance': `${formatAmount(bal)} USDC`,
-    'Pool Address': realm.ticInstances[sym].address,
+    'Pool Address': realm.pools['v1'][sym].address,
   }));
   console.table(result);
 }

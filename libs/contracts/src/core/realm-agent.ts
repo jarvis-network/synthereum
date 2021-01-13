@@ -14,7 +14,7 @@ import {
   weiToTokenAmount,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
-import { SynthereumRealmWithWeb3 } from './types';
+import { SynthereumRealmWithWeb3 } from './types/realm';
 import {
   allSupportedSymbols,
   SyntheticSymbol,
@@ -23,6 +23,7 @@ import { SupportedNetworkName } from '../config';
 import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { t } from '@jarvis-network/web3-utils/base/meta';
+import { PoolVersion, SynthereumPool } from './types/pools';
 
 export interface GasOptions {
   gasLimit?: BN;
@@ -57,6 +58,7 @@ export class RealmAgent<
   constructor(
     public readonly realm: SynthereumRealmWithWeb3<Net>,
     public readonly agentAddress: AddressOn<Net>,
+    public readonly poolVersion: PoolVersion,
   ) {}
 
   async collateralBalance(): Promise<Amount> {
@@ -64,8 +66,16 @@ export class RealmAgent<
   }
 
   async syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
-    const asset = this.realm.ticInstances[synthetic].syntheticToken;
+    const asset = this.realm.pools[this.poolVersion][synthetic].syntheticToken;
     return await getTokenBalance(asset, this.agentAddress);
+  }
+
+  assertV1Pool(operation: string) {
+    if (this.poolVersion !== 'v1') {
+      throw new Error(
+        `'${this.poolVersion}' support for '${operation}' is not implemented yet.`,
+      );
+    }
   }
 
   async mint({
@@ -74,7 +84,10 @@ export class RealmAgent<
     outputSynth,
     txOptions = {},
   }: MintParams) {
-    const tic = this.realm.ticInstances[outputSynth];
+    this.assertV1Pool('mint');
+    const tic = this.realm.pools[this.poolVersion][
+      outputSynth
+    ] as SynthereumPool<'v1', Net>;
     // TODO: Should we return both promises separately?
     console.log(`Checking allowance...`);
     const result = await this.ensureSufficientAllowanceFor(
@@ -104,8 +117,13 @@ export class RealmAgent<
     outputAmount,
     txOptions = {},
   }: ExchangeParams) {
-    const inputTic = this.realm.ticInstances[inputSynth];
-    const destinationTicAddress = this.realm.ticInstances[outputSynth].address;
+    this.assertV1Pool('mint');
+    const inputTic = this.realm.pools[this.poolVersion][
+      inputSynth
+    ] as SynthereumPool<'v1', Net>;
+    const destinationTicAddress = this.realm.pools[this.poolVersion][
+      outputSynth
+    ].address;
     const result = await this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,
@@ -132,7 +150,10 @@ export class RealmAgent<
     collateral,
     txOptions = {},
   }: RedeemParams) {
-    const inputTic = this.realm.ticInstances[inputSynth];
+    this.assertV1Pool('mint');
+    const inputTic = this.realm.pools[this.poolVersion][
+      inputSynth
+    ] as SynthereumPool<'v1', Net>;
     await this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,

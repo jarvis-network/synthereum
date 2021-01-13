@@ -1,9 +1,7 @@
 import BN from 'bn.js';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import {
-  SynthereumPool,
-  SynthereumRealmWithWeb3,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/types';
+import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
+import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import { scale } from '@jarvis-network/web3-utils/base/big-number';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import {
@@ -30,7 +28,7 @@ export class ExchangeRequestValidator {
   }
 
   async CheckRequest(
-    info: SynthereumPool<SupportedNetworkName>,
+    info: SynthereumPool<'v1', SupportedNetworkName>,
     request: ExchangeRequest,
   ): Promise<boolean> {
     const { priceFeed } = info;
@@ -44,7 +42,7 @@ export class ExchangeRequestValidator {
     );
 
     const destTic = request.dest_tic;
-    const destinationInfo = Object.values(this.realm.ticInstances).find(
+    const destinationInfo = Object.values(this.realm.pools['v1']).find(
       pool => pool.address === destTic,
     );
     if (!destinationInfo) {

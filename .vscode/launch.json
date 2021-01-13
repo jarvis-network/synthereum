@@ -9,11 +9,11 @@
       "request": "launch",
       "name": "Launch Program",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "envFile": "${workspaceFolder}/packages/keeper-bot-v2/.env",
+      "envFile": "${workspaceFolder}/apps/cli/.env",
       "skipFiles": ["<node_internals>/**"],
-      "args": ["${workspaceFolder}/packages/keeper-bot-v2/src/index.ts"],
+      "args": ["${workspaceFolder}/apps/cli/src/get-pool-balance.ts"],
       "env": {
-        "TS_NODE_PROJECT": "${workspaceFolder}/packages/keeper-bot-v2/tsconfig.json"
+        "TS_NODE_PROJECT": "${workspaceFolder}/apps/cli/tsconfig.json"
       }
     }
   ]

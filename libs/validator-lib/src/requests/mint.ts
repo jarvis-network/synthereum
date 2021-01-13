@@ -1,6 +1,6 @@
 import BN from 'bn.js';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types';
+import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import { scale } from '@jarvis-network/web3-utils/base/big-number';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import {
@@ -23,7 +23,7 @@ export class MintRequestValidator {
   }
 
   async CheckRequest(
-    info: SynthereumPool<SupportedNetworkName>,
+    info: SynthereumPool<'v1', SupportedNetworkName>,
     request: MintRequest,
   ): Promise<boolean> {
     const { priceFeed } = info;

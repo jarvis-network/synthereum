@@ -1,8 +1,6 @@
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import {
-  SynthereumPool,
-  SynthereumRealmWithWeb3,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/types';
+import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
+import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import {
   createEverLogger,
   ExchangeRequestValidator,
@@ -66,7 +64,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
       let started: number = performance.now();
 
       Promise.all(
-        Object.values(this.realm.ticInstances).map(info =>
+        Object.values(this.realm.pools['v1']).map(info =>
           Promise.all([
             this.checkMintRequests(info),
             this.checkRedeemRequests(info),
@@ -89,7 +87,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   }
 
   private async checkRequests<T extends [string, string, string, ...unknown[]]>(
-    info: SynthereumPool<Net>,
+    info: SynthereumPool<'v1', Net>,
     getRequestsMethod: () => NonPayableTransactionObject<T[]>,
     approveRequestMethod: ApproveRejectMethod,
     rejectRequestMethod: ApproveRejectMethod,
@@ -115,7 +113,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
     }
   }
 
-  private async checkMintRequests(info: SynthereumPool<Net>) {
+  private async checkMintRequests(info: SynthereumPool<'v1', Net>) {
     await this.checkRequests<MintOrRedeemRequest>(
       info,
       info.instance.methods.getMintRequests,
@@ -134,7 +132,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
     );
   }
 
-  private async checkRedeemRequests(info: SynthereumPool<Net>) {
+  private async checkRedeemRequests(info: SynthereumPool<'v1', Net>) {
     await this.checkRequests<MintOrRedeemRequest>(
       info,
       info.instance.methods.getRedeemRequests,
@@ -153,7 +151,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
     );
   }
 
-  private async checkExchangeRequests(info: SynthereumPool<Net>) {
+  private async checkExchangeRequests(info: SynthereumPool<'v1', Net>) {
     await this.checkRequests<ExchangeRequest>(
       info,
       info.instance.methods.getExchangeRequests,

@@ -1,4 +1,7 @@
-import type { Address } from '@jarvis-network/web3-utils/eth/address';
+import type {
+  Address,
+  AddressOn,
+} from '@jarvis-network/web3-utils/eth/address';
 import type { Amount } from '@jarvis-network/web3-utils/base/big-number';
 import type {
   SupportedNetworkIds,
@@ -32,11 +35,11 @@ export function mapAsset<F extends (sym: SyntheticSymbol) => T, T>(
   return mapTupleToObject(allSupportedSymbols, mapFun);
 }
 
-export interface ContractDependencies {
-  identifierWhitelist: Address;
-  finderAddress: Address;
-  collateralAddress: Address;
-  ticFactory: Address;
+export interface ContractDependencies<Net extends SupportedNetworkName> {
+  identifierWhitelist: AddressOn<Net>;
+  finderAddress: AddressOn<Net>;
+  collateralAddress: AddressOn<Net>;
+  poolRegistry: AddressOn<Net>;
 }
 
 export interface Fees {

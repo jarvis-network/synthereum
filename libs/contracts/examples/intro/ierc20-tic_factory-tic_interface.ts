@@ -36,7 +36,7 @@ export async function example() {
   const web3 = getInfuraWeb3(netId);
   const realm = await loadRealm(web3, netId);
   const myAddress = web3.defaultAccount as AddressOn<typeof netId>;
-  const realmAgent: RealmAgent = new RealmAgent(realm, myAddress);
+  const realmAgent: RealmAgent = new RealmAgent(realm, myAddress, 'v1');
 
   // Example: IERC20 Balances:
   console.log(
