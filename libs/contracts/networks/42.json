@@ -68,28 +68,5 @@
     "contractName": "SynthereumPoolFactory",
     "address": "0x5BBd14960B9bdF1E65AC44cBB8D3C46b59aA98B6",
     "transactionHash": "0x472cc2f15d9d77e258dba62f9f3ef4b1fb8ef8eb365a8c8672a2f9214c8dc859"
-  },
-  {
-    "contractName": "SynthereumPoolRegistry",
-    "address": "0x78a30907aD0EeC249D786d09D97EB2f6CB57b98B",
-    "transactionHash": "0x912d73d64ec8db8ac4d4255dcf9d4a7279a1d10b7dd00106d3997b14e3f7b31c"
-  },
-  {
-    "contractName": "SynthereumPool",
-    "address": "0x391C2Ee6958036bf14536C665EBa758fb5D46067",
-    "transactionHash": ""
-  },
-  {
-    "contractName": "PerpetualPoolParty",
-    "address": "0x029838f0f33AE950107806c4788a5cd1E1b63108",
-    "transactionHash": ""
-  },
-  {
-    "contractName": "MintableBurnableSyntheticToken",
-    "address": "0x3D51Da77faBD1F57c8C913e764f8Fbd4d9Ae5A52"
-  },
-  {
-    "contractName": "SynthereumTIC",
-    "address": "0xb4A3A0a98eCF993Dd33C292425b6d10d89BC6E10"
   }
 ]
