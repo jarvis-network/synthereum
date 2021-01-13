@@ -33,11 +33,8 @@ export function mapAsset<F extends (sym: SyntheticSymbol) => T, T>(
 }
 
 export interface ContractDependencies {
-  expiringMultiPartyCreator: Address;
-  tokenFactoryAddress: Address;
   identifierWhitelist: Address;
   finderAddress: Address;
-  storeAddress: Address;
   collateralAddress: Address;
   ticFactory: Address;
 }
