@@ -28,7 +28,8 @@ const HeaderContainer = styled.div`
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     order: 1;
     border-bottom-width: 0;
-    background: ${props => props.theme.background.secondary};
+    background: ${props => props.theme.background.primary};
+    border-color: ${props => props.theme.border.primary};
 
     .account-button {
       background: none;
