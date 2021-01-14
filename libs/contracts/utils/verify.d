@@ -6,6 +6,8 @@ import std.file : readText;
 import std.format : format;
 import std.json : JSONValue, parseJSON;
 import std.stdio : File, stdin, stdout, writeln, writefln;
+import std.parallelism : parallel;
+import std.uuid : randomUUID;
 
 enum alreadyVerified = "Contract source code already verified";
 enum indent = "    ";
@@ -51,7 +53,7 @@ void main(string[] args)
         skipContractsCount,
     );
 
-    foreach (idx, info; contractAddresses)
+    foreach (idx, info; contractAddresses.parallel)
     {
         const contractName = info["contractName"].str;
         const contractAddress = info["address"].str;
@@ -64,12 +66,12 @@ void main(string[] args)
            indent,
            skipContractsCount + idx + 1, skipContractsCount + contractAddresses.length,
            contractName, contractAddress);
-        const tmpArgsFilepath = "./tmp-arguments.js";
+        const tmpArgsFilepath = "./%s-tmp-arguments.js".format(randomUUID());
         writeArgumentsFile(tmpArgsFilepath, contractArgs);
         import std.file : remove;
         scope (success) remove(tmpArgsFilepath);
-        const newVerification = `yarn hardhat verify --network %s --constructor-args ./tmp-arguments.js %s`
-            .format(network, contractAddress)
+        const newVerification = `yarn hardhat verify --network %s --constructor-args %s %s`
+            .format(network, tmpArgsFilepath, contractAddress)
             .runVerify(alreadyVerified);
 
         writefln(
