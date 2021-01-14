@@ -1,8 +1,8 @@
 {
   "42": {
-    "admin": "0x81ccE2d050dEfB2d8F79946e4D0714c170cDe410",
+    "admin": "0x539E625172026F8d2AC50648a55871FA728618e8",
     "maintainer": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
-    "liquidityProvider": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
-    "validator": "0x65f2D1f3C1c76e37C645D45b8e499046A9d25243"
+    "liquidityProvider": "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
+    "validator": "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa"
   }
 }

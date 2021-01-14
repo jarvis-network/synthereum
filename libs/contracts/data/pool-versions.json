@@ -1,11 +1,11 @@
 {
   "42": {
     "TICFactory": {
-      "version": 0,
+      "version": 1,
       "isEnabled": true
     },
     "PoolFactory": {
-      "version": 1,
+      "version": 2,
       "isEnabled": true
     }
   }
