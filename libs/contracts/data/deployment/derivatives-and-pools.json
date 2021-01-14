@@ -1,1 +1,12 @@
-{ "42": { "isEnabled": true, "Derivative": 1, "Pool": 1 } }
+{
+  "42": {
+    "isEnabled": true,
+    "Derivative": 1,
+    "Pool": 2
+  },
+  "1": {
+    "isEnabled": true,
+    "Derivative": 1,
+    "Pool": 1
+  }
+}

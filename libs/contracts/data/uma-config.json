@@ -6,5 +6,13 @@
     "withdrawalLiveness": "3600",
     "liquidationLiveness": "3600",
     "excessTokenBeneficiary": "0x535aC9f9b46E515a3af364434061181a504D5bFb"
+  },
+  "1": {
+    "disputeBondPct": "50000000000000000",
+    "sponsorDisputeRewardPct": "500000000000000000",
+    "disputerDisputeRewardPct": "200000000000000000",
+    "withdrawalLiveness": "7200",
+    "liquidationLiveness": "7200",
+    "excessTokenBeneficiary": "0x535aC9f9b46E515a3af364434061181a504D5bFb"
   }
 }

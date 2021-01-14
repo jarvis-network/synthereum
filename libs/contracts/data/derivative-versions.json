@@ -4,5 +4,11 @@
       "version": 1,
       "isEnabled": true
     }
+  },
+  "1": {
+    "DerivativeFactory": {
+      "version": 1,
+      "isEnabled": true
+    }
   }
 }

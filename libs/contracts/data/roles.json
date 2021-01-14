@@ -4,5 +4,11 @@
     "maintainer": "0x5F960A547b2E67b9207AB0463e65b3817A5768B5",
     "liquidityProvider": "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
     "validator": "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa"
+  },
+  "1": {
+    "admin": "0x128C8E20Dd4F2d8519dD605632660686bA35D212",
+    "maintainer": "0x01160b02645727D09493d14A39eDE6Ec749a6555",
+    "liquidityProvider": "0x85e0d7f67B909f1a815fbC8bb39ea76b8Ba6994F",
+    "validator": "0xCb3508A63176c8a2D24f1d048374E80BEfe8A8a2"
   }
 }

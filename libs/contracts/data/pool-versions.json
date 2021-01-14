@@ -8,5 +8,15 @@
       "version": 2,
       "isEnabled": true
     }
+  },
+  "1": {
+    "TICFactory": {
+      "version": 1,
+      "isEnabled": false
+    },
+    "PoolFactory": {
+      "version": 2,
+      "isEnabled": true
+    }
   }
 }
