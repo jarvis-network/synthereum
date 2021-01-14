@@ -84,19 +84,12 @@ const render = () => {
       key: 'Account',
       onClick: handleAccountOverviewOpen,
     },
+    {
+      name: 'Help',
+      key: 'Help',
+      onClick: () => window.open('#', '_blank'),
+    },
   ];
-
-  // Fallback for initial release
-  // If no transactions in state do not show Acitity item in top menu
-  // It is because we probably will not implement backend logic for that
-  // @todo Remove after transactions backend will be done
-  if (transactions.length) {
-    links.push({
-      name: 'Activity',
-      key: 'Activity',
-      onClick: handleRecentActivityOpen,
-    });
-  }
 
   if (auth && auth.address) {
     const addr = formatWalletAddress(auth.address);
