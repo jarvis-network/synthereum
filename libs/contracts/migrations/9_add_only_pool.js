@@ -46,7 +46,7 @@ module.exports = async function (deployer, network, accounts) {
       let derivative = deployment[networkId].Derivatives[asset.syntheticSymbol];
       let poolForAdding =
         deployment[networkId].PoolForAdding[asset.syntheticSymbol];
-      if (deployment[networkId].Pool === 0) {
+      if (deployment[networkId].Pool === 1) {
         poolVersion = poolVersions[networkId]['TICFactory'].version;
         poolPayload = web3.eth.abi.encodeParameters(
           [
@@ -97,7 +97,7 @@ module.exports = async function (deployer, network, accounts) {
           ],
         );
         poolPayload = '0x' + poolPayload.substring(66);
-      } else if (deployment[networkId].Pool === 1) {
+      } else if (deployment[networkId].Pool === 2) {
         poolVersion = poolVersions[networkId]['PoolFactory'].version;
         poolPayload = web3.eth.abi.encodeParameters(
           [
