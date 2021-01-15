@@ -31,7 +31,9 @@ stages:
   - build libs
   - build and push images
   - deploy
-  - delete
+  - build-old
+  - deploy-old
+  - delete-old
 
 # Jobs:
 
@@ -119,7 +121,10 @@ stages:
 
 build-old-validator:
   <<: *job-config
-  stage: install and build dependencies
+  stage: build-old
+  when: manual
+  allow_failure: true
+  needs: []
   before_script:
     - docker info
     - echo "$ACR_CI_PASSWORD" | docker login -u "$ACR_CI_USER" --password-stdin $ACR_URL
@@ -127,15 +132,12 @@ build-old-validator:
   script:
     - docker build --pull -t "$ACR_IMAGE_FULL_NAME" ./packages/keeper-bot
     - docker push "$ACR_IMAGE_FULL_NAME"
-  when: manual
 
 .deploy-keeper-bot-default: &deploy-keeper-bot-default
   image: mcr.microsoft.com/azure-cli
-  stage: deploy
+  stage: deploy-old
   when: manual
-  needs:
-    - job: build-old-validator
-      artifacts: true
+  allow_failure: true
   script:
     - *acr_path_script
     - CONTAINER_INSTANCE_NAME="${CI_PROJECT_NAME}-${ACR_IMAGE_TAG}"
@@ -161,11 +163,9 @@ build-old-validator:
 
 .delete-keeper-bot-default: &delete-keeper-bot-default
   image: mcr.microsoft.com/azure-cli
-  stage: delete
+  stage: delete-old
   when: manual
-  needs:
-    - job: build-old-validator
-      artifacts: true
+  allow_failure: true
   script:
     - *acr_path_script
     - CONTAINER_INSTANCE_NAME="${CI_PROJECT_NAME}-${ACR_IMAGE_TAG}"
@@ -180,7 +180,6 @@ build-old-validator:
 
 deploy-azure-stage:
   <<: *deploy-keeper-bot-default
-  when: manual
   only:
     - merge_requests
     - dev
@@ -189,7 +188,6 @@ deploy-azure-stage:
 delete-azure:
   <<: *job-config
   <<: *delete-keeper-bot-default
-  when: manual
 
 release:
   stage: release
