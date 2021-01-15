@@ -25,7 +25,14 @@
     "migrate-all:kovan": "hardhat test ./test/correct-migration.js --network kovan",
     "add-pool-and-derivative:kovan": "MIGRATION_TYPE=pool-and-derivative hardhat test ./test/correct-migration.js --network kovan",
     "add-only-pool:kovan": "MIGRATION_TYPE=only-pool hardhat test ./test/correct-migration.js --network kovan",
-    "add-only-derivative:kovan": "MIGRATION_TYPE=only-derivative hardhat test ./test/correct-migration.js --network kovan"
+    "add-only-derivative:kovan": "MIGRATION_TYPE=only-derivative hardhat test ./test/correct-migration.js --network kovan",
+    "migrate-infrastructure:mainnet": "MIGRATION_TYPE=infrastructure hardhat test ./test/correct-migration.js --network mainnet",
+    "migrate-derivative-version:mainnet": "MIGRATION_TYPE=derivativeVersions hardhat test ./test/correct-migration.js --network mainnet",
+    "migrate-pool-version:mainnet": "MIGRATION_TYPE=poolVersions hardhat test ./test/correct-migration.js --network mainnet",
+    "migrate-all:mainnet": "hardhat test ./test/correct-migration.js --network mainnet",
+    "add-pool-and-derivative:mainnet": "MIGRATION_TYPE=pool-and-derivative hardhat test ./test/correct-migration.js --network mainnet",
+    "add-only-pool:mainnet": "MIGRATION_TYPE=only-pool hardhat test ./test/correct-migration.js --network mainnet",
+    "add-only-derivative:mainnet": "MIGRATION_TYPE=only-derivative hardhat test ./test/correct-migration.js --network mainnet"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
