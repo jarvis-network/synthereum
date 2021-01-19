@@ -13,6 +13,7 @@ var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
 const { getDeploymentInstance } = require('../utils/deployment.js');
+const { encodeDerivative, encodePool } = require('../utils/encoding.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
@@ -54,181 +55,71 @@ module.exports = async function (deployer, network, accounts) {
       if (deployment[networkId].Derivative === 1) {
         derivativeVersion =
           derivativeVersions[networkId]['DerivativeFactory'].version;
-        derivativePayload = web3.eth.abi.encodeParameters(
+        derivativePayload = encodeDerivative(
+          collAddress,
+          asset.priceFeedIdentifier,
+          asset.syntheticName,
+          asset.syntheticSymbol,
+          ZERO_ADDRESS,
+          asset.collateralRequirement,
+          umaConfig[networkId].disputeBondPct,
+          umaConfig[networkId].sponsorDisputeRewardPct,
+          umaConfig[networkId].disputerDisputeRewardPct,
+          asset.minSponsorTokens,
+          umaConfig[networkId].withdrawalLiveness,
+          umaConfig[networkId].liquidationLiveness,
+          umaConfig[networkId].excessTokenBeneficiary,
           [
-            {
-              params: {
-                collateralAddress: 'address',
-                priceFeedIdentifier: 'bytes32',
-                syntheticName: 'string',
-                syntheticSymbol: 'string',
-                syntheticToken: 'address',
-                collateralRequirement: {
-                  rawValue: 'uint256',
-                },
-                disputeBondPct: {
-                  rawValue: 'uint256',
-                },
-                sponsorDisputeRewardPct: {
-                  ravValue: 'uint256',
-                },
-                disputerDisputeRewardPct: {
-                  rawValue: 'uint256',
-                },
-                minSponsorTokens: {
-                  rawValue: 'uint256',
-                },
-                withdrawalLiveness: 'uint256',
-                liquidationLiveness: 'uint256',
-                excessTokenBeneficiary: 'address',
-                admins: 'address[]',
-                pools: 'address[]',
-              },
-            },
+            isDeployedDeployer
+              ? synthereumDeployerInstance.address
+              : synthereumDeployerInstance.options.address,
           ],
-          [
-            {
-              collateralAddress: collAddress,
-              priceFeedIdentifier: web3Utils.padRight(
-                web3Utils.toHex(asset.priceFeedIdentifier),
-                64,
-              ),
-              syntheticName: asset.syntheticName,
-              syntheticSymbol: asset.syntheticSymbol,
-              syntheticToken: ZERO_ADDRESS,
-              collateralRequirement: {
-                rawValue: asset.collateralRequirement,
-              },
-              disputeBondPct: {
-                rawValue: umaConfig[networkId].disputeBondPct,
-              },
-              sponsorDisputeRewardPct: {
-                ravValue: umaConfig[networkId].sponsorDisputeRewardPct,
-              },
-              disputerDisputeRewardPct: {
-                rawValue: umaConfig[networkId].disputerDisputeRewardPct,
-              },
-              minSponsorTokens: {
-                rawValue: asset.minSponsorTokens,
-              },
-              withdrawalLiveness: umaConfig[networkId].withdrawalLiveness,
-              liquidationLiveness: umaConfig[networkId].liquidationLiveness,
-              excessTokenBeneficiary:
-                umaConfig[networkId].excessTokenBeneficiary,
-              admins: [
-                isDeployedDeployer
-                  ? synthereumDeployerInstance.address
-                  : synthereumDeployerInstance.options.address,
-              ],
-              pools: [],
-            },
-          ],
+          [],
         );
       }
       if (deployment[networkId].Pool === 1) {
         poolVersion = poolVersions[networkId]['TICFactory'].version;
-        poolPayload = web3.eth.abi.encodeParameters(
-          [
-            'address',
-            'address',
-            'uint8',
-            {
-              roles: {
-                admin: 'address',
-                maintainer: 'address',
-                liquidityProvider: 'address',
-                validator: 'address',
-              },
-            },
-            'uint256',
-            {
-              fee: {
-                feePercentage: {
-                  rawValue: 'uint256',
-                },
-                feeRecipients: 'address[]',
-                feeProportions: 'uint32[]',
-              },
-            },
-          ],
-          [
-            ZERO_ADDRESS,
-            isDeployedFinder
-              ? synthereumFinderInstance.address
-              : synthereumFinderInstance.options.address,
-            poolVersion,
-            {
-              admin: admin,
-              maintainer: maintainer,
-              liquidityProvider: liquidityProvider,
-              validator: validator,
-            },
-            asset.startingCollateralization,
-            {
-              feePercentage: {
-                rawValue: web3Utils.toWei(
-                  fees[networkId].feePercentage.toString(),
-                ),
-              },
-              feeRecipients: fees[networkId].feeRecipients,
-              feeProportions: fees[networkId].feeProportions,
-            },
-          ],
+        poolPayload = encodeTIC(
+          ZERO_ADDRESS,
+          isDeployedFinder
+            ? synthereumFinderInstance.address
+            : synthereumFinderInstance.options.address,
+          poolVersion,
+          {
+            admin: admin,
+            maintainer: maintainer,
+            liquidityProvider: liquidityProvider,
+            validator: validator,
+          },
+          asset.startingCollateralization,
+          {
+            feePercentage: fees[networkId].feePercentage,
+            feeRecipients: fees[networkId].feeRecipients,
+            feeProportions: fees[networkId].feeProportions,
+          },
         );
-        poolPayload = '0x' + poolPayload.substring(66);
       } else if (deployment[networkId].Pool === 2) {
         poolVersion = poolVersions[networkId]['PoolFactory'].version;
-        poolPayload = web3.eth.abi.encodeParameters(
-          [
-            'address',
-            'address',
-            'uint8',
-            {
-              roles: {
-                admin: 'address',
-                maintainer: 'address',
-                liquidityProvider: 'address',
-                validator: 'address',
-              },
-            },
-            'bool',
-            'uint256',
-            {
-              fee: {
-                feePercentage: {
-                  rawValue: 'uint256',
-                },
-                feeRecipients: 'address[]',
-                feeProportions: 'uint32[]',
-              },
-            },
-          ],
-          [
-            ZERO_ADDRESS,
-            isDeployedFinder
-              ? synthereumFinderInstance.address
-              : synthereumFinderInstance.options.address,
-            poolVersion,
-            {
-              admin: admin,
-              maintainer: maintainer,
-              liquidityProvider: liquidityProvider,
-              validator: validator,
-            },
-            asset.isContractAllowed,
-            asset.startingCollateralization,
-            {
-              feePercentage: {
-                rawValue: web3Utils.toWei(
-                  fees[networkId].feePercentage.toString(),
-                ),
-              },
-              feeRecipients: fees[networkId].feeRecipients,
-              feeProportions: fees[networkId].feeProportions,
-            },
-          ],
+        poolPayload = encodePool(
+          ZERO_ADDRESS,
+          isDeployedFinder
+            ? synthereumFinderInstance.address
+            : synthereumFinderInstance.options.address,
+          poolVersion,
+          {
+            admin: admin,
+            maintainer: maintainer,
+            liquidityProvider: liquidityProvider,
+            validator: validator,
+          },
+          asset.isContractAllowed,
+          asset.startingCollateralization,
+          {
+            feePercentage: fees[networkId].feePercentage,
+            feeRecipients: fees[networkId].feeRecipients,
+            feeProportions: fees[networkId].feeProportions,
+          },
         );
-        poolPayload = '0x' + poolPayload.substring(66);
       }
       txData.push({
         asset: asset.syntheticSymbol,

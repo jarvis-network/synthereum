@@ -48,108 +48,47 @@ module.exports = async function (deployer, network, accounts) {
         deployment[networkId].PoolForAdding[asset.syntheticSymbol];
       if (deployment[networkId].Pool === 1) {
         poolVersion = poolVersions[networkId]['TICFactory'].version;
-        poolPayload = web3.eth.abi.encodeParameters(
-          [
-            'address',
-            'address',
-            'uint8',
-            {
-              roles: {
-                admin: 'address',
-                maintainer: 'address',
-                liquidityProvider: 'address',
-                validator: 'address',
-              },
-            },
-            'uint256',
-            {
-              fee: {
-                feePercentage: {
-                  rawValue: 'uint256',
-                },
-                feeRecipients: 'address[]',
-                feeProportions: 'uint32[]',
-              },
-            },
-          ],
-          [
-            ZERO_ADDRESS,
-            isDeployedFinder
-              ? synthereumFinderInstance.address
-              : synthereumFinderInstance.options.address,
-            poolVersion,
-            {
-              admin: admin,
-              maintainer: maintainer,
-              liquidityProvider: liquidityProvider,
-              validator: validator,
-            },
-            asset.startingCollateralization,
-            {
-              feePercentage: {
-                rawValue: web3Utils.toWei(
-                  fees[networkId].feePercentage.toString(),
-                ),
-              },
-              feeRecipients: fees[networkId].feeRecipients,
-              feeProportions: fees[networkId].feeProportions,
-            },
-          ],
+        poolPayload = encodeTIC(
+          ZERO_ADDRESS,
+          isDeployedFinder
+            ? synthereumFinderInstance.address
+            : synthereumFinderInstance.options.address,
+          poolVersion,
+          {
+            admin: admin,
+            maintainer: maintainer,
+            liquidityProvider: liquidityProvider,
+            validator: validator,
+          },
+          asset.startingCollateralization,
+          {
+            feePercentage: fees[networkId].feePercentage,
+            feeRecipients: fees[networkId].feeRecipients,
+            feeProportions: fees[networkId].feeProportions,
+          },
         );
-        poolPayload = '0x' + poolPayload.substring(66);
       } else if (deployment[networkId].Pool === 2) {
         poolVersion = poolVersions[networkId]['PoolFactory'].version;
-        poolPayload = web3.eth.abi.encodeParameters(
-          [
-            'address',
-            'address',
-            'uint8',
-            {
-              roles: {
-                admin: 'address',
-                maintainer: 'address',
-                liquidityProvider: 'address',
-                validator: 'address',
-              },
-            },
-            'bool',
-            'uint256',
-            {
-              fee: {
-                feePercentage: {
-                  rawValue: 'uint256',
-                },
-                feeRecipients: 'address[]',
-                feeProportions: 'uint32[]',
-              },
-            },
-          ],
-          [
-            ZERO_ADDRESS,
-            isDeployedFinder
-              ? synthereumFinderInstance.address
-              : synthereumFinderInstance.options.address,
-            poolVersion,
-            {
-              admin: admin,
-              maintainer: maintainer,
-              liquidityProvider: liquidityProvider,
-              validator: validator,
-            },
-            asset.isContractAllowed,
-            asset.startingCollateralization,
-            {
-              feePercentage: {
-                rawValue: web3Utils.toWei(
-                  fees[networkId].feePercentage.toString(),
-                ),
-              },
-              feeRecipients: fees[networkId].feeRecipients,
-              feeProportions: fees[networkId].feeProportions,
-            },
-          ],
+        poolPayload = encodePool(
+          ZERO_ADDRESS,
+          isDeployedFinder
+            ? synthereumFinderInstance.address
+            : synthereumFinderInstance.options.address,
+          poolVersion,
+          {
+            admin: admin,
+            maintainer: maintainer,
+            liquidityProvider: liquidityProvider,
+            validator: validator,
+          },
+          asset.isContractAllowed,
+          asset.startingCollateralization,
+          {
+            feePercentage: fees[networkId].feePercentage,
+            feeRecipients: fees[networkId].feeRecipients,
+            feeProportions: fees[networkId].feeProportions,
+          },
         );
-        poolPayload = '0x' + poolPayload.substring(66);
       }
       txData.push({
         asset: asset.syntheticSymbol,

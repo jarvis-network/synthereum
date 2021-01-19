@@ -41,78 +41,26 @@ module.exports = async function (deployer, network, accounts) {
       if (deployment[networkId].Derivative === 1) {
         derivativeVersion =
           derivativeVersions[networkId]['DerivativeFactory'].version;
-        derivativePayload = web3.eth.abi.encodeParameters(
+        derivativePayload = encodeDerivative(
+          umaContracts[networkId].collateralAddress,
+          asset.priceFeedIdentifier,
+          asset.syntheticName,
+          asset.syntheticSymbol,
+          deployment[networkId].SyntheticTokenAddress[asset.syntheticSymbol],
+          asset.collateralRequirement,
+          umaConfig[networkId].disputeBondPct,
+          umaConfig[networkId].sponsorDisputeRewardPct,
+          umaConfig[networkId].disputerDisputeRewardPct,
+          asset.minSponsorTokens,
+          umaConfig[networkId].withdrawalLiveness,
+          umaConfig[networkId].liquidationLiveness,
+          umaConfig[networkId].excessTokenBeneficiary,
           [
-            {
-              params: {
-                collateralAddress: 'address',
-                priceFeedIdentifier: 'bytes32',
-                syntheticName: 'string',
-                syntheticSymbol: 'string',
-                syntheticToken: 'address',
-                collateralRequirement: {
-                  rawValue: 'uint256',
-                },
-                disputeBondPct: {
-                  rawValue: 'uint256',
-                },
-                sponsorDisputeRewardPct: {
-                  ravValue: 'uint256',
-                },
-                disputerDisputeRewardPct: {
-                  rawValue: 'uint256',
-                },
-                minSponsorTokens: {
-                  rawValue: 'uint256',
-                },
-                withdrawalLiveness: 'uint256',
-                liquidationLiveness: 'uint256',
-                excessTokenBeneficiary: 'address',
-                admins: 'address[]',
-                pools: 'address[]',
-              },
-            },
+            isDeployedDeployer
+              ? synthereumDeployerInstance.address
+              : synthereumDeployerInstance.options.address,
           ],
-          [
-            {
-              collateralAddress: umaContracts[networkId].collateralAddress,
-              priceFeedIdentifier: web3Utils.padRight(
-                web3Utils.toHex(asset.priceFeedIdentifier),
-                64,
-              ),
-              syntheticName: asset.syntheticName,
-              syntheticSymbol: asset.syntheticSymbol,
-              syntheticToken:
-                deployment[networkId].SyntheticTokenAddress[
-                  asset.syntheticSymbol
-                ],
-              collateralRequirement: {
-                rawValue: asset.collateralRequirement,
-              },
-              disputeBondPct: {
-                rawValue: umaConfig[networkId].disputeBondPct,
-              },
-              sponsorDisputeRewardPct: {
-                ravValue: umaConfig[networkId].sponsorDisputeRewardPct,
-              },
-              disputerDisputeRewardPct: {
-                rawValue: umaConfig[networkId].disputerDisputeRewardPct,
-              },
-              minSponsorTokens: {
-                rawValue: asset.minSponsorTokens,
-              },
-              withdrawalLiveness: umaConfig[networkId].withdrawalLiveness,
-              liquidationLiveness: umaConfig[networkId].liquidationLiveness,
-              excessTokenBeneficiary:
-                umaConfig[networkId].excessTokenBeneficiary,
-              admins: [
-                isDeployedDeployer
-                  ? synthereumDeployerInstance.address
-                  : synthereumDeployerInstance.options.address,
-              ],
-              pools: [],
-            },
-          ],
+          [],
         );
       }
       txData.push({
