@@ -4,8 +4,7 @@ services:
     entrypoint: ['env', '-u', 'DOCKER_HOST']
     command: ['dockerd-entrypoint.sh']
 variables:
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_CERTDIR: '/certs'
+  DOCKER_DRIVER: overlay2
   NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
   TAG: mr-${CI_MERGE_REQUEST_ID}
   REGISTRY: jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo
