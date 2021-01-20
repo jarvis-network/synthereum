@@ -53,7 +53,7 @@ async function main() {
     },
   ] as Filter[];
 
-  const erc20 = realm.pools.v1.jEUR.collateralToken.instance;
+  const erc20 = realm.pools.v2.jEUR.collateralToken.instance;
 
   const events = (
     await Promise.all(

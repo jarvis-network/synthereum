@@ -1,8 +1,8 @@
 require('dotenv').config();
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { getPoolBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
+import { getPoolBalances } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
+import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
 import { formatAmount } from '@jarvis-network/web3-utils/base/big-number';
 import { basename } from 'path';
 
@@ -11,13 +11,20 @@ async function main() {
   const netId = parseSupportedNetworkId(42);
   const web3 = getInfuraWeb3(netId);
   const realm = await loadRealm(web3, netId);
-  const balances = await getPoolBalances(realm);
+  let balances = await getPoolBalances(realm, 'v1');
   const result = balances.map(([sym, bal]) => ({
     Symbol: sym,
-    'Pool Balance': `${formatAmount(bal)} USDC`,
-    'Pool Address': realm.pools['v1'][sym].address,
+    'Pool v1 Balance': `${formatAmount(bal)} USDC`,
+    'Pool v1 Address': realm.pools['v1'][sym].address,
   }));
   console.table(result);
+  balances = await getPoolBalances(realm, 'v2');
+  const resultv2 = balances.map(([sym, bal]) => ({
+    Symbol: sym,
+    'Pool v2 Balance': `${formatAmount(bal)} USDC`,
+    'Pool v2 Address': realm.pools['v2'][sym].address,
+  }));
+  console.table(resultv2);
 }
 
 main()
