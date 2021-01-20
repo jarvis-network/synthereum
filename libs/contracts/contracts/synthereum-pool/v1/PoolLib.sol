@@ -159,10 +159,10 @@ library SynthereumPoolLib {
   function removeDerivative(
     ISynthereumPoolStorage.Storage storage self,
     IDerivative derivative
-  ) external checkDerivative(self, derivative) {
+  ) external {
     require(
       self.derivatives.remove(address(derivative)),
-      'Derivative has already been included'
+      'Derivative not included'
     );
     emit RemoveDerivative(address(this), address(derivative));
   }
@@ -200,6 +200,7 @@ library SynthereumPoolLib {
       mintMetaTx.nonce,
       mintMetaTx.expiration
     );
+
     FixedPoint.Unsigned memory collateralAmount =
       FixedPoint.Unsigned(mintMetaTx.collateralAmount);
     FixedPoint.Unsigned memory numTokens =
@@ -288,7 +289,6 @@ library SynthereumPoolLib {
       redeemMetaTx.nonce,
       redeemMetaTx.expiration
     );
-
     FixedPoint.Unsigned memory collateralAmount =
       FixedPoint.Unsigned(redeemMetaTx.collateralAmount);
     FixedPoint.Unsigned memory numTokens =
@@ -297,7 +297,10 @@ library SynthereumPoolLib {
 
     FixedPoint.Unsigned memory amountWithdrawn =
       redeemForCollateral(redeemMetaTx.sender, derivative, numTokens);
-    require(amountWithdrawn.isGreaterThan(collateralAmount));
+    require(
+      amountWithdrawn.isGreaterThan(collateralAmount),
+      'Collateral amount bigger than collateral in the derivative'
+    );
 
     // Calculate fees
     FixedPoint.Unsigned memory feeTotal =
@@ -351,14 +354,14 @@ library SynthereumPoolLib {
         digest,
         signatureVerificationParams.signature
       );
-      self.checkMetaTxParams(
-        exchangeMetaTx.sender,
-        exchangeMetaTx.derivativeAddr,
-        exchangeMetaTx.feePercentage,
-        exchangeMetaTx.nonce,
-        exchangeMetaTx.expiration
-      );
     }
+    self.checkMetaTxParams(
+      exchangeMetaTx.sender,
+      exchangeMetaTx.derivativeAddr,
+      exchangeMetaTx.feePercentage,
+      exchangeMetaTx.nonce,
+      exchangeMetaTx.expiration
+    );
     FixedPoint.Unsigned memory collateralAmount =
       FixedPoint.Unsigned(exchangeMetaTx.collateralAmount);
     FixedPoint.Unsigned memory numTokens =
@@ -374,7 +377,7 @@ library SynthereumPoolLib {
     );
     require(
       amountWithdrawn.isGreaterThan(collateralAmount),
-      'No tokens were redeemed'
+      'Collateral amount bigger than collateral in the derivative'
     );
 
     // Calculate fees
@@ -390,7 +393,6 @@ library SynthereumPoolLib {
       exchangeMetaTx.destPoolAddr,
       destinationCollateral.rawValue
     );
-
     // Mint the destination tokens with the withdrawn collateral
     ISynthereumPool(exchangeMetaTx.destPoolAddr).exchangeMint(
       derivative,
@@ -491,7 +493,7 @@ library SynthereumPoolLib {
     IDerivative derivative,
     FixedPoint.Unsigned memory collateralAmount
   ) external checkDerivative(self, derivative) {
-    self.collateralToken.approve(
+    self.collateralToken.safeApprove(
       address(derivative),
       collateralAmount.rawValue
     );
@@ -633,9 +635,10 @@ library SynthereumPoolLib {
       // Must be called after `emergencyShutdown` to make sure expiryPrice is set
       FixedPoint.Unsigned memory dueCollateral =
         numTokens.mul(derivative.emergencyShutdownPrice());
+
       totalToRedeem = FixedPoint.min(
         dueCollateral,
-        FixedPoint.Unsigned(address(this).balance)
+        FixedPoint.Unsigned(collateralToken.balanceOf(address(this)))
       );
     }
     amountSettled = totalToRedeem.rawValue;
@@ -643,8 +646,8 @@ library SynthereumPoolLib {
     collateralToken.safeTransfer(msg.sender, amountSettled);
 
     emit Settlement(
-      address(this),
       msg.sender,
+      address(this),
       numTokens.rawValue,
       amountSettled
     );
@@ -940,10 +943,13 @@ library SynthereumPoolLib {
     IDerivative derivative,
     FixedPoint.Unsigned memory numTokens
   ) internal returns (FixedPoint.Unsigned memory amountWithdrawn) {
-    require(numTokens.isGreaterThan(0));
+    require(numTokens.isGreaterThan(0), 'Number of tokens to redeem is 0');
 
     IERC20 tokenCurrency = derivative.positionManagerData().tokenCurrency;
-    require(tokenCurrency.balanceOf(tokenHolder) >= numTokens.rawValue);
+    require(
+      tokenCurrency.balanceOf(tokenHolder) >= numTokens.rawValue,
+      'Token balance less than token to redeem'
+    );
 
     // Move synthetic tokens from the user to the TIC
     // - This is because derivative expects the tokens to come from the sponsor address
@@ -972,7 +978,6 @@ library SynthereumPoolLib {
     FixedPoint.Unsigned memory collateralAmount,
     address recipient
   ) internal returns (uint256 amountWithdrawn) {
-    require(collateralAmount.isGreaterThan(0), 'No tokens were redeemed');
     amountWithdrawn = collateralAmount.rawValue;
     self.collateralToken.safeTransfer(recipient, amountWithdrawn);
   }
@@ -989,15 +994,13 @@ library SynthereumPoolLib {
     // Distribute fees
     // TODO Consider using the withdrawal pattern for fees
     for (uint256 i = 0; i < self.fee.feeRecipients.length; i++) {
-      require(
-        self.collateralToken.transfer(
-          self.fee.feeRecipients[i],
-          // This order is important because it mixes FixedPoint with unscaled uint
-          _feeAmount
-            .mul(self.fee.feeProportions[i])
-            .div(self.totalFeeProportions)
-            .rawValue
-        )
+      self.collateralToken.safeTransfer(
+        self.fee.feeRecipients[i],
+        // This order is important because it mixes FixedPoint with unscaled uint
+        _feeAmount
+          .mul(self.fee.feeProportions[i])
+          .div(self.totalFeeProportions)
+          .rawValue
       );
     }
   }
@@ -1091,11 +1094,14 @@ library SynthereumPoolLib {
       ISynthereumPoolRegistry(
         finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
       );
-    poolRegister.isPoolDeployed(
-      poolToCheck.syntheticTokenSymbol(),
-      collateralToken,
-      poolToCheck.version(),
-      address(poolToCheck)
+    require(
+      poolRegister.isPoolDeployed(
+        poolToCheck.syntheticTokenSymbol(),
+        collateralToken,
+        poolToCheck.version(),
+        address(poolToCheck)
+      ),
+      'Destination pool not registred'
     );
   }
 

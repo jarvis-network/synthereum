@@ -26,6 +26,9 @@ contract SynthereumPoolRegistry is ISynthereumPoolRegistry, Lockable {
   mapping(string => mapping(IERC20 => mapping(uint8 => EnumerableSet.AddressSet)))
     private symbolToPools;
 
+  //Set containing collateral address
+  EnumerableSet.AddressSet private collaterals;
+
   //----------------------------------------
   // Constructors
   //----------------------------------------
@@ -61,6 +64,7 @@ contract SynthereumPoolRegistry is ISynthereumPoolRegistry, Lockable {
       );
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
     symbolToPools[syntheticTokenSymbol][collateralToken][poolVersion].add(pool);
+    collaterals.add(address(collateralToken));
   }
 
   //----------------------------------------
@@ -106,5 +110,24 @@ contract SynthereumPoolRegistry is ISynthereumPoolRegistry, Lockable {
       pools[j] = poolSet.at(j);
     }
     return pools;
+  }
+
+  /**
+   * @notice Returns all the collateral used
+   * @return List of all collaterals
+   */
+  function getCollaterals()
+    external
+    view
+    override
+    nonReentrantView
+    returns (address[] memory)
+  {
+    uint256 numberOfCollaterals = collaterals.length();
+    address[] memory collateralAddresses = new address[](numberOfCollaterals);
+    for (uint256 j = 0; j < numberOfCollaterals; j++) {
+      collateralAddresses[j] = collaterals.at(j);
+    }
+    return collateralAddresses;
   }
 }

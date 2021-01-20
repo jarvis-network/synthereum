@@ -48,4 +48,10 @@ interface ISynthereumPoolRegistry {
     IERC20 collateral,
     uint8 poolVersion
   ) external view returns (address[] memory);
+
+  /**
+   * @notice Returns all the collateral used
+   * @return List of all collaterals
+   */
+  function getCollaterals() external view returns (address[] memory);
 }

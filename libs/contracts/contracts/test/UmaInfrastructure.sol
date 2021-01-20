@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity ^0.6.12;
+
 import {
   Finder
 } from '@jarvis-network/uma-core/contracts/oracle/implementation/Finder.sol';
@@ -37,3 +40,6 @@ import {
 import {
   OptimisticOracle
 } from '@jarvis-network/uma-core/contracts/oracle/implementation/OptimisticOracle.sol';
+import {
+  MockOracle
+} from '@jarvis-network/uma-core/contracts/oracle/test/MockOracle.sol';
