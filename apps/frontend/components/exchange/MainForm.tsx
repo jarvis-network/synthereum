@@ -119,6 +119,8 @@ const ErrorMessage = styled.div`
 
 const allowedKeys = '0123456789.'.split('');
 
+const MAX_MINT_VALUE = new FPN(500);
+
 const handleKeyPress = (
   e: React.KeyboardEvent<HTMLInputElement>,
   asset: AssetType,
@@ -195,8 +197,14 @@ export const MainForm: React.FC<Props> = () => {
     dispatch(setReceive('0'));
   };
 
+  const mintingOverLimit =
+    paySymbol === 'USDC' && new FPN(pay).gt(MAX_MINT_VALUE);
+
   const swapDisabled =
-    !Number(payString) || !Number(receiveString) || insufficientBalance;
+    !Number(payString) ||
+    !Number(receiveString) ||
+    insufficientBalance ||
+    mintingOverLimit;
 
   const fees = !swapDisabled && <Fees />;
 
@@ -219,7 +227,7 @@ export const MainForm: React.FC<Props> = () => {
     }
 
     return value;
-  }
+  };
 
   const getFormattedPay = () => {
     if (base === 'pay') {
@@ -227,7 +235,7 @@ export const MainForm: React.FC<Props> = () => {
     }
 
     return getFormattedValue(payString);
-  }
+  };
 
   const getFormattedReceive = () => {
     if (base === 'receive') {
@@ -235,11 +243,17 @@ export const MainForm: React.FC<Props> = () => {
     }
 
     return getFormattedValue(receiveString);
-  }
+  };
+
+  const errorMessage = insufficientBalance
+    ? 'Insufficient funds'
+    : mintingOverLimit
+    ? 'Limit Reached'
+    : null;
 
   return (
     <>
-      <ExchangeBox error={insufficientBalance}>
+      <ExchangeBox error={Boolean(errorMessage)}>
         <Title>You pay</Title>
         <Max />
         <Amount
@@ -260,9 +274,7 @@ export const MainForm: React.FC<Props> = () => {
           placeholder="0"
         />
         <Asset type="pay" />
-        <ErrorMessage>
-          {insufficientBalance && 'Insufficient funds'}
-        </ErrorMessage>
+        <ErrorMessage>{errorMessage}</ErrorMessage>
       </ExchangeBox>
       <IconButton onClick={flipValues}>
         <Icon icon="IoIosArrowRoundDown" />
