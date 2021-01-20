@@ -25,6 +25,7 @@ const SynthereumSyntheticTokenFactory = artifacts.require(
 const SynthereumDerivativeFactory = artifacts.require(
   'SynthereumDerivativeFactory',
 );
+const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
 const Timer = artifacts.require('Timer');
 const MockOracle = artifacts.require('MockOracle');
 const UmaFinder = artifacts.require('Finder');
@@ -113,8 +114,7 @@ contract('Factories', function (accounts) {
   const path = "m/44'/60'/0'/0/3";
   const wallet = ethers.Wallet.fromMnemonic(mnemonic, path);
   let validatorPrivKey = wallet.privateKey.replace('0x', '');
-
-  it('Can deploy', async () => {
+  beforeEach(async () => {
     collateralAddress = (await TestnetERC20.deployed()).address;
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
@@ -148,15 +148,9 @@ contract('Factories', function (accounts) {
       startingCollateralization,
       fee,
     );
-    const addresses = await deployerInstance.deployPoolAndDerivative.call(
-      derivativeVersion,
-      poolVersion,
-      derivativePayload,
-      poolPayload,
-      { from: maintainer },
-    );
-    poolAddress = addresses.pool;
-    derivativeAddress = addresses.derivative;
+  });
+
+  it('Can deploy', async () => {
     await deployerInstance.deployPoolAndDerivative(
       derivativeVersion,
       poolVersion,
@@ -164,72 +158,36 @@ contract('Factories', function (accounts) {
       poolPayload,
       { from: maintainer },
     );
-    poolInstance = await SynthereumPool.at(poolAddress);
-    nonce = (await poolInstance.getUserNonce.call(sender)).toString();
-    networkId = await web3.eth.net.getId();
-    version = await poolInstance.version.call();
-    collateralInstance = await TestnetERC20.deployed();
-    expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
-    numTokens = web3Utils.toWei('100');
-    await collateralInstance.allocateTo(poolAddress, poolStartingDeposit);
-    await collateralInstance.allocateTo(sender, totCollAmount);
-    await collateralInstance.approve(poolAddress, totCollAmount, {
-      from: sender,
-    });
-    derivativeInstance = await PerpetualPoolParty.at(derivativeAddress);
-    synthTokenAddr = await derivativeInstance.tokenCurrency.call();
-    synthTokenInstance = await MintableBurnableERC20.at(synthTokenAddr);
-    timerInstance = await Timer.deployed();
   });
   describe('Revert if not deployer', async () => {
     it('Revert in derivative factory', async () => {
-      collateralAddress = collateralInstance.address;
-      console.log(collateralAddress);
-      deployerInstance = await SynthereumDeployer.deployed();
-      derivativeAdmins = [deployerInstance.address];
-      derivativePools = [];
-      poolVersion = 1;
-      feePercentageWei = web3Utils.toWei(feePercentage);
-      synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
-      umaFinderAddrress = (await UmaFinder.deployed()).address;
-      const priceFeed = web3Utils.toHex(priceFeedIdentifier);
-      const derivativeFactory = await SynthereumDerivativeFactory.deployed();
-
-      collateralRequirement = { rawValue: collateralRequirement };
-      disputeBondPct = { rawValue: disputeBondPct };
-      sponsorDisputeRewardPct = { rawValue: sponsorDisputeRewardPct };
-      disputerDisputeRewardPct = { rawValue: disputerDisputeRewardPct };
-      LiquidatableParams = {
-        liquidationLiveness,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-      };
-      const Roles = {
-        derivativeAdmins,
-        derivativePools,
-      };
-      minSponsorTokens = { rawValue: minSponsorTokens };
-      const timerAddress = timerInstance.address;
-      const PositionManagerParams = {
-        withdrawalLiveness,
-        collateralAddress,
-        syntheticTokenAddress,
-        umaFinderAddrress,
-        priceFeed,
-        minSponsorTokens,
-        timerAddress,
-        excessBeneficiary,
-      };
-      const params = {
-        PositionManagerParams,
-        LiquidatableParams,
-      };
-
-      console.log(params);
-
-      await derivativeFactory.createPerpetual(params, { from: sender });
+      const derivativeFactoryInstance = await SynthereumDerivativeFactory.deployed();
+      const funcSignature = await derivativeFactoryInstance.deploymentSignature();
+      const dataPayload = funcSignature + derivativePayload.replace('0x', '');
+      await truffleAssert.reverts(
+        web3.eth.sendTransaction({
+          from: sender,
+          to: derivativeFactoryInstance.address,
+          data: dataPayload,
+        }),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Revert in pool factory', async () => {
+      const poolFactoryInstance = await SynthereumPoolFactory.deployed();
+      const funcSignature = await poolFactoryInstance.deploymentSignature();
+      const dataPayload =
+        funcSignature +
+        web3Utils.padRight(ZERO_ADDRESS.replace('0x', ''), '64') +
+        poolPayload.replace('0x', '');
+      await truffleAssert.reverts(
+        web3.eth.sendTransaction({
+          from: sender,
+          to: poolFactoryInstance.address,
+          data: dataPayload,
+        }),
+        'Sender must be Synthereum deployer',
+      );
     });
   });
 });
