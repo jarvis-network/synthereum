@@ -6,29 +6,52 @@ import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contra
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
 import { allSupportedSymbols } from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config/supported-networks';
-import { SynthereumPool_Abi, SynthereumTIC_Abi } from '../contracts/abi';
 import {
-  SynthereumPool as SynthereumPool_Contract,
-  SynthereumTIC as SynthereumTIC_Contract,
-} from '../contracts/typechain';
+  IDerivative_Abi,
+  SynthereumPool_Abi,
+  SynthereumTIC_Abi,
+} from '../contracts/abi';
+import { IDerivative } from '../contracts/typechain';
 import { PoolContract, PoolVersion } from './types/pools';
 import { SynthereumRealmWithWeb3 } from './types/realm';
-
-export function getPool<
+export interface PoolAddressWithDerivates<Version extends PoolVersion> {
+  result: PoolContract<Version>;
+  derivativeAddress: IDerivative;
+}
+export async function getPool<
   Net extends SupportedNetworkName,
   Version extends PoolVersion
 >(
   web3: Web3On<Net>,
   version: Version,
   poolAddress: AddressOn<Net>,
-): PoolContract<Version> {
-  const result: SynthereumTIC_Contract | SynthereumPool_Contract =
-    version === 'v1'
-      ? getContract(web3, SynthereumTIC_Abi, poolAddress).instance
-      : version === 'v2'
-      ? getContract(web3, SynthereumPool_Abi, poolAddress).instance
-      : throwError(`Unsupported pool version: '${version}'`);
-  return result as PoolContract<Version>;
+): Promise<PoolAddressWithDerivates<Version>> {
+  if (version === 'v1') {
+    const result = getContract(web3, SynthereumTIC_Abi, poolAddress).instance;
+    const derivatesAddress = (await result.methods
+      .derivative()
+      .call()) as AddressOn<Net>;
+    return {
+      result: result as PoolContract<Version>,
+      derivativeAddress: getContract(web3, IDerivative_Abi, derivatesAddress)
+        .instance,
+    };
+  } else if (version === 'v2') {
+    const result = getContract(web3, SynthereumPool_Abi, poolAddress).instance;
+    const derivatesAddresses = (await result.methods
+      .getAllDerivatives()
+      .call()) as AddressOn<Net>[];
+
+    return {
+      result: result as PoolContract<Version>,
+      derivativeAddress: getContract(
+        web3,
+        IDerivative_Abi,
+        derivatesAddresses[derivatesAddresses.length - 1],
+      ).instance,
+    };
+  }
+  throwError(`Unsupported pool version: '${version}'`);
 }
 
 export async function getPoolBalances<

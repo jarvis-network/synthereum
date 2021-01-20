@@ -1,46 +1,40 @@
 import {
+  parseInteger,
+  throwError,
+} from '@jarvis-network/web3-utils/base/asserts';
+import { t } from '@jarvis-network/web3-utils/base/meta';
+import {
   AddressOn,
   assertIsAddress,
   isAddress,
 } from '@jarvis-network/web3-utils/eth/address';
-import { t } from '@jarvis-network/web3-utils/base/meta';
-import {
-  parseInteger,
-  throwError,
-} from '@jarvis-network/web3-utils/base/asserts';
+import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
+import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
+import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 import type {
   NetworkName,
   Web3On,
 } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
-import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
-
+import type {
+  ContractDependencies,
+  SupportedNetworkId,
+  SupportedNetworkName,
+} from '../config';
+import {
+  allSupportedSymbols,
+  SyntheticSymbol,
+} from '../config/data/all-synthetic-asset-symbols';
+import { contractDependencies } from '../config/data/contract-dependencies';
+import { priceFeed } from '../config/data/price-feed';
+import { ERC20_Abi, SynthereumPoolRegistry_Abi } from '../contracts/abi';
+import { SynthereumPoolRegistry } from '../contracts/typechain';
+import { getPool } from './pool-utils';
 import type {
   PoolsForVersion,
   PoolVersion,
   SynthereumPool,
 } from './types/pools';
 import type { SynthereumRealmWithWeb3 } from './types/realm';
-
-import { SynthereumPoolRegistry_Abi, ERC20_Abi } from '../contracts/abi';
-
-import { contractDependencies } from '../config/data/contract-dependencies';
-import type {
-  ContractDependencies,
-  SupportedNetworkId,
-  SupportedNetworkName,
-} from '../config';
-import type {
-  ContractInfo,
-  TokenInfo,
-} from '@jarvis-network/web3-utils/eth/contracts/types';
-import { priceFeed } from '../config/data/price-feed';
-import {
-  allSupportedSymbols,
-  SyntheticSymbol,
-} from '../config/data/all-synthetic-asset-symbols';
-import { getPool } from './pool-utils';
-import { SynthereumPoolRegistry } from '../contracts/typechain';
 
 /**
  * Load the default Synthereum Realm.
@@ -93,7 +87,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 
     return Object.fromEntries(pairs);
   };
-
+  const collateralToken = await getTokenInfo(web3, collateralAddress);
   return {
     web3,
     netId,
@@ -103,7 +97,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
       v2: (await loadAllPools('v2')) as PoolsForVersion<'v2', Net>,
     },
     // Assume the same collateral token for all synthetics:
-    collateralToken: await getTokenInfo(web3, collateralAddress),
+    collateralToken,
   };
 }
 
@@ -140,7 +134,11 @@ export async function loadPoolInfo<
 
   const poolAddress = assertIsAddress(lastPoolAddress) as AddressOn<Net>;
 
-  const poolInstance = getPool(web3, version, poolAddress);
+  const { result: poolInstance, derivativeAddress } = await getPool(
+    web3,
+    version,
+    poolAddress,
+  );
 
   const collateralTokenAddress = assertIsAddress(
     await poolInstance.methods.collateralToken().call(),
@@ -156,7 +154,6 @@ export async function loadPoolInfo<
   const syntheticTokenAddress = assertIsAddress(
     await poolInstance.methods.syntheticToken().call(),
   ) as AddressOn<Net>;
-
   return {
     priceFeed: priceFeed[symbol],
     symbol,
@@ -164,6 +161,10 @@ export async function loadPoolInfo<
     instance: poolInstance,
     syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
     collateralToken: await getTokenInfo(web3, collateralTokenAddress),
+    derivative: {
+      address: derivativeAddress.options.address as AddressOn<Net>,
+      instance: derivativeAddress,
+    },
   };
 }
 

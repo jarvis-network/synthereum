@@ -5,6 +5,7 @@ import {
 import { SupportedNetworkName, SyntheticSymbol } from '../../config';
 import { priceFeed } from '../../config/data/price-feed';
 import {
+  IDerivative,
   SynthereumPool as SynthereumPool_Contract,
   SynthereumTIC as SynthereumTIC_Contract,
 } from '../../contracts/typechain';
@@ -31,6 +32,7 @@ export interface SynthereumPool<
   priceFeed: typeof priceFeed[Symbol];
   collateralToken: TokenInfo<Net>;
   syntheticToken: TokenInfo<Net>;
+  derivative: ContractInfo<Net, IDerivative>;
 }
 
 export type PoolsForVersion<
