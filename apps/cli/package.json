@@ -11,6 +11,10 @@
     "start": "./scripts/run.sh"
   },
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "1.0.0"
+    "@jarvis-network/synthereum-contracts": "1.0.0",
+    "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "@types/yargs": "^15.0.12"
   }
 }
