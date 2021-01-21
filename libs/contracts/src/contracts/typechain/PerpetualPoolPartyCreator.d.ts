@@ -36,16 +36,8 @@ export interface PerpetualPoolPartyCreator extends BaseContract {
   ): PerpetualPoolPartyCreator;
   clone(): PerpetualPoolPartyCreator;
   methods: {
-    /**
-     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
-     */
     getCurrentTime(): NonPayableTransactionObject<string>;
 
-    /**
-     * Will revert if not running in test mode.
-     * Sets the current time.
-     * @param time timestamp to set current Testable time to.
-     */
     setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
 
     timerAddress(): NonPayableTransactionObject<string>;

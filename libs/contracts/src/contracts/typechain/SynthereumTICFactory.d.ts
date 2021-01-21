@@ -29,9 +29,6 @@ export interface SynthereumTICFactory extends BaseContract {
   ): SynthereumTICFactory;
   clone(): SynthereumTICFactory;
   methods: {
-    /**
-     * Returns the bytes4 signature of the function used for the deployment of a contract in a factory
-     */
     deploymentSignature(): NonPayableTransactionObject<string>;
 
     synthereumFinder(): NonPayableTransactionObject<string>;

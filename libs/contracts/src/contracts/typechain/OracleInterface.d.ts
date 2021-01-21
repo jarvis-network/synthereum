@@ -29,34 +29,16 @@ export interface OracleInterface extends BaseContract {
   ): OracleInterface;
   clone(): OracleInterface;
   methods: {
-    /**
-     * Time must be in the past and the identifier must be supported.
-     * Enqueues a request (if a request isn't already present) for the given `identifier`, `time` pair.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     requestPrice(
       identifier: string | number[],
       time: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Time must be in the past and the identifier must be supported.
-     * Whether the price for `identifier` and `time` is available.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     hasPrice(
       identifier: string | number[],
       time: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * If the price is not available, the method reverts.
-     * Gets the price for `identifier` and `time` if it has already been requested and resolved.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     getPrice(
       identifier: string | number[],
       time: number | string

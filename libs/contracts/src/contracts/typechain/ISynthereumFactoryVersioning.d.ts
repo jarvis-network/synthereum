@@ -29,66 +29,34 @@ export interface ISynthereumFactoryVersioning extends BaseContract {
   ): ISynthereumFactoryVersioning;
   clone(): ISynthereumFactoryVersioning;
   methods: {
-    /**
-     * Set the address of a version of a pool factory
-     * @param poolFactory address of the pool factory
-     * @param version uint8 of the version index
-     */
     setPoolFactory(
       version: number | string,
       poolFactory: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Remove the address of a version of a pool factory
-     * @param version uint8 of the version index
-     */
     removePoolFactory(
       version: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Set the address of a version of a perpetual derivative factory
-     * @param derivativeFactory address of the pool factory
-     * @param version uint8 of the version index
-     */
     setDerivativeFactory(
       version: number | string,
       derivativeFactory: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Remove the address of a version of a perpetual derivative factory
-     * @param version uint8 of the version index
-     */
     removeDerivativeFactory(
       version: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns the address of a version of pool factory if exists, otherwise revert
-     * @param version uint8 of the version index
-     */
     getPoolFactoryVersion(
       version: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of existing versions of pool factory
-     */
     numberOfVerisonsOfPoolFactory(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the address of a version of perpetual derivative factory if exists, otherwise revert
-     * @param version uint8 of the version index
-     */
     getDerivativeFactoryVersion(
       version: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of existing versions of perpetual derivative factory
-     */
     numberOfVerisonsOfDerivativeFactory(): NonPayableTransactionObject<string>;
   };
   events: {

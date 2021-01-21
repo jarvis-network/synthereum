@@ -21,21 +21,31 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface ContractAllowed extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): ContractAllowed;
+  clone(): ContractAllowed;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    collateral(): NonPayableTransactionObject<string>;
 
-    owner(): NonPayableTransactionObject<string>;
+    pool(): NonPayableTransactionObject<string>;
 
-    setCompleted(completed: number | string): NonPayableTransactionObject<void>;
-
-    upgrade(new_address: string): NonPayableTransactionObject<void>;
+    mintInPool(
+      mintParams: [
+        string,
+        string,
+        number | string,
+        number | string,
+        number | string,
+        number | string,
+        number | string
+      ],
+      signature: [number | string, string | number[], string | number[]],
+      approveAmount: number | string
+    ): NonPayableTransactionObject<void>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

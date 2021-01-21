@@ -44,19 +44,10 @@ export interface AddressWhitelist extends BaseContract {
   ): AddressWhitelist;
   clone(): AddressWhitelist;
   methods: {
-    /**
-     * Returns the address of the current owner.
-     */
     owner(): NonPayableTransactionObject<string>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
-     */
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
     whitelist(arg0: string): NonPayableTransactionObject<string>;
@@ -65,30 +56,14 @@ export interface AddressWhitelist extends BaseContract {
       arg0: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Adds an address to the whitelist.
-     * @param newElement the new address to add.
-     */
     addToWhitelist(newElement: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Removes an address from the whitelist.
-     * @param elementToRemove the existing address to remove.
-     */
     removeFromWhitelist(
       elementToRemove: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Checks whether an address is on the whitelist.
-     * @param elementToCheck the address to check.
-     */
     isOnWhitelist(elementToCheck: string): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Note: This method skips over, but still iterates through addresses. It is possible for this call to run out of gas if a large number of addresses have been removed. To reduce the likelihood of this unlikely scenario, we can modify the implementation so that when addresses are removed, the last addresses in the array is moved to the empty index.
-     * Gets all addresses that are currently included in the whitelist.
-     */
     getWhitelist(): NonPayableTransactionObject<string[]>;
   };
   events: {

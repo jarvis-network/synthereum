@@ -46,35 +46,17 @@ export interface Finder extends BaseContract {
       arg0: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the address of the current owner.
-     */
     owner(): NonPayableTransactionObject<string>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
-     */
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Updates the address of the contract that implements `interfaceName`.
-     * @param implementationAddress address of the implementation contract.
-     * @param interfaceName bytes32 of the interface name that is either changed or registered.
-     */
     changeImplementationAddress(
       interfaceName: string | number[],
       implementationAddress: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Gets the address of the contract that implements the given `interfaceName`.
-     * @param interfaceName queried interface.
-     */
     getImplementationAddress(
       interfaceName: string | number[]
     ): NonPayableTransactionObject<string>;

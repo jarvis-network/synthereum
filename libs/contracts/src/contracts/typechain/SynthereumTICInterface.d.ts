@@ -29,29 +29,14 @@ export interface SynthereumTICInterface extends BaseContract {
   ): SynthereumTICInterface;
   clone(): SynthereumTICInterface;
   methods: {
-    /**
-     * Get the collateral token
-     */
     collateralToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get Synthereum finder of the pool
-     */
     synthereumFinder(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the synthetic token associated to this pool
-     */
     syntheticToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the synthetic token symbol associated to this pool
-     */
     syntheticTokenSymbol(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get Synthereum version
-     */
     version(): NonPayableTransactionObject<string>;
 
     mintRequest(

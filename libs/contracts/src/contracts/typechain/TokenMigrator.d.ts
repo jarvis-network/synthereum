@@ -39,11 +39,6 @@ export interface TokenMigrator extends BaseContract {
 
     snapshotId(): NonPayableTransactionObject<string>;
 
-    /**
-     * This function can only be called once per `tokenHolder`. Anyone can call this method on behalf of any other token holder since there is no disadvantage to receiving the tokens earlier.
-     * Migrates the tokenHolder's old tokens to new tokens.
-     * @param tokenHolder address of the token holder to migrate.
-     */
     migrateTokens(tokenHolder: string): NonPayableTransactionObject<void>;
   };
   events: {

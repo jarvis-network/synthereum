@@ -44,43 +44,20 @@ export interface IdentifierWhitelist extends BaseContract {
   ): IdentifierWhitelist;
   clone(): IdentifierWhitelist;
   methods: {
-    /**
-     * Returns the address of the current owner.
-     */
     owner(): NonPayableTransactionObject<string>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
-     */
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Price requests using this identifier will succeed after this call.
-     * Adds the provided identifier as a supported identifier.
-     * @param identifier unique UTF-8 representation for the feed being added. Eg: BTC/USD.
-     */
     addSupportedIdentifier(
       identifier: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Price requests using this identifier will no longer succeed after this call.
-     * Removes the identifier from the whitelist.
-     * @param identifier unique UTF-8 representation for the feed being removed. Eg: BTC/USD.
-     */
     removeSupportedIdentifier(
       identifier: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Checks whether an identifier is on the whitelist.
-     * @param identifier unique UTF-8 representation for the feed being queried. Eg: BTC/USD.
-     */
     isIdentifierSupported(
       identifier: string | number[]
     ): NonPayableTransactionObject<boolean>;

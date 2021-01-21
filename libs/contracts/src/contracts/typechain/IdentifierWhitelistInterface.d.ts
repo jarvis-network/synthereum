@@ -29,28 +29,14 @@ export interface IdentifierWhitelistInterface extends BaseContract {
   ): IdentifierWhitelistInterface;
   clone(): IdentifierWhitelistInterface;
   methods: {
-    /**
-     * Price requests using this identifier will succeed after this call.
-     * Adds the provided identifier as a supported identifier.
-     * @param identifier bytes32 encoding of the string identifier. Eg: BTC/USD.
-     */
     addSupportedIdentifier(
       identifier: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Price requests using this identifier will no longer succeed after this call.
-     * Removes the identifier from the whitelist.
-     * @param identifier bytes32 encoding of the string identifier. Eg: BTC/USD.
-     */
     removeSupportedIdentifier(
       identifier: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Checks whether an identifier is on the whitelist.
-     * @param identifier bytes32 encoding of the string identifier. Eg: BTC/USD.
-     */
     isIdentifierSupported(
       identifier: string | number[]
     ): NonPayableTransactionObject<boolean>;

@@ -21,33 +21,42 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface OptimisticRequester extends BaseContract {
+export interface MockOracle extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): OptimisticRequester;
-  clone(): OptimisticRequester;
+  ): MockOracle;
+  clone(): MockOracle;
   methods: {
-    priceProposed(
+    getCurrentTime(): NonPayableTransactionObject<string>;
+
+    setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
+
+    timerAddress(): NonPayableTransactionObject<string>;
+
+    requestPrice(
       identifier: string | number[],
-      timestamp: number | string,
-      ancillaryData: string | number[]
+      time: number | string
     ): NonPayableTransactionObject<void>;
 
-    priceDisputed(
+    pushPrice(
       identifier: string | number[],
-      timestamp: number | string,
-      ancillaryData: string | number[],
-      refund: number | string
-    ): NonPayableTransactionObject<void>;
-
-    priceSettled(
-      identifier: string | number[],
-      timestamp: number | string,
-      ancillaryData: string | number[],
+      time: number | string,
       price: number | string
     ): NonPayableTransactionObject<void>;
+
+    hasPrice(
+      identifier: string | number[],
+      time: number | string
+    ): NonPayableTransactionObject<boolean>;
+
+    getPrice(
+      identifier: string | number[],
+      time: number | string
+    ): NonPayableTransactionObject<string>;
+
+    getPendingQueries(): NonPayableTransactionObject<[string, string][]>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

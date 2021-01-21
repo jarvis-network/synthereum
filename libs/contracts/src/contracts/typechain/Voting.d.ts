@@ -116,23 +116,14 @@ export interface Voting extends BaseContract {
 
     gatPercentage(): NonPayableTransactionObject<string>;
 
-    /**
-     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
-     */
     getCurrentTime(): NonPayableTransactionObject<string>;
 
     inflationRate(): NonPayableTransactionObject<string>;
 
     migratedAddress(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the address of the current owner.
-     */
     owner(): NonPayableTransactionObject<string>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
-     */
     renounceOwnership(): NonPayableTransactionObject<void>;
 
     rewardsExpirationTimeout(): NonPayableTransactionObject<string>;
@@ -150,56 +141,29 @@ export interface Voting extends BaseContract {
       3: string;
     }>;
 
-    /**
-     * Will revert if not running in test mode.
-     * Sets the current time.
-     * @param time timestamp to set current Testable time to.
-     */
     setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
 
     snapshotMessageHash(): NonPayableTransactionObject<string>;
 
     timerAddress(): NonPayableTransactionObject<string>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
     voteTiming(): NonPayableTransactionObject<string>;
 
     votingToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Time must be in the past and the identifier must be supported. The length of the ancillary data is limited such that this method abides by the EVM transaction gas limit.
-     * Enqueues a request (if a request isn't already present) for the given `identifier`, `time` pair.
-     * @param ancillaryData arbitrary data appended to a price request to give the voters more info from the caller.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     "requestPrice(bytes32,uint256,bytes)"(
       identifier: string | number[],
       time: number | string,
       ancillaryData: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Time must be in the past and the identifier must be supported.
-     * Enqueues a request (if a request isn't already present) for the given `identifier`, `time` pair.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     "requestPrice(bytes32,uint256)"(
       identifier: string | number[],
       time: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Time must be in the past and the identifier must be supported.
-     * Whether the price for `identifier` and `time` is available.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     "hasPrice(bytes32,uint256)"(
       identifier: string | number[],
       time: number | string
@@ -231,12 +195,6 @@ export interface Voting extends BaseContract {
       ancillaryData: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * If the price is not available, the method reverts.
-     * Gets the price for `identifier` and `time` if it has already been requested and resolved.
-     * @param identifier uniquely identifies the price requested. eg BTC/USD (encoded as bytes32) could be requested.
-     * @param time unix timestamp for the price request.
-     */
     "getPrice(bytes32,uint256)"(
       identifier: string | number[],
       time: number | string
@@ -265,13 +223,6 @@ export interface Voting extends BaseContract {
       hash: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * `identifier`, `time` must correspond to a price request that's currently in the commit phase. Commits can be changed.Since transaction data is public, the salt will be revealed with the vote. While this is the system’s expected behavior, voters should never reuse salts. If someone else is able to guess the voted price and knows that a salt will be reused, then they can determine the vote pre-reveal.
-     * Commit a vote for a price request for `identifier` at `time`.
-     * @param hash keccak256 hash of the `price`, `salt`, voter `address`, `time`, current `roundId`, and `identifier`.
-     * @param identifier uniquely identifies the committed vote. EG BTC/USD price pair.
-     * @param time unix timestamp of the price being voted on.
-     */
     "commitVote(bytes32,uint256,bytes32)"(
       identifier: string | number[],
       time: number | string,
@@ -287,14 +238,6 @@ export interface Voting extends BaseContract {
       signature: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * The revealed `price`, `salt`, `address`, `time`, `roundId`, and `identifier`, must hash to the latest `hash` that `commitVote()` was called with. Only the committer can reveal their vote.
-     * Reveal a previously committed vote for `identifier` at `time`.
-     * @param identifier voted on in the commit phase. EG BTC/USD price pair.
-     * @param price voted on during the commit phase.
-     * @param salt value used to hide the commitment price during the commit phase.
-     * @param time specifies the unix timestamp of the price is being voted on.
-     */
     "revealVote(bytes32,uint256,int256,int256)"(
       identifier: string | number[],
       time: number | string,
@@ -302,15 +245,6 @@ export interface Voting extends BaseContract {
       salt: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * The revealed `price`, `salt`, `address`, `time`, `roundId`, and `identifier`, must hash to the latest `hash` that `commitVote()` was called with. Only the committer can reveal their vote.
-     * Reveal a previously committed vote for `identifier` at `time`.
-     * @param ancillaryData arbitrary data appended to a price request to give the voters more info from the caller.
-     * @param identifier voted on in the commit phase. EG BTC/USD price pair.
-     * @param price voted on during the commit phase.
-     * @param salt value used to hide the commitment price during the commit phase.
-     * @param time specifies the unix timestamp of the price being voted on.
-     */
     "revealVote(bytes32,uint256,int256,bytes,int256)"(
       identifier: string | number[],
       time: number | string,
@@ -336,14 +270,6 @@ export interface Voting extends BaseContract {
       encryptedVote: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * An encrypted version of the vote is emitted in an event `EncryptedVote` to allow off-chain infrastructure to retrieve the commit. The contents of `encryptedVote` are never used on chain: it is purely for convenience.
-     * commits a vote and logs an event with a data blob, typically an encrypted version of the vote
-     * @param encryptedVote offchain encrypted blob containing the voters amount, time and salt.
-     * @param hash keccak256 hash of the price you want to vote for and a `int256 salt`.
-     * @param identifier unique price pair identifier. Eg: BTC/USD price pair.
-     * @param time unix timestamp of for the price request.
-     */
     "commitAndEmitEncryptedVote(bytes32,uint256,bytes32,bytes)"(
       identifier: string | number[],
       time: number | string,

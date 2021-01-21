@@ -29,13 +29,6 @@ export interface ISynthereumDeployer extends BaseContract {
   ): ISynthereumDeployer;
   clone(): ISynthereumDeployer;
   methods: {
-    /**
-     * Deploys derivative and pool linking the contracts together
-     * @param derivativeParamsData Input params of derivative constructor
-     * @param derivativeVersion Version of derivative contract
-     * @param poolParamsData Input params of pool constructor
-     * @param poolVersion Version of the pool contract
-     */
     deployPoolAndDerivative(
       derivativeVersion: number | string,
       poolVersion: number | string,
@@ -48,24 +41,12 @@ export interface ISynthereumDeployer extends BaseContract {
       1: string;
     }>;
 
-    /**
-     * Deploys pool and links it with an already existing derivative
-     * @param derivative Existing derivative contract to link with the new pool
-     * @param poolParamsData Input params of pool constructor
-     * @param poolVersion Version of the pool contract
-     */
     deployOnlyPool(
       poolVersion: number | string,
       poolParamsData: string | number[],
       derivative: string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Deploys derivative and links it with an already existing pool
-     * @param derivativeParamsData Input params of derivative constructor
-     * @param derivativeVersion Version of the derivative contract
-     * @param pool Existing pool contract to link with the new derivative
-     */
     deployOnlyDerivative(
       derivativeVersion: number | string,
       derivativeParamsData: string | number[],

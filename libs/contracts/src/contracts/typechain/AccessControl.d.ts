@@ -56,53 +56,32 @@ export interface AccessControl extends BaseContract {
   methods: {
     DEFAULT_ADMIN_ROLE(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns `true` if `account` has been granted `role`.
-     */
     hasRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
     getRoleMemberCount(
       role: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
     getRoleMember(
       role: string | number[],
       index: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-     */
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     grantRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     revokeRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
     renounceRole(
       role: string | number[],
       account: string

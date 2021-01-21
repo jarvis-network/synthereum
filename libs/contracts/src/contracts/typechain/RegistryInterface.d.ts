@@ -29,58 +29,25 @@ export interface RegistryInterface extends BaseContract {
   ): RegistryInterface;
   clone(): RegistryInterface;
   methods: {
-    /**
-     * Only authorized contract creators can call this method.
-     * Registers a new contract.
-     * @param contractAddress defines the address of the deployed contract.
-     * @param parties an array of addresses who become parties in the contract.
-     */
     registerContract(
       parties: string[],
       contractAddress: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * If it is registered, it is an authorized participant in the UMA system.
-     * Returns whether the contract has been registered with the registry.
-     * @param contractAddress address of the contract.
-     */
     isContractRegistered(
       contractAddress: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Returns a list of all contracts that are associated with a particular party.
-     * @param party address of the party.
-     */
     getRegisteredContracts(
       party: string
     ): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Returns all registered contracts.
-     */
     getAllRegisteredContracts(): NonPayableTransactionObject<string[]>;
 
-    /**
-     * msg.sender must be the contract to which the party member is added.
-     * Adds a party to the calling contract.
-     * @param party address to be added to the contract.
-     */
     addPartyToContract(party: string): NonPayableTransactionObject<void>;
 
-    /**
-     * msg.sender must be the contract to which the party member is added.
-     * Removes a party member to the calling contract.
-     * @param party address to be removed from the contract.
-     */
     removePartyFromContract(party: string): NonPayableTransactionObject<void>;
 
-    /**
-     * checks if an address is a party in a contract.
-     * @param contractAddress address to check against the party.
-     * @param party party to check.
-     */
     isPartyMemberOfContract(
       party: string,
       contractAddress: string

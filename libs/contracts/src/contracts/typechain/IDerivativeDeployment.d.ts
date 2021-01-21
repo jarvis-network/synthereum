@@ -29,35 +29,16 @@ export interface IDerivativeDeployment extends BaseContract {
   ): IDerivativeDeployment;
   clone(): IDerivativeDeployment;
   methods: {
-    /**
-     * Add admin and pool to DEFAULT_ADMIN_ROLE and POOL_ROLE
-     * @param adminAndPool address of admin/pool.
-     */
     addAdminAndPool(adminAndPool: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Admin renounce to DEFAULT_ADMIN_ROLE
-     */
     renounceAdmin(): NonPayableTransactionObject<void>;
 
-    /**
-     * Gets the collateral currency of the derivative
-     */
     collateralCurrency(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get emergency shutdown price
-     */
     tokenCurrency(): NonPayableTransactionObject<string>;
 
-    /**
-     * Accessor method for the list of members with admin role
-     */
     getAdminMembers(): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Accessor method for the list of members with pool role
-     */
     getPoolMembers(): NonPayableTransactionObject<string[]>;
   };
   events: {

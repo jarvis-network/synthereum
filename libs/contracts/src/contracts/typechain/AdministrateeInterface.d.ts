@@ -29,21 +29,10 @@ export interface AdministrateeInterface extends BaseContract {
   ): AdministrateeInterface;
   clone(): AdministrateeInterface;
   methods: {
-    /**
-     * Initiates the shutdown process, in case of an emergency.
-     */
     emergencyShutdown(): NonPayableTransactionObject<void>;
 
-    /**
-     * It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract.
-     * A core contract method called independently or as a part of other financial contract transactions.
-     */
     remargin(): NonPayableTransactionObject<void>;
 
-    /**
-     * This is equivalent to the collateral pool available from which to pay fees. Therefore, derived contracts are expected to implement this so that pay-fee methods can correctly compute the owed fees as a % of PfC.
-     * Gets the current profit from corruption for this contract in terms of the collateral currency.
-     */
     pfc(): NonPayableTransactionObject<[string]>;
   };
   events: {

@@ -74,53 +74,32 @@ export interface SynthereumDeployer extends BaseContract {
 
     MAINTAINER_ROLE(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-     */
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
     getRoleMember(
       role: string | number[],
       index: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
     getRoleMemberCount(
       role: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     grantRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns `true` if `account` has been granted `role`.
-     */
     hasRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
     renounceRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     revokeRole(
       role: string | number[],
       account: string
@@ -128,13 +107,6 @@ export interface SynthereumDeployer extends BaseContract {
 
     synthereumFinder(): NonPayableTransactionObject<string>;
 
-    /**
-     * Deploys derivative and pool linking the contracts together
-     * @param derivativeParamsData Input params of derivative constructor
-     * @param derivativeVersion Version of derivative contract
-     * @param poolParamsData Input params of pool constructor
-     * @param poolVersion Version of the pool contract
-     */
     deployPoolAndDerivative(
       derivativeVersion: number | string,
       poolVersion: number | string,
@@ -147,24 +119,12 @@ export interface SynthereumDeployer extends BaseContract {
       1: string;
     }>;
 
-    /**
-     * Deploys a pool and links it with an already existing derivative
-     * @param derivative Existing derivative contract to link with the new pool
-     * @param poolParamsData Input params of pool constructor
-     * @param poolVersion Version of the pool contract
-     */
     deployOnlyPool(
       poolVersion: number | string,
       poolParamsData: string | number[],
       derivative: string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Deploys a derivative and links it with an already existing pool
-     * @param derivativeParamsData Input params of derivative constructor
-     * @param derivativeVersion Version of the derivative contract
-     * @param pool Existing pool contract to link with the new derivative
-     */
     deployOnlyDerivative(
       derivativeVersion: number | string,
       derivativeParamsData: string | number[],

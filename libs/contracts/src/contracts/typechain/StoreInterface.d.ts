@@ -29,10 +29,6 @@ export interface StoreInterface extends BaseContract {
   ): StoreInterface;
   clone(): StoreInterface;
   methods: {
-    /**
-     * To be used by contracts whose margin currency is ETH.
-     * Pays Oracle fees in ETH to the store.
-     */
     payOracleFees(): PayableTransactionObject<void>;
 
     payOracleFeesErc20(
@@ -51,10 +47,6 @@ export interface StoreInterface extends BaseContract {
       1: [string];
     }>;
 
-    /**
-     * Computes the final oracle fees that a contract should pay at settlement.
-     * @param currency token used to pay the final fee.
-     */
     computeFinalFee(currency: string): NonPayableTransactionObject<[string]>;
   };
   events: {

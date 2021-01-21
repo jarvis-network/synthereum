@@ -29,13 +29,6 @@ export interface MintableBurnableTokenFactory extends BaseContract {
   ): MintableBurnableTokenFactory;
   clone(): MintableBurnableTokenFactory;
   methods: {
-    /**
-     * The caller will become the only minter and burner and the new owner capable of assigning the roles.
-     * Create a new token and return it to the caller.
-     * @param tokenDecimals used to define the precision used in the token's numerical representation.
-     * @param tokenName used to describe the new token.
-     * @param tokenSymbol short ticker abbreviation of the name. Ideally < 5 chars.
-     */
     createToken(
       tokenName: string,
       tokenSymbol: string,

@@ -74,12 +74,6 @@ export interface Registry extends BaseContract {
   ): Registry;
   clone(): Registry;
   methods: {
-    /**
-     * Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.
-     * Adds `newMember` to the shared role, `roleId`.
-     * @param newMember the new SharedRole member.
-     * @param roleId the SharedRole membership to modify.
-     */
     addMember(
       roleId: number | string,
       newMember: string
@@ -94,19 +88,8 @@ export interface Registry extends BaseContract {
       1: string;
     }>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, exclusive role.
-     * Gets the current holder of the exclusive role, `roleId`.
-     * @param roleId the ExclusiveRole membership to check.
-     */
     getMember(roleId: number | string): NonPayableTransactionObject<string>;
 
-    /**
-     * Reverts if roleId does not correspond to an initialized role.
-     * Whether `memberToCheck` is a member of roleId.
-     * @param memberToCheck the address to check.
-     * @param roleId the Role to check.
-     */
     holdsRole(
       roleId: number | string,
       memberToCheck: string
@@ -116,91 +99,41 @@ export interface Registry extends BaseContract {
       arg0: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.
-     * Removes `memberToRemove` from the shared role, `roleId`.
-     * @param memberToRemove the current SharedRole member to remove.
-     * @param roleId the SharedRole membership to modify.
-     */
     removeMember(
       roleId: number | string,
       memberToRemove: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if the caller is not a member of the role for `roleId` or if `roleId` is not an initialized, SharedRole.
-     * Removes caller from the role, `roleId`.
-     * @param roleId the SharedRole membership to modify.
-     */
     renounceMembership(
       roleId: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if the caller is not a member of the managing role for `roleId` or if `roleId` is not an initialized, ExclusiveRole.
-     * Changes the exclusive role holder of `roleId` to `newMember`.
-     * @param newMember the new ExclusiveRole member.
-     * @param roleId the ExclusiveRole membership to modify.
-     */
     resetMember(
       roleId: number | string,
       newMember: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Only authorized contract creators can call this method.
-     * Registers a new financial contract.
-     * @param contractAddress address of the contract against which the parties are registered.
-     * @param parties array of addresses who become parties in the contract.
-     */
     registerContract(
       parties: string[],
       contractAddress: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * msg.sender will be used to determine the contract that this party is added to.
-     * Adds a party member to the calling contract.
-     * @param party new party for the calling contract.
-     */
     addPartyToContract(party: string): NonPayableTransactionObject<void>;
 
-    /**
-     * msg.sender will be used to determine the contract that this party is removed from.
-     * Removes a party member from the calling contract.
-     * @param partyAddress address to be removed from the calling contract.
-     */
     removePartyFromContract(
       partyAddress: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * If it is registered, it is an authorized participant in the UMA system.
-     * Returns whether the contract has been registered with the registry.
-     * @param contractAddress address of the financial contract.
-     */
     isContractRegistered(
       contractAddress: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Returns a list of all contracts that are associated with a particular party.
-     * @param party address of the party.
-     */
     getRegisteredContracts(
       party: string
     ): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Returns all registered contracts.
-     */
     getAllRegisteredContracts(): NonPayableTransactionObject<string[]>;
 
-    /**
-     * checks if an address is a party of a contract.
-     * @param contractAddress address to check against the party.
-     * @param party party to check.
-     */
     isPartyMemberOfContract(
       party: string,
       contractAddress: string

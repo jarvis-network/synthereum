@@ -33,12 +33,6 @@ export interface SynthereumSyntheticTokenFactory extends BaseContract {
 
     synthereumFinder(): NonPayableTransactionObject<string>;
 
-    /**
-     * Check if the sender is a derivative Factory and deploy a new synthetic token
-     * @param tokenDecimals used to define the precision used in the token's numerical representation
-     * @param tokenName used to describe the new token
-     * @param tokenSymbol short ticker abbreviation of the name. Ideally < 5 chars
-     */
     createToken(
       tokenName: string,
       tokenSymbol: string,

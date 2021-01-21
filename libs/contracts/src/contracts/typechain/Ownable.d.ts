@@ -36,19 +36,10 @@ export interface Ownable extends BaseContract {
   ): Ownable;
   clone(): Ownable;
   methods: {
-    /**
-     * Returns the address of the current owner.
-     */
     owner(): NonPayableTransactionObject<string>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
-     */
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
   };
   events: {

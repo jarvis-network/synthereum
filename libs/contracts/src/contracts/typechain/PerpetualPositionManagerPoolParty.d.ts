@@ -144,9 +144,6 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
 
     POOL_ROLE(): NonPayableTransactionObject<string>;
 
-    /**
-     * Gets the collateral currency of the derivative
-     */
     collateralCurrency(): NonPayableTransactionObject<string>;
 
     feePayerData(): NonPayableTransactionObject<{
@@ -160,27 +157,15 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
       3: [string];
     }>;
 
-    /**
-     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
-     */
     getCurrentTime(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-     */
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
     getRoleMember(
       role: string | number[],
       index: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
     getRoleMemberCount(
       role: string | number[]
     ): NonPayableTransactionObject<string>;
@@ -192,17 +177,11 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
       1: [string];
     }>;
 
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     grantRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns `true` if `account` has been granted `role`.
-     */
     hasRole(
       role: string | number[],
       account: string
@@ -213,16 +192,8 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
       amount: [number | string]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * These must be paid periodically for the life of the contract. If the contract has not paid its regular fee in a week or more then a late penalty is applied which is sent to the caller. If the amount of fees owed are greater than the pfc, then this will pay as much as possible from the available collateral. An event is only fired if the fees charged are greater than 0.
-     * Pays UMA DVM regular fees (as a % of the collateral pool) to the Store contract.
-     */
     payRegularFees(): NonPayableTransactionObject<[string]>;
 
-    /**
-     * This is equivalent to the collateral pool available from which to pay fees. Therefore, derived contracts are expected to implement this so that pay-fee methods can correctly compute the owed fees as a % of PfC.
-     * Gets the current profit from corruption for this contract in terms of the collateral currency.
-     */
     pfc(): NonPayableTransactionObject<[string]>;
 
     positionManagerData(): NonPayableTransactionObject<{
@@ -255,27 +226,16 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
       3: [string];
     }>;
 
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
     renounceRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     revokeRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Will revert if not running in test mode.
-     * Sets the current time.
-     * @param time timestamp to set current Testable time to.
-     */
     setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
 
     timerAddress(): NonPayableTransactionObject<string>;
@@ -297,15 +257,8 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
       collateralAmount: [number | string]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Might not withdraw the full requested amount in order to account for precision loss or if the full requested amount exceeds the collateral in the position (due to paying fees).
-     * After a passed withdrawal request (i.e., by a call to `requestWithdrawal` and waiting `withdrawalLiveness`), withdraws `positionData.withdrawalRequestAmount` of collateral currency.
-     */
     withdrawPassedRequest(): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Cancels a pending withdrawal request.
-     */
     cancelWithdrawal(): NonPayableTransactionObject<void>;
 
     create(
@@ -317,152 +270,62 @@ export interface PerpetualPositionManagerPoolParty extends BaseContract {
 
     repay(numTokens: [number | string]): NonPayableTransactionObject<void>;
 
-    /**
-     * This burns all tokens from the caller of `tokenCurrency` and sends back the resolved settlement value of `feePayerData.collateralCurrency`. Might not redeem the full proportional amount of collateral in order to account for precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.This contract must have the Burner role for the `tokenCurrency`.Note that this function does not call the updateFundingRate modifier to update the funding rate as this function is only called after an emergency shutdown & there should be no funding rate updates after the shutdown.
-     * If the contract is emergency shutdown then all token holders and sponsors can redeem their tokens or remaining collateral for underlying at the prevailing price defined by a DVM vote.
-     */
     settleEmergencyShutdown(): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Only the governor can call this function as they are permissioned within the `FinancialContractAdmin`. Upon emergency shutdown, the contract settlement time is set to the shutdown time. This enables withdrawal to occur via the `settleEmergencyShutdown` function.
-     * Premature contract settlement under emergency circumstances.
-     */
     emergencyShutdown(): NonPayableTransactionObject<void>;
 
-    /**
-     * This is supposed to be implemented by any contract that inherits `AdministrateeInterface` and callable only by the Governor contract. This method is therefore minimally implemented in this contract and does nothing.
-     * Theoretically supposed to pay fees and move money between margin accounts to make sure they reflect the NAV of the contract. However, this functionality doesn't apply to this contract.
-     */
     remargin(): NonPayableTransactionObject<void>;
 
-    /**
-     * This will drain down to the amount of tracked collateral and drain the full balance of any other token.
-     * Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
-     * @param token address of the ERC20 token whose excess balance should be drained.
-     */
     trimExcess(token: string): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Delete liquidation of a TokenSponsor psoition (This function can only be called by the contract itself)
-     * @param sponsor address of the TokenSponsor.
-     */
     deleteSponsorPosition(sponsor: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Add TokenSponsor to POOL_ROLE
-     * @param pool address of the TokenSponsor pool.
-     */
     addPool(pool: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Add admin to DEFAULT_ADMIN_ROLE
-     * @param admin address of the Admin.
-     */
     addAdmin(admin: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Add admin and pool to DEFAULT_ADMIN_ROLE and POOL_ROLE
-     * @param adminAndPool address of admin/pool.
-     */
     addAdminAndPool(adminAndPool: string): NonPayableTransactionObject<void>;
 
-    /**
-     * TokenSponsor pool renounce to POOL_ROLE
-     */
     renouncePool(): NonPayableTransactionObject<void>;
 
-    /**
-     * Admin renounce to DEFAULT_ADMIN_ROLE
-     */
     renounceAdmin(): NonPayableTransactionObject<void>;
 
-    /**
-     * Admin and TokenSponsor pool renounce to DEFAULT_ADMIN_ROLE and POOL_ROLE
-     */
     renounceAdminAndPool(): NonPayableTransactionObject<void>;
 
-    /**
-     * Add derivative as minter of synthetic token
-     * @param derivative address of the derivative
-     */
     addSyntheticTokenMinter(
       derivative: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Add derivative as burner of synthetic token
-     * @param derivative address of the derivative
-     */
     addSyntheticTokenBurner(
       derivative: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Add derivative as admin of synthetic token
-     * @param derivative address of the derivative
-     */
     addSyntheticTokenAdmin(
       derivative: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Add derivative as admin, minter and burner of synthetic token
-     * @param derivative address of the derivative
-     */
     addSyntheticTokenAdminAndMinterAndBurner(
       derivative: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * This contract renounce to be minter of synthetic token
-     */
     renounceSyntheticTokenMinter(): NonPayableTransactionObject<void>;
 
-    /**
-     * This contract renounce to be burner of synthetic token
-     */
     renounceSyntheticTokenBurner(): NonPayableTransactionObject<void>;
 
-    /**
-     * This contract renounce to be admin of synthetic token
-     */
     renounceSyntheticTokenAdmin(): NonPayableTransactionObject<void>;
 
-    /**
-     * This contract renounce to be admin, minter and burner of synthetic token
-     */
     renounceSyntheticTokenAdminAndMinterAndBurner(): NonPayableTransactionObject<void>;
 
-    /**
-     * This is necessary because the struct returned by the positions() method shows rawCollateral, which isn't a user-readable value.
-     * Accessor method for a sponsor's collateral.
-     * @param sponsor address whose collateral amount is retrieved.
-     */
     getCollateral(sponsor: string): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Get emergency shutdown price
-     */
     tokenCurrency(): NonPayableTransactionObject<string>;
 
-    /**
-     * Accessor method for the total collateral stored within the PerpetualPositionManager.
-     */
     totalPositionCollateral(): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Get the price of synthetic token set by DVM after emergencyShutdown call
-     */
     emergencyShutdownPrice(): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Accessor method for the list of member with admin role
-     */
     getAdminMembers(): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Accessor method for the list of member with pool role
-     */
     getPoolMembers(): NonPayableTransactionObject<string[]>;
   };
   events: {

@@ -21,6 +21,12 @@ export const AdministrateeInterface_Abi = require('./AdministrateeInterface.json
   AdministrateeInterface
 >;
 
+import type { ContractAllowed } from '../typechain/ContractAllowed';
+export const ContractAllowed_Abi = require('./ContractAllowed.json') as Tagged<
+  AbiItem[],
+  ContractAllowed
+>;
+
 import type { ContractCreator } from '../typechain/ContractCreator';
 export const ContractCreator_Abi = require('./ContractCreator.json') as Tagged<
   AbiItem[],
@@ -183,12 +189,6 @@ export const IdentifierWhitelistInterface_Abi = require('./IdentifierWhitelistIn
   IdentifierWhitelistInterface
 >;
 
-import type { Migrations } from '../typechain/Migrations';
-export const Migrations_Abi = require('./Migrations.json') as Tagged<
-  AbiItem[],
-  Migrations
->;
-
 import type { MintableBurnableERC20 } from '../typechain/MintableBurnableERC20';
 export const MintableBurnableERC20_Abi = require('./MintableBurnableERC20.json') as Tagged<
   AbiItem[],
@@ -211,6 +211,12 @@ import type { MintableBurnableTokenFactory } from '../typechain/MintableBurnable
 export const MintableBurnableTokenFactory_Abi = require('./MintableBurnableTokenFactory.json') as Tagged<
   AbiItem[],
   MintableBurnableTokenFactory
+>;
+
+import type { MockOracle } from '../typechain/MockOracle';
+export const MockOracle_Abi = require('./MockOracle.json') as Tagged<
+  AbiItem[],
+  MockOracle
 >;
 
 import type { MultiRole } from '../typechain/MultiRole';

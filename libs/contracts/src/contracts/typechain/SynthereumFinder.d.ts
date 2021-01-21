@@ -64,37 +64,22 @@ export interface SynthereumFinder extends BaseContract {
 
     MAINTAINER_ROLE(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-     */
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
     getRoleMember(
       role: string | number[],
       index: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
     getRoleMemberCount(
       role: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     grantRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns `true` if `account` has been granted `role`.
-     */
     hasRole(
       role: string | number[],
       account: string
@@ -104,36 +89,21 @@ export interface SynthereumFinder extends BaseContract {
       arg0: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
     renounceRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     revokeRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Updates the address of the contract that implements `interfaceName`.
-     * @param implementationAddress address of the implementation contract.
-     * @param interfaceName bytes32 of the interface name that is either changed or registered.
-     */
     changeImplementationAddress(
       interfaceName: string | number[],
       implementationAddress: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Gets the address of the contract that implements the given `interfaceName`.
-     * @param interfaceName queried interface.
-     */
     getImplementationAddress(
       interfaceName: string | number[]
     ): NonPayableTransactionObject<string>;

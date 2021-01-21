@@ -54,87 +54,39 @@ export interface DesignatedVoting extends BaseContract {
   ): DesignatedVoting;
   clone(): DesignatedVoting;
   methods: {
-    /**
-     * Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.
-     * Adds `newMember` to the shared role, `roleId`.
-     * @param newMember the new SharedRole member.
-     * @param roleId the SharedRole membership to modify.
-     */
     addMember(
       roleId: number | string,
       newMember: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, exclusive role.
-     * Gets the current holder of the exclusive role, `roleId`.
-     * @param roleId the ExclusiveRole membership to check.
-     */
     getMember(roleId: number | string): NonPayableTransactionObject<string>;
 
-    /**
-     * Reverts if roleId does not correspond to an initialized role.
-     * Whether `memberToCheck` is a member of roleId.
-     * @param memberToCheck the address to check.
-     * @param roleId the Role to check.
-     */
     holdsRole(
       roleId: number | string,
       memberToCheck: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.
-     * Removes `memberToRemove` from the shared role, `roleId`.
-     * @param memberToRemove the current SharedRole member to remove.
-     * @param roleId the SharedRole membership to modify.
-     */
     removeMember(
       roleId: number | string,
       memberToRemove: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if the caller is not a member of the role for `roleId` or if `roleId` is not an initialized, SharedRole.
-     * Removes caller from the role, `roleId`.
-     * @param roleId the SharedRole membership to modify.
-     */
     renounceMembership(
       roleId: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if the caller is not a member of the managing role for `roleId` or if `roleId` is not an initialized, ExclusiveRole.
-     * Changes the exclusive role holder of `roleId` to `newMember`.
-     * @param newMember the new ExclusiveRole member.
-     * @param roleId the ExclusiveRole membership to modify.
-     */
     resetMember(
       roleId: number | string,
       newMember: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Withdraws ETH from the contract.
-     */
     withdraw(amount: number | string): NonPayableTransactionObject<void>;
 
-    /**
-     * Withdraws ERC20 tokens from the contract.
-     * @param amount amount of tokens to withdraw.
-     * @param erc20Address ERC20 token to withdraw.
-     */
     withdrawErc20(
       erc20Address: string,
       amount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Forwards a commit to Voting.
-     * @param hash the keccak256 hash of the price you want to vote for and a random integer salt value.
-     * @param identifier uniquely identifies the feed for this vote. EG BTC/USD price pair.
-     * @param time specifies the unix timestamp of the price being voted on.
-     */
     commitVote(
       identifier: string | number[],
       time: number | string,
@@ -152,13 +104,6 @@ export interface DesignatedVoting extends BaseContract {
       ][]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Forwards a reveal to Voting.
-     * @param identifier voted on in the commit phase. EG BTC/USD price pair.
-     * @param price used along with the `salt` to produce the `hash` during the commit phase.
-     * @param salt used along with the `price` to produce the `hash` during the commit phase.
-     * @param time specifies the unix timestamp of the price being voted on.
-     */
     revealVote(
       identifier: string | number[],
       time: number | string,

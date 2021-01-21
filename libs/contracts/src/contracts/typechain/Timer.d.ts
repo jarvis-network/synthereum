@@ -29,16 +29,8 @@ export interface Timer extends BaseContract {
   ): Timer;
   clone(): Timer;
   methods: {
-    /**
-     * Will revert if not running in test mode.
-     * Sets the current time.
-     * @param time timestamp to set `currentTime` to.
-     */
     setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
 
-    /**
-     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
-     */
     getCurrentTime(): NonPayableTransactionObject<string>;
   };
   events: {

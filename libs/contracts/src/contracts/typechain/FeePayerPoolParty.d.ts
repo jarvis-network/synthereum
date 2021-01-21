@@ -40,9 +40,6 @@ export interface FeePayerPoolParty extends BaseContract {
   ): FeePayerPoolParty;
   clone(): FeePayerPoolParty;
   methods: {
-    /**
-     * Initiates the shutdown process, in case of an emergency.
-     */
     emergencyShutdown(): NonPayableTransactionObject<void>;
 
     feePayerData(): NonPayableTransactionObject<{
@@ -56,30 +53,14 @@ export interface FeePayerPoolParty extends BaseContract {
       3: [string];
     }>;
 
-    /**
-     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
-     */
     getCurrentTime(): NonPayableTransactionObject<string>;
 
-    /**
-     * It pays fees and moves money between margin accounts to make sure they reflect the NAV of the contract.
-     * A core contract method called independently or as a part of other financial contract transactions.
-     */
     remargin(): NonPayableTransactionObject<void>;
 
-    /**
-     * Will revert if not running in test mode.
-     * Sets the current time.
-     * @param time timestamp to set current Testable time to.
-     */
     setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
 
     timerAddress(): NonPayableTransactionObject<string>;
 
-    /**
-     * These must be paid periodically for the life of the contract. If the contract has not paid its regular fee in a week or more then a late penalty is applied which is sent to the caller. If the amount of fees owed are greater than the pfc, then this will pay as much as possible from the available collateral. An event is only fired if the fees charged are greater than 0.
-     * Pays UMA DVM regular fees (as a % of the collateral pool) to the Store contract.
-     */
     payRegularFees(): NonPayableTransactionObject<[string]>;
 
     payFinalFees(
@@ -87,15 +68,8 @@ export interface FeePayerPoolParty extends BaseContract {
       amount: [number | string]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * This is equivalent to the collateral pool available from which to pay fees. Therefore, derived contracts are expected to implement this so that pay-fee methods can correctly compute the owed fees as a % of PfC.
-     * Gets the current profit from corruption for this contract in terms of the collateral currency.
-     */
     pfc(): NonPayableTransactionObject<[string]>;
 
-    /**
-     * Gets the collateral currency of the derivative
-     */
     collateralCurrency(): NonPayableTransactionObject<string>;
   };
   events: {

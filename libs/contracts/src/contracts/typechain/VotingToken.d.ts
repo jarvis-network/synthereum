@@ -74,195 +74,95 @@ export interface VotingToken extends BaseContract {
   ): VotingToken;
   clone(): VotingToken;
   methods: {
-    /**
-     * The caller must have the Owner role.
-     * Add Burner role to account.
-     * @param account The address to which the Burner role is added.
-     */
     addBurner(account: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.
-     * Adds `newMember` to the shared role, `roleId`.
-     * @param newMember the new SharedRole member.
-     * @param roleId the SharedRole membership to modify.
-     */
     addMember(
       roleId: number | string,
       newMember: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * The caller must have the Owner role.
-     * Add Minter role to account.
-     * @param account The address to which the Minter role is added.
-     */
     addMinter(account: string): NonPayableTransactionObject<void>;
 
-    /**
-     * See {IERC20-allowance}.
-     */
     allowance(
       owner: string,
       spender: string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
-     */
     approve(
       spender: string,
       amount: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * See {IERC20-balanceOf}.
-     */
     balanceOf(account: string): NonPayableTransactionObject<string>;
 
-    /**
-     * Retrieves the balance of `account` at the time `snapshotId` was created.
-     */
     balanceOfAt(
       account: string,
       snapshotId: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Burns `value` tokens owned by `msg.sender`.
-     * @param value amount of tokens to burn.
-     */
     burn(value: number | string): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
-     */
     decimals(): NonPayableTransactionObject<string>;
 
-    /**
-     * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
-     */
     decreaseAllowance(
       spender: string,
       subtractedValue: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, exclusive role.
-     * Gets the current holder of the exclusive role, `roleId`.
-     * @param roleId the ExclusiveRole membership to check.
-     */
     getMember(roleId: number | string): NonPayableTransactionObject<string>;
 
-    /**
-     * Reverts if roleId does not correspond to an initialized role.
-     * Whether `memberToCheck` is a member of roleId.
-     * @param memberToCheck the address to check.
-     * @param roleId the Role to check.
-     */
     holdsRole(
       roleId: number | string,
       memberToCheck: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
-     */
     increaseAllowance(
       spender: string,
       addedValue: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Mints `value` tokens to `recipient`, returning true on success.
-     * @param recipient address to mint to.
-     * @param value amount of tokens to mint.
-     */
     mint(
       recipient: string,
       value: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Returns the name of the token.
-     */
     name(): NonPayableTransactionObject<string>;
 
-    /**
-     * Reverts if `roleId` does not represent an initialized, SharedRole or if the caller is not a member of the managing role for `roleId`.
-     * Removes `memberToRemove` from the shared role, `roleId`.
-     * @param memberToRemove the current SharedRole member to remove.
-     * @param roleId the SharedRole membership to modify.
-     */
     removeMember(
       roleId: number | string,
       memberToRemove: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if the caller is not a member of the role for `roleId` or if `roleId` is not an initialized, SharedRole.
-     * Removes caller from the role, `roleId`.
-     * @param roleId the SharedRole membership to modify.
-     */
     renounceMembership(
       roleId: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reverts if the caller is not a member of the managing role for `roleId` or if `roleId` is not an initialized, ExclusiveRole.
-     * Changes the exclusive role holder of `roleId` to `newMember`.
-     * @param newMember the new ExclusiveRole member.
-     * @param roleId the ExclusiveRole membership to modify.
-     */
     resetMember(
       roleId: number | string,
       newMember: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * The caller must have the Owner role.
-     * Reset Owner role to account.
-     * @param account The new holder of the Owner role.
-     */
     resetOwner(account: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns the symbol of the token, usually a shorter version of the name.
-     */
     symbol(): NonPayableTransactionObject<string>;
 
-    /**
-     * See {IERC20-totalSupply}.
-     */
     totalSupply(): NonPayableTransactionObject<string>;
 
-    /**
-     * Retrieves the total supply at the time `snapshotId` was created.
-     */
     totalSupplyAt(
       snapshotId: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
-     */
     transfer(
       recipient: string,
       amount: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
-     */
     transferFrom(
       sender: string,
       recipient: string,
       amount: number | string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Creates a new snapshot ID.
-     */
     snapshot(): NonPayableTransactionObject<string>;
   };
   events: {

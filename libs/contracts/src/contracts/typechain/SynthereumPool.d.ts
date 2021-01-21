@@ -140,68 +140,39 @@ export interface SynthereumPool extends BaseContract {
 
     VALIDATOR_ROLE(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-     */
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
     getRoleMember(
       role: string | number[],
       index: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
     getRoleMemberCount(
       role: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     grantRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns `true` if `account` has been granted `role`.
-     */
     hasRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
     renounceRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     revokeRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Add a derivate to be controlled by this pool
-     * @param derivative A perpetual derivative
-     */
     addDerivative(derivative: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Remove a derivative controlled by this pool
-     * @param derivative A perpetual derivative
-     */
     removeDerivative(derivative: string): NonPayableTransactionObject<void>;
 
     mint(
@@ -246,13 +217,6 @@ export interface SynthereumPool extends BaseContract {
       signature: [number | string, string | number[], string | number[]]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Called by a source TIC's `exchange` function to mint destination tokensThis functon can be called only by a pool registred in the PoolRegister contract
-     * @param collateralAmount The amount of collateral to use from the source TIC
-     * @param derivative The derivative of the destination pool to use for mint
-     * @param numTokens The number of new tokens to mint
-     * @param srcDerivative Derivative used by the source pool
-     */
     exchangeMint(
       srcDerivative: string,
       derivative: string,
@@ -260,206 +224,98 @@ export interface SynthereumPool extends BaseContract {
       numTokens: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Liquidity provider withdraw collateral from the pool
-     * @param collateralAmount The amount of collateral to withdraw
-     */
     withdrawFromPool(
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Move collateral from TIC to its derivative in order to increase GCR
-     * @param collateralAmount The amount of collateral to move into derivative
-     * @param derivative Derivative on which to deposit collateral
-     */
     depositIntoDerivative(
       derivative: string,
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Start a slow withdrawal requestCollateral can be withdrawn once the liveness period has elapsed
-     * @param collateralAmount The amount of excess collateral to withdraw
-     * @param derivative Derivative from which the collateral withdrawal is requested
-     */
     slowWithdrawRequest(
       derivative: string,
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Withdraw collateral after a withdraw request has passed it's liveness period
-     * @param derivative Derivative from which collateral withdrawal was requested
-     */
     slowWithdrawPassedRequest(
       derivative: string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Withdraw collateral immediately if the remaining collateral is above GCR
-     * @param collateralAmount The amount of excess collateral to withdraw
-     * @param derivative Derivative from which fast withdrawal was requested
-     */
     fastWithdraw(
       derivative: string,
       collateralAmount: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
-     * @param derivative Derivative on which emergency shutdown is called
-     */
     emergencyShutdown(derivative: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Redeem tokens after derivative emergency shutdown
-     * @param derivative Derivative for which settlement is requested
-     */
     settleEmergencyShutdown(
       derivative: string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Update the fee percentage
-     * @param _feePercentage The new fee percentage
-     */
     setFeePercentage(
       _feePercentage: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Update the addresses of recipients for generated fees and proportions of fees each address will receive
-     * @param _feeProportions An array of the proportions of fees generated each recipient will receive
-     * @param _feeRecipients An array of the addresses of recipients that will receive generated fees
-     */
     setFeeRecipients(
       _feeRecipients: string[],
       _feeProportions: (number | string)[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reset the starting collateral ratio - for example when you add a new derivative without collateral
-     * @param startingCollateralRatio Initial ratio between collateral amount and synth tokens
-     */
     setStartingCollateralization(
       startingCollateralRatio: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Add a role into derivative to another contract
-     * @param addressToAdd address of EOA or smart contract to add with a role in derivative
-     * @param derivative Derivative in which a role is being added
-     * @param derivativeRole Role to add
-     */
     addRoleInDerivative(
       derivative: string,
       derivativeRole: number | string,
       addressToAdd: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Removing a role from a derivative contract
-     * @param derivative Derivative in which to remove a role
-     * @param derivativeRole Role to remove
-     */
     renounceRoleInDerivative(
       derivative: string,
       derivativeRole: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Add a role into synthetic token to another contract
-     * @param addressToAdd address of EOA or smart contract to add with a role in derivative
-     * @param derivative Derivative in which adding role
-     * @param synthTokenRole Role to add
-     */
     addRoleInSynthToken(
       derivative: string,
       synthTokenRole: number | string,
       addressToAdd: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * A derivative renounces a role into synthetic token
-     * @param derivative Derivative in which renounce role
-     * @param synthTokenRole Role to renounce
-     */
     renounceRoleInSynthToken(
       derivative: string,
       synthTokenRole: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Set the possibility to accept only EOA meta-tx
-     * @param isContractAllowed Flag that represent options to receive tx by a contract or only EOA
-     */
     setIsContractAllowed(
       isContractAllowed: boolean
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Get Synthereum finder of the pool
-     */
     synthereumFinder(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get Synthereum version
-     */
     version(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the collateral token
-     */
     collateralToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the synthetic token associated to this pool
-     */
     syntheticToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get all the derivatives associated to this pool
-     */
     getAllDerivatives(): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Check if a derivative is in the withelist of this pool
-     * @param derivative Perpetual derivative
-     */
     isDerivativeAdmitted(
       derivative: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Get the starting collateral ratio of the pool
-     */
     getStartingCollateralization(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the synthetic token symbol associated to this pool
-     */
     syntheticTokenSymbol(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns if pool can accept only EOA meta-tx or also contract meta-tx
-     */
     isContractAllowed(): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Returns infos about fee set
-     */
     getFeeInfo(): NonPayableTransactionObject<[[string], string[], string[]]>;
 
-    /**
-     * Returns nonce of user meta-signature
-     */
     getUserNonce(user: string): NonPayableTransactionObject<string>;
 
-    /**
-     * Calculate the fees a user will have to pay to mint tokens with their collateral
-     * @param collateralAmount Amount of collateral on which fee is calculated
-     */
     calculateFee(
       collateralAmount: number | string
     ): NonPayableTransactionObject<string>;

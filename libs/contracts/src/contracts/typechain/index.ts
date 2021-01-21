@@ -6,6 +6,7 @@ export type KnownContract =
   | Tagged<AccessControl, 'AccessControl'>
   | Tagged<AddressWhitelist, 'AddressWhitelist'>
   | Tagged<AdministrateeInterface, 'AdministrateeInterface'>
+  | Tagged<ContractAllowed, 'ContractAllowed'>
   | Tagged<ContractCreator, 'ContractCreator'>
   | Tagged<DesignatedVoting, 'DesignatedVoting'>
   | Tagged<DesignatedVotingFactory, 'DesignatedVotingFactory'>
@@ -35,11 +36,11 @@ export type KnownContract =
   | Tagged<ISynthereumPoolRegistry, 'ISynthereumPoolRegistry'>
   | Tagged<IdentifierWhitelist, 'IdentifierWhitelist'>
   | Tagged<IdentifierWhitelistInterface, 'IdentifierWhitelistInterface'>
-  | Tagged<Migrations, 'Migrations'>
   | Tagged<MintableBurnableERC20, 'MintableBurnableERC20'>
   | Tagged<MintableBurnableIERC20, 'MintableBurnableIERC20'>
   | Tagged<MintableBurnableSyntheticToken, 'MintableBurnableSyntheticToken'>
   | Tagged<MintableBurnableTokenFactory, 'MintableBurnableTokenFactory'>
+  | Tagged<MockOracle, 'MockOracle'>
   | Tagged<MultiRole, 'MultiRole'>
   | Tagged<OptimisticOracle, 'OptimisticOracle'>
   | Tagged<OptimisticOracleInterface, 'OptimisticOracleInterface'>
@@ -111,6 +112,9 @@ export namespace AddressWhitelist_Events {
 
 import type { AdministrateeInterface } from './AdministrateeInterface';
 export type { AdministrateeInterface };
+
+import type { ContractAllowed } from './ContractAllowed';
+export type { ContractAllowed };
 
 import type { ContractCreator } from './ContractCreator';
 export type { ContractCreator };
@@ -339,9 +343,6 @@ export namespace IdentifierWhitelist_Events {
 import type { IdentifierWhitelistInterface } from './IdentifierWhitelistInterface';
 export type { IdentifierWhitelistInterface };
 
-import type { Migrations } from './Migrations';
-export type { Migrations };
-
 import type { MintableBurnableERC20 } from './MintableBurnableERC20';
 export type { MintableBurnableERC20 };
 import type {
@@ -389,6 +390,9 @@ export namespace MintableBurnableSyntheticToken_Events {
 
 import type { MintableBurnableTokenFactory } from './MintableBurnableTokenFactory';
 export type { MintableBurnableTokenFactory };
+
+import type { MockOracle } from './MockOracle';
+export type { MockOracle };
 
 import type { MultiRole } from './MultiRole';
 export type { MultiRole };

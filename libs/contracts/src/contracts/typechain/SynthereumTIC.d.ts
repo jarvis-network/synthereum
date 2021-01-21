@@ -146,172 +146,86 @@ export interface SynthereumTIC extends BaseContract {
 
     VALIDATOR_ROLE(): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-     */
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
     getRoleMember(
       role: string | number[],
       index: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
     getRoleMemberCount(
       role: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     grantRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns `true` if `account` has been granted `role`.
-     */
     hasRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<boolean>;
 
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
     renounceRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
     revokeRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Submit a request to mint tokensThe request needs to approved by the LP before tokens are created. This is         necessary to prevent users from abusing LPs by minting large amounts of tokens         with little collateral.User must approve collateral transfer for the mint request to succeed
-     * @param collateralAmount The amount of collateral supplied
-     * @param numTokens The number of tokens the user wants to mint
-     */
     mintRequest(
       collateralAmount: number | string,
       numTokens: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Approve a mint request as an LPThis will typically be done with a keeper botUser needs to have approved the transfer of collateral tokens
-     * @param mintID The ID of the mint request
-     */
     approveMint(mintID: string | number[]): NonPayableTransactionObject<void>;
 
-    /**
-     * Reject a mint request as an LPThis will typically be done with a keeper bot
-     * @param mintID The ID of the mint request
-     */
     rejectMint(mintID: string | number[]): NonPayableTransactionObject<void>;
 
-    /**
-     * Liquidity provider supplies margin to the TIC to collateralize user deposits
-     * @param collateralAmount The amount of margin supplied
-     */
     deposit(
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Liquidity provider withdraw margin from the TIC
-     * @param collateralAmount The amount of margin to withdraw
-     */
     withdraw(
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * This function could be called by any account to mint tokens, however they will lose      their excess collateral to the liquidity provider when they redeem the tokens.
-     * TODO: Potentially restrict this function to only TICs registered on a whitelistCalled by a source TIC's `exchange` function to mint destination tokens
-     * @param collateralAmount The amount of collateral to use from the source TIC
-     * @param numTokens The number of new tokens to mint
-     */
     exchangeMint(
       collateralAmount: number | string,
       numTokens: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Move collateral from TIC to its derivative in order to increase GCR
-     * @param collateralAmount The amount of collateral to move into derivative
-     */
     depositIntoDerivative(
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Start a withdrawal requestCollateral can be withdrawn once the liveness period has elapsed
-     * @param collateralAmount The amount of short margin to withdraw
-     */
     withdrawRequest(
       collateralAmount: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Withdraw collateral after a withdraw request has passed it's liveness period
-     */
     withdrawPassedRequest(): NonPayableTransactionObject<void>;
 
-    /**
-     * Submit a request to redeem tokensThe request needs to approved by the LP before tokens are created. This is         necessary to prevent users from abusing LPs by redeeming large amounts of collateral         from a small number of tokens.User must approve synthetic token transfer for the redeem request to succeed
-     * @param collateralAmount The amount of collateral to redeem tokens for
-     * @param numTokens The number of tokens to redeem
-     */
     redeemRequest(
       collateralAmount: number | string,
       numTokens: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Approve a redeem request as an LPThis will typically be done with a keeper botUser needs to have approved the transfer of synthetic tokens
-     * @param redeemID The ID of the redeem request
-     */
     approveRedeem(
       redeemID: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reject a redeem request as an LPThis will typically be done with a keeper bot
-     * @param redeemID The ID of the redeem request
-     */
     rejectRedeem(
       redeemID: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
-     */
     emergencyShutdown(): NonPayableTransactionObject<void>;
 
-    /**
-     * Redeem tokens after contract emergency shutdownAfter derivative shutdown, an LP should use this instead of `withdrawRequest` to         retrieve their collateral.
-     */
     settleEmergencyShutdown(): NonPayableTransactionObject<void>;
 
-    /**
-     * The number of destination tokens needs to be calculated relative to the value of the      source tokens and the destination's collateral ratio. If too many destination tokens      are requested the transaction will fail.
-     * Submit a request to perform an atomic of tokens between TICs
-     * @param collateralAmount Collateral amount equivalent to numTokens and destNumTokens
-     * @param destNumTokens The number of destination tokens the swap attempts to procure
-     * @param destTIC The destination TIC
-     * @param numTokens The number of source tokens to swap
-     */
     exchangeRequest(
       destTIC: string,
       numTokens: number | string,
@@ -319,76 +233,38 @@ export interface SynthereumTIC extends BaseContract {
       destNumTokens: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Approve an exchange requestThis will typically be done with a keeper botUser needs to have approved the transfer of synthetic tokens
-     * @param exchangeID The ID of the exchange request
-     */
     approveExchange(
       exchangeID: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Reject an exchange requestThis will typically be done with a keeper bot
-     * @param exchangeID The ID of the exchange request
-     */
     rejectExchange(
       exchangeID: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Get Synthereum finder of the pool
-     */
     synthereumFinder(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get Synthereum version
-     */
     version(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the derivative contract
-     */
     derivative(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the collateral token
-     */
     collateralToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the synthetic token from the derivative contract
-     */
     syntheticToken(): NonPayableTransactionObject<string>;
 
-    /**
-     * Get the synthetic token symbol associated to this pool
-     */
     syntheticTokenSymbol(): NonPayableTransactionObject<string>;
 
-    /**
-     * Calculate the fees a user will have to pay to mint tokens with their collateral
-     */
     calculateFee(
       collateralAmount: number | string
     ): NonPayableTransactionObject<string>;
 
-    /**
-     * Get all open mint requests
-     */
     getMintRequests(): NonPayableTransactionObject<
       [string, string, string, [string], [string]][]
     >;
 
-    /**
-     * Get all open redeem requests
-     */
     getRedeemRequests(): NonPayableTransactionObject<
       [string, string, string, [string], [string]][]
     >;
 
-    /**
-     * Get all open exchange requests
-     */
     getExchangeRequests(): NonPayableTransactionObject<
       [string, string, string, string, [string], [string], [string]][]
     >;
@@ -397,19 +273,10 @@ export interface SynthereumTIC extends BaseContract {
       _fee: [[number | string], string[], (number | string)[]]
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Update the fee percentage
-     * @param _feePercentage The new fee percentage
-     */
     setFeePercentage(
       _feePercentage: number | string
     ): NonPayableTransactionObject<void>;
 
-    /**
-     * Update the percentage of the fee
-     * @param _feeProportions The percentage of new fee
-     * @param _feeRecipients The percentage of new fee
-     */
     setFeeRecipients(
       _feeRecipients: string[],
       _feeProportions: (number | string)[]

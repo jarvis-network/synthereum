@@ -36,21 +36,10 @@ export interface SynthereumDerivativeFactory extends BaseContract {
   ): SynthereumDerivativeFactory;
   clone(): SynthereumDerivativeFactory;
   methods: {
-    /**
-     * Returns the bytes4 signature of the function used for the deployment of a contract in a factory
-     */
     deploymentSignature(): NonPayableTransactionObject<string>;
 
-    /**
-     * Gets the current time. Will return the last time set in `setCurrentTime` if running in test mode. Otherwise, it will return the block timestamp.
-     */
     getCurrentTime(): NonPayableTransactionObject<string>;
 
-    /**
-     * Will revert if not running in test mode.
-     * Sets the current time.
-     * @param time timestamp to set current Testable time to.
-     */
     setCurrentTime(time: number | string): NonPayableTransactionObject<void>;
 
     synthereumFinder(): NonPayableTransactionObject<string>;
