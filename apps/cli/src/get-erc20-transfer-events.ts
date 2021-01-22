@@ -29,16 +29,16 @@ async function main() {
     10000000,
     addDays(new Date(), -250).getTime() / 1000,
   );
-  log('Got starting block', { blockFrom250daysAgo });
+  log('Got starting block:', { blockFrom250daysAgo });
   const realm = await loadRealm(web3, netId);
-  log('Realm loaded');
+  log('Realm loaded:', { poolRegistry: realm.poolRegistry.address });
   const myAddress = assertIsAddress<42>(
     argv.address ?? '0x6e30001f52C69948066Afd91B417a988c543d3F1',
   );
   const fromBlock = blockFrom250daysAgo;
   const toBlock = 'latest';
 
-  log('Getting ERC20 Transfer events:', {
+  log('Getting ERC20 Transfer events for:', {
     address: myAddress,
     fromBlock,
     toBlock,
