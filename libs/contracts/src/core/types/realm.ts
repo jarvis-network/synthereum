@@ -1,4 +1,7 @@
-import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
+import {
+  ContractInfo,
+  TokenInfo,
+} from '@jarvis-network/web3-utils/eth/contracts/types';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
 import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 import { SupportedNetworkName } from '../../config';
@@ -14,7 +17,7 @@ export interface SynthereumRealm<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
   readonly collateralToken: TokenInfo<Net>;
-  readonly poolRegistry: SynthereumPoolRegistry_Contract;
+  readonly poolRegistry: ContractInfo<Net, SynthereumPoolRegistry_Contract>;
   readonly pools: {
     [Version in PoolVersion]: PoolsForVersion<Version, Net>;
   };

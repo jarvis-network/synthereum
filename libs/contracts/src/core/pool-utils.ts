@@ -24,9 +24,9 @@ export function getPool<
 ): PoolContract<Version> {
   const result: SynthereumTIC_Contract | SynthereumPool_Contract =
     version === 'v1'
-      ? getContract(web3, SynthereumTIC_Abi, poolAddress)
+      ? getContract(web3, SynthereumTIC_Abi, poolAddress).instance
       : version === 'v2'
-      ? getContract(web3, SynthereumPool_Abi, poolAddress)
+      ? getContract(web3, SynthereumPool_Abi, poolAddress).instance
       : throwError(`Unsupported pool version: '${version}'`);
   return result as PoolContract<Version>;
 }

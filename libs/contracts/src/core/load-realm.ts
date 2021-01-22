@@ -30,7 +30,10 @@ import type {
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../config';
-import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
+import type {
+  ContractInfo,
+  TokenInfo,
+} from '@jarvis-network/web3-utils/eth/contracts/types';
 import { priceFeed } from '../config/data/price-feed';
 import {
   allSupportedSymbols,
@@ -79,7 +82,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
       allSupportedSymbols.map(async symbol => {
         const info = await loadPoolInfo(
           web3,
-          poolRegistry,
+          poolRegistry.instance,
           collateralAddress,
           version,
           symbol,
@@ -94,7 +97,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   return {
     web3,
     netId,
-    poolRegistry: poolRegistry,
+    poolRegistry,
     pools: {
       v1: (await loadAllPools('v1')) as PoolsForVersion<'v1', Net>,
       v2: (await loadAllPools('v2')) as PoolsForVersion<'v2', Net>,
@@ -168,7 +171,7 @@ async function getTokenInfo<Net extends NetworkName>(
   web3: Web3On<Net>,
   address: AddressOn<Net>,
 ): Promise<TokenInfo<Net>> {
-  const instance = getContract(web3, ERC20_Abi, address);
+  const { instance } = getContract(web3, ERC20_Abi, address);
   const symbol = await instance.methods.symbol().call();
   const decimals = parseInteger(await instance.methods.decimals().call());
   return {
