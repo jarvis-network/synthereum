@@ -6,7 +6,6 @@ import { getClosestBlock } from '@jarvis-network/web3-utils/eth/web3';
 import { addDays } from '@jarvis-network/web3-utils/base/date-time-utils';
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
-import { basename } from 'path';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import { Filter } from 'web3-eth-contract/types';
 import {
@@ -14,29 +13,25 @@ import {
   formatAmount,
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
+import { console, log } from './utils/log';
 
 const argv = yargs(hideBin(process.argv)).option('address', {
   type: 'string',
 }).argv;
 
-function log(...args: any[]) {
-  const prefix = `[${new Date().toISOString()} | ${basename(__filename)}]:`;
-  console.log(prefix, ...args);
-}
-
 async function main() {
-  log('starting');
+  log('Starting');
   const netId = parseSupportedNetworkId(42);
   const web3 = getInfuraWeb3(netId, 'wss');
-  log('getting starting block');
+  log('Getting starting block');
   const blockFrom250daysAgo = await getClosestBlock(
     web3,
     10000000,
     addDays(new Date(), -250).getTime() / 1000,
   );
-
+  log('Got starting block', { blockFrom250daysAgo });
   const realm = await loadRealm(web3, netId);
-  log('realm loaded');
+  log('Realm loaded');
   const myAddress = assertIsAddress<42>(
     argv.address ?? '0x6e30001f52C69948066Afd91B417a988c543d3F1',
   );
