@@ -1,6 +1,45 @@
 import { sortedUniqBy } from 'lodash';
 import { assert } from './asserts';
 
+type AsyncBinarySearchParams = {
+  isLessThanAt: (idx: number) => Promise<boolean>;
+  getStartIndex: () => Promise<number>;
+  getEndIndex: () => Promise<number>;
+};
+
+/**
+ * Returns an index pointing to the first element in the range
+ * `[startIndex, endIndex)` that is not less than, as determined by the
+ * `isLessThanAt` function, or `endIndex` if no such element is found.
+ *
+ * In contrast with the classical implementation of this algorithm, this
+ * function in async, as it doesn't require that all the data exists
+ * beforehand. Instead the following parameters:
+ *
+ * * `isLessThanAt: (idx: number) => Promise<boolean>`
+ * * `getStartIndex: () => Promise<number>`
+ * * `getEndIndex: () => Promise<number>`
+ *
+ * allow lazy fetching of the needed data on demand.
+ */
+export async function asyncLowerBound({
+  isLessThanAt,
+  getStartIndex,
+  getEndIndex,
+}: AsyncBinarySearchParams): Promise<number> {
+  let [lo, hi] = await Promise.all([getStartIndex(), getEndIndex()]);
+  let len = hi - lo;
+  while (len > 0) {
+    const step = len >> 1;
+    const mid = lo + step;
+    if (await isLessThanAt(mid)) {
+      lo = mid + 1;
+      len -= step + 1;
+    } else len = step;
+  }
+  return lo;
+}
+
 export type CompareFunction<T> = (a: T, b: T) => number;
 export type LeftOuterJoinMapFunction<T, U> = (a: T, b: T | null) => U;
 export type MaybeSortedArray<T, K extends number | string> =

@@ -1,15 +1,54 @@
 import type { EventEmitter } from 'events';
 import BN from 'bn.js';
 import { toBN, toWei } from 'web3-utils';
-import { PromiEvent, Transaction, TransactionReceipt } from 'web3-core';
+import type {
+  BlockNumber,
+  PromiEvent,
+  Transaction,
+  TransactionReceipt,
+} from 'web3-core';
 import { getContractTxs, getEthUsdBtcPrice } from '../apis/etherscan';
 import { fromBNToDecimalString } from '../base/big-number';
-import { assertIsFiniteNumber, assertIsString } from '../base/asserts';
+import {
+  assertIsFiniteNumber,
+  assertIsString,
+  parseInteger,
+} from '../base/asserts';
 import type {
   NonPayableTransactionObject,
   BaseContract,
 } from './contracts/typechain/types';
 import { NetworkName, Web3On } from './web3-instance';
+import { asyncLowerBound } from '../base/sorting';
+
+export async function getBlockTimestamp<Net extends NetworkName>(
+  web3: Web3On<Net>,
+  blockNumber: BlockNumber,
+): Promise<number> {
+  return parseInteger((await web3.eth.getBlock(blockNumber)).timestamp);
+}
+
+/**
+ * Finds the last block number in the range `[startTime, endTime)`, using
+ * binary search, where `startTime` is the timestamp of the `startBlock`
+ * parameter.
+ *
+ * @param web3 Web3 instance
+ * @param startBlock block number from which to start searching
+ * @param endingTimestamp
+ */
+export async function getClosestBlock<Net extends NetworkName>(
+  web3: Web3On<Net>,
+  startBlock: number,
+  endingTimestamp: number,
+): Promise<number> {
+  return asyncLowerBound({
+    isLessThanAt: blockNumber =>
+      getBlockTimestamp(web3, blockNumber).then(t => t < endingTimestamp),
+    getStartIndex: () => Promise.resolve(startBlock),
+    getEndIndex: () => web3.eth.getBlockNumber(),
+  });
+}
 
 export async function getContractTransactions<Net extends NetworkName>(
   web3: Web3On<Net>,
