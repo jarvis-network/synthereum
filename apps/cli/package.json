@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@jarvis-network/synthereum-contracts": "1.0.0",
+    "colors": "^1.4.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
