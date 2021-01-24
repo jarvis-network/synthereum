@@ -8,9 +8,9 @@
   "private": true,
   "scripts": {
     "clean": "yarn clean:build-artifacts-only",
-    "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- . && rm -rf node_modules/.cache",
-    "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
-    "clean:all": "git clean -fdx -e .env -e hush -- .",
+    "clean:build-artifacts-only": "git clean -fdX -e .env -e .direnv -e node_modules -e hush -- . && rm -rf node_modules/.cache",
+    "clean:node_modules": "git clean -fdX -e .env -e .direnv -e hush -- .",
+    "clean:all": "git clean -fdX -e .env -e hush -- .",
     "nx": "nx",
     "start": "nx start",
     "test": "nx test",
