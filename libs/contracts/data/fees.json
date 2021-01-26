@@ -2,8 +2,8 @@
   "42": {
     "feePercentage": 0.002,
     "feeRecipients": [
-      "0xCc3528125499d168ADFB5Ef99895c98a7C430ed4",
-      "0x535aC9f9b46E515a3af364434061181a504D5bFb"
+      "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
+      "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
     ],
     "feeProportions": [50, 50]
   },
