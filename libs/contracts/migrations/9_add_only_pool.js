@@ -13,6 +13,7 @@ var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
 const { getDeploymentInstance } = require('../utils/deployment.js');
+const { encodeTIC, encodePool } = require('../utils/encoding.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
@@ -130,7 +131,6 @@ module.exports = async function (deployer, network, accounts) {
                 txData[j].derivative,
               )
               .call({ from: maintainer });
-        console.log(`Preparing to call deployOnlyPool`, { isDeployedDeployer });
         const tx = isDeployedDeployer
           ? await synthereumDeployerInstance.deployOnlyPool(
               txData[j].poolVersion,

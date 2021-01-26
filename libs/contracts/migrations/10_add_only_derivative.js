@@ -11,6 +11,7 @@ var deployment = require('../data/deployment/only-derivatives.json');
 var assets = require('../data/synthetic-assets.json');
 var derivativeVersions = require('../data/derivative-versions.json');
 const { getDeploymentInstance } = require('../utils/deployment.js');
+const { encodeDerivative } = require('../utils/encoding.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
