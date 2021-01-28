@@ -38,6 +38,12 @@ const appSlice = createSlice({
         isFullScreenLoaderVisible: action.payload,
       };
     },
+    setAuthModalVisible(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isAuthModalVisible: action.payload,
+      };
+    },
     setMobileTab(state, action: SetMobileTabAction) {
       return {
         ...state,
@@ -52,6 +58,7 @@ export const {
   setRecentActivityModalVisible,
   setAccountDropdownExpanded,
   setFullScreenLoaderVisible,
+  setAuthModalVisible,
   setMobileTab,
 } = appSlice.actions;
 export const { reducer } = appSlice;

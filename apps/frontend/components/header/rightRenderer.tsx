@@ -8,7 +8,7 @@ import { setTheme } from '@/state/slices/theme';
 import {
   setAccountDropdownExpanded,
   setAccountOverviewModalVisible,
-  setRecentActivityModalVisible,
+  setAuthModalVisible,
 } from '@/state/slices/app';
 import { avatar } from '@/utils/avatar';
 import { formatWalletAddress } from '@/utils/format';
@@ -16,8 +16,6 @@ import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
-
-const noop = () => undefined;
 
 const CustomAccountDropdown = styled(AccountDropdown)`
   @media screen and (max-width: ${props =>
@@ -35,7 +33,6 @@ const CustomAccountDropdown = styled(AccountDropdown)`
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
-  const transactions = useReduxSelector(state => state.transactions.list);
   const isAccountDropdownExpanded = useReduxSelector(
     state => state.app.isAccountDropdownExpanded,
   );
@@ -43,15 +40,8 @@ const render = () => {
   const name = usePrettyName((auth?.address ?? null) as Address | null);
 
   const logIn = async () => {
-    await authLogin?.login();
+    dispatch(setAuthModalVisible(true));
   };
-
-  useEffect(() => {
-    const autoLoginWallet = localStorage.getItem('jarvis/autologin');
-    if (autoLoginWallet) {
-      authLogin?.login(autoLoginWallet).catch(noop);
-    }
-  }, []);
 
   const handleSetTheme = (theme: State['theme']) => {
     dispatch(setTheme({ theme }));
@@ -59,11 +49,6 @@ const render = () => {
 
   const handleAccountOverviewOpen = () => {
     dispatch(setAccountOverviewModalVisible(true));
-    dispatch(setAccountDropdownExpanded(false));
-  };
-
-  const handleRecentActivityOpen = () => {
-    dispatch(setRecentActivityModalVisible(true));
     dispatch(setAccountDropdownExpanded(false));
   };
 

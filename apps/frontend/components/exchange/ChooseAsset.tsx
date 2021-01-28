@@ -272,9 +272,9 @@ export const ChooseAsset: React.FC = () => {
             row => !ownedAssets.includes(row.symbol),
           );
 
-          const comingSoon = !owned.length &&
-            !other.length &&
-            selected > 1 && <ComingSoon src="/images/coming-soon.svg" />;
+          const comingSoon = !owned.length && !other.length && selected > 1 && (
+            <ComingSoon src="/images/coming-soon.svg" />
+          );
 
           const ownedSection = owned.length ? (
             <>

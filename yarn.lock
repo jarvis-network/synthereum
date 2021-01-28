@@ -3637,10 +3637,10 @@
     rxjs "^6.6.3"
     wrap-ansi "^7.0.0"
 
-"@jarvis-network/ui@^0.8.4":
-  version "0.8.4"
-  resolved "https://registry.npmjs.org/@jarvis-network/ui/-/ui-0.8.4.tgz#3f428ad83ffc11debc18133e93a6aeaa6941c71c"
-  integrity sha512-BLS0ce+P4rCIzDQGVV6Uyn55YYddokiKnfoK/l3UijyTyiYTQ8JK88Ke7Sd5QhNDdvwd3v2N6UA4zprnkleyuw==
+"@jarvis-network/ui@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/@jarvis-network/ui/-/ui-0.9.1.tgz#5eb95d99314946ea1a20a96e4c91f7030feba8da"
+  integrity sha512-RmsMXLK8vQbWRuXtuad6HSOsxyg8gKXCmaUbjjUILpvDi5L04W+kRPpxkPyoCIMgJoAg4MObfp/1g1ayq9a+gA==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"

@@ -11,8 +11,9 @@ import { useStore } from '@/state/store';
 import { AppThemeProvider } from '@/components/AppThemeProvider';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { FullScreenLoader } from '@/components/FullScreenLoader';
+import { AuthFlow } from '@/components/auth/AuthFlow';
 
-import './_app.css';
+import './_app.scss';
 import 'react-table/react-table.css';
 
 const MainWrapper = styled.div`
@@ -36,6 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <StateProvider store={store}>
         <AppThemeProvider>
           <AuthProvider>
+            <AuthFlow />
             <MainWrapper>
               <FullScreenLoader />
               <Component {...pageProps} />

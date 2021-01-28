@@ -75,14 +75,17 @@ const getLedger = () => {
 
 type OnboardConfig = Pick<
   Initialization,
-  'dappId' | 'networkId' | 'walletSelect'
+  'dappId' | 'networkId' | 'walletSelect' | 'hideBranding'
 >;
 
 const getOnboardConfig = (): OnboardConfig => {
   return {
     dappId: ONBOARD_API_KEY,
+    hideBranding: true,
     networkId: NETWORK_ID,
     walletSelect: {
+      heading: 'Sing Up/In with your wallet',
+      description: ' ', // space here to hide default text
       wallets: filterEmpty([
         { walletName: 'metamask' },
         getWalletConnect(),
