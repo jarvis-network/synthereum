@@ -1,10 +1,18 @@
+import BN from 'bn.js';
 import { throwError } from '@jarvis-network/web3-utils/base/asserts';
+import { Amount } from '@jarvis-network/web3-utils/base/big-number';
 import { t } from '@jarvis-network/web3-utils/base/meta';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
-import { getTokenBalance } from '@jarvis-network/web3-utils/eth/contracts/erc20';
+import {
+  getTokenBalance,
+  weiToTokenAmount,
+} from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { allSupportedSymbols } from '../config/data/all-synthetic-asset-symbols';
+import {
+  allSupportedSymbols,
+  SyntheticSymbol,
+} from '../config/data/all-synthetic-asset-symbols';
 import { SupportedNetworkName } from '../config/supported-networks';
 import {
   IDerivative_Abi,
@@ -14,6 +22,8 @@ import {
 import { IDerivative } from '../contracts/typechain';
 import { PoolContract, PoolVersion } from './types/pools';
 import { SynthereumRealmWithWeb3 } from './types/realm';
+import { NonPayableTransactionObject } from '@jarvis-network/web3-utils';
+
 export interface PoolAddressWithDerivates<Version extends PoolVersion> {
   result: PoolContract<Version>;
   derivativeAddress: IDerivative;
@@ -67,4 +77,63 @@ export async function getPoolBalances<
   );
 
   return balances;
+}
+
+export async function depositInAllPools<
+  Net extends SupportedNetworkName,
+  Version extends PoolVersion
+>(
+  realm: SynthereumRealmWithWeb3<Net>,
+  version: Version = 'v1' as Version,
+  amount: Amount,
+  gasPrice?: number,
+) {
+  const keys = Object.keys(realm.pools[version]);
+  const perPool = amount.div(new BN(keys.length)) as Amount;
+  const collateral = realm.collateralToken;
+  const finalAmount = weiToTokenAmount({
+    wei: perPool,
+    decimals: collateral.decimals,
+  }).toString(10);
+  const web3 = realm.web3;
+  let nonce = await web3.eth.getTransactionCount(web3.defaultAccount!);
+  gasPrice = gasPrice ?? parseFloat(await web3.eth.getGasPrice());
+  return Promise.all(
+    keys.map(async symbol => {
+      const address = realm.pools[version][symbol as SyntheticSymbol].address;
+      await sendTx({
+        web3: web3,
+        gasPrice,
+        tx: collateral.instance.methods.transfer(address, finalAmount),
+        nonce: nonce++,
+      });
+    }),
+  );
+}
+
+export async function sendTx<Result, Net extends SupportedNetworkName>({
+  web3,
+  gasPrice,
+  nonce,
+  tx,
+  sender,
+}: {
+  web3: Web3On<Net>;
+  gasPrice?: number;
+  nonce?: number;
+  tx: NonPayableTransactionObject<Result>;
+  sender?: AddressOn<Net>;
+}) {
+  const from = sender ?? web3.defaultAccount ?? undefined;
+  const gas = await tx.estimateGas({
+    from,
+    nonce,
+  });
+  const params = {
+    from,
+    gas,
+    gasPrice,
+    nonce,
+  };
+  await tx.send(params);
 }
