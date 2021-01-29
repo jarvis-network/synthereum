@@ -76,7 +76,7 @@ const render = () => {
 
     // @TODO Just clear data in Redux without hard-reload
     window.location.reload();
-  }
+  };
 
   const links = [
     {
@@ -87,7 +87,12 @@ const render = () => {
     {
       name: 'Help',
       key: 'Help',
-      onClick: () => window.open('#', '_blank'),
+      onClick: () =>
+        window.open(
+          'https://jarvis-exchange.crisp.help/en/',
+          '_blank',
+          'noopener',
+        ),
     },
   ];
 
