@@ -11,6 +11,11 @@ import {
 
 export type PoolVersion = 'v1' | 'v2';
 
+export function assertIsSupportedPoolVersion(x: unknown): PoolVersion {
+  if (x === 'v1' || x === 'v2') return x;
+  throw new Error(`'${x}' is not a supported pool version`);
+}
+
 export type PoolContract<Version extends PoolVersion> = Version extends 'v1'
   ? SynthereumTIC_Contract
   : Version extends 'v2'
