@@ -20,8 +20,8 @@ export function wei(str: string | number): Amount {
   return new BN(str, 10) as Amount;
 }
 
-export function numberToWei(n: number) {
-  return new BN(toWei(n.toFixed(18)));
+export function numberToWei(n: number): Amount {
+  return new BN(toWei(n.toFixed(18))) as Amount;
 }
 
 export function scale(a: BN, b: number): BN {
