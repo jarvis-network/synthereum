@@ -156,3 +156,6 @@ result
 
 # Frontend assets
 apps/frontend/public/assets
+
+# Local Netlify folder
+.netlify
