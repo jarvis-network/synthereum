@@ -5,4 +5,5 @@ library SynthereumInterfaces {
   bytes32 public constant Deployer = 'Deployer';
   bytes32 public constant FactoryVersioning = 'FactoryVersioning';
   bytes32 public constant PoolRegistry = 'PoolRegistry';
+  bytes32 public constant PriceFeed = 'PriceFeed';
 }
