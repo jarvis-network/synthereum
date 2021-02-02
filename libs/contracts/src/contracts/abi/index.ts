@@ -21,6 +21,18 @@ export const AdministrateeInterface_Abi = require('./AdministrateeInterface.json
   AdministrateeInterface
 >;
 
+import type { AggregatorInterface } from '../typechain/AggregatorInterface';
+export const AggregatorInterface_Abi = require('./AggregatorInterface.json') as Tagged<
+  AbiItem[],
+  AggregatorInterface
+>;
+
+import type { AggregatorV2V3Interface } from '../typechain/AggregatorV2V3Interface';
+export const AggregatorV2V3Interface_Abi = require('./AggregatorV2V3Interface.json') as Tagged<
+  AbiItem[],
+  AggregatorV2V3Interface
+>;
+
 import type { AggregatorV3Interface } from '../typechain/AggregatorV3Interface';
 export const AggregatorV3Interface_Abi = require('./AggregatorV3Interface.json') as Tagged<
   AbiItem[],
@@ -253,6 +265,12 @@ import type { MockOracle } from '../typechain/MockOracle';
 export const MockOracle_Abi = require('./MockOracle.json') as Tagged<
   AbiItem[],
   MockOracle
+>;
+
+import type { MockV3Aggregator } from '../typechain/MockV3Aggregator';
+export const MockV3Aggregator_Abi = require('./MockV3Aggregator.json') as Tagged<
+  AbiItem[],
+  MockV3Aggregator
 >;
 
 import type { MultiRole } from '../typechain/MultiRole';

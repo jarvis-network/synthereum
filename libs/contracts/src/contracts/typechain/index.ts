@@ -6,6 +6,8 @@ export type KnownContract =
   | Tagged<AccessControl, 'AccessControl'>
   | Tagged<AddressWhitelist, 'AddressWhitelist'>
   | Tagged<AdministrateeInterface, 'AdministrateeInterface'>
+  | Tagged<AggregatorInterface, 'AggregatorInterface'>
+  | Tagged<AggregatorV2V3Interface, 'AggregatorV2V3Interface'>
   | Tagged<AggregatorV3Interface, 'AggregatorV3Interface'>
   | Tagged<ContractAllowed, 'ContractAllowed'>
   | Tagged<ContractCreator, 'ContractCreator'>
@@ -47,6 +49,7 @@ export type KnownContract =
   | Tagged<MintableBurnableSyntheticToken, 'MintableBurnableSyntheticToken'>
   | Tagged<MintableBurnableTokenFactory, 'MintableBurnableTokenFactory'>
   | Tagged<MockOracle, 'MockOracle'>
+  | Tagged<MockV3Aggregator, 'MockV3Aggregator'>
   | Tagged<MultiRole, 'MultiRole'>
   | Tagged<OptimisticOracle, 'OptimisticOracle'>
   | Tagged<OptimisticOracleInterface, 'OptimisticOracleInterface'>
@@ -123,6 +126,28 @@ export namespace AddressWhitelist_Events {
 
 import type { AdministrateeInterface } from './AdministrateeInterface';
 export type { AdministrateeInterface };
+
+import type { AggregatorInterface } from './AggregatorInterface';
+export type { AggregatorInterface };
+import type {
+  AnswerUpdated as AggregatorInterface_AnswerUpdated,
+  NewRound as AggregatorInterface_NewRound,
+} from './AggregatorInterface';
+export namespace AggregatorInterface_Events {
+  export type AnswerUpdated = AggregatorInterface_AnswerUpdated;
+  export type NewRound = AggregatorInterface_NewRound;
+}
+
+import type { AggregatorV2V3Interface } from './AggregatorV2V3Interface';
+export type { AggregatorV2V3Interface };
+import type {
+  AnswerUpdated as AggregatorV2V3Interface_AnswerUpdated,
+  NewRound as AggregatorV2V3Interface_NewRound,
+} from './AggregatorV2V3Interface';
+export namespace AggregatorV2V3Interface_Events {
+  export type AnswerUpdated = AggregatorV2V3Interface_AnswerUpdated;
+  export type NewRound = AggregatorV2V3Interface_NewRound;
+}
 
 import type { AggregatorV3Interface } from './AggregatorV3Interface';
 export type { AggregatorV3Interface };
@@ -422,6 +447,17 @@ export type { MintableBurnableTokenFactory };
 
 import type { MockOracle } from './MockOracle';
 export type { MockOracle };
+
+import type { MockV3Aggregator } from './MockV3Aggregator';
+export type { MockV3Aggregator };
+import type {
+  AnswerUpdated as MockV3Aggregator_AnswerUpdated,
+  NewRound as MockV3Aggregator_NewRound,
+} from './MockV3Aggregator';
+export namespace MockV3Aggregator_Events {
+  export type AnswerUpdated = MockV3Aggregator_AnswerUpdated;
+  export type NewRound = MockV3Aggregator_NewRound;
+}
 
 import type { MultiRole } from './MultiRole';
 export type { MultiRole };
