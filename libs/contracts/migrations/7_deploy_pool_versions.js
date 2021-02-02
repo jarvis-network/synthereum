@@ -69,13 +69,13 @@ module.exports = async function (deployer, network, accounts) {
 
     isDeployedFactoryVersioning
       ? await synthereumFactoryVersioningInstance.setPoolFactory(
-          poolVersions[networkId]?.TICFactory?.version ?? 0,
+          poolVersions[networkId]?.TICFactory?.version ?? 1,
           synthereumTICFactoryInstance.address,
           { from: maintainer },
         )
       : await synthereumFactoryVersioningInstance.methods
           .setPoolFactory(
-            poolVersions[networkId]?.TICFactory?.version ?? 0,
+            poolVersions[networkId]?.TICFactory?.version ?? 1,
             synthereumTICFactoryInstance.address,
           )
           .send({ from: maintainer });
@@ -117,13 +117,13 @@ module.exports = async function (deployer, network, accounts) {
 
     isDeployedFactoryVersioning
       ? await synthereumFactoryVersioningInstance.setPoolFactory(
-          poolVersions[networkId]?.PoolFactory?.version ?? 1,
+          poolVersions[networkId]?.PoolFactory?.version ?? 2,
           synthereumPoolFactoryInstance.address,
           { from: maintainer },
         )
       : await synthereumFactoryVersioningInstance.methods
           .setPoolFactory(
-            poolVersions[networkId]?.PoolFactory?.version ?? 1,
+            poolVersions[networkId]?.PoolFactory?.version ?? 2,
             synthereumPoolFactoryInstance.address,
           )
           .send({ from: maintainer });

@@ -65,7 +65,7 @@ contract('Synthereum Pool Register', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 1;
+    poolVersion = 2;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativePayload = encodeDerivative(
       collateralAddress,

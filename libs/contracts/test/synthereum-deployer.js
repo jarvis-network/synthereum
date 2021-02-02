@@ -65,7 +65,7 @@ contract('Synthereum Deployer', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 1;
+    poolVersion = 2;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativePayload = encodeDerivative(
       collateralAddress,
@@ -116,7 +116,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
         return (
-          ev.poolVersion == 1 &&
+          ev.poolVersion == 2 &&
           ev.derivative == derivative &&
           ev.newPool == pool
         );
@@ -338,7 +338,7 @@ contract('Synthereum Deployer', function (accounts) {
     );
     truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
       return (
-        ev.poolVersion == 1 &&
+        ev.poolVersion == 2 &&
         ev.derivative == derivative &&
         ev.newPool == secondPool
       );
