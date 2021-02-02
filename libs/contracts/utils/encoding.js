@@ -198,4 +198,66 @@ function encodePool(
   );
   return '0x' + poolPayload.substring(66);
 }
-module.exports = { encodeDerivative, encodeTIC, encodePool };
+
+function encodePoolOnChainPriceFeed(
+  derivativeAddress,
+  synthereumFinderAddress,
+  poolVersion,
+  roles,
+  isContractAllowed,
+  startingCollateralization,
+  fee,
+) {
+  poolPayload = Web3EthAbi.encodeParameters(
+    [
+      'address',
+      'address',
+      'uint8',
+      {
+        roles: {
+          admin: 'address',
+          maintainer: 'address',
+          liquidityProvider: 'address',
+        },
+      },
+      'bool',
+      'uint256',
+      {
+        fee: {
+          feePercentage: {
+            rawValue: 'uint256',
+          },
+          feeRecipients: 'address[]',
+          feeProportions: 'uint32[]',
+        },
+      },
+    ],
+    [
+      derivativeAddress,
+      synthereumFinderAddress,
+      poolVersion,
+      {
+        admin: roles.admin,
+        maintainer: roles.maintainer,
+        liquidityProvider: roles.liquidityProvider,
+      },
+      isContractAllowed,
+      startingCollateralization,
+      {
+        feePercentage: {
+          rawValue: web3Utils.toWei(fee.feePercentage.toString()),
+        },
+        feeRecipients: fee.feeRecipients,
+        feeProportions: fee.feeProportions,
+      },
+    ],
+  );
+  return '0x' + poolPayload.substring(66);
+}
+
+module.exports = {
+  encodeDerivative,
+  encodeTIC,
+  encodePool,
+  encodePoolOnChainPriceFeed,
+};

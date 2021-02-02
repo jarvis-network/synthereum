@@ -13,11 +13,15 @@ var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
 const { getDeploymentInstance } = require('../utils/deployment.js');
-const { encodeDerivative, encodePool } = require('../utils/encoding.js');
 const { parseFiniteFloat } = require('@jarvis-network/web3-utils/base/asserts');
 const {
   logTransactionOutput,
 } = require('@jarvis-network/web3-utils/eth/contracts/print-tx');
+const {
+  encodeDerivative,
+  encodePool,
+  encodePoolOnChainPriceFeed,
+} = require('../utils/encoding.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
@@ -118,6 +122,28 @@ module.exports = async function (deployer, network, accounts) {
             maintainer: maintainer,
             liquidityProvider: liquidityProvider,
             validator: validator,
+          },
+          asset.isContractAllowed,
+          asset.startingCollateralization,
+          {
+            feePercentage: fees[networkId].feePercentage,
+            feeRecipients: fees[networkId].feeRecipients,
+            feeProportions: fees[networkId].feeProportions,
+          },
+        );
+      } else if (deployment[networkId].Pool === 3) {
+        poolVersion =
+          poolVersions[networkId]['PoolOnChainPriceFeedFactory'].version;
+        poolPayload = encodePoolOnChainPriceFeed(
+          ZERO_ADDRESS,
+          isDeployedFinder
+            ? synthereumFinderInstance.address
+            : synthereumFinderInstance.options.address,
+          poolVersion,
+          {
+            admin: admin,
+            maintainer: maintainer,
+            liquidityProvider: liquidityProvider,
           },
           asset.isContractAllowed,
           asset.startingCollateralization,

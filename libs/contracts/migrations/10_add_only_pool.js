@@ -13,7 +13,11 @@ var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
 const { getDeploymentInstance } = require('../utils/deployment.js');
-const { encodeTIC, encodePool } = require('../utils/encoding.js');
+const {
+  encodeTIC,
+  encodePool,
+  encodePoolOnChainPriceFeed,
+} = require('../utils/encoding.js');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
@@ -90,6 +94,28 @@ module.exports = async function (deployer, network, accounts) {
             feeProportions: fees[networkId].feeProportions,
           },
         );
+      } else if (deployment[networkId].Pool === 3) {
+        poolVersion =
+          poolVersions[networkId]['PoolOnChainPriceFeedFactory'].version;
+        poolPayload = encodePoolOnChainPriceFeed(
+          ZERO_ADDRESS,
+          isDeployedFinder
+            ? synthereumFinderInstance.address
+            : synthereumFinderInstance.options.address,
+          poolVersion,
+          {
+            admin: admin,
+            maintainer: maintainer,
+            liquidityProvider: liquidityProvider,
+          },
+          asset.isContractAllowed,
+          asset.startingCollateralization,
+          {
+            feePercentage: fees[networkId].feePercentage,
+            feeRecipients: fees[networkId].feeRecipients,
+            feeProportions: fees[networkId].feeProportions,
+          },
+        );
       }
       txData.push({
         asset: asset.syntheticSymbol,
@@ -157,6 +183,7 @@ module.exports = async function (deployer, network, accounts) {
           poolToDeploy,
           { from: maintainer },
         );
+        console.log(`    '${txData[j].asset}' added to the derivative`);
       }
     }
   }
