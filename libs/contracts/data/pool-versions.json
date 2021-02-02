@@ -7,6 +7,10 @@
     "PoolFactory": {
       "version": 2,
       "isEnabled": true
+    },
+    "PoolOnChainPriceFeedFactory": {
+      "version": 3,
+      "isEnabled": true
     }
   },
   "1": {
