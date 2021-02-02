@@ -7,10 +7,10 @@ const deployPoolRegistry = require('../migrations/4_deploy_pool_registry.js');
 const deployFactoryVersioning = require('../migrations/5_deploy_factory_versioning.js');
 const deployDerivativeVersions = require('../migrations/6_deploy_derivative_versions.js');
 const deployPoolVersions = require('../migrations/7_deploy_pool_versions.js');
-
-const deployPoolAndDerivative = require('../migrations/8_add_pool_and_derivative.js');
-const deployOnlyPool = require('../migrations/9_add_only_pool.js');
-const deployOnlyDerivative = require('../migrations/10_add_only_derivative.js');
+const deployPriceFeed = require('../migrations/8_deploy_price_feed.js');
+const deployPoolAndDerivative = require('../migrations/9_add_pool_and_derivative.js');
+const deployOnlyPool = require('../migrations/10_add_only_pool.js');
+const deployOnlyDerivative = require('../migrations/11_add_only_derivative.js');
 
 //Uma contracts to deploy Uma infrastructure for local hardhat test
 const umaDeployFinder = require('@jarvis-network/uma-core/migrations/2_deploy_finder.js');
@@ -56,6 +56,9 @@ module.exports = async ({ network, web3 }) => {
   } else if (process.env.MIGRATION_TYPE == 'poolVersions') {
     console.log('Deploying pool versions...');
     await deployPoolVersions(null, network.name, accounts);
+  } else if (process.env.MIGRATION_TYPE == 'priceFeed') {
+    console.log('Deploying price feed...');
+    await deployPriceFeed(null, network.name, accounts);
   } else if (process.env.MIGRATION_TYPE == 'pool-and-derivative') {
     console.log('Deploying pool and derivatives...');
     await deployPoolAndDerivative(null, network.name, accounts);
@@ -73,5 +76,6 @@ module.exports = async ({ network, web3 }) => {
     await deployFactoryVersioning(null, network.name, accounts);
     await deployDerivativeVersions(null, network.name, accounts);
     await deployPoolVersions(null, network.name, accounts);
+    await deployPriceFeed(null, network.name, accounts);
   }
 };
