@@ -198,7 +198,7 @@ export const MainForm: React.FC<Props> = () => {
   };
 
   const mintingOverLimit =
-    paySymbol === 'USDC' && new FPN(pay).gt(MAX_MINT_VALUE);
+    paySymbol === 'USDC' && new FPN(payString).gt(MAX_MINT_VALUE);
 
   const swapDisabled =
     !Number(payString) ||
