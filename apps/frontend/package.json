@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@jarvis-network/synthereum-contracts": "1.0.0",
-    "@jarvis-network/ui": "^0.9.1",
+    "@jarvis-network/ui": "^0.9.4",
     "@jarvis-network/web3-utils": "1.0.0",
     "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
