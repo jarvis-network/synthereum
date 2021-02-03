@@ -102,8 +102,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 
       const rlmAgent = new RealmAgent(
         realm,
-        address as AddressOn<typeof netId>,
-        'v1',
+        address as AddressOn<typeof netId>
       );
       setRealmAgent(rlmAgent);
     })();
