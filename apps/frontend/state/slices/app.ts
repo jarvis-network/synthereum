@@ -26,12 +26,6 @@ const appSlice = createSlice({
         isRecentActivityModalVisible: action.payload,
       };
     },
-    setAccountDropdownExpanded(state, action: SetModalVisibilityAction) {
-      return {
-        ...state,
-        isAccountDropdownExpanded: action.payload,
-      };
-    },
     setFullScreenLoaderVisible(state, action: SetModalVisibilityAction) {
       return {
         ...state,
@@ -56,7 +50,6 @@ const appSlice = createSlice({
 export const {
   setAccountOverviewModalVisible,
   setRecentActivityModalVisible,
-  setAccountDropdownExpanded,
   setFullScreenLoaderVisible,
   setAuthModalVisible,
   setMobileTab,

@@ -46,7 +46,6 @@ export interface State {
   app: {
     isAccountOverviewModalVisible: boolean;
     isRecentActivityModalVisible: boolean;
-    isAccountDropdownExpanded: boolean;
     isFullScreenLoaderVisible: boolean;
     isAuthModalVisible: boolean;
     mobileTab: number;
@@ -85,7 +84,6 @@ export const initialState: State = {
   app: {
     isAccountOverviewModalVisible: false,
     isRecentActivityModalVisible: false,
-    isAccountDropdownExpanded: false,
     isFullScreenLoaderVisible: false,
     isAuthModalVisible: false,
     mobileTab: 1,
