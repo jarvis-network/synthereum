@@ -31,22 +31,28 @@ import { Max } from './Max';
 interface Props {}
 
 const ExchangeBox = styled.div<{ error: boolean }>`
-  margin: 15px 30px;
-  border: 1px solid
-    ${props =>
-      !props.error ? props.theme.border.secondary : props.theme.border.invalid};
-  padding: 5px 10px 12px 15px;
+  margin: 5px 15px;
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
   grid-template-areas:
     'title max'
-    'amount asset';
+    'asset-select asset-select';
   position: relative;
+`;
 
-  &:nth-child(2) {
-    margin-top: 20px;
-  }
+const AssetSelect = styled.div<{ error: boolean }>`
+  grid-area: asset-select;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  grid-template-areas: 'amount asset';
+  padding: 5px 5px 10px 10px;
+  margin-top: 3px;
+  border: 1px solid
+    ${props =>
+    !props.error ? props.theme.border.primary : props.theme.border.invalid};
+  border-radius: ${props => props.theme.borderRadius.s};
 `;
 
 const Title = styled.div`
@@ -77,7 +83,7 @@ const Amount = styled.input`
 `;
 
 const Footer = styled.div`
-  margin: 0 30px;
+  margin: 5px 15px;
 `;
 
 const IconButton = styled.button`
@@ -85,14 +91,16 @@ const IconButton = styled.button`
   padding: 0;
   background: none;
   cursor: pointer;
-  margin-left: 50px;
+  margin: 5px auto -7px;
   outline: none !important;
   align-self: flex-start;
 
   svg {
     width: 24px;
     height: 24px;
-    fill: ${props => props.theme.text.primary};
+    margin-left: -8px;
+    margin-right: -8px;
+    fill: ${props => props.theme.text.secondary};
   }
 `;
 
@@ -248,61 +256,66 @@ export const MainForm: React.FC<Props> = () => {
   const errorMessage = insufficientBalance
     ? 'Insufficient funds'
     : mintingOverLimit
-    ? 'Limit Reached'
-    : null;
+      ? 'Limit Reached'
+      : null;
 
   return (
     <>
       <ExchangeBox error={Boolean(errorMessage)}>
-        <Title>You pay</Title>
+        <Title>You swap</Title>
         <Max />
-        <Amount
-          value={getFormattedPay()}
-          onKeyPress={e => handleKeyPress(e, assetPay!)}
-          onChange={e => {
-            updateBase('pay');
-            updatePay(e.target.value);
-          }}
-          onFocus={e => {
-            e.target.select();
+        <AssetSelect error={Boolean(errorMessage)}>
+          <Amount
+            value={getFormattedPay()}
+            onKeyPress={e => handleKeyPress(e, assetPay!)}
+            onChange={e => {
+              updateBase('pay');
+              updatePay(e.target.value);
+            }}
+            onFocus={e => {
+              e.target.select();
 
-            if (!Number(payString) && payString.length) {
-              updatePay('');
-            }
-          }}
-          disabled={!assetPay}
-          placeholder="0"
-        />
-        <Asset type="pay" />
+              if (!Number(payString) && payString.length) {
+                updatePay('');
+              }
+            }}
+            disabled={!assetPay}
+            placeholder="0"
+          />
+          <Asset type="pay" />
+        </AssetSelect>
         <ErrorMessage>{errorMessage}</ErrorMessage>
       </ExchangeBox>
       <IconButton onClick={flipValues}>
+        <Icon icon="IoIosArrowRoundUp" />
         <Icon icon="IoIosArrowRoundDown" />
       </IconButton>
       <ExchangeBox error={false}>
-        <Title>You receive</Title>
-        <Amount
-          value={getFormattedReceive()}
-          onKeyPress={e => handleKeyPress(e, assetReceive!)}
-          onChange={e => {
-            updateBase('receive');
-            updateReceive(e.target.value);
-          }}
-          onFocus={e => {
-            e.target.select();
+        <Title>For</Title>
+        <AssetSelect error={Boolean(errorMessage)}>
+          <Amount
+            value={getFormattedReceive()}
+            onKeyPress={e => handleKeyPress(e, assetReceive!)}
+            onChange={e => {
+              updateBase('receive');
+              updateReceive(e.target.value);
+            }}
+            onFocus={e => {
+              e.target.select();
 
-            if (!Number(receiveString) && receiveString.length) {
-              updateReceive('');
-            }
-          }}
-          disabled={!assetReceive}
-          placeholder="0"
-        />
-        <Asset type="receive" />
+              if (!Number(receiveString) && receiveString.length) {
+                updateReceive('');
+              }
+            }}
+            disabled={!assetReceive}
+            placeholder="0"
+          />
+          <Asset type="receive" />
+        </AssetSelect>
       </ExchangeBox>
       <Footer>
         <ExchangeRate />
-        <SwapButton disabled={swapDisabled} type="success" onClick={doSwap}>
+        <SwapButton disabled={swapDisabled} type="success" onClick={doSwap} size="m">
           Swap
         </SwapButton>
       </Footer>
