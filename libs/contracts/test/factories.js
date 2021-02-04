@@ -1,24 +1,16 @@
 //helper scripts
-const { interfaceName } = require('@jarvis-network/uma-common');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const ethers = require('ethers');
-const { encodeDerivative, encodePool } = require('../utils/encoding.js');
 const {
-  generateMintSignature,
-  generateRedeemSignature,
-  generateExchangeSignature,
-} = require('../utils/metasignature.js');
-const AddressWhitelist = artifacts.require('AddressWhitelist');
+  encodeDerivative,
+  encodePool,
+  encodePoolOnChainPriceFeed,
+} = require('../utils/encoding.js');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const TestnetERC20 = artifacts.require('TestnetERC20');
-const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
-const SynthereumPool = artifacts.require('SynthereumPool');
-const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
-const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
-const SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
 const SynthereumSyntheticTokenFactory = artifacts.require(
   'SynthereumSyntheticTokenFactory',
 );
@@ -26,10 +18,9 @@ const SynthereumDerivativeFactory = artifacts.require(
   'SynthereumDerivativeFactory',
 );
 const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
-const Timer = artifacts.require('Timer');
-const MockOracle = artifacts.require('MockOracle');
-const UmaFinder = artifacts.require('Finder');
-const ContractAllowed = artifacts.require('ContractAllowed');
+const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
+  'SynthereumPoolOnChainPriceFeedFactory',
+);
 
 contract('Factories', function (accounts) {
   let derivativeVersion = 1;
@@ -58,6 +49,7 @@ contract('Factories', function (accounts) {
   let derivativeAddress = ZERO_ADDRESS;
   let synthereumFinderAddress;
   let poolVersion;
+  let poolOnChainVersion;
   let admin = accounts[0];
   let maintainer = accounts[1];
   let liquidityProvider = accounts[2];
@@ -81,45 +73,19 @@ contract('Factories', function (accounts) {
     feeRecipients,
     feeProportions,
   };
-  //Addresses
-  let poolAddress;
-  let synthTokenAddr;
   //Other params
   let sender = accounts[6];
-  let secondSender = accounts[7];
-  let wrongSender = accounts[8];
-  let wrongDerivativeAddr = accounts[9];
-  let newAdmin = accounts[10];
   let derivativePayload;
   let poolPayload;
-  let collateralInstance;
-  let poolStartingDeposit = web3Utils.toWei('1000', 'mwei');
-  let poolInstance;
-  let derivativeInstance;
-  let synthTokenInstance;
-  //MetaSig params
-  //We suppose a starting rate of 1 jEur = 1.2 USDC (EUR/USD = 1.2)
-  let collateralAmount = web3Utils.toWei('120', 'mwei');
-  let feeAmount = web3Utils.toWei((120 * feePercentage).toString(), 'mwei');
-  let totCollAmount = (
-    parseInt(collateralAmount) + parseInt(feeAmount)
-  ).toString();
-  let numTokens;
-  let nonce;
-  let networkId;
-  let version;
-  let expiration;
-  const mnemonic =
-    'test test test test test test test test test test test junk';
-  const path = "m/44'/60'/0'/0/3";
-  const wallet = ethers.Wallet.fromMnemonic(mnemonic, path);
-  let validatorPrivKey = wallet.privateKey.replace('0x', '');
+  let poolOnChainPayload;
+
   beforeEach(async () => {
     collateralAddress = (await TestnetERC20.deployed()).address;
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
     poolVersion = 2;
+    poolOnChainVersion = 3;
     feePercentageWei = web3Utils.toWei(feePercentage);
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativePayload = encodeDerivative(
@@ -148,14 +114,32 @@ contract('Factories', function (accounts) {
       startingCollateralization,
       fee,
     );
+    poolOnChainPayload = encodePoolOnChainPriceFeed(
+      derivativeAddress,
+      synthereumFinderAddress,
+      poolOnChainVersion,
+      roles,
+      isContractAllowed,
+      startingCollateralization,
+      fee,
+    );
   });
 
-  it('Can deploy', async () => {
+  it('Can deploy derivative and pool', async () => {
     await deployerInstance.deployPoolAndDerivative(
       derivativeVersion,
       poolVersion,
       derivativePayload,
       poolPayload,
+      { from: maintainer },
+    );
+  });
+  it('Can deploy derivative and on-chain-price pool', async () => {
+    await deployerInstance.deployPoolAndDerivative(
+      derivativeVersion,
+      poolOnChainVersion,
+      derivativePayload,
+      poolOnChainPayload,
       { from: maintainer },
     );
   });
@@ -173,6 +157,18 @@ contract('Factories', function (accounts) {
         'Sender must be Synthereum deployer',
       );
     });
+    it('Revert in synthetic token factory', async () => {
+      const synthereumSyntheticTokenFactoryInstance = await SynthereumSyntheticTokenFactory.deployed();
+      await truffleAssert.reverts(
+        synthereumSyntheticTokenFactoryInstance.createToken(
+          'jTest',
+          'Test Coin',
+          18,
+          { from: sender },
+        ),
+        'Sender must be a Derivative Factory',
+      );
+    });
     it('Revert in pool factory', async () => {
       const poolFactoryInstance = await SynthereumPoolFactory.deployed();
       const funcSignature = await poolFactoryInstance.deploymentSignature();
@@ -184,6 +180,22 @@ contract('Factories', function (accounts) {
         web3.eth.sendTransaction({
           from: sender,
           to: poolFactoryInstance.address,
+          data: dataPayload,
+        }),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Revert in on-chain-price pool factory', async () => {
+      const poolOnChainFactoryInstance = await SynthereumPoolOnChainPriceFeedFactory.deployed();
+      const funcSignature = await poolOnChainFactoryInstance.deploymentSignature();
+      const dataPayload =
+        funcSignature +
+        web3Utils.padRight(ZERO_ADDRESS.replace('0x', ''), '64') +
+        poolOnChainPayload.replace('0x', '');
+      await truffleAssert.reverts(
+        web3.eth.sendTransaction({
+          from: sender,
+          to: poolOnChainFactoryInstance.address,
           data: dataPayload,
         }),
         'Sender must be Synthereum deployer',
