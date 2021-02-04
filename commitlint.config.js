@@ -16,6 +16,7 @@ module.exports = {
       [
         'build',
         'chore',
+        'config',
         'improve',
         'deploy',
         'docs',
