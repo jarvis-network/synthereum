@@ -12,4 +12,6 @@ const configOverride = {
 
 const config = getHardhatConfig(configOverride);
 config.solidity.settings.optimizer.runs = 200;
+config.networks['mainnet_fork'].timeout = 60000;
+config.networks['mainnet'].timeout = 120000;
 module.exports = config;
