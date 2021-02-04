@@ -109,9 +109,9 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 
 function poolVersionId(version: PoolVersion) {
   return version === 'v1'
-    ? 0
-    : version === 'v2'
     ? 1
+    : version === 'v2'
+    ? 2
     : throwError(`'${version}' is not a supported pool version`);
 }
 
