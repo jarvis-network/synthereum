@@ -105,7 +105,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
-    "@jarvis-network/cz-ccgls": "0.3.1",
+    "@jarvis-network/cz-ccgls": "^0.3.2",
     "@nrwl/cli": "11.0.20",
     "@nrwl/node": "11.0.20",
     "@nrwl/react": "11.0.20",

@@ -3614,10 +3614,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@jarvis-network/cz-ccgls@0.3.1":
-  version "0.3.1"
-  resolved "https://gitlab.com/api/v4/projects/23438265/packages/npm/@jarvis-network/cz-ccgls/-/@jarvis-network/cz-ccgls-0.3.1.tgz#00b866800ab978fd393ea76c9d9ac10c280c032d"
-  integrity sha1-ALhmgAq5eP05PqdsnZrBDCgMAy0=
+"@jarvis-network/cz-ccgls@^0.3.2":
+  version "0.3.2"
+  resolved "https://gitlab.com/api/v4/projects/23438265/packages/npm/@jarvis-network/cz-ccgls/-/@jarvis-network/cz-ccgls-0.3.2.tgz#a9ad94730ecf4753a5134b35ca9cef5205b05a11"
+  integrity sha1-qa2Ucw7PR1OlE0s1ypzvUgWwWhE=
   dependencies:
     chalk "^4.1.0"
     cli-truncate "^2.1.0"
