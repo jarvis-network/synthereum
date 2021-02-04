@@ -12,7 +12,10 @@ var assets = require('../data/synthetic-assets.json');
 var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
-const { getDeploymentInstance } = require('../utils/deployment.js');
+const {
+  getDeploymentInstance,
+  printTruffleLikeTransactionOutput,
+} = require('../utils/deployment.js');
 const { encodeDerivative, encodePool } = require('../utils/encoding.js');
 
 module.exports = async function (deployer, network, accounts) {
@@ -166,9 +169,12 @@ module.exports = async function (deployer, network, accounts) {
               )
               .send({ from: maintainer });
 
-        const gasUsed = isDeployedDeployer ? tx.receipt.gasUsed : tx.gasUsed;
-        console.log(`   > gas used: ${gasUsed}`);
-        console.log('\n');
+        const { transactionHash } = isDeployedDeployer ? tx.receipt : tx;
+        await printTruffleLikeTransactionOutput(
+          txData[j].asset,
+          '<not ctor call>',
+          transactionHash,
+        );
       }
     }
   }
