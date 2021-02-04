@@ -70,8 +70,13 @@ void main(string[] args)
         writeArgumentsFile(tmpArgsFilepath, contractArgs);
         import std.file : remove;
         scope (success) remove(tmpArgsFilepath);
-        const newVerification = `yarn hardhat verify --network %s --constructor-args %s %s`
-            .format(network, tmpArgsFilepath, contractAddress)
+        string hardhatContractArgs = "";
+        if (auto contractPath = "contractPath" in info)
+        {
+            hardhatContractArgs = "--contract %s:%s".format(contractPath.str, contractName);
+        }
+        const newVerification = `yarn hardhat verify %s --network %s --constructor-args %s %s`
+            .format(hardhatContractArgs, network, tmpArgsFilepath, contractAddress)
             .runVerify(alreadyVerified);
 
         writefln(
