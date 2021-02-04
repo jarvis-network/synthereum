@@ -58,5 +58,18 @@
     "contractName": "SynthereumPoolFactory",
     "address": "0x2097E7f338eB44C69a48c3f9eBea7dEeeb88f63F",
     "transactionHash": "0x674415e32a8060b47179b93854c3b576ae3022eaa935b68408916bb980757309"
+  },
+  {
+    "contractName": "jEUR ERC20",
+    "address": "0x0f17bc9a994b87b5225cfb6a2cd4d667adb4f20b"
+  },
+  {
+    "contractName": "PerpetualPoolParty",
+    "contractPath": "contracts/@jarvis-network/uma-core/contracts/financial-templates/perpetual-poolParty/PerpetualPoolParty.sol",
+    "address": "0x48546bdd57d34cb110f011cdd1ccaae75ee17a70"
+  },
+  {
+    "contractName": "jEUR Pool",
+    "address": "0xbe9c588eb7a2bdd76f49f1d3a54c7254612a7e9e"
   }
 ]

@@ -38,5 +38,68 @@
   "0xDB026D6c3450F5F28f3a035E158E1B68AfCE8f9F": [],
   "0x2097E7f338eB44C69a48c3f9eBea7dEeeb88f63F": [
     "0xD451dE78E297b496ee8a4f06dCF991C17580B452"
+  ],
+  "0x0f17bc9a994b87b5225cfb6a2cd4d667adb4f20b": [
+    "Jarvis Synthetic Euro",
+    "jEUR",
+    18
+  ],
+  "0x48546bdd57d34cb110f011cdd1ccaae75ee17a70": [
+    {
+      "positionManagerParams": {
+        "withdrawalLiveness": "7200",
+        "collateralAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "tokenAddress": "0x0f17bc9a994b87b5225cfb6a2cd4d667adb4f20b",
+        "finderAddress": "0x40f941e48a552bf496b154af6bf55725f18d77c3",
+        "priceFeedIdentifier": "0x4555525553440000000000000000000000000000000000000000000000000000",
+        "minSponsorTokens": {
+          "rawValue": "0"
+        },
+        "timerAddress": "0x0000000000000000000000000000000000000000",
+        "excessTokenBeneficiary": "0x535ac9f9b46e515a3af364434061181a504d5bfb"
+      },
+      "roles": {
+        "admins": ["0x592108f92f6e570f1a47f32c459a03c90ace05a7"],
+        "pools": []
+      },
+      "liquidatableParams": {
+        "liquidationLiveness": "7200",
+        "collateralRequirement": {
+          "rawValue": "1100000000000000000"
+        },
+        "disputeBondPct": {
+          "rawValue": "50000000000000000"
+        },
+        "sponsorDisputeRewardPct": {
+          "rawValue": "500000000000000000"
+        },
+        "disputerDisputeRewardPct": {
+          "rawValue": "200000000000000000"
+        }
+      }
+    }
+  ],
+  "0xbe9c588eb7a2bdd76f49f1d3a54c7254612a7e9e": [
+    "0x48546bdd57d34cb110f011cdd1ccaae75ee17a70",
+    "0xd451de78e297b496ee8a4f06dcf991c17580b452",
+    2,
+    {
+      "admin": "0x128c8e20dd4f2d8519dd605632660686ba35d212",
+      "maintainer": "0x10d7c10a2f25ba6212968d8918eb687d589c6e0a",
+      "liquidityProvider": "0x85e0d7f67b909f1a815fbc8bb39ea76b8ba6994f",
+      "validator": "0xcb3508a63176c8a2d24f1d048374e80befe8a8a2"
+    },
+    false,
+    "1585500",
+    {
+      "feePercentage": {
+        "rawValue": "2000000000000000"
+      },
+      "feeRecipients": [
+        "0xcc3528125499d168adfb5ef99895c98a7c430ed4",
+        "0x535ac9f9b46e515a3af364434061181a504d5bfb"
+      ],
+      "feeProportions": [50, 50]
+    }
   ]
 }
