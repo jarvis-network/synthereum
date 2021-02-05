@@ -144,7 +144,9 @@ export async function loadPoolInfo<
     await poolInstance.methods.collateralToken().call(),
   ) as AddressOn<Net>;
 
-  if (collateralTokenAddress !== collateralAddress) {
+  if (
+    collateralTokenAddress.toLowerCase() !== collateralAddress.toLowerCase()
+  ) {
     throwError(
       `Collateral token mismatch - expected: '${collateralAddress}', ` +
         `got: '${collateralTokenAddress}'`,
