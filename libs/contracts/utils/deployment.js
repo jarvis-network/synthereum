@@ -9,7 +9,7 @@ async function getDeploymentInstance(artifact, contractName, networkId) {
     const networkContractAddresses = networks.filter(contract => {
       return contract.contractName === contractName;
     });
-    contractInstance = new web3.eth.Contract(
+    contractInstance = new global.web3.eth.Contract(
       artifact.abi,
       networkContractAddresses[networkContractAddresses.length - 1].address,
     );

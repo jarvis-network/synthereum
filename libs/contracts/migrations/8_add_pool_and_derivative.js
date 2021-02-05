@@ -21,6 +21,7 @@ const { parseFiniteFloat } = require('@jarvis-network/web3-utils/base/asserts');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
+  global.web3 = web3;
 
   const gasPrice = parseFiniteFloat(process.env.GAS_PRICE);
 
