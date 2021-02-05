@@ -19,6 +19,11 @@ export interface Rate {
   rate: FPN;
 }
 
+export interface WhitespacePricePoint {
+  time: string;
+  history?: boolean;
+}
+
 export interface PricePoint {
   time: string; // in format YYYY-MM-DD
   open: number;
@@ -27,6 +32,8 @@ export interface PricePoint {
   close: number;
   history: boolean;
 }
+
+export type DataItem = PricePoint | WhitespacePricePoint;
 
 export interface PricePointsMap {
   [pair: string]: PricePoint[];

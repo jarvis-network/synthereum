@@ -1,14 +1,37 @@
 import BN from 'bn.js';
 import { fromWei, toWei } from 'web3-utils';
 
+const stringifyValue = (val: string | number | BN) => {
+  if (val instanceof BN) {
+    return val.toString();
+  }
+  if (typeof val === 'string') {
+    return val.trim();
+  }
+  const s = String(val);
+  if (s.includes('e')) {
+    // we should avoid toFixed because it acts weird sometimes, returning
+    // incorrectly rounded values, like (3.14).toFixed(16)
+    return val.toFixed(18);
+  }
+  return s;
+};
+
 const prepareValue = (val: string | number | BN) => {
-  const value = val instanceof BN ? val.toString() : String(val).trim();
+  const value = stringifyValue(val);
   if (Number(value.match(/\./g)?.length) > 1) {
     throw new TypeError('Number cannot contain more than one dot.');
   }
   if (value === '.' || !value) {
     return '0';
   }
+
+  let [whole, fraction] = value.split('.');
+  if (fraction && fraction.length > 18) {
+    fraction = fraction.substr(0, 18);
+    return [whole, fraction].join('.');
+  }
+
   return value;
 };
 

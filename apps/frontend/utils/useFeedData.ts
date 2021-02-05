@@ -6,8 +6,7 @@ import {
 import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { PricePoint } from '@/state/initialState';
-import { DataItem } from '@/components/Chart';
+import { DataItem, PricePoint } from '@/state/initialState';
 
 const reversePricePoint = (data: PricePoint) => ({
   ...data,

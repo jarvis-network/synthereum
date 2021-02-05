@@ -69,3 +69,11 @@ const json = JSON.stringify(objectToStringify);
 const obj = JSON.parse(json);
 assert.strictEqual(obj.price, obj.pricebn);
 assert.strictEqual(FPN.fromWei(new BN(obj.price, 16)).format(3), '99.123');
+
+// High precision float shouldn't crash
+const highPrecisionFloat = 0.0005520996027849057;
+assert.strictEqual(new FPN(highPrecisionFloat).format(5), '0.00055');
+
+// Expotential notation shouldn't crash
+const exp = 7.514464338823816e-7;
+assert.strictEqual(new FPN(exp).format(7), '0.0000007');

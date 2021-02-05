@@ -3,6 +3,7 @@ import { Icon, styled, Tabs, themeValue } from '@jarvis-network/ui';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { ColoredTabs } from '@/components/ColoredTabs';
+import { mainContentBackground } from '@/data/backgrounds';
 
 export interface Props {
   className?: string;
@@ -10,12 +11,6 @@ export interface Props {
   mode?: 'tab' | 'back';
   onBack?: () => void;
 }
-
-const mainContentBackground = {
-  night: '#2e3541',
-  dark: '#292929',
-  light: '#fff',
-};
 
 const Container = styled.div`
   box-shadow: ${props => props.theme.shadow.base};

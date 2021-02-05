@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { ColoredTabs } from '@/components/ColoredTabs';
 import { ChartCard } from '@/components/chart/ChartCard';
