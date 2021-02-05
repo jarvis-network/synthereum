@@ -16,4 +16,10 @@ export const contractDependencies = typeCheck<
     collateralAddress: A<42>('0xe22da380ee6B445bb8273C81944ADEB6E8450422'),
     poolRegistry: A<42>('0x963C30D1d707d2B0f3F175525Cc4a740ce3ce0C7'),
   },
+  '1': {
+    identifierWhitelist: A<1>('0xcF649d9Da4D1362C4DAEa67573430Bd6f945e570'),
+    finderAddress: A<1>('0x40f941E48A552bF496B154Af6bf55725f18D77c3'),
+    collateralAddress: A<1>('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'),
+    poolRegistry: A<1>('0xefb040204CC94e49433FDD472e49D4f3538D5346'),
+  },
 } as const); // Mark as const so TS can know what networks are actually defined

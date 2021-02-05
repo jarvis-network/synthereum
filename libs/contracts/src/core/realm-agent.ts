@@ -218,7 +218,9 @@ export class RealmAgent<
   }
 }
 
-export async function getAllBalances(realmAgent: RealmAgent<'kovan'>) {
+export async function getAllBalances<Net extends SupportedNetworkName>(
+  realmAgent: RealmAgent<Net>,
+) {
   const usdcBalancePromise = t(
     realmAgent.realm.collateralToken.symbol,
     await realmAgent.collateralBalance(),

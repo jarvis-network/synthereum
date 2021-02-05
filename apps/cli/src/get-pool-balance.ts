@@ -54,7 +54,7 @@ async function main() {
 }
 
 async function printPoolBalance(
-  realm: SynthereumRealmWithWeb3<'kovan'>,
+  realm: SynthereumRealmWithWeb3,
   version: PoolVersion,
 ) {
   let balances = await getPoolBalances(realm, version);

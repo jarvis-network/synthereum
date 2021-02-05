@@ -1,4 +1,4 @@
-import { assert, isString } from '@jarvis-network/web3-utils/base/asserts';
+import { assert } from '@jarvis-network/web3-utils/base/asserts';
 import { typeCheck, ValuesOf } from '@jarvis-network/web3-utils/base/meta';
 import { PerNetwork } from '..';
 import { SupportedNetworkId } from '../supported-networks';
@@ -7,6 +7,7 @@ const devNetworkId = 123;
 
 export const enabledSymbols = typeCheck<PerNetwork<readonly string[]>>()({
   '42': ['jEUR', 'jGBP', 'jCHF', 'jXAU'] as const,
+  '1': ['jEUR', 'jGBP'] as const,
   [devNetworkId]: [
     'jEUR',
     'jGBP',
