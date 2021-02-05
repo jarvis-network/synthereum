@@ -68,5 +68,21 @@
     "contractName": "SynthereumPoolFactory",
     "address": "0xC3cA1272D82f908Fed6D93e0b3189A244828A1E0",
     "transactionHash": "0x7a2557a3610aaa1b40e0f7673d4aec702407630690b77e300ef1c7e45cbc6cae"
+  },
+  {
+    "contractName": "jEUR Synthereum Pool",
+    "address": "0xf8be24f14D5FD3395eB3b33b27e1606271CE8242"
+  },
+  {
+    "contractName": "jEUR Synthetic Token",
+    "address": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7"
+  },
+  {
+    "contractName": "jEUR Derivative",
+    "address": "0x00051f5d33412144a4576E3e3cdE5f913B9F4d62"
+  },
+  {
+    "contractName": "jGBP Derivative",
+    "address": "0xb7CE3a331E79379604F5c4977664c6e30a98bADB"
   }
 ]
