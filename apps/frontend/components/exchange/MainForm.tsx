@@ -20,7 +20,6 @@ import { setFullScreenLoaderVisible } from '@/state/slices/app';
 import { Asset as AssetType } from '@/data/assets.ts';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
-import { Fees } from '@/components/exchange/Fees';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { useSwap } from '@/components/exchange/useSwap';
@@ -83,7 +82,7 @@ const Amount = styled.input`
 `;
 
 const Footer = styled.div`
-  margin: 5px 15px;
+  margin: 15px;
 `;
 
 const IconButton = styled.button`
@@ -214,8 +213,6 @@ export const MainForm: React.FC<Props> = () => {
     insufficientBalance ||
     mintingOverLimit;
 
-  const fees = !swapDisabled && <Fees />;
-
   const doSwap = async () => {
     dispatch(setFullScreenLoaderVisible(true));
     try {
@@ -256,8 +253,8 @@ export const MainForm: React.FC<Props> = () => {
   const errorMessage = insufficientBalance
     ? 'Insufficient funds'
     : mintingOverLimit
-      ? 'Limit Reached'
-      : null;
+    ? 'Limit Reached'
+    : null;
 
   return (
     <>
@@ -315,11 +312,10 @@ export const MainForm: React.FC<Props> = () => {
       </ExchangeBox>
       <Footer>
         <ExchangeRate />
-        <SwapButton disabled={swapDisabled} type="success" onClick={doSwap} size="m">
+        <SwapButton disabled={swapDisabled} type="success" onClick={doSwap} size="l">
           Swap
         </SwapButton>
       </Footer>
-      {fees}
     </>
   );
 };

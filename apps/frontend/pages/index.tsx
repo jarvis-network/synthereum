@@ -21,8 +21,34 @@ import { Card } from '@/components/Card';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 import { StyledCard } from '@/components/exchange/StyledCard';
 
-const StyledChartCard = styled(Card)`
-  flex: 1;
+const Layout = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+const LayoutChart = styled.div`
+  display: flex;
+  flex: 1 1 0%;
+  width: 100%;
+  height: 100vh;
+  padding: 90px 30px 30px calc(50vw - 510px);
+  box-sizing: border-box;
+`;
+
+const LayoutWidget = styled(Background)`
+  height: 100vh;
+  padding: 90px calc(50vw - 510px) 30px 30px;
+  box-sizing: border-box;
+`;
+
+const ChartContainer = styled.div`
+  width: 100%;
+`;
+
+const WidgetContainer = styled.div`
+  min-width: 360px;
+  height: 100%;
 `;
 
 export default function Home() {
@@ -58,20 +84,18 @@ export default function Home() {
         {chooseAsset ? <ChooseAsset /> : <ChartExchangeCards />}
       </OnMobile>
       <OnDesktop>
-        <Background image={url}>
-          <CardsHolder>
-            <StyledChartCard title="Chart">
+        <Layout>
+          <LayoutChart>
+            <ChartContainer>
               <ChartCard />
-            </StyledChartCard>
-            {chooseAsset ? (
-              <ChooseAsset />
-            ) : (
-              <StyledCard title="Exchange">
-                <ExchangeCard />
-              </StyledCard>
-            )}
-          </CardsHolder>
-        </Background>
+            </ChartContainer>
+          </LayoutChart>
+          <LayoutWidget image={url}>
+            <WidgetContainer>
+              {chooseAsset ? <ChooseAsset /> : <ExchangeCard />}
+            </WidgetContainer>
+          </LayoutWidget>
+        </Layout>
       </OnDesktop>
     </StickyHeader>
   );

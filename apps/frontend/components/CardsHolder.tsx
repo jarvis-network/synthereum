@@ -1,7 +1,7 @@
 import { styled } from '@jarvis-network/ui';
 
 export const CardsHolder = styled.div`
-  padding-top: calc(118px - 51px);
+  padding-top: 90px;
   height: 506px;
   display: flex;
   width: 1072px;

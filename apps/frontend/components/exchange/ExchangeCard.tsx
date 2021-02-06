@@ -18,6 +18,17 @@ import { Asset, AssetPair } from '@/data/assets';
 
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
+import { useExchangeValues } from '@/utils/useExchangeValues';
+import { Fees } from './Fees';
+import { StyledCard } from './StyledCard';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+`;
 
 const grid = {
   columns: [
@@ -144,6 +155,13 @@ export const ExchangeCard: React.FC = () => {
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
 
+  const {
+    payString,
+    receiveString,
+  } = useExchangeValues();
+
+  const swapDisabled = !Number(payString) || !Number(receiveString);
+
   const handleCloseClick = () => {
     setQuery('');
     setSearchOpen(false);
@@ -217,9 +235,12 @@ export const ExchangeCard: React.FC = () => {
   );
 
   return (
-    <>
-      <StyledSearchBar {...searchBarProps} suffix={suffix} />
-      {!searchOpen && <MainForm />}
-    </>
+    <Container>
+      <StyledCard title="Swap">
+        <StyledSearchBar {...searchBarProps} suffix={suffix} />
+        {!searchOpen && <MainForm />}
+      </StyledCard>
+      <Fees />
+    </Container>
   );
 };

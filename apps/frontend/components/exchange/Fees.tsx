@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Tooltip, themeValue } from '@jarvis-network/ui';
+import { styled, Tooltip } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
@@ -7,24 +7,26 @@ import { FEE } from '@/data/fee';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin-top: 5px;
-  justify-content: flex-end;
+  border-radius: ${props => props.theme.borderRadius.l};
+  background: ${props => props.theme.background.primary};
+  margin-top: 20px;
+  padding: 15px;
 `;
 
 const Line = styled.div`
-  background: ${themeValue(
-    { dark: '#272727', night: '#29303c' },
-    theme => theme.border.secondary,
-  )};
-  padding: 5px 30px;
+  padding: 8px 0;
   display: flex;
-  font-size: 10px;
+  font-size: ${props => props.theme.font.sizes.xxs};
   justify-content: space-between;
   align-items: center;
-  min-height: 24px;
+
+  :first-child {
+    padding-top: 0;
+  }
+
+  :last-child {
+    padding-bottom: 0;
+  }
 `;
 const Key = styled.div``;
 const Value = styled.div`

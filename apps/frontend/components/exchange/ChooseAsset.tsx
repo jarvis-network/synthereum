@@ -172,6 +172,8 @@ const StyledGrid = styled(DataGrid)`
 `;
 
 const ScrollableCard = styled(StyledCard)`
+  width: 100%;
+
   .box {
     height: 100%;
   }

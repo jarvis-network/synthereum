@@ -14,34 +14,36 @@ const Container = styled.div`
 `;
 
 const HeaderContainer = styled.div`
-  border-style: solid;
-  border-color: ${props => props.theme.border.secondary};
-  border-width: 0;
-  border-bottom-width: 1px;
+  position: absolute;
+  top: 0;
+  bottom: auto;
+  left: 0;
+  right: 0;
 
   .header-logo {
     height: 25px;
     margin-left: 15px;
   }
 
-  @media screen and (max-width: ${props =>
-      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
-    order: 1;
-    border-bottom-width: 0;
-    background: ${props => props.theme.background.primary};
-    border-color: ${props => props.theme.border.primary};
-
-    .account-button {
-      background: none;
-    }
+  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 `;
 
 const CustomHeader = styled(Header)`
   padding-top: 0;
   padding-bottom: 0;
-  height: 52px;
+  padding-left: calc(50vw - 520px);
+  padding-right: calc(50vw - 520px);
+  height: 90px;
   grid-template-columns: auto auto auto;
+
+  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    height: 52px;
+  }
 `;
 
 const Content = styled.div`
