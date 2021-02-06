@@ -70,19 +70,18 @@
     "transactionHash": "0x7a2557a3610aaa1b40e0f7673d4aec702407630690b77e300ef1c7e45cbc6cae"
   },
   {
-    "contractName": "jEUR Synthereum Pool",
-    "address": "0xf8be24f14D5FD3395eB3b33b27e1606271CE8242"
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0x75ef22E9a532f9796ED357D596e5C1FDc92985bD",
+    "transactionHash": "0x62bb3e5d44d75198df89fb308bc5929e1882a613fabaa7a64aedce90e392cf81"
   },
   {
-    "contractName": "jEUR Synthetic Token",
-    "address": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7"
+    "contractName": "SynthereumPoolOnChainPriceFeedLib",
+    "address": "0x96EBaBaEA9E7F49A27CacE50F9FDD8DC1b66413d",
+    "transactionHash": "0xb3d3f387972ecd5359d0d9d93cafe2ef1de48f3299f56000e709a03862bfd72b"
   },
   {
-    "contractName": "jEUR Derivative",
-    "address": "0x00051f5d33412144a4576E3e3cdE5f913B9F4d62"
-  },
-  {
-    "contractName": "jGBP Derivative",
-    "address": "0xb7CE3a331E79379604F5c4977664c6e30a98bADB"
+    "contractName": "SynthereumPoolOnChainPriceFeedFactory",
+    "address": "0x9531A6fE73bcd53a444347D68024e1f74b17834f",
+    "transactionHash": "0x93a97fe5e166ad335637692422e1dee326a51078b027d83cf5cdc18cf41be2c0"
   }
 ]

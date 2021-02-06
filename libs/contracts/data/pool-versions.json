@@ -2,11 +2,11 @@
   "42": {
     "TICFactory": {
       "version": 1,
-      "isEnabled": true
+      "isEnabled": false
     },
     "PoolFactory": {
       "version": 2,
-      "isEnabled": true
+      "isEnabled": false
     },
     "PoolOnChainPriceFeedFactory": {
       "version": 3,

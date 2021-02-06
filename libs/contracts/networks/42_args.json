@@ -43,80 +43,15 @@
   "0xC3cA1272D82f908Fed6D93e0b3189A244828A1E0": [
     "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34"
   ],
-  "0xf8be24f14D5FD3395eB3b33b27e1606271CE8242": [
-    "0x00051f5d33412144a4576E3e3cdE5f913B9F4d62",
+  "0x75ef22E9a532f9796ED357D596e5C1FDc92985bD": [
     "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34",
-    2,
     {
       "admin": "0x539E625172026F8d2AC50648a55871FA728618e8",
-      "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
-      "liquidityProvider": "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
-      "validator": "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa"
-    },
-    false,
-    "1824000",
-    {
-      "feePercentage": ["2000000000000000"],
-      "feeRecipients": [
-        "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
-        "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
-      ],
-      "feeProportions": [50, 50]
+      "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486"
     }
   ],
-  "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7": [
-    "Jarvis Synthetic Euro",
-    "jEUR",
-    18
-  ],
-  "0x00051f5d33412144a4576E3e3cdE5f913B9F4d62": [
-    {
-      "positionManagerParams": {
-        "withdrawalLiveness": 7200,
-        "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422",
-        "tokenAddress": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7",
-        "finderAddress": "0xeD0169a88d267063184b0853BaAAAe66c3c154B2",
-        "priceFeedIdentifier": "0x4555522f55534400000000000000000000000000000000000000000000000000",
-        "minSponsorTokens": { "rawValue": "20000000000000000000" },
-        "timerAddress": "0x0000000000000000000000000000000000000000",
-        "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
-      },
-      "roles": {
-        "admins": ["0x8137C08A710281270b852c2F0000944bb473D190"],
-        "pools": []
-      },
-      "liquidatableParams": {
-        "liquidationLiveness": 7200,
-        "collateralRequirement": { "rawValue": "1200000000000000000" },
-        "disputeBondPct": { "rawValue": "100000000000000000" },
-        "sponsorDisputeRewardPct": { "rawValue": "50000000000000000" },
-        "disputerDisputeRewardPct": { "rawValue": "500000000000000000" }
-      }
-    }
-  ],
-  "0xb7CE3a331E79379604F5c4977664c6e30a98bADB": [
-    {
-      "positionManagerParams": {
-        "withdrawalLiveness": 7200,
-        "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422",
-        "tokenAddress": "0x08654C14d7807cEc6042e86F19B79Bab64c3D648",
-        "finderAddress": "0xeD0169a88d267063184b0853BaAAAe66c3c154B2",
-        "priceFeedIdentifier": "0x4555522f47425000000000000000000000000000000000000000000000000000",
-        "minSponsorTokens": ["18000000000000000000"],
-        "timerAddress": "0x0000000000000000000000000000000000000000",
-        "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
-      },
-      "roles": {
-        "admins": ["0x8137C08A710281270b852c2F0000944bb473D190"],
-        "pools": []
-      },
-      "liquidatableParams": {
-        "liquidationLiveness": "7200",
-        "collateralRequirement": ["1200000000000000000"],
-        "disputeBondPct": ["100000000000000000"],
-        "sponsorDisputeRewardPct": ["50000000000000000"],
-        "disputerDisputeRewardPct": ["500000000000000000"]
-      }
-    }
+  "0x96EBaBaEA9E7F49A27CacE50F9FDD8DC1b66413d": [],
+  "0x9531A6fE73bcd53a444347D68024e1f74b17834f": [
+    "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34"
   ]
 }
