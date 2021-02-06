@@ -19,6 +19,7 @@ const SynthereumPool = artifacts.require('SynthereumPool');
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
+const Derivative = artifacts.require('PerpetualPoolParty');
 const Timer = artifacts.require('Timer');
 const MockOracle = artifacts.require('MockOracle');
 const UmaFinder = artifacts.require('Finder');
@@ -170,7 +171,7 @@ contract('Synthereum pool', function (accounts) {
     await collateralInstance.approve(poolAddress, totCollAmount, {
       from: sender,
     });
-    derivativeInstance = await PerpetualPoolParty.at(derivativeAddress);
+    derivativeInstance = await Derivative.at(derivativeAddress);
     synthTokenAddr = await derivativeInstance.tokenCurrency.call();
     synthTokenInstance = await MintableBurnableERC20.at(synthTokenAddr);
     timerInstance = await Timer.deployed();
@@ -555,7 +556,7 @@ contract('Synthereum pool', function (accounts) {
     });
   });
 
-  describe('Redeem synthetic tokens', () => {
+  describe('Redeem collateral', () => {
     let tokensToRedeem;
     let collateralToReceive;
     let feeAmountRedeem;
@@ -814,7 +815,7 @@ contract('Synthereum pool', function (accounts) {
         'Invalid meta-signature',
       );
     });
-    it('Revert if mint tx was sent by a an address different from the one used by metasignature', async () => {
+    it('Revert if redeem tx was sent by a an address different from the one used by metasignature', async () => {
       nonce = (await poolInstance.getUserNonce.call(sender)).toString();
       RedeemSignature = generateRedeemSignature(
         sender,
@@ -1130,9 +1131,7 @@ contract('Synthereum pool', function (accounts) {
         { from: maintainer },
       );
       destPoolInstance = await SynthereumPool.at(addresses.pool);
-      destPoolDerivativeInstance = await PerpetualPoolParty.at(
-        addresses.derivative,
-      );
+      destPoolDerivativeInstance = await Derivative.at(addresses.derivative);
       const synthTokenAddr = await destPoolDerivativeInstance.tokenCurrency.call();
       destSynthTokenInstance = await MintableBurnableERC20.at(synthTokenAddr);
       await collateralInstance.allocateTo(
@@ -1173,7 +1172,6 @@ contract('Synthereum pool', function (accounts) {
         'mwei',
       );
     });
-
     it('Can exchange', async () => {
       nonce = (await poolInstance.getUserNonce.call(sender)).toString();
       let ExchangeSignature = generateExchangeSignature(
@@ -1341,7 +1339,6 @@ contract('Synthereum pool', function (accounts) {
         from: sender,
       });
     });
-
     it('Revert if derivative of destination pool is wrong', async () => {
       nonce = (await poolInstance.getUserNonce.call(sender)).toString();
       ExchangeSignature = generateExchangeSignature(
@@ -1379,7 +1376,6 @@ contract('Synthereum pool', function (accounts) {
         'Wrong derivative',
       );
     });
-
     it('Revert if collateral of destination pool is different from the one of source pool', async () => {
       const wrongCollateralInstance = await TestnetERC20.new(
         'Wrong USDC',
@@ -1432,7 +1428,7 @@ contract('Synthereum pool', function (accounts) {
         { from: maintainer },
       );
       const wrongDestPoolInstance = await SynthereumPool.at(addresses.pool);
-      const wrongDestPoolDerivativeInstance = await PerpetualPoolParty.at(
+      const wrongDestPoolDerivativeInstance = await Derivative.at(
         addresses.derivative,
       );
       const wrongSynthTokenAddr = await wrongDestPoolDerivativeInstance.tokenCurrency.call();
@@ -1476,7 +1472,6 @@ contract('Synthereum pool', function (accounts) {
         'Collateral tokens do not match',
       );
     });
-
     it('Revert if destination pool is not registred', async () => {
       const synthereumPoolLibInstance = await SynthereumPoolLib.deployed();
       await SynthereumPool.link(synthereumPoolLibInstance);
@@ -1608,6 +1603,7 @@ contract('Synthereum pool', function (accounts) {
       );
     });
   });
+
   describe('Deposit into derivative', async () => {
     let collateralToDeposit;
     beforeEach(async () => {
@@ -1681,6 +1677,7 @@ contract('Synthereum pool', function (accounts) {
       );
     });
   });
+
   describe('Fast withdraw', async () => {
     let collateralToWithdraw;
     beforeEach(async () => {
@@ -1824,6 +1821,7 @@ contract('Synthereum pool', function (accounts) {
       );
     });
   });
+
   describe('Slow withdraw', async () => {
     let collateralToWithdraw;
     beforeEach(async () => {
@@ -1907,6 +1905,7 @@ contract('Synthereum pool', function (accounts) {
       );
     });
   });
+
   describe('Withdraw from the pool', async () => {
     let collateralToWithdraw = web3Utils.toWei('10', 'mwei');
     it('Can withdraw from pool', async () => {
@@ -1945,7 +1944,8 @@ contract('Synthereum pool', function (accounts) {
       );
     });
   });
-  describe('Emergency shutdown and setlle', async () => {
+
+  describe('Emergency shutdown and settle', async () => {
     let secondCollateralAmount;
     let secondNumTokens;
     let mockOracle;
@@ -2141,23 +2141,8 @@ contract('Synthereum pool', function (accounts) {
         'Account has nothing to settle',
       );
     });
-    it('Revert if sender is not a token holder or the LP', async () => {
-      const actualTime = parseInt(
-        (await timerInstance.getCurrentTime()).toString(),
-      );
-      await mockOracle.pushPrice(
-        web3Utils.utf8ToHex(priceFeedIdentifier),
-        actualTime,
-        web3Utils.toWei('1.3'),
-      );
-      await truffleAssert.reverts(
-        poolInstance.settleEmergencyShutdown(derivativeAddress, {
-          from: wrongSender,
-        }),
-        'Account has nothing to settle',
-      );
-    });
   });
+
   describe('Derivatives linking', async () => {
     it('Can add derivative', async () => {
       derivativePayload = encodeDerivative(
@@ -2340,6 +2325,7 @@ contract('Synthereum pool', function (accounts) {
       );
     });
   });
+
   describe('Roles of derivative managment', async () => {
     it('Can add admin', async () => {
       await poolInstance.addRoleInDerivative(derivativeAddress, 0, newAdmin, {
@@ -2555,6 +2541,7 @@ contract('Synthereum pool', function (accounts) {
       assert.equal(isPool, false, 'Wrong pool');
     });
   });
+
   describe('Roles of synthetic token managment', async () => {
     let newDerivative;
     beforeEach(async () => {
@@ -2591,7 +2578,6 @@ contract('Synthereum pool', function (accounts) {
         from: maintainer,
       });
     });
-
     it('Add new admin', async () => {
       await poolInstance.addRoleInSynthToken(derivativeAddress, 0, newAdmin, {
         from: maintainer,
@@ -2819,6 +2805,7 @@ contract('Synthereum pool', function (accounts) {
       assert.equal(isBurner, false, 'Wrong burner');
     });
   });
+
   describe('Fee functions', async () => {
     it('Check fees values', async () => {
       const feeOutput = await poolInstance.getFeeInfo.call();
@@ -2915,6 +2902,7 @@ contract('Synthereum pool', function (accounts) {
       assert.equal(feeAmountOutput, feeToCheck, 'Correct fee');
     });
   });
+
   describe('Starting collatralization ratio', async () => {
     it('Check ratio', async () => {
       const ratio = await poolInstance.getStartingCollateralization.call();
@@ -2929,7 +2917,8 @@ contract('Synthereum pool', function (accounts) {
       assert.equal(ratio, newRatio, 'Wrong starting ratio');
     });
   });
-  describe('Check if metasignature are allowed to contracts', async () => {
+
+  describe('Check if access is allowed to contracts', async () => {
     let proxyContract;
     let proxyMintParams;
     let proxySignature;
