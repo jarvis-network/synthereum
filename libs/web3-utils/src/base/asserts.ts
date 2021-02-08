@@ -1,3 +1,5 @@
+import { includes } from './array-fp-utils';
+
 type AssertFunc = (value: any, message?: string) => asserts value;
 
 export const assert: AssertFunc =
@@ -117,4 +119,23 @@ export function assertIsArray(x: unknown): unknown[] {
 
 export function throwError(errorMessage: string): never {
   throw new Error(errorMessage);
+}
+
+/**
+ * Checks if `array` includes `element` and returns the element if that's true.
+ * Otherwise throws an error with the provided error message, or a default one.
+ * @param array Array to search in
+ * @param element Element to search for and return if present
+ * @param error Optional error message
+ */
+export function assertIncludes<T>(
+  array: readonly T[],
+  element: unknown,
+  error?: string,
+): T {
+  return includes(array, element)
+    ? element
+    : throwError(
+        error ?? `'${element}' is not a member of the array '${array}'.`,
+      );
 }
