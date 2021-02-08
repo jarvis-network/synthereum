@@ -14,6 +14,10 @@ export function unique<T = any>(array: T[]): T[] {
   return [...new Set(array)];
 }
 
+export function first<T = any>(array: readonly T[]): T {
+  return array[0];
+}
+
 export function lastInArray<T = any>(array: T[]): T {
   return array[array.length - 1];
 }
