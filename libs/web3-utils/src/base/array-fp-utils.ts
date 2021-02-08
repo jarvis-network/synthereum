@@ -1,5 +1,5 @@
 export function mapReduce<T, U, R>(
-  array: T[],
+  array: readonly T[],
   initialValue: R,
   mapFn: (elem: T) => U,
   reduceFn: (curr: R, next: U) => R,
@@ -10,7 +10,7 @@ export function mapReduce<T, U, R>(
   );
 }
 
-export function unique<T = any>(array: T[]): T[] {
+export function unique<T = any>(array: readonly T[]): T[] {
   return [...new Set(array)];
 }
 
@@ -18,11 +18,11 @@ export function first<T = any>(array: readonly T[]): T {
   return array[0];
 }
 
-export function lastInArray<T = any>(array: T[]): T {
+export function last<T = any>(array: readonly T[]): T {
   return array[array.length - 1];
 }
 
-export function indexOfMaxValue(array: number[]): number {
+export function indexOfMaxValue(array: readonly number[]): number {
   return array.indexOf(Math.max(...array));
 }
 
