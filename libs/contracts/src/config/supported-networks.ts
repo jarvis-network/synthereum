@@ -1,6 +1,6 @@
 import {
+  assertIncludes,
   parseInteger,
-  throwError,
 } from '@jarvis-network/web3-utils/base/asserts';
 import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 import {
@@ -14,12 +14,10 @@ export type SupportedNetworkId = SupportedNetworkIds[number];
 export type SupportedNetworkName = ToNetworkName<SupportedNetworkId>;
 
 export function parseSupportedNetworkId(x: unknown): SupportedNetworkId {
-  const id = parseInteger(x);
-  const supported = supportedNetworkIds as readonly number[];
-  return supported.findIndex(s => id === s) !== -1
-    ? (id as SupportedNetworkId)
-    : throwError(
-        `${x} is not a supported networkId. Supported network ids are: ` +
-          `[${supportedNetworkIds}]`,
-      );
+  return assertIncludes(
+    supportedNetworkIds,
+    parseInteger(x),
+    `${x} is not a supported networkId. Supported network ids are: ` +
+      `[${supportedNetworkIds}]`,
+  );
 }
