@@ -49,8 +49,14 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
+export type DeepReadonly<T> = {
+  readonly [P in keyof T]: DeepReadonly<T[P]>;
+};
+
 export function typeCheck<Expected>() {
-  return function <Actual extends Readonly<Expected>>(value: Actual): Actual {
+  return function <Actual extends DeepReadonly<Expected>>(
+    value: Actual,
+  ): Actual {
     return value;
   };
 }
