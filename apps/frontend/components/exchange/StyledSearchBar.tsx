@@ -16,12 +16,12 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   // this app styles in random order. When they have the same specificity they
   // in result sometimes gets applied and sometimes not
   &&& input {
-    height: 50px;
     box-sizing: border-box;
-    font-size: 12px;
+    font-size: ${props => props.theme.font.sizes.xs};
     font-family: 'Krub';
     padding: 0 10px;
     background: none;
+    height: ${props => props.theme.sizes.row};
   }
 
   .group {

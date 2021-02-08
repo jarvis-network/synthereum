@@ -11,7 +11,8 @@ const Container = styled.div`
   grid-area: asset;
   justify-self: end;
   margin-top: 5px;
-  font-size: 14px;
+  font-size: ${props => props.theme.font.sizes.m};
+  width: 85px;
 
   img {
     width: 22px;
@@ -30,7 +31,7 @@ const Container = styled.div`
     justify-content: space-between;
     vertical-align: middle;
     width: 55px;
-    margin-left: 7px;
+    margin-left: 8px;
   }
 `;
 
@@ -49,7 +50,7 @@ const AssetSelectButton = styled.button`
   border: none;
   padding: 0 6px;
   height: 26px;
-  font-size: 12px;
+  font-size: ${props => props.theme.font.sizes.xxs};
   color: ${themeValue(
     {
       light: theme => theme.text.secondary,

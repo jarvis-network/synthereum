@@ -42,11 +42,12 @@ const ExchangeBox = styled.div<{ error: boolean }>`
 
 const AssetSelect = styled.div<{ error: boolean }>`
   grid-area: asset-select;
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
-  grid-template-areas: 'amount asset';
-  padding: 5px 5px 10px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px 10px 10px;
+  height: ${props => props.theme.sizes.row};
+  box-sizing: border-box;
   margin-top: 3px;
   border: 1px solid
     ${props =>
@@ -70,10 +71,12 @@ const Amount = styled.input`
     },
     theme => theme.text.medium,
   )};
-  font-size: 14px;
-  width: 50%;
+  font-size: ${props => props.theme.font.sizes.m};
+  width: 65%;
+  max-width: 260px;
   outline: none !important;
   margin-top: 5px;
+  height: 100%;
   font-family: Krub;
 
   &::placeholder {
@@ -110,6 +113,7 @@ const SwapButton = styled(Button)`
   text-align: center;
   margin-top: 25px;
   box-shadow: ${props => props.theme.shadow.small};
+  height: ${props => props.theme.sizes.row};
 
   &:disabled {
     box-shadow: none;

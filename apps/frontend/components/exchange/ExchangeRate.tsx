@@ -8,24 +8,23 @@ import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange'
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Container = styled.div`
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto;
-  grid-template-areas: 'rate assets';
-
+  display: flex;
+  justify-content: flex-end;
+  align-itens: center;
   color: ${themeValue(
     {
       light: theme => theme.text.secondary,
     },
     theme => theme.text.medium,
   )};
-  font-size: 12px;
+  font-size: ${props => props.theme.font.sizes.xs};;
   padding-left: 15px;
   padding-right: 10px;
 `;
 
 const Rate = styled.div`
   grid-area: rate;
+  padding-right: 10px;
 `;
 
 const Assets = styled.div`
