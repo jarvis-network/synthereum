@@ -29,3 +29,15 @@ export function indexOfMaxValue(array: readonly number[]): number {
 export function indexOfMaxLexicographicalValue(array: string[]): number {
   return array.indexOf(array.sort()[array.length - 1]);
 }
+
+/**
+ * Checks if `array` includes `element`.
+ * @param array Array to search in
+ * @param element Element to search for and return if present
+ */
+export function includes<T>(
+  array: readonly T[],
+  element: unknown,
+): element is T {
+  return array.includes(element as any);
+}
