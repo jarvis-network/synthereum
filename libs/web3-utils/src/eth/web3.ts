@@ -104,11 +104,11 @@ export function once<T>(
           blockHash?: string,
         ) {
           if (confirmations == maxConfirmations) {
-            resolve([confirmations, receipt, blockHash]);
             ((promiEvent as unknown) as EventEmitter).off(
               'confirmation',
               onConfirm,
             );
+            resolve([confirmations, receipt, blockHash]);
           }
         }
 
