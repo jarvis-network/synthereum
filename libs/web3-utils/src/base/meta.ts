@@ -11,6 +11,12 @@ export function entriesOf<T extends object>(obj: T): Entries<T> {
   return Object.entries(obj) as Entries<T>;
 }
 
+export type OneOf<
+  T,
+  V extends readonly any[],
+  NK extends keyof V = Exclude<keyof V, keyof any[]>
+> = { [K in NK]: T extends V[K] ? V[K] : never }[NK];
+
 /**
  * Gets the object representation of a type. Useful for "flattening" interesction types.
  *
