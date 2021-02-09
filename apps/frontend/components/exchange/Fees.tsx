@@ -11,6 +11,11 @@ const Container = styled.div`
   background: ${props => props.theme.background.primary};
   margin-top: 20px;
   padding: 15px;
+
+  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    background: ${props => props.theme.background.secondary};
+    margin: 15px;
+  }
 `;
 
 const Line = styled.div`

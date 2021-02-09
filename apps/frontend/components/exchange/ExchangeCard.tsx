@@ -21,6 +21,8 @@ import { FlagsPair } from './FlagsPair';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { Fees } from './Fees';
 import { StyledCard } from './StyledCard';
+import { OnMobile } from '../OnMobile';
+import { OnDesktop } from '../OnDesktop';
 
 const Container = styled.div`
   display: flex;
@@ -117,11 +119,11 @@ const ClearButton = styled.button`
 
   i {
     color: ${themeValue(
-      {
-        light: theme => theme.text.secondary,
-      },
-      theme => theme.text.medium,
-    )}!important;
+  {
+    light: theme => theme.text.secondary,
+  },
+  theme => theme.text.medium,
+)}!important;
 
     svg {
       width: 15px;
@@ -234,12 +236,23 @@ export const ExchangeCard: React.FC = () => {
     </ClearButton>
   );
 
+  const content = (
+    <>
+      <StyledSearchBar {...searchBarProps} suffix={suffix} />
+      {!searchOpen && <MainForm />}
+    </>
+  );
+
   return (
     <Container>
-      <StyledCard title="Swap">
-        <StyledSearchBar {...searchBarProps} suffix={suffix} />
-        {!searchOpen && <MainForm />}
-      </StyledCard>
+      <OnMobile>
+        {content}
+      </OnMobile>
+      <OnDesktop>
+        <StyledCard title="Swap">
+          {content}
+        </StyledCard>
+      </OnDesktop>
       <Fees />
     </Container>
   );

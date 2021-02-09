@@ -1,6 +1,8 @@
 import { styled, Tabs, themeValue } from '@jarvis-network/ui';
 
 export const ColoredTabs = styled(Tabs)`
+  height: 100%;
+
   > :first-child {
     background: ${themeValue(
       {
@@ -26,6 +28,6 @@ export const ColoredTabs = styled(Tabs)`
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    height: calc(100% - 51px);
+    height: calc(100% - ${props => props.theme.sizes.row} * 2);
   }
 `;

@@ -68,7 +68,13 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
-  heigth: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+
+  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    padding: 30px;
+  }
 `;
 
 export const ChartCard: React.FC = () => {

@@ -13,6 +13,7 @@ const Box = styled.div`
   width: 100%;
   height: auto;
   padding-bottom: 30px;
+  box-sizing: border-box;
 `;
 
 const Symbols = styled.div`
