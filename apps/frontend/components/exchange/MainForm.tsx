@@ -40,8 +40,8 @@ const ExchangeBox = styled.div<{ error: boolean }>`
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
   grid-template-areas:
-    'title max'
-    'asset-select asset-select';
+    'title'
+    'asset-select';
   position: relative;
 `;
 
@@ -77,8 +77,7 @@ const Amount = styled.input`
     theme => theme.text.medium,
   )};
   font-size: ${props => props.theme.font.sizes.l};
-  width: 65%;
-  max-width: 260px;
+  width: 45%;
   outline: none !important;
   margin-top: 5px;
   height: 100%;
@@ -269,7 +268,6 @@ export const MainForm: React.FC<Props> = () => {
     <Container>
       <ExchangeBox error={Boolean(errorMessage)}>
         <Title>You swap</Title>
-        <Max />
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
             value={getFormattedPay()}
@@ -288,6 +286,7 @@ export const MainForm: React.FC<Props> = () => {
             disabled={!assetPay}
             placeholder="0"
           />
+          <Max />
           <Asset type="pay" />
         </AssetSelect>
         <ErrorMessage>{errorMessage}</ErrorMessage>

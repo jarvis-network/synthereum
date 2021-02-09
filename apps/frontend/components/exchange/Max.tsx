@@ -6,21 +6,22 @@ import { setBase, setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Container = styled.button`
-  grid-area: max;
-  justify-self: end;
-  font-size: 10px;
   color: ${themeValue(
     {
       light: theme => theme.text.secondary,
     },
     theme => theme.text.medium,
   )};
-  border: none;
-  padding: 0;
-  background: none;
+  border: 1px solid ${props => props.theme.border.primary};
+  padding: 5px 7px;
+  border-radius: ${props => props.theme.borderRadius.s};
+  background: transparent;
   outline: none !important;
   text-transform: uppercase;
   cursor: pointer;
+  margin-top: 8px;
+  font-family: Krub;
+  font-weight: 300;
 `;
 
 export const Max: React.FC = () => {
@@ -50,5 +51,5 @@ export const Max: React.FC = () => {
     dispatch(setPay(formattedMax));
     dispatch(setBase('pay'));
   };
-  return <Container onClick={handleClick}>Max: {formattedMax}</Container>;
+  return <Container onClick={handleClick}>Max</Container>;
 };

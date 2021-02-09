@@ -12,7 +12,7 @@ const Container = styled.div`
   justify-self: end;
   margin-top: 5px;
   font-size: ${props => props.theme.font.sizes.m};
-  width: 105px;
+  width: 100px;
 
   img {
     width: 22px;
