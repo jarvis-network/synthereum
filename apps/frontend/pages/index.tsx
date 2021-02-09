@@ -40,6 +40,9 @@ const LayoutWidget = styled(Background)`
   height: 100vh;
   padding: 90px calc(50vw - 510px) 30px 30px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 const ChartContainer = styled.div`
@@ -48,6 +51,7 @@ const ChartContainer = styled.div`
 
 const WidgetContainer = styled.div`
   min-width: 360px;
+  max-height: 540px;
   height: 100%;
 `;
 
