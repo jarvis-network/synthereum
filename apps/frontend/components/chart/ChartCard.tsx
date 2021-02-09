@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from 'recharts';
-import { useTheme } from '@jarvis-network/ui';
+import { useTheme, styled } from '@jarvis-network/ui';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { useRate } from '@/utils/useRate';
@@ -62,6 +62,14 @@ const getValuesDiff = (compare?: DataItem, current?: DataItem) => {
     diffPerc,
   };
 };
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  heigth: 100%;
+`;
 
 export const ChartCard: React.FC = () => {
   const [change, setChange] = useState<ChangeType | null>(null);
@@ -160,7 +168,7 @@ export const ChartCard: React.FC = () => {
   } = getValuesDiff(beginningPayload, currentPayload);
 
   return (
-    <>
+    <Container>
       <InfoBox
         value={value}
         changeValue={changeValue}
@@ -211,6 +219,6 @@ export const ChartCard: React.FC = () => {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </>
+    </Container>
   );
 };

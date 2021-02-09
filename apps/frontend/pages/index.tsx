@@ -1,25 +1,22 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { styled } from '@jarvis-network/ui';
+
 import { RealmAgentContext } from '@/components/auth/AuthProvider';
 import { StickyHeader } from '@/components/header/StickyHeader';
-import { backgroundMap } from '@/data/backgrounds';
 import { Background } from '@/components/Background';
-import { CardsHolder } from '@/components/CardsHolder';
-
 import { ExchangeCard } from '@/components/exchange/ExchangeCard';
 import { ChartCard } from '@/components/chart/ChartCard';
+import { ChartExchangeCards } from '@/components/ChartExchangeCards';
+import { ChooseAsset } from '@/components/exchange/ChooseAsset';
+import { OnMobile } from '@/components/OnMobile';
+import { OnDesktop } from '@/components/OnDesktop';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
 import { subscribeTransactionsHistory } from '@/state/slices/transactions';
 import { subscribeWalletBalances } from '@/state/slices/wallet';
-import { ChartExchangeCards } from '@/components/ChartExchangeCards';
-import { OnMobile } from '@/components/OnMobile';
-import { OnDesktop } from '@/components/OnDesktop';
-import { styled } from '@jarvis-network/ui';
-import { Card } from '@/components/Card';
-import { ChooseAsset } from '@/components/exchange/ChooseAsset';
-import { StyledCard } from '@/components/exchange/StyledCard';
+import { backgroundMap } from '@/data/backgrounds';
 
 const Layout = styled.div`
   display: flex;
@@ -43,10 +40,6 @@ const LayoutWidget = styled(Background)`
   display: flex;
   flex-direction: column;
   justify-content: center;
-`;
-
-const ChartContainer = styled.div`
-  width: 100%;
 `;
 
 const WidgetContainer = styled.div`
@@ -90,9 +83,7 @@ export default function Home() {
       <OnDesktop>
         <Layout>
           <LayoutChart>
-            <ChartContainer>
-              <ChartCard />
-            </ChartContainer>
+            <ChartCard />
           </LayoutChart>
           <LayoutWidget image={url}>
             <WidgetContainer>

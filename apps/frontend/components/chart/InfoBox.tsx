@@ -7,7 +7,12 @@ import { useFeedData } from '@/utils/useFeedData';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Box = styled.div`
-  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  height: auto;
+  padding-bottom: 30px;
 `;
 
 const Symbols = styled.div`
