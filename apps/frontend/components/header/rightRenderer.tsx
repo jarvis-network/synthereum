@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AccountSummary } from '@jarvis-network/ui';
+import { AccountSummary, useWindowSize } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
 
 import { AuthContext } from '@/components/auth/AuthProvider';
@@ -20,6 +20,7 @@ const render = () => {
   const auth = useReduxSelector(state => state.auth);
   const authLogin = useContext(AuthContext);
   const name = usePrettyName((auth?.address ?? null) as Address | null);
+  const { innerWidth } = useWindowSize();
 
   const handleLogIn = async () => {
     dispatch(setAuthModalVisible(true));
@@ -68,6 +69,7 @@ const render = () => {
       image={image}
       menu={links}
       mode="demo"
+      contentOnTop={innerWidth <= 1080}
       onLogout={handleLogOut}
       onLogin={handleLogIn}
       onThemeChange={handleSetTheme}
