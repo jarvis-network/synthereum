@@ -17,7 +17,7 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   // in result sometimes gets applied and sometimes not
   &&& input {
     box-sizing: border-box;
-    font-size: ${props => props.theme.font.sizes.xs};
+    font-size: ${props => props.theme.font.sizes.m};
     font-family: 'Krub';
     padding: 0 10px;
     background: none;
@@ -38,5 +38,5 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   display: flex;
   flex-direction: column;
 
-  ${props => (props.open ? 'height: 100%;' : '')};
+  ${props => (props.open ? 'height: 100%; max-height: 426px;' : '')};
 `;

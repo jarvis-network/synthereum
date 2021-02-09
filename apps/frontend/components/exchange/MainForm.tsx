@@ -29,6 +29,11 @@ import { Max } from './Max';
 
 interface Props {}
 
+const Container = styled.div`
+  height: 100%;
+  max-height: 440px;
+`;
+
 const ExchangeBox = styled.div<{ error: boolean }>`
   margin: 5px 15px;
   display: grid;
@@ -71,7 +76,7 @@ const Amount = styled.input`
     },
     theme => theme.text.medium,
   )};
-  font-size: ${props => props.theme.font.sizes.m};
+  font-size: ${props => props.theme.font.sizes.l};
   width: 65%;
   max-width: 260px;
   outline: none !important;
@@ -85,7 +90,7 @@ const Amount = styled.input`
 `;
 
 const Footer = styled.div`
-  margin: 15px;
+  margin: 5px 15px 15px;
 `;
 
 const IconButton = styled.button`
@@ -93,9 +98,9 @@ const IconButton = styled.button`
   padding: 0;
   background: none;
   cursor: pointer;
-  margin: 5px auto -7px;
+  margin: 6px auto -7px;
   outline: none !important;
-  align-self: flex-start;
+  width: 100%;
 
   svg {
     width: 24px;
@@ -261,7 +266,7 @@ export const MainForm: React.FC<Props> = () => {
     : null;
 
   return (
-    <>
+    <Container>
       <ExchangeBox error={Boolean(errorMessage)}>
         <Title>You swap</Title>
         <Max />
@@ -320,6 +325,6 @@ export const MainForm: React.FC<Props> = () => {
           Swap
         </SwapButton>
       </Footer>
-    </>
+    </Container>
   );
 };

@@ -7,7 +7,7 @@ import { FEE } from '@/data/fee';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 const Container = styled.div`
-  border-radius: ${props => props.theme.borderRadius.l};
+  border-radius: ${props => props.theme.borderRadius.m};
   background: ${props => props.theme.background.primary};
   margin-top: 20px;
   padding: 15px;

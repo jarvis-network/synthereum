@@ -12,7 +12,7 @@ const Container = styled.div`
   justify-self: end;
   margin-top: 5px;
   font-size: ${props => props.theme.font.sizes.m};
-  width: 85px;
+  width: 105px;
 
   img {
     width: 22px;
@@ -30,8 +30,11 @@ const Container = styled.div`
     display: inline-flex;
     justify-content: space-between;
     vertical-align: middle;
-    width: 55px;
+    width: 65px;
     margin-left: 8px;
+    font-size: ${props => props.theme.font.sizes.m};
+    font-family: Krub;
+    font-weight: 300;
   }
 `;
 

@@ -14,7 +14,7 @@ export interface Props {
 
 const Container = styled.div`
   box-shadow: ${props => props.theme.shadow.base};
-  border-radius: ${props => props.theme.borderRadius.l};
+  border-radius: ${props => props.theme.borderRadius.m};
   height: 100%;
   position: relative;
 `;
