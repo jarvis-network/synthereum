@@ -7,7 +7,7 @@ import {
 import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
 import { SupportedNetworkId } from '../../src/config';
 import { loadRealm } from '../../src/core/load-realm';
-import { getAllBalances, RealmAgent } from '../../src/core/realm-agent';
+import { RealmAgent } from '../../src/core/realm-agent';
 import { parseSupportedNetworkId } from '../../src/config/supported-networks';
 
 /**
@@ -49,7 +49,7 @@ export async function example() {
   );
 
   /// Get all balances in one promise:
-  const balances = await getAllBalances(realmAgent);
+  const balances = await realmAgent.getAllBalances();
   // TODO: multiply each balance by its price:
   const totalBalance = mapSumBN(balances, x => x[1]);
   console.log(`total balance: ${formatAmount(totalBalance)}`);

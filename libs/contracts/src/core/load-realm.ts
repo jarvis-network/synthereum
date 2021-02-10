@@ -16,19 +16,15 @@ import type {
   Web3On,
 } from '@jarvis-network/web3-utils/eth/web3-instance';
 import type {
-  ContractDependencies,
+  SynthereumContractDependencies,
+  SyntheticSymbol,
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../config';
-import {
-  allSupportedSymbols,
-  SyntheticSymbol,
-} from '../config/data/all-synthetic-asset-symbols';
-import { contractDependencies } from '../config/data/contract-dependencies';
-import { priceFeed } from '../config/data/price-feed';
+import { allSyntheticSymbols, priceFeed, synthereumConfig } from '../config';
 import { ERC20_Abi, SynthereumPoolRegistry_Abi } from '../contracts/abi';
 import { SynthereumPoolRegistry } from '../contracts/typechain';
-import { getPool } from './pool-utils';
+import { loadPool } from './pool-utils';
 import type {
   PoolsForVersion,
   PoolVersion,
@@ -45,10 +41,8 @@ export async function loadRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
 ): Promise<SynthereumRealmWithWeb3<Net>> {
-  const config = contractDependencies[
-    netId as SupportedNetworkId
-  ] as ContractDependencies<Net>;
-
+  const config = synthereumConfig[netId as SupportedNetworkId]
+    .contractsDependencies.synthereum as SynthereumContractDependencies<Net>;
   return loadCustomRealm(web3, netId, config);
 }
 
@@ -61,7 +55,7 @@ export async function loadRealm<Net extends SupportedNetworkName>(
 export async function loadCustomRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
-  config: ContractDependencies<Net>,
+  config: SynthereumContractDependencies<Net>,
 ): Promise<SynthereumRealmWithWeb3<Net>> {
   let poolRegistry = getContract(
     web3,
@@ -69,11 +63,11 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     config.poolRegistry,
   );
 
-  const collateralAddress = config.collateralAddress;
+  const collateralAddress = config.primaryCollateralToken.address;
 
   const loadAllPools = async (version: PoolVersion) => {
     const pairs = await Promise.all(
-      allSupportedSymbols.map(async symbol => {
+      allSyntheticSymbols.map(async symbol => {
         const info = await loadPoolInfo(
           web3,
           poolRegistry.instance,
@@ -134,7 +128,7 @@ export async function loadPoolInfo<
 
   const poolAddress = assertIsAddress(lastPoolAddress) as AddressOn<Net>;
 
-  const { result: poolInstance, derivativeAddress } = await getPool(
+  const { result: poolInstance, derivativeAddress } = await loadPool(
     web3,
     version,
     poolAddress,

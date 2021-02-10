@@ -3,7 +3,7 @@ import { isFinite } from '@jarvis-network/web3-utils/base/asserts';
 import axios from 'axios';
 import { URLSearchParams } from 'url';
 import { env } from '../config';
-import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
+import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 const pairs = Object.values(priceFeedPairsMap);
 

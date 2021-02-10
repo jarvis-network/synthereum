@@ -2,15 +2,16 @@ import {
   ContractInfo,
   TokenInfo,
 } from '@jarvis-network/web3-utils/eth/contracts/types';
-import { SupportedNetworkName, SyntheticSymbol } from '../../config';
-import { priceFeed } from '../../config/data/price-feed';
+import type { SupportedNetworkName, SyntheticSymbol } from '../../config';
+import { priceFeed } from '../../config';
 import {
   IDerivative,
   SynthereumPool as SynthereumPool_Contract,
   SynthereumTIC as SynthereumTIC_Contract,
 } from '../../contracts/typechain';
 
-export type PoolVersion = 'v1' | 'v2';
+export type PoolVersions = ['v1', 'v2'];
+export type PoolVersion = PoolVersions[number];
 
 export function assertIsSupportedPoolVersion(x: unknown): PoolVersion {
   if (x === 'v1' || x === 'v2') return x;

@@ -16,14 +16,16 @@ import {
 
 import { SynthereumRealmWithWeb3 } from './types/realm';
 import {
-  allSupportedSymbols,
+  SupportedNetworkName,
   SyntheticSymbol,
-} from '../config/data/all-synthetic-asset-symbols';
-import { SupportedNetworkName } from '../config';
+  allSyntheticSymbols,
+  ExchangeToken,
+} from '../config';
 import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { t } from '@jarvis-network/web3-utils/base/meta';
-import { PoolVersion, SynthereumPool } from './types/pools';
+import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
+import { mapPools } from './pool-utils';
 
 export interface GasOptions {
   gasLimit?: BN;
@@ -68,6 +70,19 @@ export class RealmAgent<
   async syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
     const asset = this.realm.pools[this.poolVersion][synthetic].syntheticToken;
     return await getTokenBalance(asset, this.agentAddress);
+  }
+
+  getAllBalances(): Promise<[ExchangeToken, Amount][]> {
+    return Promise.all([
+      (async (): Promise<[ExchangeToken, Amount]> =>
+        t(
+          'USDC' as const,
+          await getTokenBalance(this.realm.collateralToken, this.agentAddress),
+        ))(),
+      ...mapPools(this.realm, this.poolVersion, async p =>
+        t(p.symbol, await getTokenBalance(p.syntheticToken, this.agentAddress)),
+      ),
+    ]);
   }
 
   assertV1Pool(operation: string) {
@@ -216,21 +231,4 @@ export class RealmAgent<
       gasPrice: txOptions?.gasPrice?.toString(10),
     });
   }
-}
-
-export async function getAllBalances<Net extends SupportedNetworkName>(
-  realmAgent: RealmAgent<Net>,
-) {
-  const usdcBalancePromise = t(
-    realmAgent.realm.collateralToken.symbol,
-    await realmAgent.collateralBalance(),
-  );
-  const allSyntheticTokenBalancePromises = allSupportedSymbols.map(
-    async asset => t(asset, await realmAgent.syntheticTokenBalanceOf(asset)),
-  );
-  const allBalances = Promise.all([
-    usdcBalancePromise,
-    ...allSyntheticTokenBalancePromises,
-  ]);
-  return allBalances;
 }

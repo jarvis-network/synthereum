@@ -1,16 +1,15 @@
 import { weeks } from 'milliseconds';
 
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
-import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+import {
+  priceFeed as priceFeedPairsMap,
+  SyntheticSymbol,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { formatDate } from '@/utils/format';
 
 export const SubscriptionPairsCollection = Object.values(priceFeedPairsMap);
 
 export type SubscriptionPair = typeof SubscriptionPairsCollection[0];
-
-export type AssetSymbol = SyntheticSymbol | PrimaryStableCoin;
 
 export type OHLC = [open: number, high: number, low: number, close: number];
 

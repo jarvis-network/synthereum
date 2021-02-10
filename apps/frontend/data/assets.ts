@@ -1,21 +1,17 @@
 import { FlagKeys } from '@jarvis-network/ui';
 import {
+  primaryCollateralSymbol,
   PerAsset,
-  SyntheticSymbol,
+  ExchangeToken,
+  synthereumConfig,
 } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import {
-  PrimaryStableCoin,
-  PRIMARY_STABLE_COIN as PRIMARY_STABLE_COIN_SYMBOL,
-} from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
-import { allSyntheticTokensMap } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-assets';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
-import { allSupportedSymbols } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-asset-symbols';
 
 export interface Asset {
   name: string;
-  symbol: SyntheticSymbol | PrimaryStableCoin;
+  symbol: ExchangeToken;
   pair: SubscriptionPair | null;
   icon: FlagKeys | null;
   price: FPN | null;
@@ -31,7 +27,7 @@ export interface AssetPair {
 
 export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
-  symbol: PRIMARY_STABLE_COIN_SYMBOL,
+  symbol: primaryCollateralSymbol,
   pair: null,
   icon: 'us',
   price: new FPN(1),
@@ -49,19 +45,22 @@ const assetIconMap: PerAsset<FlagKeys | null> = {
   jGBP: 'gbp',
   jCHF: 'chf',
   jXAU: 'xau',
+  jXAG: null,
+  jXTI: null,
+  jSPX: null,
 } as const;
 
-const syntheticAssets: Asset[] = allSupportedSymbols.map(asset => {
-  const token = allSyntheticTokensMap[asset];
-  return {
-    name: token.syntheticName,
-    symbol: token.syntheticSymbol,
-    pair: token.priceFeedIdentifier.replace('/', '') as SubscriptionPair,
-    icon: assetIconMap[token.syntheticSymbol],
-    price: null,
-    decimals: 18,
-    type: 'forex',
-  };
-});
+// FIXME: Instead of hardcoding the networkId and pool version make them dynamic
+const syntheticAssets: Asset[] = Object.values(
+  synthereumConfig[1].perVersionConfig.v2.syntheticTokens,
+).map(info => ({
+  name: info.syntheticName,
+  symbol: info.syntheticSymbol,
+  pair: info.jarvisPriceFeedIdentifier,
+  icon: assetIconMap[info.syntheticSymbol],
+  price: null,
+  decimals: 18,
+  type: 'forex',
+}));
 
 export const assets: Asset[] = [PRIMARY_STABLE_COIN, ...syntheticAssets];

@@ -1,34 +1,88 @@
 import BN from 'bn.js';
-import { throwError } from '@jarvis-network/web3-utils/base/asserts';
+import {
+  assertNotNull,
+  throwError,
+} from '@jarvis-network/web3-utils/base/asserts';
 import { Amount } from '@jarvis-network/web3-utils/base/big-number';
-import { t } from '@jarvis-network/web3-utils/base/meta';
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+import { t, OneOf } from '@jarvis-network/web3-utils/base/meta';
+import {
+  AddressOn,
+  assertIsAddress,
+} from '@jarvis-network/web3-utils/eth/address';
 import {
   getTokenBalance,
   weiToTokenAmount,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import {
-  allSupportedSymbols,
-  SyntheticSymbol,
-} from '../config/data/all-synthetic-asset-symbols';
-import { SupportedNetworkName } from '../config/supported-networks';
+import type { SupportedNetworkName, SyntheticSymbol } from '../config';
 import {
   IDerivative_Abi,
   SynthereumPool_Abi,
   SynthereumTIC_Abi,
 } from '../contracts/abi';
 import { IDerivative } from '../contracts/typechain';
-import { PoolContract, PoolVersion } from './types/pools';
-import { SynthereumRealmWithWeb3 } from './types/realm';
+import {
+  PoolContract,
+  PoolVersion,
+  PoolVersions,
+  SynthereumPool,
+} from './types/pools';
+import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
 import { NonPayableTransactionObject } from '@jarvis-network/web3-utils';
+
+export function foreachPool<
+  Net extends SupportedNetworkName = SupportedNetworkName,
+  Version extends PoolVersion = PoolVersion
+>(
+  realm: SynthereumRealm<Net>,
+  version: Version,
+  callback: (
+    pool: SynthereumPool<OneOf<Version, PoolVersions>, Net, SyntheticSymbol>,
+    idx: number,
+  ) => void,
+) {
+  const pools = assertNotNull(realm.pools[version as PoolVersion]);
+  let idx = 0;
+  console.log('Number of available pools:' + Object.keys(pools).length);
+  for (const key in pools) {
+    if (!pools.hasOwnProperty(key)) continue;
+    const pool = pools[key as keyof typeof pools];
+    if (!pool) continue;
+    callback(
+      pool as SynthereumPool<
+        OneOf<Version, PoolVersions>,
+        Net,
+        SyntheticSymbol
+      >,
+      idx++,
+    );
+  }
+}
+
+export function mapPools<
+  Result,
+  Net extends SupportedNetworkName = SupportedNetworkName,
+  Version extends PoolVersion = PoolVersion
+>(
+  realm: SynthereumRealm<Net>,
+  version: Version,
+  callback: (
+    p: SynthereumPool<OneOf<Version, PoolVersions>, Net, SyntheticSymbol>,
+    idx: number,
+  ) => Result,
+) {
+  const array: Result[] = [];
+  foreachPool(realm, version, (pool, idx) => array.push(callback(pool, idx)));
+  return array;
+}
 
 export interface PoolAddressWithDerivates<Version extends PoolVersion> {
   result: PoolContract<Version>;
   derivativeAddress: IDerivative;
 }
-export async function getPool<
+
+export async function loadPool<
   Net extends SupportedNetworkName,
   Version extends PoolVersion
 >(
@@ -64,19 +118,15 @@ export async function getPool<
   throwError(`Unsupported pool version: '${version}'`);
 }
 
-export async function getPoolBalances<
+export function getPoolBalances<
   Net extends SupportedNetworkName,
   Version extends PoolVersion
->(realm: SynthereumRealmWithWeb3<Net>, version: Version = 'v1' as Version) {
-  const balanceOf = (address: AddressOn<Net>) =>
-    getTokenBalance(realm.collateralToken, address);
-  const balances = await Promise.all(
-    allSupportedSymbols.map(async symbol =>
-      t(symbol, await balanceOf(realm.pools[version][symbol].address)),
+>(realm: SynthereumRealm<Net>, version: Version = 'v1' as Version) {
+  return Promise.all(
+    mapPools(realm, version, async p =>
+      t(p.symbol, await getTokenBalance(realm.collateralToken, p.address)),
     ),
   );
-
-  return balances;
 }
 
 export async function depositInAllPools<

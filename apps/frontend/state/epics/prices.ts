@@ -3,8 +3,10 @@ import { fromEvent, of } from 'rxjs';
 import { map, mergeMap, concatMap } from 'rxjs/operators';
 
 import { indexOfMaxLexicographicalValue } from '@jarvis-network/web3-utils/base/array-fp-utils';
-import { allSupportedSymbols } from '@jarvis-network/synthereum-contracts/dist/src/config/data/all-synthetic-asset-symbols';
-import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
+import {
+  allSyntheticSymbols, // FIXME: this should be dynamic
+  reversedPriceFeedPairs,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { Dependencies } from '@/utils/epics';
 import {
@@ -69,7 +71,7 @@ export const priceFeedSubscribeEpic: Epic<
   action$.pipe(
     ofType(subscribeAllPrices.type),
     map(() =>
-      dependencies$.priceFeed.subscribeMany(allSupportedSymbols, {
+      dependencies$.priceFeed.subscribeMany(allSyntheticSymbols, {
         includeHistory: true,
       }),
     ),

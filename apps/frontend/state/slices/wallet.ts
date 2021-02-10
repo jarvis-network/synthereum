@@ -1,12 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import {
-  RealmAgent,
-  getAllBalances,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
 import { initialState, State } from '@/state/initialState';
 
@@ -15,17 +11,17 @@ interface Action<T> {
 }
 
 export interface WalletBalance {
-  asset: SyntheticSymbol | PrimaryStableCoin;
+  asset: ExchangeToken;
   amount: FPN;
 }
 
 export const fetchWalletBalances = createAsyncThunk(
   'wallet/fetch',
   async (realmAgent: RealmAgent): Promise<WalletBalance[]> => {
-    const balances = await getAllBalances(realmAgent);
+    const balances = await realmAgent.getAllBalances();
 
     return balances.map(([asset, amount]) => ({
-      asset: asset as SyntheticSymbol | PrimaryStableCoin,
+      asset,
       amount: FPN.fromWei(amount),
     }));
   },

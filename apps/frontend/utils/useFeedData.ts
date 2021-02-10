@@ -1,9 +1,8 @@
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import {
-  PrimaryStableCoin,
-  PRIMARY_STABLE_COIN,
-} from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
-import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config/data/price-feed';
+  ExchangeToken,
+  priceFeed as priceFeedPairsMap,
+  primaryCollateralSymbol,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { DataItem, PricePoint } from '@/state/initialState';
@@ -17,20 +16,20 @@ const reversePricePoint = (data: PricePoint) => ({
 });
 
 export const useFeedData = (
-  payAsset: SyntheticSymbol | PrimaryStableCoin,
-  receiveAsset: SyntheticSymbol | PrimaryStableCoin,
+  payAsset: ExchangeToken,
+  receiveAsset: ExchangeToken,
 ): DataItem[] => {
   if (
-    payAsset === PRIMARY_STABLE_COIN ||
-    receiveAsset === PRIMARY_STABLE_COIN
+    payAsset === primaryCollateralSymbol ||
+    receiveAsset === primaryCollateralSymbol
   ) {
-    if (payAsset !== PRIMARY_STABLE_COIN) {
+    if (payAsset !== primaryCollateralSymbol) {
       const pair = priceFeedPairsMap[payAsset];
 
       return useReduxSelector(state => state.prices.feed[pair] || []);
     }
 
-    if (receiveAsset !== PRIMARY_STABLE_COIN) {
+    if (receiveAsset !== primaryCollateralSymbol) {
       const pair = priceFeedPairsMap[receiveAsset];
 
       return useReduxSelector(state =>

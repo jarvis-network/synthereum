@@ -1,8 +1,8 @@
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { fees } from '@jarvis-network/synthereum-contracts/dist/src/config/data/fees';
+import { synthereumConfig } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
-// FIXME: the fee should be calculated per realm:
-const FEE = new FPN(fees[42].feePercentage);
+// FIXME: the fee should loaded dynamically from the SC:
+const FEE = new FPN(synthereumConfig[42].fees.feePercentage);
 // const FEE = new FPN(0.002);
 
 export { FEE };

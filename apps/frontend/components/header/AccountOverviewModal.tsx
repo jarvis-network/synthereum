@@ -7,8 +7,7 @@ import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
 
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+import type { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 interface BalanceProps {
   total: FPN;
@@ -64,7 +63,7 @@ export const AccountOverviewModal: FC = () => {
   };
 
   const items: AssetRowProps[] = useMemo(() => {
-    const keys = Object.keys(wallet) as (SyntheticSymbol | PrimaryStableCoin)[];
+    const keys = Object.keys(wallet) as ExchangeToken[];
 
     return keys
       .map(token => {

@@ -2,8 +2,7 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { PrimaryStableCoin } from '@jarvis-network/synthereum-contracts/dist/src/config/data/stable-coin';
+import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
@@ -39,9 +38,8 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
-export const DEFAULT_PAY_ASSET: SyntheticSymbol | PrimaryStableCoin = 'USDC';
-export const DEFAULT_RECEIVE_ASSET: SyntheticSymbol | PrimaryStableCoin =
-  'jEUR';
+export const DEFAULT_PAY_ASSET: ExchangeToken = 'USDC';
+export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 
 export interface State {
   theme: ThemeNameType;
@@ -65,13 +63,13 @@ export interface State {
     pay: string;
     receive: string;
     base: Values;
-    payAsset: SyntheticSymbol | PrimaryStableCoin | null;
-    receiveAsset: SyntheticSymbol | PrimaryStableCoin | null;
+    payAsset: ExchangeToken | null;
+    receiveAsset: ExchangeToken | null;
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
   };
   wallet: {
-    [key in SyntheticSymbol | PrimaryStableCoin]?: WalletInfo;
+    [key in ExchangeToken]?: WalletInfo;
   };
   transactions: {
     list: Transaction[];
