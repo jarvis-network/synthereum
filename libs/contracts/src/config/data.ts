@@ -1,4 +1,4 @@
-import { weiString } from '@jarvis-network/web3-utils/base/big-number';
+import { toWeiString } from '@jarvis-network/web3-utils/base/big-number';
 import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
 import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
 import {
@@ -11,7 +11,7 @@ import {
 
 function toFixed(num: string): FixedPointNumber {
   return {
-    rawValue: weiString(num),
+    rawValue: toWeiString(num),
   };
 }
 
@@ -116,7 +116,7 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
 export const synthereumConfig = typeCheck<SynthereumConfig>()({
   '42': {
     fees: {
-      feePercentage: weiString('0.002'),
+      feePercentage: toWeiString('0.002'),
       feeRecipients: [
         A<42>('0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa'),
         A<42>('0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb'),
@@ -167,7 +167,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
   },
   '1': {
     fees: {
-      feePercentage: weiString('0.002'),
+      feePercentage: toWeiString('0.002'),
       feeRecipients: [
         A<1>('0x8eF00583bAa186094D9A34a0A4750C1D1BB86831'),
         A<1>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
