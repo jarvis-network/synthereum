@@ -14,7 +14,7 @@ export function isString(x: unknown): x is string {
 }
 
 export function isNumericString(str: string) {
-  return /^-?\d+$/.test(str);
+  return isFinite(parseFloat(assertIsString(str)));
 }
 
 export function assertIsNumericString(x: string): string {
