@@ -1,27 +1,24 @@
-import { getEthUsdBtcPrice } from '@jarvis-network/web3-utils/apis/etherscan';
-import { parseFiniteFloat } from '@jarvis-network/web3-utils/base/asserts';
-import { formatAmount, wei } from '@jarvis-network/web3-utils/base/big-number';
-import { getBlockTimestamp } from '@jarvis-network/web3-utils/eth/block';
-import type { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import type { SupportedNetworkName } from '../config';
+import { getEthUsdBtcPrice } from '../../apis/etherscan';
+import { parseFiniteFloat } from '../../base/asserts';
+import { formatAmount, wei } from '../../base/big-number';
+import { getBlockTimestamp } from '../block';
+import type { NetworkName, Web3On } from '../web3-instance';
 
-interface TxAdditionalInfo {
+export interface PrintTxInfo {
+  web3: Web3On<NetworkName>;
+  txhash: string;
   contractName?: string;
   contractAddress?: string;
   contractInteraction?: string;
 }
 
-export async function printTruffleLikeTransactionOutput<
-  Net extends SupportedNetworkName = SupportedNetworkName
->(
-  web3: Web3On<Net>,
-  txhash: string,
-  {
-    contractAddress,
-    contractInteraction = 'Deploying',
-    contractName,
-  }: TxAdditionalInfo,
-) {
+export async function printTruffleLikeTransactionOutput({
+  web3,
+  txhash,
+  contractAddress,
+  contractInteraction = 'Deploying',
+  contractName,
+}: PrintTxInfo) {
   if (!web3) return;
   const { gasPrice, gas: gasLimit, value } = await web3.eth.getTransaction(
     txhash,
