@@ -10,6 +10,7 @@ export interface PrintTxInfo {
   contractName?: string;
   contractAddress?: string;
   contractInteraction?: string;
+  log?: (msg: string, ...args: any[]) => void;
 }
 
 export async function printTruffleLikeTransactionOutput({
@@ -18,6 +19,7 @@ export async function printTruffleLikeTransactionOutput({
   contractAddress,
   contractInteraction = 'Deploying',
   contractName,
+  log = console.log,
 }: PrintTxInfo) {
   if (!web3) return;
   const { gasPrice, gas: gasLimit, value } = await web3.eth.getTransaction(
@@ -36,7 +38,7 @@ export async function printTruffleLikeTransactionOutput({
     totalCost * parseFiniteFloat((await getEthUsdBtcPrice()).ethusd)
   ).toFixed(2);
 
-  return `${contractInteraction} '${contractName}'
+  log(`${contractInteraction} '${contractName}'
    -------------------------------
    > transaction hash:    ${txhash}
    > contract address:    ${contractAddress}
@@ -47,5 +49,5 @@ export async function printTruffleLikeTransactionOutput({
    > gas used:            ${gasUsed} / ${gasLimit} (${gasUsedRatio}%)
    > gas price:           ${parseFloat(gasPrice) * 1e-9} gwei
    > value sent:          ${ethSent * 1e-18} ETH
-   > total cost:          ${totalCost} ETH / ${totalCostUsd} USD`;
+   > total cost:          ${totalCost} ETH / ${totalCostUsd} USD`);
 }
