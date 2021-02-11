@@ -11,7 +11,7 @@ export const console = new Console({
 const startTime = new Date().getTime();
 let prevTime = startTime;
 
-export function log(...args: any[]) {
+export function log(msg: string, ...args: any[]) {
   const info = getCallStackInfo();
   let loc = '';
   if (info) {
@@ -28,8 +28,8 @@ export function log(...args: any[]) {
     c.yellow(diff) +
     ` ms | Δtᵢ: ` +
     c.yellow(diff2) +
-    ` ms | ${c.bgGray(loc)} ]: ${c.bold(args[0])}`;
-  console.log(prefix, ...args.slice(1));
+    ` ms | ${c.bgGray(loc)} ]: ${c.bold(msg)}`;
+  console.log(prefix, ...args);
 }
 
 // https://v8.dev/docs/stack-trace-api
