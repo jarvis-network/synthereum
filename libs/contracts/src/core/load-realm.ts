@@ -2,6 +2,7 @@ import {
   parseInteger,
   throwError,
 } from '@jarvis-network/web3-utils/base/asserts';
+import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
 import { t } from '@jarvis-network/web3-utils/base/meta';
 import {
   AddressOn,
@@ -120,7 +121,7 @@ export async function loadPoolInfo<
     .call();
 
   // Assume the last address in the array is the one we should interact with
-  const lastPoolAddress = poolAddresses[poolAddresses.length - 1];
+  const lastPoolAddress = last(poolAddresses);
 
   if (!isAddress(lastPoolAddress)) {
     return null;

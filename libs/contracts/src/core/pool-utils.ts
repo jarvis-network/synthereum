@@ -3,6 +3,7 @@ import {
   assertNotNull,
   throwError,
 } from '@jarvis-network/web3-utils/base/asserts';
+import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
 import { Amount } from '@jarvis-network/web3-utils/base/big-number';
 import { t, OneOf } from '@jarvis-network/web3-utils/base/meta';
 import {
@@ -110,7 +111,7 @@ export async function loadPool<
       derivativeAddress: getContract(
         web3,
         IDerivative_Abi,
-        derivatesAddresses[derivatesAddresses.length - 1],
+        last(derivatesAddresses),
       ).instance,
     };
   }

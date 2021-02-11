@@ -3,6 +3,7 @@ import { dirname, basename, normalize, resolve, join } from 'path';
 import { strict as assert } from 'assert';
 import { merge as _merge } from 'lodash';
 import { DeepPartial } from '@jarvis-network/web3-utils/base/meta';
+import { assertIsArray } from '@jarvis-network/web3-utils/base/asserts';
 
 main()
   .then(() => process.exit(0))
@@ -17,15 +18,15 @@ async function main() {
     `Usage: node generate_typechain_header <dir>\n  argv: [${process.argv}]`,
   );
   const contractsDir = resolve(process.argv[2]);
-  const contractsAbiDir = join(contractsDir, "abi");
+  const contractsAbiDir = join(contractsDir, 'abi');
   const contractsBuildDir = join(
     dirname(dirname(contractsDir)),
     `/build/contracts`,
-  )
+  );
   const contractsDistAbiDir = join(
     dirname(dirname(contractsDir)),
     `dist/src/contracts/abi`,
-  )
+  );
   assert(
     lstatSync(contractsDir).isDirectory(),
     `'${contractsDir}' is not a directory.`,
@@ -35,10 +36,12 @@ async function main() {
     module: '@jarvis-network/web3-utils/base/tagged-type',
   };
 
-  await execTask("Copying json files to src", () => copyJsonFiles({
-    from: contractsBuildDir,
-    to: contractsAbiDir
-  }))
+  await execTask('Copying json files to src', () =>
+    copyJsonFiles({
+      from: contractsBuildDir,
+      to: contractsAbiDir,
+    }),
+  );
   await execTask('Generating index.ts of all *.json ABI files', () =>
     writeHeaderFile(contractsAbiDir, {
       ext: '.json',
@@ -56,10 +59,7 @@ async function main() {
   await execTask('Preparing optimized ABI json files', () =>
     prepareAbiJSONFiles({
       from: contractsBuildDir,
-      to: [
-        contractsAbiDir,
-        contractsDistAbiDir,
-      ],
+      to: [contractsAbiDir, contractsDistAbiDir],
     }),
   );
   logSeparate('All header files generated successfully.');
@@ -88,10 +88,7 @@ interface PrepareAbiOptions {
   to: string[];
 }
 
-async function prepareAbiJSONFiles({
-  to,
-  from,
-}: PrepareAbiOptions) {
+async function prepareAbiJSONFiles({ to, from }: PrepareAbiOptions) {
   await Promise.all(to.map(t => fs.mkdir(t, { recursive: true })));
 
   const list = (await fs.readdir(from)).filter(fname =>
@@ -99,16 +96,13 @@ async function prepareAbiJSONFiles({
   );
   console.info(list.join(', '));
   const promises = list.map(async fname => {
-    const contents = JSON.parse(
-      String(await fs.readFile(join(from, fname))),
-    );
+    const contents = JSON.parse(String(await fs.readFile(join(from, fname))));
     if (!contents.abi) {
       throw new Error(`File ${fname} has no abi field.`);
     }
-    await Promise.all(to.map(t => fs.writeFile(
-      join(t, fname),
-      JSON.stringify(contents.abi),
-    )));
+    await Promise.all(
+      to.map(t => fs.writeFile(join(t, fname), JSON.stringify(contents.abi))),
+    );
   });
 
   return Promise.all(promises).then(() => undefined); // then is to satisfy TS
@@ -209,7 +203,7 @@ export function getAllModuleExports(moduleFileName: string): string[] {
 
 function shouldGenerateAbiJsonImport(filename: string) {
   const json = JSON.parse(readFileSync(filename, 'utf-8'));
-  return (json.abi as any[])?.length > 0;
+  return assertIsArray(json.abi).length > 0;
 }
 
 type WrappableString = (maxLineLength: number) => string;
