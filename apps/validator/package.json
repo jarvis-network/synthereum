@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "clean": "git clean -fdX -e .env -e node_modules -- .",
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
     "lint": "echo 'ESLint not configured yet!' && exit 13",
     "build": "tsc",
     "watch": "ts-node src/index.ts | bunyan -o short",

@@ -11,7 +11,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "git clean -fdX -e .env -e node_modules -- .",
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
     "lint": "tslint -p tsconfig.json",
     "build": "tsc -p tsconfig.json",
     "start": "yarn build",

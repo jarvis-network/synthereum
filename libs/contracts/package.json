@@ -7,7 +7,7 @@
   ],
   "types": "dist",
   "scripts": {
-    "clean": "git clean -fdX -e .env -e node_modules -- .",
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
     "format": "prettier --write .",
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "start": "yarn build",
