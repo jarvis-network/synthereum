@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import { fromWei, toWei } from 'web3-utils';
 import { mapReduce } from './array-fp-utils';
-import { assertIsNumericString, isObject } from './asserts';
+import { assertIsInteger, assertIsNumericString, isObject } from './asserts';
 import { Tagged } from './tagged-type';
 import { Unit } from 'web3-utils';
 
@@ -12,8 +12,12 @@ export type StringAmountOf<U extends Unit> = Tagged<string, U>;
 export type StringAmount = StringAmountOf<'wei'>;
 
 export function weiString(str: string): StringAmount {
-  assertIsNumericString(str);
+  assertIsInteger(str);
   return str as StringAmount;
+}
+
+export function toWeiString(str: string): StringAmount {
+  return toWei(assertIsNumericString(str)) as StringAmount;
 }
 
 export function wei(str: string | number): Amount {
