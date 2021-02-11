@@ -12,12 +12,12 @@ var assets = require('../data/synthetic-assets.json');
 var derivativeVersions = require('../data/derivative-versions.json');
 var poolVersions = require('../data/pool-versions.json');
 var fees = require('../data/fees.json');
-const {
-  getDeploymentInstance,
-  printTruffleLikeTransactionOutput,
-} = require('../utils/deployment.js');
+const { getDeploymentInstance } = require('../utils/deployment.js');
 const { encodeDerivative, encodePool } = require('../utils/encoding.js');
 const { parseFiniteFloat } = require('@jarvis-network/web3-utils/base/asserts');
+const {
+  printTruffleLikeTransactionOutput,
+} = require('@jarvis-network/synthereum-contracts/dist/src/utils/tx-utils');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await web3.eth.net.getId();
@@ -174,11 +174,10 @@ module.exports = async function (deployer, network, accounts) {
               .send({ from: maintainer, gasPrice });
 
         const { transactionHash } = isDeployedDeployer ? tx.receipt : tx;
-        await printTruffleLikeTransactionOutput(
-          txData[j].asset,
-          '<not ctor call>',
-          transactionHash,
-        );
+        await printTruffleLikeTransactionOutput(web, transactionHash, {
+          contractName: txData[j].asset,
+          contractInteraction: 'deployPoolAndDerivative',
+        });
       }
     }
   }
