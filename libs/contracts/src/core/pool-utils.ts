@@ -31,6 +31,14 @@ import {
 } from './types/pools';
 import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
 
+export function getAvailableSymbols<
+  Net extends SupportedNetworkName = SupportedNetworkName,
+  Version extends PoolVersion = PoolVersion
+>(realm: SynthereumRealm<Net>, version: OneOf<Version, PoolVersions>) {
+  const pool = assertNotNull(realm.pools[version]);
+  return (Object.keys(pool!) as unknown) as keyof typeof pool;
+}
+
 export function foreachPool<
   Net extends SupportedNetworkName = SupportedNetworkName,
   Version extends PoolVersion = PoolVersion
