@@ -1,7 +1,42 @@
-import type { NetworkName } from '../networks';
+import type { AddressOn } from '../address';
+import type { NetworkName, ToNetworkId } from '../networks';
+import type { NonPayableTransactionObject } from './typechain/types';
 import type { PromiEvent, TransactionReceipt } from 'web3-core';
 import { EventEmitter } from 'events';
 import { Web3On } from '../web3-instance';
+
+export interface TxOptions<
+  Net extends NetworkName,
+  fromRequired extends boolean = false
+> {
+  from: fromRequired extends true ? AddressOn<Net> : AddressOn<Net> | undefined;
+  nonce?: number;
+  chainId?: ToNetworkId<Net>;
+  gasLimit?: number;
+  gasPrice?: number;
+}
+
+export async function sendTx<
+  Result,
+  Net extends NetworkName,
+  hasSender extends boolean = false
+>(
+  tx: NonPayableTransactionObject<Result>,
+  { gasLimit, ...rest }: TxOptions<Net, hasSender>,
+): Promise<TransactionReceipt> {
+  const estimatedGas = await tx.estimateGas({
+    ...rest,
+  });
+  gasLimit ??= estimatedGas;
+  const result = await once(
+    tx.send({
+      ...rest,
+      gas: estimatedGas < gasLimit ? estimatedGas : gasLimit,
+    }),
+    'confirmation',
+  );
+  return result[1];
+}
 
 export function once<T>(
   promiEvent: PromiEvent<T>,
