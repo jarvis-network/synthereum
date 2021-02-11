@@ -9,6 +9,7 @@ export const console = new Console({
 });
 
 const startTime = new Date().getTime();
+let prevTime = startTime;
 
 export function log(...args: any[]) {
   const info = getCallStackInfo();
@@ -20,9 +21,13 @@ export function log(...args: any[]) {
   }
   const now = new Date();
   const diff = ('+' + (now.getTime() - startTime).toString(10)).padStart(7);
+  const diff2 = ('+' + (now.getTime() - prevTime).toString(10)).padStart(7);
+  prevTime = now.getTime();
   const prefix =
-    `[ ${c.gray(now.toISOString())} | ` +
+    `[ ${c.gray(now.toISOString())} | Δt₀: ` +
     c.yellow(diff) +
+    ` ms | Δtᵢ: ` +
+    c.yellow(diff2) +
     ` ms | ${c.bgGray(loc)} ]: ${c.bold(args[0])}`;
   console.log(prefix, ...args.slice(1));
 }
