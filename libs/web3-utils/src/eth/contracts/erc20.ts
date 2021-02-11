@@ -1,13 +1,14 @@
 import BN from 'bn.js';
 
 import { t } from '../../base/meta';
-import { assert } from '../../base/asserts';
+import { assert, throwError } from '../../base/asserts';
 import { SortedArray } from '../../base/sorting';
-import { Amount, maxUint256 } from '../../base/big-number';
+import { Amount, formatAmount, maxUint256 } from '../../base/big-number';
 import { AddressOn } from '../address';
 import { NetworkName, Web3On } from '../web3-instance';
 import { TokenInfo, TimestampedTransferEvent } from './types';
 import { getBlockTimestamp } from '../block';
+import { sendTx, TxOptions } from './send-tx';
 
 /**
  * Gets the balance of `account` on an ERC20 token in units of `wei`.
@@ -54,6 +55,25 @@ export async function getTokenAllowance<Net extends NetworkName>(
 ): Promise<Amount> {
   const amount = await instance.methods.allowance(account, spender).call();
   return scaleTokenAmountToWei({ amount: new BN(amount), decimals });
+}
+
+export async function erc20Transfer<Net extends NetworkName>(
+  info: TokenInfo<Net>,
+  recipient: AddressOn<Net>,
+  amount: Amount,
+  txOptions: TxOptions<Net, true>,
+) {
+  const { symbol, decimals, instance } = info;
+  const { from: sender } = txOptions;
+  const balance = await getTokenBalance(info, sender);
+  if (balance.lt(amount))
+    throwError(
+      `Insufficient balance of '${sender}': have '${formatAmount(balance)}' ` +
+        `${symbol}, needs '${formatAmount(amount)}' ${symbol}`,
+    );
+  const tokens = weiToTokenAmount({ wei: amount, decimals });
+  const tx = instance.methods.transfer(recipient, tokens.toString(10));
+  return await sendTx(tx, txOptions);
 }
 
 export function setTokenAllowance<Net extends NetworkName>(
