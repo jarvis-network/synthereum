@@ -25,6 +25,7 @@ import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { t } from '@jarvis-network/web3-utils/base/meta';
 import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
+import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 import { mapPools } from './pool-utils';
 
 export interface GasOptions {
@@ -61,14 +62,18 @@ export class RealmAgent<
     public readonly realm: SynthereumRealmWithWeb3<Net>,
     public readonly agentAddress: AddressOn<Net>,
     public readonly poolVersion: PoolVersion,
-  ) {}
+  ) {
+    this.activePools = assertNotNull(realm.pools[poolVersion]);
+  }
+
+  private readonly activePools: PoolsForVersion<PoolVersion, Net>;
 
   async collateralBalance(): Promise<Amount> {
     return await getTokenBalance(this.realm.collateralToken, this.agentAddress);
   }
 
   async syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
-    const asset = this.realm.pools[this.poolVersion][synthetic].syntheticToken;
+    const asset = assertNotNull(this.activePools[synthetic]).syntheticToken;
     return await getTokenBalance(asset, this.agentAddress);
   }
 
@@ -100,9 +105,7 @@ export class RealmAgent<
     txOptions = {},
   }: MintParams) {
     this.assertV1Pool('mint');
-    const tic = this.realm.pools[this.poolVersion][
-      outputSynth
-    ] as SynthereumPool<'v1', Net>;
+    const tic = this.activePools[outputSynth] as SynthereumPool<'v1', Net>;
     // TODO: Should we return both promises separately?
     console.log(`Checking allowance...`);
     const result = await this.ensureSufficientAllowanceFor(
@@ -115,9 +118,9 @@ export class RealmAgent<
     const inputCollateral = weiToTokenAmount({
       wei: collateral,
       decimals: tic.collateralToken.decimals,
-    }) as any;
+    });
     const tx = tic.instance.methods.mintRequest(
-      inputCollateral,
+      inputCollateral as any,
       outputAmount as any,
     );
     console.log(`Sending tx`);
@@ -133,12 +136,9 @@ export class RealmAgent<
     txOptions = {},
   }: ExchangeParams) {
     this.assertV1Pool('mint');
-    const inputTic = this.realm.pools[this.poolVersion][
-      inputSynth
-    ] as SynthereumPool<'v1', Net>;
-    const destinationTicAddress = this.realm.pools[this.poolVersion][
-      outputSynth
-    ].address;
+    const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
+    const destinationTicAddress = assertNotNull(this.activePools[outputSynth])
+      .address;
     const result = await this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,
@@ -166,9 +166,7 @@ export class RealmAgent<
     txOptions = {},
   }: RedeemParams) {
     this.assertV1Pool('mint');
-    const inputTic = this.realm.pools[this.poolVersion][
-      inputSynth
-    ] as SynthereumPool<'v1', Net>;
+    const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
     await this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,

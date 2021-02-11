@@ -12,22 +12,27 @@ import {
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
 import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { parseFiniteFloat } from '@jarvis-network/web3-utils/base/asserts';
+import {
+  assertNotNull,
+  parseFiniteFloat,
+} from '@jarvis-network/web3-utils/base/asserts';
 import { getTokenBalance } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
+import { printTruffleLikeTransactionOutput } from '@jarvis-network/synthereum-contracts/dist/src/utils/tx-utils';
 import {
   assertIsSupportedPoolVersion,
   PoolVersion,
 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import { log } from './utils/log';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
+import { t } from '@jarvis-network/web3-utils/base/meta';
 
 async function main() {
   log('Starting');
   const netId = parseSupportedNetworkId(42);
   const web3 = getInfuraWeb3(netId);
   log('Web3 instance loaded');
-  setPrivateKey_DevelopmentOnly(web3, process.env.PRIVATE_KEY!);
+  setPrivateKey_DevelopmentOnly(web3, assertNotNull(process.env.PRIVATE_KEY));
   log('Private key set - using', { address: web3.defaultAccount });
   const realm = await loadRealm(web3, netId);
   log('Realm loaded', { poolRegistry: realm.poolRegistry.address });
@@ -48,7 +53,22 @@ async function main() {
       await getTokenBalance(realm.collateralToken, sender),
     ),
   });
-  await depositInAllPools(realm, poolVersion, numberToWei(depositAmount));
+  const result = await depositInAllPools(
+    realm,
+    poolVersion,
+    numberToWei(depositAmount),
+  );
+  for (const txP of result) {
+    const tx = await txP;
+    log(
+      `Tx summary:\n`,
+      await printTruffleLikeTransactionOutput(web3, tx.transactionHash, {
+        contractName: 'USDC',
+        contractInteraction: `Calling 'ERC20.transfer'`,
+        contractAddress: realm.collateralToken.address,
+      }),
+    );
+  }
   log('Deposit complete. Getting v2 balances');
   await printPoolBalance(realm, poolVersion);
 }
@@ -58,17 +78,18 @@ async function printPoolBalance(
   version: PoolVersion,
 ) {
   let balances = await getPoolBalances(realm, version);
-  const result = balances.map(([sym, bal]) => ({
-    Symbol: sym,
-    [`'${version}' Pool Balance`]: `${formatAmount(bal)} USDC`,
-    [`'${version}' Pool Address`]: realm.pools[version][sym].address,
-    'Synthetic Token Address':
-      realm.pools[version][sym].syntheticToken.address +
-      ` (${realm.pools[version][sym].syntheticToken.symbol})`,
-    'Collateral Token Address':
-      realm.pools[version][sym].collateralToken.address +
-      ` (${realm.pools[version][sym].collateralToken.symbol})`,
-  }));
+  const pools = assertNotNull(realm.pools[version]);
+  const result = assertNotNull(balances)
+    .map(([sym, bal]) => t(sym, bal, pools[sym]!))
+    .map(([sym, bal, pool]) => ({
+      Symbol: sym,
+      [`'${version}' Pool Balance`]: `${formatAmount(bal)} USDC`,
+      [`'${version}' Pool Address`]: pool.address,
+      'Synthetic Token Address':
+        pool.syntheticToken.address + ` (${pool.syntheticToken.symbol})`,
+      'Collateral Token Address':
+        pool.collateralToken.address + ` (${pool.collateralToken.symbol})`,
+    }));
   console.table(result);
 }
 

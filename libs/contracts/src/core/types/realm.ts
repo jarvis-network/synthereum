@@ -19,7 +19,7 @@ export interface SynthereumRealm<
   readonly collateralToken: TokenInfo<Net>;
   readonly poolRegistry: ContractInfo<Net, SynthereumPoolRegistry_Contract>;
   readonly pools: {
-    [Version in PoolVersion]: PoolsForVersion<Version, Net>;
+    [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
   };
 }
 

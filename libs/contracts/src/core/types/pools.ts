@@ -40,5 +40,5 @@ export type PoolsForVersion<
   Version extends PoolVersion,
   Net extends SupportedNetworkName
 > = {
-  [Symbol in SyntheticSymbol]: SynthereumPool<Version, Net, Symbol>;
+  [Symbol in SyntheticSymbol]?: SynthereumPool<Version, Net, Symbol>;
 };

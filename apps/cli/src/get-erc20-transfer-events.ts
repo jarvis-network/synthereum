@@ -14,6 +14,7 @@ import {
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
 import { console, log } from './utils/log';
+import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 
 const argv = yargs(hideBin(process.argv)).option('address', {
   type: 'string',
@@ -53,7 +54,7 @@ async function main() {
     },
   ] as Filter[];
 
-  const erc20 = realm.pools.v2.jEUR.collateralToken.instance;
+  const erc20 = assertNotNull(realm.pools.v2?.jEUR).collateralToken.instance;
 
   const events = (
     await Promise.all(

@@ -1,8 +1,10 @@
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
-import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import {
-  createEverLogger,
+  PoolsForVersion,
+  SynthereumPool,
+} from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
+import {
   ExchangeRequestValidator,
   MintRequestValidator,
   PriceFeed,
@@ -13,6 +15,7 @@ import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import Logger from 'bunyan';
 import { performance } from 'perf_hooks';
 import { ENV } from '../config';
+import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 type ApproveRejectMethod = (
   id: string | number[],
 ) => NonPayableTransactionObject<void>;
@@ -34,11 +37,13 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   redeemService: RedeemRequestValidator;
   mintService: MintRequestValidator;
   priceFeed = new PriceFeed();
+  private readonly activePools: PoolsForVersion<'v1', Net>;
   constructor(
     private logger: Logger,
     private readonly realm: SynthereumRealmWithWeb3<Net>,
     { FREQUENCY, MAX_SLIPPAGE }: ENV,
   ) {
+    this.activePools = assertNotNull(realm.pools.v1);
     this.frequency = FREQUENCY;
     this.maxSlippage = MAX_SLIPPAGE;
     const _env = {
@@ -64,13 +69,15 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
       let started: number = performance.now();
 
       Promise.all(
-        Object.values(this.realm.pools['v1']).map(info =>
-          Promise.all([
-            this.checkMintRequests(info),
-            this.checkRedeemRequests(info),
-            this.checkExchangeRequests(info),
-          ]),
-        ),
+        Object.values(this.activePools)
+          .map(assertNotNull)
+          .map(info =>
+            Promise.all([
+              this.checkMintRequests(info),
+              this.checkRedeemRequests(info),
+              this.checkExchangeRequests(info),
+            ]),
+          ),
       ).then(() => {
         this.logger.info(
           `Checked requests in ${

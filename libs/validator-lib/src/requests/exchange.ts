@@ -42,8 +42,8 @@ export class ExchangeRequestValidator {
     );
 
     const destTic = request.dest_tic;
-    const destinationInfo = Object.values(this.realm.pools['v1']).find(
-      pool => pool.address === destTic,
+    const destinationInfo = Object.values(this.realm.pools.v1!).find(
+      pool => pool!.address === destTic,
     );
     if (!destinationInfo) {
       this.logger.warn(`No TIC configured for address ${request.dest_tic}`);

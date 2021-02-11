@@ -79,7 +79,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
       }),
     );
 
-    return Object.fromEntries(pairs);
+    return Object.fromEntries(pairs.filter(x => !!x[1]));
   };
   const collateralToken = await getTokenInfo(web3, collateralAddress);
   return {
