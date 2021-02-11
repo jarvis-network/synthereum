@@ -32,7 +32,7 @@ const Container = styled.div`
     vertical-align: middle;
     width: 65px;
     margin-left: 8px;
-    font-size: ${props => props.theme.font.sizes.m};
+    font-size: ${props => props.theme.font.sizes.l};
     font-family: Krub;
     font-weight: 300;
   }

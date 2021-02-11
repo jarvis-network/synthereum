@@ -61,7 +61,7 @@ const AssetSelect = styled.div<{ error: boolean }>`
 `;
 
 const Title = styled.div`
-  font-size: ${props => props.theme.font.sizes.s};
+  font-size: ${props => props.theme.font.sizes.m};
   grid-area: title;
 `;
 
@@ -111,6 +111,7 @@ const IconButton = styled.button`
 `;
 
 const SwapButton = styled(Button)`
+  font-size: 20px;
   font-weight: normal;
   font-family: 'Krub';
   width: 100%;

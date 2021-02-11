@@ -17,7 +17,7 @@ const Container = styled.div`
     },
     theme => theme.text.medium,
   )};
-  font-size: 14px;
+  font-size: ${props => props.theme.font.sizes.m};
   padding-left: 15px;
   padding-right: 10px;
 `;

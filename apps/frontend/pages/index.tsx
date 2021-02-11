@@ -29,13 +29,13 @@ const LayoutChart = styled.div`
   flex: 1 1 0%;
   width: 100%;
   height: 100vh;
-  padding: 90px 30px 30px calc(50vw - 510px);
+  padding: 90px 60px 30px calc(50vw - 510px);
   box-sizing: border-box;
 `;
 
 const LayoutWidget = styled(Background)`
   height: 100vh;
-  padding: 90px calc(50vw - 510px) 30px 30px;
+  padding: 90px calc(50vw - 510px) 30px 60px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
