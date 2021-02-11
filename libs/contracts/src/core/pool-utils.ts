@@ -11,7 +11,7 @@ import {
 } from '@jarvis-network/web3-utils/eth/address';
 import {
   getTokenBalance,
-  weiToTokenAmount,
+  erc20Transfer,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
@@ -29,7 +29,6 @@ import {
   SynthereumPool,
 } from './types/pools';
 import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
-import { NonPayableTransactionObject } from '@jarvis-network/web3-utils';
 
 export function foreachPool<
   Net extends SupportedNetworkName = SupportedNetworkName,
@@ -129,61 +128,21 @@ export function getPoolBalances<
   );
 }
 
-export async function depositInAllPools<
-  Net extends SupportedNetworkName,
-  Version extends PoolVersion
->(
+export async function depositInAllPools<Net extends SupportedNetworkName>(
   realm: SynthereumRealmWithWeb3<Net>,
-  version: Version = 'v1' as Version,
+  version: PoolVersion,
   amount: Amount,
   gasPrice?: number,
 ) {
-  const keys = Object.keys(realm.pools[version]);
-  const perPool = amount.div(new BN(keys.length)) as Amount;
-  const collateral = realm.collateralToken;
-  const finalAmount = weiToTokenAmount({
-    wei: perPool,
-    decimals: collateral.decimals,
-  }).toString(10);
-  const web3 = realm.web3;
-  let nonce = await web3.eth.getTransactionCount(web3.defaultAccount!);
-  gasPrice = gasPrice ?? parseFloat(await web3.eth.getGasPrice());
-  return Promise.all(
-    keys.map(async symbol => {
-      const address = realm.pools[version][symbol as SyntheticSymbol].address;
-      await sendTx({
-        web3: web3,
-        gasPrice,
-        tx: collateral.instance.methods.transfer(address, finalAmount),
-        nonce: nonce++,
-      });
+  const poolsCount = Object.keys(realm.pools[version] ?? {}).length;
+  const from = assertIsAddress<Net>(realm.web3.defaultAccount);
+  const nonce = await realm.web3.eth.getTransactionCount(from);
+  const perPool = amount.div(new BN(poolsCount)) as Amount;
+  return mapPools(realm, version, (pool, i) =>
+    erc20Transfer(realm.collateralToken, pool.address, perPool, {
+      from,
+      gasPrice,
+      nonce: nonce + i,
     }),
   );
-}
-
-export async function sendTx<Result, Net extends SupportedNetworkName>({
-  web3,
-  gasPrice,
-  nonce,
-  tx,
-  sender,
-}: {
-  web3: Web3On<Net>;
-  gasPrice?: number;
-  nonce?: number;
-  tx: NonPayableTransactionObject<Result>;
-  sender?: AddressOn<Net>;
-}) {
-  const from = sender ?? web3.defaultAccount ?? undefined;
-  const gas = await tx.estimateGas({
-    from,
-    nonce,
-  });
-  const params = {
-    from,
-    gas,
-    gasPrice,
-    nonce,
-  };
-  await tx.send(params);
 }
