@@ -414,4 +414,283 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       );
     });
   });
+
+  describe('Redeem collateral', () => {
+    let tokensToRedeem;
+    let totCollateralToReceive;
+    let feeAmountRedeem;
+    let collateralToReceive;
+    beforeEach(async () => {
+      // Suppose rate EUR/USDC moved to 1.3
+
+      totCollateralToReceive = web3Utils.toWei('65', 'mwei');
+      feeAmountRedeem = web3Utils.toWei(
+        (65 * feePercentage).toString(),
+        'mwei',
+      );
+      collateralToReceive = (
+        parseInt(totCollateralToReceive) - parseInt(feeAmountRedeem)
+      ).toString();
+      tokensToRedeem = web3Utils.toWei('50');
+      const MintParameters = {
+        derivative: derivativeAddress,
+        minNumTokens: numTokens,
+        collateralAmount: collateralAmount,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      const mintTx = await poolInstance.mint(MintParameters, {
+        from: sender,
+      });
+      await synthTokenInstance.approve(poolAddress, numTokens, {
+        from: sender,
+      });
+      aggregatorInstance.updateAnswer(web3Utils.toWei('130', 'mwei'));
+    });
+    it('Can redeem', async () => {
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      const prevSynthTokenBalance = await synthTokenInstance.balanceOf.call(
+        sender,
+      );
+      const prevCollatBalance = await collateralInstance.balanceOf.call(sender);
+      const prevCollatDaoBalance = await collateralInstance.balanceOf.call(DAO);
+      const prevCollatLPBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const redeemTx = await poolInstance.redeem(RedeemParameters, {
+        from: sender,
+      });
+      truffleAssert.eventEmitted(redeemTx, 'Redeem', ev => {
+        return (
+          ev.account == sender &&
+          ev.pool == poolAddress &&
+          ev.numTokensSent == tokensToRedeem &&
+          ev.collateralReceived == collateralToReceive &&
+          ev.feePaid == feeAmountRedeem
+        );
+      });
+      const actualSynthTokenBalance = await synthTokenInstance.balanceOf.call(
+        sender,
+      );
+      const actualCollatBalance = await collateralInstance.balanceOf.call(
+        sender,
+      );
+      const actualCollatDaoBalance = await collateralInstance.balanceOf.call(
+        DAO,
+      );
+      const actualCollatLPBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      // Check correct balances after redeem
+      assert.equal(
+        prevSynthTokenBalance.eq(
+          actualSynthTokenBalance.add(web3Utils.toBN(tokensToRedeem)),
+        ),
+        true,
+        'Wrong Synth token balance after redeem',
+      );
+      assert.equal(
+        actualCollatBalance.eq(
+          prevCollatBalance.add(web3Utils.toBN(collateralToReceive)),
+        ),
+        true,
+        'Wrong collateral balance after redeem',
+      );
+      assert.equal(
+        actualCollatDaoBalance.eq(
+          prevCollatDaoBalance.add(web3Utils.toBN(feeAmountRedeem / 2)),
+        ),
+        true,
+        'Wrong fee DAO balance after redeem',
+      );
+      assert.equal(
+        actualCollatLPBalance.eq(
+          prevCollatLPBalance.add(web3Utils.toBN(feeAmountRedeem / 2)),
+        ),
+        true,
+        'Wrong fee LP balance after redeem',
+      );
+      // Check gas cost for other redeems;
+      tokensToRedeem = web3Utils.toWei('20');
+      collateralToReceive = web3Utils.toWei('20', 'mwei');
+      RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await poolInstance.redeem(RedeemParameters, {
+        from: sender,
+      });
+      await poolInstance.redeem(RedeemParameters, {
+        from: sender,
+      });
+    });
+    it('Revert if wrong derivative', async () => {
+      let RedeemParameters = {
+        derivative: wrongDerivativeAddr,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'Wrong derivative',
+      );
+    });
+    it('Revert if transaction is over the timeout', async () => {
+      const wrongExpiration = expiration - 100;
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: wrongExpiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'Transaction expired',
+      );
+    });
+    it('Revert if fee is over the fee set by user', async () => {
+      const wrongFeePercentageWei = web3Utils.toWei('0.0019');
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: wrongFeePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'User fee percentage less than actual one',
+      );
+    });
+    it('Revert if user does not approve enough synthetic tokens to pool', async () => {
+      await synthTokenInstance.approve(
+        poolAddress,
+        web3Utils.toBN(tokensToRedeem).sub(web3Utils.toBN(1)),
+        { from: sender },
+      );
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'ERC20: transfer amount exceeds allowance',
+      );
+    });
+    it('Revert if try to redeem 0 tokens', async () => {
+      const wrongNumTokens = 0;
+      const wrongMinCollateral = 0;
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: wrongNumTokens,
+        minCollateral: wrongMinCollateral,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'Sending amount is equal to 0',
+      );
+    });
+    it('Revert if try to redeem more than sender balance', async () => {
+      totCollateralToReceive = web3Utils.toWei('260', 'mwei');
+      feeAmountRedeem = web3Utils.toWei(
+        (260 * feePercentage).toString(),
+        'mwei',
+      );
+      collateralToReceive = (
+        parseInt(totCollateralToReceive) - parseInt(feeAmountRedeem)
+      ).toString();
+      tokensToRedeem = web3Utils.toWei('200');
+      await synthTokenInstance.approve(poolAddress, tokensToRedeem, {
+        from: sender,
+      });
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'Token balance less than token to redeem',
+      );
+    });
+    it('Revert if collateral to redeem bigger than collateral in the derivative', async () => {
+      aggregatorInstance.updateAnswer(web3Utils.toWei('500', 'mwei'));
+      collateralToReceive = web3Utils.toWei('150', 'mwei');
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: collateralToReceive,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'Collateral amount bigger than collateral in the derivative',
+      );
+    });
+    it('Redeem if max slippage is enough to redeem tokens ', async () => {
+      const newMinCollateral = (
+        parseInt(collateralToReceive) - parseInt(web3Utils.toWei('10', 'mwei'))
+      ).toString();
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: newMinCollateral,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await poolInstance.redeem(RedeemParameters, {
+        from: sender,
+      });
+    });
+    it('Revert if max slippage is not enough to redeem tokens ', async () => {
+      const newMinCollateral = (parseInt(collateralToReceive) + 1).toString();
+      let RedeemParameters = {
+        derivative: derivativeAddress,
+        numTokens: tokensToRedeem,
+        minCollateral: newMinCollateral,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+      };
+      await truffleAssert.reverts(
+        poolInstance.redeem(RedeemParameters, {
+          from: sender,
+        }),
+        'Collateral amount less than minimum limit',
+      );
+    });
+  });
 });
