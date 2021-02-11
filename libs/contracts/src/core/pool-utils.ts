@@ -16,13 +16,22 @@ import {
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import type { SupportedNetworkName, SyntheticSymbol } from '../config';
+import {
+  SupportedNetworkId,
+  SupportedNetworkName,
+  synthereumConfig,
+  SyntheticSymbol,
+} from '../config';
 import {
   IDerivative_Abi,
   SynthereumPool_Abi,
   SynthereumTIC_Abi,
 } from '../contracts/abi';
-import { IDerivative } from '../contracts/typechain';
+import {
+  IDerivative,
+  NonPayableTransactionObject,
+} from '../contracts/typechain';
+import { TransactionReceipt } from 'web3-core';
 import {
   PoolContract,
   PoolVersion,
@@ -30,7 +39,13 @@ import {
   SynthereumPool,
 } from './types/pools';
 import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
-import { TxOptions } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
+import {
+  FullTxOptions,
+  TxOptions,
+  sendTx,
+} from '@jarvis-network/web3-utils/eth/contracts/send-tx';
+import { Fees } from '../config/types';
+import { executeInSequence } from '@jarvis-network/web3-utils/base/async';
 
 export function getAvailableSymbols<
   Net extends SupportedNetworkName = SupportedNetworkName,
@@ -155,4 +170,116 @@ export async function depositInAllPools<Net extends SupportedNetworkName>(
       }),
     ),
   );
+}
+
+interface RoleChange<Net extends SupportedNetworkName> {
+  previousAddress: AddressOn<Net>;
+  newAddress: AddressOn<Net>;
+}
+
+type PoolParameters<Net extends SupportedNetworkName> = {
+  lp?: RoleChange<Net>;
+  validator?: RoleChange<Net>;
+  newFees?: Readonly<Fees<Net>>;
+  perPool?: {
+    [key in SyntheticSymbol]?: {
+      startingCollateralization?: BN;
+    };
+  };
+};
+
+export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
+  realm: SynthereumRealmWithWeb3<Net>,
+  { newFees, lp, validator, perPool }: PoolParameters<Net>,
+  _txOpt: TxOptions,
+) {
+  const maintainer = synthereumConfig[realm.netId as SupportedNetworkId].roles
+    .maintainer as AddressOn<Net>;
+
+  const txOptions: FullTxOptions<Net> = {
+    web3: realm.web3,
+    ..._txOpt,
+    from: maintainer,
+  };
+
+  await executeInSequence(
+    ...mapPools(realm, 'v2', pool => async () => {
+      if (lp) {
+        await changeRole(pool, 'LIQUIDITY_PROVIDER_ROLE', lp, txOptions);
+      }
+
+      if (validator) {
+        await changeRole(pool, 'VALIDATOR_ROLE', validator, txOptions);
+      }
+
+      if (newFees) {
+        const tx1 = pool.instance.methods.setFee([
+          [newFees.feePercentage],
+          newFees.feeRecipients,
+          newFees.feeProportions,
+        ]);
+        await sendTxWithMsg(tx1, txOptions, 'setFee');
+      }
+
+      const { startingCollateralization } = perPool?.[pool.symbol] ?? {};
+
+      if (startingCollateralization) {
+        const tx6 = pool.instance.methods.setStartingCollateralization(
+          startingCollateralization.toString(10),
+        );
+        await sendTxWithMsg(tx6, txOptions, 'setStartingCollateralization');
+      }
+    }),
+  );
+}
+
+export async function changeRole<Net extends SupportedNetworkName>(
+  pool: SynthereumPool<PoolVersion, Net>,
+  roleName: keyof typeof pool.instance.methods,
+  role: RoleChange<Net>,
+  txOptions: FullTxOptions<Net>,
+) {
+  if (!(roleName in pool.instance.methods)) {
+    throwError(`Role '${roleName}' not found.`);
+  }
+
+  const roleId = await ((pool.instance.methods[
+    roleName
+  ] as any)() as NonPayableTransactionObject<string>).call();
+
+  const hasRole = await pool.instance.methods
+    .hasRole(roleId, role.previousAddress)
+    .call();
+
+  if (!hasRole) {
+    throwError(
+      `Expected address '${role.previousAddress}' to have role '${roleName} at pool ${pool.address}'`,
+    );
+  }
+
+  const from =
+    synthereumConfig[pool.networkId as SupportedNetworkId].roles.admin;
+
+  const tx1 = pool.instance.methods.revokeRole(roleId, role.previousAddress);
+  await sendTxWithMsg(
+    tx1,
+    { ...txOptions, from },
+    `Revoking '${roleName}' Role`,
+  );
+  const tx2 = pool.instance.methods.grantRole(roleId, role.newAddress);
+  await sendTxWithMsg(
+    tx2,
+    { ...txOptions, from },
+    `Granting '${roleName}' Role`,
+  );
+}
+
+function sendTxWithMsg<T>(
+  tx: NonPayableTransactionObject<T>,
+  txOpt: FullTxOptions<SupportedNetworkName>,
+  msg: string,
+): Promise<TransactionReceipt> {
+  txOpt.printInfo ??= {};
+  txOpt.printInfo.txSummaryText = msg;
+  return sendTx(tx, txOpt);
 }
