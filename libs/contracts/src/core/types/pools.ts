@@ -2,6 +2,7 @@ import {
   ContractInfo,
   TokenInfo,
 } from '@jarvis-network/web3-utils/eth/contracts/types';
+import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
 import type { SupportedNetworkName, SyntheticSymbol } from '../../config';
 import { priceFeed } from '../../config';
 import {
@@ -29,6 +30,8 @@ export interface SynthereumPool<
   Net extends SupportedNetworkName = SupportedNetworkName,
   Symbol extends SyntheticSymbol = SyntheticSymbol
 > extends ContractInfo<Net, PoolContract<Version>> {
+  networkId: ToNetworkId<Net>;
+  versionId: Version;
   symbol: Symbol;
   priceFeed: typeof priceFeed[Symbol];
   collateralToken: TokenInfo<Net>;

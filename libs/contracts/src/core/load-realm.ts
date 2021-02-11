@@ -71,6 +71,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
       allSyntheticSymbols.map(async symbol => {
         const info = await loadPoolInfo(
           web3,
+          netId,
           poolRegistry.instance,
           collateralAddress,
           version,
@@ -110,6 +111,7 @@ export async function loadPoolInfo<
   Net extends SupportedNetworkName
 >(
   web3: Web3On<Net>,
+  netId: ToNetworkId<Net>,
   poolRegistry: SynthereumPoolRegistry,
   collateralAddress: AddressOn<Net>,
   version: Version,
@@ -152,6 +154,8 @@ export async function loadPoolInfo<
     await poolInstance.methods.syntheticToken().call(),
   ) as AddressOn<Net>;
   return {
+    versionId: version,
+    networkId: netId,
     priceFeed: priceFeed[symbol],
     symbol,
     address: poolAddress,
