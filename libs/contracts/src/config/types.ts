@@ -1,12 +1,13 @@
+import { StringAmount } from '@jarvis-network/web3-utils/base/big-number';
+import { PerTupleElement } from '@jarvis-network/web3-utils/base/meta';
+import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+import { ToNetworkName } from '@jarvis-network/web3-utils/eth/networks';
+import { PoolVersion } from '../core/types/pools';
 import {
-  SupportedNetworkName,
   SupportedNetworkId,
   SupportedNetworkIds,
+  SupportedNetworkName,
 } from './supported-networks';
-import { PoolVersion } from '../core/types/pools';
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
-import { PerTupleElement } from '@jarvis-network/web3-utils/base/meta';
-import { ToNetworkName } from '@jarvis-network/web3-utils/eth/networks';
 
 export const allSyntheticSymbols = [
   'jEUR',
@@ -67,7 +68,7 @@ export interface SynthereumContractDependencies<
 }
 
 export interface Fees<Net extends SupportedNetworkName> {
-  feePercentage: number; // Example: 0.002,
+  feePercentage: StringAmount; // Example: weiString(0.002),
   feeRecipients: AddressOn<Net>[]; // Example: ["0xCc3528125499d168ADFB5Ef99895c98a7C430ed4"]
   feeProportions: number[]; // Example: [50, 50]
 }
@@ -106,5 +107,5 @@ export interface SyntheticTokenConfig<
 }
 
 export interface FixedPointNumber {
-  rawValue: string;
+  rawValue: StringAmount;
 }
