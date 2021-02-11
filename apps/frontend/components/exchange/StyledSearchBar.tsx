@@ -38,5 +38,5 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   display: flex;
   flex-direction: column;
 
-  ${props => (props.open ? 'height: 100%; max-height: 426px;' : '')};
+  ${props => (props.open ? 'height: 100%;' : '')};
 `;

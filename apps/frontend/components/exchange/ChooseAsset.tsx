@@ -182,7 +182,7 @@ const ScrollableCard = styled(StyledCard)`
 const ScrollableSearchBar = styled(StyledSearchBar)`
   display: flex;
   flex-direction: column;
-  height: calc(100% - 51px);
+  height: calc(100% - ${props => props.theme.sizes.row});
 
   > :nth-child(2) > :first-child {
     padding-left: 0;

@@ -44,8 +44,7 @@ const LayoutWidget = styled(Background)`
 
 const WidgetContainer = styled.div`
   width: 360px;
-  max-height: 540px;
-  height: 100%;
+  height: 540px;
 `;
 
 export default function Home() {

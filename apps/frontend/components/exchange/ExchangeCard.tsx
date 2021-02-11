@@ -29,7 +29,19 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: 540px;
+`;
+
+const CardContainer = styled.div`
+  height: 475px;
+`;
+
+const FeesContainer = styled.div`
+  height: 65px;
+`;
+
+const ContentContainer = styled.div`
+  height: calc(100% - ${props => props.theme.borderRadius.m});
 `;
 
 const grid = {
@@ -237,23 +249,27 @@ export const ExchangeCard: React.FC = () => {
   );
 
   const content = (
-    <>
+    <ContentContainer>
       <StyledSearchBar {...searchBarProps} suffix={suffix} />
       {!searchOpen && <MainForm />}
-    </>
+    </ContentContainer>
   );
 
   return (
     <Container>
-      <OnMobile>
-        {content}
-      </OnMobile>
-      <OnDesktop>
-        <StyledCard title="Swap">
+      <CardContainer>
+        <OnDesktop>
+          <StyledCard title="Swap">
+            {content}
+          </StyledCard>
+        </OnDesktop>
+        <OnMobile>
           {content}
-        </StyledCard>
-      </OnDesktop>
-      <Fees />
+        </OnMobile>
+      </CardContainer>
+      <FeesContainer>
+        <Fees />
+      </FeesContainer>
     </Container>
   );
 };

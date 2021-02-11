@@ -31,14 +31,13 @@ interface Props {}
 
 const Container = styled.div`
   height: 100%;
-  max-height: 440px;
 `;
 
 const ExchangeBox = styled.div<{ error: boolean }>`
   margin: 5px 15px;
   display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
   grid-template-areas:
     'title'
     'asset-select';
