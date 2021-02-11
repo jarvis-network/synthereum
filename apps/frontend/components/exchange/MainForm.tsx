@@ -171,6 +171,8 @@ export const MainForm: React.FC<Props> = () => {
 
   const swap = useSwap();
 
+  const auth = useReduxSelector(state => state.auth);
+
   const wallet = useReduxSelector(
     state => (paySymbol && state.wallet[paySymbol]) || null,
   );
@@ -216,6 +218,7 @@ export const MainForm: React.FC<Props> = () => {
     paySymbol === 'USDC' && new FPN(payString).gt(MAX_MINT_VALUE);
 
   const swapDisabled =
+    !auth ||
     !Number(payString) ||
     !Number(receiveString) ||
     insufficientBalance ||
@@ -321,7 +324,7 @@ export const MainForm: React.FC<Props> = () => {
       <Footer>
         <ExchangeRate />
         <SwapButton disabled={swapDisabled} type="success" onClick={doSwap} size="l">
-          Swap
+          {auth ? 'Swap' : 'Sign in'}
         </SwapButton>
       </Footer>
     </Container>
