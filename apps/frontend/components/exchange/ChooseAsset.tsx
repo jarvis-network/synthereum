@@ -206,6 +206,7 @@ const ComingSoon = styled.img`
 
 const ScrollableContents = styled.div`
   ${props => styledScrollbars(props.theme)}
+  height: 340px;
 `;
 
 const ScrollableTabs = styled(StyledTabs)`
