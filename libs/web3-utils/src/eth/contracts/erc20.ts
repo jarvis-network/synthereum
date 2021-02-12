@@ -8,7 +8,7 @@ import { AddressOn } from '../address';
 import { NetworkName, Web3On } from '../web3-instance';
 import { TokenInfo, TimestampedTransferEvent } from './types';
 import { getBlockTimestamp } from '../block';
-import { sendTx, TxOptions } from './send-tx';
+import { sendTx, FullTxOptions } from './send-tx';
 
 /**
  * Gets the balance of `account` on an ERC20 token in units of `wei`.
@@ -61,7 +61,7 @@ export async function erc20Transfer<Net extends NetworkName>(
   info: TokenInfo<Net>,
   recipient: AddressOn<Net>,
   amount: Amount,
-  txOptions: TxOptions<Net, true>,
+  txOptions: FullTxOptions<Net>,
 ) {
   const { symbol, decimals, instance } = info;
   const { from: sender } = txOptions;

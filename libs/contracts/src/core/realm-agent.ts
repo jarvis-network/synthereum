@@ -1,5 +1,3 @@
-import BN from 'bn.js';
-
 import {
   Amount,
   formatAmount,
@@ -18,24 +16,22 @@ import { SynthereumRealmWithWeb3 } from './types/realm';
 import {
   SupportedNetworkName,
   SyntheticSymbol,
-  allSyntheticSymbols,
   ExchangeToken,
 } from '../config';
-import { NonPayableTransactionObject } from '../contracts/typechain';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { t } from '@jarvis-network/web3-utils/base/meta';
 import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
 import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 import { mapPools } from './pool-utils';
-
-export interface GasOptions {
-  gasLimit?: BN;
-  gasPrice?: BN;
-}
+import {
+  FullTxOptions,
+  sendTx,
+  TxOptions,
+} from '@jarvis-network/web3-utils/eth/contracts/send-tx';
 
 interface BaseTxParams {
   collateral: Amount;
-  txOptions?: GasOptions;
+  txOptions?: TxOptions;
 }
 
 interface MintParams extends BaseTxParams {
@@ -64,9 +60,14 @@ export class RealmAgent<
     public readonly poolVersion: PoolVersion,
   ) {
     this.activePools = assertNotNull(realm.pools[poolVersion]);
+    this.defaultTxOptions = {
+      from: this.agentAddress,
+      web3: this.realm.web3,
+    };
   }
 
   private readonly activePools: PoolsForVersion<PoolVersion, Net>;
+  private readonly defaultTxOptions: FullTxOptions<Net>;
 
   async collateralBalance(): Promise<Amount> {
     return await getTokenBalance(this.realm.collateralToken, this.agentAddress);
@@ -98,12 +99,7 @@ export class RealmAgent<
     }
   }
 
-  async mint({
-    collateral,
-    outputAmount,
-    outputSynth,
-    txOptions = {},
-  }: MintParams) {
+  async mint({ collateral, outputAmount, outputSynth, txOptions }: MintParams) {
     this.assertV1Pool('mint');
     const tic = this.activePools[outputSynth] as SynthereumPool<'v1', Net>;
     // TODO: Should we return both promises separately?
@@ -124,7 +120,10 @@ export class RealmAgent<
       outputAmount as any,
     );
     console.log(`Sending tx`);
-    return await this.sendTx(tx, txOptions);
+    return await sendTx(tx, {
+      ...this.defaultTxOptions,
+      ...txOptions,
+    });
   }
 
   async exchange({
@@ -133,7 +132,7 @@ export class RealmAgent<
     outputSynth,
     inputAmount,
     outputAmount,
-    txOptions = {},
+    txOptions,
   }: ExchangeParams) {
     this.assertV1Pool('mint');
     const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
@@ -156,14 +155,17 @@ export class RealmAgent<
       inputCollateral as any,
       outputAmount as any,
     );
-    return await this.sendTx(tx, txOptions);
+    return await sendTx(tx, {
+      ...this.defaultTxOptions,
+      ...txOptions,
+    });
   }
 
   async redeem({
     inputAmount,
     inputSynth,
     collateral,
-    txOptions = {},
+    txOptions,
   }: RedeemParams) {
     this.assertV1Pool('mint');
     const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
@@ -181,14 +183,17 @@ export class RealmAgent<
       outputCollateral as any,
       inputAmount as any,
     );
-    return await this.sendTx(tx, txOptions);
+    return await sendTx(tx, {
+      ...this.defaultTxOptions,
+      ...txOptions,
+    });
   }
 
   private async ensureSufficientAllowanceFor(
     tokenInfo: TokenInfo<Net>,
     spender: AddressOn<Net>,
     necessaryAllowance: Amount,
-    txOptions: GasOptions,
+    txOptions?: TxOptions,
   ) {
     console.log('Checking allowance...');
     const allowance = await getTokenAllowance(
@@ -206,8 +211,11 @@ export class RealmAgent<
         amount: maxUint256,
         decimals: tokenInfo.decimals,
       });
-      const x = setTokenAllowance(tokenInfo, spender, max);
-      return await this.sendTx(x, txOptions);
+      const tx = setTokenAllowance(tokenInfo, spender, max);
+      return await sendTx(tx, {
+        ...this.defaultTxOptions,
+        ...txOptions,
+      });
     } else {
       console.log(
         `Allowance of ${spender} is ${formatAmount(
@@ -216,17 +224,5 @@ export class RealmAgent<
       );
       return true;
     }
-  }
-
-  private sendTx<T>(
-    tx: NonPayableTransactionObject<T>,
-    txOptions?: GasOptions,
-  ) {
-    return tx.send({
-      from: this.agentAddress,
-      chainId: this.realm.netId,
-      gas: txOptions?.gasLimit?.toString(10),
-      gasPrice: txOptions?.gasPrice?.toString(10),
-    });
   }
 }

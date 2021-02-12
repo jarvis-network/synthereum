@@ -30,6 +30,7 @@ import {
   SynthereumPool,
 } from './types/pools';
 import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
+import { TxOptions } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
 
 export function getAvailableSymbols<
   Net extends SupportedNetworkName = SupportedNetworkName,
@@ -52,7 +53,6 @@ export function foreachPool<
 ) {
   const pools = assertNotNull(realm.pools[version as PoolVersion]);
   let idx = 0;
-  console.log('Number of available pools:' + Object.keys(pools).length);
   for (const key in pools) {
     if (!pools.hasOwnProperty(key)) continue;
     const pool = pools[key as keyof typeof pools];
@@ -141,17 +141,18 @@ export async function depositInAllPools<Net extends SupportedNetworkName>(
   realm: SynthereumRealmWithWeb3<Net>,
   version: PoolVersion,
   amount: Amount,
-  gasPrice?: number,
+  txOptions: TxOptions,
 ) {
   const poolsCount = Object.keys(realm.pools[version] ?? {}).length;
   const from = assertIsAddress<Net>(realm.web3.defaultAccount);
-  const nonce = await realm.web3.eth.getTransactionCount(from);
   const perPool = amount.div(new BN(poolsCount)) as Amount;
-  return mapPools(realm, version, (pool, i) =>
-    erc20Transfer(realm.collateralToken, pool.address, perPool, {
-      from,
-      gasPrice,
-      nonce: nonce + i,
-    }),
+  return await Promise.all(
+    mapPools(realm, version, (pool, i) =>
+      erc20Transfer(realm.collateralToken, pool.address, perPool, {
+        ...txOptions,
+        web3: realm.web3,
+        from,
+      }),
+    ),
   );
 }

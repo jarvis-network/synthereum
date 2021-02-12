@@ -1,48 +1,74 @@
+import type { EventEmitter } from 'events';
+import type { PromiEvent, TransactionReceipt } from 'web3-core';
 import type { AddressOn } from '../address';
 import type { NetworkName, ToNetworkId } from '../networks';
-import type { NonPayableTransactionObject } from './typechain/types';
-import type { PromiEvent, TransactionReceipt } from 'web3-core';
-import { EventEmitter } from 'events';
 import { Web3On } from '../web3-instance';
-import { printTruffleLikeTransactionOutput, PrintTxInfo } from './print-tx';
+import { logTransactionOutput, TxLogParams } from './print-tx';
+import type {
+  NonPayableTransactionObject,
+  NonPayableTx,
+} from './typechain/types';
 
-export type TxOptions<
-  Net extends NetworkName,
-  fromRequired extends boolean = false
-> = {
+export interface TxOptions {
   nonce?: number;
-  chainId?: ToNetworkId<Net>;
   gasLimit?: number;
   gasPrice?: number;
-  printInfo?: Omit<PrintTxInfo, 'txhash'>;
-} & (fromRequired extends true ? { from: AddressOn<Net> } : {});
+  printInfo?: Omit<TxLogParams, 'txhash'>;
+}
 
-export async function sendTx<
-  Result,
-  Net extends NetworkName,
-  hasSender extends boolean = false
->(
+export interface FullTxOptions<Net extends NetworkName> extends TxOptions {
+  web3: Web3On<Net>;
+  from: AddressOn<Net>;
+  chainId?: ToNetworkId<Net>;
+}
+
+const nonces: Record<string, number> = {};
+
+export async function sendTx<Result, Net extends NetworkName>(
   tx: NonPayableTransactionObject<Result>,
-  { gasLimit, printInfo, ...rest }: TxOptions<Net, hasSender>,
+  { web3, gasLimit, nonce, from, printInfo, ...rest }: FullTxOptions<Net>,
 ): Promise<TransactionReceipt> {
-  const estimatedGas = await tx.estimateGas({
-    ...rest,
-  });
-  gasLimit ??= estimatedGas;
-  const result = await once(
-    tx.send({
-      ...rest,
-      gas: estimatedGas < gasLimit ? estimatedGas : gasLimit,
-    }),
-    'confirmation',
-  );
+  // If no logging function is provided, default to noop:
+  const log = printInfo?.log ?? (() => {});
 
-  const [_, txReceipt] = result;
+  log('Getting tx nonce', { userSpecifiedNonce: nonce });
+  if (!nonces[from]) {
+    const newNonce = nonce ?? (await web3.eth.getTransactionCount(from));
+    // In an async environment another "fiber" of execution may resolve the
+    // promise above before us. Use the double-checked locking pattern (kind
+    // of), to prevent overwrite in case we're late:
+    if (!nonces[from]) {
+      nonces[from] = newNonce;
+    }
+  }
+  nonce = nonces[from]++;
+  log('Using nonce:', nonce, { nextNonces: nonces });
+
+  const txParams: NonPayableTx = {
+    ...rest,
+    from,
+    nonce,
+  };
+
+  log(
+    `Gas estimation for '${printInfo?.txSummaryText}' tx:`,
+    tx.arguments,
+    txParams,
+  );
+  const estimatedGas = await tx.estimateGas(txParams);
+
+  gasLimit ??= estimatedGas;
+  (txParams.gas = estimatedGas < gasLimit ? estimatedGas : gasLimit),
+    log('Setting gasLimit: ', txParams.gas);
+
+  log(`Sending '${printInfo?.txSummaryText}' tx:`, tx.arguments, txParams);
+  const txReceipt = await logTransactionStatus(web3, tx.send(txParams), log);
 
   if (printInfo) {
-    await printTruffleLikeTransactionOutput({
+    await logTransactionOutput({
       ...printInfo,
       txhash: txReceipt.transactionHash,
+      web3,
     });
   }
 
@@ -109,16 +135,17 @@ export function once<T>(
 export async function logTransactionStatus<T, Net extends NetworkName>(
   web3: Web3On<Net>,
   promiEvent: PromiEvent<T>,
+  log = console.log,
 ) {
   await once(promiEvent, 'sending');
-  console.log('[1/4] Sending tx...');
+  log('  [1/4] Sending tx...');
 
   await once(promiEvent, 'sent');
-  console.log('[2/4] Tx sent. Waiting for hash...');
+  log('  [2/4] Tx sent. Waiting for hash...');
 
   const txHash = await once(promiEvent, 'transactionHash');
-  console.log(
-    `[3/4]: Tx hash: '${txHash}'. Waiting for ${web3.eth.transactionConfirmationBlocks} confirmations...`,
+  log(
+    `  [3/4]: Tx hash: '${txHash}'. Waiting for ${web3.eth.transactionConfirmationBlocks} confirmations...`,
   );
 
   const [confirmation, receipt] = await once(
@@ -127,8 +154,8 @@ export async function logTransactionStatus<T, Net extends NetworkName>(
     web3.eth.transactionConfirmationBlocks,
   );
   const { gasUsed, blockNumber } = receipt;
-  console.log(
-    `[4/4]: Tx confirmed ${confirmation} time(s). Gas used: ${gasUsed} | block number: ${blockNumber}`,
+  log(
+    `  [4/4]: Tx confirmed ${confirmation} time(s). Gas used: ${gasUsed} | block number: ${blockNumber}`,
   );
 
   return receipt;

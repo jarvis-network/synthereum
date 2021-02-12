@@ -18,7 +18,6 @@ import {
 } from '@jarvis-network/web3-utils/base/asserts';
 import { getTokenBalance } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
-import { printTruffleLikeTransactionOutput } from '@jarvis-network/synthereum-contracts/dist/src/utils/tx-utils';
 import {
   assertIsSupportedPoolVersion,
   PoolVersion,
@@ -53,22 +52,9 @@ async function main() {
       await getTokenBalance(realm.collateralToken, sender),
     ),
   });
-  const result = await depositInAllPools(
-    realm,
-    poolVersion,
-    numberToWei(depositAmount),
-  );
-  for (const txP of result) {
-    const tx = await txP;
-    log(
-      `Tx summary:\n`,
-      await printTruffleLikeTransactionOutput(web3, tx.transactionHash, {
-        contractName: 'USDC',
-        contractInteraction: `Calling 'ERC20.transfer'`,
-        contractAddress: realm.collateralToken.address,
-      }),
-    );
-  }
+  await depositInAllPools(realm, poolVersion, numberToWei(depositAmount), {
+    printInfo: { log },
+  });
   log('Deposit complete. Getting v2 balances');
   await printPoolBalance(realm, poolVersion);
 }
