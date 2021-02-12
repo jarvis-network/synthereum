@@ -76,7 +76,7 @@ export const Fees: React.FC = () => {
           </Tooltip>
         </Key>
         <Value>
-          {fee?.format(5)} {PRIMARY_STABLE_COIN.symbol}
+          {fee ? `${fee?.format(5)} ${PRIMARY_STABLE_COIN.symbol}` : '---'}
         </Value>
       </Line>
     </Container>

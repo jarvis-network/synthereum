@@ -10,7 +10,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 const Container = styled.div`
   display: flex;
   justify-content: flex-end;
-  align-itens: center;
+  align-items: center;
+  height: calc(${props => props.theme.font.sizes.m} * 1.4);
   color: ${themeValue(
     {
       light: theme => theme.text.secondary,
@@ -43,7 +44,7 @@ export const ExchangeRate: React.FC = () => {
     : useRate(receiveAsset, payAsset);
 
   if (!payAsset || !receiveAsset || !rate) {
-    return null;
+    return <Container />;
   }
 
   const handleInvertClick = () => {
