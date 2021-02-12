@@ -68,6 +68,9 @@ async function main() {
           startingCollateralization: wei('2061000'),
         },
       },
+      allowContractsUpdate: {
+        enabled: true,
+      },
     },
     txOptions,
   );

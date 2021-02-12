@@ -186,11 +186,20 @@ type PoolParameters<Net extends SupportedNetworkName> = {
       startingCollateralization?: BN;
     };
   };
+  allowContractsUpdate?: {
+    enabled: boolean;
+  };
 };
 
 export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
   realm: SynthereumRealmWithWeb3<Net>,
-  { newFees, lp, validator, perPool }: PoolParameters<Net>,
+  {
+    newFees,
+    lp,
+    validator,
+    perPool,
+    allowContractsUpdate,
+  }: PoolParameters<Net>,
   _txOpt: TxOptions,
 ) {
   const maintainer = synthereumConfig[realm.netId as SupportedNetworkId].roles
@@ -210,6 +219,16 @@ export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
 
       if (validator) {
         await changeRole(pool, 'VALIDATOR_ROLE', validator, txOptions);
+      }
+
+      if (allowContractsUpdate) {
+        const allowed = await pool.instance.methods.isContractAllowed().call();
+        if (allowed != allowContractsUpdate.enabled) {
+          const tx0 = pool.instance.methods.setIsContractAllowed(
+            allowContractsUpdate.enabled,
+          );
+          await sendTxWithMsg(tx0, txOptions, 'setIsContractAllowed');
+        }
       }
 
       if (newFees) {
