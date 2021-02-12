@@ -161,8 +161,8 @@ export async function depositInAllPools<Net extends SupportedNetworkName>(
   const poolsCount = Object.keys(realm.pools[version] ?? {}).length;
   const from = assertIsAddress<Net>(realm.web3.defaultAccount);
   const perPool = amount.div(new BN(poolsCount)) as Amount;
-  return await Promise.all(
-    mapPools(realm, version, (pool, i) =>
+  return await executeInSequence(
+    ...mapPools(realm, version, (pool, i) => () =>
       erc20Transfer(realm.collateralToken, pool.address, perPool, {
         ...txOptions,
         web3: realm.web3,
