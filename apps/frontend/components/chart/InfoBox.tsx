@@ -3,8 +3,8 @@ import { Flag, styled } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
-import { useFeedData } from '@/utils/useFeedData';
-import { useReduxSelector } from '@/state/useReduxSelector';
+
+import { Days } from './types';
 
 const Box = styled.div`
   display: flex;
@@ -26,10 +26,12 @@ const Flags = styled.div`
   z-index: 1;
   margin-right: 5px;
   display: block;
-  height: 24px;
+  height: 29px;
 
   > * {
     position: relative;
+    height: 29px;
+    width: 29px;
   }
 
   > *:first-child {
@@ -41,16 +43,19 @@ const Flags = styled.div`
   }
 `;
 
-const PaySymbol = styled.span`
-  font-weight: bold;
+const CurrencySymbol = styled.span`
+  font-size: 20px;
 `;
-
-const ReceiveSymbol = styled.span``;
 
 const Rate = styled.div`
   font-size: ${props => props.theme.font.sizes.xl};
   font-weight: 500;
-  margin-top: 0.25em;
+  margin-top: 0.5em;
+  display: flex;
+`;
+
+const RateValue = styled.div`
+  flex: 1;
 `;
 
 const Change = styled.div<{ pastHidden: boolean }>`
@@ -64,6 +69,16 @@ const Change = styled.div<{ pastHidden: boolean }>`
 const CustomFlag = styled(Flag)`
   height: 24px;
   width: 24px;
+`;
+
+const DayButton = styled.button<{ active: boolean }>`
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none !important;
+  padding: 0.25em 1em;
+  color: ${props => props.theme.text.primary};
+  ${props => props.active && 'font-weight: bold;'}
 `;
 
 const formatNumberAsDiff = (value: number | null, precision = 5) => {
@@ -81,7 +96,15 @@ interface Props {
   wholeRangeChangeValue: number | null;
   wholeRangeChangePerc: number | null;
   changeValuePerc: number | null;
+  onDaysChange: (days: Days) => void;
+  days: Days;
 }
+
+const daysToLabelMap: Record<Days, string> = {
+  1: '24 hours',
+  7: 'week',
+  30: 'month',
+};
 
 const InfoBox: React.FC<Props> = ({
   value,
@@ -89,6 +112,8 @@ const InfoBox: React.FC<Props> = ({
   wholeRangeChangeValue,
   changeValuePerc,
   wholeRangeChangePerc,
+  onDaysChange,
+  days,
 }) => {
   const {
     paySymbol,
@@ -96,9 +121,6 @@ const InfoBox: React.FC<Props> = ({
     assetPay,
     assetReceive,
   } = useExchangeValues();
-
-  const { payAsset, receiveAsset } = useReduxSelector(state => state.exchange);
-  const chartData = useFeedData(payAsset!, receiveAsset!); // @TODO handle currently impossible case when some asset is not selected
 
   const payFlag = assetPay?.icon ? <CustomFlag flag={assetPay.icon} /> : null;
   const receiveFlag = assetReceive?.icon ? (
@@ -112,17 +134,31 @@ const InfoBox: React.FC<Props> = ({
           {payFlag}
           {receiveFlag}
         </Flags>
-        <PaySymbol>{paySymbol}</PaySymbol>/
-        <ReceiveSymbol>{receiveSymbol}</ReceiveSymbol>
+        <CurrencySymbol>
+          {paySymbol} {receiveSymbol}
+        </CurrencySymbol>
       </Symbols>
       <Rate>
-        {value} {receiveSymbol}
+        <RateValue>
+          {value} {receiveSymbol}
+        </RateValue>
+        <div>
+          <DayButton active={days === 1} onClick={() => onDaysChange(1)}>
+            24H
+          </DayButton>
+          <DayButton active={days === 7} onClick={() => onDaysChange(7)}>
+            W
+          </DayButton>
+          <DayButton active={days === 30} onClick={() => onDaysChange(30)}>
+            M
+          </DayButton>
+        </div>
       </Rate>
       <Change pastHidden={changeValue !== null}>
-        {formatNumberAsDiff(changeValue || wholeRangeChangeValue)}{' '}
+        {formatNumberAsDiff(changeValue ?? wholeRangeChangeValue)}{' '}
         {receiveSymbol} (
-        {formatNumberAsDiff(changeValuePerc || wholeRangeChangePerc, 2)}%)
-        <span> Past {chartData.length - 1} days</span>
+        {formatNumberAsDiff(changeValuePerc ?? wholeRangeChangePerc, 2)}%)
+        <span> Past {daysToLabelMap[days]}</span>
       </Change>
     </Box>
   );

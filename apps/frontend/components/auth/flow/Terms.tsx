@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { PageProps } from '@/components/auth/flow/types';
 import {
   BigP,

@@ -56,7 +56,7 @@ const AssetSelect = styled.div<{ error: boolean }>`
   margin-top: 3px;
   border: 1px solid
     ${props =>
-    !props.error ? props.theme.border.primary : props.theme.border.invalid};
+      !props.error ? props.theme.border.primary : props.theme.border.invalid};
   border-radius: ${props => props.theme.borderRadius.s};
 `;
 
@@ -324,7 +324,12 @@ export const MainForm: React.FC<Props> = () => {
       </ExchangeBox>
       <Footer>
         <ExchangeRate />
-        <SwapButton disabled={swapDisabled} type="success" onClick={doSwap} size="l">
+        <SwapButton
+          disabled={swapDisabled}
+          type="success"
+          onClick={doSwap}
+          size="l"
+        >
           {auth ? 'Swap' : 'Sign in'}
         </SwapButton>
       </Footer>

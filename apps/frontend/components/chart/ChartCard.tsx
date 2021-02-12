@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useFeedData } from '@/utils/useFeedData';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import {
   AreaChart,
   XAxis,
@@ -13,37 +13,40 @@ import { useTheme, styled } from '@jarvis-network/ui';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { useRate } from '@/utils/useRate';
-import { useReduxSelector } from '@/state/useReduxSelector';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { mainContentBackground } from '@/data/backgrounds';
-import { DataItem, PricePoint } from '@/state/initialState';
 import { getPercentageChange } from '@/utils/getPercentageChange';
 import { InfoBox } from '@/components/chart/InfoBox';
+import { ChartData, useChartData } from '@/utils/useChartData';
+import { formatDate, formatTimestamp } from '@/utils/format';
+import { Days } from '@/components/chart/types';
 
 type ChangeType = 'more' | 'less';
 
 type PayloadWrapper = {
-  payload: DataItem;
+  payload: ChartData;
 };
 
 type MouseEventData = {
   activePayload?: PayloadWrapper[];
 };
 
-const getWholeRangeChange = (chartData: DataItem[]): ChangeType => {
-  const noGapData = chartData.filter(c => 'close' in c) as PricePoint[];
-  if (noGapData.length < 2) {
+const MORE_STROKE_COLOR = '#00ff38';
+const MORE_FILL_COLOR = '#4ffb75';
+const LESS_STROKE_COLOR = '#eb4b59';
+const LESS_FILL_COLOR = '#f55867';
+
+const getWholeRangeChange = (chartData: ChartData[]): ChangeType => {
+  if (chartData.length < 2) {
     return 'more';
   }
-  const diff = noGapData[noGapData.length - 1].close - noGapData[0].close;
+  const diff = chartData[0].close - chartData[chartData.length - 1].close;
   if (diff > 0) {
     return 'more';
   }
   return 'less';
 };
 
-const getValuesDiff = (compare?: DataItem, current?: DataItem) => {
-  if (!compare || !current || !('close' in compare) || !('close' in current)) {
+const getValuesDiff = (compare?: ChartData, current?: ChartData) => {
+  if (!compare || !current) {
     return {
       diff: null,
       diffPerc: null,
@@ -72,48 +75,41 @@ const Container = styled.div`
   padding: 0;
   box-sizing: border-box;
 
-  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     padding: 30px;
+  }
+
+  @media screen and (min-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1] + 1}px) {
+    height: calc(475px + 119px); // swap panel + infobox
+    padding-bottom: calc(
+      60px + 119px
+    ); // extra height of the fees box + extra height of the info box, so the infobox is "above"
+    align-self: center;
+    box-sizing: content-box;
   }
 `;
 
 export const ChartCard: React.FC = () => {
+  const [days, setDays] = useState<Days>(7);
   const [change, setChange] = useState<ChangeType | null>(null);
   const [changeValue, setChangeValue] = useState<number | null>(null);
   const [changeValuePerc, setChangeValuePerc] = useState<number | null>(null);
   const [currentValue, setCurrentValue] = useState<number | null>(null);
 
-  const { payAsset, receiveAsset } = useReduxSelector(state => state.exchange);
   const theme = useTheme();
-  const chartData = useFeedData(payAsset!, receiveAsset!); // @TODO handle currently impossible case when some asset is not selected
 
   const { paySymbol, receiveSymbol } = useExchangeValues();
+
+  const chartData = useChartData(paySymbol, receiveSymbol, days);
 
   const rate = useRate(receiveSymbol, paySymbol);
   const wholeRangeChange = getWholeRangeChange(chartData);
 
-  const tickFormatter = (timeStr: string | 0) => {
-    // uninitialized data causes tick formatter to be called with either `0`
-    // (number) or `auto` for some weird reasonpayFlag
-    if (timeStr === 'auto' || typeof timeStr === 'number') {
-      return '';
-    }
-    return timeStr.substr(5);
+  const customTooltip = (info: TooltipProps<number, string>) => {
+    return <div>{formatTimestamp(info.label)}</div>;
   };
-
-  const xticks =
-    chartData.length > 0
-      ? [
-          String(chartData[0].time),
-          String(chartData[Math.ceil(chartData.length / 3)].time),
-          String(chartData[2 * Math.ceil(chartData.length / 3)].time),
-          String(chartData[chartData.length - 1].time),
-        ]
-      : [];
-
-  const customTooltip = (info: TooltipProps<number, string>) => (
-    <div>{typeof info.label === 'string' ? info.label.substr(5) : null}</div>
-  );
 
   const resetChart = () => {
     setChange(null);
@@ -130,7 +126,7 @@ export const ChartCard: React.FC = () => {
       }
 
       const { payload: hoveredPayload } = e.activePayload[0];
-      const currentPayload = chartData[chartData.length - 1];
+      const currentPayload = chartData[0];
 
       if ('close' in hoveredPayload) {
         setCurrentValue(hoveredPayload.close);
@@ -140,11 +136,11 @@ export const ChartCard: React.FC = () => {
       setChangeValue(diff);
       setChangeValuePerc(diffPerc);
 
-      if (diff! > 0) {
+      if (diff! < 0) {
         setChange('less');
         return;
       }
-      if (diff! < 0) {
+      if (diff! > 0) {
         setChange('more');
         return;
       }
@@ -155,18 +151,21 @@ export const ChartCard: React.FC = () => {
     },
   };
 
-  const valueSource = currentValue ? new FPN(currentValue) : rate?.rate;
+  const valueSource = currentValue != null ? new FPN(currentValue) : rate?.rate;
   const value = valueSource?.format(5) || '';
 
   // can't use transparent, because with recharts it goes dark grey as default
-  const bgColor = mainContentBackground[theme.name];
-  const currentColor =
+  const bgColor = theme.background.primary;
+  const currentStrokeColor =
     (change || wholeRangeChange) === 'more'
-      ? theme.common.success
-      : theme.common.danger;
+      ? MORE_STROKE_COLOR
+      : LESS_STROKE_COLOR;
+
+  const currentFillColor =
+    (change || wholeRangeChange) === 'more' ? MORE_FILL_COLOR : LESS_FILL_COLOR;
 
   const beginningPayload = chartData[0];
-  const currentPayload = chartData[chartData.length - 1];
+  const currentPayload = chartData[0];
 
   const {
     diff: wholeRangeChangeValue,
@@ -181,17 +180,22 @@ export const ChartCard: React.FC = () => {
         changeValuePerc={changeValuePerc}
         wholeRangeChangeValue={wholeRangeChangeValue}
         wholeRangeChangePerc={wholeRangeChangePerc}
+        onDaysChange={val => setDays(val)}
+        days={days}
       />
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer>
         <AreaChart data={chartData} {...events}>
           <defs>
             <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={currentColor} stopOpacity={0.95} />
+              <stop offset="5%" stopColor={currentFillColor} stopOpacity={1} />
               <stop offset="80%" stopColor={bgColor} stopOpacity={0.8} />
             </linearGradient>
           </defs>
           <XAxis
+            type="number"
             dataKey="time"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
             axisLine={false}
             interval="preserveStartEnd"
             tickLine={false}
@@ -199,12 +203,11 @@ export const ChartCard: React.FC = () => {
               color: 'black',
               fontSize: 12,
             }}
-            ticks={xticks}
-            dy={-10}
-            tickFormatter={tickFormatter}
+            hide
           />
           <YAxis
             hide
+            type="number"
             domain={['dataMin', 'dataMax']}
             padding={{ top: 0, bottom: 16 }}
           />
@@ -212,7 +215,7 @@ export const ChartCard: React.FC = () => {
             dot={false}
             type="monotone"
             dataKey="close"
-            stroke={currentColor}
+            stroke={currentStrokeColor}
             strokeWidth={2}
             fill="url(#colorUv)"
           />

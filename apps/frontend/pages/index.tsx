@@ -41,6 +41,14 @@ const LayoutWidget = styled(Background)`
   justify-content: center;
 `;
 
+const ChartContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
 const WidgetContainer = styled.div`
   width: 360px;
   height: ${FULL_WIDGET_HEIGHT_PX}px;
