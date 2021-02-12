@@ -20,7 +20,7 @@ const Container = styled.button`
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 8px;
-  font-size: ${props => props.theme.font.sizes.s};
+  font-size: ${props => props.theme.font.sizes.m};
   font-family: Krub;
   font-weight: 300;
 `;
