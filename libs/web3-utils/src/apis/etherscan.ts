@@ -43,6 +43,32 @@ export async function getContractTxs<Net extends NetworkName>(
   });
 }
 
+interface SourceCodeResult<Net extends NetworkName> {
+  ABI: string; // AbiItem[]
+  CompilerVersion: string;
+  ConstructorArguments: string;
+  ContractName: string;
+  EVMVersion: 'Default' | string;
+  Implementation: '' | AddressOn<Net>;
+  Library: '' | string;
+  LicenseType: '' | string;
+  OptimizationUsed: '0' | '1';
+  Proxy: '0' | '1';
+  Runs: string;
+  SourceCode: string;
+  SwarmSource: string;
+}
+
+export async function getContractSourceCode<Net extends NetworkName>(
+  contract: AddressOn<Net>,
+) {
+  return await makeEtherscanApiCall<SourceCodeResult<Net>, Net>({
+    module: 'contract',
+    action: 'getsourcecode',
+    address: contract,
+  });
+}
+
 export async function getContractAbi<Net extends NetworkName>(
   contract: AddressOn<Net>,
 ) {
