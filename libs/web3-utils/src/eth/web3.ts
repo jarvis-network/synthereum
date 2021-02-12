@@ -3,6 +3,7 @@ import { getContractTxs } from '../apis/etherscan';
 import { parseInteger } from '../base/asserts';
 import { NetworkName, Web3On } from './web3-instance';
 import { asyncLowerBound } from '../base/sorting';
+import { AddressOn } from './address';
 
 export async function getBlockTimestamp<Net extends NetworkName>(
   web3: Web3On<Net>,
@@ -35,7 +36,7 @@ export async function getClosestBlock<Net extends NetworkName>(
 
 export async function getContractTransactions<Net extends NetworkName>(
   web3: Web3On<Net>,
-  address: string,
+  address: AddressOn<Net>,
 ): Promise<Transaction[]> {
   return await Promise.all(
     (await getContractTxs(address)).map(

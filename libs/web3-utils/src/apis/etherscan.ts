@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { encode, ParsedUrlQueryInput } from 'querystring';
+import { encode } from 'querystring';
 import type { BlockNumber } from 'web3-core';
 import type { AbiItem } from 'web3-utils';
 import { env } from '../config';
-import { assertIsAddress } from '../eth/address';
+import { AddressOn } from '../eth/address';
+import { NetworkName } from '../eth/networks';
 
 export interface EtherscanTxInfo {
   blockNumber: string;
@@ -27,31 +28,31 @@ export interface EtherscanTxInfo {
   confirmations: string;
 }
 
-export async function getContractTxs(
-  contractAddress: string,
+export async function getContractTxs<Net extends NetworkName>(
+  contract: AddressOn<Net>,
   startBlock: BlockNumber = 0,
   endBlock: BlockNumber = 'latest',
 ) {
-  const query = {
+  return await makeEtherscanApiCall<EtherscanTxInfo[], Net>({
     module: 'account',
     action: 'tokentx',
-    contractaddress: assertIsAddress(contractAddress),
+    contractaddress: contract,
     startblock: startBlock.toString(),
     endblock: endBlock.toString(),
     sort: 'asc',
-  };
-  const result = await makeEtherscanApiCall(query);
-  return result as EtherscanTxInfo[];
+  });
 }
 
-export async function getContractAbi(contract: string) {
-  const query = {
-    module: 'contract',
-    action: 'getabi',
-    address: assertIsAddress(contract),
-  };
-  const result = await makeEtherscanApiCall(query);
-  return JSON.parse(result) as AbiItem[];
+export async function getContractAbi<Net extends NetworkName>(
+  contract: AddressOn<Net>,
+) {
+  return JSON.parse(
+    await makeEtherscanApiCall<string, Net>({
+      module: 'contract',
+      action: 'getabi',
+      address: contract,
+    }),
+  ) as AbiItem[];
 }
 
 interface EtherscanPriceResult {
@@ -61,41 +62,59 @@ interface EtherscanPriceResult {
   ethusd_timestamp: string; // e.g. '1592638990'
 }
 
-export async function getEthUsdBtcPrice() {
-  const query = {
+export async function getEthUsdBtcPrice<Net extends NetworkName>() {
+  return await makeEtherscanApiCall<EtherscanPriceResult, Net>({
     module: 'stats',
     action: 'ethprice',
-  };
-  const result = await makeEtherscanApiCall(query);
-  return result as EtherscanPriceResult;
+  });
 }
 
-async function makeEtherscanApiCall(
-  query: ParsedUrlQueryInput,
-  apikey?: string,
-) {
-  apikey = apikey ?? env.apiKeys.etherscan;
-  query = { ...query, apikey };
-  const queryString = encode(query);
-  const url = `https://api.etherscan.io/api?${queryString}`;
-  const response = await axios.get(url);
-  const data = response.data;
+interface EtherscanApiResult<R> {
+  status: string;
+  message: string;
+  error?:
+    | string
+    | {
+        message: string;
+      };
+  result: string | R;
+}
 
-  if (data.status && data.status != 1) {
-    let returnMessage = data.message || 'NOTOK';
-    if (data.result && typeof data.result === 'string') {
-      returnMessage = data.result;
-    } else if (data.message && typeof data.message === 'string') {
-      returnMessage = data.message;
-    }
-    throw new Error(returnMessage);
-  } else if (data.error) {
-    let message = data.error;
-    if (typeof data.error === 'object' && data.error.message) {
-      message = data.error.message;
-    }
-    throw new Error(message);
+async function makeEtherscanApiCall<R, Net extends NetworkName>(
+  query: {
+    apikey?: string;
+    module: string;
+    action: string;
+    [other: string]: string | string[] | undefined;
+  },
+  networkName: Net = 'mainnet' as Net,
+) {
+  query.apikey ??= env.apiKeys.etherscan;
+  const queryString = encode(query);
+  const netPrefix = networkName === 'mainnet' ? '' : `-${networkName}`;
+  const url = `https://api${netPrefix}.etherscan.io/api?${queryString}`;
+  const { data, status } = await axios.get<EtherscanApiResult<R>>(url);
+
+  if (((status / 100) | 0) !== 2) {
+    throw new Error(
+      `Etherscan API Request failed with HTTP status: '${status}'`,
+    );
   }
 
-  return data.result;
+  if (data.status != '1' || data.error) {
+    let errorMessage;
+    if (typeof data.result === 'string') {
+      errorMessage = data.result;
+    } else if (typeof data.message === 'string') {
+      errorMessage = data.message;
+    } else if (data.error) {
+      errorMessage =
+        typeof data.error === 'object' ? data.error.message : data.error;
+    } else {
+      errorMessage = 'Unknown error';
+    }
+    throw new Error(errorMessage);
+  }
+
+  return data.result as R;
 }
