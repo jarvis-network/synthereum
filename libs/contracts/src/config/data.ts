@@ -77,9 +77,9 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
     umaPriceFeedIdentifier: 'EURUSD',
     jarvisPriceFeedIdentifier: 'EURUSD',
     collateralRequirement: '1100000000000000000',
-    startingCollateralization: '1794750',
+    startingCollateralization: '1819350',
     minSponsorTokens: '0',
-    isContractAllowed: false,
+    isContractAllowed: true,
   },
   jCHF: {
     syntheticName: 'Jarvis Synthetic Swiss Franc',
@@ -87,9 +87,9 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
     umaPriceFeedIdentifier: 'CHFUSD',
     jarvisPriceFeedIdentifier: 'USDCHF',
     collateralRequirement: '1100000000000000000',
-    startingCollateralization: '1659450',
+    startingCollateralization: '2079000',
     minSponsorTokens: '0',
-    isContractAllowed: false,
+    isContractAllowed: true,
   },
   jGBP: {
     syntheticName: 'Jarvis Synthetic British Pound',
@@ -99,7 +99,7 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
     collateralRequirement: '1100000000000000000',
     startingCollateralization: '2052000',
     minSponsorTokens: '0',
-    isContractAllowed: false,
+    isContractAllowed: true,
   },
   jXAU: {
     syntheticName: 'Jarvis Synthetic Gold',
@@ -109,7 +109,7 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
     collateralRequirement: '1200000000000000000',
     startingCollateralization: '2696355000',
     minSponsorTokens: '0',
-    isContractAllowed: false,
+    isContractAllowed: true,
   },
 } as const);
 
@@ -178,7 +178,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       admin: A<1>('0x128C8E20Dd4F2d8519dD605632660686bA35D212'),
       maintainer: A<1>('0x10D7C10A2F25bA6212968d8918eb687d589C6e0a'),
       liquidityProvider: A<1>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
-      validator: A<1>('0xCb3508A63176c8a2D24f1d048374E80BEfe8A8a2'),
+      validator: A<1>('0x62Ca030EB6B3F9f0a8fd353d95C48a60763AAfF0'),
     },
     contractsDependencies: {
       uma: {
