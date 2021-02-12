@@ -19,3 +19,13 @@ export async function executeInSequence<Args extends any[]>(
   }
   return result;
 }
+
+export async function nullOnFailure<T>(
+  promise: Promise<T>,
+): Promise<T | null> {
+  try {
+    return await promise;
+  } catch (err) {
+    return null;
+  }
+}
