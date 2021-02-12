@@ -15,7 +15,10 @@ import {
   Web3On,
 } from '@jarvis-network/web3-utils/eth/web3-instance';
 import { log } from './utils/log';
-import { parseFiniteFloat } from '@jarvis-network/web3-utils/base/asserts';
+import {
+  assertIsString,
+  parseFiniteFloat,
+} from '@jarvis-network/web3-utils/base/asserts';
 import { synthereumConfig } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { Fees } from '@jarvis-network/synthereum-contracts/dist/src/config/types';
 import { TxOptions } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
@@ -37,11 +40,12 @@ async function main() {
 
   const localRpc = 'http://localhost:8545';
   const infuraEndPoint = getInfuraEndpoint(netId, 'https');
-  log('Endpoints:', { localRpc, infuraEndPoint });
+  const customRpcUrl = assertIsString(process.env.CUSTOM_RPC_URL);
+  log('Endpoints:', { localRpc, infuraEndPoint, customRpcUrl });
 
   const realmParams = {
-    admin: t(true, localRpc, netId),
-    maintainer: t(false, localRpc, netId),
+    admin: t(true, customRpcUrl, netId),
+    maintainer: t(false, customRpcUrl, netId),
   };
 
   const synCfg = synthereumConfig[netId];
@@ -124,7 +128,10 @@ async function getRealm<Net extends SupportedNetworkId>(
 
   if (!useLedger) {
     log('Setting private key');
-    setPrivateKey_DevelopmentOnly(web3, process.env.PRIVATE_KEY!);
+    setPrivateKey_DevelopmentOnly(
+      web3,
+      assertIsString(process.env.PRIVATE_KEY),
+    );
   }
 
   const accounts = await web3.eth.getAccounts();
