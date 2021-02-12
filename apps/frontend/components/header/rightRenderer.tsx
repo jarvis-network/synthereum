@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AccountSummary, useWindowSize } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
@@ -14,12 +14,16 @@ import { formatWalletAddress } from '@/utils/format';
 import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
+import { setLoginState } from '@/state/slices/auth';
+
+const noop = () => undefined;
 
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
   const authLogin = useContext(AuthContext);
   const name = usePrettyName((auth?.address ?? null) as Address | null);
+  const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
 
   const handleLogIn = async () => {
@@ -28,9 +32,8 @@ const render = () => {
 
   const handleLogOut = () => {
     authLogin!.logout();
-
-    // @TODO Just clear data in Redux without hard-reload
-    window.location.reload();
+    setSigningOut(true);
+    dispatch(setLoginState(null));
   };
 
   const handleSetTheme = (theme: State['theme']) => {
@@ -40,6 +43,12 @@ const render = () => {
   const handleAccountOverviewOpen = () => {
     dispatch(setAccountOverviewModalVisible(true));
   };
+
+  useEffect(() => {
+    if (isSigningOut) {
+      setTimeout(() => setSigningOut(false), 1000);
+    }
+  }, [isSigningOut]);
 
   const links = [
     {
@@ -59,19 +68,40 @@ const render = () => {
     },
   ];
 
-  const addr = auth ? formatWalletAddress(auth.address) : undefined;
-  const image = auth ? avatar(auth.address) : undefined;
+  const getImage = () => {
+    if (isSigningOut) {
+      return '';
+    }
+
+    return auth ? avatar(auth.address) : undefined;
+  }
+
+  const getName = () => {
+    if (isSigningOut) {
+      return '';
+    }
+
+    return name || '';
+  }
+
+  const getAddress = () => {
+    if (isSigningOut) {
+      return 'Signing out...';
+    }
+
+    return auth ? formatWalletAddress(auth.address) : undefined;
+  }
 
   return (
     <AccountSummary
-      name={name || ''}
-      wallet={addr}
-      image={image}
+      name={getName()}
+      wallet={getAddress()}
+      image={getImage()}
       menu={links}
       mode="demo"
       contentOnTop={innerWidth <= 1080}
-      onLogout={handleLogOut}
-      onLogin={handleLogIn}
+      onLogout={isSigningOut ? noop : handleLogOut}
+      onLogin={isSigningOut ? noop : handleLogIn}
       onThemeChange={handleSetTheme}
     />
   );
