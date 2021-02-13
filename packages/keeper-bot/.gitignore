@@ -1,7 +1,0 @@
-.env
-hush/*
-
-__pycache__
-_virtualenv
-.cache
-.coverage
