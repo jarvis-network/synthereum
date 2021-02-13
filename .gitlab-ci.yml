@@ -30,9 +30,6 @@ stages:
   - build libs
   - build and push images
   - deploy
-  - build-old
-  - deploy-old
-  - delete-old
 
 # Jobs:
 
@@ -59,7 +56,7 @@ stages:
   stage: build and push images
   parallel:
     matrix:
-      - TARGET: [validator, frontend, frontend-old]
+      - TARGET: [validator, frontend]
   dependencies:
     - 🏗 build libs
 
@@ -91,102 +88,6 @@ stages:
     - netlify deploy --dir /src/out
   dependencies:
     - 🐳 build & push
-
-# --------------------------------- Old Jobs --------------------------------- #
-
-💎 deploy old frontend:
-  <<: *job-config
-  stage: deploy
-  image: $REGISTRY/frontend-old:${TAG}
-  variables:
-    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_OLD'
-    GIT_STRATEGY: none
-  before_script:
-    - npm install -g netlify-cli
-  script:
-    - ls -la /src
-    - netlify deploy --dir /src/build
-  dependencies:
-    - 🐳 build & push
-
-.acr_path:
-  - &acr_path_script |
-    case "$CI_COMMIT_REF_SLUG" in
-      production) ACR_IMAGE_TAG='production';;
-      dev) ACR_IMAGE_TAG='dev';;
-      *) ACR_IMAGE_TAG="unmerged-$CI_COMMIT_REF_SLUG";;
-    esac
-    ACR_IMAGE_FULL_NAME="${ACR_URL}/${CI_PROJECT_PATH}:${ACR_IMAGE_TAG}"
-
-build-old-validator:
-  <<: *job-config
-  stage: build-old
-  when: manual
-  allow_failure: true
-  needs: []
-  before_script:
-    - docker info
-    - echo "$ACR_CI_PASSWORD" | docker login -u "$ACR_CI_USER" --password-stdin $ACR_URL
-    - *acr_path_script
-  script:
-    - docker build --pull -t "$ACR_IMAGE_FULL_NAME" ./packages/keeper-bot
-    - docker push "$ACR_IMAGE_FULL_NAME"
-
-.deploy-keeper-bot-default: &deploy-keeper-bot-default
-  image: mcr.microsoft.com/azure-cli
-  stage: deploy-old
-  when: manual
-  allow_failure: true
-  script:
-    - *acr_path_script
-    - CONTAINER_INSTANCE_NAME="${CI_PROJECT_NAME}-${ACR_IMAGE_TAG}"
-    - |
-      az login --service-principal \
-      -u $CONTAINER_INSTANCE_CI_USER \
-      --password $CONTAINER_INSTANCE_CI_PASSWORD \
-      --tenant $CONTAINER_INSTANCE_CI_TENANT_ID
-    - az container delete -g $CONTAINER_INSTANCE_RESOURCE_GROUP -n $CONTAINER_INSTANCE_NAME -y
-    - |
-      az container create \
-      --resource-group $CONTAINER_INSTANCE_RESOURCE_GROUP \
-      --name $CONTAINER_INSTANCE_NAME \
-      --image $ACR_IMAGE_FULL_NAME \
-      --registry-username $ACR_CI_USER \
-      --registry-password $ACR_CI_PASSWORD \
-      --environment-variables ETH_FROM=$CI_ETH_FROM RPC_HOST=$CI_RPC_HOST FREQUENCY=$CI_FREQUENCY \
-      --secrets key_store="$CI_KEY_STORE" password="$CI_PASSWORD" \
-      --secrets-mount-path="$CI_SECRETS_PATH" \
-      --command-line "$CI_DOCKER_COMMAND_INPUT" \
-      --restart-policy OnFailure \
-      --cpu 1 --memory 0.5
-
-.delete-keeper-bot-default: &delete-keeper-bot-default
-  image: mcr.microsoft.com/azure-cli
-  stage: delete-old
-  when: manual
-  allow_failure: true
-  script:
-    - *acr_path_script
-    - CONTAINER_INSTANCE_NAME="${CI_PROJECT_NAME}-${ACR_IMAGE_TAG}"
-    - echo TENANT ${CONTAINER_INSTANCE_CI_TENANT_ID}
-    - |
-      az login --service-principal \
-        -u $CONTAINER_INSTANCE_CI_USER \
-        --password $CONTAINER_INSTANCE_CI_PASSWORD \
-        --tenant $CONTAINER_INSTANCE_CI_TENANT_ID
-
-    - az container delete -g $CONTAINER_INSTANCE_RESOURCE_GROUP -n $CONTAINER_INSTANCE_NAME -y
-
-deploy-azure-stage:
-  <<: *deploy-keeper-bot-default
-  only:
-    - merge_requests
-    - dev
-    - production
-
-delete-azure:
-  <<: *job-config
-  <<: *delete-keeper-bot-default
 
 release:
   stage: release
