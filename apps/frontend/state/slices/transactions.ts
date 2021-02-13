@@ -54,3 +54,4 @@ const transactionsSlice = createSlice({
 });
 
 export const { reducer } = transactionsSlice;
+export const { setTransactionsHistory } = transactionsSlice.actions;

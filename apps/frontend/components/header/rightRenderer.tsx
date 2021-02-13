@@ -15,6 +15,8 @@ import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { setLoginState } from '@/state/slices/auth';
+import { setTransactionsHistory } from '@/state/slices/transactions';
+import { setWalletBalance } from '@/state/slices/wallet';
 
 const noop = () => undefined;
 
@@ -33,7 +35,9 @@ const render = () => {
   const handleLogOut = () => {
     authLogin!.logout();
     setSigningOut(true);
+    dispatch(setWalletBalance({}))
     dispatch(setLoginState(null));
+    dispatch(setTransactionsHistory([]))
   };
 
   const handleSetTheme = (theme: State['theme']) => {
