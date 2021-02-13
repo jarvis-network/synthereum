@@ -8,12 +8,12 @@ interface Props {
 
 const Container = styled.div`
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 22px;
 
   img {
-    width: 19px;
-    height: 19px;
+    width: 22px;
+    height: 22px;
     position: absolute;
   }
 

@@ -50,9 +50,6 @@ const WidgetContainer = styled.div`
 export default function Home() {
   const dispatch = useDispatch();
   const theme = useReduxSelector(state => state.theme);
-  const chooseAsset = useReduxSelector(
-    state => state.exchange.chooseAssetActive,
-  );
   const realmAgent = useContext(RealmAgentContext);
   const url = backgroundMap[theme];
 
@@ -77,7 +74,7 @@ export default function Home() {
   return (
     <StickyHeader>
       <OnMobile>
-        {chooseAsset ? <ChooseAsset /> : <ChartExchangeCards />}
+        <ChartExchangeCards />
       </OnMobile>
       <OnDesktop>
         <Layout>
@@ -86,7 +83,7 @@ export default function Home() {
           </LayoutChart>
           <LayoutWidget image={url}>
             <WidgetContainer>
-              {chooseAsset ? <ChooseAsset /> : <ExchangeCard />}
+              <ExchangeCard />
             </WidgetContainer>
           </LayoutWidget>
         </Layout>

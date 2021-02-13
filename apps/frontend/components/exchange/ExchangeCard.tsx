@@ -7,22 +7,22 @@ import {
   DataGrid,
   Icon,
   themeValue,
+  Card,
 } from '@jarvis-network/ui';
 
 import { MainForm } from '@/components/exchange/MainForm';
+import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 
-import { setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
+import { setChooseAsset, setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import { Asset, AssetPair } from '@/data/assets';
 
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
-import { useExchangeValues } from '@/utils/useExchangeValues';
 import { Fees } from './Fees';
-import { StyledCard } from './StyledCard';
-import { OnMobile } from '../OnMobile';
 import { OnDesktop } from '../OnDesktop';
+import { OnMobile } from '../OnMobile';
 
 const Container = styled.div`
   display: flex;
@@ -30,6 +30,12 @@ const Container = styled.div`
   justify-content: center;
   width: 100%;
   height: 540px;
+
+  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    height: 100%;
+    padding-bottom: 51px;
+    justify-content: space-between;
+  }
 `;
 
 const CardContainer = styled.div`
@@ -42,6 +48,15 @@ const FeesContainer = styled.div`
 
 const ContentContainer = styled.div`
   height: calc(100% - ${props => props.theme.borderRadius.m});
+`;
+
+const MobileCardContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
 `;
 
 const grid = {
@@ -83,21 +98,18 @@ const StyledGrid = styled(DataGrid)`
   }
   .number {
     text-align: right;
-    padding-right: 23px !important; // 30 - 7 for slim scrollbar
+    padding-let: 0 !important;
   }
   .flag {
-    padding-left: 30px !important;
-    padding-right: 7px !important;
     flex-grow: 0 !important;
     width: auto !important;
+    padding: 16px 0 16px 24px !important;
   }
   .text,
   .number {
     color: ${props => props.theme.text.primary};
-  }
-  .text {
-    font-size: 12px;
-    padding-left: 0 !important;
+    font-size: ${props => props.theme.font.sizes.m};
+    padding: 16px !important;
   }
 
   .rt-tbody .rt-tr-group:first-child {
@@ -105,7 +117,7 @@ const StyledGrid = styled(DataGrid)`
   }
 
   .rt-tbody .rt-tr-group {
-    border-color: ${props => props.theme.border.secondary}!important;
+    border-color: ${props => props.theme.border.primary}!important;
   }
 
   .rt-table {
@@ -163,22 +175,22 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
-
-  const pairsList = useMemo(() => createPairs(list), [list]);
+  const chooseAsset = useReduxSelector(state => state.exchange.chooseAssetActive);
 
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const {
-    payString,
-    receiveString,
-  } = useExchangeValues();
-
-  const swapDisabled = !Number(payString) || !Number(receiveString);
+  const pairsList = useMemo(() => createPairs(list), [list]);
 
   const handleCloseClick = () => {
     setQuery('');
     setSearchOpen(false);
+  };
+
+  const handleSelected = (pair: AssetPair) => {
+    dispatch(setPayAsset(pair.input.symbol));
+    dispatch(setReceiveAsset(pair.output.symbol));
+    handleCloseClick();
   };
 
   useEffect(() => {
@@ -191,13 +203,6 @@ export const ExchangeCard: React.FC = () => {
 
     return () => document.removeEventListener('keydown', callback);
   }, []);
-
-  const handleSelected = (pair: AssetPair) => {
-    dispatch(setPayAsset(pair.input.symbol));
-    dispatch(setReceiveAsset(pair.output.symbol));
-    setQuery('');
-    setSearchOpen(false);
-  };
 
   const searchBarProps: React.ComponentProps<typeof StyledSearchBar> = {
     placeholder: 'Try "jEUR"',
@@ -242,29 +247,67 @@ export const ExchangeCard: React.FC = () => {
     };
   }
 
-  const suffix = searchOpen && (
-    <ClearButton onClick={handleCloseClick}>
-      <Icon icon="IoMdClose" />
-    </ClearButton>
+  const getContent = () => {
+    if (chooseAsset) {
+      return <ChooseAsset />
+    }
+
+    const suffix = searchOpen && (
+      <ClearButton onClick={handleCloseClick}>
+        <Icon icon="IoMdClose" />
+      </ClearButton>
+    );
+
+    return (
+      <ContentContainer>
+        <StyledSearchBar {...searchBarProps} suffix={suffix} />
+        {!searchOpen && <MainForm />}
+      </ContentContainer>
+    );
+  }
+
+  const getCardProps = () => {
+    if (chooseAsset) {
+      return {
+        title: "Choose asset",
+        onBack: () => dispatch(setChooseAsset(null))
+      }
+    }
+
+    if (searchOpen) {
+      return {
+        title: "Swap",
+        onBack: () => handleCloseClick()
+      }
+    }
+
+    return {
+      title: "Swap"
+    }
+  };
+
+  const content = getContent();
+
+  const card = (
+    <Card disableBorderRadiusOnMobile={true} {...getCardProps()}>
+      {content}
+    </Card>
   );
 
-  const content = (
-    <ContentContainer>
-      <StyledSearchBar {...searchBarProps} suffix={suffix} />
-      {!searchOpen && <MainForm />}
-    </ContentContainer>
-  );
+  const mobileContent = chooseAsset || searchOpen ? (
+    <MobileCardContainer>
+      {card}
+    </MobileCardContainer>
+  ) : content;
 
   return (
     <Container>
       <CardContainer>
         <OnDesktop>
-          <StyledCard title="Swap">
-            {content}
-          </StyledCard>
+          {card}
         </OnDesktop>
         <OnMobile>
-          {content}
+          {mobileContent}
         </OnMobile>
       </CardContainer>
       <FeesContainer>

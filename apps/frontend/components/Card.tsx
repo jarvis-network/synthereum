@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, styled, Tabs, themeValue } from '@jarvis-network/ui';
+import { Icon, styled } from '@jarvis-network/ui';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { ColoredTabs } from '@/components/ColoredTabs';

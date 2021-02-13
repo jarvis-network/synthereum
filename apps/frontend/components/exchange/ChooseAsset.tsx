@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
+import type { RowInfo } from 'react-table';
+
 import {
   ColumnType,
   DataGrid,
@@ -12,24 +14,20 @@ import {
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
-import { StyledCard } from '@/components/exchange/StyledCard';
-import { Asset, AssetWithWalletInfo } from '@/data/assets';
+import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import {
   setChooseAsset,
   setPayAsset,
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-
-import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-
-import type { RowInfo } from 'react-table';
+import { Asset, AssetWithWalletInfo } from '@/data/assets';
 
 import { StyledSearchBar } from './StyledSearchBar';
 
 const tabsList = [
   {
-    title: 'All',
+    title: 'ALL',
     filterValue: '',
   },
   {
@@ -89,9 +87,9 @@ const grid = {
 const StyledTabs = styled(Tabs)`
   & > *:first-child {
     border-top: none;
-    border-bottom: 1px solid ${props => props.theme.border.secondary};
+    border-bottom: 1px solid ${props => props.theme.border.primary};
     background: none;
-    padding-left: 30px;
+    padding-left: 16px;
     box-sizing: border-box;
   }
 
@@ -105,12 +103,12 @@ const StyledTabs = styled(Tabs)`
   }
 `;
 
-const StyledHeader = styled.b`
-  padding-left: 30px;
-  margin-top: 30px;
+const StyledHeader = styled.span`
+  padding-left: 24px;
+  margin-top: 24px;
   margin-bottom: 10px;
   display: block;
-  font-size: 10px;
+  font-size: ${props => props.theme.font.sizes.m}
 `;
 
 const StyledGrid = styled(DataGrid)`
@@ -118,28 +116,29 @@ const StyledGrid = styled(DataGrid)`
   .asset,
   .flag {
     text-align: left;
-  }
-
-  .asset,
-  .number .value {
-    font-size: 12px;
-    color: ${props => props.theme.text.primary};
+    padding: 8px 16px !important;
   }
 
   .number {
     text-align: right;
-    padding-right: 30px !important;
+    padding: 8px 16px !important;
+  }
+
+  .asset,
+  .number .value {
+    color: ${props => props.theme.text.primary};
+    font-size: ${props => props.theme.font.sizes.m};
   }
 
   .flag {
-    padding-left: 30px !important;
     flex-grow: 0 !important;
     width: auto !important;
     padding-right: 0 !important;
-  }
 
-  .asset {
-    padding: 0 0 4px 30px !important;
+    img {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   .rt-tbody {
@@ -148,7 +147,7 @@ const StyledGrid = styled(DataGrid)`
     }
 
     .rt-tr-group {
-      border-color: ${props => props.theme.border.secondary}!important;
+      border-color: ${props => props.theme.border.primary}!important;
     }
   }
 
@@ -171,18 +170,10 @@ const StyledGrid = styled(DataGrid)`
   ${noColorGrid()}
 `;
 
-const ScrollableCard = styled(StyledCard)`
-  width: 100%;
-
-  .box {
-    height: 100%;
-  }
-`;
-
 const ScrollableSearchBar = styled(StyledSearchBar)`
   display: flex;
   flex-direction: column;
-  height: calc(100% - ${props => props.theme.sizes.row});
+  height: 100%;
 
   > :nth-child(2) > :first-child {
     padding-left: 0;
@@ -201,12 +192,12 @@ const ScrollableSearchBar = styled(StyledSearchBar)`
 `;
 
 const ComingSoon = styled.img`
-  margin: 0 2em;
+  margin: 2em;
 `;
 
 const ScrollableContents = styled.div`
   ${props => styledScrollbars(props.theme)}
-  height: 340px;
+  height: calc(100% - 150px);
 `;
 
 const ScrollableTabs = styled(StyledTabs)`
@@ -260,7 +251,7 @@ export const ChooseAsset: React.FC = () => {
   });
 
   return (
-    <ScrollableCard mode="back" title="Choose an asset" onBack={onBack}>
+    <>
       <ScrollableSearchBar
         tabs={tabs}
         data={list}
@@ -321,6 +312,6 @@ export const ChooseAsset: React.FC = () => {
           );
         }}
       />
-    </ScrollableCard>
+    </>
   );
 };

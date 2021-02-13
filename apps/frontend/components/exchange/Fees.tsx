@@ -16,8 +16,10 @@ const Container = styled.div`
   padding: 15px;
 
   @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
-    background: ${props => props.theme.background.secondary};
-    margin: 15px;
+    margin-top: 15px;
+    border-top: 1px solid ${props => props.theme.border.primary};
+    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-radius: 0;
   }
 `;
 

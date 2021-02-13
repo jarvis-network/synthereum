@@ -14,7 +14,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 24px;
+  padding: 4px 24px;
   margin: 0 -24px;
 
   :not(:last-child) {

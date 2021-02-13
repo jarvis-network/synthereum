@@ -26,13 +26,15 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
 
   .group {
     & > div:first-child {
-      padding-left: 30px;
+      padding-left: 24px;
     }
     & > div:nth-child(3) {
-      padding-right: 30px;
+      padding-right: 24px;
     }
     border: none;
-    border-bottom: 1px solid ${props => props.theme.border.secondary};
+    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-radius: 0;
+    margin: 0;
   }
 
   display: flex;

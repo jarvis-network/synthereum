@@ -30,7 +30,7 @@ const Heading = styled.h4`
 `;
 
 const Content = styled.div`
-  padding: ${props => props.theme.font.sizes.m} 0;
+  padding: 5px 0;
   font-size: ${props => props.theme.font.sizes.m};
 `;
 

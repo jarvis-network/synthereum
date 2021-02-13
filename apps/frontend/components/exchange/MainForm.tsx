@@ -31,6 +31,7 @@ interface Props {}
 
 const Container = styled.div`
   height: 100%;
+  padding-top: 8px;
 `;
 
 const ExchangeBox = styled.div<{ error: boolean }>`
