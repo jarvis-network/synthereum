@@ -4,14 +4,13 @@ let
 in
 mkShell {
   buildInputs = [
-    dmd
+    # dmd # FIXME: Bring back dmd support by adding our pacakge derivation
     fish
     git
-    docker
+    (docker.override { buildxSupport = true; })
     docker-compose
     nodejs-14_x
     (yarn.override { nodejs = nodejs-14_x; })
-    nodePackages.lerna
     gnumake
     python3
     gccStdenv
