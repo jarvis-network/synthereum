@@ -5,8 +5,9 @@ import std.exception : enforce;
 import std.file : readText;
 import std.format : format;
 import std.json : JSONValue, parseJSON;
+import std.range : dropExactly, take;
 import std.stdio : File, stdin, stdout, writeln, writefln;
-import std.parallelism : parallel;
+import std.parallelism : parallel, defaultPoolThreads;
 import std.uuid : randomUUID;
 
 enum alreadyVerified = "Contract source code already verified";
@@ -24,13 +25,19 @@ void main(string[] args)
 {
     import std.getopt : config, defaultGetoptPrinter, getopt;
 
+    uint count = uint.max;
     uint skipContractsCount = 0;
     Network network = Network.kovan;
+    bool parallel = false;
 
     auto helpInformation = args.getopt(
+        "count", "How many contracts to verify", &count,
         "skipContractsCount", "How many contracts to skip verifying from the list. Default is 0.", &skipContractsCount,
         "network", "Network id identifying the 'networks/<id>[_args].json' files to use", &network,
+        "parallel", "Enable parallel verification", &parallel,
     );
+
+    if (!parallel) defaultPoolThreads = 0;
 
     if (helpInformation.helpWanted)
     {
@@ -41,10 +48,17 @@ void main(string[] args)
         return;
     }
 
-    const contractAddresses = "./networks/%s.json".format(cast(int)network)
-        .readText.parseJSON.array[skipContractsCount .. $];
+    const allContractAddresses = "./networks/%s.json".format(cast(int)network)
+        .readText.parseJSON.array;
+    const contractAddresses = allContractAddresses.dropExactly(skipContractsCount).take(count);
     const allContractArgs = "./networks/%s_args.json".format(cast(int)network)
         .readText.parseJSON.object;
+
+    if (!contractAddresses.length) {
+        "No contracts to verify - allAddresses = %s | skip: %s | count: %s | selectedAddresses = %s"
+            .writefln(allContractAddresses.length, skipContractsCount, count, contractAddresses.length);
+        return;
+    }
 
     writefln(
         "Starting verification on network='%s' from contract='%s' (index='%s')\n",
