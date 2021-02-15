@@ -83,5 +83,10 @@
     "contractName": "SynthereumPoolOnChainPriceFeedFactory",
     "address": "0x4f8fAe794fCac0753efA68Ca5D5488e7e8153750",
     "transactionHash": "0x52e74d31a9fc31a4b69e83d649f57fcb48463ee9ae350b2612f49fc973cc1d30"
+  },
+  {
+    "contractName": "jEUR Synthereum Pool v3",
+    "address": "0x1D79C29E9cA15dE979c0748DB7c569fDac4Bb9d7",
+    "transactionHash": ""
   }
 ]

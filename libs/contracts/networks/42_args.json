@@ -53,5 +53,25 @@
   "0x0E8B9A7Cba2fe3e459447D62d1961709d626319a": [],
   "0x4f8fAe794fCac0753efA68Ca5D5488e7e8153750": [
     "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34"
+  ],
+  "0x1D79C29E9cA15dE979c0748DB7c569fDac4Bb9d7": [
+    "0x00051f5d33412144a4576E3e3cdE5f913B9F4d62",
+    "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34",
+    3,
+    {
+      "admin": "0x539E625172026F8d2AC50648a55871FA728618e8",
+      "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
+      "liquidityProvider": "0x22744fcAd77B78595f6Abb003cc5C5FB97e16365"
+    },
+    true,
+    "1819800",
+    {
+      "feePercentage": { "rawValue": "2000000000000000"},
+      "feeRecipients": [
+        "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
+        "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
+      ],
+      "feeProportions": [50, 50]
+    }
   ]
 }
