@@ -1,4 +1,4 @@
-#!/usr/bin/env -S dmd -g -run
+#!/usr/bin/env -S ldmd2 -g -run
 
 import std.conv : to;
 import std.exception : enforce;

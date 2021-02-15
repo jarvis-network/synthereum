@@ -4,7 +4,7 @@ let
 in
 mkShell {
   buildInputs = [
-    # dmd # FIXME: Bring back dmd support by adding our pacakge derivation
+    ldc
     fish
     git
     (docker.override { buildxSupport = true; })
