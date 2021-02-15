@@ -71,8 +71,8 @@
   },
   {
     "contractName": "SynthereumChainlinkPriceFeed",
-    "address": "0xCb6cB6Bd8C70EC25553030D36F8D7B57C2aC590a",
-    "transactionHash": "0x6683ba4e474603ce0d22bab66a3ec42ba0fe3669678300d3df8b4d015170c1e2"
+    "address": "0x5ccD849ee56020f972b3bE1d469bB0c6A6cC9b28",
+    "transactionHash": "0x995ff84d034bd6d894f7ed73051fb0d8f42990f1e4a0465e3bdf7305dc8670fd"
   },
   {
     "contractName": "SynthereumPoolOnChainPriceFeedLib",
