@@ -25,6 +25,7 @@ import {
 import {
   IDerivative_Abi,
   SynthereumPool_Abi,
+  SynthereumPoolOnChainPriceFeed_Abi,
   SynthereumTIC_Abi,
 } from '../contracts/abi';
 import {
@@ -125,6 +126,24 @@ export async function loadPool<
     };
   } else if (version === 'v2') {
     const result = getContract(web3, SynthereumPool_Abi, poolAddress).instance;
+    const derivatesAddresses = (await result.methods
+      .getAllDerivatives()
+      .call()) as AddressOn<Net>[];
+
+    return {
+      result: result as PoolContract<Version>,
+      derivativeAddress: getContract(
+        web3,
+        IDerivative_Abi,
+        last(derivatesAddresses),
+      ).instance,
+    };
+  } else if (version === 'v3') {
+    const result = getContract(
+      web3,
+      SynthereumPoolOnChainPriceFeed_Abi,
+      poolAddress,
+    ).instance;
     const derivatesAddresses = (await result.methods
       .getAllDerivatives()
       .call()) as AddressOn<Net>[];
@@ -252,8 +271,11 @@ export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
   );
 }
 
-export async function changeRole<Net extends SupportedNetworkName>(
-  pool: SynthereumPool<PoolVersion, Net>,
+export async function changeRole<
+  Version extends PoolVersion,
+  Net extends SupportedNetworkName
+>(
+  pool: SynthereumPool<'v2', Net>,
   roleName: keyof typeof pool.instance.methods,
   role: RoleChange<Net>,
   txOptions: FullTxOptions<Net>,

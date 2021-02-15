@@ -1,3 +1,4 @@
+import { assertIncludes } from '@jarvis-network/web3-utils/base/asserts';
 import {
   ContractInfo,
   TokenInfo,
@@ -9,20 +10,27 @@ import {
   IDerivative,
   SynthereumPool as SynthereumPool_Contract,
   SynthereumTIC as SynthereumTIC_Contract,
+  SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeed_Contract,
 } from '../../contracts/typechain';
 
-export type PoolVersions = ['v1', 'v2'];
+export const poolVersions = ['v1', 'v2', 'v3'] as const;
+export type PoolVersions = typeof poolVersions;
 export type PoolVersion = PoolVersions[number];
 
 export function assertIsSupportedPoolVersion(x: unknown): PoolVersion {
-  if (x === 'v1' || x === 'v2') return x;
-  throw new Error(`'${x}' is not a supported pool version`);
+  return assertIncludes(
+    poolVersions,
+    x,
+    `'${x}' is not a supported pool version`,
+  );
 }
 
 export type PoolContract<Version extends PoolVersion> = Version extends 'v1'
   ? SynthereumTIC_Contract
   : Version extends 'v2'
   ? SynthereumPool_Contract
+  : Version extends 'v3'
+  ? SynthereumPoolOnChainPriceFeed_Contract
   : never;
 
 export interface SynthereumPool<

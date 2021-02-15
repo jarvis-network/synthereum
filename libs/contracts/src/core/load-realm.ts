@@ -66,7 +66,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 
   const collateralAddress = config.primaryCollateralToken.address;
 
-  const loadAllPools = async (version: PoolVersion) => {
+  const loadAllPools = async <Version extends PoolVersion>(version: Version) => {
     const pairs = await Promise.all(
       allSyntheticSymbols.map(async symbol => {
         const info = await loadPoolInfo(
@@ -89,8 +89,9 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     netId,
     poolRegistry,
     pools: {
-      v1: (await loadAllPools('v1')) as PoolsForVersion<'v1', Net>,
-      v2: (await loadAllPools('v2')) as PoolsForVersion<'v2', Net>,
+      v1: await loadAllPools('v1'),
+      v2: await loadAllPools('v2'),
+      v3: await loadAllPools('v3'),
     },
     // Assume the same collateral token for all synthetics:
     collateralToken,
@@ -102,6 +103,8 @@ function poolVersionId(version: PoolVersion) {
     ? 1
     : version === 'v2'
     ? 2
+    : version === 'v3'
+    ? 3
     : throwError(`'${version}' is not a supported pool version`);
 }
 
