@@ -43,9 +43,9 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
       "collateralRequirement": "1100000000000000000",
-      "startingCollateralization": "1794750",
+      "startingCollateralization": "1819350",
       "minSponsorTokens": "0",
-      "isContractAllowed": false
+      "isContractAllowed": true
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
@@ -54,16 +54,16 @@
       "collateralRequirement": "1100000000000000000",
       "startingCollateralization": "1659450",
       "minSponsorTokens": "0",
-      "isContractAllowed": false
+      "isContractAllowed": true
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1100000000000000000",
-      "startingCollateralization": "2052000",
+      "startingCollateralization": "2079000",
       "minSponsorTokens": "0",
-      "isContractAllowed": false
+      "isContractAllowed": true
     },
     {
       "syntheticName": "Jarvis Synthetic Gold",
@@ -72,7 +72,7 @@
       "collateralRequirement": "1200000000000000000",
       "startingCollateralization": "2696355000",
       "minSponsorTokens": "0",
-      "isContractAllowed": false
+      "isContractAllowed": true
     }
   ]
 }
