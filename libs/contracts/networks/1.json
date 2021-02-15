@@ -71,5 +71,25 @@
   {
     "contractName": "jEUR Pool",
     "address": "0xbe9c588eb7a2bdd76f49f1d3a54c7254612a7e9e"
+  },
+  {
+    "contractName": "SynthereumChainlinkPriceFeed",
+    "address": "0xbA7CE51F85D55473009C46eF8776d520FF3cC425",
+    "transactionHash": "0x598bb9d7301a391778ca0145a8e5e6357a03e09287af36f364843f3a9a494e42"
+  },
+  {
+    "contractName": "SynthereumPoolOnChainPriceFeedLib",
+    "address": "0xc676dFA282773bbfB154041B2Fe6E84745825807",
+    "transactionHash": "0xc4102a99147e02f765caf62a6092ac328a62231d1b5b5aaeb73baf30337e5968"
+  },
+  {
+    "contractName": "SynthereumPoolOnChainPriceFeedFactory",
+    "address": "0x69ae71BeDBB229F69453d1A048753aac43f36a61",
+    "transactionHash": "0x653e19d339aef74f49565e7e85387fd55a03577b285a219391d011043098710a"
+  },
+  {
+    "contractName": "jEUR Synthereum V3 Pool",
+    "address": "0x833407f9c6C55df59E7fe2Ed6fB86bb413536359",
+    "transactionHash": ""
   }
 ]
