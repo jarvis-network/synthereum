@@ -14,5 +14,17 @@
       "jGBP": "0xCA0b869e468B134e5aA4470B3B7F45e22163bEA0",
       "jXAU": "0x7F11D44EB91C069E51F2070a3309aa45dfB22e73"
     }
+  },
+  "1": {
+    "isEnabled": true,
+    "Pool": 3,
+    "Derivatives": {
+      "jEUR": "0x48546bDD57D34Cb110f011Cdd1CcaaE75Ee17a70",
+      "jGBP": "0x182d5993106573A95a182AB3A77c892713fFDA56"
+    },
+    "PoolForAdding": {
+      "jEUR": "0xBe9C588eb7A2BDD76F49f1D3a54c7254612A7e9E",
+      "jGBP": "0xf09f461C1d254B62cA3Ab479426e29265642713b"
+    }
   }
 }
