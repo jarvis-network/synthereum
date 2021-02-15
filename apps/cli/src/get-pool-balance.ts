@@ -21,6 +21,7 @@ import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/di
 import {
   assertIsSupportedPoolVersion,
   PoolVersion,
+  poolVersions,
 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import { log } from './utils/log';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
@@ -35,10 +36,12 @@ async function main() {
   log('Private key set - using', { address: web3.defaultAccount });
   const realm = await loadRealm(web3, netId);
   log('Realm loaded', { poolRegistry: realm.poolRegistry.address });
-  log('Getting v1 balances');
-  await printPoolBalance(realm, 'v1');
-  log('Getting v2 balances');
-  await printPoolBalance(realm, 'v2');
+
+  for (const v of poolVersions) {
+    log(`Getting ${v} balances`);
+    await printPoolBalance(realm, v);
+  }
+
   const depositAmount = parseFiniteFloat(process.env.TOTAL_DEPOSIT_AMOUNT);
   if (depositAmount <= 0) return;
   const poolVersion = assertIsSupportedPoolVersion(
