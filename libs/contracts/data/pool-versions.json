@@ -20,6 +20,10 @@
     },
     "PoolFactory": {
       "version": 2,
+      "isEnabled": false
+    },
+    "PoolOnChainPriceFeedFactory": {
+      "version": 3,
       "isEnabled": true
     }
   }

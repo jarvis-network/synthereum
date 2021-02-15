@@ -64,15 +64,6 @@
       "startingCollateralization": "2079000",
       "minSponsorTokens": "0",
       "isContractAllowed": true
-    },
-    {
-      "syntheticName": "Jarvis Synthetic Gold",
-      "syntheticSymbol": "jXAU",
-      "priceFeedIdentifier": "XAUUSD",
-      "collateralRequirement": "1100000000000000000",
-      "startingCollateralization": "2696355000",
-      "minSponsorTokens": "0",
-      "isContractAllowed": true
     }
   ]
 }
