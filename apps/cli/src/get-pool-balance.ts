@@ -29,7 +29,7 @@ import { t } from '@jarvis-network/web3-utils/base/meta';
 
 async function main() {
   log('Starting');
-  const netId = parseSupportedNetworkId(42);
+  const netId = parseSupportedNetworkId(process.env.NETWORK_ID);
   const web3 = getInfuraWeb3(netId);
   log('Web3 instance loaded');
   setPrivateKey_DevelopmentOnly(web3, assertNotNull(process.env.PRIVATE_KEY));
