@@ -78,6 +78,7 @@ async function printPoolBalance(
         pool.syntheticToken.address + ` (${pool.syntheticToken.symbol})`,
       'Collateral Token Address':
         pool.collateralToken.address + ` (${pool.collateralToken.symbol})`,
+      'Derivative Address': pool.derivative.address,
     }));
   console.table(result);
 }
