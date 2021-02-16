@@ -363,6 +363,12 @@ export const PerpetualPositionManagerPoolPartyLib_Abi = require('./PerpetualPosi
   PerpetualPositionManagerPoolPartyLib
 >;
 
+import type { PriceFeedGetter } from '../typechain/PriceFeedGetter';
+export const PriceFeedGetter_Abi = require('./PriceFeedGetter.json') as Tagged<
+  AbiItem[],
+  PriceFeedGetter
+>;
+
 import type { Registry } from '../typechain/Registry';
 export const Registry_Abi = require('./Registry.json') as Tagged<
   AbiItem[],

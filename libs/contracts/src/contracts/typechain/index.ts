@@ -65,6 +65,7 @@ export type KnownContract =
   | Tagged<PerpetualPoolPartyCreator, 'PerpetualPoolPartyCreator'>
   | Tagged<PerpetualPositionManagerPoolParty, 'PerpetualPositionManagerPoolParty'>
   | Tagged<PerpetualPositionManagerPoolPartyLib, 'PerpetualPositionManagerPoolPartyLib'>
+  | Tagged<PriceFeedGetter, 'PriceFeedGetter'>
   | Tagged<Registry, 'Registry'>
   | Tagged<RegistryInterface, 'RegistryInterface'>
   | Tagged<Store, 'Store'>
@@ -704,6 +705,9 @@ export namespace PerpetualPositionManagerPoolPartyLib_Events {
   export type SettleEmergencyShutdown = PerpetualPositionManagerPoolPartyLib_SettleEmergencyShutdown;
   export type Withdrawal = PerpetualPositionManagerPoolPartyLib_Withdrawal;
 }
+
+import type { PriceFeedGetter } from './PriceFeedGetter';
+export type { PriceFeedGetter };
 
 import type { Registry } from './Registry';
 export type { Registry };
