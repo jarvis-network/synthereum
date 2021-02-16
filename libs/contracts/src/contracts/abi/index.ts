@@ -45,6 +45,12 @@ export const ContractAllowed_Abi = require('./ContractAllowed.json') as Tagged<
   ContractAllowed
 >;
 
+import type { ContractAllowedOnChanPriceFeed } from '../typechain/ContractAllowedOnChanPriceFeed';
+export const ContractAllowedOnChanPriceFeed_Abi = require('./ContractAllowedOnChanPriceFeed.json') as Tagged<
+  AbiItem[],
+  ContractAllowedOnChanPriceFeed
+>;
+
 import type { ContractCreator } from '../typechain/ContractCreator';
 export const ContractCreator_Abi = require('./ContractCreator.json') as Tagged<
   AbiItem[],

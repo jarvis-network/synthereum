@@ -10,6 +10,7 @@ export type KnownContract =
   | Tagged<AggregatorV2V3Interface, 'AggregatorV2V3Interface'>
   | Tagged<AggregatorV3Interface, 'AggregatorV3Interface'>
   | Tagged<ContractAllowed, 'ContractAllowed'>
+  | Tagged<ContractAllowedOnChanPriceFeed, 'ContractAllowedOnChanPriceFeed'>
   | Tagged<ContractCreator, 'ContractCreator'>
   | Tagged<DesignatedVoting, 'DesignatedVoting'>
   | Tagged<DesignatedVotingFactory, 'DesignatedVotingFactory'>
@@ -154,6 +155,9 @@ export type { AggregatorV3Interface };
 
 import type { ContractAllowed } from './ContractAllowed';
 export type { ContractAllowed };
+
+import type { ContractAllowedOnChanPriceFeed } from './ContractAllowedOnChanPriceFeed';
+export type { ContractAllowedOnChanPriceFeed };
 
 import type { ContractCreator } from './ContractCreator';
 export type { ContractCreator };
