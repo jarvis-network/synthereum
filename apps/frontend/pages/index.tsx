@@ -6,10 +6,9 @@ import { styled } from '@jarvis-network/ui';
 import { RealmAgentContext } from '@/components/auth/AuthProvider';
 import { StickyHeader } from '@/components/header/StickyHeader';
 import { Background } from '@/components/Background';
-import { ExchangeCard } from '@/components/exchange/ExchangeCard';
+import { ExchangeCard, FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
 import { ChartCard } from '@/components/chart/ChartCard';
 import { ChartExchangeCards } from '@/components/ChartExchangeCards';
-import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 import { OnMobile } from '@/components/OnMobile';
 import { OnDesktop } from '@/components/OnDesktop';
 import { useReduxSelector } from '@/state/useReduxSelector';
@@ -44,7 +43,7 @@ const LayoutWidget = styled(Background)`
 
 const WidgetContainer = styled.div`
   width: 360px;
-  height: 540px;
+  height: ${FULL_WIDGET_HEIGHT_PX}px;
 `;
 
 export default function Home() {

@@ -26,7 +26,7 @@ const Container = styled.div`
 const Line = styled.div`
   padding: 8px 0;
   display: flex;
-  font-size: ${props => props.theme.font.sizes.xxs};
+  font-size: ${props => props.theme.font.sizes.m};
   justify-content: space-between;
   align-items: center;
 
@@ -45,40 +45,55 @@ const Value = styled.div`
 
 const QuestionMark = styled.span`
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: ${props => props.theme.font.sizes.xs};
+  height: ${props => props.theme.font.sizes.xs};
   color: #80dfff;
-  font-size: 6px;
-  border-radius: 100px;
+  font-size: ${props => props.theme.font.sizes.xs};
+  border-radius: 200px;
   border: 1px solid #80dfff;
   text-align: center;
-  line-height: 6px;
+  line-height: ${props => props.theme.font.sizes.xs};
   margin-left: 3px;
+  transform: translateY(-2px);
 
   &::before {
     content: '?';
   }
 `;
 
-const feeText =
-  `A ${FEE.mul(new FPN(100)).format()}% protocol fee is taken on every` +
-  ` transaction. The funds are after that evenly split between the Liquidity` +
-  ` provider and the treasury`;
+const liquidityProviderFeeText = `A ${FEE.div(new FPN(2)).mul(new FPN(100)).format()}% liquidity provider fee is collected and send to the Liquidity Provider`;
+
+const treasuryFeeText = `A ${FEE.div(new FPN(2)).mul(new FPN(100)).format()}% treasury fee is collected and is sent to the treasury, in the future to the DAO.`;
+
+export const FEES_BLOCK_HEIGHT_PX = 108;
 
 export const Fees: React.FC = () => {
   const { fee } = useExchangeValues();
+
+  const feeItem = fee ? fee : null //fee?.div(new FPN(2)) : null;
 
   return (
     <Container>
       <Line>
         <Key>
-          Protocol Fee
-          <Tooltip tooltip={feeText} position="top">
+          Liquidity Provider fee
+          <Tooltip tooltip={liquidityProviderFeeText} position="top">
             <QuestionMark />
           </Tooltip>
         </Key>
         <Value>
-          {fee ? `${fee?.format(5)} ${PRIMARY_STABLE_COIN.symbol}` : '---'}
+          {feeItem ? `${feeItem?.format(5)} ${PRIMARY_STABLE_COIN.symbol}` : '---'}
+        </Value>
+      </Line>
+      <Line>
+        <Key>
+          Treasury Fee
+          <Tooltip tooltip={treasuryFeeText} position="top">
+            <QuestionMark />
+          </Tooltip>
+        </Key>
+        <Value>
+          {feeItem ? `${feeItem?.format(5)} ${PRIMARY_STABLE_COIN.symbol}` : '---'}
         </Value>
       </Line>
     </Container>

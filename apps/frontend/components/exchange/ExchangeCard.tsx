@@ -20,16 +20,18 @@ import { Asset, AssetPair } from '@/data/assets';
 
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
-import { Fees } from './Fees';
+import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
 import { OnDesktop } from '../OnDesktop';
 import { OnMobile } from '../OnMobile';
+
+export const FULL_WIDGET_HEIGHT_PX = 595;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  height: 540px;
+  height: ${FULL_WIDGET_HEIGHT_PX}px;
 
   @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     height: 100%;
@@ -39,11 +41,11 @@ const Container = styled.div`
 `;
 
 const CardContainer = styled.div`
-  height: 475px;
+  height: ${FULL_WIDGET_HEIGHT_PX - FEES_BLOCK_HEIGHT_PX}px;
 `;
 
 const FeesContainer = styled.div`
-  height: 65px;
+  height: ${FEES_BLOCK_HEIGHT_PX}px;
 `;
 
 const ContentContainer = styled.div`
