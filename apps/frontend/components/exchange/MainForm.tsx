@@ -97,9 +97,9 @@ const IconButton = styled.button`
   padding: 0;
   background: none;
   cursor: pointer;
-  margin: 6px auto -7px;
   outline: none !important;
   width: 100%;
+  transform: translateY(14px);
 
   svg {
     width: 24px;
