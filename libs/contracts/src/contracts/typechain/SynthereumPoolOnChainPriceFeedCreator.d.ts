@@ -21,21 +21,23 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface SynthereumInterfaces extends BaseContract {
+export interface SynthereumPoolOnChainPriceFeedCreator extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): SynthereumInterfaces;
-  clone(): SynthereumInterfaces;
+  ): SynthereumPoolOnChainPriceFeedCreator;
+  clone(): SynthereumPoolOnChainPriceFeedCreator;
   methods: {
-    Deployer(): NonPayableTransactionObject<string>;
-
-    FactoryVersioning(): NonPayableTransactionObject<string>;
-
-    PoolRegistry(): NonPayableTransactionObject<string>;
-
-    PriceFeed(): NonPayableTransactionObject<string>;
+    createPool(
+      derivative: string,
+      finder: string,
+      version: number | string,
+      roles: [string, string, string],
+      isContractAllowed: boolean,
+      startingCollateralization: number | string,
+      fee: [[number | string], string[], (number | string)[]]
+    ): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

@@ -21,21 +21,21 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface SynthereumInterfaces extends BaseContract {
+export interface ISynthereumPriceFeed extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): SynthereumInterfaces;
-  clone(): SynthereumInterfaces;
+  ): ISynthereumPriceFeed;
+  clone(): ISynthereumPriceFeed;
   methods: {
-    Deployer(): NonPayableTransactionObject<string>;
-
-    FactoryVersioning(): NonPayableTransactionObject<string>;
-
-    PoolRegistry(): NonPayableTransactionObject<string>;
-
-    PriceFeed(): NonPayableTransactionObject<string>;
+    /**
+     * Get last chainlink oracle price for a given price identifier
+     * @param priceIdentifier Price feed identifier
+     */
+    getLatestPrice(
+      priceIdentifier: string | number[]
+    ): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

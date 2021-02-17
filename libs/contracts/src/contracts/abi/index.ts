@@ -21,6 +21,12 @@ export const AdministrateeInterface_Abi = require('./AdministrateeInterface.json
   AdministrateeInterface
 >;
 
+import type { AggregatorV3Interface } from '../typechain/AggregatorV3Interface';
+export const AggregatorV3Interface_Abi = require('./AggregatorV3Interface.json') as Tagged<
+  AbiItem[],
+  AggregatorV3Interface
+>;
+
 import type { ContractAllowed } from '../typechain/ContractAllowed';
 export const ContractAllowed_Abi = require('./ContractAllowed.json') as Tagged<
   AbiItem[],
@@ -141,6 +147,12 @@ export const IStandardERC20_Abi = require('./IStandardERC20.json') as Tagged<
   IStandardERC20
 >;
 
+import type { ISynthereumChainlinkPriceFeed } from '../typechain/ISynthereumChainlinkPriceFeed';
+export const ISynthereumChainlinkPriceFeed_Abi = require('./ISynthereumChainlinkPriceFeed.json') as Tagged<
+  AbiItem[],
+  ISynthereumChainlinkPriceFeed
+>;
+
 import type { ISynthereumDeployer } from '../typechain/ISynthereumDeployer';
 export const ISynthereumDeployer_Abi = require('./ISynthereumDeployer.json') as Tagged<
   AbiItem[],
@@ -171,10 +183,34 @@ export const ISynthereumPoolDeployment_Abi = require('./ISynthereumPoolDeploymen
   ISynthereumPoolDeployment
 >;
 
+import type { ISynthereumPoolGeneral } from '../typechain/ISynthereumPoolGeneral';
+export const ISynthereumPoolGeneral_Abi = require('./ISynthereumPoolGeneral.json') as Tagged<
+  AbiItem[],
+  ISynthereumPoolGeneral
+>;
+
+import type { ISynthereumPoolInteraction } from '../typechain/ISynthereumPoolInteraction';
+export const ISynthereumPoolInteraction_Abi = require('./ISynthereumPoolInteraction.json') as Tagged<
+  AbiItem[],
+  ISynthereumPoolInteraction
+>;
+
+import type { ISynthereumPoolOnChainPriceFeed } from '../typechain/ISynthereumPoolOnChainPriceFeed';
+export const ISynthereumPoolOnChainPriceFeed_Abi = require('./ISynthereumPoolOnChainPriceFeed.json') as Tagged<
+  AbiItem[],
+  ISynthereumPoolOnChainPriceFeed
+>;
+
 import type { ISynthereumPoolRegistry } from '../typechain/ISynthereumPoolRegistry';
 export const ISynthereumPoolRegistry_Abi = require('./ISynthereumPoolRegistry.json') as Tagged<
   AbiItem[],
   ISynthereumPoolRegistry
+>;
+
+import type { ISynthereumPriceFeed } from '../typechain/ISynthereumPriceFeed';
+export const ISynthereumPriceFeed_Abi = require('./ISynthereumPriceFeed.json') as Tagged<
+  AbiItem[],
+  ISynthereumPriceFeed
 >;
 
 import type { IdentifierWhitelist } from '../typechain/IdentifierWhitelist';
@@ -324,6 +360,12 @@ export const StoreInterface_Abi = require('./StoreInterface.json') as Tagged<
   StoreInterface
 >;
 
+import type { SynthereumChainlinkPriceFeed } from '../typechain/SynthereumChainlinkPriceFeed';
+export const SynthereumChainlinkPriceFeed_Abi = require('./SynthereumChainlinkPriceFeed.json') as Tagged<
+  AbiItem[],
+  SynthereumChainlinkPriceFeed
+>;
+
 import type { SynthereumDeployer } from '../typechain/SynthereumDeployer';
 export const SynthereumDeployer_Abi = require('./SynthereumDeployer.json') as Tagged<
   AbiItem[],
@@ -376,6 +418,30 @@ import type { SynthereumPoolLib } from '../typechain/SynthereumPoolLib';
 export const SynthereumPoolLib_Abi = require('./SynthereumPoolLib.json') as Tagged<
   AbiItem[],
   SynthereumPoolLib
+>;
+
+import type { SynthereumPoolOnChainPriceFeed } from '../typechain/SynthereumPoolOnChainPriceFeed';
+export const SynthereumPoolOnChainPriceFeed_Abi = require('./SynthereumPoolOnChainPriceFeed.json') as Tagged<
+  AbiItem[],
+  SynthereumPoolOnChainPriceFeed
+>;
+
+import type { SynthereumPoolOnChainPriceFeedCreator } from '../typechain/SynthereumPoolOnChainPriceFeedCreator';
+export const SynthereumPoolOnChainPriceFeedCreator_Abi = require('./SynthereumPoolOnChainPriceFeedCreator.json') as Tagged<
+  AbiItem[],
+  SynthereumPoolOnChainPriceFeedCreator
+>;
+
+import type { SynthereumPoolOnChainPriceFeedFactory } from '../typechain/SynthereumPoolOnChainPriceFeedFactory';
+export const SynthereumPoolOnChainPriceFeedFactory_Abi = require('./SynthereumPoolOnChainPriceFeedFactory.json') as Tagged<
+  AbiItem[],
+  SynthereumPoolOnChainPriceFeedFactory
+>;
+
+import type { SynthereumPoolOnChainPriceFeedLib } from '../typechain/SynthereumPoolOnChainPriceFeedLib';
+export const SynthereumPoolOnChainPriceFeedLib_Abi = require('./SynthereumPoolOnChainPriceFeedLib.json') as Tagged<
+  AbiItem[],
+  SynthereumPoolOnChainPriceFeedLib
 >;
 
 import type { SynthereumPoolRegistry } from '../typechain/SynthereumPoolRegistry';

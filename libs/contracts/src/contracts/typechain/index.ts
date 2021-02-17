@@ -6,6 +6,7 @@ export type KnownContract =
   | Tagged<AccessControl, 'AccessControl'>
   | Tagged<AddressWhitelist, 'AddressWhitelist'>
   | Tagged<AdministrateeInterface, 'AdministrateeInterface'>
+  | Tagged<AggregatorV3Interface, 'AggregatorV3Interface'>
   | Tagged<ContractAllowed, 'ContractAllowed'>
   | Tagged<ContractCreator, 'ContractCreator'>
   | Tagged<DesignatedVoting, 'DesignatedVoting'>
@@ -28,12 +29,17 @@ export type KnownContract =
   | Tagged<IERC20Standard, 'IERC20Standard'>
   | Tagged<IRole, 'IRole'>
   | Tagged<IStandardERC20, 'IStandardERC20'>
+  | Tagged<ISynthereumChainlinkPriceFeed, 'ISynthereumChainlinkPriceFeed'>
   | Tagged<ISynthereumDeployer, 'ISynthereumDeployer'>
   | Tagged<ISynthereumFactoryVersioning, 'ISynthereumFactoryVersioning'>
   | Tagged<ISynthereumFinder, 'ISynthereumFinder'>
   | Tagged<ISynthereumPool, 'ISynthereumPool'>
   | Tagged<ISynthereumPoolDeployment, 'ISynthereumPoolDeployment'>
+  | Tagged<ISynthereumPoolGeneral, 'ISynthereumPoolGeneral'>
+  | Tagged<ISynthereumPoolInteraction, 'ISynthereumPoolInteraction'>
+  | Tagged<ISynthereumPoolOnChainPriceFeed, 'ISynthereumPoolOnChainPriceFeed'>
   | Tagged<ISynthereumPoolRegistry, 'ISynthereumPoolRegistry'>
+  | Tagged<ISynthereumPriceFeed, 'ISynthereumPriceFeed'>
   | Tagged<IdentifierWhitelist, 'IdentifierWhitelist'>
   | Tagged<IdentifierWhitelistInterface, 'IdentifierWhitelistInterface'>
   | Tagged<MintableBurnableERC20, 'MintableBurnableERC20'>
@@ -59,6 +65,7 @@ export type KnownContract =
   | Tagged<RegistryInterface, 'RegistryInterface'>
   | Tagged<Store, 'Store'>
   | Tagged<StoreInterface, 'StoreInterface'>
+  | Tagged<SynthereumChainlinkPriceFeed, 'SynthereumChainlinkPriceFeed'>
   | Tagged<SynthereumDeployer, 'SynthereumDeployer'>
   | Tagged<SynthereumDerivativeFactory, 'SynthereumDerivativeFactory'>
   | Tagged<SynthereumFactoryVersioning, 'SynthereumFactoryVersioning'>
@@ -68,6 +75,10 @@ export type KnownContract =
   | Tagged<SynthereumPoolCreator, 'SynthereumPoolCreator'>
   | Tagged<SynthereumPoolFactory, 'SynthereumPoolFactory'>
   | Tagged<SynthereumPoolLib, 'SynthereumPoolLib'>
+  | Tagged<SynthereumPoolOnChainPriceFeed, 'SynthereumPoolOnChainPriceFeed'>
+  | Tagged<SynthereumPoolOnChainPriceFeedCreator, 'SynthereumPoolOnChainPriceFeedCreator'>
+  | Tagged<SynthereumPoolOnChainPriceFeedFactory, 'SynthereumPoolOnChainPriceFeedFactory'>
+  | Tagged<SynthereumPoolOnChainPriceFeedLib, 'SynthereumPoolOnChainPriceFeedLib'>
   | Tagged<SynthereumPoolRegistry, 'SynthereumPoolRegistry'>
   | Tagged<SynthereumSyntheticTokenFactory, 'SynthereumSyntheticTokenFactory'>
   | Tagged<SynthereumTIC, 'SynthereumTIC'>
@@ -112,6 +123,9 @@ export namespace AddressWhitelist_Events {
 
 import type { AdministrateeInterface } from './AdministrateeInterface';
 export type { AdministrateeInterface };
+
+import type { AggregatorV3Interface } from './AggregatorV3Interface';
+export type { AggregatorV3Interface };
 
 import type { ContractAllowed } from './ContractAllowed';
 export type { ContractAllowed };
@@ -309,6 +323,9 @@ export namespace IStandardERC20_Events {
   export type Transfer = IStandardERC20_Transfer;
 }
 
+import type { ISynthereumChainlinkPriceFeed } from './ISynthereumChainlinkPriceFeed';
+export type { ISynthereumChainlinkPriceFeed };
+
 import type { ISynthereumDeployer } from './ISynthereumDeployer';
 export type { ISynthereumDeployer };
 
@@ -324,8 +341,20 @@ export type { ISynthereumPool };
 import type { ISynthereumPoolDeployment } from './ISynthereumPoolDeployment';
 export type { ISynthereumPoolDeployment };
 
+import type { ISynthereumPoolGeneral } from './ISynthereumPoolGeneral';
+export type { ISynthereumPoolGeneral };
+
+import type { ISynthereumPoolInteraction } from './ISynthereumPoolInteraction';
+export type { ISynthereumPoolInteraction };
+
+import type { ISynthereumPoolOnChainPriceFeed } from './ISynthereumPoolOnChainPriceFeed';
+export type { ISynthereumPoolOnChainPriceFeed };
+
 import type { ISynthereumPoolRegistry } from './ISynthereumPoolRegistry';
 export type { ISynthereumPoolRegistry };
+
+import type { ISynthereumPriceFeed } from './ISynthereumPriceFeed';
+export type { ISynthereumPriceFeed };
 
 import type { IdentifierWhitelist } from './IdentifierWhitelist';
 export type { IdentifierWhitelist };
@@ -680,6 +709,23 @@ export namespace Store_Events {
 import type { StoreInterface } from './StoreInterface';
 export type { StoreInterface };
 
+import type { SynthereumChainlinkPriceFeed } from './SynthereumChainlinkPriceFeed';
+export type { SynthereumChainlinkPriceFeed };
+import type {
+  RemoveAggregator as SynthereumChainlinkPriceFeed_RemoveAggregator,
+  RoleAdminChanged as SynthereumChainlinkPriceFeed_RoleAdminChanged,
+  RoleGranted as SynthereumChainlinkPriceFeed_RoleGranted,
+  RoleRevoked as SynthereumChainlinkPriceFeed_RoleRevoked,
+  SetAggregator as SynthereumChainlinkPriceFeed_SetAggregator,
+} from './SynthereumChainlinkPriceFeed';
+export namespace SynthereumChainlinkPriceFeed_Events {
+  export type RemoveAggregator = SynthereumChainlinkPriceFeed_RemoveAggregator;
+  export type RoleAdminChanged = SynthereumChainlinkPriceFeed_RoleAdminChanged;
+  export type RoleGranted = SynthereumChainlinkPriceFeed_RoleGranted;
+  export type RoleRevoked = SynthereumChainlinkPriceFeed_RoleRevoked;
+  export type SetAggregator = SynthereumChainlinkPriceFeed_SetAggregator;
+}
+
 import type { SynthereumDeployer } from './SynthereumDeployer';
 export type { SynthereumDeployer };
 import type {
@@ -799,6 +845,64 @@ export namespace SynthereumPoolLib_Events {
   export type SetFeePercentage = SynthereumPoolLib_SetFeePercentage;
   export type SetFeeRecipients = SynthereumPoolLib_SetFeeRecipients;
   export type Settlement = SynthereumPoolLib_Settlement;
+}
+
+import type { SynthereumPoolOnChainPriceFeed } from './SynthereumPoolOnChainPriceFeed';
+export type { SynthereumPoolOnChainPriceFeed };
+import type {
+  AddDerivative as SynthereumPoolOnChainPriceFeed_AddDerivative,
+  Exchange as SynthereumPoolOnChainPriceFeed_Exchange,
+  Mint as SynthereumPoolOnChainPriceFeed_Mint,
+  Redeem as SynthereumPoolOnChainPriceFeed_Redeem,
+  RemoveDerivative as SynthereumPoolOnChainPriceFeed_RemoveDerivative,
+  RoleAdminChanged as SynthereumPoolOnChainPriceFeed_RoleAdminChanged,
+  RoleGranted as SynthereumPoolOnChainPriceFeed_RoleGranted,
+  RoleRevoked as SynthereumPoolOnChainPriceFeed_RoleRevoked,
+  SetFeePercentage as SynthereumPoolOnChainPriceFeed_SetFeePercentage,
+  SetFeeRecipients as SynthereumPoolOnChainPriceFeed_SetFeeRecipients,
+  Settlement as SynthereumPoolOnChainPriceFeed_Settlement,
+} from './SynthereumPoolOnChainPriceFeed';
+export namespace SynthereumPoolOnChainPriceFeed_Events {
+  export type AddDerivative = SynthereumPoolOnChainPriceFeed_AddDerivative;
+  export type Exchange = SynthereumPoolOnChainPriceFeed_Exchange;
+  export type Mint = SynthereumPoolOnChainPriceFeed_Mint;
+  export type Redeem = SynthereumPoolOnChainPriceFeed_Redeem;
+  export type RemoveDerivative = SynthereumPoolOnChainPriceFeed_RemoveDerivative;
+  export type RoleAdminChanged = SynthereumPoolOnChainPriceFeed_RoleAdminChanged;
+  export type RoleGranted = SynthereumPoolOnChainPriceFeed_RoleGranted;
+  export type RoleRevoked = SynthereumPoolOnChainPriceFeed_RoleRevoked;
+  export type SetFeePercentage = SynthereumPoolOnChainPriceFeed_SetFeePercentage;
+  export type SetFeeRecipients = SynthereumPoolOnChainPriceFeed_SetFeeRecipients;
+  export type Settlement = SynthereumPoolOnChainPriceFeed_Settlement;
+}
+
+import type { SynthereumPoolOnChainPriceFeedCreator } from './SynthereumPoolOnChainPriceFeedCreator';
+export type { SynthereumPoolOnChainPriceFeedCreator };
+
+import type { SynthereumPoolOnChainPriceFeedFactory } from './SynthereumPoolOnChainPriceFeedFactory';
+export type { SynthereumPoolOnChainPriceFeedFactory };
+
+import type { SynthereumPoolOnChainPriceFeedLib } from './SynthereumPoolOnChainPriceFeedLib';
+export type { SynthereumPoolOnChainPriceFeedLib };
+import type {
+  AddDerivative as SynthereumPoolOnChainPriceFeedLib_AddDerivative,
+  Exchange as SynthereumPoolOnChainPriceFeedLib_Exchange,
+  Mint as SynthereumPoolOnChainPriceFeedLib_Mint,
+  Redeem as SynthereumPoolOnChainPriceFeedLib_Redeem,
+  RemoveDerivative as SynthereumPoolOnChainPriceFeedLib_RemoveDerivative,
+  SetFeePercentage as SynthereumPoolOnChainPriceFeedLib_SetFeePercentage,
+  SetFeeRecipients as SynthereumPoolOnChainPriceFeedLib_SetFeeRecipients,
+  Settlement as SynthereumPoolOnChainPriceFeedLib_Settlement,
+} from './SynthereumPoolOnChainPriceFeedLib';
+export namespace SynthereumPoolOnChainPriceFeedLib_Events {
+  export type AddDerivative = SynthereumPoolOnChainPriceFeedLib_AddDerivative;
+  export type Exchange = SynthereumPoolOnChainPriceFeedLib_Exchange;
+  export type Mint = SynthereumPoolOnChainPriceFeedLib_Mint;
+  export type Redeem = SynthereumPoolOnChainPriceFeedLib_Redeem;
+  export type RemoveDerivative = SynthereumPoolOnChainPriceFeedLib_RemoveDerivative;
+  export type SetFeePercentage = SynthereumPoolOnChainPriceFeedLib_SetFeePercentage;
+  export type SetFeeRecipients = SynthereumPoolOnChainPriceFeedLib_SetFeeRecipients;
+  export type Settlement = SynthereumPoolOnChainPriceFeedLib_Settlement;
 }
 
 import type { SynthereumPoolRegistry } from './SynthereumPoolRegistry';
