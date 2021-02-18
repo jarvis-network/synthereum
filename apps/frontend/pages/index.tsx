@@ -31,25 +31,19 @@ const LayoutChart = styled.div`
   flex: 1 1 0%;
   width: 100%;
   height: 100vh;
+  min-height: 720px;
   padding: 90px 60px 30px calc(50vw - 510px);
   box-sizing: border-box;
 `;
 
 const LayoutWidget = styled(Background)`
   height: 100vh;
+  min-height: 720px;
   padding: 90px calc(50vw - 510px) 30px 60px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-`;
-
-const ChartContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 `;
 
 const WidgetContainer = styled.div`

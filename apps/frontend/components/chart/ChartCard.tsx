@@ -16,8 +16,9 @@ import { useRate } from '@/utils/useRate';
 import { getPercentageChange } from '@/utils/getPercentageChange';
 import { InfoBox } from '@/components/chart/InfoBox';
 import { ChartData, useChartData } from '@/utils/useChartData';
-import { formatDate, formatTimestamp } from '@/utils/format';
+import { formatTimestamp } from '@/utils/format';
 import { Days } from '@/components/chart/types';
+import { FULL_WIDGET_HEIGHT_PX } from '../exchange/ExchangeCard';
 
 type ChangeType = 'more' | 'less';
 
@@ -82,10 +83,7 @@ const Container = styled.div`
 
   @media screen and (min-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1] + 1}px) {
-    height: calc(475px + 119px); // swap panel + infobox
-    padding-bottom: calc(
-      60px + 119px
-    ); // extra height of the fees box + extra height of the info box, so the infobox is "above"
+    height: ${FULL_WIDGET_HEIGHT_PX}px;
     align-self: center;
     box-sizing: content-box;
   }
