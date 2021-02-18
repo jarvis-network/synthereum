@@ -162,7 +162,7 @@ export const MainForm: React.FC<Props> = () => {
 
   const balance = wallet ? wallet.amount : new FPN(0);
 
-  const insufficientBalance = new FPN(pay).gt(balance);
+  const insufficientBalance = new FPN(payString).gt(balance);
 
   const updateBase = (baseValue: State['exchange']['base']) => {
     dispatch(setBase(baseValue));
