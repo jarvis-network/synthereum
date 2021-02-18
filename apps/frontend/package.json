@@ -23,7 +23,7 @@
     "@jarvis-network/web3-utils": "1.0.0",
     "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
-    "bnc-onboard": "^1.18.0",
+    "bnc-onboard": "^1.19.2",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
     "idb-keyval": "^3.2.0",
