@@ -25,9 +25,9 @@ const Container = styled.div`
 `;
 
 const Line = styled.div`
-  padding: 8px 0;
+  padding: 7px 0;
   display: flex;
-  font-size: ${props => props.theme.font.sizes.m};
+  font-size: ${props => props.theme.font.sizes.s};
   justify-content: space-between;
   align-items: center;
 
@@ -46,14 +46,14 @@ const Value = styled.div`
 
 const QuestionMark = styled.span`
   display: inline-block;
-  width: ${props => props.theme.font.sizes.xs};
-  height: ${props => props.theme.font.sizes.xs};
+  width: ${props => props.theme.font.sizes.xxs};
+  height: ${props => props.theme.font.sizes.xxs};
   color: #80dfff;
-  font-size: ${props => props.theme.font.sizes.xs};
+  font-size: ${props => props.theme.font.sizes.xxs};
   border-radius: 200px;
   border: 1px solid #80dfff;
   text-align: center;
-  line-height: ${props => props.theme.font.sizes.xs};
+  line-height: ${props => props.theme.font.sizes.xxs};
   margin-left: 3px;
   transform: translateY(-2px);
 
@@ -70,7 +70,7 @@ const treasuryFeeText = `A ${FEE.div(new FPN(2))
   .mul(new FPN(100))
   .format()}% treasury fee is collected and is sent to the treasury, in the future to the DAO.`;
 
-export const FEES_BLOCK_HEIGHT_PX = 108;
+export const FEES_BLOCK_HEIGHT_PX = 100;
 
 export const Fees: React.FC = () => {
   const { fee } = useExchangeValues();
