@@ -20,7 +20,7 @@ export const ChartExchangeCards: React.FC = () => {
     },
     {
       title: 'Exchange',
-      content: <ExchangeCard />
+      content: <ExchangeCard />,
     },
   ];
   return (

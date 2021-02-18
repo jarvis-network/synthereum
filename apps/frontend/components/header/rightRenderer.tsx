@@ -35,9 +35,9 @@ const render = () => {
   const handleLogOut = () => {
     authLogin!.logout();
     setSigningOut(true);
-    dispatch(setWalletBalance({}))
+    dispatch(setWalletBalance({}));
     dispatch(setLoginState(null));
-    dispatch(setTransactionsHistory([]))
+    dispatch(setTransactionsHistory([]));
   };
 
   const handleSetTheme = (theme: State['theme']) => {
@@ -78,7 +78,7 @@ const render = () => {
     }
 
     return auth ? avatar(auth.address) : undefined;
-  }
+  };
 
   const getName = () => {
     if (isSigningOut) {
@@ -86,7 +86,7 @@ const render = () => {
     }
 
     return name || '';
-  }
+  };
 
   const getAddress = () => {
     if (isSigningOut) {
@@ -94,7 +94,7 @@ const render = () => {
     }
 
     return auth ? formatWalletAddress(auth.address) : undefined;
-  }
+  };
 
   return (
     <AccountSummary

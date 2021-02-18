@@ -25,7 +25,8 @@ const HeaderContainer = styled.div`
     margin-left: 15px;
   }
 
-  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     top: auto;
     bottom: 0;
     left: 0;
@@ -41,7 +42,8 @@ const CustomHeader = styled(Header)`
   height: 90px;
   grid-template-columns: auto auto auto;
 
-  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     height: 52px;
   }
 `;

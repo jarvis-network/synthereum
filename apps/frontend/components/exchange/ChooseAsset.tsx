@@ -108,7 +108,7 @@ const StyledHeader = styled.span`
   margin-top: 24px;
   margin-bottom: 10px;
   display: block;
-  font-size: ${props => props.theme.font.sizes.m}
+  font-size: ${props => props.theme.font.sizes.m};
 `;
 
 const StyledGrid = styled(DataGrid)`

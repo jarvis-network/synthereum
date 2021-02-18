@@ -37,7 +37,9 @@ const Content = styled.div`
 const Balance: FC<BalanceProps> = ({ total }) => (
   <Block>
     <Heading>Balance</Heading>
-    <Content>{PRIMARY_STABLE_COIN_TEXT_SYMBOL} {total.format(2)}</Content>
+    <Content>
+      {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {total.format(2)}
+    </Content>
   </Block>
 );
 

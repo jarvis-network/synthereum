@@ -15,7 +15,8 @@ const Container = styled.div`
   margin-top: 20px;
   padding: 15px;
 
-  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     margin-top: 15px;
     border-top: 1px solid ${props => props.theme.border.secondary};
     border-bottom: 1px solid ${props => props.theme.border.secondary};
@@ -61,16 +62,20 @@ const QuestionMark = styled.span`
   }
 `;
 
-const liquidityProviderFeeText = `A ${FEE.div(new FPN(2)).mul(new FPN(100)).format()}% liquidity provider fee is collected and send to the Liquidity Provider`;
+const liquidityProviderFeeText = `A ${FEE.div(new FPN(2))
+  .mul(new FPN(100))
+  .format()}% liquidity provider fee is collected and send to the Liquidity Provider`;
 
-const treasuryFeeText = `A ${FEE.div(new FPN(2)).mul(new FPN(100)).format()}% treasury fee is collected and is sent to the treasury, in the future to the DAO.`;
+const treasuryFeeText = `A ${FEE.div(new FPN(2))
+  .mul(new FPN(100))
+  .format()}% treasury fee is collected and is sent to the treasury, in the future to the DAO.`;
 
 export const FEES_BLOCK_HEIGHT_PX = 108;
 
 export const Fees: React.FC = () => {
   const { fee } = useExchangeValues();
 
-  const feeItem = fee ? fee : null //fee?.div(new FPN(2)) : null;
+  const feeItem = fee || null; // fee?.div(new FPN(2)) : null;
 
   return (
     <Container>
@@ -82,7 +87,9 @@ export const Fees: React.FC = () => {
           </Tooltip>
         </Key>
         <Value>
-          {feeItem ? `${feeItem?.format(5)} ${PRIMARY_STABLE_COIN.symbol}` : '---'}
+          {feeItem
+            ? `${feeItem?.format(5)} ${PRIMARY_STABLE_COIN.symbol}`
+            : '---'}
         </Value>
       </Line>
       <Line>
@@ -93,7 +100,9 @@ export const Fees: React.FC = () => {
           </Tooltip>
         </Key>
         <Value>
-          {feeItem ? `${feeItem?.format(5)} ${PRIMARY_STABLE_COIN.symbol}` : '---'}
+          {feeItem
+            ? `${feeItem?.format(5)} ${PRIMARY_STABLE_COIN.symbol}`
+            : '---'}
         </Value>
       </Line>
     </Container>

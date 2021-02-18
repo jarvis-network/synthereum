@@ -6,7 +6,10 @@ import { styled } from '@jarvis-network/ui';
 import { RealmAgentContext } from '@/components/auth/AuthProvider';
 import { StickyHeader } from '@/components/header/StickyHeader';
 import { Background } from '@/components/Background';
-import { ExchangeCard, FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
+import {
+  ExchangeCard,
+  FULL_WIDGET_HEIGHT_PX,
+} from '@/components/exchange/ExchangeCard';
 import { ChartCard } from '@/components/chart/ChartCard';
 import { ChartExchangeCards } from '@/components/ChartExchangeCards';
 import { OnMobile } from '@/components/OnMobile';

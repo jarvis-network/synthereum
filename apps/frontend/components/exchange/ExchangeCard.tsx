@@ -13,16 +13,22 @@ import {
 import { MainForm } from '@/components/exchange/MainForm';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 
-import { setChooseAsset, setPayAsset, setReceiveAsset } from '@/state/slices/exchange';
+import {
+  setChooseAsset,
+  setPayAsset,
+  setReceiveAsset,
+} from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import { Asset, AssetPair } from '@/data/assets';
 
+import { OnDesktop } from '../OnDesktop';
+
+import { OnMobile } from '../OnMobile';
+
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
-import { OnDesktop } from '../OnDesktop';
-import { OnMobile } from '../OnMobile';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 
@@ -33,7 +39,8 @@ const Container = styled.div`
   width: 100%;
   height: ${FULL_WIDGET_HEIGHT_PX}px;
 
-  @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     height: 100%;
     padding-bottom: 51px;
     justify-content: space-between;
@@ -145,11 +152,11 @@ const ClearButton = styled.button`
 
   i {
     color: ${themeValue(
-  {
-    light: theme => theme.text.secondary,
-  },
-  theme => theme.text.medium,
-)}!important;
+      {
+        light: theme => theme.text.secondary,
+      },
+      theme => theme.text.medium,
+    )}!important;
 
     svg {
       width: 15px;
@@ -177,7 +184,9 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
-  const chooseAsset = useReduxSelector(state => state.exchange.chooseAssetActive);
+  const chooseAsset = useReduxSelector(
+    state => state.exchange.chooseAssetActive,
+  );
 
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -251,7 +260,7 @@ export const ExchangeCard: React.FC = () => {
 
   const getContent = () => {
     if (chooseAsset) {
-      return <ChooseAsset />
+      return <ChooseAsset />;
     }
 
     const suffix = searchOpen && (
@@ -266,44 +275,41 @@ export const ExchangeCard: React.FC = () => {
         {!searchOpen && <MainForm />}
       </ContentContainer>
     );
-  }
+  };
 
   const getCardProps = () => {
     if (chooseAsset) {
       return {
-        title: "Choose asset",
-        onBack: () => dispatch(setChooseAsset(null))
-      }
+        title: 'Choose asset',
+        onBack: () => dispatch(setChooseAsset(null)),
+      };
     }
 
     return {
-      title: "Swap"
-    }
+      title: 'Swap',
+    };
   };
 
   const content = getContent();
 
   const card = (
-    <Card disableBorderRadiusOnMobile={true} {...getCardProps()}>
+    <Card disableBorderRadiusOnMobile {...getCardProps()}>
       {content}
     </Card>
   );
 
-  const mobileContent = chooseAsset || searchOpen ? (
-    <MobileCardContainer>
-      {card}
-    </MobileCardContainer>
-  ) : content;
+  const mobileContent =
+    chooseAsset || searchOpen ? (
+      <MobileCardContainer>{card}</MobileCardContainer>
+    ) : (
+      content
+    );
 
   return (
     <Container>
       <CardContainer>
-        <OnDesktop>
-          {card}
-        </OnDesktop>
-        <OnMobile>
-          {mobileContent}
-        </OnMobile>
+        <OnDesktop>{card}</OnDesktop>
+        <OnMobile>{mobileContent}</OnMobile>
       </CardContainer>
       <FeesContainer>
         <Fees />
