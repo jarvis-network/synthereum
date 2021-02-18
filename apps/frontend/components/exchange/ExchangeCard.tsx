@@ -119,7 +119,7 @@ const StyledGrid = styled(DataGrid)`
   }
 
   .rt-tbody .rt-tr-group {
-    border-color: ${props => props.theme.border.primary}!important;
+    border-color: ${props => props.theme.border.secondary} !important;
   }
 
   .rt-table {

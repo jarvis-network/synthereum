@@ -17,8 +17,8 @@ const Container = styled.div`
 
   @media screen and (max-width: ${props => props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     margin-top: 15px;
-    border-top: 1px solid ${props => props.theme.border.primary};
-    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-top: 1px solid ${props => props.theme.border.secondary};
+    border-bottom: 1px solid ${props => props.theme.border.secondary};
     border-radius: 0;
   }
 `;

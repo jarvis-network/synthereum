@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { styled, Flag } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
-import { Asset, PRIMARY_STABLE_COIN } from '@/data/assets';
+import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
 
 export interface AssetRowProps {
   asset: Asset;
@@ -18,7 +18,7 @@ const Container = styled.div`
   margin: 0 -24px;
 
   :not(:last-child) {
-    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-bottom: 1px solid ${props => props.theme.border.secondary};
   }
 `;
 
@@ -52,7 +52,7 @@ const Value = styled(Amount)`
 export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value }) => {
   const valueElem = value && (
     <Value>
-      {value.format(2)} {PRIMARY_STABLE_COIN.symbol}
+      {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {value.format(2)}
     </Value>
   );
 

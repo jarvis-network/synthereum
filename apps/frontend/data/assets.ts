@@ -25,6 +25,8 @@ export interface AssetPair {
   name: string; // used for easier filtering
 }
 
+export const PRIMARY_STABLE_COIN_TEXT_SYMBOL = '$';
+
 export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
   symbol: primaryCollateralSymbol,

@@ -56,7 +56,7 @@ const AssetSelect = styled.div<{ error: boolean }>`
   margin-top: 3px;
   border: 1px solid
     ${props =>
-      !props.error ? props.theme.border.primary : props.theme.border.invalid};
+      !props.error ? props.theme.border.secondary : props.theme.border.invalid};
   border-radius: ${props => props.theme.borderRadius.s};
 `;
 
@@ -70,12 +70,7 @@ const Amount = styled.input`
   border: none;
   padding: none;
   background: none;
-  color: ${themeValue(
-    {
-      light: theme => theme.text.secondary,
-    },
-    theme => theme.text.medium,
-  )};
+  color: ${props => props.theme.text.secondary};
   font-size: ${props => props.theme.font.sizes.l};
   width: 45%;
   outline: none !important;
@@ -122,6 +117,7 @@ const SwapButton = styled(Button)`
 
   &:disabled {
     box-shadow: none;
+    background: ${props => props.theme.background.secondary};
   }
 `;
 

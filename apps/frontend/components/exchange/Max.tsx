@@ -12,7 +12,7 @@ const Container = styled.button`
     },
     theme => theme.text.medium,
   )};
-  border: 1px solid ${props => props.theme.border.primary};
+  border: 1px solid ${props => props.theme.border.secondary};
   padding: 5px 7px;
   border-radius: ${props => props.theme.borderRadius.s};
   background: transparent;

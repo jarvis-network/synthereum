@@ -12,12 +12,7 @@ const Container = styled.div`
   justify-content: flex-end;
   align-items: center;
   height: calc(${props => props.theme.font.sizes.m} * 1.4);
-  color: ${themeValue(
-    {
-      light: theme => theme.text.secondary,
-    },
-    theme => theme.text.medium,
-  )};
+  color: ${props => props.theme.text.secondary};
   font-size: ${props => props.theme.font.sizes.m};
   padding-left: 15px;
   padding-right: 10px;

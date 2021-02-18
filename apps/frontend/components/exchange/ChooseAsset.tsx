@@ -87,7 +87,7 @@ const grid = {
 const StyledTabs = styled(Tabs)`
   & > *:first-child {
     border-top: none;
-    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-bottom: 1px solid ${props => props.theme.border.secondary};
     background: none;
     padding-left: 16px;
     box-sizing: border-box;
@@ -147,7 +147,7 @@ const StyledGrid = styled(DataGrid)`
     }
 
     .rt-tr-group {
-      border-color: ${props => props.theme.border.primary}!important;
+      border-color: ${props => props.theme.border.secondary}!important;
     }
   }
 

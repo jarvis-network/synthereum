@@ -2,12 +2,12 @@ import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, ModalContent } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import type { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
-
-import type { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
 
 interface BalanceProps {
   total: FPN;
@@ -37,7 +37,7 @@ const Content = styled.div`
 const Balance: FC<BalanceProps> = ({ total }) => (
   <Block>
     <Heading>Balance</Heading>
-    <Content>$ {total.format(2)}</Content>
+    <Content>{PRIMARY_STABLE_COIN_TEXT_SYMBOL} {total.format(2)}</Content>
   </Block>
 );
 

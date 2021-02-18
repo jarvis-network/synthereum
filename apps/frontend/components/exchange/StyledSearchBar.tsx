@@ -1,14 +1,9 @@
-import { SearchBar, styled, themeValue } from '@jarvis-network/ui';
+import { SearchBar, styled } from '@jarvis-network/ui';
 
 export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
   input::placeholder,
   .icon {
-    color: ${themeValue(
-      {
-        light: theme => theme.text.secondary,
-      },
-      theme => theme.text.medium,
-    )}!important;
+    color: ${props => props.theme.text.secondary};
   }
 
   // https://styled-components.com/docs/faqs#how-can-i-override-styles-with-higher-specificity
@@ -22,6 +17,7 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
     padding: 0 10px;
     background: none;
     height: ${props => props.theme.sizes.row};
+    color: ${props => props.theme.text.secondary};
   }
 
   .group {
@@ -32,7 +28,7 @@ export const StyledSearchBar = styled(SearchBar)<{ open?: boolean }>`
       padding-right: 24px;
     }
     border: none;
-    border-bottom: 1px solid ${props => props.theme.border.primary};
+    border-bottom: 1px solid ${props => props.theme.border.secondary};
     border-radius: 0;
     margin: 0;
   }
