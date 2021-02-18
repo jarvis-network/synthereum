@@ -276,13 +276,6 @@ export const ExchangeCard: React.FC = () => {
       }
     }
 
-    if (searchOpen) {
-      return {
-        title: "Swap",
-        onBack: () => handleCloseClick()
-      }
-    }
-
     return {
       title: "Swap"
     }
