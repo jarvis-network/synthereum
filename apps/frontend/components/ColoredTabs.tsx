@@ -30,4 +30,13 @@ export const ColoredTabs = styled(Tabs)`
     align-items: stretch;
     height: calc(100% - ${props => props.theme.sizes.row});
   }
+
+  @media screen and (max-width: ${props =>
+    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    border-radius: 0 !important;
+
+    > :first-child {
+      border-radius: 0 !important;
+    }
+  }
 `;

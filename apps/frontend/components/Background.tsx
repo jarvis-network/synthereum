@@ -1,12 +1,9 @@
-import { styled, themeValue } from '@jarvis-network/ui';
+import { styled } from '@jarvis-network/ui';
 
 export const Background = styled.div<{ image: string }>`
   height: 100%;
   background-repeat: no-repeat;
-  background-color: ${themeValue(
-    { light: theme => theme.border.secondary },
-    theme => theme.background.primary,
-  )};
+  background-color: ${props => props.theme.background.medium};
   background-size: cover;
   background-image: url(${props => props.image});
 

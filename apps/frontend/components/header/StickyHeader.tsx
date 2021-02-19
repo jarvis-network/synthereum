@@ -23,6 +23,10 @@ const HeaderContainer = styled.div`
   .header-logo {
     height: 25px;
     margin-left: 15px;
+
+    @media screen and (max-width: 319px) {
+      display: none;
+    }
   }
 
   @media screen and (max-width: ${props =>
@@ -31,6 +35,9 @@ const HeaderContainer = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
+    background: ${props => props.theme.background.primary};
+    border-top: 1px solid ${props => props.theme.border.primary};
+    z-index: 3;
   }
 `;
 
@@ -50,6 +57,7 @@ const CustomHeader = styled(Header)`
 
 const Content = styled.div`
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
 `;
 

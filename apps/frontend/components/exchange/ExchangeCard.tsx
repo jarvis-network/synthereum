@@ -49,6 +49,11 @@ const Container = styled.div`
 
 const CardContainer = styled.div`
   height: ${FULL_WIDGET_HEIGHT_PX - FEES_BLOCK_HEIGHT_PX}px;
+
+  @media screen and (max-width: ${props =>
+    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    height: auto;
+  }
 `;
 
 const FeesContainer = styled.div`
@@ -161,6 +166,21 @@ const ClearButton = styled.button`
     svg {
       width: 15px;
       height: 15px;
+    }
+  }
+`;
+
+const CustomCard = styled(Card)`
+  @media screen and (max-width: ${props =>
+    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    border-radius: 0 !important;
+
+    *:first-child {
+      border-radius: 0 !important;
+    }
+
+    *:last-child {
+      border-radius: 0 !important;
     }
   }
 `;
@@ -293,9 +313,9 @@ export const ExchangeCard: React.FC = () => {
   const content = getContent();
 
   const card = (
-    <Card disableBorderRadiusOnMobile {...getCardProps()}>
+    <CustomCard {...getCardProps()}>
       {content}
-    </Card>
+    </CustomCard>
   );
 
   const mobileContent =

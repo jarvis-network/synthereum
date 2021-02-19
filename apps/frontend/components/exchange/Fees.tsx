@@ -18,9 +18,9 @@ const Container = styled.div`
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     margin-top: 15px;
-    border-top: 1px solid ${props => props.theme.border.secondary};
-    border-bottom: 1px solid ${props => props.theme.border.secondary};
+    border-top: 1px solid ${props => props.theme.border.primary};
     border-radius: 0;
+    padding-bottom: 68px; // include sticky header on bottom
   }
 `;
 
