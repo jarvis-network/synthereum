@@ -271,6 +271,7 @@ export const MainForm: React.FC<Props> = () => {
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
             value={getFormattedPay()}
+            inputMode="numeric"
             onKeyPress={e => handleKeyPress(e, assetPay!)}
             onChange={e => {
               updateBase('pay');
@@ -300,6 +301,7 @@ export const MainForm: React.FC<Props> = () => {
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
             value={getFormattedReceive()}
+            inputMode="numeric"
             onKeyPress={e => handleKeyPress(e, assetReceive!)}
             onChange={e => {
               updateBase('receive');
