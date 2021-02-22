@@ -89,5 +89,6 @@ export const config = {
 
 addPublicNetwork(config, 1);
 addPublicNetwork(config, 42);
+addPublicNetwork(config, 4);
 
 export default config;
