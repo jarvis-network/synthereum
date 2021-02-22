@@ -135,7 +135,7 @@ const InfoBox: React.FC<Props> = ({
           {receiveFlag}
         </Flags>
         <CurrencySymbol>
-          {paySymbol} {receiveSymbol}
+          {paySymbol} / {receiveSymbol}
         </CurrencySymbol>
       </Symbols>
       <Rate>

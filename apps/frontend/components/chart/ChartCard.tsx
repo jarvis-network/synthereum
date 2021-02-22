@@ -18,6 +18,7 @@ import { InfoBox } from '@/components/chart/InfoBox';
 import { ChartData, useChartData } from '@/utils/useChartData';
 import { formatTimestamp } from '@/utils/format';
 import { Days } from '@/components/chart/types';
+
 import { FULL_WIDGET_HEIGHT_PX } from '../exchange/ExchangeCard';
 
 type ChangeType = 'more' | 'less';
@@ -163,7 +164,7 @@ export const ChartCard: React.FC = () => {
     (change || wholeRangeChange) === 'more' ? MORE_FILL_COLOR : LESS_FILL_COLOR;
 
   const beginningPayload = chartData[0];
-  const currentPayload = chartData[0];
+  const currentPayload = chartData[chartData.length - 1];
 
   const {
     diff: wholeRangeChangeValue,

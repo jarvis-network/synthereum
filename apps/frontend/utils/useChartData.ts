@@ -61,7 +61,7 @@ const getPrices = async (
     body: JSON.stringify({ query }),
   }).then(r => r.json())) as GraphResponse;
 
-  return rawData.data.prices.map(p => {
+  const pricesList = rawData.data.prices.map(p => {
     let val = FPN.fromWei(`${p.price}0000000000`);
     if (invert) {
       val = new FPN(1).div(val);
@@ -71,6 +71,15 @@ const getPrices = async (
       time: Number(p.timestamp) * 1000,
     };
   });
+
+  if (pricesList.length === 1) {
+    pricesList.push({
+      ...pricesList[0],
+      time: pricesList[0].time - 1,
+    });
+  }
+
+  return pricesList;
 };
 
 const getIndirectPrices = async (
