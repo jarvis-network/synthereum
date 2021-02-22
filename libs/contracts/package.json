@@ -44,7 +44,8 @@
     "add-only-pool:mainnet": "MIGRATION_TYPE=only-pool hardhat test ./test/correct-migration.js --network mainnet",
     "add-only-derivative:mainnet": "MIGRATION_TYPE=only-derivative hardhat test ./test/correct-migration.js --network mainnet",
     "test": "hardhat test",
-    "coverage": "hardhat coverage"
+    "coverage": "hardhat coverage",
+    "verify": "./utils/verify.d"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
