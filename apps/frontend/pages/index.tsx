@@ -78,7 +78,7 @@ export default function Home() {
   return (
     <StickyHeader>
       <OnMobile>
-        <ChartExchangeCards />
+        <ChartExchangeCards image={url} />
       </OnMobile>
       <OnDesktop>
         <Layout>

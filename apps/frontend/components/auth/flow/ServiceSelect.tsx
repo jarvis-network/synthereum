@@ -9,7 +9,14 @@ import {
   ImgContainer,
   ChevronRight,
 } from '@/components/auth/flow/ModalComponents';
-import { Button, Checkbox, Flag, Icon, styled } from '@jarvis-network/ui';
+import {
+  Button,
+  Checkbox,
+  Flag,
+  Icon,
+  styled,
+  themeValue,
+} from '@jarvis-network/ui';
 import { AuthContext } from '@/components/auth/AuthProvider';
 
 const TermsContainer = styled.div`
@@ -33,6 +40,12 @@ const Btn = styled(Button)`
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  background: none;
+  color: currentColor;
+  border-color: ${themeValue(
+    { light: theme => theme.border.primary },
+    theme => theme.border.secondary,
+  )};
 
   > span {
     flex: 1;

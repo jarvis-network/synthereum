@@ -51,7 +51,7 @@ const CardContainer = styled.div`
   height: ${FULL_WIDGET_HEIGHT_PX - FEES_BLOCK_HEIGHT_PX}px;
 
   @media screen and (max-width: ${props =>
-    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     height: auto;
   }
 `;
@@ -172,7 +172,7 @@ const ClearButton = styled.button`
 
 const CustomCard = styled(Card)`
   @media screen and (max-width: ${props =>
-    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     border-radius: 0 !important;
 
     *:first-child {
@@ -312,11 +312,7 @@ export const ExchangeCard: React.FC = () => {
 
   const content = getContent();
 
-  const card = (
-    <CustomCard {...getCardProps()}>
-      {content}
-    </CustomCard>
-  );
+  const card = <CustomCard {...getCardProps()}>{content}</CustomCard>;
 
   const mobileContent =
     chooseAsset || searchOpen ? (

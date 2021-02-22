@@ -4,6 +4,8 @@ import { Header, styled } from '@jarvis-network/ui';
 import { NextLinkAdapter } from '@/components/NextLink';
 import { rightRenderer } from '@/components/header/rightRenderer';
 
+import { useReduxSelector } from '@/state/useReduxSelector';
+
 import { AccountOverviewModal } from './AccountOverviewModal';
 import { RecentActivityModal } from './RecentActivityModal';
 
@@ -13,12 +15,16 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const HeaderContainer = styled.div`
+const HeaderContainer = styled.div<{ isAuthModalVisible: boolean }>`
   position: absolute;
   top: 0;
   bottom: auto;
   left: 0;
   right: 0;
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    ${props => (props.isAuthModalVisible ? 'display: none;' : '')}
+  }
 
   .header-logo {
     height: 25px;
@@ -62,9 +68,11 @@ const Content = styled.div`
 `;
 
 export const StickyHeader: React.FC = ({ children }) => {
+  const { isAuthModalVisible } = useReduxSelector(state => state.app);
+
   return (
     <Container>
-      <HeaderContainer>
+      <HeaderContainer isAuthModalVisible={isAuthModalVisible}>
         <CustomHeader
           leftSide={{ menu: [] }}
           rightSide={rightRenderer}
