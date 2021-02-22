@@ -18,7 +18,8 @@ enum Network
 {
     mainnet = 1,
     ropsten = 3,
-    kovan = 42,
+    rinkeby = 4,
+    kovan = 42
 }
 
 void main(string[] args)
