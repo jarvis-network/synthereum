@@ -4,6 +4,11 @@
     "finderAddress": "0xeD0169a88d267063184b0853BaAAAe66c3c154B2",
     "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422"
   },
+  "4": {
+    "identifierWhitelist": "0x26f65d7Da395F01A3e9C21595D1A2C0e173d82A4",
+    "finderAddress": "0x9e416a429De8773e05563a92de4eD589aB5E5f1E",
+    "collateralAddress": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"
+  },
   "1": {
     "identifierWhitelist": "0xcF649d9Da4D1362C4DAEa67573430Bd6f945e570",
     "finderAddress": "0x40f941E48A552bF496B154Af6bf55725f18D77c3",

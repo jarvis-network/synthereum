@@ -7,6 +7,14 @@
     ],
     "feeProportions": [50, 50]
   },
+  "4": {
+    "feePercentage": 0.002,
+    "feeRecipients": [
+      "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
+      "0x535aC9f9b46E515a3af364434061181a504D5bFb"
+    ],
+    "feeProportions": [50, 50]
+  },
   "1": {
     "feePercentage": 0.002,
     "feeRecipients": [
