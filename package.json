@@ -7,6 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "postinstall": "patch-package",
     "clean": "yarn clean:build-artifacts-only",
     "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- . && rm -rf node_modules/.cache",
     "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
@@ -159,6 +160,7 @@
     "jest": "24.9.0",
     "nodemon": "2.0.4",
     "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.2",
     "pretty-quick": "^3.1.0",
