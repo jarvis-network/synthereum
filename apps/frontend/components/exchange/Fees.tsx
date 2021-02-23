@@ -75,7 +75,7 @@ export const FEES_BLOCK_HEIGHT_PX = 100;
 export const Fees: React.FC = () => {
   const { fee } = useExchangeValues();
 
-  const feeItem = fee || null; // fee?.div(new FPN(2)) : null;
+  const feeItem = fee?.div(new FPN(2)) || null;
 
   return (
     <Container>
