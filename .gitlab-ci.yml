@@ -82,7 +82,7 @@ stages:
     NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
     GIT_STRATEGY: none
   before_script:
-    - npm install -g netlify-cli
+    - yarn global add netlify-cli
   script:
     - ls -la /src
     - netlify deploy --dir /src/out
