@@ -5,6 +5,8 @@ import { styled, themeValue } from '@jarvis-network/ui';
 import { setBase, setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
+import { MAX_MINT_VALUE } from '@/utils/environment';
+
 const Container = styled.button`
   color: ${themeValue(
     {
@@ -37,6 +39,10 @@ export const Max: React.FC = () => {
     const wallet = state.wallet[payAsset];
     if (!wallet) {
       return null;
+    }
+
+    if (payAsset === 'USDC' && wallet.amount.gt(MAX_MINT_VALUE)) {
+      return MAX_MINT_VALUE;
     }
 
     return wallet.amount;

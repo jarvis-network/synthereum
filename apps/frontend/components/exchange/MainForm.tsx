@@ -24,6 +24,8 @@ import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { useSwap } from '@/components/exchange/useSwap';
 
+import { MAX_MINT_VALUE } from '@/utils/environment';
+
 import { Asset } from './Asset';
 import { Max } from './Max';
 
@@ -130,8 +132,6 @@ const ErrorMessage = styled.div`
 `;
 
 const allowedKeys = '0123456789.'.split('');
-
-const MAX_MINT_VALUE = new FPN(500);
 
 const handleKeyPress = (
   e: React.KeyboardEvent<HTMLInputElement>,
