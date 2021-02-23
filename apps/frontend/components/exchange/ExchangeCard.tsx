@@ -185,6 +185,8 @@ const CustomCard = styled(Card)`
   }
 `;
 
+const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
+
 const createPairs = (list: Asset[]): AssetPair[] => {
   return list.reduce<AssetPair[]>((result, input) => {
     result.push(
@@ -228,6 +230,9 @@ export const ExchangeCard: React.FC = () => {
     const callback = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleCloseClick();
+
+        // blur input
+        (document.activeElement as HTMLInputElement | null)?.blur();
       }
     };
     document.addEventListener('keydown', callback);
@@ -251,6 +256,7 @@ export const ExchangeCard: React.FC = () => {
     onFocus: (event: React.FocusEvent<HTMLInputElement>) => {
       setSearchOpen(true);
     },
+    className: CUSTOM_SEARCH_BAR_CLASS,
     value: query,
     open: searchOpen,
   };
