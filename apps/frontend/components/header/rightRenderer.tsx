@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AccountSummary, useWindowSize } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
@@ -72,14 +72,6 @@ const render = () => {
     },
   ];
 
-  const getImage = () => {
-    if (isSigningOut) {
-      return '';
-    }
-
-    return auth ? avatar(auth.address) : undefined;
-  };
-
   const getName = () => {
     if (isSigningOut) {
       return '';
@@ -96,11 +88,13 @@ const render = () => {
     return auth ? formatWalletAddress(auth.address) : undefined;
   };
 
+  const image = useMemo(() => auth && !isSigningOut ? avatar(auth.address) : undefined, [auth, isSigningOut]);
+
   return (
     <AccountSummary
       name={getName()}
       wallet={getAddress()}
-      image={getImage()}
+      image={image}
       menu={links}
       mode="demo"
       contentOnTop={innerWidth <= 1080}
