@@ -5,3 +5,5 @@ declare module 'ric-shim' {
   declare function ric(cb: Function): void;
   export = ric;
 }
+
+declare module "*.md";

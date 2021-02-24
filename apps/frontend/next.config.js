@@ -10,5 +10,15 @@ module.exports = withBundleAnalyzer(withPWA({
     register: true,
     dest: "public",
     scope: "/"
-  }
+  },
+  webpack: (config) => {
+    config.module.rules.push(
+      {
+        test: /\.md$/,
+        use: 'raw-loader'
+      }
+    )
+
+    return config
+  },
 }));
