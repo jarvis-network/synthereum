@@ -9,6 +9,7 @@ import {
   themeValue,
   Card,
 } from '@jarvis-network/ui';
+import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { MainForm } from '@/components/exchange/MainForm';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
@@ -187,6 +188,14 @@ const CustomCard = styled(Card)`
 
 const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 
+const getRealSymbol = (symbol: ExchangeToken): string => {
+  if (symbol === 'USDC') {
+    return 'usd';
+  }
+
+  return symbol.substring(1);
+};
+
 const createPairs = (list: Asset[]): AssetPair[] => {
   return list.reduce<AssetPair[]>((result, input) => {
     result.push(
@@ -195,7 +204,12 @@ const createPairs = (list: Asset[]): AssetPair[] => {
           return innerResult;
         }
         const name = `${input.symbol}/${output.symbol}`;
-        innerResult.push({ input, output, name });
+        const nameWithoutSlash = name.replace(/\//g, '');
+        const realCurrenciesPair = `${getRealSymbol(
+          input.symbol,
+        )}${getRealSymbol(output.symbol)}`;
+        const index = `${nameWithoutSlash}/${realCurrenciesPair}`;
+        innerResult.push({ input, output, name, index });
         return innerResult;
       }, []),
     );
@@ -246,9 +260,7 @@ export const ExchangeCard: React.FC = () => {
     filter: (data: AssetPair[], { query: searchQuery }: { query: string }) => {
       const q = searchQuery.toLowerCase().replace(/\//g, '');
 
-      return data.filter(item => {
-        return item.name.toLowerCase().replace(/\//g, '').includes(q);
-      });
+      return data.filter(item => item.index.toLowerCase().includes(q));
     },
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
