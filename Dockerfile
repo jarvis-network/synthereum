@@ -86,12 +86,6 @@ COPY apps/frontend apps/frontend
 RUN yarn nx build frontend
 RUN cp -r apps/frontend/out /out
 
-# ---------------------------- Build Old Frontend ---------------------------- #
-FROM install as old-frontend
-COPY packages/frontend-old packages/frontend-old
-RUN yarn --cwd packages/frontend-old build
-RUN cp -r packages/frontend-old/build /out
-
 # ---------------------------------------------------------------------------- #
 #                                Deploy Frontend                               #
 # ---------------------------------------------------------------------------- #

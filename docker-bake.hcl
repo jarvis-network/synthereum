@@ -94,20 +94,3 @@ target "frontend" {
     "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
   ]
 }
-
-target "frontend-old" {
-  dockerfile = "Dockerfile"
-  output = ["type=registry"]
-  tags = [
-    "${REGISTRY_NAME}/frontend-old:${TAG}"
-  ]
-  platforms = ["linux/amd64"]
-  target = "frontend-old"
-  cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}",
-    "type=registry,ref=${REGISTRY_NAME}/frontend-old-cache:${TAG}"
-  ]
-  cache-to= [
-    "type=registry,ref=${REGISTRY_NAME}/frontend-old-cache:${TAG}"
-  ]
-}
