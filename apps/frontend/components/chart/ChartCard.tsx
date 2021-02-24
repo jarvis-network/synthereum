@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
 import {
   AreaChart,
   XAxis,
@@ -125,7 +126,7 @@ export const ChartCard: React.FC = () => {
       }
 
       const { payload: hoveredPayload } = e.activePayload[0];
-      const currentPayload = chartData[0];
+      const currentPayload = last(chartData);
 
       if ('close' in hoveredPayload) {
         setCurrentValue(hoveredPayload.close);
@@ -139,7 +140,7 @@ export const ChartCard: React.FC = () => {
         setChange('less');
         return;
       }
-      if (diff! > 0) {
+      if (diff! >= 0) {
         setChange('more');
         return;
       }
