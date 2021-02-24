@@ -88,7 +88,10 @@ const render = () => {
     return auth ? formatWalletAddress(auth.address) : undefined;
   };
 
-  const image = useMemo(() => auth && !isSigningOut ? avatar(auth.address) : undefined, [auth, isSigningOut]);
+  const image = useMemo(
+    () => (auth && !isSigningOut ? avatar(auth.address) : undefined),
+    [auth, isSigningOut],
+  );
 
   return (
     <AccountSummary

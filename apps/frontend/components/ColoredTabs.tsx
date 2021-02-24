@@ -32,7 +32,7 @@ export const ColoredTabs = styled(Tabs)`
   }
 
   @media screen and (max-width: ${props =>
-    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     border-radius: 0 !important;
 
     > :first-child {
