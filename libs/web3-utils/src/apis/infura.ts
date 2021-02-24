@@ -8,9 +8,9 @@ export type Protocol = 'wss' | 'https';
 export function getInfuraEndpoint<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
+  projectId = env.infuraProjectId,
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
-  const projectId = env.infuraProjectId;
   return (`${protocol}://${networkName}.infura.io` +
     (protocol === 'wss' ? '/ws' : '') +
     `/v3/${projectId}`) as ValueOnNetwork<string, Net>;
