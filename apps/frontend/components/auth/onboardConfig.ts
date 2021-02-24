@@ -73,7 +73,7 @@ const getRPCWalletConfig = <T extends string>(walletName: T) => {
 
 type OnboardConfig = Pick<
   Initialization,
-  'dappId' | 'networkId' | 'walletSelect' | 'hideBranding'
+  'dappId' | 'networkId' | 'walletSelect' | 'hideBranding' | 'walletCheck'
 >;
 
 const getOnboardConfig = (): OnboardConfig => {
@@ -81,6 +81,12 @@ const getOnboardConfig = (): OnboardConfig => {
     dappId: ONBOARD_API_KEY,
     hideBranding: true,
     networkId: NETWORK_ID,
+    walletCheck: [
+      { checkName: 'connect' },
+      { checkName: 'network' },
+      { checkName: 'derivationPath' },
+      { checkName: 'accounts' },
+    ],
     walletSelect: {
       heading: 'Sing Up/In with your wallet',
       description: ' ', // space here to hide default text
