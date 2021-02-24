@@ -27,25 +27,17 @@ function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
 
   return (
-    <>
-      <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-        />
-      </Head>
-      <StateProvider store={store}>
-        <AppThemeProvider>
-          <AuthProvider>
-            <AuthFlow />
-            <MainWrapper>
-              <FullScreenLoader />
-              <Component {...pageProps} />
-            </MainWrapper>
-          </AuthProvider>
-        </AppThemeProvider>
-      </StateProvider>
-    </>
+    <StateProvider store={store}>
+      <AppThemeProvider>
+        <AuthProvider>
+          <AuthFlow />
+          <MainWrapper>
+            <FullScreenLoader />
+            <Component {...pageProps} />
+          </MainWrapper>
+        </AuthProvider>
+      </AppThemeProvider>
+    </StateProvider>
   );
 }
 
