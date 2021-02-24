@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Icon, styled, themeValue } from '@jarvis-network/ui';
+
+import { styledScrollbars } from '@/utils/styleMixins';
+
+import { ModalHeaderProps } from './types';
 
 export const ImgContainer = styled.div`
   flex: 1;
@@ -80,3 +84,42 @@ const RotatedIcon = styled(Icon)`
 `;
 
 export const ChevronRight = () => <RotatedIcon icon="BsChevronDown" />;
+
+const HeaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const HeaderTitle = styled.strong`
+  font-size: ${props => props.theme.font.sizes.l};
+`;
+
+const HeaderIconButton = styled(IconButton)`
+  padding: 0;
+  margin-right: 10px;
+
+  i svg {
+    right: 0;
+    top: 1px;
+  }
+`;
+
+export const ModalHeader: FC<ModalHeaderProps> = ({ onBack, title }) => (
+  <HeaderWrapper>
+    <HeaderIconButton onClick={onBack}>
+      <Icon icon="BsArrowLeft" />
+    </HeaderIconButton>
+    <HeaderTitle>{title}</HeaderTitle>
+  </HeaderWrapper>
+);
+
+export const ContentWrapper = styled.div`
+  width: 100%;
+  max-height: 100%;
+  padding: 15px;
+  border: 1px solid ${props => props.theme.border.secondary};
+  box-sizing: border-box;
+
+  ${props => styledScrollbars(props.theme)}
+`;

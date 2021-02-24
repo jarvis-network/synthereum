@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Button, Checkbox, styled, themeValue } from '@jarvis-network/ui';
+
 import { PageProps } from '@/components/auth/flow/types';
 import {
   BigP,
@@ -7,14 +10,12 @@ import {
   P,
   ImgContainer,
   ChevronRight,
+  ModalHeader,
+  ContentWrapper,
 } from '@/components/auth/flow/ModalComponents';
-import {
-  Button,
-  Checkbox,
-  ModalContent,
-  styled,
-  themeValue,
-} from '@jarvis-network/ui';
+
+import termsOfServiceText from '@/components/auth/flow/policies/tos.md';
+import privacyPolicyText from '@/components/auth/flow/policies/pp.md';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -85,13 +86,12 @@ const Submit = styled(Button)`
 
 export const Terms: React.FC<PageProps> = ({ onNext }) => {
   const [checked, setChecked] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [mode, setMode] = useState<'approve' | 'terms' | 'privacy'>('approve');
 
   const toggle = () => setChecked(p => !p);
 
-  return (
-    <TutorialContent>
+  const approve = (
+    <>
       <ImgContainer>
         <Img src="/images/welcome-statue.svg" alt="" />
       </ImgContainer>
@@ -101,11 +101,11 @@ export const Terms: React.FC<PageProps> = ({ onNext }) => {
         No worry, they are <b>easy to read</b>!
       </P>
       <TermsContainer>
-        <Btn inverted type="dark" onClick={() => setShowTerms(true)}>
-          <span>Terms of service</span>
+        <Btn inverted type="dark" onClick={() => setMode('terms')}>
+          <span>Terms of Service</span>
           <ChevronRight />
         </Btn>
-        <Btn inverted type="dark" onClick={() => setShowPrivacy(true)}>
+        <Btn inverted type="dark" onClick={() => setMode('privacy')}>
           <span>Privacy Policy</span>
           <ChevronRight />
         </Btn>
@@ -121,22 +121,34 @@ export const Terms: React.FC<PageProps> = ({ onNext }) => {
           I agree
         </Submit>
       </Footer>
-
-      <ModalContent
-        title="Terms of a service"
-        isOpened={showTerms}
-        onClose={() => setShowTerms(false)}
-      >
-        terms
-      </ModalContent>
-
-      <ModalContent
-        title="Privacy Policy"
-        isOpened={showPrivacy}
-        onClose={() => setShowPrivacy(false)}
-      >
-        terms
-      </ModalContent>
-    </TutorialContent>
+    </>
   );
+
+  const terms = (
+    <>
+      <ModalHeader title="Terms of Service" onBack={() => setMode('approve')} />
+      <BigP>No worry, we have made them super clear and easy to read</BigP>
+      <ContentWrapper>
+        <ReactMarkdown allowDangerousHtml>{termsOfServiceText}</ReactMarkdown>
+      </ContentWrapper>
+    </>
+  );
+
+  const privacy = (
+    <>
+      <ModalHeader title="Privacy Policy" onBack={() => setMode('approve')} />
+      <BigP>No worry, we have made them super clear and easy to read</BigP>
+      <ContentWrapper>
+        <ReactMarkdown allowDangerousHtml>{privacyPolicyText}</ReactMarkdown>
+      </ContentWrapper>
+    </>
+  );
+
+  const Content = {
+    approve,
+    terms,
+    privacy,
+  };
+
+  return <TutorialContent>{Content[mode]}</TutorialContent>;
 };
