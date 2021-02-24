@@ -83,6 +83,16 @@ RUN cp -r apps/validator/dist /out
 # ------------------------------ Build Frontend ------------------------------ #
 FROM build-libs as build-frontend
 COPY apps/frontend apps/frontend
+# Keep in sync with docker-bake.hcl and apps/frontend/.env.example
+ARG NEXT_PUBLIC_ONBOARD_API_KEY
+ARG NEXT_PUBLIC_NETWORK_ID
+ARG NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET
+ARG NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET
+ARG NEXT_PUBLIC_INFURA_API_KEY
+ARG NEXT_PUBLIC_PORTIS_API_KEY
+ARG NEXT_PUBLIC_SQUARELINK_API_KEY
+ARG NEXT_PUBLIC_PRICE_FEED_ROOT
+ARG NEXT_PUBLIC_SUPPORTED_ASSETS
 RUN yarn nx build frontend
 RUN cp -r apps/frontend/out /out
 
