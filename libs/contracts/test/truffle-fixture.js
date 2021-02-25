@@ -1,16 +1,16 @@
 require('dotenv').config({ path: './.env.migration' });
 const { parseBoolean } = require('@jarvis-network/web3-utils/base/asserts');
 //Synthereum contracts to deploy Synthereum infrastructure for local hardhat test
-const deployFinder = require('../migrations/2_deploy_finder.js');
-const deployDeployer = require('../migrations/3_deploy_deployer.js');
-const deployPoolRegistry = require('../migrations/4_deploy_pool_registry.js');
-const deployFactoryVersioning = require('../migrations/5_deploy_factory_versioning.js');
-const deployDerivativeVersions = require('../migrations/6_deploy_derivative_versions.js');
-const deployPoolVersions = require('../migrations/7_deploy_pool_versions.js');
-const deployPriceFeed = require('../migrations/8_deploy_price_feed.js');
-const deployPoolAndDerivative = require('../migrations/9_add_pool_and_derivative.js');
-const deployOnlyPool = require('../migrations/10_add_only_pool.js');
-const deployOnlyDerivative = require('../migrations/11_add_only_derivative.js');
+const deployFinder = require('../migrations/1_deploy_finder.js');
+const deployDeployer = require('../migrations/2_deploy_deployer.js');
+const deployPoolRegistry = require('../migrations/3_deploy_pool_registry.js');
+const deployFactoryVersioning = require('../migrations/4_deploy_factory_versioning.js');
+const deployDerivativeVersions = require('../migrations/5_deploy_derivative_versions.js');
+const deployPoolVersions = require('../migrations/6_deploy_pool_versions.js');
+const deployPriceFeed = require('../migrations/7_deploy_price_feed.js');
+const deployPoolAndDerivative = require('../migrations/8_add_pool_and_derivative.js');
+const deployOnlyPool = require('../migrations/9_add_only_pool.js');
+const deployOnlyDerivative = require('../migrations/10_add_only_derivative.js');
 
 //Uma contracts to deploy Uma infrastructure for local hardhat test
 const umaDeployFinder = require('@jarvis-network/uma-core/migrations/2_deploy_finder.js');
