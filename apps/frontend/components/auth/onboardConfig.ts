@@ -47,16 +47,6 @@ const getFortmatic = () => {
   };
 };
 
-const getSquareLink = () => {
-  if (!process.env.NEXT_PUBLIC_SQUARELINK_API_KEY) {
-    return null;
-  }
-  return {
-    walletName: 'squarelink',
-    apiKey: process.env.NEXT_PUBLIC_SQUARELINK_API_KEY,
-  };
-};
-
 const getRPCWalletConfig = <T extends string>(walletName: T) => {
   if (!process.env.NEXT_PUBLIC_INFURA_API_KEY) {
     return null;
@@ -95,8 +85,6 @@ const getOnboardConfig = (): OnboardConfig => {
         getWalletConnect(),
         getPortis(),
         getFortmatic(),
-        getSquareLink(),
-        { walletName: 'dapper' },
         { walletName: 'authereum' },
         { walletName: 'trust' },
         { walletName: 'opera' },
