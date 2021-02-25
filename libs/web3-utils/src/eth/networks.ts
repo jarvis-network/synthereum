@@ -70,13 +70,24 @@ export type ToNetworkName<Net extends Network> = (typeof networkIdToName &
 export type ToNetworkId<Net extends Network> = (typeof networkNameToId &
   typeof networkIdToId)[Net];
 
+export type NetworkNameNoFork<
+  T extends NetworkName | `${NetworkName}_fork`
+> = T extends `${infer Name}_fork` ? Name : T;
+
 export function toNetworkId<Id extends NetworkId>(id: Id): Id;
-export function toNetworkId<Name extends NetworkName>(
+export function toNetworkId<Name extends NetworkName | `${NetworkName}_fork`>(
   network: Name,
-): ToNetworkId<Name>;
+): ToNetworkId<NetworkNameNoFork<Name>>;
 export function toNetworkId(network: Network): NetworkId;
 export function toNetworkId(network: Network): NetworkId {
-  return isNetworkName(network) ? networkNameToId[network] : network;
+  if (typeof network === 'string') {
+    if (network.endsWith('_fork')) {
+      network = assertIsNetworkName(network.substring(0, network.length - 5));
+    }
+    return networkNameToId[network];
+  } else {
+    return assertIsNetworkId(network);
+  }
 }
 
 export function toNetworkName<Name extends NetworkName>(network: Name): Name;
