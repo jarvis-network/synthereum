@@ -1,20 +1,15 @@
-const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
-const { getDeploymentInstance } = require('../utils/deployment.js');
-var SynthereumDeployer = artifacts.require('SynthereumDeployer');
-var SynthereumFinder = artifacts.require('SynthereumFinder');
+const {
+  getExistingInstance,
+} = require('../dist/src/migration-utils/deployment');
+const SynthereumDeployer = artifacts.require('SynthereumDeployer');
+const SynthereumFinder = artifacts.require('SynthereumFinder');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+const { toNetworkId } = require('@jarvis-network/web3-utils/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = await web3.eth.net.getId();
-  const {
-    contractInstance: synthereumFinderInstance,
-    isDeployed,
-  } = await getDeploymentInstance(
-    SynthereumFinder,
-    'SynthereumFinder',
-    networkId,
-  );
+  const networkId = toNetworkId(network);
+  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
@@ -23,25 +18,20 @@ module.exports = async function (deployer, network, accounts) {
     deployer,
     network,
     SynthereumDeployer,
-    isDeployed
-      ? synthereumFinderInstance.address
-      : synthereumFinderInstance.options.address,
+    synthereumFinder.options.address,
     roles,
     { from: keys.deployer },
   );
   const deployerInterface = await web3.utils.stringToHex('Deployer');
-  const synthereumDeployerInstance = await SynthereumDeployer.deployed();
-  isDeployed
-    ? await synthereumFinderInstance.changeImplementationAddress(
-        deployerInterface,
-        synthereumDeployerInstance.address,
-        { from: maintainer },
-      )
-    : await synthereumFinderInstance.methods
-        .changeImplementationAddress(
-          deployerInterface,
-          synthereumDeployerInstance.address,
-        )
-        .send({ from: maintainer });
+  const synthereumDeployer = await getExistingInstance(
+    web3,
+    SynthereumDeployer,
+  );
+  await synthereumFinder.methods
+    .changeImplementationAddress(
+      deployerInterface,
+      synthereumDeployer.options.address,
+    )
+    .send({ from: maintainer });
   console.log('SynthereumDeployer added to SynthereumFinder');
 };
