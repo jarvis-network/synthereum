@@ -40,7 +40,7 @@ module.exports = async function (deployer, network, accounts) {
     : await synthereumFinderInstance.methods
         .changeImplementationAddress(
           poolRegistryInterface,
-          synthereumFinderInstance.address,
+          synthereumPoolRegistryInstance.address,
         )
         .send({ from: maintainer });
   console.log('SynthereumPoolRegistry added to SynthereumFinder');
