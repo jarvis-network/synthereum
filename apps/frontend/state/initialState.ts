@@ -7,6 +7,7 @@ import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/con
 import { assets, Asset } from '@/data/assets';
 import { transactions, Transaction } from '@/data/transactions';
 import { SubscriptionPair } from '@/utils/priceFeed';
+import { cache } from '@/utils/cache';
 
 type Values = 'pay' | 'receive';
 
@@ -41,6 +42,8 @@ export interface PricePointsMap {
 export const DEFAULT_PAY_ASSET: ExchangeToken = 'USDC';
 export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 
+export type Days = 1 | 7 | 30;
+
 export interface State {
   theme: ThemeNameType;
   app: {
@@ -66,6 +69,7 @@ export interface State {
     receiveAsset: ExchangeToken | null;
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
+    chartDays: Days;
   };
   wallet: {
     [key in ExchangeToken]?: WalletInfo;
@@ -80,10 +84,18 @@ export interface State {
 }
 
 export const initialState: State = {
-  theme: 'light',
+  theme: cache?.get<ThemeNameType | null>('jarvis/state/theme') || 'light',
   app: {
-    isAccountOverviewModalVisible: false,
-    isRecentActivityModalVisible: false,
+    isAccountOverviewModalVisible: Boolean(
+      cache?.get<boolean | null>(
+        'jarvis/state/app.isAccountOverviewModalVisible',
+      ),
+    ),
+    isRecentActivityModalVisible: Boolean(
+      cache?.get<boolean | null>(
+        'jarvis/state/app.isRecentActivityModalVisible',
+      ),
+    ),
     isFullScreenLoaderVisible: false,
     isAuthModalVisible: false,
     mobileTab: 1,
@@ -96,10 +108,15 @@ export const initialState: State = {
     pay: '0',
     receive: '0',
     base: 'pay',
-    payAsset: DEFAULT_PAY_ASSET,
-    receiveAsset: DEFAULT_RECEIVE_ASSET,
+    payAsset:
+      cache?.get<ExchangeToken | null>('jarvis/state/exchange.payAsset') ||
+      DEFAULT_PAY_ASSET,
+    receiveAsset:
+      cache?.get<ExchangeToken | null>('jarvis/state/exchange.receiveAsset') ||
+      DEFAULT_RECEIVE_ASSET,
     invertRateInfo: false,
     chooseAssetActive: null,
+    chartDays: cache?.get<Days | null>('jarvis/state/exchange.chartDays') || 7,
   },
   wallet: {},
   transactions: {

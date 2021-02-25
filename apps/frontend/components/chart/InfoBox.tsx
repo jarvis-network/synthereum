@@ -3,8 +3,7 @@ import { Flag, styled } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
-
-import { Days } from './types';
+import { Days } from '@/state/initialState';
 
 const Box = styled.div`
   display: flex;

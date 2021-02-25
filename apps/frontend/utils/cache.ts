@@ -1,19 +1,11 @@
-import { Store, set, get } from 'idb-keyval';
-
-class Cache {
-  store: Store;
-
-  constructor() {
-    this.store = new Store('jarvis', 'exchange');
-  }
-
+const cacheObj = {
   set<T = any>(key: string, value: T) {
-    return set(key, value, this.store);
-  }
+    return localStorage.setItem(key, JSON.stringify(value));
+  },
 
   get<T = any>(key: string) {
-    return get<T>(key, this.store);
-  }
-}
+    return JSON.parse(localStorage.getItem(key)!) as T | null;
+  },
+};
 
-export const cache = typeof window === 'undefined' ? null : new Cache();
+export const cache = typeof window === 'undefined' ? null : cacheObj;

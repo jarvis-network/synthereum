@@ -204,8 +204,6 @@ export const MainForm: React.FC<Props> = () => {
   };
 
   const reset = () => {
-    dispatch(setPayAsset(DEFAULT_PAY_ASSET));
-    dispatch(setReceiveAsset(DEFAULT_RECEIVE_ASSET));
     dispatch(setBase('pay'));
     dispatch(setPay('0'));
     dispatch(setReceive('0'));

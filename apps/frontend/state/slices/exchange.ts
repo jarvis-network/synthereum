@@ -26,6 +26,10 @@ interface SetReceiveAssetAction {
   payload: State['exchange']['receiveAsset'];
 }
 
+interface SetChartDays {
+  payload: State['exchange']['chartDays'];
+}
+
 const exchangeSlice = createSlice({
   name: 'exchange',
   initialState: initialState.exchange,
@@ -66,6 +70,10 @@ const exchangeSlice = createSlice({
       // eslint-disable-next-line no-param-reassign
       state.invertRateInfo = !state.invertRateInfo;
     },
+    setChartDays(state, action: SetChartDays) {
+      // eslint-disable-next-line no-param-reassign
+      state.chartDays = action.payload;
+    },
   },
 });
 
@@ -77,6 +85,7 @@ export const {
   setPayAsset,
   setReceiveAsset,
   invertRateInfo,
+  setChartDays,
 } = exchangeSlice.actions;
 
 export const { reducer } = exchangeSlice;

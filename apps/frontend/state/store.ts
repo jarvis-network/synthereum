@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { configureStore, Store, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 
@@ -7,9 +7,9 @@ import { cache } from '@/utils/cache';
 import { PriceFeed } from '@/utils/priceFeed';
 import { Dependencies } from '@/utils/epics';
 import { State, initialState } from '@/state/initialState';
-import { reducer, RootState } from '@/state/reducer';
-import { saveCachedHistory } from '@/state/slices/prices';
+import { reducer } from '@/state/reducer';
 import { epic } from '@/state/epic';
+import { createPersistMiddleware } from '@/state/persist';
 
 let cachedStore: Store | undefined;
 
@@ -26,7 +26,18 @@ function initStore(preloadedState: State = initialState) {
     },
   });
 
-  const middleware = [...getDefaultMiddleware(), epicMiddleware];
+  const middleware = [
+    ...getDefaultMiddleware(),
+    createPersistMiddleware([
+      'theme',
+      'exchange.payAsset',
+      'exchange.receiveAsset',
+      'exchange.chartDays',
+      'app.isAccountOverviewModalVisible',
+      'app.isRecentActivityModalVisible',
+    ]),
+    epicMiddleware,
+  ];
 
   // If you are going to load preloaded state from serialized data somewhere
   // here, make sure to convert all needed values from strings to BN
@@ -62,17 +73,5 @@ export const initializeStore = (preloadedState: State) => {
 };
 
 export function useStore(state: State) {
-  const store = useMemo(() => initializeStore(state), [state]);
-
-  useEffect(() => {
-    if (!cache) {
-      return;
-    }
-
-    cache
-      .get<RootState['prices']>('prices')
-      .then(prices => store.dispatch(saveCachedHistory(prices)));
-  }, []);
-
-  return store;
+  return useMemo(() => initializeStore(state), [state]);
 }

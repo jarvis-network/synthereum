@@ -26,7 +26,6 @@
     "bnc-onboard": "^1.19.2",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
-    "idb-keyval": "^3.2.0",
     "milliseconds": "^1.0.3",
     "next": "9.5.3",
     "next-pwa": "^5.0.4",

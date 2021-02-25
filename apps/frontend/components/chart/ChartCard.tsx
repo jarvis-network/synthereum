@@ -18,7 +18,10 @@ import { getPercentageChange } from '@/utils/getPercentageChange';
 import { InfoBox } from '@/components/chart/InfoBox';
 import { ChartData, useChartData } from '@/utils/useChartData';
 import { formatTimestamp } from '@/utils/format';
-import { Days } from '@/components/chart/types';
+
+import { useReduxSelector } from '@/state/useReduxSelector';
+import { useDispatch } from 'react-redux';
+import { setChartDays } from '@/state/slices/exchange';
 
 import { FULL_WIDGET_HEIGHT_PX } from '../exchange/ExchangeCard';
 
@@ -92,11 +95,12 @@ const Container = styled.div`
 `;
 
 export const ChartCard: React.FC = () => {
-  const [days, setDays] = useState<Days>(7);
   const [change, setChange] = useState<ChangeType | null>(null);
   const [changeValue, setChangeValue] = useState<number | null>(null);
   const [changeValuePerc, setChangeValuePerc] = useState<number | null>(null);
   const [currentValue, setCurrentValue] = useState<number | null>(null);
+  const days = useReduxSelector(state => state.exchange.chartDays);
+  const dispatch = useDispatch();
 
   const theme = useTheme();
 
@@ -180,7 +184,7 @@ export const ChartCard: React.FC = () => {
         changeValuePerc={changeValuePerc}
         wholeRangeChangeValue={wholeRangeChangeValue}
         wholeRangeChangePerc={wholeRangeChangePerc}
-        onDaysChange={val => setDays(val)}
+        onDaysChange={val => dispatch(setChartDays(val))}
         days={days}
       />
       <ResponsiveContainer>
