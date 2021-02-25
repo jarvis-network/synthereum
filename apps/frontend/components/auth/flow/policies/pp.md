@@ -1,5 +1,5 @@
-#### Privacy policy
-###### Last updated: February 24, 2021
+# Privacy policy
+## Last updated: February 24, 2021
 
 Jarvis One Ltd. (hereinafter referred to as “Jarvis”, “we”, “us” or “our”), a company registered in Saint Vincent and the Grenadines, seated at The Financial Services Center, Stoney Ground, Kingston, with registration number 24623 IBC 2018, provides a service (hereafter called "Service" or "Services") through its website located at https://jarvis.exchange/ (hereinafter referred to as “Website”), and a web application located at https://app.jarvis.exchange (hereafter referred to as "Application”).
 

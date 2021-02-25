@@ -1,5 +1,5 @@
-#### Terms of Service
-###### Effective since 2020, February the 23rd
+# Terms of Service
+## Effective since 2020, February the 23rd
 
 Jarvis One Ltd. (hereinafter referred to as “Jarvis”, “we”, “us” or “our”), a company registered in Saint Vincent and the Grenadines, seated at The Financial Services Center, Stoney Ground, Kingston, with registration number 24623 IBC 2018, has developed these Terms of Service (hereinafter referred to as “Terms”) that govern your use of the tools, information, products and services (collectively referred to as “Service”) made available on the site https://jarvis.exchange/ (hereinafter referred to as “Website”).
 By visiting our Website, or using our Service, you acknowledge that you have read, understood, and agreed to these Terms, as well as the accompanying Risk warning and Privacy Policy. These Terms represent a binding agreement between You, the legal entity You represent (collectively hereinafter referred to as “You”) and Jarvis. If you do not agree with these terms, do not use the Service.

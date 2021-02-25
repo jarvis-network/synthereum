@@ -121,5 +121,20 @@ export const ContentWrapper = styled.div`
   border: 1px solid ${props => props.theme.border.secondary};
   box-sizing: border-box;
 
+  > h1,
+  > h2 {
+    text-align: center;
+    paddin-top: 0;
+    margin-top: 0;
+  }
+
+  > h1 {
+    font-size: ${props => props.theme.font.sizes.l};
+  }
+
+  > h2 {
+    font-size: ${props => props.theme.font.sizes.s};
+  }
+
   ${props => styledScrollbars(props.theme)}
 `;
