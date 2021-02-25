@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Document, {
   Html,
   Head,
@@ -102,11 +104,6 @@ class MyDocument extends Document {
           <meta name="theme-color" content="#fff" />
           <meta name="application-name" content="Jarvis Exchange" />
           <meta name="apple-mobile-web-app-title" content="Jarvis Exchange" />
-
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-          />
         </Head>
         <body>
           <Main />
