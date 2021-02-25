@@ -1,13 +1,14 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { styled, ModalContent } from '@jarvis-network/ui';
+import { styled, ModalContent, FlagImagesMap } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import type { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { ExchangeToken, primaryCollateralSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
-import { PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
+import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
+import { RealmAgentContext, Web3Context } from '../auth/AuthProvider';
 
 interface BalanceProps {
   total: FPN;
@@ -15,6 +16,7 @@ interface BalanceProps {
 
 interface AssetsProps {
   items: AssetRowProps[];
+  onAddToMetaMaskClick?: (asset: Asset) => void;
 }
 
 const Wrapper = styled.div``;
@@ -43,12 +45,18 @@ const Balance: FC<BalanceProps> = ({ total }) => (
   </Block>
 );
 
-const Assets: FC<AssetsProps> = ({ items }) => (
+const Assets: FC<AssetsProps> = ({ items, onAddToMetaMaskClick }) => (
   <Block>
     <Heading>Assets</Heading>
-    {items.map(item => (
-      <AssetRow {...item} key={item.asset.symbol} />
-    ))}
+    {items.map(item => {
+      const props: AssetRowProps = { ...item };
+
+      if (onAddToMetaMaskClick && item.asset.symbol !== primaryCollateralSymbol) {
+        props.onAddToMetaMaskClick = () => onAddToMetaMaskClick(item.asset);
+      }
+
+      return <AssetRow {...props} key={item.asset.symbol} />;
+    })}
   </Block>
 );
 
@@ -59,10 +67,53 @@ export const AccountOverviewModal: FC = () => {
   );
   const wallet = useReduxSelector(state => state.wallet);
   const assets = useReduxSelector(state => state.assets.list);
+  const web3 = useContext(Web3Context);
+  const realmAgent = useContext(RealmAgentContext);
 
   const handleClose = () => {
     dispatch(setAccountOverviewModalVisible(false));
   };
+
+  const handleAddToMetamaskClick = (asset: Asset) => {
+    if (!realmAgent || !web3 || !web3.currentProvider) {
+      return;
+    }
+
+    if (typeof web3.currentProvider === "string") {
+      return;
+    }
+
+    if (!("request" in web3.currentProvider) || !web3.currentProvider.request) {
+      return;
+    }
+
+    const { symbol, icon, decimals } = asset;
+
+    if (symbol === primaryCollateralSymbol) {
+      return;
+    }
+
+    const address = realmAgent.activePools[symbol]?.syntheticToken.address;
+
+    if (!address) {
+      return;
+    }
+
+    const image = icon ? `${location.href}${FlagImagesMap[icon]}` : `${location.href}icons/alpha_192.png`;
+
+    web3.currentProvider.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          symbol,
+          decimals,
+          address,
+          image
+        },
+      }
+    });
+  }
 
   const items: AssetRowProps[] = useMemo(() => {
     const keys = Object.keys(wallet) as ExchangeToken[];
@@ -93,7 +144,7 @@ export const AccountOverviewModal: FC = () => {
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
       <Wrapper>
         <Balance total={total} />
-        <Assets items={items} />
+        <Assets items={items} onAddToMetaMaskClick={handleAddToMetamaskClick} />
       </Wrapper>
     </ModalContent>
   );
