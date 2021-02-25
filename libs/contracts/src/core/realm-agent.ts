@@ -54,6 +54,9 @@ interface RedeemParams extends BaseTxParams {
 export class RealmAgent<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
+  public readonly activePools: PoolsForVersion<PoolVersion, Net>;
+  private readonly defaultTxOptions: FullTxOptions<Net>;
+
   constructor(
     public readonly realm: SynthereumRealmWithWeb3<Net>,
     public readonly agentAddress: AddressOn<Net>,
@@ -65,9 +68,6 @@ export class RealmAgent<
       web3: this.realm.web3,
     };
   }
-
-  private readonly activePools: PoolsForVersion<PoolVersion, Net>;
-  private readonly defaultTxOptions: FullTxOptions<Net>;
 
   async collateralBalance(): Promise<Amount> {
     return await getTokenBalance(this.realm.collateralToken, this.agentAddress);

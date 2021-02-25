@@ -1,14 +1,16 @@
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
+import { assert } from '@jarvis-network/web3-utils/base/asserts';
 import {
   formatAmount,
   mapSumBN,
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import { SupportedNetworkId } from '../../src/config';
+import { parseSupportedNetworkId } from '../../src/config/supported-networks';
 import { loadRealm } from '../../src/core/load-realm';
 import { RealmAgent } from '../../src/core/realm-agent';
-import { parseSupportedNetworkId } from '../../src/config/supported-networks';
 
 /**
  * Apps building on top of Synthereum need to work with a single class - the
@@ -76,6 +78,22 @@ export async function example() {
   console.log(tx.transactionHash);
   console.log(tx.events);
   console.log(tx.blockNumber);
+
+  const {
+    address: jEurAddress,
+    instance: jEur,
+  } = realmAgent.activePools.jEUR!.syntheticToken;
+
+  const jEurBalance1 = FPN.fromWei(
+    await jEur.methods.balanceOf(realmAgent.agentAddress).call(),
+  );
+  const jEurBalance2 = await realmAgent.syntheticTokenBalanceOf('jEUR');
+  assert(jEurBalance1.bn.eq(jEurBalance2));
+
+  console.log(
+    `jEUR ERC20 Token Address: ${jEurAddress} | myBalance jEUR Balance:`,
+    jEurBalance2,
+  );
 
   /**************************************************************************
    *  Exchanging                                                            *
