@@ -154,8 +154,8 @@ export const ServiceSelect: React.FC<PageProps> = () => {
           You will need <b>USDC</b> to interact with our <b>application</b>.
           <br />
           USDC is a tokenized version of the dollar.{' '}
-          <Link href="/" passHref>
-            <CustomLink>Read more.</CustomLink>
+          <Link href="https://www.circle.com/en/usdc" passHref>
+            <CustomLink target="_blank">Read more.</CustomLink>
           </Link>
         </div>
       </Footer>
