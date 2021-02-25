@@ -1,6 +1,5 @@
 import React from 'react';
 import type { AppProps /* , AppContext */ } from 'next/app';
-import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
 
 import { styled } from '@jarvis-network/ui';
@@ -15,6 +14,7 @@ import { AuthFlow } from '@/components/auth/AuthFlow';
 
 import './_app.scss';
 import 'react-table/react-table.css';
+import { BackgroundPreloader } from '@/components/BackgroundsPreloader';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -31,6 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AppThemeProvider>
         <AuthProvider>
           <AuthFlow />
+          <BackgroundPreloader />
           <MainWrapper>
             <FullScreenLoader />
             <Component {...pageProps} />
