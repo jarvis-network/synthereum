@@ -3980,10 +3980,10 @@
     rxjs "^6.6.3"
     wrap-ansi "^7.0.0"
 
-"@jarvis-network/ui@^0.9.5":
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/@jarvis-network/ui/-/ui-0.9.5.tgz#0b29c4829998f1faf3ed301689de77bcc9440930"
-  integrity sha512-nilRUoX7TCdyzfqI+gh80tlhWyX19G08jn4i7VkNa40KCGfMvKa2x2nTOasxGDCOwJ1D35JgzwIdIsu+ILUqAw==
+"@jarvis-network/ui@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.npmjs.org/@jarvis-network/ui/-/ui-0.9.6.tgz#e303298e7a95a7968e205685abd66bc5953dafde"
+  integrity sha512-gcmf1ZYGjgAAuKDRCpQVevHWtAJ9LdHkzo67hZ/xUw+MDBMyfUB1l9BEPUql+NK3UHMnP/Q+pRjFJLxW2bE+rw==
   dependencies:
     "@emotion/core" "^10.0.35"
     "@emotion/styled" "^10.0.27"

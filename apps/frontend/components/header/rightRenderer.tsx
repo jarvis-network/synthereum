@@ -60,17 +60,10 @@ const render = () => {
       key: 'Account',
       onClick: handleAccountOverviewOpen,
     },
-    {
-      name: 'Help',
-      key: 'Help',
-      onClick: () =>
-        window.open(
-          'https://jarvis-exchange.crisp.help/en/',
-          '_blank',
-          'noopener',
-        ),
-    },
   ];
+
+  const onHelp = () =>
+    window.open('https://help.jarvis.exchange/en/', '_blank', 'noopener');
 
   const getName = () => {
     if (isSigningOut) {
@@ -104,6 +97,7 @@ const render = () => {
       onLogout={isSigningOut ? noop : handleLogOut}
       onLogin={isSigningOut ? noop : handleLogIn}
       onThemeChange={handleSetTheme}
+      onHelp={onHelp}
     />
   );
 };
