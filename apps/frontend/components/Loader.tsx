@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { styled } from '@jarvis-network/ui';
 
-const Container = styled.div`
+interface LoaderProps {
+  size?: "s" | "m" | "l";
+  color?: CSSProperties["color"];
+}
+
+const SizeMap = {
+  s: 36,
+  m: 50,
+  l: 64
+} as const;
+
+const Container = styled.div<LoaderProps>`
+  width: auto;
+  height: ${props => SizeMap[props.size || "m"]}px;
+
   svg {
     animation: rotate 1s linear infinite;
-    width: 50px;
-    height: 50px;
+    width: ${props => SizeMap[props.size || "m"]}px;
+    height: ${props => SizeMap[props.size || "m"]}px;
     position: relative;
   }
 
@@ -14,7 +28,7 @@ const Container = styled.div`
     stroke-dashoffset: 0;
     animation: dash 1.5s ease-in-out infinite;
     stroke-linecap: round;
-    stroke: white;
+    stroke: ${props => props.color || "white"};
   }
 
   @keyframes rotate {
@@ -38,9 +52,9 @@ const Container = styled.div`
   }
 `;
 
-export const Loader: React.FC = () => {
+export const Loader: React.FC<LoaderProps> = props => {
   return (
-    <Container>
+    <Container {...props}>
       <svg viewBox="25 25 50 50">
         <circle
           cx="50"

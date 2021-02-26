@@ -1,11 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Icon, styled, themeValue } from '@jarvis-network/ui';
+import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import {
-  DEFAULT_PAY_ASSET,
-  DEFAULT_RECEIVE_ASSET,
   State,
 } from '@/state/initialState';
 import {
@@ -16,7 +14,7 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { setFullScreenLoaderVisible } from '@/state/slices/app';
+import { setAuthModalVisible, setSwapLoaderVisible } from '@/state/slices/app';
 import { Asset as AssetType } from '@/data/assets.ts';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
@@ -28,6 +26,7 @@ import { MAX_MINT_VALUE } from '@/utils/environment';
 
 import { Asset } from './Asset';
 import { Max } from './Max';
+import { Loader } from '../Loader';
 
 interface Props {}
 
@@ -167,6 +166,9 @@ export const MainForm: React.FC<Props> = () => {
   } = useExchangeValues();
 
   const swap = useSwap();
+  const theme = useTheme();
+
+  const isSwapLoaderVisible = useReduxSelector(state => state.app.isSwapLoaderVisible);
 
   const auth = useReduxSelector(state => state.auth);
 
@@ -212,23 +214,47 @@ export const MainForm: React.FC<Props> = () => {
   const mintingOverLimit =
     paySymbol === 'USDC' && new FPN(payString).gt(MAX_MINT_VALUE);
 
-  const swapDisabled =
-    !auth ||
-    !Number(payString) ||
-    !Number(receiveString) ||
-    insufficientBalance ||
-    mintingOverLimit;
+  const isSwapDisabled = () => {
+    if (isSwapLoaderVisible) {
+      return true;
+    }
+
+    if (!auth) {
+      return false;
+    }
+
+    return !Number(payString) ||
+      !Number(receiveString) ||
+      insufficientBalance ||
+      mintingOverLimit;
+  }
 
   const doSwap = async () => {
-    dispatch(setFullScreenLoaderVisible(true));
+    dispatch(setSwapLoaderVisible(true));
     try {
       await swap?.();
       reset();
     } catch (e) {
       console.error(e); // @TODO needs proper error handler
     }
-    dispatch(setFullScreenLoaderVisible(false));
+    dispatch(setSwapLoaderVisible(false));
   };
+
+  const handleSwapButtonClick = () => {
+    if (!auth) {
+      return dispatch(setAuthModalVisible(true));
+    }
+
+    return doSwap();
+  }
+
+  const getSwapButtonLabel = () => {
+    if (isSwapLoaderVisible) {
+      return <Loader size="s" color={theme.text.secondary} />
+    }
+
+    return auth ? 'Swap' : 'Sign in';
+  }
 
   const getFormattedValue = (value: string) => {
     const [, decimals] = value.split('.');
@@ -321,12 +347,12 @@ export const MainForm: React.FC<Props> = () => {
       <Footer>
         <ExchangeRate />
         <SwapButton
-          disabled={swapDisabled}
+          disabled={isSwapDisabled()}
           type="success"
-          onClick={doSwap}
+          onClick={handleSwapButtonClick}
           size="l"
         >
-          {auth ? 'Swap' : 'Sign in'}
+          {getSwapButtonLabel()}
         </SwapButton>
       </Footer>
     </Container>

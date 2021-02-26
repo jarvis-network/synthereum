@@ -32,6 +32,12 @@ const appSlice = createSlice({
         isFullScreenLoaderVisible: action.payload,
       };
     },
+    setSwapLoaderVisible(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isSwapLoaderVisible: action.payload,
+      };
+    },
     setAuthModalVisible(state, action: SetModalVisibilityAction) {
       return {
         ...state,
@@ -51,6 +57,7 @@ export const {
   setAccountOverviewModalVisible,
   setRecentActivityModalVisible,
   setFullScreenLoaderVisible,
+  setSwapLoaderVisible,
   setAuthModalVisible,
   setMobileTab,
 } = appSlice.actions;
