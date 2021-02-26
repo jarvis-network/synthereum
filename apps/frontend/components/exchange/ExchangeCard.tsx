@@ -30,13 +30,14 @@ import { OnMobile } from '../OnMobile';
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
+import { useExchangeValues } from '@/utils/useExchangeValues';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   height: ${FULL_WIDGET_HEIGHT_PX}px;
 
@@ -229,6 +230,8 @@ export const ExchangeCard: React.FC = () => {
 
   const pairsList = useMemo(() => createPairs(list), [list]);
 
+  const { fee } = useExchangeValues();
+
   const handleCloseClick = () => {
     setQuery('');
     setSearchOpen(false);
@@ -339,15 +342,19 @@ export const ExchangeCard: React.FC = () => {
       content
     );
 
+  const hasFee = !!fee?.toNumber();
+
   return (
     <Container>
       <CardContainer>
         <OnDesktop>{card}</OnDesktop>
         <OnMobile>{mobileContent}</OnMobile>
       </CardContainer>
-      <FeesContainer>
-        <Fees />
-      </FeesContainer>
+      {hasFee && (
+        <FeesContainer>
+          <Fees />
+        </FeesContainer>
+      )}
     </Container>
   );
 };
