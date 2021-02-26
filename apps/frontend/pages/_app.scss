@@ -22,6 +22,29 @@ aside.bn-onboard-custom {
     border-radius: 10px;
     border-left: 9px solid #e490ae;
 
+    scrollbar-color: #c1c1c1 #fff;
+    scrollbar-width: thin !important;
+
+    &::-webkit-scrollbar {
+      width: 9px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb:vertical {
+      background: #c1c1c1;
+      background-clip: padding-box;
+      border: 2px solid #fff;
+      border-right-width: 5px;
+      min-height: 10px;
+      border-radius: 100px;
+    }
+
+    &::-webkit-scrollbar-thumb:vertical:active {
+      background: #c1c1c1;
+      border: 2px solid #fff;
+      border-right-width: 5px;
+    }
+
     .bn-onboard-modal-content-header-icon,
     .bn-onboard-select-info-container {
       display: none;
@@ -35,7 +58,7 @@ aside.bn-onboard-custom {
     .bn-onboard-modal-select-wallets {
       > li button {
         border: 1px solid #f1f1f1;
-        width: 202px;
+        width: 199px;
         height: 66px;
         border-radius: 10px;
         padding-left: 15px;
@@ -72,6 +95,14 @@ body.theme-dark {
     > section.bn-onboard-custom {
       background: rgb(41, 41, 41);
       color: white;
+      scrollbar-color: rgba(0,0,0,0.3) #292929;
+      border-color: rgb(118, 100, 110);
+
+      &::-webkit-scrollbar-thumb:vertical,
+      &::-webkit-scrollbar-thumb:vertical:active {
+        background: rgba(0,0,0,0.3);
+        border-color: #292929;
+      }
 
       .bn-onboard-modal-select-wallets > li button {
         border-color: rgb(59,59,59);
@@ -85,6 +116,14 @@ body.theme-night {
     > section.bn-onboard-custom {
       background: rgb(46,53,65);
       color: white;
+      scrollbar-color: rgba(0,0,0,0.3) #2e3541;
+      border-color: rgb(118, 92, 147);
+
+      &::-webkit-scrollbar-thumb:vertical,
+      &::-webkit-scrollbar-thumb:vertical:active {
+        background: rgba(0,0,0,0.3);
+        border-color: #2e3541;
+      }
 
       .bn-onboard-modal-select-wallets > li button {
         border-color: rgb(52,59,71);
