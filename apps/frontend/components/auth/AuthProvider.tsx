@@ -70,18 +70,20 @@ export const AuthProvider: React.FC = ({ children }) => {
         const check = await onboard.walletCheck();
         const onboardState = onboard.getState();
         if (check && onboardState.wallet.name) {
-          localStorage.setItem('jarvis/autologin', onboardState.wallet.name);
+          const { name } = onboardState.wallet;
+          localStorage.setItem('jarvis/autologin', name);
           const { wallet: _, ...state } = onboardState;
-          dispatch(setLoginState(state));
+          dispatch(setLoginState({ ...state, wallet: name }));
         }
         return check;
       },
       logout() {
         onboard.walletReset();
-        const { wallet: _, ...state } = onboard.getState();
+        const { wallet, ...state } = onboard.getState();
+        const { name } = wallet;
         localStorage.removeItem('jarvis/autologin');
 
-        dispatch(setLoginState(state));
+        dispatch(setLoginState({ ...state, wallet: name }));
       },
     });
   }, [onboard]);

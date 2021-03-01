@@ -8,7 +8,7 @@ import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
-import { RealmAgentContext, Web3Context } from '../auth/AuthProvider';
+import { RealmAgentContext, Web3Context } from '@/components/auth/AuthProvider';
 
 interface BalanceProps {
   total: FPN;
@@ -69,6 +69,7 @@ export const AccountOverviewModal: FC = () => {
   const assets = useReduxSelector(state => state.assets.list);
   const web3 = useContext(Web3Context);
   const realmAgent = useContext(RealmAgentContext);
+  const isLoggedInViaMetaMask = useReduxSelector(state => state.auth?.wallet === 'MetaMask');
 
   const handleClose = () => {
     dispatch(setAccountOverviewModalVisible(false));
@@ -115,6 +116,14 @@ export const AccountOverviewModal: FC = () => {
     });
   }
 
+  const getMetaMaskHandler = () => {
+    if (!isLoggedInViaMetaMask) {
+      return undefined;
+    }
+
+    return handleAddToMetamaskClick;
+  }
+
   const items: AssetRowProps[] = useMemo(() => {
     const keys = Object.keys(wallet) as ExchangeToken[];
 
@@ -144,7 +153,7 @@ export const AccountOverviewModal: FC = () => {
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
       <Wrapper>
         <Balance total={total} />
-        <Assets items={items} onAddToMetaMaskClick={handleAddToMetamaskClick} />
+        <Assets items={items} onAddToMetaMaskClick={getMetaMaskHandler()} />
       </Wrapper>
     </ModalContent>
   );

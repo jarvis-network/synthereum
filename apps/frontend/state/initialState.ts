@@ -44,6 +44,8 @@ export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 
 export type Days = 1 | 7 | 30;
 
+export type AuthState = Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] } | null;
+
 export interface State {
   theme: ThemeNameType;
   app: {
@@ -54,7 +56,7 @@ export interface State {
     isAuthModalVisible: boolean;
     mobileTab: number;
   };
-  auth: Omit<UserState, 'wallet'> | null;
+  auth: AuthState;
   assets: {
     list: Asset[];
   };
