@@ -1,11 +1,5 @@
 import React from 'react';
-import { useWindowSize } from '@jarvis-network/ui';
 
-export const OnMobile: React.FC = props => {
-  const { innerWidth } = useWindowSize();
+import { useIsMobile } from '@/utils/useIsMobile';
 
-  if (innerWidth <= 1080) {
-    return <>{props.children}</>;
-  }
-  return null;
-};
+export const OnMobile: React.FC = props => useIsMobile() ? <>{props.children}</> : null;
