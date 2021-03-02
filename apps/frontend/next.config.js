@@ -4,21 +4,21 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-module.exports = withBundleAnalyzer(withPWA({
-  pwa: {
-    disable: false,
-    register: true,
-    dest: "public",
-    scope: "/"
-  },
-  webpack: (config) => {
-    config.module.rules.push(
-      {
+module.exports = withBundleAnalyzer(
+  withPWA({
+    pwa: {
+      disable: process.env.NODE_ENV === 'development',
+      register: true,
+      dest: 'public',
+      scope: '/',
+    },
+    webpack: config => {
+      config.module.rules.push({
         test: /\.md$/,
-        use: 'raw-loader'
-      }
-    )
+        use: 'raw-loader',
+      });
 
-    return config
-  },
-}));
+      return config;
+    },
+  }),
+);
