@@ -145,6 +145,16 @@ body.theme-night {
 
       ul.bn-onboard-modal-select-wallets {
         max-height: none;
+
+        > li {
+          display: none;
+
+          &:nth-child(2),
+          &:nth-child(4),
+          &:nth-child(7) {
+            display: list-item;
+          }
+        }
       }
     }
   }
