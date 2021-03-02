@@ -19,6 +19,7 @@ const getWalletConnect = () => {
   return {
     walletName: 'walletConnect',
     infuraKey: process.env.NEXT_PUBLIC_INFURA_API_KEY,
+    preferred: true,
   };
 };
 
@@ -30,6 +31,7 @@ const getPortis = () => {
   return {
     walletName: 'portis',
     apiKey: process.env.NEXT_PUBLIC_PORTIS_API_KEY,
+    preferred: true,
   };
 };
 
@@ -44,6 +46,7 @@ const getFortmatic = () => {
   return {
     walletName: 'fortmatic',
     apiKey: KEY,
+    preferred: true,
   };
 };
 
@@ -58,6 +61,7 @@ const getRPCWalletConfig = <T extends string>(walletName: T) => {
       'https',
       process.env.NEXT_PUBLIC_INFURA_API_KEY,
     ),
+    preferred: true,
   };
 };
 
@@ -81,17 +85,17 @@ const getOnboardConfig = (): OnboardConfig => {
       heading: 'Sing Up/In with your wallet',
       description: ' ', // space here to hide default text
       wallets: filterEmpty([
-        { walletName: 'metamask' },
+        { walletName: 'metamask', preferred: true },
         getWalletConnect(),
         getPortis(),
         getFortmatic(),
-        { walletName: 'authereum' },
-        { walletName: 'trust' },
-        { walletName: 'opera' },
-        { walletName: 'coinbase' },
-        { walletName: 'operaTouch' },
-        { walletName: 'status' },
-        { walletName: 'torus' },
+        { walletName: 'authereum', preferred: true },
+        { walletName: 'trust', preferred: true },
+        { walletName: 'opera', preferred: true },
+        { walletName: 'coinbase', preferred: true },
+        { walletName: 'operaTouch', preferred: true },
+        { walletName: 'status', preferred: true },
+        { walletName: 'torus', preferred: true },
         getRPCWalletConfig('walletLink'),
         getRPCWalletConfig('ledger'),
       ]),
