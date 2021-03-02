@@ -22,22 +22,6 @@ variable "NEXT_PUBLIC_PORTIS_API_KEY" {}
 variable "NEXT_PUBLIC_PRICE_FEED_ROOT" {}
 variable "NEXT_PUBLIC_SUPPORTED_ASSETS" {}
 
-target "base" {
-  dockerfile = "Dockerfile"
-  output = ["type=registry"]
-  tags = [
-    "${REGISTRY_NAME}/base:${TAG}"
-  ]
-  platforms = ["linux/amd64"]
-  target = "install_dep"
-  cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/base-cache:${YARN_LOCK_SHA256}"
-  ]
-  cache-to= [
-    "type=registry,ref=${REGISTRY_NAME}/base-cache:${YARN_LOCK_SHA256}"
-  ]
-}
-
 target "install" {
   dockerfile = "Dockerfile"
   output = ["type=registry"]
@@ -55,44 +39,11 @@ target "install" {
   ]
 }
 
-target "libs" {
-  dockerfile = "Dockerfile"
-  output = ["type=registry"]
-  tags = [
-    "${REGISTRY_NAME}/libs:${TAG}"
-  ]
-  platforms = ["linux/amd64"]
-  target = "build-libs"
-  cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}",
-    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}"
-  ]
-  cache-to= [
-    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}"
-  ]
-}
 
-
-target "validator" {
-  dockerfile = "Dockerfile"
-  output = ["type=registry"]
-  tags = [
-    notequal("",TAG) ?  "${REGISTRY_NAME}/validator:${TAG}":  "${REGISTRY_NAME}/validator:${TAG}"
-  ]
-  platforms = ["linux/amd64"]
-  target = "validator"
-  cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}",
-    "type=registry,ref=${REGISTRY_NAME}/validator-cache:${TAG}"
-  ]
-  cache-to= [
-   "type=registry,ref=${REGISTRY_NAME}/validator-cache:${TAG}"
-  ]
-}
 
 target "frontend" {
   dockerfile = "Dockerfile"
-  output = ["type=registry"]
+  output = ["type=docker"]
   tags = [
     "${REGISTRY_NAME}/frontend:${TAG}"
   ]
@@ -109,7 +60,6 @@ target "frontend" {
   }
   target = "frontend"
   cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/libs-cache:${TAG}",
     "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
   ]
   cache-to= [

@@ -14,80 +14,29 @@ before_script:
   - docker context create buildx-ctx
   - docker buildx create buildx-ctx --use
   - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
+
 .job-config: &job-config
   only:
     - merge_requests
     - dev
     - production
-  script:
-    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
-    - docker buildx bake $TARGET --print
-    - docker buildx bake $TARGET  --progress=plain
+
 stages:
+  - build and deploy frontend
   - release
-  - base
-  - install and build dependencies
-  - build libs
-  - build and push images
-  - deploy
-
-# Jobs:
-
-🏗 prepare base image:
-  <<: *job-config
-  stage: base
-  variables:
-    TARGET: base
-
-🏗 prepare install image:
-  <<: *job-config
-  stage: install and build dependencies
-  variables:
-    TARGET: install
-
-🏗 build libs:
-  <<: *job-config
-  stage: build libs
-  variables:
-    TARGET: libs
+  # Jobs:
 
 🐳 build & push:
   <<: *job-config
-  stage: build and push images
-  parallel:
-    matrix:
-      - TARGET: [validator, frontend]
-  dependencies:
-    - 🏗 build libs
-
-🐳 release:
-  <<: *job-config
-  stage: build and push images
-  variables:
-    GIT_STRATEGY: none
-  parallel:
-    matrix:
-      - TARGET: [base, install, libs, validator, frontend]
-  script:
-    - docker pull $REGISTRY/$TARGET:$TAG
-    - docker tag $REGISTRY/$TARGET:$TAG $REGISTRY/$TARGET:dev
-    - docker push $REGISTRY/$TARGET:dev
-  when: manual
-
-💎 deploy frontend:
-  <<: *job-config
-  stage: deploy
-  image: $REGISTRY/frontend:${TAG}
+  stage: build and deploy frontend
   variables:
     NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
-    GIT_STRATEGY: none
-  before_script:
-    - yarn global add netlify-cli
+    NETLIFY_AUTH_TOKEN: '$NETLIFY_AUTH_TOKEN'
   script:
-    - ls -la /src
-    - netlify deploy --dir /src/out
-  dependencies:
-    - 🐳 build & push
+    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
+    - docker buildx bake frontend --print
+    - docker buildx bake frontend  --progress=plain
+    - docker run --rm "${REGISTRY}/frontend:${TAG}" netlify deploy --dir /src/out --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
 
 release:
   stage: release

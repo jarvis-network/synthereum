@@ -60,29 +60,22 @@ COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 RUN yarn nx build contracts
 RUN cp -r libs/contracts/dist /out
 
-FROM install as build-validator-lib
-WORKDIR /src
-COPY libs/validator-lib libs/validator-lib
-COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
-RUN yarn nx build validator-lib
-RUN mkdir -p /out
-RUN cp -r libs/validator-lib/dist/* /out
-
-FROM install as build-libs
-COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
-COPY --from=build-validator-lib /out node_modules/@jarvis-network/validator-lib
-
 # ------------------------------ Build Validator ----------------------------- #
-FROM build-libs as build-validator
+FROM install as build-validator
+WORKDIR /src
+COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
+COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
+COPY libs/validator-lib libs/validator-lib
+RUN yarn nx build validator-lib
 COPY apps/validator apps/validator
 RUN yarn nx build validator
 RUN cp -r apps/validator/dist /out
 
 # ------------------------------ Build Frontend ------------------------------ #
-FROM build-libs as build-frontend
+FROM install as build-frontend
 COPY apps/frontend apps/frontend
+COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
+COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 # Keep in sync with docker-bake.hcl and apps/frontend/.env.example
 ARG NEXT_PUBLIC_ONBOARD_API_KEY
 ARG NEXT_PUBLIC_NETWORK_ID
@@ -100,7 +93,9 @@ RUN cp -r apps/frontend/out /out
 # ---------------------------------------------------------------------------- #
 
 FROM node:${NODE_VERSION}-alpine as frontend
+RUN yarn global add netlify-cli
 COPY --from=build-frontend /out /src
+
 
 FROM node:${NODE_VERSION}-alpine as frontend-old
 COPY --from=old-frontend /out /src
