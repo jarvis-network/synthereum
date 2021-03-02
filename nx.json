@@ -26,6 +26,9 @@
     "web3-utils": {
       "tags": []
     },
+    "ui": {
+      "tags": []
+    },
     "contracts": {
       "tags": [],
       "implicitDependencies": ["web3-utils"]
@@ -40,7 +43,7 @@
     },
     "frontend": {
       "tags": [],
-      "implicitDependencies": ["contracts"]
+      "implicitDependencies": ["ui", "contracts"]
     },
     "cli": {
       "tags": [],
