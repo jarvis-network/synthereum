@@ -3,6 +3,7 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {ISynthereumPool} from './interfaces/IPool.sol';
+import {ISynthereumPoolGeneral} from '../common/interfaces/IPoolGeneral.sol';
 import {ISynthereumPoolStorage} from './interfaces/IPoolStorage.sol';
 import {
   FixedPoint
@@ -299,7 +300,7 @@ library SynthereumPoolLib {
     FixedPoint.Unsigned memory amountWithdrawn =
       redeemForCollateral(exchangeMetaTx.sender, derivative, numTokens);
     self.checkPool(
-      ISynthereumPool(exchangeMetaTx.destPoolAddr),
+      ISynthereumPoolGeneral(exchangeMetaTx.destPoolAddr),
       destDerivative
     );
     require(
@@ -320,7 +321,7 @@ library SynthereumPoolLib {
       destinationCollateral.rawValue
     );
 
-    ISynthereumPool(exchangeMetaTx.destPoolAddr).exchangeMint(
+    ISynthereumPoolGeneral(exchangeMetaTx.destPoolAddr).exchangeMint(
       derivative,
       destDerivative,
       destinationCollateral.rawValue,
@@ -351,7 +352,7 @@ library SynthereumPoolLib {
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) external {
-    self.checkPool(ISynthereumPool(msg.sender), srcDerivative);
+    self.checkPool(ISynthereumPoolGeneral(msg.sender), srcDerivative);
     FixedPoint.Unsigned memory globalCollateralization =
       derivative.getGlobalCollateralizationRatio();
 
@@ -556,7 +557,7 @@ library SynthereumPoolLib {
     if (derivativeRole == ISynthereumPool.DerivativeRoles.ADMIN) {
       derivative.addAdmin(addressToAdd);
     } else {
-      ISynthereumPool pool = ISynthereumPool(addressToAdd);
+      ISynthereumPoolGeneral pool = ISynthereumPoolGeneral(addressToAdd);
       IERC20 collateralToken = self.collateralToken;
       require(
         collateralToken == pool.collateralToken(),
@@ -796,7 +797,7 @@ library SynthereumPoolLib {
 
   function checkPool(
     ISynthereumPoolStorage.Storage storage self,
-    ISynthereumPool poolToCheck,
+    ISynthereumPoolGeneral poolToCheck,
     IDerivative derivativeToCheck
   ) internal view {
     require(
