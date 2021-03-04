@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AccountSummary, useWindowSize } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
 
-import { AuthContext } from '@/components/auth/AuthProvider';
 import { setTheme } from '@/state/slices/theme';
 import {
   setAccountOverviewModalVisible,
@@ -17,13 +16,14 @@ import { State } from '@/state/initialState';
 import { setLoginState } from '@/state/slices/auth';
 import { setTransactionsHistory } from '@/state/slices/transactions';
 import { setWalletBalance } from '@/state/slices/wallet';
+import { useAuth } from '@/utils/useAuth';
 
 const noop = () => undefined;
 
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
-  const authLogin = useContext(AuthContext);
+  const { logout } = useAuth() || {};
   const name = usePrettyName((auth?.address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
@@ -33,7 +33,7 @@ const render = () => {
   };
 
   const handleLogOut = () => {
-    authLogin!.logout();
+    logout!();
     setSigningOut(true);
     dispatch(setWalletBalance({}));
     dispatch(setLoginState(null));

@@ -1,23 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { PageProps } from '@/components/auth/flow/types';
 import {
   BigP,
   Img,
   TutorialContent,
-  P,
   ImgContainer,
   ChevronRight,
 } from '@/components/auth/flow/ModalComponents';
-import {
-  Button,
-  Checkbox,
-  Flag,
-  Icon,
-  styled,
-  themeValue,
-} from '@jarvis-network/ui';
-import { AuthContext } from '@/components/auth/AuthProvider';
+import { Button, Flag, styled, themeValue } from '@jarvis-network/ui';
+import { useAuth } from '@/utils/useAuth';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -105,7 +97,7 @@ const Content = styled.div`
 `;
 
 export const ServiceSelect: React.FC<PageProps> = () => {
-  const authLogin = useContext(AuthContext);
+  const authLogin = useAuth();
 
   const logIn = () => {
     authLogin?.login();

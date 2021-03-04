@@ -2,13 +2,17 @@ import React, { FC, useContext, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, ModalContent, FlagImagesMap } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { ExchangeToken, primaryCollateralSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import {
+  ExchangeToken,
+  primaryCollateralSymbol,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
-import { RealmAgentContext, Web3Context } from '@/components/auth/AuthProvider';
+import { useCoreObservables } from '@/utils/CoreObservablesContext';
+import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
 
 interface BalanceProps {
   total: FPN;
@@ -51,7 +55,10 @@ const Assets: FC<AssetsProps> = ({ items, onAddToMetaMaskClick }) => (
     {items.map(item => {
       const props: AssetRowProps = { ...item };
 
-      if (onAddToMetaMaskClick && item.asset.symbol !== primaryCollateralSymbol) {
+      if (
+        onAddToMetaMaskClick &&
+        item.asset.symbol !== primaryCollateralSymbol
+      ) {
         props.onAddToMetaMaskClick = () => onAddToMetaMaskClick(item.asset);
       }
 
@@ -67,9 +74,10 @@ export const AccountOverviewModal: FC = () => {
   );
   const wallet = useReduxSelector(state => state.wallet);
   const assets = useReduxSelector(state => state.assets.list);
-  const web3 = useContext(Web3Context);
-  const realmAgent = useContext(RealmAgentContext);
   const isLoggedInViaMetaMask = useReduxSelector(state => state.auth?.wallet === 'MetaMask');
+  const { web3$, realmAgent$ } = useCoreObservables();
+  const web3 = useBehaviorSubject(web3$);
+  const realmAgent = useBehaviorSubject(realmAgent$);
 
   const handleClose = () => {
     dispatch(setAccountOverviewModalVisible(false));
@@ -80,11 +88,11 @@ export const AccountOverviewModal: FC = () => {
       return;
     }
 
-    if (typeof web3.currentProvider === "string") {
+    if (typeof web3.currentProvider === 'string') {
       return;
     }
 
-    if (!("request" in web3.currentProvider) || !web3.currentProvider.request) {
+    if (!('request' in web3.currentProvider) || !web3.currentProvider.request) {
       return;
     }
 
@@ -100,7 +108,9 @@ export const AccountOverviewModal: FC = () => {
       return;
     }
 
-    const image = icon ? `${location.href}${FlagImagesMap[icon]}` : `${location.href}icons/alpha_192.png`;
+    const image = icon
+      ? `${location.href}${FlagImagesMap[icon]}`
+      : `${location.href}icons/alpha_192.png`;
 
     web3.currentProvider.request({
       method: 'wallet_watchAsset',
@@ -110,11 +120,11 @@ export const AccountOverviewModal: FC = () => {
           symbol,
           decimals,
           address,
-          image
+          image,
         },
-      }
+      },
     });
-  }
+  };
 
   const getMetaMaskHandler = () => {
     if (!isLoggedInViaMetaMask) {

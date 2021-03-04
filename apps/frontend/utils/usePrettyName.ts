@@ -1,18 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { ENSContext } from '@/components/auth/AuthProvider';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
+import { useBehaviorSubject } from './useBehaviorSubject';
+import { useCoreObservables } from './CoreObservablesContext';
 
 const noop = () => undefined;
 
 export const usePrettyName = (address: Address | null) => {
   const [name, setName] = useState<string | null>(null);
-  const ens = useContext(ENSContext);
+  const ens = useBehaviorSubject(useCoreObservables().ens$);
 
   useEffect(() => {
-    if (!ens || !address) {
-      return () => {};
-    }
+    if (!ens || !address) return;
 
     let cancelled = false;
 

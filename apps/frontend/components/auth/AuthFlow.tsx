@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, styled, useTheme } from '@jarvis-network/ui';
 
 import { Welcome } from '@/components/auth/flow/Welcome';
 import { Terms } from '@/components/auth/flow/Terms';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
-import { AuthContext, Web3Context } from '@/components/auth/AuthProvider';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAuthModalVisible } from '@/state/slices/app';
+import { useAuth } from '@/utils/useAuth';
+import { useCoreObservables } from '@/utils/CoreObservablesContext';
+import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
 
 const noop = () => undefined;
 
@@ -26,9 +28,9 @@ const ModalWrapper = styled.div`
   }
 `;
 
-const AuthFlow: React.FC = ({ children }) => {
-  const web3 = useContext(Web3Context);
-  const authLogin = useContext(AuthContext);
+const AuthFlow: React.FC = () => {
+  const web3 = useBehaviorSubject(useCoreObservables().web3$);
+  const { login } = useAuth() || {};
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -69,13 +71,11 @@ const AuthFlow: React.FC = ({ children }) => {
   };
 
   useEffect(() => {
-    (async () => {
-      const autoLoginWallet = localStorage.getItem('jarvis/autologin');
-      if (autoLoginWallet) {
-        authLogin?.login(autoLoginWallet).catch(noop);
-      }
-    })();
-  }, []);
+    if (!login) return;
+    const autoLoginWallet = localStorage.getItem('jarvis/autologin');
+    if (!autoLoginWallet) return;
+    login(autoLoginWallet).catch(noop);
+  }, [login]);
 
   useEffect(() => {
     if (web3) {

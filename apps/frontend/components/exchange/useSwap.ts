@@ -1,12 +1,12 @@
-import { useContext } from 'react';
-import { RealmAgentContext } from '@/components/auth/AuthProvider';
 import { wei } from '@jarvis-network/web3-utils/base/big-number';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
+import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
+import { useCoreObservables } from '@/utils/CoreObservablesContext';
 
 export const useSwap = () => {
-  const agent = useContext(RealmAgentContext);
+  const agent = useBehaviorSubject(useCoreObservables().realmAgent$);
   const {
     paySymbol,
     payValue,

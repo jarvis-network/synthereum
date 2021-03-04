@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { styled } from '@jarvis-network/ui';
 
-import { RealmAgentContext } from '@/components/auth/AuthProvider';
 import { StickyHeader } from '@/components/header/StickyHeader';
 import { Background } from '@/components/Background';
 import {
@@ -19,6 +18,8 @@ import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
 import { subscribeTransactionsHistory } from '@/state/slices/transactions';
 import { subscribeWalletBalances } from '@/state/slices/wallet';
 import { backgroundMap } from '@/data/backgrounds';
+import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
+import { useCoreObservables } from '@/utils/CoreObservablesContext';
 
 const Layout = styled.div`
   display: flex;
@@ -54,7 +55,7 @@ const WidgetContainer = styled.div`
 export default function Home() {
   const dispatch = useDispatch();
   const theme = useReduxSelector(state => state.theme);
-  const realmAgent = useContext(RealmAgentContext);
+  const realmAgent = useBehaviorSubject(useCoreObservables().realmAgent$);
   const url = backgroundMap[theme];
 
   useEffect(() => {

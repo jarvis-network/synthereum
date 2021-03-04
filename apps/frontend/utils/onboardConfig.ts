@@ -1,12 +1,9 @@
 import { Initialization } from 'bnc-onboard/dist/src/interfaces';
 import { filterEmpty } from '@jarvis-network/web3-utils/base/optional';
 import { getInfuraEndpoint } from '@jarvis-network/web3-utils/apis/infura';
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { NETWORK_ID } from './environment';
 
 const MAIN_NETWORK_ID = 1;
-export const NETWORK_ID = parseSupportedNetworkId(
-  Number(process.env.NEXT_PUBLIC_NETWORK_ID) || 42,
-);
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
 
 // Note: UI crashes instantly when walletConnect is used without an key
