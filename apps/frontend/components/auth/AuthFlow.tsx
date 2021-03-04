@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, styled, useTheme } from '@jarvis-network/ui';
+import Onboard from 'bnc-onboard';
+import Web3 from 'web3';
 
 import { Welcome } from '@/components/auth/flow/Welcome';
 import { Terms } from '@/components/auth/flow/Terms';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAuthModalVisible } from '@/state/slices/app';
-import { useAuth } from '@/utils/useAuth';
+import { authFactory, useAuth } from '@/utils/useAuth';
 import { useCoreObservables } from '@/utils/CoreObservablesContext';
 import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
+import { getOnboardConfig } from '@/utils/onboardConfig';
+import { ENSHelper } from '@/utils/ens';
+import { useConstant } from '@/utils/useConstant';
 
 const noop = () => undefined;
 
@@ -29,10 +34,13 @@ const ModalWrapper = styled.div`
 `;
 
 const AuthFlow: React.FC = () => {
-  const web3 = useBehaviorSubject(useCoreObservables().web3$);
-  const { login } = useAuth() || {};
+  const { web3$, ens$, onboard$ } = useCoreObservables();
+  const web3 = useBehaviorSubject(web3$);
+
   const dispatch = useDispatch();
   const theme = useTheme();
+  const auth = useAuth();
+  const { login } = auth || {};
 
   const { isAuthModalVisible } = useReduxSelector(state => state.app);
 
@@ -47,6 +55,28 @@ const AuthFlow: React.FC = () => {
 
   const pages = [Welcome, Terms, ServiceSelect];
   const Page = pages[current];
+
+  useEffect(() => {
+    const onboardInstance = Onboard({
+      ...getOnboardConfig(),
+      subscriptions: {
+        wallet: wallet => {
+          if (!wallet.provider) {
+            const currentAuth = authFactory(onboardInstance, dispatch);
+            currentAuth.logout();
+            web3$.next(null);
+            ens$.next(null);
+            return;
+          }
+          const web3instance = new Web3(wallet.provider);
+          web3$.next(web3instance);
+          const ensInstance = new ENSHelper(web3instance);
+          ens$.next(ensInstance);
+        },
+      },
+    });
+    onboard$.next(onboardInstance);
+  }, []);
 
   useEffect(() => {
     if (isAuthModalVisible) {
@@ -72,18 +102,18 @@ const AuthFlow: React.FC = () => {
 
   useEffect(() => {
     if (!login) {
-      return
-    };
+      return;
+    }
 
     const autoLoginWallet = localStorage.getItem('jarvis/autologin');
 
     if (!autoLoginWallet) {
-      return
-    };
+      return;
+    }
 
     // Disable autologin for WalletConnect provider
     if (autoLoginWallet === 'WalletConnect') {
-      return
+      return;
     }
 
     login(autoLoginWallet).catch(noop);

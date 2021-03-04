@@ -1,11 +1,15 @@
 import { useDispatch } from 'react-redux';
 import { setLoginState } from '@/state/slices/auth';
-import { useBehaviorSubject } from './useBehaviorSubject';
-import { useCoreObservables } from './CoreObservablesContext';
+
 import { useMemo } from 'react';
 import type Onboard from 'bnc-onboard';
+import { setWalletBalance } from '@/state/slices/wallet';
+import { setTransactionsHistory } from '@/state/slices/transactions';
 
-function authFactory(
+import { useCoreObservables } from './CoreObservablesContext';
+import { useBehaviorSubject } from './useBehaviorSubject';
+
+export function authFactory(
   onboard: ReturnType<typeof Onboard>,
   dispatch: ReturnType<typeof useDispatch>,
 ) {
@@ -27,13 +31,11 @@ function authFactory(
     },
     logout() {
       onboard.walletReset();
-      const {
-        wallet: { name: wallet },
-        ...state
-      } = onboard.getState();
       localStorage.removeItem('jarvis/autologin');
 
-      dispatch(setLoginState({ ...state, wallet }));
+      dispatch(setWalletBalance({}));
+      dispatch(setLoginState(null));
+      dispatch(setTransactionsHistory([]));
     },
   };
 }

@@ -35,9 +35,6 @@ const render = () => {
   const handleLogOut = () => {
     logout!();
     setSigningOut(true);
-    dispatch(setWalletBalance({}));
-    dispatch(setLoginState(null));
-    dispatch(setTransactionsHistory([]));
   };
 
   const handleSetTheme = (theme: State['theme']) => {

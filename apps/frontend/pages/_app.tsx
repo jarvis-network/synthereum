@@ -20,7 +20,6 @@ import 'react-table/react-table.css';
 import { BackgroundPreloader } from '@/components/BackgroundsPreloader';
 import { CoreObservablesContextProvider } from '@/utils/CoreObservablesContext';
 import { useConstant } from '@/utils/useConstant';
-import { getOnboardConfig } from '@/utils/onboardConfig';
 import { ENSHelper } from '@/utils/ens';
 import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
 import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
@@ -39,21 +38,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     onboard$: new BehaviorSubject<ReturnType<typeof Onboard> | null>(null),
     realmAgent$: new BehaviorSubject<RealmAgent | null>(null),
   });
-
-  useEffect(() => {
-    const onboardInstance = Onboard({
-      ...getOnboardConfig(),
-      subscriptions: {
-        wallet: wallet => {
-          const web3instance = new Web3(wallet.provider);
-          subjects.web3$.next(web3instance);
-          const ensInstance = new ENSHelper(web3instance);
-          subjects.ens$.next(ensInstance);
-        },
-      },
-    });
-    subjects.onboard$.next(onboardInstance);
-  }, []);
 
   const store = useStore(pageProps.initialReduxState);
 
