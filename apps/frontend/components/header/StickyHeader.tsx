@@ -6,6 +6,8 @@ import { rightRenderer } from '@/components/header/rightRenderer';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
+import { leftRenderer } from '@/components/header/leftRenderer';
+
 import { AccountOverviewModal } from './AccountOverviewModal';
 import { RecentActivityModal } from './RecentActivityModal';
 
@@ -53,7 +55,7 @@ const CustomHeader = styled(Header)`
   padding-left: calc(50vw - 520px);
   padding-right: calc(50vw - 520px);
   height: 90px;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto 1fr auto;
 
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
@@ -74,7 +76,7 @@ export const StickyHeader: React.FC = ({ children }) => {
     <Container>
       <HeaderContainer isAuthModalVisible={isAuthModalVisible}>
         <CustomHeader
-          leftSide={{ menu: [] }}
+          leftSide={leftRenderer}
           rightSide={rightRenderer}
           link={NextLinkAdapter}
           logoUrl="/images/logo.svg"
