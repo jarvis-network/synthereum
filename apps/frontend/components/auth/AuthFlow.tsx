@@ -71,9 +71,21 @@ const AuthFlow: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!login) return;
+    if (!login) {
+      return
+    };
+
     const autoLoginWallet = localStorage.getItem('jarvis/autologin');
-    if (!autoLoginWallet) return;
+
+    if (!autoLoginWallet) {
+      return
+    };
+
+    // Disable autologin for WalletConnect provider
+    if (autoLoginWallet === 'WalletConnect') {
+      return
+    }
+
     login(autoLoginWallet).catch(noop);
   }, [login]);
 
