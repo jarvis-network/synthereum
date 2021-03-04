@@ -5,7 +5,7 @@ import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumPoolOnChainPriceFeed} from './IPoolOnChainPriceFeed.sol';
-import {ISynthereumFinder} from '../../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   EnumerableSet
 } from '../../../../@openzeppelin/contracts/utils/EnumerableSet.sol';

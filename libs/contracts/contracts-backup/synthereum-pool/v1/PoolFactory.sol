@@ -2,13 +2,13 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPool} from './interfaces/IPool.sol';
 import {SynthereumPool} from './Pool.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   IDeploymentSignature
-} from '../../versioning/interfaces/IDeploymentSignature.sol';
+} from '../../core/interfaces/IDeploymentSignature.sol';
 import {SynthereumPoolCreator} from './PoolCreator.sol';
 
 contract SynthereumPoolFactory is SynthereumPoolCreator, IDeploymentSignature {

@@ -16,7 +16,7 @@ import {SynthereumTICHelper} from './TICHelper.sol';
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 
 contract SynthereumTIC is

@@ -2,15 +2,15 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
 } from './interfaces/IPoolOnChainPriceFeed.sol';
 import {SynthereumPoolOnChainPriceFeed} from './PoolOnChainPriceFeed.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   IDeploymentSignature
-} from '../../versioning/interfaces/IDeploymentSignature.sol';
+} from '../../core/interfaces/IDeploymentSignature.sol';
 import {
   SynthereumPoolOnChainPriceFeedCreator
 } from './PoolOnChainPriceFeedCreator.sol';

@@ -11,9 +11,9 @@ import {
 import {
   ISynthereumPoolOnChainPriceFeedStorage
 } from './interfaces/IPoolOnChainPriceFeedStorage.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
-import {ISynthereumDeployer} from '../../versioning/interfaces/IDeployer.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {ISynthereumDeployer} from '../../core/interfaces/IDeployer.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {Strings} from '../../../@openzeppelin/contracts/utils/Strings.sol';
 import {
   EnumerableSet

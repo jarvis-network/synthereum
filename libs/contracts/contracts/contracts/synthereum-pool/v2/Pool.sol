@@ -7,9 +7,9 @@ import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {ISynthereumPool} from './interfaces/IPool.sol';
 import {ISynthereumPoolStorage} from './interfaces/IPoolStorage.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
-import {ISynthereumDeployer} from '../../versioning/interfaces/IDeployer.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {ISynthereumDeployer} from '../../core/interfaces/IDeployer.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {Strings} from '../../../@openzeppelin/contracts/utils/Strings.sol';
 import {
   EnumerableSet

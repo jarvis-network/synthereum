@@ -3,7 +3,7 @@ pragma solidity ^0.6.12;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumPool} from './IPool.sol';
-import {ISynthereumFinder} from '../../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
 import {
   FixedPoint

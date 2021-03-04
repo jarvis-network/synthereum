@@ -2,7 +2,7 @@
 pragma solidity ^0.6.12;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {ISynthereumFinder} from '../../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 
 /**
  * @title Interface that a pool MUST have in order to be included in the deployer

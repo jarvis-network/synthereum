@@ -11,10 +11,8 @@ import {
 import {
   IDerivative
 } from '../../../derivative/common/interfaces/IDerivative.sol';
-import {
-  ISynthereumDeployer
-} from '../../../versioning/interfaces/IDeployer.sol';
-import {ISynthereumFinder} from '../../../versioning/interfaces/IFinder.sol';
+import {ISynthereumDeployer} from '../../../core/interfaces/IDeployer.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ISynthereumPoolGeneral} from '../../common/interfaces/IPoolGeneral.sol';
 
 /**

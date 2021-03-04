@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumFactoryVersioning
-} from '../../versioning/interfaces/IFactoryVersioning.sol';
+} from '../../core/interfaces/IFactoryVersioning.sol';
 import {
   MintableBurnableIERC20
 } from '@jarvis-network/uma-core/contracts/common/interfaces/MintableBurnableIERC20.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   MintableBurnableTokenFactory
 } from '@jarvis-network/uma-core/contracts/financial-templates/common/MintableBurnableTokenFactory.sol';

@@ -3,9 +3,9 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 import {
   IDeploymentSignature
-} from '../../versioning/interfaces/IDeploymentSignature.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+} from '../../core/interfaces/IDeploymentSignature.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   PerpetualPoolPartyCreator
 } from '../../../@jarvis-network/uma-core/contracts/financial-templates/perpetual-poolParty/PerpetutalPoolPartyCreator.sol';

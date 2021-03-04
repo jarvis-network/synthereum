@@ -16,14 +16,12 @@ import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {IRole} from './interfaces/IRole.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
-import {
-  ISynthereumPoolRegistry
-} from '../../versioning/interfaces/IPoolRegistry.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {ISynthereumPoolRegistry} from '../../core/interfaces/IPoolRegistry.sol';
 import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
-import {SynthereumInterfaces} from '../../versioning/Constants.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SafeMath} from '../../../@openzeppelin/contracts/math/SafeMath.sol';
 import {
   SafeERC20

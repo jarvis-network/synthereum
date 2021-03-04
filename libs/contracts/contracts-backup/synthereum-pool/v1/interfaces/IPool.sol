@@ -9,10 +9,8 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   IDerivative
 } from '../../../derivative/common/interfaces/IDerivative.sol';
-import {
-  ISynthereumDeployer
-} from '../../../versioning/interfaces/IDeployer.sol';
-import {ISynthereumFinder} from '../../../versioning/interfaces/IFinder.sol';
+import {ISynthereumDeployer} from '../../../core/interfaces/IDeployer.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISynthereumPoolDeployment
 } from '../../common/interfaces/IPoolDeployment.sol';

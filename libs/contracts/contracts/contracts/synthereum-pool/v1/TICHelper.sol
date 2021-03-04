@@ -11,7 +11,7 @@ import {
 import {HitchensUnorderedKeySetLib} from './HitchensUnorderedKeySet.sol';
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
-import {ISynthereumFinder} from '../../versioning/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 
 library SynthereumTICHelper {
   using SafeMath for uint256;
