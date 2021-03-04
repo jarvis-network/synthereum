@@ -127,7 +127,6 @@ export const Terms: React.FC<PageProps> = ({ onNext }) => {
   const terms = (
     <>
       <ModalHeader title="Terms of Service" onBack={() => setMode('approve')} />
-      <BigP>No worry, we have made them super clear and easy to read</BigP>
       <ContentWrapper>
         <ReactMarkdown>{termsOfServiceText}</ReactMarkdown>
       </ContentWrapper>
@@ -137,7 +136,6 @@ export const Terms: React.FC<PageProps> = ({ onNext }) => {
   const privacy = (
     <>
       <ModalHeader title="Privacy Policy" onBack={() => setMode('approve')} />
-      <BigP>No worry, we have made them super clear and easy to read</BigP>
       <ContentWrapper>
         <ReactMarkdown>{privacyPolicyText}</ReactMarkdown>
       </ContentWrapper>

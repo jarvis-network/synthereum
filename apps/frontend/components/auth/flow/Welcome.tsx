@@ -23,9 +23,8 @@ export const Welcome: React.FC<PageProps> = ({ children, onNext }) => {
         Hello <b>stranger</b>!
       </BigP>
       <P>
-        Jarvis is not a broker. Nor an exchange. It is a peer-to-contract
-        trading platform to open leveraged position on several financial
-        markets.
+        Jarvis Exchange is a trading platform to buy, sell and exchange
+        synthetic assets on Ethereum.
       </P>
       <P>
         Your counterpart is a smart contract holding the funds of other users,
