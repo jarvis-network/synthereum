@@ -2,7 +2,7 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {ISynthereumPool} from '../synthereum-pool/v1/interfaces/IPool.sol';
+import {ISynthereumPool} from '../synthereum-pool/v2/interfaces/IPool.sol';
 import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract ContractAllowed {
