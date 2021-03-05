@@ -44,11 +44,17 @@ module.exports = async ({ network, web3 }) => {
     await UmaDeployDesignatedVotingFactory(null, network.name, accounts);
     await UmaDeployOptimisticOracle(null, network.name, accounts);
   }
-  if (process.env.MIGRATION_TYPE == 'infrastructure') {
-    console.log('Deploying infrastracture...');
+  if (process.env.MIGRATION_TYPE == 'finder') {
+    console.log('Deploying finder...');
     await deployFinder(null, network.name, accounts);
+  } else if (process.env.MIGRATION_TYPE == 'deployer') {
+    console.log('Deploying deployer...');
     await deployDeployer(null, network.name, accounts);
+  } else if (process.env.MIGRATION_TYPE == 'poolRegistry') {
+    console.log('Deploying pool registry...');
     await deployPoolRegistry(null, network.name, accounts);
+  } else if (process.env.MIGRATION_TYPE == 'factoryVersioning') {
+    console.log('Deploying factory versioning...');
     await deployFactoryVersioning(null, network.name, accounts);
   } else if (process.env.MIGRATION_TYPE == 'derivativeVersions') {
     console.log('Deploying derivative versions...');
