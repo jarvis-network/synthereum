@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
@@ -58,6 +58,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
 
   useRealmAgentProvider(store, subjects.web3$, subjects.realmAgent$);
+
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <CoreObservablesContextProvider value={subjects}>
