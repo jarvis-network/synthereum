@@ -36,6 +36,7 @@ export type KnownContract =
   | Tagged<ISynthereumDeployer, 'ISynthereumDeployer'>
   | Tagged<ISynthereumFactoryVersioning, 'ISynthereumFactoryVersioning'>
   | Tagged<ISynthereumFinder, 'ISynthereumFinder'>
+  | Tagged<ISynthereumManager, 'ISynthereumManager'>
   | Tagged<ISynthereumPool, 'ISynthereumPool'>
   | Tagged<ISynthereumPoolDeployment, 'ISynthereumPoolDeployment'>
   | Tagged<ISynthereumPoolGeneral, 'ISynthereumPoolGeneral'>
@@ -76,6 +77,7 @@ export type KnownContract =
   | Tagged<SynthereumFactoryVersioning, 'SynthereumFactoryVersioning'>
   | Tagged<SynthereumFinder, 'SynthereumFinder'>
   | Tagged<SynthereumInterfaces, 'SynthereumInterfaces'>
+  | Tagged<SynthereumManager, 'SynthereumManager'>
   | Tagged<SynthereumPool, 'SynthereumPool'>
   | Tagged<SynthereumPoolCreator, 'SynthereumPoolCreator'>
   | Tagged<SynthereumPoolFactory, 'SynthereumPoolFactory'>
@@ -364,6 +366,9 @@ export type { ISynthereumFactoryVersioning };
 
 import type { ISynthereumFinder } from './ISynthereumFinder';
 export type { ISynthereumFinder };
+
+import type { ISynthereumManager } from './ISynthereumManager';
+export type { ISynthereumManager };
 
 import type { ISynthereumPool } from './ISynthereumPool';
 export type { ISynthereumPool };
@@ -832,6 +837,19 @@ export namespace SynthereumFinder_Events {
 
 import type { SynthereumInterfaces } from './SynthereumInterfaces';
 export type { SynthereumInterfaces };
+
+import type { SynthereumManager } from './SynthereumManager';
+export type { SynthereumManager };
+import type {
+  RoleAdminChanged as SynthereumManager_RoleAdminChanged,
+  RoleGranted as SynthereumManager_RoleGranted,
+  RoleRevoked as SynthereumManager_RoleRevoked,
+} from './SynthereumManager';
+export namespace SynthereumManager_Events {
+  export type RoleAdminChanged = SynthereumManager_RoleAdminChanged;
+  export type RoleGranted = SynthereumManager_RoleGranted;
+  export type RoleRevoked = SynthereumManager_RoleRevoked;
+}
 
 import type { SynthereumPool } from './SynthereumPool';
 export type { SynthereumPool };

@@ -189,6 +189,12 @@ export const ISynthereumFinder_Abi = require('./ISynthereumFinder.json') as Tagg
   ISynthereumFinder
 >;
 
+import type { ISynthereumManager } from '../typechain/ISynthereumManager';
+export const ISynthereumManager_Abi = require('./ISynthereumManager.json') as Tagged<
+  AbiItem[],
+  ISynthereumManager
+>;
+
 import type { ISynthereumPool } from '../typechain/ISynthereumPool';
 export const ISynthereumPool_Abi = require('./ISynthereumPool.json') as Tagged<
   AbiItem[],
@@ -424,6 +430,12 @@ import type { SynthereumInterfaces } from '../typechain/SynthereumInterfaces';
 export const SynthereumInterfaces_Abi = require('./SynthereumInterfaces.json') as Tagged<
   AbiItem[],
   SynthereumInterfaces
+>;
+
+import type { SynthereumManager } from '../typechain/SynthereumManager';
+export const SynthereumManager_Abi = require('./SynthereumManager.json') as Tagged<
+  AbiItem[],
+  SynthereumManager
 >;
 
 import type { SynthereumPool } from '../typechain/SynthereumPool';

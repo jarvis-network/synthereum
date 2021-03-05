@@ -33,6 +33,8 @@ export interface SynthereumInterfaces extends BaseContract {
 
     FactoryVersioning(): NonPayableTransactionObject<string>;
 
+    Manager(): NonPayableTransactionObject<string>;
+
     PoolRegistry(): NonPayableTransactionObject<string>;
 
     PriceFeed(): NonPayableTransactionObject<string>;
