@@ -10,7 +10,7 @@ import {
 } from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
-import {IRole} from './interfaces/IRole.sol';
+import {IRole} from '../../base/interfaces/IRole.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPoolRegistry} from '../../core/interfaces/IPoolRegistry.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
