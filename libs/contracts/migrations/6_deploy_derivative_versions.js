@@ -1,64 +1,55 @@
 require('dotenv').config({ path: './.env.migration' });
 const { parseBoolean } = require('@jarvis-network/web3-utils/base/asserts');
-const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
-const { getDeploymentInstance } = require('../utils/deployment.js');
+const {
+  getExistingInstance,
+} = require('../dist/src/migration-utils/deployment');
 const umaContracts = require('../data/uma-contract-dependencies.json');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
-var SynthereumFinder = artifacts.require('SynthereumFinder');
-var FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
-var PerpetualLiquidatablePoolPartyLib = artifacts.require(
+const SynthereumFinder = artifacts.require('SynthereumFinder');
+const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const PerpetualLiquidatablePoolPartyLib = artifacts.require(
   'PerpetualLiquidatablePoolPartyLib',
 );
-var PerpetualPositionManagerPoolPartyLib = artifacts.require(
+const PerpetualPositionManagerPoolPartyLib = artifacts.require(
   'PerpetualPositionManagerPoolPartyLib',
 );
-var PerpetualPoolPartyLib = artifacts.require('PerpetualPoolPartyLib');
+const PerpetualPoolPartyLib = artifacts.require('PerpetualPoolPartyLib');
 
-var MintableBurnableTokenFactory = artifacts.require(
+const MintableBurnableTokenFactory = artifacts.require(
   'MintableBurnableTokenFactory',
 );
-var SynthereumFactoryVersioning = artifacts.require(
+const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
-var SynthereumDerivativeFactory = artifacts.require(
+const SynthereumDerivativeFactory = artifacts.require(
   'SynthereumDerivativeFactory',
 );
-var SynthereumSyntheticTokenFactory = artifacts.require(
+const SynthereumSyntheticTokenFactory = artifacts.require(
   'SynthereumSyntheticTokenFactory',
 );
-var UmaFinder = artifacts.require('Finder');
-var AddressWhitelist = artifacts.require('AddressWhitelist');
-var IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
-var TestnetERC20 = artifacts.require('TestnetERC20');
-var Timer = artifacts.require('Timer');
-var Registry = artifacts.require('Registry');
-var derivativeVersions = require('../data/derivative-versions.json');
+const UmaFinder = artifacts.require('Finder');
+const AddressWhitelist = artifacts.require('AddressWhitelist');
+const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
+const TestnetERC20 = artifacts.require('TestnetERC20');
+const Timer = artifacts.require('Timer');
+const Registry = artifacts.require('Registry');
+const derivativeVersions = require('../data/derivative-versions.json');
 const {
   RegistryRolesEnum,
   getKeysForNetwork,
   interfaceName,
   deploy,
 } = require('@jarvis-network/uma-common');
+const { toNetworkId } = require('@jarvis-network/web3-utils/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = await web3.eth.net.getId();
-  const {
-    contractInstance: synthereumFactoryVersioningInstance,
-    isDeployed: isDeployedFactoryVersioning,
-  } = await getDeploymentInstance(
+  const networkId = await toNetworkId(network);
+  const synthereumFactoryVersioning = await getExistingInstance(
+    web3,
     SynthereumFactoryVersioning,
-    'SynthereumFactoryVersioning',
-    networkId,
   );
-  const {
-    contractInstance: synthereumFinderInstance,
-    isDeployed: isDeployedFinder,
-  } = await getDeploymentInstance(
-    SynthereumFinder,
-    'SynthereumFinder',
-    networkId,
-  );
+  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const newUmaDeployment =
     parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE) ?? false;
   const umaDeployment =
@@ -71,9 +62,7 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SynthereumSyntheticTokenFactory,
-      isDeployedFinder
-        ? synthereumFinderInstance.address
-        : synthereumFinderInstance.options.address,
+      synthereumFinder.options.address,
       derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
       { from: keys.deployer },
     );
@@ -83,41 +72,50 @@ module.exports = async function (deployer, network, accounts) {
       await deploy(deployer, network, AddressWhitelist, {
         from: keys.deployer,
       });
-      const collateralWhitelistInstance = await AddressWhitelist.deployed();
+      const collateralWhitelist = await getExistingInstance(
+        web3,
+        AddressWhitelist,
+      );
 
       // Add CollateralWhitelist to finder.
-      const UmaFinderInstance = await UmaFinder.deployed();
-      await UmaFinderInstance.changeImplementationAddress(
-        web3.utils.utf8ToHex(interfaceName.CollateralWhitelist),
-        collateralWhitelistInstance.address,
-        {
+      const umaFinder = await getExistingInstance(web3, UmaFinder);
+      await umaFinder.methods
+        .changeImplementationAddress(
+          web3.utils.utf8ToHex(interfaceName.CollateralWhitelist),
+          collateralWhitelist.options.address,
+        )
+        .send({
           from: keys.deployer,
-        },
-      );
+        });
 
       // Add the testnet ERC20 as the default collateral currency (USDC for our use case)
       await deploy(deployer, network, TestnetERC20, 'USD Coin', 'USDC', 6, {
         from: keys.deployer,
       });
-      const collateralTokenInstance = await TestnetERC20.deployed();
-      await collateralWhitelistInstance.addToWhitelist(
-        collateralTokenInstance.address,
-        { from: keys.deployer },
-      );
+      const collateralToken = await getExistingInstance(web3, TestnetERC20);
+      await collateralWhitelist.methods
+        .addToWhitelist(collateralToken.options.address)
+        .send({
+          from: keys.deployer,
+        });
 
       // Add the identifier for a currency pair (EUR/USD for our use case)
-      const identifierWhitelistInstance = await IdentifierWhitelist.deployed();
-      const identifierBytes = web3.utils.utf8ToHex('EUR/USD');
-      await identifierWhitelistInstance.addSupportedIdentifier(
-        identifierBytes,
-        { from: keys.deployer },
+      const identifierWhitelist = await getExistingInstance(
+        web3,
+        IdentifierWhitelist,
       );
+      const identifierBytes = web3.utils.utf8ToHex('EUR/USD');
+      await identifierWhitelist.methods
+        .addSupportedIdentifier(identifierBytes)
+        .send({ from: keys.deployer });
     }
-
-    const synthereumSyntheticTokenFactoryInstance = await SynthereumSyntheticTokenFactory.deployed();
+    const synthereumSyntheticTokenFactory = await getExistingInstance(
+      web3,
+      SynthereumSyntheticTokenFactory,
+    );
     //hardat
     if (FeePayerPoolPartyLib.setAsDeployed) {
-      const { contract: feePayerPoolPartyInstance } = await deploy(
+      const { contract: feePayerPoolParty } = await deploy(
         deployer,
         network,
         FeePayerPoolPartyLib,
@@ -127,11 +125,9 @@ module.exports = async function (deployer, network, accounts) {
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
-        await PerpetualPositionManagerPoolPartyLib.link(
-          feePayerPoolPartyInstance,
-        );
-        await PerpetualLiquidatablePoolPartyLib.link(feePayerPoolPartyInstance);
-        await PerpetualPoolPartyLib.link(feePayerPoolPartyInstance);
+        await PerpetualPositionManagerPoolPartyLib.link(feePayerPoolParty);
+        await PerpetualLiquidatablePoolPartyLib.link(feePayerPoolParty);
+        await PerpetualPoolPartyLib.link(feePayerPoolParty);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
@@ -149,7 +145,7 @@ module.exports = async function (deployer, network, accounts) {
     //hardhat
     if (PerpetualPositionManagerPoolPartyLib.setAsDeployed) {
       const {
-        contract: perpetualPositionManagerPoolPartyLibInstance,
+        contract: perpetualPositionManagerPoolPartyLib,
       } = await deploy(
         deployer,
         network,
@@ -161,11 +157,9 @@ module.exports = async function (deployer, network, accounts) {
       // and throws an error if its already linked. So we'll just ignore it...
       try {
         await PerpetualLiquidatablePoolPartyLib.link(
-          perpetualPositionManagerPoolPartyLibInstance,
+          perpetualPositionManagerPoolPartyLib,
         );
-        await PerpetualPoolPartyLib.link(
-          perpetualPositionManagerPoolPartyLibInstance,
-        );
+        await PerpetualPoolPartyLib.link(perpetualPositionManagerPoolPartyLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
@@ -181,18 +175,19 @@ module.exports = async function (deployer, network, accounts) {
     }
     //hardhat
     if (PerpetualLiquidatablePoolPartyLib.setAsDeployed) {
-      const {
-        contract: perpetualLiquidatablePoolPartyLibInstance,
-      } = await deploy(deployer, network, PerpetualLiquidatablePoolPartyLib, {
-        from: keys.deployer,
-      });
+      const { contract: perpetualLiquidatablePoolPartyLib } = await deploy(
+        deployer,
+        network,
+        PerpetualLiquidatablePoolPartyLib,
+        {
+          from: keys.deployer,
+        },
+      );
 
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
-        await PerpetualPoolPartyLib.link(
-          perpetualLiquidatablePoolPartyLibInstance,
-        );
+        await PerpetualPoolPartyLib.link(perpetualLiquidatablePoolPartyLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
@@ -208,7 +203,7 @@ module.exports = async function (deployer, network, accounts) {
     }
     //hardhat
     if (PerpetualPoolPartyLib.setAsDeployed) {
-      const { contract: perpetualPoolPartyLibInstance } = await deploy(
+      const { contract: perpetualPoolPartyLib } = await deploy(
         deployer,
         network,
         PerpetualPoolPartyLib,
@@ -218,13 +213,15 @@ module.exports = async function (deployer, network, accounts) {
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
-        await SynthereumDerivativeFactory.link(perpetualPoolPartyLibInstance);
+        await SynthereumDerivativeFactory.link(perpetualPoolPartyLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
     } else {
       // Truffle
-      await deploy(deployer, network, PerpetualPoolPartyLib);
+      await deploy(deployer, network, PerpetualPoolPartyLib, {
+        from: keys.deployer,
+      });
       await deployer.link(PerpetualPoolPartyLib, SynthereumDerivativeFactory);
     }
 
@@ -233,38 +230,36 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SynthereumDerivativeFactory,
-      isDeployedFinder
-        ? synthereumFinderInstance.address
-        : synthereumFinderInstance.options.address,
+      synthereumFinder.options.address,
       umaDeployment
-        ? (await UmaFinder.deployed()).address
+        ? (await getExistingInstance(web3, UmaFinder)).options.address
         : umaContracts[networkId].finderAddress,
-      synthereumSyntheticTokenFactoryInstance.address,
-      umaDeployment ? (await Timer.deployed()).address : ZERO_ADDRESS,
+      synthereumSyntheticTokenFactory.options.address,
+      umaDeployment
+        ? (await getExistingInstance(web3, Timer)).options.address
+        : ZERO_ADDRESS,
       { from: keys.deployer },
     );
 
-    const derivativeFactoryInstance = await SynthereumDerivativeFactory.deployed();
-    isDeployedFactoryVersioning
-      ? await synthereumFactoryVersioningInstance.setDerivativeFactory(
-          derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
-          derivativeFactoryInstance.address,
-          { from: maintainer },
-        )
-      : await synthereumFactoryVersioningInstance.methods
-          .setDerivativeFactory(
-            derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
-            derivativeFactoryInstance.address,
-          )
-          .send({ from: maintainer });
+    const derivativeFactory = await getExistingInstance(
+      web3,
+      SynthereumDerivativeFactory,
+    );
+    await synthereumFactoryVersioning.methods
+      .setDerivativeFactory(
+        derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
+        derivativeFactory.options.address,
+      )
+      .send({ from: maintainer });
     console.log('DerivativeFactory adeed to synthereumFactoryVersioning');
     if (umaDeployment == true) {
-      const registryInstance = await Registry.deployed();
-      await registryInstance.addMember(
-        RegistryRolesEnum.CONTRACT_CREATOR,
-        derivativeFactoryInstance.address,
-        { from: keys.deployer },
-      );
+      const registry = await getExistingInstance(web3, Registry);
+      await registry.methods
+        .addMember(
+          RegistryRolesEnum.CONTRACT_CREATOR,
+          derivativeFactory.options.address,
+        )
+        .send({ from: keys.deployer });
     }
   }
 };
