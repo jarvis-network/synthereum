@@ -32,7 +32,8 @@
     "add-only-derivative": "MIGRATION_TYPE=only-derivative hardhat test ./test/correct-migration.js",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
-    "verify": "./utils/verify.d"
+    "verify": "./utils/verify.d",
+    "start:local-fork": "./local-fork.sh"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
