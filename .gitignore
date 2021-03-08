@@ -137,7 +137,6 @@ local.settings.json
 
 **/hush
 **/keystore
-**/logging
 
 # Nix build output
 result

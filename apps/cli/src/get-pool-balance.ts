@@ -23,7 +23,7 @@ import {
   PoolVersion,
   poolVersions,
 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
-import { log } from './utils/log';
+import { log } from '@jarvis-network/web3-utils/logging';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import { t } from '@jarvis-network/web3-utils/base/meta';
 

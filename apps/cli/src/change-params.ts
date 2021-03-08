@@ -14,7 +14,7 @@ import {
   setPrivateKey_DevelopmentOnly,
   Web3On,
 } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { log } from './utils/log';
+import { log } from '@jarvis-network/web3-utils/logging';
 import {
   assertIsString,
   parseFiniteFloat,

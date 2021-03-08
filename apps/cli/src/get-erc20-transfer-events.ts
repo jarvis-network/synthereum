@@ -13,7 +13,8 @@ import {
   formatAmount,
   wei,
 } from '@jarvis-network/web3-utils/base/big-number';
-import { console, log } from './utils/log';
+
+import { log, console } from '@jarvis-network/web3-utils/logging';
 import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 
 const argv = yargs(hideBin(process.argv)).option('address', {
