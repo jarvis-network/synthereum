@@ -137,10 +137,10 @@ export async function logTransactionStatus<T, Net extends NetworkName>(
   promiEvent: PromiEvent<T>,
   log = console.log,
 ) {
-  await once(promiEvent, 'sending');
+  await once(promiEvent, 'sent');
   log('  [1/4] Sending tx...');
 
-  await once(promiEvent, 'sent');
+  await once(promiEvent, 'sending');
   log('  [2/4] Tx sent. Waiting for hash...');
 
   const txHash = await once(promiEvent, 'transactionHash');
