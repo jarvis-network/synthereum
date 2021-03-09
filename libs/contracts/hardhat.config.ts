@@ -52,6 +52,7 @@ function addPublicNetwork(config: HardhatUserConfig, chainId: NetworkId) {
   config.networks[`${networkName}_fork`] = {
     chainId,
     url: localRpc,
+    timeout: 60e3,
   };
 }
 
