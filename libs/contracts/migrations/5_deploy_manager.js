@@ -22,11 +22,12 @@ module.exports = async function (deployer, network, accounts) {
     roles,
     { from: keys.deployer },
   );
-  const deployerInterface = await web3.utils.stringToHex('Manager');
+  const managerInterface = await web3.utils.stringToHex('Manager');
+  console.log({ managerInterface });
   const synthereumManager = await getExistingInstance(web3, SynthereumManager);
   await synthereumFinder.methods
     .changeImplementationAddress(
-      deployerInterface,
+      managerInterface,
       synthereumManager.options.address,
     )
     .send({ from: maintainer });
