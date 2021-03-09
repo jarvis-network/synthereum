@@ -66,6 +66,7 @@ export class RealmAgent<
     this.defaultTxOptions = {
       from: this.agentAddress,
       web3: this.realm.web3,
+      confirmations: 1,
     };
   }
 

@@ -14,6 +14,7 @@ export interface TxOptions {
   gasLimit?: number;
   gasPrice?: number;
   printInfo?: Omit<TxLogParams, 'txhash'>;
+  confirmations?: number;
 }
 
 export interface FullTxOptions<Net extends NetworkName> extends TxOptions {
@@ -26,7 +27,15 @@ const nonces: Record<string, number> = {};
 
 export async function sendTx<Result, Net extends NetworkName>(
   tx: NonPayableTransactionObject<Result>,
-  { web3, gasLimit, nonce, from, printInfo, ...rest }: FullTxOptions<Net>,
+  {
+    web3,
+    gasLimit,
+    nonce,
+    from,
+    printInfo,
+    confirmations,
+    ...rest
+  }: FullTxOptions<Net>,
 ): Promise<TransactionReceipt> {
   // If no logging function is provided, default to noop:
   const log = printInfo?.log ?? (() => {});
@@ -62,7 +71,12 @@ export async function sendTx<Result, Net extends NetworkName>(
     log('Setting gasLimit: ', txParams.gas);
 
   log(`Sending '${printInfo?.txSummaryText}' tx:`, tx.arguments, txParams);
-  const txReceipt = await logTransactionStatus(web3, tx.send(txParams), log);
+  const txReceipt = await logTransactionStatus({
+    web3,
+    promiEvent: tx.send(txParams),
+    log,
+    confirmations,
+  });
 
   if (printInfo) {
     await logTransactionOutput({
@@ -132,11 +146,17 @@ export function once<T>(
   });
 }
 
-export async function logTransactionStatus<T, Net extends NetworkName>(
-  web3: Web3On<Net>,
-  promiEvent: PromiEvent<T>,
+export async function logTransactionStatus<T, Net extends NetworkName>({
+  web3,
+  promiEvent,
   log = console.log,
-) {
+  confirmations = web3.eth.transactionConfirmationBlocks,
+}: {
+  web3: Web3On<Net>;
+  promiEvent: PromiEvent<T>;
+  log?: (message?: any, ...optionalParams: any[]) => void;
+  confirmations?: number;
+}) {
   await once(promiEvent, 'sent');
   log('  [1/4] Sending tx...');
 
@@ -145,13 +165,13 @@ export async function logTransactionStatus<T, Net extends NetworkName>(
 
   const txHash = await once(promiEvent, 'transactionHash');
   log(
-    `  [3/4]: Tx hash: '${txHash}'. Waiting for ${web3.eth.transactionConfirmationBlocks} confirmations...`,
+    `  [3/4]: Tx hash: '${txHash}'. Waiting for ${confirmations} confirmations...`,
   );
 
   const [confirmation, receipt] = await once(
     promiEvent,
     'confirmation',
-    web3.eth.transactionConfirmationBlocks,
+    confirmations,
   );
   const { gasUsed, blockNumber } = receipt;
   log(
