@@ -209,6 +209,7 @@ export const MainForm: React.FC<Props> = () => {
     dispatch(setBase('pay'));
     dispatch(setPay('0'));
     dispatch(setReceive('0'));
+    dispatch(setSwapLoaderVisible(false));
   };
 
   const mintingOverLimit =
@@ -233,11 +234,10 @@ export const MainForm: React.FC<Props> = () => {
     dispatch(setSwapLoaderVisible(true));
     try {
       await swap?.();
-      reset();
+      setTimeout(reset, 1000);
     } catch (e) {
       console.error(e); // @TODO needs proper error handler
     }
-    dispatch(setSwapLoaderVisible(false));
   };
 
   const handleSwapButtonClick = () => {

@@ -22,84 +22,81 @@ export const useSwap = () => {
 
   if (paySymbol === PRIMARY_STABLE_COIN.symbol) {
     // mint
-    return async () => {
-      try {
-        const collateral = wei(transactionCollateral!.bn.toString(10));
-        const outputAmount = wei(receiveValue!.bn.toString(10));
-        const outputSynth = receiveSymbol as SyntheticSymbol;
-
-        console.log({
-          collateral: collateral.toString(10),
-          outputAmount: outputAmount.toString(10),
-          outputSynth,
-        });
-
-        const result = await agent.mint({
-          collateral,
-          outputAmount,
-          outputSynth,
-        });
-        console.log('Minted!', result);
-      } catch (e) {
-        console.error('Error while minting', e);
-      }
-    };
-  }
-  if (receiveSymbol === PRIMARY_STABLE_COIN.symbol) {
-    // redeem
-    return async () => {
-      try {
-        const collateral = wei(transactionCollateral!.bn.toString(10));
-        const inputAmount = wei(payValue!.bn.toString(10));
-        const inputSynth = paySymbol as SyntheticSymbol;
-
-        console.log({
-          collateral: collateral.toString(10),
-          inputAmount: inputAmount.toString(10),
-          inputSynth,
-        });
-
-        const result = await agent.redeem({
-          collateral,
-          inputAmount,
-          inputSynth,
-        });
-        console.log('Redeem!', result);
-      } catch (e) {
-        console.error('Error while minting', e);
-      }
-    };
-  }
-  // else: exchange
-
-  return async () => {
-    try {
+    return () => {
       const collateral = wei(transactionCollateral!.bn.toString(10));
-      const inputAmount = wei(payValue!.bn.toString(10));
-      const inputSynth = paySymbol as SyntheticSymbol;
       const outputAmount = wei(receiveValue!.bn.toString(10));
       const outputSynth = receiveSymbol as SyntheticSymbol;
 
       console.log({
         collateral: collateral.toString(10),
-
-        inputAmount: inputAmount.toString(10),
-        inputSynth,
-
         outputAmount: outputAmount.toString(10),
         outputSynth,
       });
 
-      const result = await agent.exchange({
+      const { allowancePromise, txPromise } = agent.mint({
         collateral,
-        inputAmount,
-        inputSynth,
         outputAmount,
         outputSynth,
       });
-      console.log('exchange!', result);
-    } catch (e) {
-      console.error('Error while minting', e);
-    }
+
+      txPromise.then(result => console.log('Minted!', result));
+
+      return allowancePromise;
+    };
+  }
+  if (receiveSymbol === PRIMARY_STABLE_COIN.symbol) {
+    // redeem
+    return () => {
+      const collateral = wei(transactionCollateral!.bn.toString(10));
+      const inputAmount = wei(payValue!.bn.toString(10));
+      const inputSynth = paySymbol as SyntheticSymbol;
+
+      console.log({
+        collateral: collateral.toString(10),
+        inputAmount: inputAmount.toString(10),
+        inputSynth,
+      });
+
+      const { allowancePromise, txPromise } = agent.redeem({
+        collateral,
+        inputAmount,
+        inputSynth,
+      });
+
+      txPromise.then(result => console.log('Redeem!', result));
+
+      return allowancePromise;
+    };
+  }
+  // else: exchange
+
+  return () => {
+    const collateral = wei(transactionCollateral!.bn.toString(10));
+    const inputAmount = wei(payValue!.bn.toString(10));
+    const inputSynth = paySymbol as SyntheticSymbol;
+    const outputAmount = wei(receiveValue!.bn.toString(10));
+    const outputSynth = receiveSymbol as SyntheticSymbol;
+
+    console.log({
+      collateral: collateral.toString(10),
+
+      inputAmount: inputAmount.toString(10),
+      inputSynth,
+
+      outputAmount: outputAmount.toString(10),
+      outputSynth,
+    });
+
+    const { allowancePromise, txPromise } = agent.exchange({
+      collateral,
+      inputAmount,
+      inputSynth,
+      outputAmount,
+      outputSynth,
+    });
+
+    txPromise.then(result => console.log('Exchange!', result));
+
+    return allowancePromise;
   };
 };
