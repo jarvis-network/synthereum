@@ -75,5 +75,12 @@
       ],
       "feeProportions": [50, 50]
     }
+  ],
+  "0x15a2870d62d7e08622bafC5832404e284AF5CdC7": [
+    "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34",
+    {
+      "admin": "0x539E625172026F8d2AC50648a55871FA728618e8",
+      "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486"
+    }
   ]
 }
