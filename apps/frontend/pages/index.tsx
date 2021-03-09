@@ -52,6 +52,30 @@ const WidgetContainer = styled.div`
   height: ${FULL_WIDGET_HEIGHT_PX}px;
 `;
 
+const Rotate = styled.div`
+  display: none;
+
+  @media screen and (max-device-width: 1080px) and (orientation: landscape) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+    background: ${props => props.theme.background.secondary};
+    color: ${props => props.theme.text.secondary};
+    font-size: ${props => props.theme.font.sizes.l};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  > span {
+    font-size: ${props => props.theme.font.sizes.xxl};
+    padding-right: 5px;
+  }
+`;
+
 export default function Home() {
   const dispatch = useDispatch();
   const theme = useReduxSelector(state => state.theme);
@@ -80,6 +104,7 @@ export default function Home() {
     <StickyHeader>
       <OnMobile>
         <ChartExchangeCards image={url} />
+        <Rotate><span>↺</span> Rotate your device to portrait mode</Rotate>
       </OnMobile>
       <OnDesktop>
         <Layout>
