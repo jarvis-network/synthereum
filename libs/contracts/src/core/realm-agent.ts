@@ -1,3 +1,4 @@
+import type { TransactionReceipt } from 'web3-core';
 import {
   Amount,
   formatAmount,
@@ -51,6 +52,11 @@ interface RedeemParams extends BaseTxParams {
   inputAmount: Amount;
 }
 
+interface SwapResult {
+  allowancePromise: Promise<true | TransactionReceipt>;
+  txPromise: Promise<TransactionReceipt>
+}
+
 export class RealmAgent<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
@@ -100,94 +106,118 @@ export class RealmAgent<
     }
   }
 
-  async mint({ collateral, outputAmount, outputSynth, txOptions }: MintParams) {
+  mint({ collateral, outputAmount, outputSynth, txOptions }: MintParams): SwapResult {
     this.assertV1Pool('mint');
+
     const tic = this.activePools[outputSynth] as SynthereumPool<'v1', Net>;
-    // TODO: Should we return both promises separately?
-    console.log(`Checking allowance...`);
-    const result = await this.ensureSufficientAllowanceFor(
+
+    const allowancePromise = this.ensureSufficientAllowanceFor(
       this.realm.collateralToken,
       tic.address,
       collateral,
       txOptions,
     );
-    console.log(`Allowance ok.`);
+
     const inputCollateral = weiToTokenAmount({
       wei: collateral,
       decimals: tic.collateralToken.decimals,
     });
+
     const tx = tic.instance.methods.mintRequest(
       inputCollateral as any,
       outputAmount as any,
     );
-    console.log(`Sending tx`);
-    return await sendTx(tx, {
+
+    const txPromise = allowancePromise.then(() => sendTx(tx, {
       ...this.defaultTxOptions,
       ...txOptions,
-    });
+    }));
+
+    return {
+      allowancePromise,
+      txPromise
+    }
   }
 
-  async exchange({
+  exchange({
     collateral,
     inputSynth,
     outputSynth,
     inputAmount,
     outputAmount,
     txOptions,
-  }: ExchangeParams) {
+  }: ExchangeParams): SwapResult {
     this.assertV1Pool('mint');
     const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
+
     const destinationTicAddress = assertNotNull(this.activePools[outputSynth])
       .address;
-    const result = await this.ensureSufficientAllowanceFor(
+
+    const allowancePromise = this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,
       inputAmount,
       txOptions,
     );
-    console.log(`Allowance ok - ${result}`);
+
     const inputCollateral = weiToTokenAmount({
       wei: collateral,
       decimals: inputTic.collateralToken.decimals,
     });
+
     const tx = inputTic.instance.methods.exchangeRequest(
       destinationTicAddress,
       inputAmount as any,
       inputCollateral as any,
       outputAmount as any,
     );
-    return await sendTx(tx, {
+
+    const txPromise = allowancePromise.then(() => sendTx(tx, {
       ...this.defaultTxOptions,
       ...txOptions,
-    });
+    }));
+
+    return {
+      allowancePromise,
+      txPromise
+    }
   }
 
-  async redeem({
+  redeem({
     inputAmount,
     inputSynth,
     collateral,
     txOptions,
-  }: RedeemParams) {
+  }: RedeemParams): SwapResult {
     this.assertV1Pool('mint');
     const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
-    await this.ensureSufficientAllowanceFor(
+
+    const allowancePromise = this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
       inputTic.address,
       inputAmount,
       txOptions,
     );
+
     const outputCollateral = weiToTokenAmount({
       wei: collateral,
       decimals: inputTic.collateralToken.decimals,
     });
+
     const tx = inputTic.instance.methods.redeemRequest(
       outputCollateral as any,
       inputAmount as any,
     );
-    return await sendTx(tx, {
+
+    const txPromise = allowancePromise.then(() => sendTx(tx, {
       ...this.defaultTxOptions,
       ...txOptions,
-    });
+    }));
+
+    return {
+      allowancePromise,
+      txPromise
+    }
   }
 
   private async ensureSufficientAllowanceFor(

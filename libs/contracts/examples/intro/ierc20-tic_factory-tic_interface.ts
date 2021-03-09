@@ -74,7 +74,7 @@ export async function example() {
     // Read more about calculating values: /docs/fee-calculations.md
     collateral: wei(1100),
     outputAmount: wei(1000),
-  });
+  }).txPromise;
   console.log(tx.transactionHash);
   console.log(tx.events);
   console.log(tx.blockNumber);
