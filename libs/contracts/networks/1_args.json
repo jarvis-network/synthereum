@@ -125,12 +125,21 @@
     true,
     "1820250",
     {
-      "feePercentage": { "rawValue": "2000000000000000" },
+      "feePercentage": {
+        "rawValue": "2000000000000000"
+      },
       "feeRecipients": [
         "0x8eF00583bAa186094D9A34a0A4750C1D1BB86831",
         "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
       ],
       "feeProportions": [50, 50]
+    }
+  ],
+  "0xddFeF53637848fAccB683564F981f579B9089955": [
+    "0xD451dE78E297b496ee8a4f06dCF991C17580B452",
+    {
+      "admin": "0xeb04e2b446Cde583F900dAFF3dd9917FCF6F0586",
+      "maintainer": "0xcddDD005cF81dC8C4182E27F3079d22Fa7C7d35a"
     }
   ]
 }

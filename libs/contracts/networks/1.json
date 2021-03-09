@@ -91,5 +91,10 @@
     "contractName": "jEUR Synthereum V3 Pool",
     "address": "0x833407f9c6C55df59E7fe2Ed6fB86bb413536359",
     "transactionHash": ""
+  },
+  {
+    "contractName": "SynthereumManager",
+    "address": "0xddFeF53637848fAccB683564F981f579B9089955",
+    "transactionHash": "0x0d1128b6496938ccff2ebffb3498ff45e57d28c589dd30f848f05d65b912ab32"
   }
 ]
