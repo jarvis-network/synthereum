@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { logoutAction } from '@/state/actions';
 import { initialState, State } from '@/state/initialState';
 
-interface SetLoginStateAction {
+interface LoginActionPayload {
   payload: State['auth'];
 }
 
@@ -10,11 +11,16 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: initialState.auth,
   reducers: {
-    setLoginState(state, action: SetLoginStateAction) {
+    login(_, action: LoginActionPayload) {
       return action.payload;
+    },
+  },
+  extraReducers: {
+    [logoutAction.type]() {
+      return initialState.auth;
     },
   },
 });
 
-export const { setLoginState } = authSlice.actions;
+export const { login } = authSlice.actions;
 export const { reducer } = authSlice;

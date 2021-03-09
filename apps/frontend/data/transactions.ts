@@ -49,6 +49,7 @@ export interface SynthereumTransaction extends TransactionBase {
 
 export type Transaction = SynthereumTransaction;
 
+// TODO: Remove
 export const transactions: Transaction[] = [
   {
     timestamp: new Date('2020-11-11 05:00:00').getTime(),

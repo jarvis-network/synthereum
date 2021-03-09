@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
+import { logoutAction } from '@/state/actions';
 import { initialState } from '@/state/initialState';
 import { Transaction } from '@/data/transactions';
 
@@ -31,13 +32,6 @@ const transactionsSlice = createSlice({
   name: 'transactions',
   initialState: initialState.transactions,
   reducers: {
-    setTransactionsHistory: (
-      state,
-      { payload: transactions }: Action<Transaction[]>,
-    ) => {
-      // eslint-disable-next-line no-param-reassign
-      state.list = transactions;
-    },
     addTransaction: (state, { payload: transaction }: Action<Transaction>) => {
       state.list.push(transaction);
     },
@@ -50,8 +44,10 @@ const transactionsSlice = createSlice({
       // eslint-disable-next-line no-param-reassign
       state.list = transactions;
     },
+    [logoutAction.type](state) {
+      state.list = [];
+    },
   },
 });
 
 export const { reducer } = transactionsSlice;
-export const { setTransactionsHistory } = transactionsSlice.actions;

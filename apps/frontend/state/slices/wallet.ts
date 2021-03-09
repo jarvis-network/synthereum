@@ -4,6 +4,7 @@ import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/con
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
+import { logoutAction } from '@/state/actions';
 import { initialState, State } from '@/state/initialState';
 
 interface Action<T> {
@@ -39,18 +40,7 @@ export const subscribeWalletBalances = createAsyncThunk(
 const walletSlice = createSlice({
   name: 'wallet',
   initialState: initialState.wallet,
-  reducers: {
-    setWalletBalance(_, { payload }: Action<State['wallet']>) {
-      return payload;
-    },
-    setWalletAmount(
-      state,
-      { payload: { asset, ...value } }: Action<WalletBalance>,
-    ) {
-      // eslint-disable-next-line no-param-reassign
-      state[asset] = value;
-    },
-  },
+  reducers: {},
   extraReducers: {
     [fetchWalletBalances.fulfilled.type]: (
       state,
@@ -61,8 +51,10 @@ const walletSlice = createSlice({
         state[asset] = value;
       });
     },
+    [logoutAction.type]() {
+      return initialState.wallet;
+    },
   },
 });
 
 export const { reducer } = walletSlice;
-export const { setWalletAmount, setWalletBalance } = walletSlice.actions;

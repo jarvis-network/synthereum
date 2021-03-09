@@ -5,7 +5,7 @@ import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { assets, Asset } from '@/data/assets';
-import { transactions, Transaction } from '@/data/transactions';
+import { Transaction } from '@/data/transactions';
 import { SubscriptionPair } from '@/utils/priceFeed';
 import { cache } from '@/utils/cache';
 
@@ -44,7 +44,9 @@ export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 
 export type Days = 1 | 7 | 30;
 
-export type AuthState = Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] } | null;
+export type AuthState =
+  | (Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] })
+  | null;
 
 export interface State {
   theme: ThemeNameType;
@@ -124,7 +126,7 @@ export const initialState: State = {
   },
   wallet: {},
   transactions: {
-    list: transactions,
+    list: [],
   },
   prices: {
     persistedPairs: [],

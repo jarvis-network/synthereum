@@ -13,9 +13,6 @@ import { formatWalletAddress } from '@/utils/format';
 import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
-import { setLoginState } from '@/state/slices/auth';
-import { setTransactionsHistory } from '@/state/slices/transactions';
-import { setWalletBalance } from '@/state/slices/wallet';
 import { useAuth } from '@/utils/useAuth';
 
 const noop = () => undefined;

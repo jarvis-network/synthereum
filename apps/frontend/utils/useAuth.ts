@@ -1,10 +1,9 @@
 import { useDispatch } from 'react-redux';
-import { setLoginState } from '@/state/slices/auth';
+import { logoutAction } from '@/state/actions';
+import { login } from '@/state/slices/auth';
 
 import { useMemo } from 'react';
 import type Onboard from 'bnc-onboard';
-import { setWalletBalance } from '@/state/slices/wallet';
-import { setTransactionsHistory } from '@/state/slices/transactions';
 
 import { useCoreObservables } from './CoreObservablesContext';
 import { useBehaviorSubject } from './useBehaviorSubject';
@@ -25,7 +24,7 @@ export function authFactory(
       if (check && walletName) {
         localStorage.setItem('jarvis/autologin', walletName);
         const { wallet: _, ...state } = onboardState;
-        dispatch(setLoginState({ ...state, wallet: walletName }));
+        dispatch(login({ ...state, wallet: walletName }));
       }
       return check;
     },
@@ -33,9 +32,7 @@ export function authFactory(
       onboard.walletReset();
       localStorage.removeItem('jarvis/autologin');
 
-      dispatch(setWalletBalance({}));
-      dispatch(setLoginState(null));
-      dispatch(setTransactionsHistory([]));
+      dispatch(logoutAction());
     },
   };
 }
