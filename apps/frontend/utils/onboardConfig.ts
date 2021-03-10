@@ -1,6 +1,7 @@
 import { Initialization } from 'bnc-onboard/dist/src/interfaces';
 import { filterEmpty } from '@jarvis-network/web3-utils/base/optional';
 import { getInfuraEndpoint } from '@jarvis-network/web3-utils/apis/infura';
+
 import { NETWORK_ID } from './environment';
 
 const MAIN_NETWORK_ID = 1;

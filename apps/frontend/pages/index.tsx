@@ -104,7 +104,9 @@ export default function Home() {
     <StickyHeader>
       <OnMobile>
         <ChartExchangeCards image={url} />
-        <Rotate><span>↺</span> Rotate your device to portrait mode</Rotate>
+        <Rotate>
+          <span>↺</span> Rotate your device to portrait mode
+        </Rotate>
       </OnMobile>
       <OnDesktop>
         <Layout>

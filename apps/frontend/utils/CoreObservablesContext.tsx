@@ -3,6 +3,7 @@ import type Onboard from 'bnc-onboard';
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
 import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+
 import type { ENSHelper } from './ens';
 
 type Context = {

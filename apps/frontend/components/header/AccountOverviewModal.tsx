@@ -74,7 +74,9 @@ export const AccountOverviewModal: FC = () => {
   );
   const wallet = useReduxSelector(state => state.wallet);
   const assets = useReduxSelector(state => state.assets.list);
-  const isLoggedInViaMetaMask = useReduxSelector(state => state.auth?.wallet === 'MetaMask');
+  const isLoggedInViaMetaMask = useReduxSelector(
+    state => state.auth?.wallet === 'MetaMask',
+  );
   const { web3$, realmAgent$ } = useCoreObservables();
   const web3 = useBehaviorSubject(web3$);
   const realmAgent = useBehaviorSubject(realmAgent$);
@@ -132,7 +134,7 @@ export const AccountOverviewModal: FC = () => {
     }
 
     return handleAddToMetamaskClick;
-  }
+  };
 
   const items: AssetRowProps[] = useMemo(() => {
     const keys = Object.keys(wallet) as ExchangeToken[];

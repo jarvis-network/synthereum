@@ -97,7 +97,12 @@ const Value = styled(Amount)`
   color: ${props => props.theme.text.secondary};
 `;
 
-export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value, onAddToMetaMaskClick }) => {
+export const AssetRow: FC<AssetRowProps> = ({
+  asset,
+  amount,
+  value,
+  onAddToMetaMaskClick,
+}) => {
   const valueElem = value && (
     <Value>
       {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {value.format(2)}
@@ -105,7 +110,9 @@ export const AssetRow: FC<AssetRowProps> = ({ asset, amount, value, onAddToMetaM
   );
 
   const addToMetaMask = onAddToMetaMaskClick && (
-    <MetamaskButton onClick={onAddToMetaMaskClick}>Add to <MetamaskLogo src="/images/metamask.svg" alt="MetaMask logo" /></MetamaskButton>
+    <MetamaskButton onClick={onAddToMetaMaskClick}>
+      Add to <MetamaskLogo src="/images/metamask.svg" alt="MetaMask logo" />
+    </MetamaskButton>
   );
 
   return (

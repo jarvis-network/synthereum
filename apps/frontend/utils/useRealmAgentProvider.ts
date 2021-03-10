@@ -4,7 +4,7 @@ import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-import { NETWORK_ID } from './environment';
+
 import {
   PoolsForVersion,
   PoolVersion,
@@ -12,6 +12,8 @@ import {
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
 import { useStore } from '@/state/store';
+
+import { NETWORK_ID } from './environment';
 
 const poolVersion = (process.env.NEXT_PUBLIC_POOL_VERSION ||
   'v1') as PoolVersion;
