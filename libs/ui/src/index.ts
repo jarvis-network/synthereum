@@ -1,3 +1,4 @@
+export { AcceptBox } from './AcceptBox';
 export { Background, BackgroundProvider, useBackground } from './Background';
 export { Button } from './Button';
 export { CardButton } from './CardButton';

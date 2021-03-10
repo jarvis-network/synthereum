@@ -23,6 +23,7 @@ import { useConstant } from '@/utils/useConstant';
 import { ENSHelper } from '@/utils/ens';
 import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
 import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { GDPRPopup } from '@/components/GDPRPopup';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -65,6 +66,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <MainWrapper>
             <FullScreenLoader />
             <Component {...pageProps} />
+            <GDPRPopup />
           </MainWrapper>
         </AppThemeProvider>
       </StateProvider>
