@@ -72,8 +72,14 @@ export const Interactive = () => {
   const wallet = text('Wallet', '0x235c..fe47');
   const mode = select('Mode', ['real', 'demo'], 'real');
 
-  const [isLoggedIn, setLoggedIn] = useState(true);
+  const [isLoggedIn, setStateLoggedIn] = useState(true);
   const [theme, setTheme] = useState<ThemeNameType>('light');
+
+  const setLoggedIn = (state: boolean) => {
+    setTimeout(() => {
+      setStateLoggedIn(state);
+    }, 500);
+  };
 
   return (
     <ThemeProvider theme={theme}>

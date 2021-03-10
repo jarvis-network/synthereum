@@ -77,6 +77,7 @@ const FullHeightButton = styled(Button)`
 const FullWidthMenuDropdown = styled(MenuDropdown)`
   .dropdown-content {
     width: 100%;
+    min-width: 120px;
 
     button {
       width: calc(100% - 20px) !important;
@@ -114,8 +115,15 @@ export const AccountSummary: FC<AccountSummaryProps> = ({
 }) => {
   const { name: theme } = useTheme();
 
-  const [isMenuVisible, setMenuVisible] = useState(false);
+  const [isMenuVisible, setStateMenuVisible] = useState(false);
   const [isThemeSwitcherVisible, setThemeSwitcherVisible] = useState(false);
+
+  const setMenuVisible = (state: boolean) => {
+    if (!wallet) {
+      return;
+    }
+    setStateMenuVisible(state);
+  };
 
   const handleThemeChange = (newTheme: ThemeNameType) => {
     if (!onThemeChange) {
