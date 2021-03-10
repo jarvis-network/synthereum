@@ -44,6 +44,12 @@ const appSlice = createSlice({
         isAuthModalVisible: action.payload,
       };
     },
+    setExchangeConfirmationVisible(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isExchangeConfirmationVisible: action.payload,
+      };
+    },
     setMobileTab(state, action: SetMobileTabAction) {
       return {
         ...state,
@@ -59,6 +65,7 @@ export const {
   setFullScreenLoaderVisible,
   setSwapLoaderVisible,
   setAuthModalVisible,
+  setExchangeConfirmationVisible,
   setMobileTab,
 } = appSlice.actions;
 export const { reducer } = appSlice;

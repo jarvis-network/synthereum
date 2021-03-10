@@ -3,9 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
-import {
-  State,
-} from '@/state/initialState';
+import { State } from '@/state/initialState';
 import {
   setBase,
   setPay,
@@ -14,19 +12,22 @@ import {
   setReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { setAuthModalVisible, setSwapLoaderVisible } from '@/state/slices/app';
-import { Asset as AssetType } from '@/data/assets.ts';
+import {
+  setAuthModalVisible,
+  setExchangeConfirmationVisible,
+} from '@/state/slices/app';
+import { Asset as AssetType } from '@/data/assets';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
-import { useSwap } from '@/components/exchange/useSwap';
-
 import { MAX_MINT_VALUE } from '@/utils/environment';
+import { formatExchangeAmount } from '@/utils/format';
+
+import { Loader } from '../Loader';
 
 import { Asset } from './Asset';
 import { Max } from './Max';
-import { Loader } from '../Loader';
 
 interface Props {}
 
@@ -173,10 +174,11 @@ export const MainForm: React.FC<Props> = () => {
     receiveString,
   } = useExchangeValues();
 
-  const swap = useSwap();
   const theme = useTheme();
 
-  const isSwapLoaderVisible = useReduxSelector(state => state.app.isSwapLoaderVisible);
+  const isSwapLoaderVisible = useReduxSelector(
+    state => state.app.isSwapLoaderVisible,
+  );
 
   const auth = useReduxSelector(state => state.auth);
 
@@ -213,13 +215,6 @@ export const MainForm: React.FC<Props> = () => {
     updatePay(receiveString);
   };
 
-  const reset = () => {
-    dispatch(setBase('pay'));
-    dispatch(setPay('0'));
-    dispatch(setReceive('0'));
-    dispatch(setSwapLoaderVisible(false));
-  };
-
   const mintingOverLimit =
     paySymbol === 'USDC' && new FPN(payString).gt(MAX_MINT_VALUE);
 
@@ -232,20 +227,12 @@ export const MainForm: React.FC<Props> = () => {
       return false;
     }
 
-    return !Number(payString) ||
+    return (
+      !Number(payString) ||
       !Number(receiveString) ||
       insufficientBalance ||
-      mintingOverLimit;
-  }
-
-  const doSwap = async () => {
-    dispatch(setSwapLoaderVisible(true));
-    try {
-      await swap?.();
-      setTimeout(reset, 1000);
-    } catch (e) {
-      console.error(e); // @TODO needs proper error handler
-    }
+      mintingOverLimit
+    );
   };
 
   const handleSwapButtonClick = () => {
@@ -253,25 +240,15 @@ export const MainForm: React.FC<Props> = () => {
       return dispatch(setAuthModalVisible(true));
     }
 
-    return doSwap();
-  }
+    return dispatch(setExchangeConfirmationVisible(true));
+  };
 
   const getSwapButtonLabel = () => {
     if (isSwapLoaderVisible) {
-      return <Loader size="s" color={theme.text.secondary} />
+      return <Loader size="s" color={theme.text.secondary} />;
     }
 
     return auth ? 'Swap' : 'Sign in';
-  }
-
-  const getFormattedValue = (value: string) => {
-    const [, decimals] = value.split('.');
-
-    if (decimals && decimals.length > 5) {
-      return Number(value).toFixed(5);
-    }
-
-    return value;
   };
 
   const getFormattedPay = () => {
@@ -279,7 +256,7 @@ export const MainForm: React.FC<Props> = () => {
       return pay;
     }
 
-    return getFormattedValue(payString);
+    return formatExchangeAmount(payString);
   };
 
   const getFormattedReceive = () => {
@@ -287,7 +264,7 @@ export const MainForm: React.FC<Props> = () => {
       return receive;
     }
 
-    return getFormattedValue(receiveString);
+    return formatExchangeAmount(receiveString);
   };
 
   const errorMessage = insufficientBalance
@@ -296,9 +273,7 @@ export const MainForm: React.FC<Props> = () => {
     ? 'Limit Reached'
     : null;
 
-  const amount = wallet && (
-    <Balance>Balance: {getFormattedValue(wallet.amount.format())}</Balance>
-  )
+  const amount = wallet && <Balance>Balance: {wallet.amount.format()}</Balance>;
 
   return (
     <Container>

@@ -48,6 +48,16 @@ export function formatDate(timestamp: number) {
   return `${year}-${formatedMonth}-${formatedDay}`;
 }
 
+export const formatExchangeAmount = (value: string) => {
+  const [, decimals] = value.split('.');
+
+  if (decimals && decimals.length > 5) {
+    return Number(value).toFixed(5);
+  }
+
+  return value;
+};
+
 // Transactions
 export function formatTransactionType(type: TransactionType) {
   if (type === 'sendToSelf') {

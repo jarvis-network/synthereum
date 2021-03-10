@@ -56,6 +56,7 @@ export interface State {
     isFullScreenLoaderVisible: boolean;
     isSwapLoaderVisible: boolean;
     isAuthModalVisible: boolean;
+    isExchangeConfirmationVisible: boolean;
     mobileTab: number;
   };
   auth: AuthState;
@@ -104,6 +105,7 @@ export const initialState: State = {
     isFullScreenLoaderVisible: false,
     isSwapLoaderVisible: false,
     isAuthModalVisible: false,
+    isExchangeConfirmationVisible: false,
     mobileTab: 1,
   },
   auth: null,

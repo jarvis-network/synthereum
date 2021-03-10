@@ -18,10 +18,21 @@ import {
   setChooseAsset,
   setPayAsset,
   setReceiveAsset,
+  setReceive,
+  setBase,
+  setPay,
 } from '@/state/slices/exchange';
+import {
+  setSwapLoaderVisible,
+  setExchangeConfirmationVisible,
+} from '@/state/slices/app';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import { Asset, AssetPair } from '@/data/assets';
+
+import { useExchangeValues } from '@/utils/useExchangeValues';
+
+import { useSwap } from '@/components/exchange/useSwap';
 
 import { OnDesktop } from '../OnDesktop';
 
@@ -30,7 +41,7 @@ import { OnMobile } from '../OnMobile';
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
-import { useExchangeValues } from '@/utils/useExchangeValues';
+import { SwapConfirm } from './SwapConfirm';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 
@@ -59,7 +70,13 @@ const CardContainer = styled.div`
 `;
 
 const FeesContainer = styled.div`
-  height: ${FEES_BLOCK_HEIGHT_PX}px;
+  height: ${FEES_BLOCK_HEIGHT_PX - 20}px;
+  margin-top: 20px;
+
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    border-top: 1px solid ${props => props.theme.border.primary};
+  }
 `;
 
 const ContentContainer = styled.div`
@@ -177,11 +194,11 @@ const CustomCard = styled(Card)`
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     border-radius: 0 !important;
 
-    *:first-child {
+    > *:first-child {
       border-radius: 0 !important;
     }
 
-    *:last-child {
+    > *:last-child {
       border-radius: 0 !important;
     }
   }
@@ -221,6 +238,9 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
+  const isExchangeConfirmationVisible = useReduxSelector(
+    state => state.app.isExchangeConfirmationVisible,
+  );
   const chooseAsset = useReduxSelector(
     state => state.exchange.chooseAssetActive,
   );
@@ -232,6 +252,8 @@ export const ExchangeCard: React.FC = () => {
 
   const { fee } = useExchangeValues();
 
+  const swap = useSwap();
+
   const handleCloseClick = () => {
     setQuery('');
     setSearchOpen(false);
@@ -241,6 +263,28 @@ export const ExchangeCard: React.FC = () => {
     dispatch(setPayAsset(pair.input.symbol));
     dispatch(setReceiveAsset(pair.output.symbol));
     handleCloseClick();
+  };
+
+  const reset = () => {
+    dispatch(setBase('pay'));
+    dispatch(setPay('0'));
+    dispatch(setReceive('0'));
+    dispatch(setSwapLoaderVisible(false));
+    dispatch(setExchangeConfirmationVisible(false));
+  };
+
+  const doSwap = async () => {
+    try {
+      await swap?.();
+      setTimeout(reset, 1000);
+    } catch (e) {
+      console.error(e); // @TODO needs proper error handler
+    }
+  };
+
+  const handleConfirmButtonClick = () => {
+    dispatch(setSwapLoaderVisible(true));
+    doSwap();
   };
 
   useEffect(() => {
@@ -304,6 +348,10 @@ export const ExchangeCard: React.FC = () => {
       return <ChooseAsset />;
     }
 
+    if (isExchangeConfirmationVisible) {
+      return <SwapConfirm onConfim={handleConfirmButtonClick} />;
+    }
+
     const suffix = searchOpen && (
       <ClearButton onClick={handleCloseClick}>
         <Icon icon="IoMdClose" />
@@ -326,6 +374,13 @@ export const ExchangeCard: React.FC = () => {
       };
     }
 
+    if (isExchangeConfirmationVisible) {
+      return {
+        title: 'Confirmation',
+        onBack: () => dispatch(setExchangeConfirmationVisible(false)),
+      };
+    }
+
     return {
       title: 'Swap',
     };
@@ -335,12 +390,14 @@ export const ExchangeCard: React.FC = () => {
 
   const card = <CustomCard {...getCardProps()}>{content}</CustomCard>;
 
-  const mobileContent =
-    chooseAsset || searchOpen ? (
-      <MobileCardContainer>{card}</MobileCardContainer>
-    ) : (
-      content
-    );
+  const isMobileCardVisible =
+    chooseAsset || searchOpen || isExchangeConfirmationVisible;
+
+  const mobileContent = isMobileCardVisible ? (
+    <MobileCardContainer>{card}</MobileCardContainer>
+  ) : (
+    content
+  );
 
   const hasFee = !!fee?.toNumber();
 
