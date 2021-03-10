@@ -15,7 +15,7 @@ RUN mkdir /out \
 FROM core as config_files
 COPY . .
 RUN mkdir /out \
-  && find . -name "tsconfig.json" -o -name "package.json" -o -name "nx.json" -o -name "workspace.json" -o -name ".eslintrc.json" | \
+  && find . -name "tsconfig*.json" -o -name "package.json" -o -name "nx.json" -o -name "workspace.json" -o -name ".eslintrc.json" | \
     xargs cp -v --parents -t /out
 
 # ---------------------------- Base builder image ---------------------------- #
@@ -71,10 +71,17 @@ COPY apps/validator apps/validator
 RUN yarn nx build validator
 RUN cp -r apps/validator/dist /out
 
+# ----------------- Build @jarvis-network/ui library ----------------- #
+FROM install as build-ui
+COPY libs/ui libs/ui
+RUN yarn nx build ui
+RUN cp -r libs/ui/dist /out && ls -lah /out
+
 # ------------------------------ Build Frontend ------------------------------ #
 FROM install as build-frontend
 COPY apps/frontend apps/frontend
-COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
+COPY --from=build-ui /out node_modules/@jarvis-network/ui
+COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 # Keep in sync with docker-bake.hcl and apps/frontend/.env.example
 ARG NEXT_PUBLIC_ONBOARD_API_KEY
