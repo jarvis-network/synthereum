@@ -64,6 +64,14 @@ const AssetSelect = styled.div<{ error: boolean }>`
 const Title = styled.div`
   font-size: ${props => props.theme.font.sizes.m};
   grid-area: title;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+
+const Balance = styled.span`
+  color: ${props => props.theme.text.secondary};
+  font-size: ${props => props.theme.font.sizes.s};
 `;
 
 const Amount = styled.input`
@@ -288,10 +296,14 @@ export const MainForm: React.FC<Props> = () => {
     ? 'Limit Reached'
     : null;
 
+  const amount = wallet && (
+    <Balance>Balance: {getFormattedValue(wallet.amount.format())}</Balance>
+  )
+
   return (
     <Container>
       <ExchangeBox error={Boolean(errorMessage)}>
-        <Title>You swap</Title>
+        <Title>You swap {amount}</Title>
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
             value={getFormattedPay()}
