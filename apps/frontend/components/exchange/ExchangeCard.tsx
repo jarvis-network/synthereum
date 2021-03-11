@@ -18,9 +18,6 @@ import {
   setChooseAsset,
   setPayAsset,
   setReceiveAsset,
-  setReceive,
-  setBase,
-  setPay,
 } from '@/state/slices/exchange';
 import {
   setSwapLoaderVisible,
@@ -33,6 +30,8 @@ import { Asset, AssetPair } from '@/data/assets';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { useSwap } from '@/components/exchange/useSwap';
+
+import { resetSwapAction } from '@/state/actions';
 
 import { OnDesktop } from '../OnDesktop';
 
@@ -265,13 +264,7 @@ export const ExchangeCard: React.FC = () => {
     handleCloseClick();
   };
 
-  const reset = () => {
-    dispatch(setBase('pay'));
-    dispatch(setPay('0'));
-    dispatch(setReceive('0'));
-    dispatch(setSwapLoaderVisible(false));
-    dispatch(setExchangeConfirmationVisible(false));
-  };
+  const reset = () => dispatch(resetSwapAction());
 
   const doSwap = async () => {
     try {

@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { initialState } from '@/state/initialState';
 
+import { resetSwapAction } from '../actions';
+
 interface SetModalVisibilityAction {
   payload: boolean;
 }
@@ -54,6 +56,15 @@ const appSlice = createSlice({
       return {
         ...state,
         mobileTab: action.payload,
+      };
+    },
+  },
+  extraReducers: {
+    [resetSwapAction.type](state) {
+      return {
+        ...state,
+        isSwapLoaderVisible: false,
+        isExchangeConfirmationVisible: false,
       };
     },
   },
