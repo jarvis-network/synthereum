@@ -1,3 +1,5 @@
+import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+
 import { TransactionStatus, TransactionType } from '@/data/transactions';
 
 export const toUpperFirst = (str: string) =>
@@ -48,15 +50,7 @@ export function formatDate(timestamp: number) {
   return `${year}-${formatedMonth}-${formatedDay}`;
 }
 
-export const formatExchangeAmount = (value: string) => {
-  const [, decimals] = value.split('.');
-
-  if (decimals && decimals.length > 5) {
-    return Number(value).toFixed(5);
-  }
-
-  return value;
-};
+export const formatExchangeAmount = (value: string) => new FPN(value).format(5);
 
 // Transactions
 export function formatTransactionType(type: TransactionType) {
