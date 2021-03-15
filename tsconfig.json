@@ -15,6 +15,7 @@
     "incremental": false,
     "sourceMap": true,
     "declaration": true,
+    "declarationMap": true,
     "removeComments": false,
 
     // Strict and linter checks:

@@ -1,21 +1,8 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "jsx": "react",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "outDir": "dist",
-    "strict": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "noEmit": false
   },
-  "include": ["src/"],
   "exclude": ["src/**/stories/**/*", "src/**/*spec.*"]
 }
