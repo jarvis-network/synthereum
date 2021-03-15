@@ -104,6 +104,7 @@
         "gitlab",
         "validator",
         "frontend",
+        "ui",
         "web3-utils",
         "contracts",
         "package.json",
