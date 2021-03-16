@@ -17,6 +17,12 @@ export { Select } from './JSelect';
 export { SearchBar } from './SearchBar';
 export { Label, HeadingLabel } from './Label';
 export { Modal, ModalContent } from './Modal';
+export {
+  NotificationsProvider,
+  NotificationsPlacement,
+  useNotifications,
+  NotificationType,
+} from './Notifications';
 export { Tabs } from './Tabs';
 export { Tooltip } from './Tooltip';
 export { AccountButton } from './AccountButton';
