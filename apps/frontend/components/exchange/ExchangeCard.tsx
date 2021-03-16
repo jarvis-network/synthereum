@@ -8,6 +8,9 @@ import {
   Icon,
   themeValue,
   Card,
+  useNotifications,
+  NotificationType,
+  NotificationsPlacement,
   useTheme,
   Skeleton,
 } from '@jarvis-network/ui';
@@ -36,6 +39,7 @@ import { useSwap } from '@/components/exchange/useSwap';
 
 import { resetSwapAction } from '@/state/actions';
 
+import { useIsMobile } from '@/utils/useIsMobile';
 import { OnDesktop } from '@/components/OnDesktop';
 import { OnMobile } from '@/components/OnMobile';
 
@@ -212,6 +216,15 @@ const CustomCard = styled(Card)`
   }
 `;
 
+const NotificationsContainer = styled.div`
+  position: relative;
+
+  .notification {
+    width: 100%;
+    top: -133px;
+  }
+`;
+
 const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 
 const getRealSymbol = (symbol: ExchangeToken): string => {
@@ -243,6 +256,8 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 };
 
 export const ExchangeCard: React.FC = () => {
+  const isMobile = useIsMobile();
+  const notify = useNotifications();
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
   const wallet = useReduxSelector(state => state.wallet);
@@ -278,11 +293,58 @@ export const ExchangeCard: React.FC = () => {
   const reset = () => dispatch(resetSwapAction());
 
   const doSwap = async () => {
+    if (!swap) {
+      return;
+    }
+
+    dispatch(setSwapLoaderVisible(true));
+    const place = isMobile ? 'global' : 'exchange';
+    const time = 8000;
+
     try {
-      await swap?.();
-      setTimeout(reset, 1000);
+      const { allowancePromise, txPromise, sendTx } = swap();
+
+      const result = await allowancePromise;
+      if (!result) {
+        throw new Error('Allowance = false');
+      }
+
+      const { promiEvent } = await sendTx;
+
+      promiEvent.once('transactionHash', () => {
+        // transaction confirmed in the wallet app
+        reset();
+        notify(
+          'Your transaction has started',
+          NotificationType.pending,
+          place,
+          time,
+        );
+      });
+
+      await txPromise;
+      notify(
+        'Your transaction is complete',
+        NotificationType.success,
+        place,
+        time,
+      );
     } catch (e) {
-      console.error(e); // @TODO needs proper error handler
+      if (
+        e?.message ===
+        'MetaMask Tx Signature: User denied transaction signature.'
+      ) {
+        return;
+      }
+      console.error('Transaction error', e);
+      notify(
+        'Your transaction has failed',
+        NotificationType.error,
+        place,
+        time,
+      );
+    } finally {
+      dispatch(setSwapLoaderVisible(false));
     }
   };
 
@@ -447,6 +509,9 @@ export const ExchangeCard: React.FC = () => {
 
   return (
     <Container>
+      <NotificationsContainer>
+        <NotificationsPlacement name="exchange" className="notification" />
+      </NotificationsContainer>
       <CardContainer>
         <OnDesktop>{card}</OnDesktop>
         <OnMobile>{mobileContent}</OnMobile>

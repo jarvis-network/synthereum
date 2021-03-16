@@ -33,7 +33,7 @@ export const useSwap = () => {
         outputSynth,
       });
 
-      const { allowancePromise, txPromise } = agent.mint({
+      const { allowancePromise, txPromise, sendTx } = agent.mint({
         collateral,
         outputAmount,
         outputSynth,
@@ -41,7 +41,7 @@ export const useSwap = () => {
 
       txPromise.then(result => console.log('Minted!', result));
 
-      return allowancePromise;
+      return { allowancePromise, txPromise, sendTx };
     };
   }
   if (receiveSymbol === PRIMARY_STABLE_COIN.symbol) {
@@ -57,7 +57,7 @@ export const useSwap = () => {
         inputSynth,
       });
 
-      const { allowancePromise, txPromise } = agent.redeem({
+      const { allowancePromise, txPromise, sendTx } = agent.redeem({
         collateral,
         inputAmount,
         inputSynth,
@@ -65,7 +65,7 @@ export const useSwap = () => {
 
       txPromise.then(result => console.log('Redeem!', result));
 
-      return allowancePromise;
+      return { allowancePromise, txPromise, sendTx };
     };
   }
   // else: exchange
@@ -87,7 +87,7 @@ export const useSwap = () => {
       outputSynth,
     });
 
-    const { allowancePromise, txPromise } = agent.exchange({
+    const { allowancePromise, txPromise, sendTx } = agent.exchange({
       collateral,
       inputAmount,
       inputSynth,
@@ -97,6 +97,6 @@ export const useSwap = () => {
 
     txPromise.then(result => console.log('Exchange!', result));
 
-    return allowancePromise;
+    return { allowancePromise, txPromise, sendTx };
   };
 };

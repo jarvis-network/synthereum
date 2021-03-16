@@ -290,7 +290,6 @@ export const MainForm: React.FC<Props> = () => {
             }}
             onFocus={e => {
               e.target.select();
-
               if (!Number(payString) && payString.length) {
                 updatePay('');
               }

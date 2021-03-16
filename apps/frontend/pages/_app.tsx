@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
 
-import { styled } from '@jarvis-network/ui';
+import { NotificationsProvider, styled } from '@jarvis-network/ui';
 
 import '@/utils/consoleErrorFilter';
 
@@ -61,13 +61,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <StateProvider store={store}>
         <AppThemeProvider>
-          <AuthFlow />
-          <BackgroundPreloader />
-          <MainWrapper>
-            <FullScreenLoader />
-            <Component {...pageProps} />
-            <GDPRPopup />
-          </MainWrapper>
+          <NotificationsProvider>
+            <AuthFlow />
+            <BackgroundPreloader />
+            <MainWrapper>
+              <FullScreenLoader />
+              <Component {...pageProps} />
+              <GDPRPopup />
+            </MainWrapper>
+          </NotificationsProvider>
         </AppThemeProvider>
       </StateProvider>
     </CoreObservablesContextProvider>
