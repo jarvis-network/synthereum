@@ -158,5 +158,5 @@ export const useChartData = (
     };
   }, [paySymbol, receiveSymbol, days]);
 
-  return data;
+  return data.sort((a, b) => a.time - b.time);
 };

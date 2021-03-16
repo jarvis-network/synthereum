@@ -44,7 +44,7 @@ const getWholeRangeChange = (chartData: ChartData[]): ChangeType => {
   if (chartData.length < 2) {
     return 'more';
   }
-  const diff = chartData[0].close - chartData[chartData.length - 1].close;
+  const diff = last(chartData).close - chartData[0].close;
   if (diff > 0) {
     return 'more';
   }
@@ -130,7 +130,7 @@ export const ChartCard: React.FC = () => {
       }
 
       const { payload: hoveredPayload } = e.activePayload[0];
-      const currentPayload = last(chartData);
+      const currentPayload = chartData[0];
 
       if ('close' in hoveredPayload) {
         setCurrentValue(hoveredPayload.close);
@@ -169,7 +169,7 @@ export const ChartCard: React.FC = () => {
     (change || wholeRangeChange) === 'more' ? MORE_FILL_COLOR : LESS_FILL_COLOR;
 
   const beginningPayload = chartData[0];
-  const currentPayload = chartData[chartData.length - 1];
+  const currentPayload = last(chartData);
 
   const {
     diff: wholeRangeChangeValue,
