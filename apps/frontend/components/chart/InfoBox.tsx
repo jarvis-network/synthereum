@@ -5,12 +5,15 @@ import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { Days } from '@/state/initialState';
 
+import { Skeleton } from '@/components/Skeleton';
+
 const Box = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
   height: auto;
+  min-height: 116.5px;
   padding-bottom: 30px;
   box-sizing: border-box;
 `;
@@ -19,6 +22,7 @@ const Symbols = styled.div`
   height: 24px;
   display: flex;
   align-items: center;
+  margin-bottom: 0.5rem;
 `;
 
 const Flags = styled.div`
@@ -48,8 +52,8 @@ const CurrencySymbol = styled.span`
 
 const Rate = styled.div`
   font-size: ${props => props.theme.font.sizes.xl};
+  min-height: 32px;
   font-weight: 500;
-  margin-top: 0.5em;
   display: flex;
 `;
 
@@ -59,6 +63,7 @@ const RateValue = styled.div`
 
 const Change = styled.div<{ pastHidden: boolean }>`
   font-size: ${props => props.theme.font.sizes.s};
+  min-height: 18px;
 
   span {
     visibility: ${props => (props.pastHidden ? 'hidden' : 'visible')};
@@ -126,17 +131,8 @@ const InfoBox: React.FC<Props> = ({
     <CustomFlag flag={assetReceive.icon} />
   ) : null;
 
-  return (
-    <Box>
-      <Symbols>
-        <Flags>
-          {payFlag}
-          {receiveFlag}
-        </Flags>
-        <CurrencySymbol>
-          {paySymbol} / {receiveSymbol}
-        </CurrencySymbol>
-      </Symbols>
+  const content = value ? (
+    <>
       <Rate>
         <RateValue>
           {value} {receiveSymbol}
@@ -159,6 +155,21 @@ const InfoBox: React.FC<Props> = ({
         {formatNumberAsDiff(changeValuePerc ?? wholeRangeChangePerc, 2)}%)
         <span> Past {daysToLabelMap[days]}</span>
       </Change>
+    </>
+  ) : null;
+
+  return (
+    <Box>
+      <Symbols>
+        <Flags>
+          {payFlag}
+          {receiveFlag}
+        </Flags>
+        <CurrencySymbol>
+          {paySymbol} / {receiveSymbol}
+        </CurrencySymbol>
+      </Symbols>
+      <Skeleton>{content}</Skeleton>
     </Box>
   );
 };

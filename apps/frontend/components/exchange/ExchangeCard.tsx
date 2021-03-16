@@ -8,6 +8,7 @@ import {
   Icon,
   themeValue,
   Card,
+  useTheme,
 } from '@jarvis-network/ui';
 import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
@@ -33,9 +34,9 @@ import { useSwap } from '@/components/exchange/useSwap';
 
 import { resetSwapAction } from '@/state/actions';
 
-import { OnDesktop } from '../OnDesktop';
-
-import { OnMobile } from '../OnMobile';
+import { OnDesktop } from '@/components/OnDesktop';
+import { OnMobile } from '@/components/OnMobile';
+import { Skeleton } from '@/components/Skeleton';
 
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
@@ -64,7 +65,7 @@ const CardContainer = styled.div`
 
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
-    height: auto;
+    height: 100%;
   }
 `;
 
@@ -79,8 +80,12 @@ const FeesContainer = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  height: calc(100% - ${props => props.theme.borderRadius.m});
+  height: 100%;
+  border-radius: 0 0 ${props => props.theme.borderRadius.m}
+    ${props => props.theme.borderRadius.m};
 `;
+
+const SkeletonContainer = styled(ContentContainer)``;
 
 const MobileCardContainer = styled.div`
   position: fixed;
@@ -237,6 +242,8 @@ const createPairs = (list: Asset[]): AssetPair[] => {
 export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
+  const wallet = useReduxSelector(state => state.wallet);
+  const auth = useReduxSelector(state => state.auth);
   const isExchangeConfirmationVisible = useReduxSelector(
     state => state.app.isExchangeConfirmationVisible,
   );
@@ -249,9 +256,10 @@ export const ExchangeCard: React.FC = () => {
 
   const pairsList = useMemo(() => createPairs(list), [list]);
 
-  const { fee } = useExchangeValues();
+  const { fee, paySymbol, assetPay, assetReceive } = useExchangeValues();
 
   const swap = useSwap();
+  const theme = useTheme();
 
   const handleCloseClick = () => {
     setQuery('');
@@ -336,6 +344,16 @@ export const ExchangeCard: React.FC = () => {
     };
   }
 
+  const isExchangeVisible = () => {
+    const isAssetPriceLoaded = assetPay?.price && assetReceive?.price;
+
+    if (!auth) {
+      return isAssetPriceLoaded;
+    }
+
+    return isAssetPriceLoaded && paySymbol && wallet[paySymbol];
+  };
+
   const getContent = () => {
     if (chooseAsset) {
       return <ChooseAsset />;
@@ -351,10 +369,20 @@ export const ExchangeCard: React.FC = () => {
       </ClearButton>
     );
 
-    return (
-      <ContentContainer>
+    const content = isExchangeVisible() ? (
+      <>
         <StyledSearchBar {...searchBarProps} suffix={suffix} />
         {!searchOpen && <MainForm />}
+      </>
+    ) : null;
+
+    return (
+      <ContentContainer>
+        <SkeletonContainer>
+          <Skeleton style={{ borderRadius: theme.borderRadius.m }}>
+            {content}
+          </Skeleton>
+        </SkeletonContainer>
       </ContentContainer>
     );
   };

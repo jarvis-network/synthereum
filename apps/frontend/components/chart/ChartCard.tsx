@@ -23,7 +23,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { useDispatch } from 'react-redux';
 import { setChartDays } from '@/state/slices/exchange';
 
-import { FULL_WIDGET_HEIGHT_PX } from '../exchange/ExchangeCard';
+import { FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
+import { Skeleton } from '@/components/Skeleton';
 
 type ChangeType = 'more' | 'less';
 
@@ -176,6 +177,54 @@ export const ChartCard: React.FC = () => {
     diffPerc: wholeRangeChangePerc,
   } = getValuesDiff(beginningPayload, currentPayload);
 
+  const chart = chartData.length ? (
+    <ResponsiveContainer>
+      <AreaChart data={chartData} {...events}>
+        <defs>
+          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={currentFillColor} stopOpacity={1} />
+            <stop offset="80%" stopColor={bgColor} stopOpacity={0.8} />
+          </linearGradient>
+        </defs>
+        <XAxis
+          type="number"
+          dataKey="time"
+          scale="time"
+          domain={['dataMin', 'dataMax']}
+          axisLine={false}
+          interval="preserveStartEnd"
+          tickLine={false}
+          tick={{
+            color: 'black',
+            fontSize: 12,
+          }}
+          hide
+        />
+        <YAxis
+          hide
+          type="number"
+          domain={['dataMin', 'dataMax']}
+          padding={{ top: 0, bottom: 16 }}
+        />
+        <Area
+          dot={false}
+          type="monotone"
+          dataKey="close"
+          stroke={currentStrokeColor}
+          strokeWidth={2}
+          fill="url(#colorUv)"
+        />
+        <Tooltip
+          isAnimationActive={false}
+          content={customTooltip}
+          position={{
+            y: 0,
+          }}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  ) : null;
+
   return (
     <Container>
       <InfoBox
@@ -187,51 +236,7 @@ export const ChartCard: React.FC = () => {
         onDaysChange={val => dispatch(setChartDays(val))}
         days={days}
       />
-      <ResponsiveContainer>
-        <AreaChart data={chartData} {...events}>
-          <defs>
-            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={currentFillColor} stopOpacity={1} />
-              <stop offset="80%" stopColor={bgColor} stopOpacity={0.8} />
-            </linearGradient>
-          </defs>
-          <XAxis
-            type="number"
-            dataKey="time"
-            scale="time"
-            domain={['dataMin', 'dataMax']}
-            axisLine={false}
-            interval="preserveStartEnd"
-            tickLine={false}
-            tick={{
-              color: 'black',
-              fontSize: 12,
-            }}
-            hide
-          />
-          <YAxis
-            hide
-            type="number"
-            domain={['dataMin', 'dataMax']}
-            padding={{ top: 0, bottom: 16 }}
-          />
-          <Area
-            dot={false}
-            type="monotone"
-            dataKey="close"
-            stroke={currentStrokeColor}
-            strokeWidth={2}
-            fill="url(#colorUv)"
-          />
-          <Tooltip
-            isAnimationActive={false}
-            content={customTooltip}
-            position={{
-              y: 0,
-            }}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      <Skeleton>{chart}</Skeleton>
     </Container>
   );
 };

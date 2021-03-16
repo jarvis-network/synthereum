@@ -1,4 +1,4 @@
-import React, { FC, useContext, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, ModalContent, FlagImagesMap } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
@@ -14,6 +14,8 @@ import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
 import { useCoreObservables } from '@/utils/CoreObservablesContext';
 import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
 
+import { Skeleton } from '@/components/Skeleton';
+
 interface BalanceProps {
   total: FPN;
 }
@@ -23,7 +25,19 @@ interface AssetsProps {
   onAddToMetaMaskClick?: (asset: Asset) => void;
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  height: 284px;
+  margin: 0 -24px -24px;
+
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    height: calc(100vh - 134px);
+  }
+`;
+
+const Container = styled.div`
+  padding: 0 24px 24px;
+`;
 
 const Block = styled.div`
   margin-top: 20px;
@@ -161,11 +175,19 @@ export const AccountOverviewModal: FC = () => {
     return FPN.sum(items.map(_item => _item.value).filter(Boolean) as FPN[]);
   }, [items]);
 
+  const hasWallet = Object.keys(wallet).length > 0;
+
+  const content = hasWallet ? (
+    <Container>
+      <Balance total={total} />
+      <Assets items={items} onAddToMetaMaskClick={getMetaMaskHandler()} />
+    </Container>
+  ) : null;
+
   return (
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
       <Wrapper>
-        <Balance total={total} />
-        <Assets items={items} onAddToMetaMaskClick={getMetaMaskHandler()} />
+        <Skeleton>{content}</Skeleton>
       </Wrapper>
     </ModalContent>
   );
