@@ -9,6 +9,7 @@ import {
   themeValue,
   Card,
   useTheme,
+  Skeleton,
 } from '@jarvis-network/ui';
 import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
@@ -36,7 +37,6 @@ import { resetSwapAction } from '@/state/actions';
 
 import { OnDesktop } from '@/components/OnDesktop';
 import { OnMobile } from '@/components/OnMobile';
-import { Skeleton } from '@/components/Skeleton';
 
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';

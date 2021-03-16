@@ -40,3 +40,4 @@ export { Card, CardTabs } from './Card';
 export { MenuDropdown } from './MenuDropdown';
 export { IconsDropdown } from './IconsDropdown';
 export { AccountSummary } from './AccountSummary';
+export { Skeleton } from './Skeleton';

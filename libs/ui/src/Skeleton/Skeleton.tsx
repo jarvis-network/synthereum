@@ -1,12 +1,10 @@
-import { CSSProperties, FC } from 'react';
+import React, { FC } from 'react';
 
-import { styled } from '@jarvis-network/ui';
+import { styled } from '../Theme';
 
-interface SkeletonProps {
-  style?: CSSProperties;
-}
+import { SkeletonProps, SkeletonVisibility } from './types';
 
-const Container = styled.div<{ isVisible?: boolean }>`
+const Container = styled.div<SkeletonVisibility>`
   width: 100%;
   height: 100%;
   display: block;
@@ -43,7 +41,7 @@ const Container = styled.div<{ isVisible?: boolean }>`
   }
 `;
 
-const Content = styled.div<{ isVisible?: boolean }>`
+const Content = styled.div<SkeletonVisibility>`
   width: 100%;
   height: 100%;
   transition: opacity 0.2s ease-in;

@@ -1,11 +1,9 @@
 import React from 'react';
-import { Flag, styled } from '@jarvis-network/ui';
+import { Flag, styled, Skeleton } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { Days } from '@/state/initialState';
-
-import { Skeleton } from '@/components/Skeleton';
 
 const Box = styled.div`
   display: flex;

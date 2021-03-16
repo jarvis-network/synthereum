@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { styled, ModalContent, FlagImagesMap } from '@jarvis-network/ui';
+import { styled, ModalContent, FlagImagesMap, Skeleton } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import {
   ExchangeToken,
@@ -13,8 +13,6 @@ import { setAccountOverviewModalVisible } from '@/state/slices/app';
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
 import { useCoreObservables } from '@/utils/CoreObservablesContext';
 import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
-
-import { Skeleton } from '@/components/Skeleton';
 
 interface BalanceProps {
   total: FPN;

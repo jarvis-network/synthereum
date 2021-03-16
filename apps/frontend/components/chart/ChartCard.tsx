@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from 'recharts';
-import { useTheme, styled } from '@jarvis-network/ui';
+import { useTheme, styled, Skeleton } from '@jarvis-network/ui';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { useRate } from '@/utils/useRate';
@@ -24,7 +24,6 @@ import { useDispatch } from 'react-redux';
 import { setChartDays } from '@/state/slices/exchange';
 
 import { FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
-import { Skeleton } from '@/components/Skeleton';
 
 type ChangeType = 'more' | 'less';
 
