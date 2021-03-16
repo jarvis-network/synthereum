@@ -4,9 +4,9 @@ import { boolean, select } from '@storybook/addon-knobs';
 import { ligthTheme } from '../../Theme/themes';
 import { styled } from '../../Theme';
 
-import { sizeList, colorList } from './data';
-
 import { ColoredBorderPanel } from '..';
+
+import { sizeList, colorList } from './data';
 
 export default {
   title: 'ColoredBorderPanel',

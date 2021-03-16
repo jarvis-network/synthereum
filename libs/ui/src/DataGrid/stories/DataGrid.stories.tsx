@@ -7,9 +7,9 @@ import { DataGridColumnProps, ColumnType, DataRows } from '../types';
 import { Button } from '../../Button';
 import { Icon } from '../../Icon';
 
-import { data, SampleData } from './data';
-
 import { DataGrid } from '..';
+
+import { data, SampleData } from './data';
 
 export default {
   title: 'DataGrid',

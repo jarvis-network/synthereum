@@ -3,9 +3,9 @@ import { select, number } from '@storybook/addon-knobs';
 
 import { styled } from '../../Theme';
 
-import { iconList, colorList } from './data';
-
 import { Icon } from '..';
+
+import { iconList, colorList } from './data';
 
 export default {
   title: 'Icon',

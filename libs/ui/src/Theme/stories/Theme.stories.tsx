@@ -4,9 +4,9 @@ import { select } from '@storybook/addon-knobs';
 
 import { ThemeConfig, ThemeNameType, ThemesList } from '../types';
 
-import { colorList } from './data';
-
 import { styled, ThemeProvider, ThemeSwitcher } from '..';
+
+import { colorList } from './data';
 
 export default {
   title: 'common/Theme',

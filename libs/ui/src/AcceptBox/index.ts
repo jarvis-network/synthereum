@@ -1,1 +1,1 @@
-export { AcceptBox } from "./AcceptBox";
+export { AcceptBox } from './AcceptBox';

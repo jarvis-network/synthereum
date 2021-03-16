@@ -4,9 +4,9 @@ import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import { addParameters } from '@storybook/react';
 import { SizeMe } from 'react-sizeme';
 
-import { images } from './assets';
-
 import { Background, BackgroundProvider } from '..';
+
+import { images } from './assets';
 
 const isChromatic =
   window.navigator.userAgent.match(/Chromatic/) ||

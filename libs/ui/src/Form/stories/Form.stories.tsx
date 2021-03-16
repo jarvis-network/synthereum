@@ -1,11 +1,11 @@
 import React from 'react';
 
+import { Form } from '..';
+
 import {
   Default as FormGroup,
   Stackable as StackableFormGroup,
 } from './FormGroup.stories';
-
-import { Form } from '..';
 
 export default {
   title: 'Form',

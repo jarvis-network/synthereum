@@ -1,8 +1,8 @@
 import { action } from '@storybook/addon-actions';
 
-import stories from './ButtonStories';
-
 import { Button } from '..';
+
+import stories from './ButtonStories';
 
 export default {
   title: 'Button/StandardButton',

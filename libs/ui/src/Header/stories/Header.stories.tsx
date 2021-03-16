@@ -5,9 +5,9 @@ import { action } from '@storybook/addon-actions';
 import { Label } from '../../Label';
 import { styled } from '../../Theme';
 
-import { images } from './assets';
-
 import { Header } from '..';
+
+import { images } from './assets';
 
 export default {
   title: 'Header',

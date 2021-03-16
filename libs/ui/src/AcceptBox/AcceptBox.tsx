@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { styled } from "../Theme";
-import { Button } from "../Button";
+
+import { styled } from '../Theme';
+import { Button } from '../Button';
 
 const Container = styled.div`
   z-index: 100;
@@ -21,7 +22,7 @@ const Inner = styled.div`
   display: flex;
 
   @media screen and (max-width: ${props =>
-  props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     flex-direction: column;
   }
 `;
@@ -32,7 +33,7 @@ const Text = styled.div`
   color: ${props => props.theme.text.primary};
 
   @media screen and (max-width: ${props =>
-  props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     padding: 0 0 20px 0;
   }
 `;
@@ -67,9 +68,7 @@ export const AcceptBox = ({ text, buttonText, store }: Props) => {
   return (
     <Container>
       <Inner>
-        <Text>
-          {text}
-        </Text>
+        <Text>{text}</Text>
         <div>
           <CustomButton type="transparent" inverted size="l" onClick={onClick}>
             {buttonText}
