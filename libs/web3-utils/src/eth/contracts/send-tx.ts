@@ -36,7 +36,7 @@ export async function sendTx<Result, Net extends NetworkName>(
     confirmations,
     ...rest
   }: FullTxOptions<Net>,
-): Promise<TransactionReceipt> {
+): Promise<{ promiEvent: PromiEvent<TransactionReceipt> }> {
   // If no logging function is provided, default to noop:
   const log = printInfo?.log ?? (() => {});
 
@@ -71,22 +71,33 @@ export async function sendTx<Result, Net extends NetworkName>(
     log('Setting gasLimit: ', txParams.gas);
 
   log(`Sending '${printInfo?.txSummaryText}' tx:`, tx.arguments, txParams);
+  return { promiEvent: tx.send(txParams) };
+}
+
+export async function sendTxAndLog<Result, Net extends NetworkName>(
+  tx: NonPayableTransactionObject<Result>,
+  options: FullTxOptions<Net>,
+): Promise<TransactionReceipt> {
+  const { promiEvent } = await sendTx(tx, options);
+
+  // If no logging function is provided, default to noop:
+  const log = options.printInfo?.log ?? (() => {});
+
   const txReceipt = await logTransactionStatus({
-    web3,
-    promiEvent: tx.send(txParams),
+    web3: options.web3,
+    promiEvent,
     log,
-    confirmations,
+    confirmations: options.confirmations,
   });
 
-  if (printInfo) {
+  if (options.printInfo) {
     await logTransactionOutput({
-      ...printInfo,
+      ...options.printInfo,
       txhash: txReceipt.transactionHash,
-      web3,
+      web3: options.web3,
     });
   }
-
-  return txReceipt;
+  return promiEvent;
 }
 
 export function once<T>(

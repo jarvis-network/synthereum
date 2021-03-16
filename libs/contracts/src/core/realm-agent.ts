@@ -1,4 +1,4 @@
-import type { TransactionReceipt } from 'web3-core';
+import type { PromiEvent, TransactionReceipt } from 'web3-core';
 import {
   Amount,
   formatAmount,
@@ -27,6 +27,7 @@ import { mapPools } from './pool-utils';
 import {
   FullTxOptions,
   sendTx,
+  sendTxAndLog,
   TxOptions,
 } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
 
@@ -54,7 +55,8 @@ interface RedeemParams extends BaseTxParams {
 
 interface SwapResult {
   allowancePromise: Promise<true | TransactionReceipt>;
-  txPromise: Promise<TransactionReceipt>
+  txPromise: Promise<TransactionReceipt>;
+  sendTx: Promise<{ promiEvent: PromiEvent<TransactionReceipt> }>;
 }
 
 export class RealmAgent<
@@ -106,7 +108,12 @@ export class RealmAgent<
     }
   }
 
-  mint({ collateral, outputAmount, outputSynth, txOptions }: MintParams): SwapResult {
+  mint({
+   collateral,
+   outputAmount,
+   outputSynth,
+   txOptions,
+  }: MintParams): SwapResult {
     this.assertV1Pool('mint');
 
     const tic = this.activePools[outputSynth] as SynthereumPool<'v1', Net>;
@@ -128,15 +135,20 @@ export class RealmAgent<
       outputAmount as any,
     );
 
-    const txPromise = allowancePromise.then(() => sendTx(tx, {
-      ...this.defaultTxOptions,
-      ...txOptions,
-    }));
+    const getSendTx = allowancePromise.then(() =>
+      sendTx(tx, {
+        ...this.defaultTxOptions,
+        ...txOptions,
+      }),
+    );
+
+    const txPromise = getSendTx.then(result => result.promiEvent);
 
     return {
       allowancePromise,
-      txPromise
-    }
+      txPromise,
+      sendTx: getSendTx,
+    };
   }
 
   exchange({
@@ -172,15 +184,20 @@ export class RealmAgent<
       outputAmount as any,
     );
 
-    const txPromise = allowancePromise.then(() => sendTx(tx, {
-      ...this.defaultTxOptions,
-      ...txOptions,
-    }));
+    const getSendTx = allowancePromise.then(() =>
+      sendTx(tx, {
+        ...this.defaultTxOptions,
+        ...txOptions,
+      }),
+    );
+
+    const txPromise = getSendTx.then(result => result.promiEvent);
 
     return {
       allowancePromise,
-      txPromise
-    }
+      txPromise,
+      sendTx: getSendTx,
+    };
   }
 
   redeem({
@@ -209,15 +226,20 @@ export class RealmAgent<
       inputAmount as any,
     );
 
-    const txPromise = allowancePromise.then(() => sendTx(tx, {
-      ...this.defaultTxOptions,
-      ...txOptions,
-    }));
+    const getSendTx = allowancePromise.then(() =>
+      sendTx(tx, {
+        ...this.defaultTxOptions,
+        ...txOptions,
+      }),
+    );
+
+    const txPromise = getSendTx.then(result => result.promiEvent);
 
     return {
       allowancePromise,
-      txPromise
-    }
+      txPromise,
+      sendTx: getSendTx,
+    };
   }
 
   private async ensureSufficientAllowanceFor(
@@ -243,7 +265,7 @@ export class RealmAgent<
         decimals: tokenInfo.decimals,
       });
       const tx = setTokenAllowance(tokenInfo, spender, max);
-      return await sendTx(tx, {
+      return await sendTxAndLog(tx, {
         ...this.defaultTxOptions,
         ...txOptions,
       });

@@ -43,7 +43,7 @@ import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
 import {
   FullTxOptions,
   TxOptions,
-  sendTx,
+  sendTxAndLog,
 } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
 import { Fees } from '../config/types';
 import { executeInSequence } from '@jarvis-network/web3-utils/base/async';
@@ -186,7 +186,7 @@ export async function depositInAllPools<Net extends SupportedNetworkName>(
         ...txOptions,
         web3: realm.web3,
         from,
-      }),
+      }).then(result => result.promiEvent),
     ),
   );
 }
@@ -322,5 +322,5 @@ function sendTxWithMsg<T>(
 ): Promise<TransactionReceipt> {
   txOpt.printInfo ??= {};
   txOpt.printInfo.txSummaryText = msg;
-  return sendTx(tx, txOpt);
+  return sendTxAndLog(tx, txOpt);
 }
