@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Modal, styled, useTheme } from '@jarvis-network/ui';
+import {
+  Modal,
+  NotificationType,
+  styled,
+  useNotifications,
+  useTheme,
+} from '@jarvis-network/ui';
 import Onboard from 'bnc-onboard';
 import Web3 from 'web3';
 
@@ -14,7 +20,7 @@ import { useCoreObservables } from '@/utils/CoreObservablesContext';
 import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
 import { getOnboardConfig } from '@/utils/onboardConfig';
 import { ENSHelper } from '@/utils/ens';
-import { useConstant } from '@/utils/useConstant';
+import { useIsMobile } from '@/utils/useIsMobile';
 
 const noop = () => undefined;
 
@@ -41,6 +47,9 @@ const AuthFlow: React.FC = () => {
   const theme = useTheme();
   const auth = useAuth();
   const { login } = auth || {};
+
+  const isMobile = useIsMobile();
+  const notify = useNotifications();
 
   const { isAuthModalVisible } = useReduxSelector(state => state.app);
 
@@ -116,7 +125,19 @@ const AuthFlow: React.FC = () => {
       return;
     }
 
-    login(autoLoginWallet).catch(noop);
+    login(autoLoginWallet)
+      .then(() => {
+        const place = isMobile ? 'global' : 'exchange';
+        notify(
+          'You have successfully signed in',
+          {
+            type: NotificationType.success,
+            icon: '👍🏻',
+          },
+          place,
+        );
+      })
+      .catch(noop);
   }, [login]);
 
   useEffect(() => {

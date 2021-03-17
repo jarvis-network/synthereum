@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AccountSummary, useWindowSize } from '@jarvis-network/ui';
+import {
+  AccountSummary,
+  NotificationType,
+  useNotifications,
+  useWindowSize,
+} from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
 
 import { setTheme } from '@/state/slices/theme';
@@ -14,6 +19,7 @@ import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { useAuth } from '@/utils/useAuth';
+import { useIsMobile } from '@/utils/useIsMobile';
 
 const noop = () => undefined;
 
@@ -24,6 +30,8 @@ const render = () => {
   const name = usePrettyName((auth?.address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
+  const isMobile = useIsMobile();
+  const notify = useNotifications();
 
   const handleLogIn = async () => {
     dispatch(setAuthModalVisible(true));
@@ -44,7 +52,16 @@ const render = () => {
 
   useEffect(() => {
     if (isSigningOut) {
-      setTimeout(() => setSigningOut(false), 1000);
+      setTimeout(() => {
+        setSigningOut(false);
+        const place = isMobile ? 'global' : 'exchange';
+
+        notify(
+          'You have successfully signed out',
+          { type: NotificationType.error, icon: '👋🏻' },
+          place,
+        );
+      }, 1000);
     }
   }, [isSigningOut]);
 

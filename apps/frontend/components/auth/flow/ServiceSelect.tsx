@@ -8,8 +8,16 @@ import {
   ImgContainer,
   ChevronRight,
 } from '@/components/auth/flow/ModalComponents';
-import { Button, Flag, styled, themeValue } from '@jarvis-network/ui';
+import {
+  Button,
+  Flag,
+  NotificationType,
+  styled,
+  themeValue,
+  useNotifications,
+} from '@jarvis-network/ui';
 import { useAuth } from '@/utils/useAuth';
+import { useIsMobile } from '@/utils/useIsMobile';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -97,10 +105,22 @@ const Content = styled.div`
 `;
 
 export const ServiceSelect: React.FC<PageProps> = () => {
+  const isMobile = useIsMobile();
+  const notify = useNotifications();
   const authLogin = useAuth();
 
   const logIn = () => {
-    authLogin?.login();
+    authLogin?.login().then(() => {
+      const place = isMobile ? 'global' : 'exchange';
+      notify(
+        'You have successfully signed in',
+        {
+          type: NotificationType.success,
+          icon: '👍🏻',
+        },
+        place,
+      );
+    });
     requestAnimationFrame(() => {
       const showMoreButton = document.querySelector(
         '.bn-onboard-modal-select-wallets > div > button',
