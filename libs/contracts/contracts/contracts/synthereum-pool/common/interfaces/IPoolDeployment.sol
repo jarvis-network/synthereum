@@ -5,6 +5,10 @@ import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {IRole} from '../../../base/interfaces/IRole.sol';
+import {
+  IDerivative
+} from '../../../derivative/common/interfaces/IDerivative.sol';
 
 interface ISynthereumPoolDeployment {
   function synthereumFinder() external view returns (ISynthereumFinder finder);
@@ -16,4 +20,9 @@ interface ISynthereumPoolDeployment {
   function syntheticToken() external view returns (IERC20 syntheticCurrency);
 
   function syntheticTokenSymbol() external view returns (string memory symbol);
+
+  function isDerivativeAdmitted(address derivative)
+    external
+    view
+    returns (bool isAdmitted);
 }

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
-import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {
+  IExtendedDerivative
+} from '../../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPool} from './interfaces/IPool.sol';
 import {SynthereumPool} from './Pool.sol';
@@ -22,7 +24,7 @@ contract SynthereumPoolFactory is SynthereumPoolCreator, IDeploymentSignature {
   }
 
   function createPool(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     ISynthereumFinder finder,
     uint8 version,
     ISynthereumPool.Roles memory roles,

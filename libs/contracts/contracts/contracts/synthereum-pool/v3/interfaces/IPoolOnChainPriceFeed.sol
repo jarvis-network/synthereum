@@ -9,16 +9,19 @@ import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  IDerivative
-} from '../../../derivative/common/interfaces/IDerivative.sol';
+  IExtendedDerivative
+} from '../../../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumDeployer} from '../../../core/interfaces/IDeployer.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {
+  ISynthereumPoolDeployment
+} from '../../common/interfaces/IPoolDeployment.sol';
 import {ISynthereumPoolGeneral} from '../../common/interfaces/IPoolGeneral.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
-interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
+interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and exchanges tokens
@@ -36,7 +39,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
 
   struct MintParams {
     // Derivative to use
-    IDerivative derivative;
+    IExtendedDerivative derivative;
     // Minimum amount of synthetic tokens that a user wants to mint using collateral (anti-slippage)
     uint256 minNumTokens;
     // Amount of collateral that a user wants to spend for minting
@@ -49,7 +52,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
 
   struct RedeemParams {
     // Derivative to use
-    IDerivative derivative;
+    IExtendedDerivative derivative;
     // Amount of synthetic tokens that user wants to use for redeeming
     uint256 numTokens;
     // Minimium amount of collateral that user wants to redeem (anti-slippage)
@@ -62,11 +65,11 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
 
   struct ExchangeParams {
     // Derivative of source pool
-    IDerivative derivative;
+    IExtendedDerivative derivative;
     // Destination pool
-    ISynthereumPoolOnChainPriceFeed destPool;
+    ISynthereumPoolGeneral destPool;
     // Derivative of destination pool
-    IDerivative destDerivative;
+    IExtendedDerivative destDerivative;
     // Amount of source synthetic tokens that user wants to use for exchanging
     uint256 numTokens;
     // Minimum Amount of destination synthetic tokens that user wants to receive (anti-slippage)
@@ -85,13 +88,13 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @notice Add a derivate to be controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function addDerivative(IDerivative derivative) external;
+  function addDerivative(IExtendedDerivative derivative) external;
 
   /**
    * @notice Remove a derivative controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function removeDerivative(IDerivative derivative) external;
+  function removeDerivative(IExtendedDerivative derivative) external;
 
   /**
    * @notice Mint synthetic tokens using fixed amount of collateral
@@ -130,6 +133,21 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
     returns (uint256 destNumTokensMinted, uint256 feePaid);
 
   /**
+   * @notice Called by a source TIC's `exchange` function to mint destination tokens
+   * @notice This functon can be called only by a pool registred in the PoolRegister contract
+   * @param srcDerivative Derivative used by the source pool
+   * @param derivative The derivative of the destination pool to use for mint
+   * @param collateralAmount The amount of collateral to use from the source TIC
+   * @param numTokens The number of new tokens to mint
+   */
+  function exchangeMint(
+    IExtendedDerivative srcDerivative,
+    IExtendedDerivative derivative,
+    uint256 collateralAmount,
+    uint256 numTokens
+  ) external;
+
+  /**
    * @notice Liquidity provider withdraw margin from the pool
    * @param collateralAmount The amount of margin to withdraw
    */
@@ -141,7 +159,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     uint256 collateralAmount
   ) external;
 
@@ -151,15 +169,17 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param derivative Derivative from which collateral withdrawal is requested
    * @param collateralAmount The amount of excess collateral to withdraw
    */
-  function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
-    external;
+  function slowWithdrawRequest(
+    IExtendedDerivative derivative,
+    uint256 collateralAmount
+  ) external;
 
   /**
    * @notice Withdraw collateral after a withdraw request has passed it's liveness period
    * @param derivative Derivative from which collateral withdrawal is requested
    * @return amountWithdrawn Amount of collateral withdrawn by slow withdrawal
    */
-  function slowWithdrawPassedRequest(IDerivative derivative)
+  function slowWithdrawPassedRequest(IExtendedDerivative derivative)
     external
     returns (uint256 amountWithdrawn);
 
@@ -169,22 +189,23 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
-  function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
-    external
-    returns (uint256 amountWithdrawn);
+  function fastWithdraw(
+    IExtendedDerivative derivative,
+    uint256 collateralAmount
+  ) external returns (uint256 amountWithdrawn);
 
   /**
    * @notice Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
    * @param derivative Derivative on which the emergency shutdown is called
    */
-  function emergencyShutdown(IDerivative derivative) external;
+  function emergencyShutdown(IExtendedDerivative derivative) external;
 
   /**
    * @notice Redeem tokens after contract emergency shutdown
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
    */
-  function settleEmergencyShutdown(IDerivative derivative)
+  function settleEmergencyShutdown(IExtendedDerivative derivative)
     external
     returns (uint256 amountSettled);
 
@@ -224,7 +245,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param addressToAdd address of EOA or smart contract to add with a role in derivative
    */
   function addRoleInDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     DerivativeRoles derivativeRole,
     address addressToAdd
   ) external;
@@ -235,7 +256,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param derivativeRole Role to renounce
    */
   function renounceRoleInDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     DerivativeRoles derivativeRole
   ) external;
 
@@ -246,7 +267,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param addressToAdd address of EOA or smart contract to add with a role in derivative
    */
   function addRoleInSynthToken(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     SynthTokenRoles synthTokenRole,
     address addressToAdd
   ) external;
@@ -261,7 +282,10 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @notice Get all the derivatives associated to this pool
    * @return Return list of all derivatives
    */
-  function getAllDerivatives() external view returns (IDerivative[] memory);
+  function getAllDerivatives()
+    external
+    view
+    returns (IExtendedDerivative[] memory);
 
   /**
    * @notice Get the starting collateral ratio of the pool
@@ -293,4 +317,10 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
     external
     view
     returns (uint256 fee);
+
+  /**
+   * @notice Returns price identifier of the pool
+   * @return identifier Price identifier
+   */
+  function getPriceFeedIdentifier() external view returns (bytes32 identifier);
 }

@@ -2,7 +2,9 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {
+  IExtendedDerivative
+} from '../../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
@@ -31,7 +33,7 @@ contract SynthereumPoolOnChainPriceFeedCreator is Lockable {
    * @return poolDeployed Pool contract deployed
    */
   function createPool(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     ISynthereumFinder finder,
     uint8 version,
     ISynthereumPoolOnChainPriceFeed.Roles memory roles,

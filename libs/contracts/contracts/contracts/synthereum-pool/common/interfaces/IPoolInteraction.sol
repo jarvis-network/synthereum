@@ -22,16 +22,6 @@ interface ISynthereumPoolInteraction {
   ) external;
 
   /**
-   * @notice Check if a derivative is in the whitelist of this pool
-   * @param derivative Perpetual derivative
-   * @return isAdmitted Return true if in the whitelist, otherwise false
-   */
-  function isDerivativeAdmitted(IDerivative derivative)
-    external
-    view
-    returns (bool isAdmitted);
-
-  /**
    * @notice Returns price identifier of the pool
    * @return identifier Price identifier
    */

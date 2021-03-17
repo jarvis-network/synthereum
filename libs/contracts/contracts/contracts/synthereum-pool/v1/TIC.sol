@@ -358,6 +358,15 @@ contract SynthereumTIC is
     return ticStorage.derivative;
   }
 
+  function isDerivativeAdmitted(address TICDerivative)
+    external
+    view
+    override
+    returns (bool)
+  {
+    return TICDerivative == address(ticStorage.derivative);
+  }
+
   function collateralToken() external view override returns (IERC20) {
     return ticStorage.collateralToken;
   }

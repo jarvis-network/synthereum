@@ -9,8 +9,8 @@ import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  IDerivative
-} from '../../../derivative/common/interfaces/IDerivative.sol';
+  IExtendedDerivative
+} from '../../../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumDeployer} from '../../../core/interfaces/IDeployer.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
@@ -81,9 +81,9 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
 
   enum SynthTokenRoles {ADMIN, MINTER, BURNER, ADMIN_AND_MINTER_AND_BURNER}
 
-  function addDerivative(IDerivative derivative) external;
+  function addDerivative(IExtendedDerivative derivative) external;
 
-  function removeDerivative(IDerivative derivative) external;
+  function removeDerivative(IExtendedDerivative derivative) external;
 
   function mint(MintParameters memory mintMetaTx, Signature memory signature)
     external
@@ -100,8 +100,8 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
   ) external returns (uint256 feePaid);
 
   function exchangeMint(
-    IDerivative srcDerivative,
-    IDerivative derivative,
+    IExtendedDerivative srcDerivative,
+    IExtendedDerivative derivative,
     uint256 collateralAmount,
     uint256 numTokens
   ) external;
@@ -109,24 +109,27 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
   function withdrawFromPool(uint256 collateralAmount) external;
 
   function depositIntoDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     uint256 collateralAmount
   ) external;
 
-  function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
-    external;
+  function slowWithdrawRequest(
+    IExtendedDerivative derivative,
+    uint256 collateralAmount
+  ) external;
 
-  function slowWithdrawPassedRequest(IDerivative derivative)
+  function slowWithdrawPassedRequest(IExtendedDerivative derivative)
     external
     returns (uint256 amountWithdrawn);
 
-  function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
-    external
-    returns (uint256 amountWithdrawn);
+  function fastWithdraw(
+    IExtendedDerivative derivative,
+    uint256 collateralAmount
+  ) external returns (uint256 amountWithdrawn);
 
-  function emergencyShutdown(IDerivative derivative) external;
+  function emergencyShutdown(IExtendedDerivative derivative) external;
 
-  function settleEmergencyShutdown(IDerivative derivative)
+  function settleEmergencyShutdown(IExtendedDerivative derivative)
     external
     returns (uint256 amountSettled);
 
@@ -143,35 +146,33 @@ interface ISynthereumPool is ISynthereumPoolDeployment {
     external;
 
   function addRoleInDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     DerivativeRoles derivativeRole,
     address addressToAdd
   ) external;
 
   function renounceRoleInDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     DerivativeRoles derivativeRole
   ) external;
 
   function addRoleInSynthToken(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     SynthTokenRoles synthTokenRole,
     address addressToAdd
   ) external;
 
   function renounceRoleInSynthToken(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     SynthTokenRoles synthTokenRole
   ) external;
 
   function setIsContractAllowed(bool isContractAllowed) external;
 
-  function getAllDerivatives() external view returns (IDerivative[] memory);
-
-  function isDerivativeAdmitted(IDerivative derivative)
+  function getAllDerivatives()
     external
     view
-    returns (bool isAdmitted);
+    returns (IExtendedDerivative[] memory);
 
   function getStartingCollateralization()
     external

@@ -2,7 +2,9 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {
+  IExtendedDerivative
+} from '../../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPool} from './interfaces/IPool.sol';
 import {SynthereumPool} from './Pool.sol';
@@ -10,7 +12,7 @@ import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockab
 
 contract SynthereumPoolCreator is Lockable {
   function createPool(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     ISynthereumFinder finder,
     uint8 version,
     ISynthereumPool.Roles memory roles,

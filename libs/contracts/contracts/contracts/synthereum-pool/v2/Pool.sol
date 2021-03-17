@@ -4,7 +4,9 @@ pragma experimental ABIEncoderV2;
 
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {
+  IExtendedDerivative
+} from '../../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumPool} from './interfaces/IPool.sol';
 import {ISynthereumPoolStorage} from './interfaces/IPoolStorage.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
@@ -106,7 +108,7 @@ contract SynthereumPool is
   }
 
   constructor(
-    IDerivative _derivative,
+    IExtendedDerivative _derivative,
     ISynthereumFinder _finder,
     uint8 _version,
     Roles memory _roles,
@@ -153,7 +155,7 @@ contract SynthereumPool is
     );
   }
 
-  function addDerivative(IDerivative derivative)
+  function addDerivative(IExtendedDerivative derivative)
     external
     override
     onlyMaintainer
@@ -162,7 +164,7 @@ contract SynthereumPool is
     poolStorage.addDerivative(derivative);
   }
 
-  function removeDerivative(IDerivative derivative)
+  function removeDerivative(IExtendedDerivative derivative)
     external
     override
     onlyMaintainer
@@ -219,8 +221,8 @@ contract SynthereumPool is
   }
 
   function exchangeMint(
-    IDerivative srcDerivative,
-    IDerivative derivative,
+    IExtendedDerivative srcDerivative,
+    IExtendedDerivative derivative,
     uint256 collateralAmount,
     uint256 numTokens
   ) external override nonReentrant {
@@ -242,7 +244,7 @@ contract SynthereumPool is
   }
 
   function depositIntoDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     uint256 collateralAmount
   ) external override onlyLiquidityProvider nonReentrant {
     poolStorage.depositIntoDerivative(
@@ -251,19 +253,17 @@ contract SynthereumPool is
     );
   }
 
-  function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
-    external
-    override
-    onlyLiquidityProvider
-    nonReentrant
-  {
+  function slowWithdrawRequest(
+    IExtendedDerivative derivative,
+    uint256 collateralAmount
+  ) external override onlyLiquidityProvider nonReentrant {
     poolStorage.slowWithdrawRequest(
       derivative,
       FixedPoint.Unsigned(collateralAmount)
     );
   }
 
-  function slowWithdrawPassedRequest(IDerivative derivative)
+  function slowWithdrawPassedRequest(IExtendedDerivative derivative)
     external
     override
     onlyLiquidityProvider
@@ -273,7 +273,10 @@ contract SynthereumPool is
     amountWithdrawn = poolStorage.slowWithdrawPassedRequest(derivative);
   }
 
-  function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
+  function fastWithdraw(
+    IExtendedDerivative derivative,
+    uint256 collateralAmount
+  )
     external
     override
     onlyLiquidityProvider
@@ -286,7 +289,7 @@ contract SynthereumPool is
     );
   }
 
-  function emergencyShutdown(IDerivative derivative)
+  function emergencyShutdown(IExtendedDerivative derivative)
     external
     override
     onlyMaintainer
@@ -295,7 +298,7 @@ contract SynthereumPool is
     poolStorage.emergencyShutdown(derivative);
   }
 
-  function settleEmergencyShutdown(IDerivative derivative)
+  function settleEmergencyShutdown(IExtendedDerivative derivative)
     external
     override
     nonReentrant
@@ -335,7 +338,7 @@ contract SynthereumPool is
   }
 
   function addRoleInDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     DerivativeRoles derivativeRole,
     address addressToAdd
   ) external override onlyMaintainer nonReentrant {
@@ -343,14 +346,14 @@ contract SynthereumPool is
   }
 
   function renounceRoleInDerivative(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     DerivativeRoles derivativeRole
   ) external override onlyMaintainer nonReentrant {
     poolStorage.renounceRoleInDerivative(derivative, derivativeRole);
   }
 
   function addRoleInSynthToken(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     SynthTokenRoles synthTokenRole,
     address addressToAdd
   ) external override onlyMaintainer nonReentrant {
@@ -358,7 +361,7 @@ contract SynthereumPool is
   }
 
   function renounceRoleInSynthToken(
-    IDerivative derivative,
+    IExtendedDerivative derivative,
     SynthTokenRoles synthTokenRole
   ) external override onlyMaintainer nonReentrant {
     poolStorage.renounceRoleInSynthToken(derivative, synthTokenRole);
@@ -408,24 +411,25 @@ contract SynthereumPool is
     external
     view
     override
-    returns (IDerivative[] memory)
+    returns (IExtendedDerivative[] memory)
   {
     EnumerableSet.AddressSet storage derivativesSet = poolStorage.derivatives;
     uint256 numberOfDerivatives = derivativesSet.length();
-    IDerivative[] memory derivatives = new IDerivative[](numberOfDerivatives);
+    IExtendedDerivative[] memory derivatives =
+      new IExtendedDerivative[](numberOfDerivatives);
     for (uint256 j = 0; j < numberOfDerivatives; j++) {
-      derivatives[j] = (IDerivative(derivativesSet.at(j)));
+      derivatives[j] = (IExtendedDerivative(derivativesSet.at(j)));
     }
     return derivatives;
   }
 
-  function isDerivativeAdmitted(IDerivative derivative)
+  function isDerivativeAdmitted(address derivative)
     external
     view
     override
     returns (bool isAdmitted)
   {
-    isAdmitted = poolStorage.derivatives.contains(address(derivative));
+    isAdmitted = poolStorage.derivatives.contains(derivative);
   }
 
   function getStartingCollateralization()
