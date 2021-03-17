@@ -24,6 +24,7 @@
     "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
     "bnc-onboard": "^1.19.2",
+    "damlev": "^1.0.0",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
     "milliseconds": "^1.0.3",

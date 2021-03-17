@@ -12707,6 +12707,11 @@ damerau-levenshtein@^1.0.4, damerau-levenshtein@^1.0.6:
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.6.tgz#143c1641cb3d85c60c32329e26899adea8701791"
   integrity sha512-JVrozIeElnj3QzfUIt8tB8YMluBJom4Vw9qTPpjGYQ9fYlB3D/rb6OordUxf3xeFB35LKWs0xqcO5U6ySvBtug==
 
+damlev@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/damlev/-/damlev-1.0.0.tgz#bce1ecc9c9da690dffd22a53e27e705441f6b240"
+  integrity sha1-vOHsycnaaQ3/0ipT4n5wVEH2skA=
+
 dargs@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
