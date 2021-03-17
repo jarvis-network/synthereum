@@ -35,8 +35,8 @@ const Mode = styled.div<{ mode: AccountModeType }>`
   padding: 0 14px;
   border-radius: ${props => props.theme.borderRadius.s};
   font-size: ${props => props.theme.font.sizes.l};
-  height: 36px;
-  line-height: 36px;
+  height: 38px;
+  line-height: 38px;
   box-sizing: border-box;
 
   ${props =>
@@ -188,11 +188,7 @@ export const AccountSummary: FC<AccountSummaryProps> = ({
 
   return (
     <Container>
-      {mode && (
-        <Item width="auto">
-          <Mode mode={mode} />
-        </Item>
-      )}
+      {mode && <Mode mode={mode} />}
 
       <Item width="100%">
         <FullWidthMenuDropdown
