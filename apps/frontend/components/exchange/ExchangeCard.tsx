@@ -12,6 +12,7 @@ import {
   Skeleton,
 } from '@jarvis-network/ui';
 import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import damlev from 'damlev';
 
 import { MainForm } from '@/components/exchange/MainForm';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
@@ -226,11 +227,10 @@ const createPairs = (list: Asset[]): AssetPair[] => {
           return innerResult;
         }
         const name = `${input.symbol}/${output.symbol}`;
-        const nameWithoutSlash = name.replace(/\//g, '');
         const realCurrenciesPair = `${getRealSymbol(
           input.symbol,
         )}${getRealSymbol(output.symbol)}`;
-        const index = `${nameWithoutSlash}/${realCurrenciesPair}`;
+        const index = realCurrenciesPair;
         innerResult.push({ input, output, name, index });
         return innerResult;
       }, []),
@@ -302,24 +302,44 @@ export const ExchangeCard: React.FC = () => {
     return () => document.removeEventListener('keydown', callback);
   }, []);
 
-  const searchBarProps: React.ComponentProps<typeof StyledSearchBar> = {
-    placeholder: 'Try "jEUR"',
-    data: pairsList,
-    filter: (data: AssetPair[], { query: searchQuery }: { query: string }) => {
-      const q = searchQuery.toLowerCase().replace(/\//g, '');
+  const searchBarProps: React.ComponentProps<typeof StyledSearchBar> = useMemo(
+    () => ({
+      placeholder: 'Try "jEUR"',
+      data: pairsList,
+      filter: (
+        data: AssetPair[],
+        { query: searchQuery }: { query: string },
+      ) => {
+        const query = searchQuery.toLowerCase().replace(/\//g, '');
 
-      return data.filter(item => item.index.toLowerCase().includes(q));
-    },
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(event.target.value);
-    },
-    onFocus: (event: React.FocusEvent<HTMLInputElement>) => {
-      setSearchOpen(true);
-    },
-    className: CUSTOM_SEARCH_BAR_CLASS,
-    value: query,
-    open: searchOpen,
-  };
+        return data.filter(item => {
+          const index = item.index.toLowerCase();
+
+          // Early return on match
+          if (index.includes(query)) {
+            return true;
+          }
+
+          // Calculate distance, but not added chairs (ie. uds <> usdeur has distance 4)
+          const distance = damlev(query, index) - (6 - query.length);
+
+          return distance < 2;
+        });
+      },
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(event.target.value);
+
+        if (!searchOpen) {
+          setSearchOpen(true);
+        }
+      },
+      onFocus: (event: React.FocusEvent<HTMLInputElement>) => {},
+      className: CUSTOM_SEARCH_BAR_CLASS,
+      value: query,
+      open: searchOpen,
+    }),
+    [searchOpen, query],
+  );
 
   if (searchOpen) {
     searchBarProps.render = data => {

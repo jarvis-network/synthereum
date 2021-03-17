@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 import type { RowInfo } from 'react-table';
+import damlev from 'damlev';
 
 import {
   ColumnType,
@@ -258,6 +259,18 @@ export const ChooseAsset: React.FC = () => {
         queryFilterProp="symbol"
         placeholder={'Try "jEUR"'}
         autoFocus
+        filter={(
+          data: AssetWithWalletInfo[],
+          { query: rawQuery }: { query: string },
+        ) => {
+          const query = rawQuery.toLowerCase();
+
+          return data.filter(item => {
+            const symbol = item.symbol.toLowerCase();
+
+            return symbol.includes(query) || damlev(query, symbol) < 3;
+          });
+        }}
         render={data => {
           const owned = data.filteredData.filter(row =>
             ownedAssets.includes(row.symbol),
