@@ -214,6 +214,51 @@
         }
       }
     },
+    "borrowing": {
+      "root": "apps/borrowing",
+      "sourceRoot": "apps/borrowing",
+      "projectType": "application",
+      "generators": {},
+      "targets": {
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "cwd": "apps/borrowing",
+            "color": true
+          }
+        },
+        "start": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn start"],
+            "cwd": "apps/borrowing",
+            "color": true
+          }
+        },
+        "start:server": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn start-dev"],
+            "cwd": "apps/borrowing",
+            "color": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/borrowing/**/*.{ts,tsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/borrowing/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "cli": {
       "root": "apps/cli",
       "sourceRoot": "apps/cli/src",

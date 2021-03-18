@@ -83,6 +83,12 @@ installing the software listed above.
             yarn build frontend --with-deps
             ```
 
+        * Borrowing:
+
+            ```sh
+            yarn build borrowing --with-deps
+            ```
+
         * Validator:
 
             ```sh

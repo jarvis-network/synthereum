@@ -1,0 +1,8 @@
+# assets are copied from ui library after install
+/public/assets
+
+# Service worker build
+/public/sw.js
+/public/sw.js.map
+/public/workbox-*.js
+/public/workbox-*.js.map

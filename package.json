@@ -104,6 +104,7 @@
         "gitlab",
         "validator",
         "frontend",
+        "borrowing",
         "ui",
         "web3-utils",
         "contracts",

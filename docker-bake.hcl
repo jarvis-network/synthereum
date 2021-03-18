@@ -66,3 +66,29 @@ target "frontend" {
     "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
   ]
 }
+
+target "borrowing" {
+  dockerfile = "Dockerfile"
+  output = ["type=docker"]
+  tags = [
+    "${REGISTRY_NAME}/borrowing:${TAG}"
+  ]
+  platforms = ["linux/amd64"]
+  args = {
+    NEXT_PUBLIC_ONBOARD_API_KEY = "${NEXT_PUBLIC_ONBOARD_API_KEY}"
+    NEXT_PUBLIC_NETWORK_ID = "${NEXT_PUBLIC_NETWORK_ID}"
+    NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET = "${NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET}"
+    NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET = "${NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET}"
+    NEXT_PUBLIC_INFURA_API_KEY = "${NEXT_PUBLIC_INFURA_API_KEY}"
+    NEXT_PUBLIC_PORTIS_API_KEY = "${NEXT_PUBLIC_PORTIS_API_KEY}"
+    NEXT_PUBLIC_PRICE_FEED_ROOT = "${NEXT_PUBLIC_PRICE_FEED_ROOT}"
+    NEXT_PUBLIC_SUPPORTED_ASSETS = "${NEXT_PUBLIC_SUPPORTED_ASSETS}"
+  }
+  target = "borrowing"
+  cache-from = [
+    "type=registry,ref=${REGISTRY_NAME}/borrowing-cache:${TAG}"
+  ]
+  cache-to= [
+    "type=registry,ref=${REGISTRY_NAME}/borrowing-cache:${TAG}"
+  ]
+}

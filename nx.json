@@ -45,6 +45,10 @@
       "tags": [],
       "implicitDependencies": ["ui", "contracts"]
     },
+    "borrowing": {
+      "tags": [],
+      "implicitDependencies": ["ui", "contracts"]
+    },
     "cli": {
       "tags": [],
       "implicitDependencies": ["contracts"]

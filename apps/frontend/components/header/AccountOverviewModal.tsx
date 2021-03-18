@@ -1,6 +1,11 @@
 import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { styled, ModalContent, FlagImagesMap, Skeleton } from '@jarvis-network/ui';
+import {
+  styled,
+  ModalContent,
+  FlagImagesMap,
+  Skeleton,
+} from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import {
   ExchangeToken,

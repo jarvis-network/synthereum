@@ -1,0 +1,66 @@
+{
+  "extends": ["airbnb", "prettier", "prettier/react"],
+  "env": {
+    "browser": true
+  },
+  "ignorePatterns": ["node_modules/"],
+  "plugins": ["@typescript-eslint", "react", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+    "no-confusing-arrow": "off",
+    "implicit-arrow-linebreak": "off",
+    "object-curly-newline": "off",
+    "arrow-parens": "off",
+    "operator-linebreak": "off",
+    "indent": "off",
+    "prettier/prettier": "error",
+    "import/no-dynamic-require": 0,
+    "import/no-unresolved": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/extensions": 0,
+    "import/prefer-default-export": 0,
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "parent", "sibling", "index"],
+        "newlines-between": "always-and-inside-groups"
+      }
+    ],
+    "no-unused-vars": 0,
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
+    "no-nested-ternary": "off",
+    "global-require": 0,
+    "react/prop-types": 0,
+    "react/jsx-filename-extension": [
+      0,
+      {
+        "extensions": [".tsx"]
+      }
+    ],
+    "react/jsx-props-no-spreading": 0,
+    "react/jsx-one-expression-per-line": 0,
+    "jsx-a11y/interactive-supports-focus": 0,
+    "@typescript-eslint/member-delimiter-style": [
+      2,
+      {
+        "multiline": {
+          "delimiter": "semi",
+          "requireLast": true
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }
+    ],
+    "@typescript-eslint/type-annotation-spacing": 2,
+    "jsx-a11y/click-events-have-key-events": 0
+  }
+}

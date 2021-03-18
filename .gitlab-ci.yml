@@ -22,21 +22,26 @@ before_script:
     - production
 
 stages:
-  - build and deploy frontend
+  - build and deploy
   - release
   # Jobs:
 
-🐳 build & push:
+🐳 build & push dapps:
   <<: *job-config
-  stage: build and deploy frontend
+  stage: build and deploy
+  parallel:
+      matrix:
+        - TARGET: frontend
+          NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_FRONTEND'
+        - TARGET: borrowing
+          NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BORROWING'
   variables:
-    NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_NEW'
     NETLIFY_AUTH_TOKEN: '$NETLIFY_AUTH_TOKEN'
   script:
     - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
-    - docker buildx bake frontend --print
-    - docker buildx bake frontend  --progress=plain
-    - docker run --rm "${REGISTRY}/frontend:${TAG}" netlify deploy --dir /src/out --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+    - docker buildx bake ${TARGET} --print
+    - docker buildx bake ${TARGET}  --progress=plain
+    - docker run --rm "${REGISTRY}/${TARGET}:${TAG}" netlify deploy --dir /src/out --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
 
 release:
   stage: release
