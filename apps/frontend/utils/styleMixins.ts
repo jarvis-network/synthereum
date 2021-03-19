@@ -12,10 +12,18 @@ const scrollThumbColor = {
   light: '#c1c1c1',
 };
 
-export const styledScrollbars = (theme: ThemeConfig) => `
+interface Overrides {
+  thumb?: string;
+  background?: string;
+}
+
+export const styledScrollbars = (
+  theme: ThemeConfig,
+  overrides: Overrides = {},
+) => `
   overflow-y: auto;
-  scrollbar-color: ${scrollThumbColor[theme.name]} ${
-  scrollBackgroundColor[theme.name]
+  scrollbar-color: ${overrides.thumb ?? scrollThumbColor[theme.name]} ${
+  overrides.background ?? scrollBackgroundColor[theme.name]
 };
   scrollbar-width: thin !important;
 
@@ -25,17 +33,21 @@ export const styledScrollbars = (theme: ThemeConfig) => `
   }
 
   &::-webkit-scrollbar-thumb:vertical {
-    background: ${scrollThumbColor[theme.name]};
+    background: ${overrides.thumb ?? scrollThumbColor[theme.name]};
     background-clip: padding-box;
-    border: 2px solid ${scrollBackgroundColor[theme.name]};
+    border: 2px solid ${
+      overrides.background ?? scrollBackgroundColor[theme.name]
+    };
     border-right-width: 5px;
     min-height: 10px;
     border-radius: 100px;
   }
 
   &::-webkit-scrollbar-thumb:vertical:active {
-    background: ${scrollThumbColor[theme.name]};
-    border: 2px solid ${scrollBackgroundColor[theme.name]};
+    background: ${overrides.thumb ?? scrollThumbColor[theme.name]};
+    border: 2px solid ${
+      overrides.background ?? scrollBackgroundColor[theme.name]
+    };
     border-right-width: 5px;
   }
 `;

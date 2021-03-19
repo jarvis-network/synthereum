@@ -43,6 +43,8 @@ import { useIsMobile } from '@/utils/useIsMobile';
 import { OnDesktop } from '@/components/OnDesktop';
 import { OnMobile } from '@/components/OnMobile';
 
+import { createPairs } from '@/utils/createPairs';
+
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
@@ -226,34 +228,6 @@ const NotificationsContainer = styled.div`
 `;
 
 const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
-
-const getRealSymbol = (symbol: ExchangeToken): string => {
-  if (symbol === 'USDC') {
-    return 'usd';
-  }
-
-  return symbol.substring(1);
-};
-
-const createPairs = (list: Asset[]): AssetPair[] => {
-  return list.reduce<AssetPair[]>((result, input) => {
-    result.push(
-      ...list.reduce<AssetPair[]>((innerResult, output) => {
-        if (output === input) {
-          return innerResult;
-        }
-        const name = `${input.symbol}/${output.symbol}`;
-        const realCurrenciesPair = `${getRealSymbol(
-          input.symbol,
-        )}${getRealSymbol(output.symbol)}`;
-        const index = realCurrenciesPair;
-        innerResult.push({ input, output, name, index });
-        return innerResult;
-      }, []),
-    );
-    return result;
-  }, []);
-};
 
 export const ExchangeCard: React.FC = () => {
   const isMobile = useIsMobile();

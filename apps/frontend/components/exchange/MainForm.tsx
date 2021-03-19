@@ -24,6 +24,8 @@ import { useExchangeValues } from '@/utils/useExchangeValues';
 import { MAX_MINT_VALUE } from '@/utils/environment';
 import { formatExchangeAmount } from '@/utils/format';
 
+import { TwoIconsButton } from '@/components/TwoIconsButton';
+
 import { Loader } from '../Loader';
 
 import { Asset } from './Asset';
@@ -95,24 +97,6 @@ const Amount = styled.input`
 
 const Footer = styled.div`
   margin: 5px 15px 15px;
-`;
-
-const IconButton = styled.button`
-  border: none;
-  padding: 0;
-  background: none;
-  cursor: pointer;
-  outline: none !important;
-  width: 100%;
-  transform: translateY(14px);
-
-  svg {
-    width: 24px;
-    height: 24px;
-    margin-left: -8px;
-    margin-right: -8px;
-    fill: ${props => props.theme.text.secondary};
-  }
 `;
 
 const SwapButton = styled(Button)`
@@ -302,10 +286,10 @@ export const MainForm: React.FC<Props> = () => {
         </AssetSelect>
         <ErrorMessage>{errorMessage}</ErrorMessage>
       </ExchangeBox>
-      <IconButton onClick={flipValues}>
+      <TwoIconsButton onClick={flipValues}>
         <Icon icon="IoIosArrowRoundUp" />
         <Icon icon="IoIosArrowRoundDown" />
-      </IconButton>
+      </TwoIconsButton>
       <ExchangeBox error={false}>
         <Title>For</Title>
         <AssetSelect error={Boolean(errorMessage)}>

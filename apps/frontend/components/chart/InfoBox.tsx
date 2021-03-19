@@ -1,9 +1,22 @@
-import React from 'react';
-import { Flag, styled, Skeleton } from '@jarvis-network/ui';
+import React, { useMemo } from 'react';
+import { Flag, styled, Skeleton, Icon, Select } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
-import { Days } from '@/state/initialState';
+import { Days, State } from '@/state/initialState';
+import { TwoIconsButton } from '@/components/TwoIconsButton';
+import {
+  setBase,
+  setPay,
+  setPayAsset,
+  setReceive,
+  setReceiveAsset,
+} from '@/state/slices/exchange';
+import { useDispatch } from 'react-redux';
+import { useReduxSelector } from '@/state/useReduxSelector';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { createPairs } from '@/utils/createPairs';
+import { styledScrollbars } from '@/utils/styleMixins';
 
 const Box = styled.div`
   display: flex;
@@ -108,6 +121,40 @@ const daysToLabelMap: Record<Days, string> = {
   30: 'month',
 };
 
+const InfoBoxTwoIcons = styled(TwoIconsButton)`
+  width: auto;
+  transform: none;
+  margin-left: 10px;
+  transform: rotate(-90deg);
+`;
+
+const CustomSelect = styled(Select)`
+  min-width: 100px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+
+  .react-select__control {
+    max-height: none;
+    transition: background-color 300ms;
+
+    &:not(:hover):not(.react-select__control--menu-is-open) {
+      background: transparent;
+    }
+  }
+
+  .react-select__single-value {
+    font-size: 20px;
+  }
+
+  .react-select__menu-list {
+    ${props =>
+      styledScrollbars(props.theme, {
+        background: props.theme.background.secondary,
+      })}
+  }
+`; //
+
 const InfoBox: React.FC<Props> = ({
   value,
   changeValue,
@@ -117,17 +164,60 @@ const InfoBox: React.FC<Props> = ({
   onDaysChange,
   days,
 }) => {
+  const dispatch = useDispatch();
   const {
     paySymbol,
     receiveSymbol,
     assetPay,
     assetReceive,
+    base,
+    payString,
+    receiveString,
   } = useExchangeValues();
 
   const payFlag = assetPay?.icon ? <CustomFlag flag={assetPay.icon} /> : null;
   const receiveFlag = assetReceive?.icon ? (
     <CustomFlag flag={assetReceive.icon} />
   ) : null;
+
+  const allAssets = useReduxSelector(state => state.assets.list);
+  const pairsList = useMemo(
+    () =>
+      createPairs(allAssets).map(p => `${p.input.symbol} / ${p.output.symbol}`),
+    [allAssets],
+  );
+
+  const updateBase = (baseValue: State['exchange']['base']) => {
+    dispatch(setBase(baseValue));
+  };
+
+  const updatePay = (inputValue: State['exchange']['pay']) => {
+    dispatch(setPay(inputValue));
+  };
+
+  const updateReceive = (inputValue: State['exchange']['receive']) => {
+    dispatch(setReceive(inputValue));
+  };
+
+  const flipValues = () => {
+    dispatch(setPayAsset(receiveSymbol));
+    dispatch(setReceiveAsset(paySymbol));
+
+    if (base === 'pay') {
+      updateBase('receive');
+      updateReceive(payString);
+      return;
+    }
+    updateBase('pay');
+    updatePay(receiveString);
+  };
+
+  const handlePairChange = (symbols: string) => {
+    const [pay, receive] = symbols.split(' / ') as SyntheticSymbol[];
+
+    dispatch(setPayAsset(pay));
+    dispatch(setReceiveAsset(receive));
+  };
 
   const content = value ? (
     <>
@@ -156,6 +246,8 @@ const InfoBox: React.FC<Props> = ({
     </>
   ) : null;
 
+  const selectedPair = `${paySymbol} / ${receiveSymbol}`;
+
   return (
     <Box>
       <Symbols>
@@ -164,8 +256,17 @@ const InfoBox: React.FC<Props> = ({
           {receiveFlag}
         </Flags>
         <CurrencySymbol>
-          {paySymbol} / {receiveSymbol}
+          <CustomSelect
+            selected={selectedPair}
+            onChange={val => handlePairChange(String(val!.value))}
+            rowsText=""
+            options={pairsList}
+          />
         </CurrencySymbol>
+        <InfoBoxTwoIcons onClick={flipValues}>
+          <Icon icon="IoIosArrowRoundUp" />
+          <Icon icon="IoIosArrowRoundDown" />
+        </InfoBoxTwoIcons>
       </Symbols>
       <Skeleton>{content}</Skeleton>
     </Box>
