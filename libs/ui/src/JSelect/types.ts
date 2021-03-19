@@ -7,10 +7,11 @@ export interface IOptions {
 
 export interface SelectProps {
   onChange: (
-    value: ValueType<IOptions, true>,
+    value: ValueType<IOptions, false>,
     actionMeta: ActionMeta<IOptions>,
   ) => void;
-  selected: string | number;
+  selected: IOptions | string | number;
   rowsText: string;
-  options: Array<string>;
+  options: (IOptions | string | number)[];
+  className?: string;
 }

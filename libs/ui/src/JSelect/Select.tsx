@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import ReactSelect from 'react-select';
 
 import { styled } from '../Theme';
@@ -89,35 +89,42 @@ const SelectWrapper = styled.div`
   }
 `;
 
+const makeIOption = (
+  rowsText: SelectProps['rowsText'],
+  opt: string | number | IOptions,
+) => {
+  if (typeof opt === 'string' || typeof opt === 'number') {
+    const suffix = rowsText ? ` ${rowsText}` : '';
+
+    return {
+      value: opt,
+      label: String(opt) + suffix,
+    };
+  }
+  return opt;
+};
+
 export const Select: React.FC<SelectProps> = ({
   onChange,
   selected,
   rowsText,
   options,
+  className,
 }) => {
-  const [transformOptions, setTransformOptions] = useState([] as IOptions[]);
-
-  useEffect(() => {
-    setTransformOptions(
-      options.map(option => ({
-        value: parseInt(option, 10),
-        label: `${option} ${rowsText}`,
-      })),
-    );
-  }, [options]);
+  const iOptions = useMemo(() => {
+    return options.map(makeIOption.bind(null, rowsText));
+  }, [options, rowsText]);
 
   const selectedItem =
     typeof selected === 'string' || typeof selected === 'number'
-      ? transformOptions.filter(
-          opt => opt.value === parseInt(String(selected), 10),
-        )
+      ? iOptions.find(opt => String(opt.value) === String(selected))!
       : selected;
 
   return (
-    <SelectWrapper>
+    <SelectWrapper className={className}>
       <ReactSelect
         value={selectedItem}
-        options={transformOptions}
+        options={iOptions}
         onChange={onChange}
         isSearchable={false}
         menuPlacement="auto"

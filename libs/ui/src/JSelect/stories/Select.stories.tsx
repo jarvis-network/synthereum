@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Select } from '..';
+import { styled } from '../../Theme';
 
 export default {
   title: 'Select',
@@ -36,7 +37,7 @@ export const Select100 = () => {
 };
 
 export const Select200 = () => {
-  const [value, setValue] = useState('10');
+  const [value, setValue] = useState(20);
 
   return (
     <div style={{ width: '200px' }}>
@@ -46,6 +47,33 @@ export const Select200 = () => {
         rowsText="rows"
         options={['10', '20']}
       />
+    </div>
+  );
+};
+
+const RedHugeSelect = styled(Select)`
+  .react-select__control {
+    background: #ff8585;
+    max-height: none;
+  }
+  .react-select__single-value {
+    font-size: 24px;
+    padding: 10px;
+  }
+`;
+
+export const CustomizedSelect = () => {
+  const [value, setValue] = useState('jEUR');
+
+  return (
+    <div style={{ width: '200px' }}>
+      <RedHugeSelect
+        selected={value}
+        onChange={e => setValue(e!.label)}
+        rowsText="rows"
+        options={['USDC', 'jEUR', 'jGBP']}
+      />
+      Selected value: {value}
     </div>
   );
 };
