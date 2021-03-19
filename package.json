@@ -34,15 +34,12 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "init:commitizen": "commitizen init @jarvis-network/cz-ccgls --yarn --dev --exact --force",
-    "start:frontend-old": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-old-frontend' start",
     "start:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' start",
     "start:validator-old": "docker-compose -f ./packages/keeper-bot/docker-compose.yml down && docker-compose -f ./packages/keeper-bot/docker-compose.yml build && docker-compose -f ./packages/keeper-bot/docker-compose.yml up",
-    "build:frontend-old": "lerna run --stream --include-dependencies --scope '@jarvis-network/synthereum-old-frontend' build",
     "build:balance-notify": "lerna run --stream --include-dependencies --scope '@jarvis-network/balance-notify' build"
   },
   "workspaces": {
     "packages": [
-      "packages/frontend-old",
       "apps/*",
       "libs/*",
       "libs/**/dist"

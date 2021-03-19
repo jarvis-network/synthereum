@@ -103,10 +103,6 @@ FROM node:${NODE_VERSION}-alpine as frontend
 RUN yarn global add netlify-cli
 COPY --from=build-frontend /out /src
 
-
-FROM node:${NODE_VERSION}-alpine as frontend-old
-COPY --from=old-frontend /out /src
-
 # ------------------------------ Build Borrowing ------------------------------ #
 FROM install as build-borrowing
 COPY apps/borrowing apps/borrowing
@@ -132,10 +128,6 @@ RUN cp -r apps/borrowing/out /out
 FROM node:${NODE_VERSION}-alpine as borrowing
 RUN yarn global add netlify-cli
 COPY --from=build-borrowing /out /src
-
-
-FROM node:${NODE_VERSION}-alpine as borrowing-old
-COPY --from=old-borrowing /out /src
 
 # ---------------------------------------------------------------------------- #
 #                               Deploy Validator                               #

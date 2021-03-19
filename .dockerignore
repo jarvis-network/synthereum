@@ -14,4 +14,3 @@ libs/**/build
 **/.next
 **/out
 packages/*
-!packages/frontend-old
