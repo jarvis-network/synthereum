@@ -18,10 +18,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "1.0.0",
-    "@jarvis-network/ui": "*",
     "@jarvis-network/app-toolkit": "*",
-    "@jarvis-network/web3-utils": "1.0.0",
+    "@jarvis-network/synthereum-contracts": "*",
+    "@jarvis-network/ui": "*",
+    "@jarvis-network/web3-utils": "*",
     "@next/bundle-analyzer": "^10.0.4",
     "bnc-onboard": "^1.19.2",
     "next": "9.5.3",
@@ -36,7 +36,6 @@
     "@types/enzyme": "^3.10.8",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.5",
-    "jest": "^26.6.3"
+    "enzyme-adapter-react-16": "^1.15.5"
   }
 }

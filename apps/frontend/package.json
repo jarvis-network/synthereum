@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@jarvis-network/app-toolkit": "*",
-    "@jarvis-network/synthereum-contracts": "1.0.0",
+    "@jarvis-network/synthereum-contracts": "*",
     "@jarvis-network/ui": "*",
-    "@jarvis-network/web3-utils": "1.0.0",
+    "@jarvis-network/web3-utils": "*",
     "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
     "bnc-onboard": "^1.19.2",
