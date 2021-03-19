@@ -86,7 +86,10 @@ const ContentContainer = styled.div`
     ${props => props.theme.borderRadius.m};
 `;
 
-const SkeletonContainer = styled(ContentContainer)``;
+const SkeletonContainer = styled(ContentContainer)`
+  border-radius: ${props => props.theme.borderRadius.m};
+  overflow: hidden;
+`;
 
 const MobileCardContainer = styled.div`
   position: fixed;
@@ -396,15 +399,7 @@ export const ExchangeCard: React.FC = () => {
       </>
     ) : null;
 
-    return (
-      <ContentContainer>
-        <SkeletonContainer>
-          <Skeleton style={{ borderRadius: theme.borderRadius.m }}>
-            {content}
-          </Skeleton>
-        </SkeletonContainer>
-      </ContentContainer>
-    );
+    return <ContentContainer>{content}</ContentContainer>;
   };
 
   const getCardProps = () => {
@@ -429,7 +424,15 @@ export const ExchangeCard: React.FC = () => {
 
   const content = getContent();
 
-  const card = <CustomCard {...getCardProps()}>{content}</CustomCard>;
+  const card = (
+    <SkeletonContainer>
+      <Skeleton>
+        {isExchangeVisible() ? (
+          <CustomCard {...getCardProps()}>{content}</CustomCard>
+        ) : null}
+      </Skeleton>
+    </SkeletonContainer>
+  );
 
   const isMobileCardVisible =
     chooseAsset || searchOpen || isExchangeConfirmationVisible;
