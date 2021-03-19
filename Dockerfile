@@ -77,9 +77,11 @@ COPY libs/ui libs/ui
 RUN yarn nx build ui
 RUN cp -r libs/ui/dist /out && ls -lah /out
 
-# ------------------------------ Build Frontend ------------------------------ #
-FROM install as build-frontend
-COPY apps/frontend apps/frontend
+# ---------------------------------------------------------------------------- #
+#                                Build Frontend base                           #
+# ---------------------------------------------------------------------------- #
+
+FROM install as build-frontend-base
 COPY --from=build-ui /out node_modules/@jarvis-network/ui
 COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
@@ -92,41 +94,40 @@ ARG NEXT_PUBLIC_INFURA_API_KEY
 ARG NEXT_PUBLIC_PORTIS_API_KEY
 ARG NEXT_PUBLIC_PRICE_FEED_ROOT
 ARG NEXT_PUBLIC_SUPPORTED_ASSETS
+
+# ------------------------------ Build Frontend ------------------------------ #
+
+FROM build-frontend-base as build-frontend
+COPY apps/frontend apps/frontend
 RUN yarn nx build frontend
 RUN cp -r apps/frontend/out /out
+
+# ------------------------------ Build Borrowing ------------------------------ #
+
+FROM build-frontend-base as build-borrowing
+COPY apps/borrowing apps/borrowing
+RUN yarn nx build borrowing
+RUN cp -r apps/borrowing/out /out
+
+# ---------------------------------------------------------------------------- #
+#                                Build Netlify                                 #
+# ---------------------------------------------------------------------------- #
+
+FROM node:${NODE_VERSION}-alpine as netlify
+RUN yarn global add netlify-cli
 
 # ---------------------------------------------------------------------------- #
 #                                Deploy Frontend                               #
 # ---------------------------------------------------------------------------- #
 
-FROM node:${NODE_VERSION}-alpine as frontend
-RUN yarn global add netlify-cli
+FROM netlify as frontend
 COPY --from=build-frontend /out /src
-
-# ------------------------------ Build Borrowing ------------------------------ #
-FROM install as build-borrowing
-COPY apps/borrowing apps/borrowing
-COPY --from=build-ui /out node_modules/@jarvis-network/ui
-COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
-# Keep in sync with docker-bake.hcl and apps/borrowing/.env.example
-ARG NEXT_PUBLIC_ONBOARD_API_KEY
-ARG NEXT_PUBLIC_NETWORK_ID
-ARG NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET
-ARG NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET
-ARG NEXT_PUBLIC_INFURA_API_KEY
-ARG NEXT_PUBLIC_PORTIS_API_KEY
-ARG NEXT_PUBLIC_PRICE_FEED_ROOT
-ARG NEXT_PUBLIC_SUPPORTED_ASSETS
-RUN yarn nx build borrowing
-RUN cp -r apps/borrowing/out /out
 
 # ---------------------------------------------------------------------------- #
 #                                Deploy Borrowing                               #
 # ---------------------------------------------------------------------------- #
 
-FROM node:${NODE_VERSION}-alpine as borrowing
-RUN yarn global add netlify-cli
+FROM netlify as borrowing
 COPY --from=build-borrowing /out /src
 
 # ---------------------------------------------------------------------------- #
