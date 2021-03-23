@@ -12,24 +12,24 @@ const Container = styled.div<SkeletonVisibility>`
   background: ${props =>
     props.isVisible
       ? `
-    ${props.theme.background.primary};
+    transparent;
   `
       : `
     linear-gradient(
       to right,
-      ${props.theme.background.primary},
       ${props.theme.background.secondary},
-      ${props.theme.background.primary}
+      ${props.theme.background.primary},
+      ${props.theme.background.secondary}
     ),
-    ${props.theme.background.primary};
+    ${props.theme.background.secondary};
   `}
 
   background-repeat: repeat-y;
-  background-size: 200px 100%;
+  background-size: 40% 100%;
   background-position: -20% 0;
 
   animation: ${props =>
-    props.isVisible ? 'none' : 'shine 6s ease-out infinite'};
+    props.isVisible ? 'none' : 'shine 10s ease-out infinite'};
 
   @keyframes shine {
     50% {
