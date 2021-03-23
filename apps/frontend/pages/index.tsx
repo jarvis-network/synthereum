@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { styled } from '@jarvis-network/ui';
@@ -14,6 +14,7 @@ import { ChartExchangeCards } from '@/components/ChartExchangeCards';
 import { OnMobile } from '@/components/OnMobile';
 import { OnDesktop } from '@/components/OnDesktop';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { setWindowLoaded } from '@/state/slices/app';
 import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
 import { subscribeTransactionsHistory } from '@/state/slices/transactions';
 import { subscribeWalletBalances } from '@/state/slices/wallet';
@@ -81,6 +82,15 @@ export default function Home() {
   const theme = useReduxSelector(state => state.theme);
   const realmAgent = useBehaviorSubject(useCoreObservables().realmAgent$);
   const url = backgroundMap[theme];
+
+  useEffect(() => {
+    function handleLoad() {
+      setTimeout(() => dispatch(setWindowLoaded(true)), 250);
+      window.removeEventListener('load', handleLoad);
+    }
+
+    window.addEventListener('load', handleLoad);
+  }, []);
 
   useEffect(() => {
     dispatch(subscribeAllPrices());

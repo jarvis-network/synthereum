@@ -4,6 +4,10 @@ import { initialState } from '@/state/initialState';
 
 import { resetSwapAction } from '../actions';
 
+import { fetchWalletBalances } from './wallet';
+import { addHistory } from './prices';
+import { login } from './auth';
+
 interface SetModalVisibilityAction {
   payload: boolean;
 }
@@ -52,6 +56,12 @@ const appSlice = createSlice({
         isExchangeConfirmationVisible: action.payload,
       };
     },
+    setWindowLoaded(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isWindowLoaded: action.payload
+      };
+    },
     setMobileTab(state, action: SetMobileTabAction) {
       return {
         ...state,
@@ -67,6 +77,24 @@ const appSlice = createSlice({
         isExchangeConfirmationVisible: false,
       };
     },
+    [login.type](state) {
+      return {
+        ...state,
+        isExchangeLoaded: false,
+      };
+    },
+    [fetchWalletBalances.fulfilled.type](state) {
+      return {
+        ...state,
+        isExchangeLoaded: true
+      };
+    },
+    [addHistory.type](state) {
+      return {
+        ...state,
+        isChartLoaded: true
+      };
+    },
   },
 });
 
@@ -77,6 +105,7 @@ export const {
   setSwapLoaderVisible,
   setAuthModalVisible,
   setExchangeConfirmationVisible,
+  setWindowLoaded,
   setMobileTab,
 } = appSlice.actions;
 export const { reducer } = appSlice;
