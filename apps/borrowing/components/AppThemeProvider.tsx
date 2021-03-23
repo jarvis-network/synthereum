@@ -1,5 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@jarvis-network/ui';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const themeOverrides = {
   rwd: {
@@ -9,7 +10,7 @@ const themeOverrides = {
 };
 
 export const AppThemeProvider: React.FC = ({ children }) => {
-  const theme = 'light';
+  const theme = useReduxSelector(state => state.theme);
 
   return (
     <ThemeProvider theme={theme} custom={themeOverrides}>

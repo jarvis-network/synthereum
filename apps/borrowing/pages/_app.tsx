@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
+import { Provider as StateProvider } from 'react-redux';
 
 import { styled } from '@jarvis-network/ui';
 
 import { AppThemeProvider } from '@/components/AppThemeProvider';
+import { useStore } from '@/state/store';
 
 import './_app.scss';
 import 'react-table/react-table.css';
@@ -22,6 +24,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     setIsMounted(true);
   }, []);
 
+  const store = useStore(pageProps.initialReduxState);
+
   if (!isMounted) return null;
 
   return (
@@ -32,11 +36,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"
         />
       </Head>
-      <AppThemeProvider>
-        <MainWrapper>
-          <Component {...pageProps} />
-        </MainWrapper>
-      </AppThemeProvider>
+      <StateProvider store={store}>
+        <AppThemeProvider>
+          <MainWrapper>
+            <Component {...pageProps} />
+          </MainWrapper>
+        </AppThemeProvider>
+      </StateProvider>
     </>
   );
 }
