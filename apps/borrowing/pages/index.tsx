@@ -2,6 +2,7 @@ import React from 'react';
 
 import { styled } from '@jarvis-network/ui';
 import { Background } from '@/components/Background';
+import { UserHeader } from '@/components/header/UserHeader';
 
 const Layout = styled.div`
   display: flex;
@@ -20,7 +21,7 @@ const LayoutChart = styled.div`
 `;
 
 const LayoutWidget = styled(Background)`
-  height: 100vh;
+  height: calc(100vh - 80px);
   min-height: 720px;
   padding: 40px calc(50vw - 510px) 40px 60px;
   box-sizing: content-box;
@@ -35,7 +36,7 @@ export default function Home() {
     <Layout>
       <LayoutChart>left</LayoutChart>
       <LayoutWidget image="/images/light-mode-background.jpg">
-        right
+        <UserHeader />
       </LayoutWidget>
     </Layout>
   );

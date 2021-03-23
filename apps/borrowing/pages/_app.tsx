@@ -3,13 +3,24 @@ import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
 
-import { styled } from '@jarvis-network/ui';
+import { NotificationsProvider, styled } from '@jarvis-network/ui';
 
 import { AppThemeProvider } from '@/components/AppThemeProvider';
 import { useStore } from '@/state/store';
 
 import './_app.scss';
+import './_onboard.scss';
 import 'react-table/react-table.css';
+import { AuthFlow } from '@/components/auth/AuthFlow';
+import { BehaviorSubject } from 'rxjs';
+import Web3 from 'web3';
+import Onboard from 'bnc-onboard';
+import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { CoreObservablesContextProvider } from '@/utils/CoreObservablesContext';
+import { useConstant } from '@/utils/useConstant';
+import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
+import { BackgroundPreloader } from '@/components/BackgroundsPreloader';
+import { ENSHelper } from '@/utils/ens';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -19,17 +30,26 @@ const MainWrapper = styled.div`
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const subjects = useConstant({
+    web3$: new BehaviorSubject<Web3 | null>(null),
+    ens$: new BehaviorSubject<ENSHelper | null>(null),
+    onboard$: new BehaviorSubject<ReturnType<typeof Onboard> | null>(null),
+    realmAgent$: new BehaviorSubject<RealmAgent | null>(null),
+  });
+
+  const store = useStore(pageProps.initialReduxState);
+
+  useRealmAgentProvider(store, subjects.web3$, subjects.realmAgent$);
+
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const store = useStore(pageProps.initialReduxState);
-
   if (!isMounted) return null;
 
   return (
-    <>
+    <CoreObservablesContextProvider value={subjects}>
       <Head>
         <meta
           name="viewport"
@@ -38,12 +58,16 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <StateProvider store={store}>
         <AppThemeProvider>
-          <MainWrapper>
-            <Component {...pageProps} />
-          </MainWrapper>
+          <NotificationsProvider>
+            <AuthFlow />
+            <BackgroundPreloader />
+            <MainWrapper>
+              <Component {...pageProps} />
+            </MainWrapper>
+          </NotificationsProvider>
         </AppThemeProvider>
       </StateProvider>
-    </>
+    </CoreObservablesContextProvider>
   );
 }
 
