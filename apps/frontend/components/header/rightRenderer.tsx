@@ -5,6 +5,8 @@ import {
   NotificationType,
   useNotifications,
   useWindowSize,
+  styled,
+  Skeleton,
 } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
 
@@ -20,12 +22,26 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { useAuth } from '@/utils/useAuth';
 import { useIsMobile } from '@/utils/useIsMobile';
+import { isAppReadySelector } from '@/state/selectors';
+
+const Container = styled.div`
+  height: 38px;
+  width: 310px;
+  border-radius: ${props => props.theme.borderRadius.s};
+  overflow: hidden;
+
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    width: 185px;
+  }
+`;
 
 const noop = () => undefined;
 
 const render = () => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
+  const isApplicationReady = useReduxSelector(isAppReadySelector);
   const { logout } = useAuth() || {};
   const name = usePrettyName((auth?.address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
@@ -97,7 +113,7 @@ const render = () => {
     [auth, isSigningOut],
   );
 
-  return (
+  const content = isApplicationReady ? (
     <AccountSummary
       name={getName()}
       wallet={getAddress()}
@@ -110,6 +126,12 @@ const render = () => {
       onThemeChange={handleSetTheme}
       onHelp={onHelp}
     />
+  ) : null;
+
+  return (
+    <Container>
+      <Skeleton>{content}</Skeleton>
+    </Container>
   );
 };
 

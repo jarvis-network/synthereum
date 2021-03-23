@@ -17,6 +17,7 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { createPairs } from '@/utils/createPairs';
 import { styledScrollbars } from '@/utils/styleMixins';
+import { isAppReadySelector } from '@/state/selectors';
 
 const Box = styled.div`
   display: flex;
@@ -175,6 +176,8 @@ const InfoBox: React.FC<Props> = ({
     receiveString,
   } = useExchangeValues();
 
+  const isApplicationReady = useReduxSelector(isAppReadySelector);
+
   const payFlag = assetPay?.icon ? <CustomFlag flag={assetPay.icon} /> : null;
   const receiveFlag = assetReceive?.icon ? (
     <CustomFlag flag={assetReceive.icon} />
@@ -219,8 +222,32 @@ const InfoBox: React.FC<Props> = ({
     dispatch(setReceiveAsset(receive));
   };
 
-  const content = value ? (
+  const isInfoBoxVisible = () => {
+    return isApplicationReady && value;
+  }
+
+  const selectedPair = `${paySymbol} / ${receiveSymbol}`;
+
+  const content = isInfoBoxVisible() ? (
     <>
+      <Symbols>
+        <Flags>
+          {payFlag}
+          {receiveFlag}
+        </Flags>
+        <CurrencySymbol>
+          <CustomSelect
+            selected={selectedPair}
+            onChange={val => handlePairChange(String(val!.value))}
+            rowsText=""
+            options={pairsList}
+          />
+        </CurrencySymbol>
+        <InfoBoxTwoIcons onClick={flipValues}>
+          <Icon icon="IoIosArrowRoundUp" />
+          <Icon icon="IoIosArrowRoundDown" />
+        </InfoBoxTwoIcons>
+      </Symbols>
       <Rate>
         <RateValue>
           {value} {receiveSymbol}
@@ -246,28 +273,8 @@ const InfoBox: React.FC<Props> = ({
     </>
   ) : null;
 
-  const selectedPair = `${paySymbol} / ${receiveSymbol}`;
-
   return (
     <Box>
-      <Symbols>
-        <Flags>
-          {payFlag}
-          {receiveFlag}
-        </Flags>
-        <CurrencySymbol>
-          <CustomSelect
-            selected={selectedPair}
-            onChange={val => handlePairChange(String(val!.value))}
-            rowsText=""
-            options={pairsList}
-          />
-        </CurrencySymbol>
-        <InfoBoxTwoIcons onClick={flipValues}>
-          <Icon icon="IoIosArrowRoundUp" />
-          <Icon icon="IoIosArrowRoundDown" />
-        </InfoBoxTwoIcons>
-      </Symbols>
       <Skeleton>{content}</Skeleton>
     </Box>
   );

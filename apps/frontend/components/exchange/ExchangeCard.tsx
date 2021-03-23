@@ -49,6 +49,7 @@ import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
 import { SwapConfirm } from './SwapConfirm';
+import { isAppReadySelector } from '@/state/selectors';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 
@@ -87,6 +88,7 @@ const FeesContainer = styled.div`
 `;
 
 const ContentContainer = styled.div`
+  background: ${props => props.theme.background.primary};
   height: 100%;
   border-radius: 0 0 ${props => props.theme.borderRadius.m}
     ${props => props.theme.borderRadius.m};
@@ -236,6 +238,7 @@ export const ExchangeCard: React.FC = () => {
   const list = useReduxSelector(state => state.assets.list);
   const wallet = useReduxSelector(state => state.wallet);
   const auth = useReduxSelector(state => state.auth);
+  const isApplicationReady = useReduxSelector(isAppReadySelector);
   const isExchangeConfirmationVisible = useReduxSelector(
     state => state.app.isExchangeConfirmationVisible,
   );
@@ -251,7 +254,6 @@ export const ExchangeCard: React.FC = () => {
   const { fee, paySymbol, assetPay, assetReceive } = useExchangeValues();
 
   const swap = useSwap();
-  const theme = useTheme();
 
   const handleCloseClick = () => {
     setQuery('');
@@ -404,6 +406,10 @@ export const ExchangeCard: React.FC = () => {
   }
 
   const isExchangeVisible = () => {
+    if (!isApplicationReady) {
+      return false;
+    }
+
     const isAssetPriceLoaded = assetPay?.price && assetReceive?.price;
 
     if (!auth) {

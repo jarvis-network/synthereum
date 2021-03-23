@@ -24,6 +24,7 @@ import { useDispatch } from 'react-redux';
 import { setChartDays } from '@/state/slices/exchange';
 
 import { FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
+import { isAppReadySelector } from '@/state/selectors';
 
 type ChangeType = 'more' | 'less';
 
@@ -94,12 +95,20 @@ const Container = styled.div`
   }
 `;
 
+const ChartContainer = styled.div`
+  border-radius: ${props => props.theme.borderRadius.m};
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+`;
+
 export const ChartCard: React.FC = () => {
   const [change, setChange] = useState<ChangeType | null>(null);
   const [changeValue, setChangeValue] = useState<number | null>(null);
   const [changeValuePerc, setChangeValuePerc] = useState<number | null>(null);
   const [currentValue, setCurrentValue] = useState<number | null>(null);
   const days = useReduxSelector(state => state.exchange.chartDays);
+  const isApplicationReady = useReduxSelector(isAppReadySelector);
   const dispatch = useDispatch();
 
   const theme = useTheme();
@@ -176,7 +185,11 @@ export const ChartCard: React.FC = () => {
     diffPerc: wholeRangeChangePerc,
   } = getValuesDiff(beginningPayload, currentPayload);
 
-  const chart = chartData.length ? (
+  const isChartVisible = () => {
+    return isApplicationReady && chartData.length;
+  };
+
+  const chart = isChartVisible() ? (
     <ResponsiveContainer>
       <AreaChart data={chartData} {...events}>
         <defs>
@@ -235,7 +248,9 @@ export const ChartCard: React.FC = () => {
         onDaysChange={val => dispatch(setChartDays(val))}
         days={days}
       />
-      <Skeleton>{chart}</Skeleton>
+      <ChartContainer>
+        <Skeleton>{chart}</Skeleton>
+      </ChartContainer>
     </Container>
   );
 };
