@@ -52,7 +52,9 @@ export class PriceFeed {
     return this.connect();
   };
 
-  private buildOptions = (options?: Options): Object | void => {
+  private buildOptions = (
+    options?: Options,
+  ): Record<string, string> | undefined => {
     if (!options) {
       return;
     }
@@ -101,20 +103,16 @@ export class PriceFeed {
     return this.socket || this.connect();
   };
 
-  private unsubscribePair = (pair: SubscriptionPair): WebSocket => {
-    return this.sendMessage('unsubscribe', pair);
-  };
+  private unsubscribePair = (pair: SubscriptionPair): WebSocket =>
+    this.sendMessage('unsubscribe', pair);
 
   private subscribePair = (
     pair: SubscriptionPair,
     options: Options,
-  ): WebSocket => {
-    return this.sendMessage('subscribe', pair, options);
-  };
+  ): WebSocket => this.sendMessage('subscribe', pair, options);
 
-  private resubscribePair = (pair: SubscriptionPair): WebSocket => {
-    return this.subscribePair(pair, {});
-  };
+  private resubscribePair = (pair: SubscriptionPair): WebSocket =>
+    this.subscribePair(pair, {});
 
   subscribe = (asset: SyntheticSymbol, options: Options): WebSocket => {
     // Get subscription pair
@@ -135,12 +133,9 @@ export class PriceFeed {
   subscribeMany = (
     assets: readonly SyntheticSymbol[],
     options: Options,
-  ): WebSocket => {
+  ): WebSocket =>
     // Return last subscription result
-    return assets.map(asset => this.subscribe(asset, options))[
-      assets.length - 1
-    ];
-  };
+    assets.map(asset => this.subscribe(asset, options))[assets.length - 1];
 
   unsubscribe = (asset: SyntheticSymbol): WebSocket => {
     // Get subscription pair
@@ -158,10 +153,9 @@ export class PriceFeed {
     return this.unsubscribePair(pair);
   };
 
-  unsubscribeMany = (assets: SyntheticSymbol[]): WebSocket => {
+  unsubscribeMany = (assets: SyntheticSymbol[]): WebSocket =>
     // Return last unsubscription result
-    return assets.map(asset => this.unsubscribe(asset))[assets.length - 1];
-  };
+    assets.map(asset => this.unsubscribe(asset))[assets.length - 1];
 
   closeConnection = () => {
     // Unsubscribe

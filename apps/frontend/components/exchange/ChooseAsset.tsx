@@ -208,8 +208,8 @@ const ScrollableTabs = styled(StyledTabs)`
 
 export const ChooseAsset: React.FC = () => {
   const dispatch = useDispatch();
-  const list = useReduxSelector(state => {
-    return state.assets.list.map(
+  const list = useReduxSelector(state =>
+    state.assets.list.map(
       (asset): AssetWithWalletInfo => {
         const ownedAmount = state.wallet[asset.symbol]?.amount || new FPN('0');
 
@@ -219,16 +219,14 @@ export const ChooseAsset: React.FC = () => {
           ownedAmount,
         };
       },
-    );
-  });
+    ),
+  );
   const asset = useReduxSelector(state => state.exchange.chooseAssetActive);
-  const ownedAssets = useReduxSelector(state => {
-    return Object.entries(state.wallet)
-      .filter(([key, value]) => {
-        return value && value.amount.gt(new FPN('0'));
-      })
-      .map(([symbol]) => symbol);
-  });
+  const ownedAssets = useReduxSelector(state =>
+    Object.entries(state.wallet)
+      .filter(([_, value]) => value && value.amount.gt(new FPN('0')))
+      .map(([symbol]) => symbol),
+  );
 
   const [selected, setSelected] = useState(0);
 

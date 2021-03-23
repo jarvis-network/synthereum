@@ -29,7 +29,6 @@ const mapTransactionToAssetRow = (
 ): AssetProps => ({
   flag: io.asset.icon ?? undefined,
   name: io.asset.symbol,
-  // @ts-ignore
   value: isFrom
     ? io.amount.mul(new BN('-1')).toString(10)
     : io.amount.toString(10),
@@ -136,9 +135,10 @@ export const RecentActivityModal: FC = () => {
     dispatch(setRecentActivityModalVisible(false));
   };
 
-  const groupedTransactions = useMemo(() => {
-    return groupTransactionsByDay(rowTransactions);
-  }, [rowTransactions]);
+  const groupedTransactions = useMemo(
+    () => groupTransactionsByDay(rowTransactions),
+    [rowTransactions],
+  );
 
   return (
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Activity">

@@ -236,9 +236,7 @@ const InfoBox: React.FC<Props> = ({
     dispatch(setReceiveAsset(receive));
   };
 
-  const isInfoBoxVisible = () => {
-    return isApplicationReady && value;
-  };
+  const isInfoBoxVisible = () => isApplicationReady && value;
 
   const selectedPair = `${paySymbol} / ${receiveSymbol}`;
 

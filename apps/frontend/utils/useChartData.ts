@@ -16,14 +16,12 @@ export interface ChartData {
   time: number;
 }
 
-const getQuery = (pair: string, timestampGte: number) => {
-  return `{
+const getQuery = (pair: string, timestampGte: number) => `{
   prices(first: 100, where: {assetPair: "${pair}", timestamp_gte: ${timestampGte}}, orderBy: timestamp, orderDirection: desc) {
     price
     timestamp
   }
 }`;
-};
 const url =
   'https://api.thegraph.com/subgraphs/name/openpredict/chainlink-prices-subgraph';
 
@@ -152,7 +150,6 @@ export const useChartData = (
       setData(singlePairResult);
     })();
 
-    // eslint-disable-next-line consistent-return
     return () => {
       isCancelled = true;
     };

@@ -52,19 +52,17 @@ const Container = styled.div<LoaderProps>`
   }
 `;
 
-export const Loader: React.FC<LoaderProps> = props => {
-  return (
-    <Container {...props}>
-      <svg viewBox="25 25 50 50">
-        <circle
-          cx="50"
-          cy="50"
-          r="20"
-          fill="none"
-          strokeWidth="2"
-          strokeMiterlimit="10"
-        />
-      </svg>
-    </Container>
-  );
-};
+export const Loader: React.FC<LoaderProps> = props => (
+  <Container {...props}>
+    <svg viewBox="25 25 50 50">
+      <circle
+        cx="50"
+        cy="50"
+        r="20"
+        fill="none"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+    </svg>
+  </Container>
+);

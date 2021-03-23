@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { styled, themeValue } from '@jarvis-network/ui';
+import { styled } from '@jarvis-network/ui';
 
 import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
 import { useRate } from '@/utils/useRate';

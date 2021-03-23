@@ -4,8 +4,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 export const useRate = (
   inputSymbol: string | null,
   outputSymbol: string | null,
-): Rate | null => {
-  return useReduxSelector(state => {
+): Rate | null =>
+  useReduxSelector(state => {
     if (!inputSymbol || !outputSymbol) {
       return null;
     }
@@ -31,4 +31,3 @@ export const useRate = (
       rate: outputAsset.price.div(inputAsset.price),
     };
   });
-};

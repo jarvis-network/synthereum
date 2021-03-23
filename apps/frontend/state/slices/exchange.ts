@@ -36,43 +36,33 @@ const exchangeSlice = createSlice({
   initialState: initialState.exchange,
   reducers: {
     setChooseAsset(state, action: SetChooseAssetAction) {
-      // eslint-disable-next-line no-param-reassign
       state.chooseAssetActive = action.payload;
     },
     setBase(state, action: SetBaseAction) {
-      // eslint-disable-next-line no-param-reassign
       state.base = action.payload;
     },
     setPay(state, action: SetPayAction) {
-      // eslint-disable-next-line no-param-reassign
       state.pay = action.payload;
     },
     setReceive(state, action: SetReceiveAction) {
-      // eslint-disable-next-line no-param-reassign
       state.receive = action.payload;
     },
     setPayAsset(state, action: SetPayAssetAction) {
       if (action.payload === state.receiveAsset) {
-        // eslint-disable-next-line no-param-reassign
         state.receiveAsset = state.payAsset;
       }
-      // eslint-disable-next-line no-param-reassign
       state.payAsset = action.payload;
     },
     setReceiveAsset(state, action: SetReceiveAssetAction) {
       if (action.payload === state.payAsset) {
-        // eslint-disable-next-line no-param-reassign
         state.payAsset = state.receiveAsset;
       }
-      // eslint-disable-next-line no-param-reassign
       state.receiveAsset = action.payload;
     },
     invertRateInfo(state) {
-      // eslint-disable-next-line no-param-reassign
       state.invertRateInfo = !state.invertRateInfo;
     },
     setChartDays(state, action: SetChartDays) {
-      // eslint-disable-next-line no-param-reassign
       state.chartDays = action.payload;
     },
   },

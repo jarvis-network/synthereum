@@ -27,7 +27,10 @@ import { setAssetsPrice } from '@/state/slices/assets';
 const isPairReversed = (pair: SubscriptionPair) =>
   reversedPriceFeedPairs.includes(pair);
 
-function getPricesMapFromPriceUpdate({ t, ...data }: PriceUpdate): PricesMap {
+function getPricesMapFromPriceUpdate({
+  t: _,
+  ...data
+}: PriceUpdate): PricesMap {
   const keys = Object.keys(data) as SubscriptionPair[];
 
   return keys.reduce((result, key) => {
@@ -77,11 +80,10 @@ export const priceFeedSubscribeEpic: Epic<
     ),
     concatMap(socket =>
       fromEvent(socket, 'message').pipe(
-        map(event => {
-          return JSON.parse(
-            (event as MessageEvent<string>).data,
-          ) as PriceMessage;
-        }),
+        map(
+          event =>
+            JSON.parse((event as MessageEvent<string>).data) as PriceMessage,
+        ),
         mergeMap(data => {
           const isHistory = Array.isArray(data.t);
 

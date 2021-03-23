@@ -9,8 +9,8 @@ const getRealSymbol = (symbol: ExchangeToken): string => {
   return symbol.substring(1);
 };
 
-export const createPairs = (list: Asset[]): AssetPair[] => {
-  return list.reduce<AssetPair[]>((result, input) => {
+export const createPairs = (list: Asset[]): AssetPair[] =>
+  list.reduce<AssetPair[]>((result, input) => {
     result.push(
       ...list.reduce<AssetPair[]>((innerResult, output) => {
         if (output === input) {
@@ -27,4 +27,3 @@ export const createPairs = (list: Asset[]): AssetPair[] => {
     );
     return result;
   }, []);
-};

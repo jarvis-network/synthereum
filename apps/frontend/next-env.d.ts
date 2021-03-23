@@ -1,9 +1,17 @@
 /// <reference types="next" />
 /// <reference types="next/types/global" />
 
-declare module 'ric-shim' {
-  declare function ric(cb: Function): void;
-  export = ric;
-}
+declare module '*.md';
 
-declare module "*.md";
+declare module 'ethereum-blockies' {
+  interface Options {
+    seed?: string;
+    size?: number;
+    scale?: number;
+    color?: string;
+    bgcolor?: string;
+    spotcolor?: string;
+  }
+
+  export function create(opts: Options);
+}

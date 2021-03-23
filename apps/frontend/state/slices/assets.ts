@@ -22,11 +22,9 @@ const assetsSlice = createSlice({
         const assetIndex = state.list.findIndex(i => i.pair === pair);
 
         if (assetIndex < 0) {
-          // eslint-disable-next-line no-continue
           continue;
         }
 
-        // eslint-disable-next-line no-param-reassign
         state.list[assetIndex].price = new FPN(payload[pair]);
       }
     },

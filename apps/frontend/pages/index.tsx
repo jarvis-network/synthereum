@@ -94,7 +94,6 @@ export default function Home() {
   useEffect(() => {
     dispatch(subscribeAllPrices());
 
-    // eslint-disable-next-line consistent-return
     return () => {
       dispatch(closeConnection());
     };

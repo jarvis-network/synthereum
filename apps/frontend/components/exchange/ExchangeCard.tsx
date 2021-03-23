@@ -350,18 +350,19 @@ export const ExchangeCard: React.FC = () => {
         data: AssetPair[],
         { query: searchQuery }: { query: string },
       ) => {
-        const query = searchQuery.toLowerCase().replace(/\//g, '');
+        searchQuery = searchQuery.toLowerCase().replace(/\//g, '');
 
         return data.filter(item => {
           const index = item.index.toLowerCase();
 
           // Early return on match
-          if (index.includes(query)) {
+          if (index.includes(searchQuery)) {
             return true;
           }
 
           // Calculate distance, but not added chairs (ie. uds <> usdeur has distance 4)
-          const distance = damlev(query, index) - (6 - query.length);
+          const distance =
+            damlev(searchQuery, index) - (6 - searchQuery.length);
 
           return distance < 2;
         });
@@ -373,7 +374,6 @@ export const ExchangeCard: React.FC = () => {
           setSearchOpen(true);
         }
       },
-      onFocus: (event: React.FocusEvent<HTMLInputElement>) => {},
       className: CUSTOM_SEARCH_BAR_CLASS,
       value: query,
       open: searchOpen,
@@ -382,7 +382,7 @@ export const ExchangeCard: React.FC = () => {
   );
 
   if (searchOpen) {
-    searchBarProps.render = data => {
+    searchBarProps.render = ({ filteredData }) => {
       const getTrProps = (_: any, rowInfo?: RowInfo) => ({
         onClick: () => handleSelected(rowInfo!.original),
         style: {
@@ -394,10 +394,10 @@ export const ExchangeCard: React.FC = () => {
         <GridContainer>
           <StyledGrid
             columns={grid.columns}
-            data={data.filteredData}
+            data={filteredData}
             showPagination={false}
             getTrProps={getTrProps}
-            pageSize={data.filteredData.length}
+            pageSize={filteredData.length}
           />
         </GridContainer>
       );

@@ -31,7 +31,7 @@ interface TransactionBase {
 }
 
 // Represents a plain ETH or ERC20 token transfer transaction
-interface RegularTransaction extends TransactionBase {
+export interface RegularTransaction extends TransactionBase {
   // 'send' if `from` is our address, 'receive' if `to` is ours, and 'sendToSelf' if both.
   type: 'send' | 'receive' | 'sendToSelf';
   from: string;

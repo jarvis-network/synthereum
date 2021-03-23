@@ -125,9 +125,9 @@ export const ChartCard: React.FC = () => {
   const rate = useRate(receiveSymbol, paySymbol);
   const wholeRangeChange = getWholeRangeChange(chartData);
 
-  const customTooltip = (info: TooltipProps<number, string>) => {
-    return <div>{formatTimestamp(info.label)}</div>;
-  };
+  const customTooltip = (info: TooltipProps<number, string>) => (
+    <div>{formatTimestamp(info.label)}</div>
+  );
 
   const resetChart = () => {
     setChange(null);
@@ -190,9 +190,7 @@ export const ChartCard: React.FC = () => {
     diffPerc: wholeRangeChangePerc,
   } = getValuesDiff(beginningPayload, currentPayload);
 
-  const isChartVisible = () => {
-    return isApplicationReady && chartData.length;
-  };
+  const isChartVisible = () => isApplicationReady && chartData.length;
 
   const chart = isChartVisible() ? (
     <ResponsiveContainer>

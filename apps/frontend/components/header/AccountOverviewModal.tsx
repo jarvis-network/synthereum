@@ -149,7 +149,7 @@ export const AccountOverviewModal: FC = () => {
 
   const getMetaMaskHandler = () => {
     if (!isLoggedInViaMetaMask) {
-      return undefined;
+      return;
     }
 
     return handleAddToMetamaskClick;
@@ -176,9 +176,10 @@ export const AccountOverviewModal: FC = () => {
       .filter(Boolean) as AssetRowProps[];
   }, [wallet, assets]);
 
-  const total = useMemo(() => {
-    return FPN.sum(items.map(_item => _item.value).filter(Boolean) as FPN[]);
-  }, [items]);
+  const total = useMemo(
+    () => FPN.sum(items.map(_item => _item.value).filter(Boolean) as FPN[]),
+    [items],
+  );
 
   const hasWallet = Object.keys(wallet).length > 0;
 

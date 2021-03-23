@@ -1,22 +1,21 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-export const useSubscriber = (
-  subscriber: Function,
-  unsubscriber?: Function,
-) => {
+export function useSubscriber(
+  subscribe: () => void,
+  unsubscribe?: () => void,
+): void {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(subscriber());
+    dispatch(subscribe());
 
-    if (!unsubscriber) {
+    if (!unsubscribe) {
       return;
     }
 
-    // eslint-disable-next-line consistent-return
     return () => {
-      dispatch(unsubscriber());
+      dispatch(unsubscribe());
     };
   }, []);
-};
+}

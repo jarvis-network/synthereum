@@ -12,10 +12,9 @@ interface Action<T> {
 
 export const fetchTransactionsHistory = createAsyncThunk(
   'transactions/fetch',
-  (realmAgent: RealmAgent): Promise<Transaction[]> => {
+  (_: RealmAgent): Promise<Transaction[]> =>
     // @todo some logic here
-    return Promise.resolve([]);
-  },
+    Promise.resolve([]),
 );
 
 export const subscribeTransactionsHistory = createAsyncThunk(
@@ -41,7 +40,6 @@ const transactionsSlice = createSlice({
       state,
       { payload: transactions }: Action<Transaction[]>,
     ) => {
-      // eslint-disable-next-line no-param-reassign
       state.list = transactions;
     },
     [logoutAction.type](state) {

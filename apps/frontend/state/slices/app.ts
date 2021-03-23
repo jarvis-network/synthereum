@@ -5,7 +5,6 @@ import { initialState } from '@/state/initialState';
 import { resetSwapAction } from '../actions';
 
 import { fetchWalletBalances } from './wallet';
-import { addHistory } from './prices';
 import { login } from './auth';
 
 interface SetModalVisibilityAction {

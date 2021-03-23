@@ -22,8 +22,6 @@ const text = (
   </>
 );
 
-export const GDPRPopup = () => {
-  return (
-    <AcceptBox text={text} buttonText="Allow all cookies" store="jarvis/gdpr" />
-  );
-};
+export const GDPRPopup = () => (
+  <AcceptBox text={text} buttonText="Allow all cookies" store="jarvis/gdpr" />
+);

@@ -40,7 +40,6 @@ const pricesSlice = createSlice({
       // Save history data for each pair in map
       for (const pair of pairs) {
         if (!state.feed[pair]) {
-          // eslint-disable-next-line no-param-reassign
           state.feed[pair] = [];
         }
 
@@ -50,6 +49,7 @@ const pricesSlice = createSlice({
         // Iterate in t, each index describe time point for pair
         // Sort t to check lower timestamp earlier to not sort values later
         for (const index in t) {
+          if (!Object.prototype.hasOwnProperty.call(t, index)) continue;
           const rawValue = values[index];
           const time = t[index];
           const [open, high, low, close] = isPairReversed(pair)
@@ -72,7 +72,6 @@ const pricesSlice = createSlice({
           if (timeIndex < 0) {
             state.feed[pair].push(timeValue);
           } else {
-            // eslint-disable-next-line no-param-reassign
             state.feed[pair][timeIndex] = timeValue;
           }
         }
@@ -92,7 +91,6 @@ const pricesSlice = createSlice({
       for (const pair of pairs) {
         // Omit if historical data does not exist yet
         if (!state.feed[pair] || !state.feed[pair].length) {
-          // eslint-disable-next-line no-continue
           continue;
         }
 
@@ -110,7 +108,6 @@ const pricesSlice = createSlice({
         // Handle new price point
         if (timeIndex < 0) {
           // Set latest item as historical
-          // eslint-disable-next-line no-param-reassign
           state.feed[pair][oldTimeIndex].history = true;
 
           // If we need to push new value we need to reset item to current value
@@ -123,7 +120,6 @@ const pricesSlice = createSlice({
             history: true,
           });
 
-          // eslint-disable-next-line no-continue
           continue;
         }
 
@@ -145,7 +141,6 @@ const pricesSlice = createSlice({
           timeValue.low = value;
         }
 
-        // eslint-disable-next-line no-param-reassign
         state.feed[pair][timeIndex] = timeValue;
       }
     },

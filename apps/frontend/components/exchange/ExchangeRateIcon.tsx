@@ -37,11 +37,9 @@ interface Props {
   onClick: (event: MouseEvent) => void;
 }
 
-export const ExchangeRateIcon: React.FC<Props> = ({ onClick }) => {
-  return (
-    <Container onClick={onClick}>
-      <Icon icon="BsArrowLeft" />
-      <Icon icon="BsArrowRight" />
-    </Container>
-  );
-};
+export const ExchangeRateIcon: React.FC<Props> = ({ onClick }) => (
+  <Container onClick={onClick}>
+    <Icon icon="BsArrowLeft" />
+    <Icon icon="BsArrowRight" />
+  </Container>
+);

@@ -5,7 +5,7 @@ import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 
 import { logoutAction } from '@/state/actions';
-import { initialState, State } from '@/state/initialState';
+import { initialState } from '@/state/initialState';
 
 interface Action<T> {
   payload: T;
@@ -47,7 +47,6 @@ const walletSlice = createSlice({
       { payload: balances }: Action<WalletBalance[]>,
     ) => {
       balances.forEach(({ asset, ...value }) => {
-        // eslint-disable-next-line no-param-reassign
         state[asset] = value;
       });
     },

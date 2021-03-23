@@ -57,7 +57,7 @@ const render = () => {
   const isMobile = useIsMobile();
   const notify = useNotifications();
 
-  const handleLogIn = async () => {
+  const handleLogIn = () => {
     dispatch(setAuthModalVisible(true));
   };
 

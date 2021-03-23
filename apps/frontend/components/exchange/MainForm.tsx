@@ -31,8 +31,6 @@ import { Loader } from '../Loader';
 import { Asset } from './Asset';
 import { Max } from './Max';
 
-interface Props {}
-
 const Container = styled.div`
   height: 100%;
   padding-top: 30px;
@@ -143,7 +141,7 @@ const handleKeyPress = (
   }
 };
 
-export const MainForm: React.FC<Props> = () => {
+export const MainForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const {
