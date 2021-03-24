@@ -168,12 +168,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     )
     nonReentrant()
   {
-    require(
-      _getIdentifierWhitelist().isIdentifierSupported(
-        _positionManagerData.priceFeedIdentifier
-      ),
-      'Unsupported price identifier'
-    );
     positionManagerData.synthereumFinder = _positionManagerData
       .synthereumFinder;
     positionManagerData.withdrawalLiveness = _positionManagerData
@@ -487,19 +481,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     returns (PositionData storage)
   {
     return positions[sponsor];
-  }
-
-  function _getIdentifierWhitelist()
-    internal
-    view
-    returns (IdentifierWhitelistInterface)
-  {
-    return
-      IdentifierWhitelistInterface(
-        feePayerData.finder.getImplementationAddress(
-          OracleInterfaces.IdentifierWhitelist
-        )
-      );
   }
 
   function _onlyCollateralizedPosition(address sponsor) internal view {
