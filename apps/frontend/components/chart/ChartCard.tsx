@@ -100,6 +100,11 @@ const ChartContainer = styled.div`
   overflow: hidden;
   width: 100%;
   height: 100%;
+
+  @media screen and (max-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    height: calc(100% - 165px);
+  }
 `;
 
 export const ChartCard: React.FC = () => {

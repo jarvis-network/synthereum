@@ -59,7 +59,6 @@ export interface State {
     isExchangeConfirmationVisible: boolean;
     isWindowLoaded: boolean;
     isExchangeLoaded: boolean;
-    isChartLoaded: boolean;
     mobileTab: number;
   };
   auth: AuthState;
@@ -111,7 +110,6 @@ export const initialState: State = {
     isExchangeConfirmationVisible: false,
     isWindowLoaded: false,
     isExchangeLoaded: true, // will become false on user sign in
-    isChartLoaded: false,
     mobileTab: 1,
   },
   auth: null,

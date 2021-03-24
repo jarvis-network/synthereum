@@ -59,7 +59,7 @@ const appSlice = createSlice({
     setWindowLoaded(state, action: SetModalVisibilityAction) {
       return {
         ...state,
-        isWindowLoaded: action.payload
+        isWindowLoaded: action.payload,
       };
     },
     setMobileTab(state, action: SetMobileTabAction) {
@@ -86,13 +86,7 @@ const appSlice = createSlice({
     [fetchWalletBalances.fulfilled.type](state) {
       return {
         ...state,
-        isExchangeLoaded: true
-      };
-    },
-    [addHistory.type](state) {
-      return {
-        ...state,
-        isChartLoaded: true
+        isExchangeLoaded: true,
       };
     },
   },

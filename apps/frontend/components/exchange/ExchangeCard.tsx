@@ -45,11 +45,12 @@ import { OnMobile } from '@/components/OnMobile';
 
 import { createPairs } from '@/utils/createPairs';
 
+import { isAppReadySelector } from '@/state/selectors';
+
 import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
 import { SwapConfirm } from './SwapConfirm';
-import { isAppReadySelector } from '@/state/selectors';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 

@@ -1,3 +1,4 @@
-import { State } from "@/state/initialState";
+import { State } from '@/state/initialState';
 
-export const isAppReadySelector = ({ app }: State) => app.isChartLoaded && app.isExchangeLoaded && app.isWindowLoaded;
+export const isAppReadySelector = ({ app }: State) =>
+  app.isExchangeLoaded && app.isWindowLoaded;

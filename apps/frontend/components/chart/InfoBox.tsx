@@ -25,9 +25,11 @@ const Box = styled.div`
   justify-content: flex-start;
   width: 100%;
   height: auto;
-  min-height: 116.5px;
-  padding-bottom: 30px;
+  min-height: 86.5px;
+  margin-bottom: 30px;
   box-sizing: border-box;
+  border-radius: ${props => props.theme.borderRadius.m};
+  overflow: hidden;
 `;
 
 const Symbols = styled.div`
@@ -224,7 +226,7 @@ const InfoBox: React.FC<Props> = ({
 
   const isInfoBoxVisible = () => {
     return isApplicationReady && value;
-  }
+  };
 
   const selectedPair = `${paySymbol} / ${receiveSymbol}`;
 
