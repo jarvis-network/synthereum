@@ -29,6 +29,10 @@
     "ui": {
       "tags": []
     },
+    "toolkit": {
+      "tags": [],
+      "implicitDependencies": ["ui"]
+    },
     "contracts": {
       "tags": [],
       "implicitDependencies": ["web3-utils"]
@@ -43,11 +47,11 @@
     },
     "frontend": {
       "tags": [],
-      "implicitDependencies": ["ui", "contracts"]
+      "implicitDependencies": ["ui", "toolkit", "contracts"]
     },
     "borrowing": {
       "tags": [],
-      "implicitDependencies": ["ui", "contracts"]
+      "implicitDependencies": ["ui", "toolkit", "contracts"]
     },
     "cli": {
       "tags": [],

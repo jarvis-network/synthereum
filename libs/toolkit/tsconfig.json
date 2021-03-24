@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.frontend.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "outDir": "dist",
+    "noEmit": false
+  },
+  "include": ["src"]
+}
