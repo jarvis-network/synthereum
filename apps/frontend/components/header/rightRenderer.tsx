@@ -24,14 +24,20 @@ import { useAuth } from '@/utils/useAuth';
 import { useIsMobile } from '@/utils/useIsMobile';
 import { isAppReadySelector } from '@/state/selectors';
 
-const Container = styled.div`
+const Container = styled.div<{ hasContent: boolean }>`
   height: 38px;
   width: 310px;
-  border-radius: ${props => props.theme.borderRadius.s};
-  overflow: hidden;
+
+  ${props =>
+    props.hasContent
+      ? ''
+      : `
+    border-radius: ${props.theme.borderRadius.m};
+    overflow: hidden;
+  `}
 
   @media screen and (max-width: ${props =>
-      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     width: 185px;
   }
 `;
@@ -129,7 +135,7 @@ const render = () => {
   ) : null;
 
   return (
-    <Container>
+    <Container hasContent={!!content}>
       <Skeleton>{content}</Skeleton>
     </Container>
   );

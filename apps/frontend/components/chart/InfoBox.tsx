@@ -19,7 +19,7 @@ import { createPairs } from '@/utils/createPairs';
 import { styledScrollbars } from '@/utils/styleMixins';
 import { isAppReadySelector } from '@/state/selectors';
 
-const Box = styled.div`
+const Box = styled.div<{ hasContent: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -28,8 +28,14 @@ const Box = styled.div`
   min-height: 86.5px;
   margin-bottom: 30px;
   box-sizing: border-box;
-  border-radius: ${props => props.theme.borderRadius.m};
-  overflow: hidden;
+
+  ${props =>
+    props.hasContent
+      ? ''
+      : `
+    border-radius: ${props.theme.borderRadius.m};
+    overflow: hidden;
+  `}
 `;
 
 const Symbols = styled.div`
@@ -276,7 +282,7 @@ const InfoBox: React.FC<Props> = ({
   ) : null;
 
   return (
-    <Box>
+    <Box hasContent={!!content}>
       <Skeleton>{content}</Skeleton>
     </Box>
   );
