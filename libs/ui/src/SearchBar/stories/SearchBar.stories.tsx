@@ -110,9 +110,7 @@ const grid = {
     {
       key: 'flag',
       type: ColumnType.CustomCell,
-      cell: ({ original }: CellInfo) => {
-        return <Flag flag={original.flag} />;
-      },
+      cell: ({ original }: CellInfo) => <Flag flag={original.flag} />,
       className: 'flag',
     },
     {
@@ -172,55 +170,46 @@ const grid = {
   ],
 };
 
-export const WithSingleGrid = () => {
-  return (
-    <StyledSearchBar
-      data={grid.data}
-      queryFilterProp="name"
-      render={data => {
-        return (
-          <StyledGrid
-            columns={grid.columns}
-            data={data.filteredData}
-            showPagination={false}
-          />
-        );
-      }}
-    />
-  );
-};
+export const WithSingleGrid = () => (
+  <StyledSearchBar
+    data={grid.data}
+    queryFilterProp="name"
+    render={data => (
+      <StyledGrid
+        columns={grid.columns}
+        data={data.filteredData}
+        showPagination={false}
+      />
+    )}
+  />
+);
 
 const customFilter: PropFilterFn = (data, { query }) => {
   const q = query.toLowerCase();
 
-  return data.filter(item => {
-    return (
+  return data.filter(
+    item =>
       item.name.toLowerCase().includes(q) ||
-      item.full_name.toLowerCase().includes(q)
-    );
-  });
-};
-
-export const WithCustomFiltering = () => {
-  return (
-    <>
-      <div>You can search by name or full name here</div>
-      <StyledSearchBar
-        data={grid.data}
-        filter={customFilter}
-        render={data => {
-          return (
-            <StyledGrid
-              columns={grid.columns}
-              data={data.filteredData}
-              showPagination={false}
-            />
-          );
-        }}
-      />
-    </>
+      item.full_name.toLowerCase().includes(q),
   );
 };
+
+export const WithCustomFiltering = () => (
+  <>
+    <div>You can search by name or full name here</div>
+    <StyledSearchBar
+      data={grid.data}
+      filter={customFilter}
+      render={data => (
+        <StyledGrid
+          columns={grid.columns}
+          data={data.filteredData}
+          showPagination={false}
+        />
+      )}
+    />
+  </>
+);
 
 export const WithTabsAndSplitGridAndFilteringByFullName = () => {
   const [selected, setSelected] = useState(0);

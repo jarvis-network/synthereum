@@ -9,18 +9,15 @@ export default function useHover<T extends HTMLElement>() {
 
   useEffect(() => {
     const node = ref.current;
+    if (!node) return;
 
-    if (node) {
-      node.addEventListener('mouseover', handleMouseOver);
-      node.addEventListener('mouseleave', handleMouseOut);
+    node.addEventListener('mouseover', handleMouseOver);
+    node.addEventListener('mouseleave', handleMouseOut);
 
-      return () => {
-        node.removeEventListener('mouseover', handleMouseOver);
-        node.removeEventListener('mouseleave', handleMouseOut);
-      };
-    }
-
-    return () => {}; // fix for consistent-return eslint rule
+    return () => {
+      node.removeEventListener('mouseover', handleMouseOver);
+      node.removeEventListener('mouseleave', handleMouseOut);
+    };
   }, [ref.current]);
 
   return [ref, value] as const;

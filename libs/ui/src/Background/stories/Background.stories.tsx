@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import { Background } from "../Background";
-import { images } from "../../AnimatedBackground/stories/assets";
-import { styled } from "../../Theme";
+import { Background } from '../Background';
+import { images } from '../../AnimatedBackground/stories/assets';
+import { styled } from '../../Theme';
 
 export default {
-  title: "background/Background",
-  component: Background
-}
+  title: 'background/Background',
+  component: Background,
+};
 
 const Container = styled.div`
   height: 500px;
@@ -16,6 +16,6 @@ const Container = styled.div`
 
 export const BasicBackground = () => (
   <Container>
-    <Background image={images['./desert_background.svg']}/>
+    <Background image={images['./desert_background.svg']} />
   </Container>
-)
+);

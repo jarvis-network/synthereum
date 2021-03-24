@@ -18,6 +18,6 @@ const FlagImage = styled.img<Pick<FlagProps, 'size'>>`
   height: ${props => getSize(props.size)}px;
 `;
 
-export const Flag: React.FC<FlagProps> = ({ flag, ...props }) => {
-  return <FlagImage alt="" {...props} src={files[flag]} />;
-};
+export const Flag: React.FC<FlagProps> = ({ flag, ...props }) => (
+  <FlagImage alt="" {...props} src={files[flag]} />
+);

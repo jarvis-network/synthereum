@@ -37,7 +37,10 @@
       "generators": {},
       "targets": {
         "lint": {
-          "executor": "@nrwl/linter:eslint"
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/ui/src/**/*.{ts,tsx}"]
+          }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",

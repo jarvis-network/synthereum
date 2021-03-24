@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { Tabs, TabsProps } from '../Tabs';
 import { styled } from '../Theme';
 
-export interface CardTabsProps extends TabsProps {}
+export type CardTabsProps = TabsProps;
 
 const Container = styled.div`
   position: relative;

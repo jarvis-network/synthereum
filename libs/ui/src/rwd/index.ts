@@ -1,2 +1,2 @@
-export { OnDesktop } from "./OnDesktop";
-export { OnMobile } from "./OnMobile";
+export { OnDesktop } from './OnDesktop';
+export { OnMobile } from './OnMobile';

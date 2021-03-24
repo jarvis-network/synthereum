@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 
+import { noop } from '../common/utils';
+
 interface BackgroundHook {
   setOffset: (offset: string) => void;
   offset: string;
 }
 
 const BackgroundContext = React.createContext<BackgroundHook>({
-  setOffset: () => {},
+  setOffset: noop,
   offset: '0',
 });
 

@@ -189,11 +189,13 @@ describe('deepMerge', () => {
   });
 
   it('should ignore inherited members', () => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     function A() {}
     A.prototype.protoMember = 'proton';
     const a = new (A as any)();
     a.a = 1;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     function B() {}
     B.prototype.protoMember = 'neutron';
     const b = new (B as any)();

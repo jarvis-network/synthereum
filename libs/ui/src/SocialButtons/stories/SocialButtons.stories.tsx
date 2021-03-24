@@ -1,13 +1,13 @@
 import React from 'react';
 
+import { noop } from '../../common/utils';
+
 import { SocialButtons } from '..';
 
 export default {
   title: 'SocialButtons',
   component: SocialButtons,
 };
-
-const noop = () => {};
 
 export const Default = () => <SocialButtons onItemSelect={noop} />;
 

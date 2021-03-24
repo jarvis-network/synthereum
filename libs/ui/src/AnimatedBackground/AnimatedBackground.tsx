@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { styled } from '../Theme';
-import { useBackground } from './BackgroundProvider';
+
 import { useWindowSize } from '../hooks/useWindowSize';
+
+import { useBackground } from './BackgroundProvider';
 
 interface IBackgroundProps {
   url: string;

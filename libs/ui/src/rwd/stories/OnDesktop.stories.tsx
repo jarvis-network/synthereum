@@ -1,18 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import {OnDesktop} from "../OnDesktop";
+import { OnDesktop } from '../OnDesktop';
 
 export default {
-  title: "common/OnDesktop",
-  component: OnDesktop
-}
+  title: 'common/OnDesktop',
+  component: OnDesktop,
+};
 
 export const Basic = () => (
   <div>
     On desktop device (resolution) you will see a dog emoji here:
-
-    <OnDesktop>
-      🐕
-    </OnDesktop>
+    <OnDesktop>🐕</OnDesktop>
   </div>
-)
+);

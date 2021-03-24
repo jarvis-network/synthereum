@@ -55,12 +55,10 @@ export const ColoredBorderPanel: FC<ColoredBorderPanelProps> = ({
   footer,
   size = 'normal',
   color,
-}) => {
-  return (
-    <Container size={size} color={color}>
-      {header && <HeaderContainer>{header}</HeaderContainer>}
-      <ContentContainer>{children}</ContentContainer>
-      {footer && <FooterContainer>{footer}</FooterContainer>}
-    </Container>
-  );
-};
+}) => (
+  <Container size={size} color={color}>
+    {header && <HeaderContainer>{header}</HeaderContainer>}
+    <ContentContainer>{children}</ContentContainer>
+    {footer && <FooterContainer>{footer}</FooterContainer>}
+  </Container>
+);

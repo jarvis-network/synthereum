@@ -101,13 +101,11 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
   isExpanded,
   ...props
 }) => {
-  const linksList = links.map(({ name, ...rest }) => {
-    return (
-      <CustomLink {...rest} key={name}>
-        {name}
-      </CustomLink>
-    );
-  });
+  const linksList = links.map(({ name, ...rest }) => (
+    <CustomLink {...rest} key={name}>
+      {name}
+    </CustomLink>
+  ));
 
   return (
     <Dropdown

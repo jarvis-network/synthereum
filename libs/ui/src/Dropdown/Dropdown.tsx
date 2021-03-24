@@ -80,7 +80,7 @@ export const Dropdown: FC<DropdownProps> = ({
 
   useEffect(() => {
     if (blockOutsideCollapse) {
-      return () => {}; // fix for consistent-return eslint rule
+      return;
     }
 
     function handleClickOutside(event: MouseEvent) {

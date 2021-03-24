@@ -1,1 +1,1 @@
-export { BackgroundPreloader } from "./BackgroundPreloader"
+export { BackgroundPreloader } from './BackgroundPreloader';

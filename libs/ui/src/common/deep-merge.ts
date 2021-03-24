@@ -30,7 +30,7 @@ const customGlobal: typeof globalThis = (global as any) ?? window;
 export function deepSanitizedClone<T extends PrimitiveType>(x: T): T;
 export function deepSanitizedClone<T extends TypedArray>(x: T): T;
 export function deepSanitizedClone<T extends U[], U>(x: T): T;
-export function deepSanitizedClone<T extends {}>(x: T): T;
+export function deepSanitizedClone<T extends Record<string, unknown>>(x: T): T;
 export function deepSanitizedClone<T extends unknown>(x: T) {
   if (typeof x !== 'object' || !x) return x;
   if (
@@ -68,9 +68,9 @@ export function deepSanitizedClone<T extends unknown>(x: T) {
   return result as T;
 }
 
-const isObj = (x: unknown): x is object => typeof x === 'object' && !!x;
+const isObj = (x: unknown): x is Obj => typeof x === 'object' && !!x;
 
-type Obj = Record<string, any>;
+type Obj = Record<string, unknown>;
 
 export function deepMerge<T extends Obj, R extends Obj[]>(
   first: T,

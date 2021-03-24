@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { select, text } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
 
 import { ThemeProvider } from '../../Theme';
 import { ThemeNameType } from '../../Theme/types';
@@ -8,13 +9,12 @@ import { ThemeNameType } from '../../Theme/types';
 import { ColoredBorderPanel } from '../../ColoredBorderPanel';
 
 import { AccountSummary } from '..';
+import { noop } from '../../common/utils';
 
 export default {
   title: 'Account/AccountSummary',
   component: AccountSummary,
 };
-
-const noop = () => {};
 
 const menu = [
   {
@@ -93,7 +93,7 @@ export const Interactive = () => {
           onThemeChange={setTheme}
           onLogin={() => setLoggedIn(true)}
           onLogout={() => setLoggedIn(false)}
-          onHelp={() => {}}
+          onHelp={action('Help requested')}
         />
       </ColoredBorderPanel>
     </ThemeProvider>

@@ -54,7 +54,7 @@ export const ModalContent: FC<ModalContentProps> = ({
 }) => (
   <Modal isOpened={isOpened} onClose={onClose} overlayClassName={className}>
     <Container className="modal-container">
-      <Heading className={"modal-heading"}>
+      <Heading className="modal-heading">
         <Title>{title}</Title>
         <IconButton
           onClick={onClose}
@@ -64,7 +64,7 @@ export const ModalContent: FC<ModalContentProps> = ({
           inline
         />
       </Heading>
-      <Content className={"modal-content"}>{children}</Content>
+      <Content className="modal-content">{children}</Content>
     </Container>
   </Modal>
 );

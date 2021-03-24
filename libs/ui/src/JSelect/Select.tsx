@@ -111,9 +111,10 @@ export const Select: React.FC<SelectProps> = ({
   options,
   className,
 }) => {
-  const iOptions = useMemo(() => {
-    return options.map(makeIOption.bind(null, rowsText));
-  }, [options, rowsText]);
+  const iOptions = useMemo(
+    () => options.map(makeIOption.bind(null, rowsText)),
+    [options, rowsText],
+  );
 
   const selectedItem =
     typeof selected === 'string' || typeof selected === 'number'

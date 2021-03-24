@@ -52,15 +52,13 @@ export const StatefulGroup = () => {
   );
 };
 
-export const CustomStyles = () => {
-  return (
-    <RadioGroup name="sex" style={{ backgroundColor: 'yellow' }}>
-      <Radio value="male" style={{ color: 'red' }}>
-        I am the male label
-      </Radio>
-      <Radio value="female" style={{ color: 'blue' }}>
-        I am the female label
-      </Radio>
-    </RadioGroup>
-  );
-};
+export const CustomStyles = () => (
+  <RadioGroup name="sex" style={{ backgroundColor: 'yellow' }}>
+    <Radio value="male" style={{ color: 'red' }}>
+      I am the male label
+    </Radio>
+    <Radio value="female" style={{ color: 'blue' }}>
+      I am the female label
+    </Radio>
+  </RadioGroup>
+);

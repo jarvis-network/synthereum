@@ -1,4 +1,4 @@
-import { styled } from "../Theme";
+import { styled } from '../Theme';
 
 export const Background = styled.div<{ image: string }>`
   height: 100%;

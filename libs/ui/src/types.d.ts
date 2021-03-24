@@ -1,5 +1,6 @@
 declare module '*.ttf';
 declare module '*.png';
+declare module '*.svg';
 
 /*
  * DeepPartial works similar to Partial generic,

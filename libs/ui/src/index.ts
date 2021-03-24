@@ -1,5 +1,9 @@
 export { AcceptBox } from './AcceptBox';
-export { AnimatedBackground, BackgroundProvider, useBackground } from './AnimatedBackground';
+export {
+  AnimatedBackground,
+  BackgroundProvider,
+  useBackground,
+} from './AnimatedBackground';
 export { Background } from './Background';
 export { BackgroundPreloader } from './BackgroundPreloader';
 export { Button } from './Button';

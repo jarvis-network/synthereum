@@ -39,10 +39,9 @@ const getValue = (selectorOrValue: SelectorOrValue, theme: ThemeConfig) => {
  */
 export const themeValue = (config: Config, defaultValue?: SelectorOrValue) => ({
   theme,
-}: ThemeValueProps): string => {
-  return config[theme.name]
+}: ThemeValueProps): string =>
+  config[theme.name]
     ? getValue(config[theme.name]!, theme)
     : defaultValue
     ? getValue(defaultValue, theme)
     : '';
-};

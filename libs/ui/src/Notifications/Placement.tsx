@@ -11,7 +11,10 @@ interface Props {
 
 const DEFAULT_TIME = 5000;
 
-export const NotificationsPlacement: React.FC<Props> = ({ name, className }) => {
+export const NotificationsPlacement: React.FC<Props> = ({
+  name,
+  className,
+}) => {
   const [list, setList] = useState<NotificationWithId[]>([]);
   const { registerPlacement } = useNotifications();
 
@@ -35,9 +38,7 @@ export const NotificationsPlacement: React.FC<Props> = ({ name, className }) => 
     ]);
   };
 
-  useEffect(() => {
-    return registerPlacement(name, add);
-  }, [name]);
+  useEffect(() => registerPlacement(name, add), [name]);
 
   const notifs = list.map(n => {
     const rm = () => remove(n.id);

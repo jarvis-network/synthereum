@@ -29,29 +29,25 @@ const TooltipContent = () => (
 );
 const TooltipComponent = () => <div>Hover on me</div>;
 
-export const Default = () => {
-  return (
-    <ThemeProvider theme="light">
-      <Wrapper>
-        <Tooltip tooltip={<TooltipContent />} position="right">
-          <TooltipComponent />
-        </Tooltip>
-      </Wrapper>
-    </ThemeProvider>
-  );
-};
+export const Default = () => (
+  <ThemeProvider theme="light">
+    <Wrapper>
+      <Tooltip tooltip={<TooltipContent />} position="right">
+        <TooltipComponent />
+      </Tooltip>
+    </Wrapper>
+  </ThemeProvider>
+);
 
-export const CustomWidth = () => {
-  return (
-    <ThemeProvider theme="light">
-      <Wrapper>
-        <Tooltip tooltip={<TooltipContent />} position="right" width="300px">
-          <TooltipComponent />
-        </Tooltip>
-      </Wrapper>
-    </ThemeProvider>
-  );
-};
+export const CustomWidth = () => (
+  <ThemeProvider theme="light">
+    <Wrapper>
+      <Tooltip tooltip={<TooltipContent />} position="right" width="300px">
+        <TooltipComponent />
+      </Tooltip>
+    </Wrapper>
+  </ThemeProvider>
+);
 export const Knobs = () => {
   const position = select('Position', positionList, positionList[0]);
   const width = select('Width', widthList, widthList[0]);

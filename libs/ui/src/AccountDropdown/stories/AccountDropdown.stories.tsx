@@ -4,13 +4,12 @@ import { ThemeProvider } from '../../Theme';
 import { ThemeNameType } from '../../Theme/types';
 
 import { AccountDropdown } from '..';
+import { noop } from '../../common/utils';
 
 export default {
   title: 'Account/AccountDropdown',
   component: AccountDropdown,
 };
-
-const noop = () => {};
 
 export const Default = () => (
   <AccountDropdown

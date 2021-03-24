@@ -49,9 +49,7 @@ export const SocialButtonsItem: FC<SocialButtonsItemProps> = ({
 }) => {
   const [ref, isHover] = useHover<HTMLSpanElement>();
 
-  useEffect(() => {
-    return isHover ? onHover(item) : onUnhover();
-  }, [isHover]);
+  useEffect(() => (isHover ? onHover(item) : onUnhover()), [isHover]);
 
   return (
     <span ref={ref}>

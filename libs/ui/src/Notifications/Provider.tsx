@@ -71,6 +71,4 @@ export const NotificationsProvider: React.FC = ({ children }) => {
   );
 };
 
-export const useNotifications = () => {
-  return useContext(NotificationsContext)!;
-};
+export const useNotifications = () => useContext(NotificationsContext)!;

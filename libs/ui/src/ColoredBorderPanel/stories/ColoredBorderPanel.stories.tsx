@@ -110,24 +110,22 @@ const RowItem = styled.div`
   margin: 10px;
 `;
 
-export const SmallInline = () => {
-  return (
-    <>
-      <RowItem>
-        <ColoredBorderPanel color="success" size="small">
-          First
-        </ColoredBorderPanel>
-      </RowItem>
-      <RowItem>
-        <ColoredBorderPanel color="success" size="small">
-          Second
-        </ColoredBorderPanel>
-      </RowItem>
-      <RowItem>
-        <ColoredBorderPanel color="success" size="small">
-          Third
-        </ColoredBorderPanel>
-      </RowItem>
-    </>
-  );
-};
+export const SmallInline = () => (
+  <>
+    <RowItem>
+      <ColoredBorderPanel color="success" size="small">
+        First
+      </ColoredBorderPanel>
+    </RowItem>
+    <RowItem>
+      <ColoredBorderPanel color="success" size="small">
+        Second
+      </ColoredBorderPanel>
+    </RowItem>
+    <RowItem>
+      <ColoredBorderPanel color="success" size="small">
+        Third
+      </ColoredBorderPanel>
+    </RowItem>
+  </>
+);

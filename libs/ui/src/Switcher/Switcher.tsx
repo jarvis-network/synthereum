@@ -46,22 +46,20 @@ const Button = styled.button<{ isActive: boolean }>`
   }
 `;
 
-export const Switcher: React.FC<Props> = ({ items, onChange, selected }) => {
-  return (
-    <Wrapper>
-      <Container>
-        {items.map((value, key) => (
-          <Button
-            key={value}
-            onClick={() => onChange(value)}
-            isActive={selected === key}
-            type="button"
-            className={selected === key ? 'active' : ''}
-          >
-            {value}
-          </Button>
-        ))}
-      </Container>
-    </Wrapper>
-  );
-};
+export const Switcher: React.FC<Props> = ({ items, onChange, selected }) => (
+  <Wrapper>
+    <Container>
+      {items.map((value, key) => (
+        <Button
+          key={value}
+          onClick={() => onChange(value)}
+          isActive={selected === key}
+          type="button"
+          className={selected === key ? 'active' : ''}
+        >
+          {value}
+        </Button>
+      ))}
+    </Container>
+  </Wrapper>
+);
