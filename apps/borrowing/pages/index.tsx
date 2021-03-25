@@ -17,6 +17,7 @@ const LayoutChart = styled.div`
   min-height: 720px;
   padding: 40px 60px 40px calc(50vw - 510px);
   box-sizing: border-box;
+  background: ${props => props.theme.background.secondary};
 `;
 
 const LayoutWidget = styled(Background)`
