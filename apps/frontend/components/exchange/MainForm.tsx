@@ -257,7 +257,9 @@ export const MainForm: React.FC<Props> = () => {
     ? 'Limit Reached'
     : null;
 
-  const amount = wallet && <Balance>Balance: {wallet.amount.format()}</Balance>;
+  const amount = wallet && (
+    <Balance>Balance: {wallet.amount.format(5)}</Balance>
+  );
 
   return (
     <Container>
