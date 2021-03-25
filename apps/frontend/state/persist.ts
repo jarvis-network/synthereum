@@ -1,6 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit';
 import { RootState } from '@/state/reducer';
-import { cache } from '@/utils/cache';
+import { cache } from '@jarvis-network/app-toolkit';
 
 let lastState: RootState | null = null;
 
@@ -24,7 +24,7 @@ export const createPersistMiddleware = (pathsToStore: string[]) => {
   const persistMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
-    if (cache) {
+    if (typeof window !== 'undefined') {
       const appState: RootState = store.getState();
 
       if (lastState) {
@@ -32,7 +32,7 @@ export const createPersistMiddleware = (pathsToStore: string[]) => {
           const current = get(appState, path.split('.'));
           const previous = get(lastState, path.split('.'));
           if (current !== previous) {
-            cache!.set(`jarvis/state/${path}`, current);
+            cache.set(`jarvis/state/${path}`, current);
           }
         });
       }

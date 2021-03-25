@@ -2,8 +2,10 @@ import { wei } from '@jarvis-network/web3-utils/base/big-number';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
-import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
-import { useCoreObservables } from '@/utils/CoreObservablesContext';
+import {
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
 
 export const useSwap = () => {
   const agent = useBehaviorSubject(useCoreObservables().realmAgent$);

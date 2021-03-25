@@ -3,7 +3,11 @@ import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
 
-import { NotificationsProvider, styled } from '@jarvis-network/ui';
+import {
+  BackgroundPreloader,
+  NotificationsProvider,
+  styled,
+} from '@jarvis-network/ui';
 
 import { AppThemeProvider } from '@/components/AppThemeProvider';
 import { useStore } from '@/state/store';
@@ -16,11 +20,13 @@ import { BehaviorSubject } from 'rxjs';
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-import { CoreObservablesContextProvider } from '@/utils/CoreObservablesContext';
-import { useConstant } from '@/utils/useConstant';
 import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
-import { BackgroundPreloader } from '@/components/BackgroundsPreloader';
-import { ENSHelper } from '@/utils/ens';
+import {
+  CoreObservablesContextProvider,
+  ENSHelper,
+  useConstant,
+} from '@jarvis-network/app-toolkit';
+import { backgroundList } from '@/data/backgrounds';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -60,7 +66,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <AppThemeProvider>
           <NotificationsProvider>
             <AuthFlow />
-            <BackgroundPreloader />
+            <BackgroundPreloader backgrounds={backgroundList} />
             <MainWrapper>
               <Component {...pageProps} />
             </MainWrapper>

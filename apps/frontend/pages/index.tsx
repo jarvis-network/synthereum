@@ -1,26 +1,25 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { styled } from '@jarvis-network/ui';
+import { Background, OnDesktop, OnMobile, styled } from '@jarvis-network/ui';
 
 import { StickyHeader } from '@/components/header/StickyHeader';
-import { Background } from '@/components/Background';
 import {
   ExchangeCard,
   FULL_WIDGET_HEIGHT_PX,
 } from '@/components/exchange/ExchangeCard';
 import { ChartCard } from '@/components/chart/ChartCard';
 import { ChartExchangeCards } from '@/components/ChartExchangeCards';
-import { OnMobile } from '@/components/OnMobile';
-import { OnDesktop } from '@/components/OnDesktop';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setWindowLoaded } from '@/state/slices/app';
 import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
 import { subscribeTransactionsHistory } from '@/state/slices/transactions';
 import { subscribeWalletBalances } from '@/state/slices/wallet';
 import { backgroundMap } from '@/data/backgrounds';
-import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
-import { useCoreObservables } from '@/utils/CoreObservablesContext';
+import {
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
 
 const Layout = styled.div`
   display: flex;

@@ -11,14 +11,10 @@ import {
 import { setRecentActivityModalVisible } from '@/state/slices/app';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Transaction, TransactionIO } from '@/data/transactions';
-import {
-  formatDayLabel,
-  formatTimestamp,
-  formatTransactionStatus,
-  formatTransactionType,
-} from '@/utils/format';
+import { formatTransactionStatus, formatTransactionType } from '@/utils/format';
 import { getEtherscanTransactionURL } from '@/utils/url';
 import BN from 'bn.js';
+import { formatDayLabel, formatTimestamp } from '@jarvis-network/app-toolkit';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 

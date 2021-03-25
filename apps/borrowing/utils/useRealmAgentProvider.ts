@@ -12,8 +12,7 @@ import {
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
 import { useStore } from '@/state/store';
-
-import { NETWORK_ID } from './environment';
+import { NETWORK_ID } from '@jarvis-network/app-toolkit';
 
 const poolVersion = (process.env.NEXT_PUBLIC_POOL_VERSION ||
   'v1') as PoolVersion;

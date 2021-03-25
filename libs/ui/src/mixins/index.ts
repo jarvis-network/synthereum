@@ -1,4 +1,4 @@
-import { ThemeConfig } from '@jarvis-network/ui';
+import { ThemeConfig } from '..';
 
 const scrollBackgroundColor = {
   night: '#2e3541',

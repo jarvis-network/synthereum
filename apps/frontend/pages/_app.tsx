@@ -6,7 +6,16 @@ import { BehaviorSubject } from 'rxjs';
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
 
-import { NotificationsProvider, styled } from '@jarvis-network/ui';
+import {
+  BackgroundPreloader,
+  NotificationsProvider,
+  styled,
+} from '@jarvis-network/ui';
+import {
+  CoreObservablesContextProvider,
+  ENSHelper,
+  useConstant,
+} from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
 
@@ -17,13 +26,10 @@ import { AuthFlow } from '@/components/auth/AuthFlow';
 
 import './_app.scss';
 import 'react-table/react-table.css';
-import { BackgroundPreloader } from '@/components/BackgroundsPreloader';
-import { CoreObservablesContextProvider } from '@/utils/CoreObservablesContext';
-import { useConstant } from '@/utils/useConstant';
-import { ENSHelper } from '@/utils/ens';
 import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
 import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 import { GDPRPopup } from '@/components/GDPRPopup';
+import { backgroundList } from '@/data/backgrounds';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -63,7 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <AppThemeProvider>
           <NotificationsProvider>
             <AuthFlow />
-            <BackgroundPreloader />
+            <BackgroundPreloader backgrounds={backgroundList} />
             <MainWrapper>
               <FullScreenLoader />
               <Component {...pageProps} />

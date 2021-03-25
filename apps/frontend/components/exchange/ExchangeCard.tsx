@@ -11,10 +11,13 @@ import {
   useNotifications,
   NotificationType,
   NotificationsPlacement,
-  useTheme,
   Skeleton,
+  noColorGrid,
+  styledScrollbars,
+  useIsMobile,
+  OnDesktop,
+  OnMobile,
 } from '@jarvis-network/ui';
-import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import damlev from 'damlev';
 
 import { MainForm } from '@/components/exchange/MainForm';
@@ -30,18 +33,13 @@ import {
   setExchangeConfirmationVisible,
 } from '@/state/slices/app';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
-import { Asset, AssetPair } from '@/data/assets';
+import { AssetPair } from '@/data/assets';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { useSwap } from '@/components/exchange/useSwap';
 
 import { resetSwapAction } from '@/state/actions';
-
-import { useIsMobile } from '@/utils/useIsMobile';
-import { OnDesktop } from '@/components/OnDesktop';
-import { OnMobile } from '@/components/OnMobile';
 
 import { createPairs } from '@/utils/createPairs';
 

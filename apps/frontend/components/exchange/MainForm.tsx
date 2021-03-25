@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
 
 import { State } from '@/state/initialState';
 import {
@@ -22,7 +23,6 @@ import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { MAX_MINT_VALUE } from '@/utils/environment';
-import { formatExchangeAmount } from '@/utils/format';
 
 import { TwoIconsButton } from '@/components/TwoIconsButton';
 

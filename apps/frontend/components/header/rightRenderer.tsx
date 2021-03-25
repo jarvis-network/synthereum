@@ -7,8 +7,13 @@ import {
   useWindowSize,
   styled,
   Skeleton,
+  useIsMobile,
 } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
+import {
+  formatWalletAddress,
+  usePrettyName,
+} from '@jarvis-network/app-toolkit';
 
 import { setTheme } from '@/state/slices/theme';
 import {
@@ -16,12 +21,9 @@ import {
   setAuthModalVisible,
 } from '@/state/slices/app';
 import { avatar } from '@/utils/avatar';
-import { formatWalletAddress } from '@/utils/format';
-import { usePrettyName } from '@/utils/usePrettyName';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { useAuth } from '@/utils/useAuth';
-import { useIsMobile } from '@/utils/useIsMobile';
 import { isAppReadySelector } from '@/state/selectors';
 
 const Container = styled.div<{ hasContent: boolean }>`

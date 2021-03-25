@@ -8,14 +8,15 @@ import {
   ColumnType,
   DataGrid,
   Flag,
+  noColorGrid,
   styled,
+  styledScrollbars,
   Tabs,
   themeValue,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
-import { noColorGrid, styledScrollbars } from '@/utils/styleMixins';
 import {
   setChooseAsset,
   setPayAsset,

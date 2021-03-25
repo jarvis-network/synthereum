@@ -1,13 +1,12 @@
-import { FC } from 'react';
-import { styled, Button, useTheme, Flag } from '@jarvis-network/ui';
+import React, { FC } from 'react';
+import { styled, Button, useTheme, Flag, OnMobile } from '@jarvis-network/ui';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
-import { formatExchangeAmount } from '@/utils/format';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import { Loader } from '../Loader';
+import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
 
-import { OnMobile } from '../OnMobile';
+import { Loader } from '../Loader';
 
 import { Fees } from './Fees';
 

@@ -1,2 +1,2 @@
-export { Background } from './Background';
+export { AnimatedBackground } from './AnimatedBackground';
 export { BackgroundProvider, useBackground } from './BackgroundProvider';

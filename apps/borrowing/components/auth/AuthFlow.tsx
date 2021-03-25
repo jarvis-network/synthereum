@@ -15,11 +15,13 @@ import { Terms } from '@/components/auth/flow/Terms';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAuthModalVisible } from '@/state/slices/app';
-import { authFactory, useAuth } from '@/utils/useAuth';
-import { useCoreObservables } from '@/utils/CoreObservablesContext';
-import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
-import { getOnboardConfig } from '@/utils/onboardConfig';
-import { ENSHelper } from '@/utils/ens';
+import { useAuth, authFactory } from '@/utils/useAuth';
+import {
+  ENSHelper,
+  getOnboardConfig,
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
 
 const noop = () => undefined;
 
@@ -124,7 +126,10 @@ const AuthFlow: React.FC = () => {
     }
 
     login(autoLoginWallet)
-      .then(() => {
+      .then(loginResult => {
+        if (!loginResult) {
+          return;
+        }
         notify('You have successfully signed in', {
           type: NotificationType.success,
           icon: '👍🏻',

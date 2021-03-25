@@ -31,7 +31,7 @@
     },
     "toolkit": {
       "tags": [],
-      "implicitDependencies": ["ui"]
+      "implicitDependencies": ["ui", "contracts"]
     },
     "contracts": {
       "tags": [],

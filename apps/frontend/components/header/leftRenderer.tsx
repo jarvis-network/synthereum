@@ -1,5 +1,5 @@
 import React from 'react';
-import { OnDesktop } from '@/components/OnDesktop';
+import { OnDesktop } from '@jarvis-network/ui';
 
 const render = () => {
   return (

@@ -26,6 +26,7 @@ export const usePrettyName = (address: Address | null) => {
       })
       .catch(noop);
 
+    // eslint-disable-next-line consistent-return
     return () => {
       cancelled = true;
       setName(null);

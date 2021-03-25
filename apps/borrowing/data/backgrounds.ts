@@ -3,3 +3,5 @@ export const backgroundMap = {
   dark: '/images/dark-mode-background.jpg',
   night: '/images/night-mode-background.jpg',
 };
+
+export const backgroundList = Object.values(backgroundMap);

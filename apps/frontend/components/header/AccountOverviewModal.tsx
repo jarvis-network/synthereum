@@ -16,8 +16,10 @@ import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
-import { useCoreObservables } from '@/utils/CoreObservablesContext';
-import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
+import {
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
 
 interface BalanceProps {
   total: FPN;
@@ -128,8 +130,8 @@ export const AccountOverviewModal: FC = () => {
     }
 
     const image = icon
-      ? `${location.href}${FlagImagesMap[icon]}`
-      : `${location.href}icons/alpha_192.png`;
+      ? `${window.location.href}${FlagImagesMap[icon]}`
+      : `${window.location.href}icons/alpha_192.png`;
 
     web3.currentProvider.request({
       method: 'wallet_watchAsset',

@@ -8,7 +8,7 @@ export const ligthTheme: ThemeConfig = {
     row: '60px',
   },
   rwd: {
-    breakpoints: [780],
+    breakpoints: [1080],
     desktopIndex: 1,
   },
   common: {

@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.frontend.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "jsx": "preserve",
+    "jsx": "react",
     "outDir": "dist",
     "noEmit": false
   },

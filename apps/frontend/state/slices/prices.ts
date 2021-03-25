@@ -1,9 +1,10 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { formatDate } from '@jarvis-network/app-toolkit';
 
 import { initialState, PricePoint } from '@/state/initialState';
-import { formatDate } from '@/utils/format';
+
 import {
   PriceUpdate,
   HistoricalPrices,

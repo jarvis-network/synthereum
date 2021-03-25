@@ -3,7 +3,6 @@ import { configureStore, Store, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 
 import { getPriceFeedEndpoint } from '@/utils/environment';
-import { cache } from '@/utils/cache';
 import { PriceFeed } from '@/utils/priceFeed';
 import { Dependencies } from '@/utils/epics';
 import { State, initialState } from '@/state/initialState';

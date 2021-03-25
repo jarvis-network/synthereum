@@ -17,7 +17,6 @@ import { useRate } from '@/utils/useRate';
 import { getPercentageChange } from '@/utils/getPercentageChange';
 import { InfoBox } from '@/components/chart/InfoBox';
 import { ChartData, useChartData } from '@/utils/useChartData';
-import { formatTimestamp } from '@/utils/format';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { useDispatch } from 'react-redux';
@@ -25,6 +24,7 @@ import { setChartDays } from '@/state/slices/exchange';
 
 import { FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
 import { isAppReadySelector } from '@/state/selectors';
+import { formatTimestamp } from '@jarvis-network/app-toolkit';
 
 type ChangeType = 'more' | 'less';
 

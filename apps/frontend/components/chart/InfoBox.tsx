@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { Flag, styled, Skeleton, Icon, Select } from '@jarvis-network/ui';
+import {
+  Flag,
+  styled,
+  Skeleton,
+  Icon,
+  Select,
+  styledScrollbars,
+} from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
@@ -16,7 +23,6 @@ import { useDispatch } from 'react-redux';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { createPairs } from '@/utils/createPairs';
-import { styledScrollbars } from '@/utils/styleMixins';
 import { isAppReadySelector } from '@/state/selectors';
 
 const Box = styled.div<{ hasContent: boolean }>`

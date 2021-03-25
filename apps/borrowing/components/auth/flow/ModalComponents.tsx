@@ -1,7 +1,5 @@
 import React, { FC } from 'react';
-import { Icon, styled } from '@jarvis-network/ui';
-
-import { styledScrollbars } from '@/utils/styleMixins';
+import { Icon, styled, styledScrollbars } from '@jarvis-network/ui';
 
 import { ModalHeaderProps } from './types';
 

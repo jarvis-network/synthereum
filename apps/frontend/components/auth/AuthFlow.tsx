@@ -4,6 +4,7 @@ import {
   Modal,
   NotificationType,
   styled,
+  useIsMobile,
   useNotifications,
   useTheme,
 } from '@jarvis-network/ui';
@@ -16,11 +17,12 @@ import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAuthModalVisible } from '@/state/slices/app';
 import { authFactory, useAuth } from '@/utils/useAuth';
-import { useCoreObservables } from '@/utils/CoreObservablesContext';
-import { useBehaviorSubject } from '@/utils/useBehaviorSubject';
-import { getOnboardConfig } from '@/utils/onboardConfig';
-import { ENSHelper } from '@/utils/ens';
-import { useIsMobile } from '@/utils/useIsMobile';
+import {
+  ENSHelper,
+  getOnboardConfig,
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
 
 const noop = () => undefined;
 
@@ -126,7 +128,10 @@ const AuthFlow: React.FC = () => {
     }
 
     login(autoLoginWallet)
-      .then(() => {
+      .then(loginSuccessful => {
+        if (!loginSuccessful) {
+          return;
+        }
         const place = isMobile ? 'global' : 'exchange';
         notify(
           'You have successfully signed in',

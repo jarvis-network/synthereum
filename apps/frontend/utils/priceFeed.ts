@@ -5,7 +5,7 @@ import {
   SyntheticSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
-import { formatDate } from '@/utils/format';
+import { formatDate } from '@jarvis-network/app-toolkit';
 
 export const SubscriptionPairsCollection = Object.values(priceFeedPairsMap);
 

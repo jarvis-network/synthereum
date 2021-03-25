@@ -14,10 +14,10 @@ import {
   NotificationType,
   styled,
   themeValue,
+  useIsMobile,
   useNotifications,
 } from '@jarvis-network/ui';
 import { useAuth } from '@/utils/useAuth';
-import { useIsMobile } from '@/utils/useIsMobile';
 
 const TermsContainer = styled.div`
   display: flex;

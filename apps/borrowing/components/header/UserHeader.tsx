@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   AccountSummary,
@@ -12,9 +12,11 @@ import { State } from '@/state/initialState';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { useAuth } from '@/utils/useAuth';
 import { Address } from '@jarvis-network/web3-utils/eth/address';
-import { usePrettyName } from '@/utils/usePrettyName';
 import { setAuthModalVisible } from '@/state/slices/app';
-import { formatWalletAddress } from '@/utils/format';
+import {
+  formatWalletAddress,
+  usePrettyName,
+} from '@jarvis-network/app-toolkit';
 
 const noop = () => undefined;
 

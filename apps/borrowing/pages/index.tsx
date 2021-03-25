@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { styled } from '@jarvis-network/ui';
-import { Background } from '@/components/Background';
+import { Background, styled } from '@jarvis-network/ui';
 import { UserHeader } from '@/components/header/UserHeader';
 
 const Layout = styled.div`

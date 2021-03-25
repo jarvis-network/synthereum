@@ -79,6 +79,9 @@ RUN cp -r libs/ui/dist /out && ls -lah /out
 
 # ----------------- Build @jarvis-network/app-toolkit library ----------------- #
 FROM install as build-toolkit
+COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
+COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
+COPY --from=build-ui /out node_modules/@jarvis-network/ui
 COPY libs/toolkit libs/toolkit
 RUN yarn nx build toolkit
 RUN cp -r libs/toolkit/dist /out && ls -lah /out
@@ -89,7 +92,7 @@ RUN cp -r libs/toolkit/dist /out && ls -lah /out
 
 FROM install as build-frontend-base
 COPY --from=build-ui /out node_modules/@jarvis-network/ui
-COPY --from=build-toolkit /out node_modules/@jarvis-network/toolkit
+COPY --from=build-toolkit /out node_modules/@jarvis-network/app-toolkit
 COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
 COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
 # Keep in sync with docker-bake.hcl and apps/frontend/.env.example

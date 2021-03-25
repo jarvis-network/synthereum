@@ -1,7 +1,6 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 
-import { cache } from '@/utils/cache';
-
+import { cache } from '@jarvis-network/app-toolkit';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 export type AuthState =
@@ -17,7 +16,7 @@ export interface State {
 }
 
 export const initialState: State = {
-  theme: cache?.get<ThemeNameType | null>('jarvis/state/theme') || 'light',
+  theme: cache.get<ThemeNameType | null>('jarvis/state/theme') || 'light',
   app: {
     isAuthModalVisible: false,
   },
