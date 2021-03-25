@@ -18,9 +18,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@jarvis-network/app-toolkit": "*",
     "@jarvis-network/synthereum-contracts": "1.0.0",
     "@jarvis-network/ui": "*",
-    "@jarvis-network/app-toolkit": "*",
     "@jarvis-network/web3-utils": "1.0.0",
     "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
@@ -30,7 +30,7 @@
     "ethereum-blockies": "^0.1.1",
     "milliseconds": "^1.0.3",
     "next": "9.5.3",
-    "next-pwa": "^5.0.4",
+    "next-pwa": "^5.0.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-markdown": "^5.0.3",
