@@ -110,16 +110,18 @@ export const ServiceSelect: React.FC<PageProps> = () => {
   const authLogin = useAuth();
 
   const logIn = () => {
-    authLogin?.login().then(() => {
-      const place = isMobile ? 'global' : 'exchange';
-      notify(
-        'You have successfully signed in',
-        {
-          type: NotificationType.success,
-          icon: '👍🏻',
-        },
-        place,
-      );
+    authLogin?.login().then(loginSuccessful => {
+      if (loginSuccessful) {
+        const place = isMobile ? 'global' : 'exchange';
+        notify(
+          'You have successfully signed in',
+          {
+            type: NotificationType.success,
+            icon: '👍🏻',
+          },
+          place,
+        );
+      }
     });
     requestAnimationFrame(() => {
       const showMoreButton = document.querySelector(

@@ -26,7 +26,7 @@ export function authFactory(
         const { wallet: _, ...state } = onboardState;
         dispatch(login({ ...state, wallet: walletName }));
       }
-      return check;
+      return Boolean(check && walletName);
     },
     logout() {
       onboard.walletReset();
