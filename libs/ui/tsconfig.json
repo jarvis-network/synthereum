@@ -1,8 +1,8 @@
 {
-  "extends": "../../tsconfig.frontend.json",
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "jsx": "react"
+    // We need `ES2020` for unit tests and VSCode:
+    "target": "ES2020"
   },
-  "include": ["src"]
+  "exclude": []
 }

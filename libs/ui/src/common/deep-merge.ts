@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-restricted-syntax */
 
 export type PrimitiveType =
@@ -24,14 +25,18 @@ export type BigIntTypedArray = BigInt64Array | BigUint64Array;
 
 export type TypedArray = NumberTypedArray | BigIntTypedArray;
 
-// eslint-disable-next-line no-undef
-const customGlobal: typeof globalThis = (global as any) ?? window;
+export type Obj = Record<string, unknown>;
+
+const isObj = (x: unknown): x is Obj => typeof x === 'object' && !!x;
+
+const customGlobal: typeof globalThis = global ?? window;
 
 export function deepSanitizedClone<T extends PrimitiveType>(x: T): T;
 export function deepSanitizedClone<T extends TypedArray>(x: T): T;
 export function deepSanitizedClone<T extends U[], U>(x: T): T;
-export function deepSanitizedClone<T extends Record<string, unknown>>(x: T): T;
-export function deepSanitizedClone<T extends unknown>(x: T) {
+export function deepSanitizedClone<T extends Obj>(x: T): T;
+export function deepSanitizedClone<T extends unknown>(x: T): T;
+export function deepSanitizedClone<T>(x: T) {
   if (typeof x !== 'object' || !x) return x;
   if (
     x instanceof Number ||
@@ -68,28 +73,25 @@ export function deepSanitizedClone<T extends unknown>(x: T) {
   return result as T;
 }
 
-const isObj = (x: unknown): x is Obj => typeof x === 'object' && !!x;
-
-type Obj = Record<string, unknown>;
-
 export function deepMerge<T extends Obj, R extends Obj[]>(
   first: T,
   ...rest: R
 ): T & R[number] {
-  const result = deepSanitizedClone(first);
+  const result: Obj = deepSanitizedClone(first);
 
   for (const custom of rest) {
     for (const key in custom) {
       if (!Object.prototype.hasOwnProperty.call(custom, key)) continue;
-      if (key in custom && custom[key] !== undefined) {
-        if (isObj(result[key]) && isObj(custom[key])) {
-          result[key as keyof T] = deepMerge(result[key], custom[key]);
-        } else {
-          (result as any)[key] = custom[key];
-        }
+      if (!(key in custom) || custom[key] === undefined) continue;
+      const dst = result[key];
+      const src = custom[key];
+      if (isObj(src) && isObj(dst)) {
+        result[key] = deepMerge(dst, src);
+      } else {
+        result[key] = src;
       }
     }
   }
 
-  return result;
+  return result as T & R[number];
 }

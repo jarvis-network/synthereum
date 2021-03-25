@@ -1,8 +1,10 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.frontend.json",
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": false
+    "noEmit": false,
+    "jsx": "react"
   },
+  "include": ["src"],
   "exclude": ["src/**/stories/**/*", "src/**/*spec.*"]
 }
