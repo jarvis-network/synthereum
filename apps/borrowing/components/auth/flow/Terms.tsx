@@ -99,7 +99,7 @@ export const Terms: React.FC<PageProps> = ({ onNext }) => {
   const approve = (
     <>
       <ImgContainer>
-        <Img src="/images/welcome-statue.svg" alt="" />
+        <Img src="/images/terms-statue.svg" alt="" />
       </ImgContainer>
 
       <P>Please review the terms below before starting.</P>

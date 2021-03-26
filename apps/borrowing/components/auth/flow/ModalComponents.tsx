@@ -13,6 +13,7 @@ export const ImgContainer = styled.div`
 export const Img = styled.img`
   display: block;
   margin: auto;
+  height: 200px;
 
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {

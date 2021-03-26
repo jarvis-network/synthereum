@@ -98,7 +98,7 @@ export const ServiceSelect: React.FC<PageProps> = () => {
   return (
     <TutorialContent>
       <ImgContainer>
-        <Img src="/images/welcome-statue.svg" alt="" />
+        <Img src="/images/service-statue.svg" alt="" />
       </ImgContainer>
 
       <Content>
