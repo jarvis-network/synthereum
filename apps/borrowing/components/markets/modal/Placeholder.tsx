@@ -12,7 +12,7 @@ const ImageContainer = styled.div`
   text-align: center;
   background: url('/images/manage-statue.svg') no-repeat center center;
   background-size: contain;
-  margin: 40px;
+  margin: 10px;
 `;
 
 const TextTitle = styled.p`
@@ -22,12 +22,6 @@ const TextTitle = styled.p`
 
 const Text = styled.p`
   margin-top: 1em;
-`;
-
-const Link = styled.a`
-  color: #0093ff;
-  font-weight: bold;
-  text-decoration: none;
 `;
 
 const SkipContainer = styled.div``;
@@ -46,17 +40,16 @@ const SkipButton = styled(Button)`
 
 interface Props {
   onSkip: () => void;
+  title: React.ReactNode;
+  subtitle: React.ReactNode;
 }
 
-export const Placeholder: React.FC<Props> = ({ onSkip }) => {
+export const Placeholder: React.FC<Props> = ({ title, subtitle, onSkip }) => {
   return (
     <Container>
       <ImageContainer />
-      <TextTitle>Lorem ipsum</TextTitle>
-      <Text>
-        You can find more information about our synthetic tokens{' '}
-        <Link href="/">here</Link>
-      </Text>
+      <TextTitle>{title}</TextTitle>
+      <Text>{subtitle}</Text>
       <SkipContainer>
         <SkipButton onClick={onSkip} size="m">
           skip
