@@ -61,12 +61,13 @@ module.exports = async function (deployer, network, accounts) {
       if (deployment[networkId].Derivative === 1) {
         derivativeVersion =
           derivativeVersions[networkId]['DerivativeFactory'].version;
+        const synthSymbol = asset.syntheticSymbol;
         derivativePayload = encodeDerivative(
           collAddress,
           asset.priceFeedIdentifier,
           asset.syntheticName,
-          asset.syntheticSymbol,
-          ZERO_ADDRESS,
+          synthSymbol,
+          deployment[networkId]?.SynthToken?.[synthSymbol] ?? ZERO_ADDRESS,
           asset.collateralRequirement,
           umaConfig[networkId].disputeBondPct,
           umaConfig[networkId].sponsorDisputeRewardPct,

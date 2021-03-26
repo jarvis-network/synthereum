@@ -1,13 +1,34 @@
 //helper scripts
-const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+const {
+  ZERO_ADDRESS,
+  RegistryRolesEnum,
+} = require('@jarvis-network/uma-common');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
-const { encodeDerivative, encodePool } = require('../utils/encoding.js');
+const {
+  encodeDerivative,
+  encodePool,
+  encodeSelfMintingDerivative,
+} = require('../utils/encoding.js');
+const Finder = artifacts.require('Finder');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
+const Registry = artifacts.require('Registry');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
+const SynthereumManager = artifacts.require('SynthereumManager');
+const SynthereumFactoryVersioning = artifacts.require(
+  'SynthereumFactoryVersioning',
+);
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
+const MintableBurnableSyntheticToken = artifacts.require(
+  'MintableBurnableSyntheticToken',
+);
+const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
+const SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
+const PoolMock = artifacts.require('PoolMock');
+const PoolFactoryMock = artifacts.require('PoolFactoryMock');
+const DerivativeMock = artifacts.require('DerivativeMock');
 
 contract('Synthereum Deployer', function (accounts) {
   let derivativeVersion = 1;
@@ -32,6 +53,7 @@ contract('Synthereum Deployer', function (accounts) {
   //Pool params
   let derivativeAddress = ZERO_ADDRESS;
   let synthereumFinderAddress;
+  let manager;
   let poolVersion;
   let admin = accounts[0];
   let maintainer = accounts[1];
@@ -54,7 +76,13 @@ contract('Synthereum Deployer', function (accounts) {
     feeRecipients,
     feeProportions,
   };
-
+  let feeRecipient = DAO;
+  let daoFee = {
+    feePercentage,
+    feeRecipient,
+  };
+  let capMintAmount = web3Utils.toWei('1000000');
+  let capDepositRatio = 700;
   //Other params
   let firstWrongAddress = accounts[6];
   let secondWrongAddress = accounts[7];
@@ -67,6 +95,7 @@ contract('Synthereum Deployer', function (accounts) {
     derivativePools = [];
     poolVersion = 2;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
+    manager = (await SynthereumManager.deployed()).address;
     derivativePayload = encodeDerivative(
       collateralAddress,
       priceFeedIdentifier,
@@ -96,7 +125,7 @@ contract('Synthereum Deployer', function (accounts) {
   });
 
   describe('Deploy derivative and pool', () => {
-    it('Can deploy', async () => {
+    it('Can deploy with new synthetic token', async () => {
       const {
         derivative,
         pool,
@@ -128,6 +157,171 @@ contract('Synthereum Deployer', function (accounts) {
           ev.newDerivative == derivative
         );
       });
+      //Check roles of the derivative
+      const derivativeInstance = await PerpetualPoolParty.at(derivative);
+      const derivatAdmins = await derivativeInstance.getAdminMembers.call();
+      assert.equal(
+        derivatAdmins.length,
+        1,
+        'Wrong number of admins for the derivative',
+      );
+      assert.equal(
+        derivatAdmins[0],
+        manager,
+        'Manager is not the derivative admin',
+      );
+      const pools = await derivativeInstance.getPoolMembers.call();
+      assert.equal(pools.length, 1, 'Wrong number of pools for the derivative');
+      assert.equal(pools[0], pool, 'Pool has not pool role');
+      //Check roles of synth token
+      const synthTokenAddress = await derivativeInstance.tokenCurrency.call();
+      const synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      const tokenAdmins = await synthTokenInstance.getAdminMembers.call();
+      assert.equal(
+        tokenAdmins.length,
+        1,
+        'Wrong number of admins for the synthetic token',
+      );
+      assert.equal(tokenAdmins[0], manager, 'Manager is not the token admin');
+      const minters = await synthTokenInstance.getMinterMembers.call();
+      assert.equal(
+        minters.length,
+        1,
+        'Wrong number of minters for the synthetic token',
+      );
+      assert.equal(
+        minters[0],
+        derivative,
+        'Derivative is not the token minter',
+      );
+      const burners = await synthTokenInstance.getBurnerMembers.call();
+      assert.equal(
+        burners.length,
+        1,
+        'Wrong number of burners for the synthetic token',
+      );
+      assert.equal(
+        burners[0],
+        derivative,
+        'Derivative is not the token burner',
+      );
+    });
+    it('Can deploy with already existing synthetic token', async () => {
+      const {
+        derivative: tempDerivative,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      const tempDerivativeInstance = await PerpetualPoolParty.at(
+        tempDerivative,
+      );
+      const synthTokenAddress = await tempDerivativeInstance.tokenCurrency.call();
+      const synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      derivativePayload = encodeDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        synthTokenAddress,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        derivativeAdmins,
+        derivativePools,
+      );
+      const {
+        derivative,
+        pool,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      //Check roles of the derivative
+      const derivativeInstance = await PerpetualPoolParty.at(derivative);
+      const derivatAdmins = await derivativeInstance.getAdminMembers.call();
+      assert.equal(
+        derivatAdmins.length,
+        1,
+        'Wrong number of admins for the derivative',
+      );
+      assert.equal(
+        derivatAdmins[0],
+        manager,
+        'Manager is not the derivative admin',
+      );
+      const pools = await derivativeInstance.getPoolMembers.call();
+      assert.equal(pools.length, 1, 'Wrong number of pools for the derivative');
+      assert.equal(pools[0], pool, 'Pool has not pool role');
+      //Check roles of synth token
+      const tokenAdmins = await synthTokenInstance.getAdminMembers.call();
+      assert.equal(
+        tokenAdmins.length,
+        1,
+        'Wrong number of admins for the synthetic token',
+      );
+      assert.equal(tokenAdmins[0], manager, 'Manager is not the token admin');
+      const minters = await synthTokenInstance.getMinterMembers.call();
+      assert.equal(
+        minters.length,
+        2,
+        'Wrong number of minters for the synthetic token',
+      );
+      assert.equal(
+        minters[0],
+        tempDerivative,
+        'First derivative is not the token minter',
+      );
+      assert.equal(
+        minters[1],
+        derivative,
+        'Second derivative is not the token minter',
+      );
+      const burners = await synthTokenInstance.getBurnerMembers.call();
+      assert.equal(
+        burners.length,
+        2,
+        'Wrong number of burners for the synthetic token',
+      );
+      assert.equal(
+        burners[0],
+        tempDerivative,
+        'First derivative is not the token burner',
+      );
+      assert.equal(
+        burners[1],
+        derivative,
+        'Second derivative is not the token burner',
+      );
     });
     it('Revert if the caller of deploy is not the maintainer of the deployer', async () => {
       await truffleAssert.reverts(
@@ -169,36 +363,6 @@ contract('Synthereum Deployer', function (accounts) {
           { from: maintainer },
         ),
         'The derivative must have one admin',
-      );
-    });
-    it('Revert if temp admin in the derivative different from deployer', async () => {
-      derivativeAdmins = [firstWrongAddress];
-      derivativePayload = encodeDerivative(
-        collateralAddress,
-        priceFeedIdentifier,
-        syntheticName,
-        syntheticSymbol,
-        syntheticTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        derivativeAdmins,
-        derivativePools,
-      );
-      await truffleAssert.reverts(
-        deployerInstance.deployPoolAndDerivative(
-          derivativeVersion,
-          poolVersion,
-          derivativePayload,
-          poolPayload,
-          { from: maintainer },
-        ),
-        'The derivative admin must be the deployer',
       );
     });
     it('Revert if temp admin in the derivative different from deployer', async () => {
@@ -305,43 +469,115 @@ contract('Synthereum Deployer', function (accounts) {
         'Wrong version in pool deployment',
       );
     });
-  });
-  it('Can deploy only pool', async () => {
-    const {
-      derivative,
-      firstPool,
-    } = await deployerInstance.deployPoolAndDerivative.call(
-      derivativeVersion,
-      poolVersion,
-      derivativePayload,
-      poolPayload,
-      { from: maintainer },
-    );
-    await deployerInstance.deployPoolAndDerivative(
-      derivativeVersion,
-      poolVersion,
-      derivativePayload,
-      poolPayload,
-      { from: maintainer },
-    );
-    const secondPool = await deployerInstance.deployOnlyPool.call(
-      poolVersion,
-      poolPayload,
-      derivative,
-      { from: maintainer },
-    );
-    const deploymentTx = await deployerInstance.deployOnlyPool(
-      poolVersion,
-      poolPayload,
-      derivative,
-      { from: maintainer },
-    );
-    truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
-      return (
-        ev.poolVersion == 2 &&
-        ev.derivative == derivative &&
-        ev.newPool == secondPool
+    it('Revert if pool derivative is different from the deployed one', async () => {
+      const {
+        derivative: tempDerivative,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
       );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      const tempDerivativeInstance = await PerpetualPoolParty.at(
+        tempDerivative,
+      );
+      const syntheticTokenDeployed = await tempDerivativeInstance.tokenCurrency.call();
+      const poolLibInstance = await SynthereumPoolLib.deployed();
+      await PoolFactoryMock.link(poolLibInstance);
+      const wrongDerivativeInstance = await DerivativeMock.new(
+        collateralAddress,
+        syntheticTokenDeployed,
+      );
+      const wrongPoolFactory = await PoolFactoryMock.new(
+        synthereumFinderAddress,
+        wrongDerivativeInstance.address,
+      );
+      const factoryVersioninginstance = await SynthereumFactoryVersioning.deployed();
+      await factoryVersioninginstance.setPoolFactory(
+        2,
+        wrongPoolFactory.address,
+        { from: maintainer },
+      );
+      derivativePayload = encodeDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        syntheticTokenDeployed,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        derivativeAdmins,
+        derivativePools,
+      );
+      await truffleAssert.reverts(
+        deployerInstance.deployPoolAndDerivative(
+          derivativeVersion,
+          poolVersion,
+          derivativePayload,
+          poolPayload,
+          { from: maintainer },
+        ),
+        'Pool doesnt support derivative',
+      );
+      await factoryVersioninginstance.setPoolFactory(
+        2,
+        (await SynthereumPoolFactory.deployed()).address,
+        { from: maintainer },
+      );
+    });
+  });
+  describe('Deploy only pool', async () => {
+    it('Can deploy', async () => {
+      const {
+        derivative,
+        firstPool,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      const secondPool = await deployerInstance.deployOnlyPool.call(
+        poolVersion,
+        poolPayload,
+        derivative,
+        { from: maintainer },
+      );
+      const deploymentTx = await deployerInstance.deployOnlyPool(
+        poolVersion,
+        poolPayload,
+        derivative,
+        { from: maintainer },
+      );
+      truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
+        return (
+          ev.poolVersion == 2 &&
+          ev.derivative == derivative &&
+          ev.newPool == secondPool
+        );
+      });
     });
   });
   describe('Deploy only derivative', async () => {
@@ -370,7 +606,7 @@ contract('Synthereum Deployer', function (accounts) {
         await derivativeInstance.positionManagerData.call()
       ).tokenCurrency;
     });
-    it('Can deploy', async () => {
+    it('Can deploy with already existing pool', async () => {
       derivativePayload = encodeDerivative(
         collateralAddress,
         priceFeedIdentifier,
@@ -407,8 +643,149 @@ contract('Synthereum Deployer', function (accounts) {
           ev.newDerivative == newDerivative
         );
       });
+      const derivativeInstance = await PerpetualPoolParty.at(newDerivative);
+      const derivatAdmins = await derivativeInstance.getAdminMembers.call();
+      assert.equal(
+        derivatAdmins.length,
+        1,
+        'Wrong number of admins for the derivative',
+      );
+      assert.equal(
+        derivatAdmins[0],
+        manager,
+        'Manager is not the derivative admin',
+      );
+      const pools = await derivativeInstance.getPoolMembers.call();
+      assert.equal(pools.length, 1, 'Wrong number of pools for the derivative');
+      assert.equal(pools[0], pool, 'Pool has not pool role');
+      //Check roles of synth token
+      const synthTokenAddress = await derivativeInstance.tokenCurrency.call();
+      assert.equal(
+        synthTokenAddress,
+        syntheticTokenDeployed,
+        'Wrong synthetic token during deployment',
+      );
+      const synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      const tokenAdmins = await synthTokenInstance.getAdminMembers.call();
+      assert.equal(
+        tokenAdmins.length,
+        1,
+        'Wrong number of admins for the synthetic token',
+      );
+      assert.equal(tokenAdmins[0], manager, 'Manager is not the token admin');
+      const minters = await synthTokenInstance.getMinterMembers.call();
+      assert.equal(
+        minters.length,
+        2,
+        'Wrong number of minters for the synthetic token',
+      );
+      assert.equal(
+        minters[1],
+        newDerivative,
+        'Derivative is not the token minter',
+      );
+      const burners = await synthTokenInstance.getBurnerMembers.call();
+      assert.equal(
+        burners.length,
+        2,
+        'Wrong number of burners for the synthetic token',
+      );
+      assert.equal(
+        burners[1],
+        newDerivative,
+        'Derivative is not the token burner',
+      );
     });
-    it('Revert if new synthetic token deployed with new derivative', async () => {
+    it('Can deploy without pool with an existing synthetic token', async () => {
+      derivativePayload = encodeDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        syntheticTokenDeployed,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        derivativeAdmins,
+        derivativePools,
+      );
+      const deploymentTx = await deployerInstance.deployOnlyDerivative(
+        derivativeVersion,
+        derivativePayload,
+        ZERO_ADDRESS,
+        { from: maintainer },
+      );
+    });
+    it('Can deploy without pool with a new synthetic token', async () => {
+      const newDerivative = await deployerInstance.deployOnlyDerivative.call(
+        derivativeVersion,
+        derivativePayload,
+        ZERO_ADDRESS,
+        { from: maintainer },
+      );
+      const deploymentTx = await deployerInstance.deployOnlyDerivative(
+        derivativeVersion,
+        derivativePayload,
+        ZERO_ADDRESS,
+        { from: maintainer },
+      );
+      const derivativeInstance = await PerpetualPoolParty.at(newDerivative);
+      const derivatAdmins = await derivativeInstance.getAdminMembers.call();
+      assert.equal(
+        derivatAdmins.length,
+        1,
+        'Wrong number of admins for the derivative',
+      );
+      assert.equal(
+        derivatAdmins[0],
+        manager,
+        'Manager is not the derivative admin',
+      );
+      const pools = await derivativeInstance.getPoolMembers.call();
+      assert.equal(pools.length, 0, 'Wrong number of pools for the derivative');
+      //Check roles of synth token
+      const synthTokenAddress = await derivativeInstance.tokenCurrency.call();
+      const synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      const tokenAdmins = await synthTokenInstance.getAdminMembers.call();
+      assert.equal(
+        tokenAdmins.length,
+        1,
+        'Wrong number of admins for the synthetic token',
+      );
+      assert.equal(tokenAdmins[0], manager, 'Manager is not the token admin');
+      const minters = await synthTokenInstance.getMinterMembers.call();
+      assert.equal(
+        minters.length,
+        1,
+        'Wrong number of minters for the synthetic token',
+      );
+      assert.equal(
+        minters[0],
+        newDerivative,
+        'Derivative is not the token minter',
+      );
+      const burners = await synthTokenInstance.getBurnerMembers.call();
+      assert.equal(
+        burners.length,
+        1,
+        'Wrong number of burners for the synthetic token',
+      );
+      assert.equal(
+        burners[0],
+        newDerivative,
+        'Derivative is not the token burner',
+      );
+    });
+    it('Revert if token currency of pool and derivative are different', async () => {
       await truffleAssert.reverts(
         deployerInstance.deployOnlyDerivative(
           derivativeVersion,
@@ -419,7 +796,7 @@ contract('Synthereum Deployer', function (accounts) {
         'Wrong synthetic token matching',
       );
     });
-    it('Revert if new synthetic token deployed with new derivative', async () => {
+    it('Revert if collateral of pool and derivative are different', async () => {
       const newCollateralInstance = await TestnetERC20.new(
         'USD Coin',
         'USDC',
@@ -454,6 +831,40 @@ contract('Synthereum Deployer', function (accounts) {
           { from: maintainer },
         ),
         'Wrong collateral matching',
+      );
+    });
+    it('Revert if pool is not registred', async () => {
+      const mockPool = await PoolMock.new(
+        poolVersion,
+        collateralAddress,
+        syntheticSymbol,
+        syntheticTokenDeployed,
+      );
+      derivativePayload = encodeDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        syntheticTokenDeployed,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        derivativeAdmins,
+        derivativePools,
+      );
+      await truffleAssert.reverts(
+        deployerInstance.deployOnlyDerivative(
+          derivativeVersion,
+          derivativePayload,
+          mockPool.address,
+          { from: maintainer },
+        ),
+        'Pool not registred',
       );
     });
   });

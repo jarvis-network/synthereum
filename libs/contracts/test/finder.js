@@ -22,9 +22,6 @@ contract('Finder', function (accounts) {
     const implementationAddress3 = web3Utils.toChecksumAddress(
       web3Utils.randomHex(20),
     );
-
-    console.log(interfaceName1);
-    console.log(implementationAddress1);
     // Random users cannot change the implementation address.
     await truffleAssert.reverts(
       finder.changeImplementationAddress(

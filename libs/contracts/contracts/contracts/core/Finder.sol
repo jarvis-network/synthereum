@@ -42,7 +42,6 @@ contract SynthereumFinder is ISynthereumFinder, AccessControl {
     address implementationAddress
   ) external override onlyMaintainer {
     interfacesImplemented[interfaceName] = implementationAddress;
-
     emit InterfaceImplementationChanged(interfaceName, implementationAddress);
   }
 

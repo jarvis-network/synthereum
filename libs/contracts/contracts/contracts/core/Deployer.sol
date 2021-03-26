@@ -8,14 +8,19 @@ import {
   ISynthereumFactoryVersioning
 } from './interfaces/IFactoryVersioning.sol';
 import {ISynthereumPoolRegistry} from './interfaces/IPoolRegistry.sol';
+import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
 import {
   ISynthereumPoolDeployment
 } from '../synthereum-pool/common/interfaces/IPoolDeployment.sol';
 import {
+  IDerivativeDeployment
+} from '../derivative/common/interfaces/IDerivativeDeployment.sol';
+import {
   IExtendedDerivativeDeployment
 } from '../derivative/common/interfaces/IExtendedDerivativeDeployment.sol';
+import {IRole} from '../base/interfaces/IRole.sol';
 import {SynthereumInterfaces} from './Constants.sol';
 import {Address} from '../../@openzeppelin/contracts/utils/Address.sol';
 import {
@@ -34,6 +39,14 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
+  bytes32 private constant ADMIN_ROLE = 0x00;
+
+  bytes32 private constant POOL_ROLE = keccak256('Pool');
+
+  bytes32 private constant MINTER_ROLE = keccak256('Minter');
+
+  bytes32 private constant BURNER_ROLE = keccak256('Burner');
+
   struct Roles {
     address admin;
     address maintainer;
@@ -44,12 +57,12 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   event PoolDeployed(
     uint8 indexed poolVersion,
     address indexed derivative,
-    address newPool
+    address indexed newPool
   );
   event DerivativeDeployed(
     uint8 indexed derivativeVersion,
     address indexed pool,
-    address newDerivative
+    address indexed newDerivative
   );
 
   modifier onlyMaintainer() {
@@ -78,10 +91,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     override
     onlyMaintainer
     nonReentrant
-    returns (
-      IExtendedDerivativeDeployment derivative,
-      ISynthereumPoolDeployment pool
-    )
+    returns (IDerivativeDeployment derivative, ISynthereumPoolDeployment pool)
   {
     ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
     derivative = deployDerivative(
@@ -97,10 +107,11 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
       poolParamsData
     );
     checkPoolDeployment(pool, poolVersion);
-    checkPoolAndDerivativeMatching(pool, derivative);
-    setDerivativeRoles(derivative, pool);
-    ISynthereumPoolRegistry poolRegister = getPoolRegister();
-    poolRegister.registerPool(
+    checkPoolAndDerivativeMatching(pool, derivative, true);
+    setDerivativeRoles(derivative, pool, false);
+    setSyntheticTokenRoles(derivative);
+    ISynthereumPoolRegistry poolRegistry = getPoolRegistry();
+    poolRegistry.registerPool(
       pool.syntheticTokenSymbol(),
       pool.collateralToken(),
       poolVersion,
@@ -117,7 +128,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   function deployOnlyPool(
     uint8 poolVersion,
     bytes calldata poolParamsData,
-    IExtendedDerivativeDeployment derivative
+    IDerivativeDeployment derivative
   )
     external
     override
@@ -133,9 +144,10 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
       poolParamsData
     );
     checkPoolDeployment(pool, poolVersion);
-    checkPoolAndDerivativeMatching(pool, derivative);
-    ISynthereumPoolRegistry poolRegister = getPoolRegister();
-    poolRegister.registerPool(
+    checkPoolAndDerivativeMatching(pool, derivative, true);
+    setPoolRole(derivative, pool);
+    ISynthereumPoolRegistry poolRegistry = getPoolRegistry();
+    poolRegistry.registerPool(
       pool.syntheticTokenSymbol(),
       pool.collateralToken(),
       poolVersion,
@@ -153,7 +165,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     override
     onlyMaintainer
     nonReentrant
-    returns (IExtendedDerivativeDeployment derivative)
+    returns (IDerivativeDeployment derivative)
   {
     ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
     derivative = deployDerivative(
@@ -162,8 +174,14 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
       derivativeParamsData
     );
     checkDerivativeRoles(derivative);
-    checkPoolAndDerivativeMatching(pool, derivative);
-    setDerivativeRoles(derivative, pool);
+    if (address(pool) != address(0)) {
+      checkPoolAndDerivativeMatching(pool, derivative, false);
+      checkPoolRegistration(pool);
+      setDerivativeRoles(derivative, pool, false);
+    } else {
+      setDerivativeRoles(derivative, pool, true);
+    }
+    setSyntheticTokenRoles(derivative);
     emit DerivativeDeployed(
       derivativeVersion,
       address(pool),
@@ -175,7 +193,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     ISynthereumFactoryVersioning factoryVersioning,
     uint8 derivativeVersion,
     bytes memory derivativeParamsData
-  ) internal returns (IExtendedDerivativeDeployment derivative) {
+  ) internal returns (IDerivativeDeployment derivative) {
     address derivativeFactory =
       factoryVersioning.getDerivativeFactoryVersion(derivativeVersion);
     bytes memory derivativeDeploymentResult =
@@ -186,7 +204,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
         ),
         'Wrong derivative deployment'
       );
-    derivative = IExtendedDerivativeDeployment(
+    derivative = IDerivativeDeployment(
       abi.decode(derivativeDeploymentResult, (address))
     );
   }
@@ -194,7 +212,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   function deployPool(
     ISynthereumFactoryVersioning factoryVersioning,
     uint8 poolVersion,
-    IExtendedDerivativeDeployment derivative,
+    IDerivativeDeployment derivative,
     bytes memory poolParamsData
   ) internal returns (ISynthereumPoolDeployment pool) {
     address poolFactory = factoryVersioning.getPoolFactoryVersion(poolVersion);
@@ -213,12 +231,73 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   function setDerivativeRoles(
-    IExtendedDerivativeDeployment derivative,
+    IDerivativeDeployment derivative,
+    ISynthereumPoolDeployment pool,
+    bool isOnlyDerivative
+  ) internal {
+    if (!isOnlyDerivative) {
+      derivative.grantRole(POOL_ROLE, address(pool));
+    }
+    derivative.grantRole(ADMIN_ROLE, address(getManager()));
+    derivative.renounceRole(ADMIN_ROLE, address(this));
+  }
+
+  function setSyntheticTokenRoles(IDerivativeDeployment derivative) internal {
+    ISynthereumManager manager = getManager();
+    IRole tokenCurrency = IRole(address(derivative.tokenCurrency()));
+    if (!tokenCurrency.hasRole(ADMIN_ROLE, address(manager))) {
+      IExtendedDerivativeDeployment extDerivative =
+        IExtendedDerivativeDeployment(address(derivative));
+      address[] memory contracts = new address[](1);
+      bytes32[] memory roles = new bytes32[](1);
+      address[] memory accounts = new address[](1);
+      contracts[0] = address(extDerivative);
+      roles[0] = POOL_ROLE;
+      accounts[0] = address(this);
+      manager.grantSynthereumRole(contracts, roles, accounts);
+      extDerivative.addSyntheticTokenAdmin(address(manager));
+      extDerivative.renouncePool();
+      contracts[0] = address(tokenCurrency);
+      roles[0] = ADMIN_ROLE;
+      accounts[0] = address(extDerivative);
+      manager.revokeSynthereumRole(contracts, roles, accounts);
+    }
+    if (
+      !tokenCurrency.hasRole(MINTER_ROLE, address(derivative)) ||
+      !tokenCurrency.hasRole(BURNER_ROLE, address(derivative))
+    ) {
+      addSyntheticTokenRoles(address(tokenCurrency), address(derivative));
+    }
+  }
+
+  function addSyntheticTokenRoles(address tokenCurrency, address derivative)
+    internal
+  {
+    ISynthereumManager manager = getManager();
+    address[] memory contracts = new address[](2);
+    bytes32[] memory roles = new bytes32[](2);
+    address[] memory accounts = new address[](2);
+    contracts[0] = tokenCurrency;
+    contracts[1] = tokenCurrency;
+    roles[0] = MINTER_ROLE;
+    roles[1] = BURNER_ROLE;
+    accounts[0] = derivative;
+    accounts[1] = derivative;
+    manager.grantSynthereumRole(contracts, roles, accounts);
+  }
+
+  function setPoolRole(
+    IDerivativeDeployment derivative,
     ISynthereumPoolDeployment pool
   ) internal {
-    address poolAddr = address(pool);
-    derivative.addAdminAndPool(poolAddr);
-    derivative.renounceAdmin();
+    ISynthereumManager manager = getManager();
+    address[] memory contracts = new address[](1);
+    bytes32[] memory roles = new bytes32[](1);
+    address[] memory accounts = new address[](1);
+    contracts[0] = address(derivative);
+    roles[0] = POOL_ROLE;
+    accounts[0] = address(pool);
+    manager.grantSynthereumRole(contracts, roles, accounts);
   }
 
   function getFactoryVersioning()
@@ -233,15 +312,21 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
   }
 
-  function getPoolRegister()
+  function getPoolRegistry()
     internal
     view
-    returns (ISynthereumPoolRegistry poolRegister)
+    returns (ISynthereumPoolRegistry poolRegistry)
   {
-    poolRegister = ISynthereumPoolRegistry(
+    poolRegistry = ISynthereumPoolRegistry(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.PoolRegistry
       )
+    );
+  }
+
+  function getManager() internal view returns (ISynthereumManager manager) {
+    manager = ISynthereumManager(
+      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager)
     );
   }
 
@@ -253,7 +338,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     signature = IDeploymentSignature(deploymentContract).deploymentSignature();
   }
 
-  function checkDerivativeRoles(IExtendedDerivativeDeployment derivative)
+  function checkDerivativeRoles(IDerivativeDeployment derivative)
     internal
     view
   {
@@ -280,7 +365,8 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
 
   function checkPoolAndDerivativeMatching(
     ISynthereumPoolDeployment pool,
-    IExtendedDerivativeDeployment derivative
+    IDerivativeDeployment derivative,
+    bool isPoolLinked
   ) internal view {
     require(
       pool.collateralToken() == derivative.collateralCurrency(),
@@ -289,6 +375,25 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     require(
       pool.syntheticToken() == derivative.tokenCurrency(),
       'Wrong synthetic token matching'
+    );
+    if (isPoolLinked) {
+      require(
+        pool.isDerivativeAdmitted(address(derivative)),
+        'Pool doesnt support derivative'
+      );
+    }
+  }
+
+  function checkPoolRegistration(ISynthereumPoolDeployment pool) internal view {
+    ISynthereumPoolRegistry poolRegistry = getPoolRegistry();
+    require(
+      poolRegistry.isPoolDeployed(
+        pool.syntheticTokenSymbol(),
+        pool.collateralToken(),
+        pool.version(),
+        address(pool)
+      ),
+      'Pool not registred'
     );
   }
 }

@@ -45,9 +45,8 @@ module.exports = async function (deployer, network, accounts) {
     assets[networkId].map(async asset => {
       let derivativeVersion = '';
       let derivativePayload = '';
-      let pool = deployment[networkId].Pools[asset.syntheticSymbol];
-      let derivativeForAdding =
-        deployment[networkId].DerivativeForAdding[asset.syntheticSymbol];
+      let pool =
+        deployment[networkId]?.Pool?.[asset.syntheticSymbol] ?? ZERO_ADDRESS;
       if (deployment[networkId].Derivative === 1) {
         derivativeVersion =
           derivativeVersions[networkId]['DerivativeFactory'].version;
@@ -56,7 +55,9 @@ module.exports = async function (deployer, network, accounts) {
           asset.priceFeedIdentifier,
           asset.syntheticName,
           asset.syntheticSymbol,
-          deployment[networkId].SyntheticTokenAddress[asset.syntheticSymbol],
+          deployment[networkId]?.SyntheticTokenAddress?.[
+            asset.syntheticSymbol
+          ] ?? ZERO_ADDRESS,
           asset.collateralRequirement,
           umaConfig[networkId].disputeBondPct,
           umaConfig[networkId].sponsorDisputeRewardPct,
@@ -72,7 +73,6 @@ module.exports = async function (deployer, network, accounts) {
       txData.push({
         asset: asset.syntheticSymbol,
         pool,
-        derivativeForAdding,
         derivativeVersion,
         derivativePayload,
       });
@@ -110,18 +110,13 @@ module.exports = async function (deployer, network, accounts) {
           contractName: txData[j].asset,
           txSummaryText: 'deployOnlyPool',
         });
-        const pool = await SynthereumPool.at(txData[j].pool);
-        await pool.addDerivative(derivativeToDeploy, {
-          from: maintainer,
-        });
-        log(`Derivative added to '${txData[j].asset}' pool`);
-        await pool.addRoleInSynthToken(
-          txData[j].derivativeForAdding,
-          3,
-          derivativeToDeploy,
-          { from: maintainer },
-        );
-        log(`Derivative added to '${txData[j].asset}' synthetic token`);
+        if (txData[j].pool != ZERO_ADDRESS) {
+          const pool = await SynthereumPool.at(txData[j].pool);
+          await pool.addDerivative(derivativeToDeploy, {
+            from: maintainer,
+          });
+          log(`Derivative added to '${txData[j].asset}' pool`);
+        }
       }
     }
   }

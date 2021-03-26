@@ -52,8 +52,6 @@ module.exports = async function (deployer, network, accounts) {
       let poolVersion = '';
       let poolPayload = '';
       let derivative = deployment[networkId].Derivatives[asset.syntheticSymbol];
-      let poolForAdding =
-        deployment[networkId].PoolForAdding[asset.syntheticSymbol];
       if (deployment[networkId].Pool === 1) {
         poolVersion = poolVersions[networkId]['TICFactory'].version;
         poolPayload = encodeTIC(
@@ -117,7 +115,6 @@ module.exports = async function (deployer, network, accounts) {
       txData.push({
         asset: asset.syntheticSymbol,
         derivative,
-        poolForAdding,
         poolVersion,
         poolPayload,
       });
@@ -155,14 +152,6 @@ module.exports = async function (deployer, network, accounts) {
           contractName: txData[j].asset,
           txSummaryText: 'deployOnlyPool',
         });
-        const poolforAdd = await SynthereumPool.at(txData[j].poolForAdding);
-        await poolforAdd.addRoleInDerivative(
-          txData[j].derivative,
-          2,
-          poolToDeploy,
-          { from: maintainer },
-        );
-        log(`    '${txData[j].asset}' added to the derivative`);
       }
     }
   }

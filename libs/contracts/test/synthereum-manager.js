@@ -146,22 +146,7 @@ contract('Synthereum manager', function (accounts) {
       synthTokenAddr,
     );
     managerInstance = await SynthereumManager.deployed();
-    await poolInstance.addRoleInDerivative(
-      derivativeInstance.address,
-      0,
-      managerInstance.address,
-      { from: maintainer },
-    );
-    await poolInstance.addRoleInSynthToken(
-      derivativeInstance.address,
-      0,
-      managerInstance.address,
-      { from: maintainer },
-    );
-    await poolInstance.renounceRoleInDerivative(derivativeInstance.address, 0, {
-      from: maintainer,
-    });
-    adminRole = ZERO_ADDRESS;
+    adminRole = '0x00';
     poolRole = web3Utils.soliditySha3('Pool');
     minterRole = web3Utils.soliditySha3('Minter');
     burnerRole = web3Utils.soliditySha3('Burner');
@@ -395,16 +380,11 @@ contract('Synthereum manager', function (accounts) {
       let actualBurners = await synthTokenInstance.getBurnerMembers.call();
       assert.equal(
         actualAdmins.length,
-        2,
+        1,
         'Wrong number of admins before manager calls',
       );
       assert.equal(
         actualAdmins[0],
-        derivativeInstance.address,
-        'Wrong admin before manager calls',
-      );
-      assert.equal(
-        actualAdmins[1],
         managerInstance.address,
         'Wrong admin before manager calls',
       );

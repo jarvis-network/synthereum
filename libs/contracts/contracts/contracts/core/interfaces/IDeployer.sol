@@ -6,8 +6,8 @@ import {
   ISynthereumPoolDeployment
 } from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';
 import {
-  IExtendedDerivativeDeployment
-} from '../../derivative/common/interfaces/IExtendedDerivativeDeployment.sol';
+  IDerivativeDeployment
+} from '../../derivative/common/interfaces/IDerivativeDeployment.sol';
 import {
   EnumerableSet
 } from '../../../@openzeppelin/contracts/utils/EnumerableSet.sol';
@@ -20,20 +20,17 @@ interface ISynthereumDeployer {
     bytes calldata poolParamsData
   )
     external
-    returns (
-      IExtendedDerivativeDeployment derivative,
-      ISynthereumPoolDeployment pool
-    );
+    returns (IDerivativeDeployment derivative, ISynthereumPoolDeployment pool);
 
   function deployOnlyPool(
     uint8 poolVersion,
     bytes calldata poolParamsData,
-    IExtendedDerivativeDeployment derivative
+    IDerivativeDeployment derivative
   ) external returns (ISynthereumPoolDeployment pool);
 
   function deployOnlyDerivative(
     uint8 derivativeVersion,
     bytes calldata derivativeParamsData,
     ISynthereumPoolDeployment pool
-  ) external returns (IExtendedDerivativeDeployment derivative);
+  ) external returns (IDerivativeDeployment derivative);
 }

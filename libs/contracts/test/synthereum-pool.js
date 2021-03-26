@@ -13,6 +13,7 @@ const {
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
+const SynthereumManager = artifacts.require('SynthereumManager');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 const SynthereumPool = artifacts.require('SynthereumPool');
@@ -91,6 +92,11 @@ contract('Synthereum pool', function (accounts) {
   let poolInstance;
   let derivativeInstance;
   let synthTokenInstance;
+  let timerInstance;
+  let managerInstance;
+  let adminRole;
+  let minterRole;
+  let burnerRole;
   //MetaSig params
   //We suppose a starting rate of 1 jEur = 1.2 USDC (EUR/USD = 1.2)
   let collateralAmount = web3Utils.toWei('120', 'mwei');
@@ -174,6 +180,10 @@ contract('Synthereum pool', function (accounts) {
     synthTokenAddr = await derivativeInstance.tokenCurrency.call();
     synthTokenInstance = await MintableBurnableERC20.at(synthTokenAddr);
     timerInstance = await Timer.deployed();
+    managerInstance = await SynthereumManager.deployed();
+    adminRole = '0x00';
+    minterRole = web3Utils.soliditySha3('Minter');
+    burnerRole = web3Utils.soliditySha3('Burner');
   });
 
   describe('Mint synthetic tokens', () => {
@@ -1703,12 +1713,6 @@ contract('Synthereum pool', function (accounts) {
         derivativeAddress,
         { from: maintainer },
       );
-      await poolInstance.addRoleInDerivative(
-        derivativeAddress,
-        1,
-        secondPoolAddress,
-        { from: maintainer },
-      );
       const secondPoolInstance = await SynthereumPool.at(secondPoolAddress);
       await collateralInstance.allocateTo(
         secondPoolAddress,
@@ -2326,7 +2330,24 @@ contract('Synthereum pool', function (accounts) {
   });
 
   describe('Roles of derivative managment', async () => {
+    beforeEach(async () => {
+      await managerInstance.grantSynthereumRole(
+        [derivativeAddress],
+        [adminRole],
+        [poolInstance.address],
+        { from: maintainer },
+      );
+    });
+    afterEach(async () => {
+      await managerInstance.revokeSynthereumRole(
+        [derivativeAddress],
+        [adminRole],
+        [poolInstance.address],
+        { from: maintainer },
+      );
+    });
     it('Can add admin', async () => {
+      const result = await derivativeInstance.getAdminMembers();
       await poolInstance.addRoleInDerivative(derivativeAddress, 0, newAdmin, {
         from: maintainer,
       });
@@ -2576,12 +2597,38 @@ contract('Synthereum pool', function (accounts) {
       await poolInstance.addDerivative(newDerivative, {
         from: maintainer,
       });
+      await managerInstance.grantSynthereumRole(
+        [synthTokenInstance.address],
+        [adminRole],
+        [derivativeAddress],
+        { from: maintainer },
+      );
+      await managerInstance.revokeSynthereumRole(
+        [synthTokenInstance.address, synthTokenInstance.address],
+        [minterRole, burnerRole],
+        [newDerivative, newDerivative],
+        { from: maintainer },
+      );
+    });
+    afterEach(async () => {
+      await managerInstance.revokeSynthereumRole(
+        [synthTokenInstance.address],
+        [adminRole],
+        [derivativeAddress],
+        { from: maintainer },
+      );
+      await managerInstance.grantSynthereumRole(
+        [synthTokenInstance.address, synthTokenInstance.address],
+        [minterRole, burnerRole],
+        [newDerivative, newDerivative],
+        { from: maintainer },
+      );
     });
     it('Add new admin', async () => {
       await poolInstance.addRoleInSynthToken(derivativeAddress, 0, newAdmin, {
         from: maintainer,
       });
-      const isAdmin = await synthTokenInstance.hasRole('0x00', newAdmin);
+      const isAdmin = await synthTokenInstance.hasRole(adminRole, newAdmin);
       const isMinter = await synthTokenInstance.hasRole(
         web3Utils.soliditySha3('Minter'),
         newAdmin,
@@ -2601,7 +2648,10 @@ contract('Synthereum pool', function (accounts) {
         newDerivative,
         { from: maintainer },
       );
-      const isAdmin = await synthTokenInstance.hasRole('0x00', newDerivative);
+      const isAdmin = await synthTokenInstance.hasRole(
+        adminRole,
+        newDerivative,
+      );
       const isMinter = await synthTokenInstance.hasRole(
         web3Utils.soliditySha3('Minter'),
         newDerivative,
