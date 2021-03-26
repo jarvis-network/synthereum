@@ -21,4 +21,5 @@ export interface ModalContentProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
+  className?: string;
 }
