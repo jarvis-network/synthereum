@@ -61,8 +61,10 @@ const CustomSubTabs = styled(CustomTabs)`
 `;
 
 const Content = styled.div`
-  padding: 20px 40px;
+  padding: 0 40px 20px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const MarketsManageModal: FC = () => {
