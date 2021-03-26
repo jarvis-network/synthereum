@@ -10,16 +10,21 @@ const Layout = styled.div`
   justify-content: center;
 `;
 
-const LayoutChart = styled.div`
+const LayoutGrid = styled.div`
   display: flex;
   flex: 1 1 0%;
   width: 100%;
-  height: 100vh;
   min-height: 720px;
-  overflow-y: auto;
-  padding: 40px 60px 40px calc(50vw - 710px);
+  max-height: 100vh;
+  padding-left: calc(50vw - 700px);
   box-sizing: border-box;
   background: ${props => props.theme.background.secondary};
+`;
+
+const LayoutGridContainer = styled.div`
+  width: 100%;
+  max-height: 100%;
+  padding: 40px 60px 40px 0;
 
   ${props =>
     styledScrollbars(props.theme, {
@@ -30,7 +35,7 @@ const LayoutChart = styled.div`
 const LayoutWidget = styled(Background)`
   height: calc(100vh - 80px);
   min-height: 720px;
-  padding: 40px calc(50vw - 710px) 40px 60px;
+  padding: 40px calc(50vw - 700px) 40px 60px;
   box-sizing: content-box;
   display: flex;
   flex-direction: column;
@@ -41,9 +46,11 @@ const LayoutWidget = styled(Background)`
 export default function Home() {
   return (
     <Layout>
-      <LayoutChart>
-        <MarketsGrid />
-      </LayoutChart>
+      <LayoutGrid>
+        <LayoutGridContainer>
+          <MarketsGrid />
+        </LayoutGridContainer>
+      </LayoutGrid>
       <LayoutWidget image="/images/light-mode-background.jpg">
         <UserHeader />
       </LayoutWidget>
