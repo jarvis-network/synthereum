@@ -265,7 +265,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       emit NewSponsor(msg.sender);
     }
 
-    feeAmount = calculateDaoFee(
+    feeAmount = _checkAndCalculateDaoFee(
       globalPositionData,
       positionManagerData,
       numTokens,
@@ -348,7 +348,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
           feePayerData.cumulativeFeeMultiplier
         )
       );
-    feeAmount = calculateDaoFee(
+    feeAmount = _checkAndCalculateDaoFee(
       globalPositionData,
       positionManagerData,
       numTokens,
@@ -429,7 +429,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     );
 
     FixedPoint.Unsigned memory feeToWithdraw =
-      calculateDaoFee(
+      _checkAndCalculateDaoFee(
         globalPositionData,
         positionManagerData,
         numTokens,
@@ -657,6 +657,23 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     return _decimalsScalingFactor(oraclePrice, feePayerData);
   }
 
+  function calculateDaoFee(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData,
+    SelfMintingPerpetualPositionManagerMultiParty.GlobalPositionData
+      storage globalPositionData,
+    FixedPoint.Unsigned memory numTokens,
+    FeePayerPoolParty.FeePayerData storage feePayerData
+  ) external view returns (FixedPoint.Unsigned memory) {
+    return
+      _calculateDaoFee(
+        globalPositionData,
+        numTokens,
+        positionManagerData.daoFee.feePercentage,
+        feePayerData
+      );
+  }
+
   function _incrementCollateralBalances(
     SelfMintingPerpetualPositionManagerMultiParty.PositionData
       storage positionData,
@@ -834,7 +851,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     );
   }
 
-  function calculateDaoFee(
+  function _checkAndCalculateDaoFee(
     SelfMintingPerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
     SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
@@ -842,13 +859,29 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory feePercentage,
     FeePayerPoolParty.FeePayerData storage feePayerData
-  ) internal view returns (FixedPoint.Unsigned memory feePaid) {
+  ) internal view returns (FixedPoint.Unsigned memory) {
     FixedPoint.Unsigned memory actualFeePercentage =
       positionManagerData.daoFee.feePercentage;
     require(
       actualFeePercentage.isLessThanOrEqual(feePercentage),
       'User fees are not enough for paying DAO'
     );
+    return
+      _calculateDaoFee(
+        globalPositionData,
+        numTokens,
+        actualFeePercentage,
+        feePayerData
+      );
+  }
+
+  function _calculateDaoFee(
+    SelfMintingPerpetualPositionManagerMultiParty.GlobalPositionData
+      storage globalPositionData,
+    FixedPoint.Unsigned memory numTokens,
+    FixedPoint.Unsigned memory actualFeePercentage,
+    FeePayerPoolParty.FeePayerData storage feePayerData
+  ) internal view returns (FixedPoint.Unsigned memory) {
     FixedPoint.Unsigned memory globalCollateralizationRatio =
       _getCollateralizationRatio(
         globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
@@ -856,9 +889,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
         ),
         globalPositionData.totalTokensOutstanding
       );
-    feePaid = numTokens.mul(globalCollateralizationRatio).mul(
-      actualFeePercentage
-    );
+    return numTokens.mul(globalCollateralizationRatio).mul(actualFeePercentage);
   }
 
   function _getOracleEmergencyShutdownPrice(

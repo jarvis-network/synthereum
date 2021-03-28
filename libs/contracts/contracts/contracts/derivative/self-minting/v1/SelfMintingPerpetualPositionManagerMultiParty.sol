@@ -19,6 +19,7 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from '../common/interfaces/ISelfMintingDerivativeDeployment.sol';
+import {ISelfMinting} from '../common/interfaces/ISelfMinting.sol';
 import {
   OracleInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
@@ -39,6 +40,7 @@ import {FeePayerPoolParty} from '../../v1/FeePayerPoolParty.sol';
 
 contract SelfMintingPerpetualPositionManagerMultiParty is
   ISelfMintingDerivativeDeployment,
+  ISelfMinting,
   FeePayerPoolParty
 {
   using FixedPoint for FixedPoint.Unsigned;
@@ -46,11 +48,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   using SafeERC20 for MintableBurnableIERC20;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for PositionData;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for PositionManagerData;
-
-  struct DaoFee {
-    FixedPoint.Unsigned feePercentage;
-    address feeRecipient;
-  }
 
   struct PositionManagerParams {
     uint256 withdrawalLiveness;
@@ -156,6 +153,11 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
 
   modifier noPendingWithdrawal(address sponsor) {
     _positionHasNoPendingWithdrawal(sponsor);
+    _;
+  }
+
+  modifier onlySelfMintingController() {
+    _onlySelfMintingController();
     _;
   }
 
@@ -388,6 +390,54 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     amount = positionManagerData.trimExcess(token, pfcAmount, feePayerData);
   }
 
+  function setCapMintAmount(FixedPoint.Unsigned memory capMintAmount)
+    external
+    override
+    onlySelfMintingController
+  {
+    positionManagerData.capMintAmount = capMintAmount;
+  }
+
+  function setCapDepositRatio(FixedPoint.Unsigned memory capDepositRatio)
+    external
+    override
+    onlySelfMintingController
+  {
+    positionManagerData.capDepositRatio = capDepositRatio;
+  }
+
+  function setDaoFee(DaoFee memory daoFee)
+    external
+    override
+    onlySelfMintingController
+  {
+    require(
+      daoFee.feeRecipient != address(0),
+      'Fee recipient cannot be zero address'
+    );
+    positionManagerData.daoFee = daoFee;
+  }
+
+  function setDaoFeePercentage(FixedPoint.Unsigned memory daoFeePercentage)
+    external
+    override
+    onlySelfMintingController
+  {
+    positionManagerData.daoFee.feePercentage = daoFeePercentage;
+  }
+
+  function setDaoFeeRecipient(address daoFeeRecipient)
+    external
+    override
+    onlySelfMintingController
+  {
+    require(
+      daoFeeRecipient != address(0),
+      'Fee recipient cannot be zero address'
+    );
+    positionManagerData.daoFee.feeRecipient = daoFeeRecipient;
+  }
+
   function deleteSponsorPosition(address sponsor) external onlyThisContract {
     delete positions[sponsor];
   }
@@ -461,6 +511,18 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     return positionManagerData.emergencyShutdownPrice;
   }
 
+  function calculateDaoFee(FixedPoint.Unsigned memory numTokens)
+    external
+    view
+    returns (FixedPoint.Unsigned memory)
+  {
+    positionManagerData.calculateDaoFee(
+      globalPositionData,
+      numTokens,
+      feePayerData
+    );
+  }
+
   function _pfc()
     internal
     view
@@ -511,6 +573,15 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     require(
       _getPositionData(sponsor).withdrawalRequestPassTimestamp == 0,
       'Pending withdrawal'
+    );
+  }
+
+  function _onlySelfMintingController() internal view {
+    require(
+      positionManagerData.synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.SelfMintingController
+      ) == msg.sender,
+      'Sender must be self-minting controller'
     );
   }
 
