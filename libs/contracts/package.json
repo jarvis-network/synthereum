@@ -17,6 +17,7 @@
     "migrate-finder": "MIGRATION_TYPE=deploy_finder hardhat test ./test/correct-migration.js",
     "migrate-deployer": "MIGRATION_TYPE=deploy_deployer hardhat test ./test/correct-migration.js",
     "migrate-pool-registry": "MIGRATION_TYPE=deploy_pool_registry hardhat test ./test/correct-migration.js",
+    "migrate-selfMinting-registry": "MIGRATION_TYPE=deploy_selfMinting_registry hardhat test ./test/correct-migration.js",
     "migrate-factory-versioning": "MIGRATION_TYPE=deploy_factory_versioning hardhat test ./test/correct-migration.js",
     "migrate-manager": "MIGRATION_TYPE=deploy_manager hardhat test ./test/correct-migration.js",
     "migrate-derivative-version": "MIGRATION_TYPE=deploy_derivative_versions hardhat test ./test/correct-migration.js",
