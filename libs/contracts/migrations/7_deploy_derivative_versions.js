@@ -1,5 +1,7 @@
 require('dotenv').config({ path: './.env.migration' });
-const { parseBoolean } = require('@jarvis-network/core-utils/dist/base/asserts');
+const {
+  parseBoolean,
+} = require('@jarvis-network/core-utils/dist/base/asserts');
 const rolesConfig = require('../data/roles.json');
 const {
   getExistingInstance,
@@ -115,7 +117,7 @@ module.exports = async function (deployer, network, accounts) {
     );
     //hardat
     if (FeePayerPoolPartyLib.setAsDeployed) {
-      const { contract: feePayerPoolParty } = await deploy(
+      const { contract: feePayerPoolPartyLib } = await deploy(
         deployer,
         network,
         FeePayerPoolPartyLib,
@@ -125,9 +127,9 @@ module.exports = async function (deployer, network, accounts) {
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
-        await PerpetualPositionManagerPoolPartyLib.link(feePayerPoolParty);
-        await PerpetualLiquidatablePoolPartyLib.link(feePayerPoolParty);
-        await PerpetualPoolPartyLib.link(feePayerPoolParty);
+        await PerpetualPositionManagerPoolPartyLib.link(feePayerPoolPartyLib);
+        await PerpetualLiquidatablePoolPartyLib.link(feePayerPoolPartyLib);
+        await PerpetualPoolPartyLib.link(feePayerPoolPartyLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }

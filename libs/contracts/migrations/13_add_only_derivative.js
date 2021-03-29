@@ -108,7 +108,7 @@ module.exports = async function (deployer, network, accounts) {
           web3,
           txhash: transactionHash,
           contractName: txData[j].asset,
-          txSummaryText: 'deployOnlyPool',
+          txSummaryText: 'deployOnlyDerivative',
         });
         if (txData[j].pool != ZERO_ADDRESS) {
           const pool = await SynthereumPool.at(txData[j].pool);
