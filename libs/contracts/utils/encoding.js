@@ -255,9 +255,111 @@ function encodePoolOnChainPriceFeed(
   return '0x' + poolPayload.substring(66);
 }
 
+function encodeSelfMintingDerivative(
+  collateralAddress,
+  priceFeedIdentifier,
+  syntheticName,
+  syntheticSymbol,
+  syntheticToken,
+  collateralRequirement,
+  disputeBondPct,
+  sponsorDisputeRewardPct,
+  disputerDisputeRewardPct,
+  minSponsorTokens,
+  withdrawalLiveness,
+  liquidationLiveness,
+  excessTokenBeneficiary,
+  version,
+  fee,
+  capMintAmount,
+  capDepositRatio,
+) {
+  selfMintingDerivativePayload = Web3EthAbi.encodeParameters(
+    [
+      {
+        params: {
+          collateralAddress: 'address',
+          priceFeedIdentifier: 'bytes32',
+          syntheticName: 'string',
+          syntheticSymbol: 'string',
+          syntheticToken: 'address',
+          collateralRequirement: {
+            rawValue: 'uint256',
+          },
+          disputeBondPct: {
+            rawValue: 'uint256',
+          },
+          sponsorDisputeRewardPct: {
+            ravValue: 'uint256',
+          },
+          disputerDisputeRewardPct: {
+            rawValue: 'uint256',
+          },
+          minSponsorTokens: {
+            rawValue: 'uint256',
+          },
+          withdrawalLiveness: 'uint256',
+          liquidationLiveness: 'uint256',
+          excessTokenBeneficiary: 'address',
+          version: 'uint8',
+          daoFee: {
+            feePercentage: { rawValue: 'uint256' },
+            feeRecipient: 'address',
+          },
+          capMintAmount: { rawValue: 'uint256' },
+          capDepositRatio: { rawValue: 'uint256' },
+        },
+      },
+    ],
+    [
+      {
+        collateralAddress: collateralAddress,
+        priceFeedIdentifier: web3Utils.padRight(
+          web3Utils.toHex(priceFeedIdentifier),
+          64,
+        ),
+        syntheticName: syntheticName,
+        syntheticSymbol: syntheticSymbol,
+        syntheticToken: syntheticToken,
+        collateralRequirement: {
+          rawValue: collateralRequirement,
+        },
+        disputeBondPct: {
+          rawValue: disputeBondPct,
+        },
+        sponsorDisputeRewardPct: {
+          ravValue: sponsorDisputeRewardPct,
+        },
+        disputerDisputeRewardPct: {
+          rawValue: disputerDisputeRewardPct,
+        },
+        minSponsorTokens: {
+          rawValue: minSponsorTokens,
+        },
+        withdrawalLiveness: withdrawalLiveness,
+        liquidationLiveness: liquidationLiveness,
+        excessTokenBeneficiary: excessTokenBeneficiary,
+        version: version,
+        daoFee: {
+          feePercentage: {
+            rawValue: web3Utils.toWei(fee.feePercentage.toString()),
+          },
+          feeRecipient: fee.feeRecipient,
+        },
+        capMintAmount: { rawValue: capMintAmount },
+        capDepositRatio: {
+          rawValue: web3Utils.toWei(capDepositRatio.toString()),
+        },
+      },
+    ],
+  );
+  return selfMintingDerivativePayload;
+}
+
 module.exports = {
   encodeDerivative,
   encodeTIC,
   encodePool,
   encodePoolOnChainPriceFeed,
+  encodeSelfMintingDerivative,
 };

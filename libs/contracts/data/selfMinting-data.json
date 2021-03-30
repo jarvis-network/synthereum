@@ -1,0 +1,9 @@
+{
+  "42": {
+    "collateralAddress": "0xEC8Fe8Aa79dAdcA065496b791AE1c1338DfBBED1",
+    "daoFee": {
+      "feePercentage": 0.002,
+      "feeRecipient": "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
+    }
+  }
+}

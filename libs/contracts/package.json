@@ -28,6 +28,7 @@
     "add-pool-and-derivative": "MIGRATION_TYPE=add_pool_and_derivative hardhat test ./test/correct-migration.js",
     "add-only-pool": "MIGRATION_TYPE=add_only_pool hardhat test ./test/correct-migration.js",
     "add-only-derivative": "MIGRATION_TYPE=add_only_derivative hardhat test ./test/correct-migration.js",
+    "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
     "test": "MIGRATION_TYPE=all hardhat test",
     "coverage": "hardhat coverage",
     "verify": "./utils/verify.d",
