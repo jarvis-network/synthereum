@@ -1,5 +1,6 @@
 import { includes } from './array-fp-utils';
 import { Empty } from './optional';
+import { Obj } from './meta';
 
 type AssertFunc = (value: any, message?: string) => asserts value;
 
@@ -96,15 +97,13 @@ export function parseBoolean(x: unknown): boolean | null {
     : throwError(`${x} is not a boolean`);
 }
 
-type Object = { [prop: string]: unknown } & { [prop: number]: unknown };
-
-export function isObject(x: unknown): x is object {
+export function isObject(x: unknown): x is Obj {
   return typeof x === 'object' && x !== null;
 }
 
-export function assertIsObject(x: unknown): Object {
+export function assertIsObject(x: unknown): Obj {
   return isObject(x)
-    ? (x as Object)
+    ? (x as Obj)
     : throwError(`'${JSON.stringify(x)}' is not an object.`);
 }
 

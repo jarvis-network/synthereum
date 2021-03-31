@@ -7,7 +7,9 @@ export type Entries<T> = {
   [K in keyof T]: [K, T[K]];
 }[keyof T][];
 
-export function entriesOf<T extends object>(obj: T): Entries<T> {
+export type Obj = Record<string | number, unknown>;
+
+export function entriesOf<T extends Obj>(obj: T): Entries<T> {
   return Object.entries(obj) as Entries<T>;
 }
 
