@@ -13,6 +13,14 @@ export function entriesOf<T extends Obj>(obj: T): Entries<T> {
   return Object.entries(obj) as Entries<T>;
 }
 
+export function keysOf<T extends Obj>(obj: T): (keyof T)[] {
+  return Object.keys(obj);
+}
+
+export function valuesOf<T extends Obj>(obj: T): ValuesOf<T>[] {
+  return Object.values(obj) as ValuesOf<T>[];
+}
+
 export type OneOf<
   T,
   V extends readonly any[],
