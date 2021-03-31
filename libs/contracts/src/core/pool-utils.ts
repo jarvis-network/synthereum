@@ -5,7 +5,7 @@ import {
 } from '@jarvis-network/web3-utils/base/asserts';
 import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
 import { Amount } from '@jarvis-network/web3-utils/base/big-number';
-import { t, OneOf } from '@jarvis-network/web3-utils/base/meta';
+import { t, OneOf, keysOf } from '@jarvis-network/web3-utils/base/meta';
 import {
   AddressOn,
   assertIsAddress,
@@ -35,6 +35,7 @@ import {
 import { TransactionReceipt } from 'web3-core';
 import {
   PoolContract,
+  PoolsForVersion,
   PoolVersion,
   PoolVersions,
   SynthereumPool,
@@ -52,8 +53,10 @@ export function getAvailableSymbols<
   Net extends SupportedNetworkName = SupportedNetworkName,
   Version extends PoolVersion = PoolVersion
 >(realm: SynthereumRealm<Net>, version: OneOf<Version, PoolVersions>) {
-  const pool = assertNotNull(realm.pools[version]);
-  return (Object.keys(pool!) as unknown) as keyof typeof pool;
+  const pool = assertNotNull(
+    realm.pools[version] as PoolsForVersion<Version, Net>,
+  );
+  return keysOf(pool);
 }
 
 export function foreachPool<
