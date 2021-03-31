@@ -1,4 +1,5 @@
 import { includes } from './array-fp-utils';
+import { Empty } from './optional';
 
 type AssertFunc = (value: any, message?: string) => asserts value;
 
@@ -38,8 +39,8 @@ export function isBoolean(x: unknown): x is boolean {
   return x === true || x === false;
 }
 
-export function assertNotNull<T>(x: T | null | undefined): T {
-  assert(x !== null && x !== void 0);
+export function assertNotNull<T>(x: T | Empty): T {
+  assert(x != null);
   return x;
 }
 

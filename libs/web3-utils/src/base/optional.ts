@@ -24,7 +24,7 @@ export async function getOrCreateElementAsync<T>(
   return result;
 }
 
-type Empty = null | undefined;
+export type Empty = null | undefined;
 
 export function filterEmpty<T>(array: (T | Empty)[]): T[] {
   return array.filter(x => x !== null && x !== void 0) as T[];
