@@ -68,37 +68,35 @@ type OnboardConfig = Pick<
   'dappId' | 'networkId' | 'walletSelect' | 'hideBranding' | 'walletCheck'
 >;
 
-const getOnboardConfig = (): OnboardConfig => {
-  return {
-    dappId: ONBOARD_API_KEY,
-    hideBranding: true,
-    networkId: NETWORK_ID,
-    walletCheck: [
-      { checkName: 'connect' },
-      { checkName: 'network' },
-      { checkName: 'derivationPath' },
-      { checkName: 'accounts' },
-    ],
-    walletSelect: {
-      heading: ' ',
-      description: ' ', // space here to hide default text
-      wallets: filterEmpty([
-        { walletName: 'metamask', preferred: true },
-        getWalletConnect(),
-        getPortis(),
-        getFortmatic(),
-        { walletName: 'authereum', preferred: true },
-        { walletName: 'trust', preferred: true },
-        { walletName: 'opera', preferred: true },
-        { walletName: 'coinbase', preferred: true },
-        { walletName: 'operaTouch', preferred: true },
-        { walletName: 'status', preferred: true },
-        { walletName: 'torus', preferred: true },
-        getRPCWalletConfig('walletLink'),
-        getRPCWalletConfig('ledger'),
-      ]),
-    },
-  };
-};
+const getOnboardConfig = (): OnboardConfig => ({
+  dappId: ONBOARD_API_KEY,
+  hideBranding: true,
+  networkId: NETWORK_ID,
+  walletCheck: [
+    { checkName: 'connect' },
+    { checkName: 'network' },
+    { checkName: 'derivationPath' },
+    { checkName: 'accounts' },
+  ],
+  walletSelect: {
+    heading: ' ',
+    description: ' ', // space here to hide default text
+    wallets: filterEmpty([
+      { walletName: 'metamask', preferred: true },
+      getWalletConnect(),
+      getPortis(),
+      getFortmatic(),
+      { walletName: 'authereum', preferred: true },
+      { walletName: 'trust', preferred: true },
+      { walletName: 'opera', preferred: true },
+      { walletName: 'coinbase', preferred: true },
+      { walletName: 'operaTouch', preferred: true },
+      { walletName: 'status', preferred: true },
+      { walletName: 'torus', preferred: true },
+      getRPCWalletConfig('walletLink'),
+      getRPCWalletConfig('ledger'),
+    ]),
+  },
+});
 
 export { getOnboardConfig };

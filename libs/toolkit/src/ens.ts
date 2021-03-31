@@ -6,6 +6,7 @@ import {
 } from '@jarvis-network/web3-utils/eth/address';
 import { getOrCreateElementAsync } from '@jarvis-network/web3-utils/base/optional';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const namehash = require('eth-ens-namehash');
 
 export class ENSHelper {
@@ -25,8 +26,8 @@ export class ENSHelper {
     return assertIsAddress(await contract.methods.name(hash).call());
   };
 
-  prettyName = async (address: Address): Promise<string> => {
-    return getOrCreateElementAsync(this.prettyCache, address, async () => {
+  prettyName = (address: Address): Promise<string> =>
+    getOrCreateElementAsync(this.prettyCache, address, async () => {
       const reverseName = await this.reverse(address);
       const ownerAddress = assertNotNull(
         await this.web3.eth.ens.getOwner(reverseName),
@@ -36,5 +37,4 @@ export class ENSHelper {
       }
       return reverseName;
     });
-  };
 }
