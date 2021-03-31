@@ -20,6 +20,7 @@ const Inner = styled.div`
   margin: auto;
   padding: 20px;
   display: flex;
+  align-items: center;
 
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
@@ -30,6 +31,7 @@ const Inner = styled.div`
 const Text = styled.div`
   flex: 1;
   padding-right: 20px;
+  font-size: 16px;
   color: ${props => props.theme.text.primary};
 
   @media screen and (max-width: ${props =>
@@ -41,8 +43,7 @@ const Text = styled.div`
 const CustomButton = styled(Button)`
   text-transform: uppercase;
   font-weight: 300;
-  font-size: 20px;
-  height: 60px;
+  height: 40px;
 `;
 
 export interface Props {
@@ -69,11 +70,9 @@ export const AcceptBox = ({ text, buttonText, store }: Props) => {
     <Container>
       <Inner>
         <Text>{text}</Text>
-        <div>
-          <CustomButton type="transparent" inverted size="l" onClick={onClick}>
-            {buttonText}
-          </CustomButton>
-        </div>
+        <CustomButton type="transparent" inverted size="m" onClick={onClick}>
+          {buttonText}
+        </CustomButton>
       </Inner>
     </Container>
   );
