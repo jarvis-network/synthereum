@@ -1,4 +1,3 @@
-require('dotenv').config();
 import Web3 from 'web3';
 import {
   parseSupportedNetworkId,
@@ -24,10 +23,13 @@ import { Fees } from '@jarvis-network/synthereum-contracts/dist/src/config/types
 import { TxOptions } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
 import { t } from '@jarvis-network/web3-utils/base/meta';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
+
 main()
   .then(_ => process.exit(0))
   .catch(err => {
-    console.log(err);
+    log(err);
     process.exit(1);
   });
 
@@ -107,8 +109,7 @@ async function getRealm<Net extends SupportedNetworkId>(
   netId: Net,
 ) {
   log(
-    'Creating web3 instance ' +
-      (useLedger ? 'with Ledger' : 'with private key'),
+    `Creating web3 instance ${useLedger ? 'with Ledger' : 'with private key'}`,
   );
   const web3 = new Web3(
     !useLedger

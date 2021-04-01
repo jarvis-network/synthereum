@@ -1,6 +1,4 @@
-require('dotenv').config();
 import yargs from 'yargs';
-const { hideBin } = require('yargs/helpers');
 import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
 import { getClosestBlock } from '@jarvis-network/web3-utils/eth/web3';
 import { addDays } from '@jarvis-network/web3-utils/base/date-time-utils';
@@ -17,9 +15,14 @@ import {
 import { log, console } from '@jarvis-network/web3-utils/logging';
 import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 
-const argv = yargs(hideBin(process.argv)).option('address', {
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { hideBin } = require('yargs/helpers');
+
+const { argv } = yargs(hideBin(process.argv)).option('address', {
   type: 'string',
-}).argv;
+});
 
 async function main() {
   log('Starting');
@@ -82,7 +85,7 @@ async function main() {
         blockNumber,
         from: formatAddr(from),
         to: formatAddr(to),
-        value: formatAmount(wei(value).mul(wei(10 ** 12)) as Amount) + ' USDC',
+        value: `${formatAmount(wei(value).mul(wei(10 ** 12)) as Amount)} USDC`,
         transactionHash,
       }),
     ),

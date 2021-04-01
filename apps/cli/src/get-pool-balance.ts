@@ -1,4 +1,3 @@
-require('dotenv').config();
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import {
@@ -26,6 +25,11 @@ import {
 import { log } from '@jarvis-network/web3-utils/logging';
 import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
 import { t } from '@jarvis-network/web3-utils/base/meta';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
+
+const { table } = console;
 
 async function main() {
   log('Starting');
@@ -66,26 +70,24 @@ async function printPoolBalance(
   realm: SynthereumRealmWithWeb3,
   version: PoolVersion,
 ) {
-  let balances = await getPoolBalances(realm, version);
+  const balances = await getPoolBalances(realm, version);
   const pools = assertNotNull(realm.pools[version]);
   const result = assertNotNull(balances)
-    .map(([sym, bal]) => t(sym, bal, pools[sym]!))
+    .map(([sym, bal]) => t(sym, bal, assertNotNull(pools[sym])))
     .map(([sym, bal, pool]) => ({
       Symbol: sym,
       [`'${version}' Pool Balance`]: `${formatAmount(bal)} USDC`,
       [`'${version}' Pool Address`]: pool.address,
-      'Synthetic Token Address':
-        pool.syntheticToken.address + ` (${pool.syntheticToken.symbol})`,
-      'Collateral Token Address':
-        pool.collateralToken.address + ` (${pool.collateralToken.symbol})`,
+      'Synthetic Token Address': `${pool.syntheticToken.address} (${pool.syntheticToken.symbol})`,
+      'Collateral Token Address': `${pool.collateralToken.address} (${pool.collateralToken.symbol})`,
       'Derivative Address': pool.derivative.address,
     }));
-  console.table(result);
+  table(result);
 }
 
 main()
   .then(_ => process.exit(0))
   .catch(err => {
-    console.log(err);
+    log(err);
     process.exit(1);
   });
