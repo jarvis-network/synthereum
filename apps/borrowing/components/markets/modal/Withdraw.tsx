@@ -10,10 +10,8 @@ const subtitle = (
   </>
 );
 
-export const Withdraw: React.FC = () => {
-  return (
-    <WithPlaceholder title={title} subtitle={subtitle} skipKey="withdraw">
-      <div>withdraw</div>
-    </WithPlaceholder>
-  );
-};
+export const Withdraw: React.FC = () => (
+  <WithPlaceholder title={title} subtitle={subtitle} skipKey="withdraw">
+    <div>withdraw</div>
+  </WithPlaceholder>
+);

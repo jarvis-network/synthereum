@@ -4,7 +4,6 @@ import { Button, Checkbox, styled, themeValue } from '@jarvis-network/ui';
 
 import { PageProps } from '@/components/auth/flow/types';
 import {
-  BigP,
   Img,
   TutorialContent,
   P,

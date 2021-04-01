@@ -44,17 +44,15 @@ interface Props {
   subtitle: React.ReactNode;
 }
 
-export const Placeholder: React.FC<Props> = ({ title, subtitle, onSkip }) => {
-  return (
-    <Container>
-      <ImageContainer />
-      <TextTitle>{title}</TextTitle>
-      <Text>{subtitle}</Text>
-      <SkipContainer>
-        <SkipButton onClick={onSkip} size="m">
-          skip
-        </SkipButton>
-      </SkipContainer>
-    </Container>
-  );
-};
+export const Placeholder: React.FC<Props> = ({ title, subtitle, onSkip }) => (
+  <Container>
+    <ImageContainer />
+    <TextTitle>{title}</TextTitle>
+    <Text>{subtitle}</Text>
+    <SkipContainer>
+      <SkipButton onClick={onSkip} size="m">
+        skip
+      </SkipButton>
+    </SkipContainer>
+  </Container>
+);

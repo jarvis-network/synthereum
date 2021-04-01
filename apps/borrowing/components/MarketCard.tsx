@@ -78,43 +78,39 @@ export const MarketCard: FC<MarketCardProps> = ({
   assetOutMinted,
   collateral,
   onManageClick,
-}) => {
-  return (
-    <Container>
-      <Header>
-        <FlagsPair assets={[assetIn.icon, assetOut.icon]} /> {assetIn.name}-
-        {assetOut.name}
-      </Header>
+}) => (
+  <Container>
+    <Header>
+      <FlagsPair assets={[assetIn.icon, assetOut.icon]} /> {assetIn.name}-
+      {assetOut.name}
+    </Header>
 
-      <DataList>
-        <DataListItem label="Collateralization Ratio">
-          {collateralizationRatio * 100}%
-        </DataListItem>
+    <DataList>
+      <DataListItem label="Collateralization Ratio">
+        {collateralizationRatio * 100}%
+      </DataListItem>
 
-        <DataListItem label="Liquidation Ratio">
-          {liquidationRatio * 100}%
-        </DataListItem>
+      <DataListItem label="Liquidation Ratio">
+        {liquidationRatio * 100}%
+      </DataListItem>
 
-        {collateral && (
-          <DataListItem label="Your Collateral">
-            {collateral * 100}%
-          </DataListItem>
-        )}
-
-        {assetOutMinted && (
-          <DataListItem label={`${assetOut.name} minted`}>
-            {assetOutMinted}
-          </DataListItem>
-        )}
-      </DataList>
-
-      {onManageClick && (
-        <Footer>
-          <ManageButton onClick={onManageClick} size="l" type="dark">
-            Manage
-          </ManageButton>
-        </Footer>
+      {collateral && (
+        <DataListItem label="Your Collateral">{collateral * 100}%</DataListItem>
       )}
-    </Container>
-  );
-};
+
+      {assetOutMinted && (
+        <DataListItem label={`${assetOut.name} minted`}>
+          {assetOutMinted}
+        </DataListItem>
+      )}
+    </DataList>
+
+    {onManageClick && (
+      <Footer>
+        <ManageButton onClick={onManageClick} size="l" type="dark">
+          Manage
+        </ManageButton>
+      </Footer>
+    )}
+  </Container>
+);

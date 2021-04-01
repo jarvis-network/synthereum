@@ -29,7 +29,7 @@ const UserHeader = () => {
   const { innerWidth } = useWindowSize();
   const notify = useNotifications();
 
-  const handleLogIn = async () => {
+  const handleLogIn = () => {
     dispatch(setAuthModalVisible(true));
   };
 

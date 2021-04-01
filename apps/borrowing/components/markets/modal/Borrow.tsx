@@ -10,10 +10,8 @@ const subtitle = (
   </>
 );
 
-export const Borrow: React.FC = () => {
-  return (
-    <WithPlaceholder title={title} subtitle={subtitle} skipKey="borrow">
-      <div>borrow</div>
-    </WithPlaceholder>
-  );
-};
+export const Borrow: React.FC = () => (
+  <WithPlaceholder title={title} subtitle={subtitle} skipKey="borrow">
+    <div>borrow</div>
+  </WithPlaceholder>
+);

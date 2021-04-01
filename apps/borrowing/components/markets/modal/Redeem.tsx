@@ -10,10 +10,8 @@ const subtitle = (
   </>
 );
 
-export const Redeem: React.FC = () => {
-  return (
-    <WithPlaceholder title={title} subtitle={subtitle} skipKey="redeem">
-      <div>redeem</div>
-    </WithPlaceholder>
-  );
-};
+export const Redeem: React.FC = () => (
+  <WithPlaceholder title={title} subtitle={subtitle} skipKey="redeem">
+    <div>redeem</div>
+  </WithPlaceholder>
+);

@@ -9,7 +9,6 @@ import {
 } from '@/components/auth/flow/ModalComponents';
 import {
   Button,
-  Flag,
   NotificationType,
   styled,
   themeValue,
@@ -85,13 +84,10 @@ export const ServiceSelect: React.FC<PageProps> = () => {
       }
     });
     requestAnimationFrame(() => {
-      const showMoreButton = document.querySelector(
+      const showMoreButton = document.querySelector<HTMLElement>(
         '.bn-onboard-modal-select-wallets > div > button',
       );
-      if (showMoreButton) {
-        // @ts-ignore
-        showMoreButton.click();
-      }
+      showMoreButton?.click();
     });
   };
 

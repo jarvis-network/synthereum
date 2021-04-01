@@ -19,23 +19,21 @@ const CustomButton = styled(Button)`
   text-align: center;
 `;
 
-export const Welcome: React.FC<PageProps> = ({ children, onNext }) => {
-  return (
-    <TutorialContent>
-      <ImgContainer>
-        <Img src="/images/welcome-statue.svg" alt="" />
-      </ImgContainer>
-      <BigP>
-        Welcome to <b>Jarvis Minter</b>!
-      </BigP>
-      <P>
-        Our protocol provides you with the ability
-        <br />
-        To self-mint any jAssets by supplying any token as collateral.
-      </P>
-      <CustomButton type="success" onClick={onNext}>
-        SIGN IN
-      </CustomButton>
-    </TutorialContent>
-  );
-};
+export const Welcome: React.FC<PageProps> = ({ onNext }) => (
+  <TutorialContent>
+    <ImgContainer>
+      <Img src="/images/welcome-statue.svg" alt="" />
+    </ImgContainer>
+    <BigP>
+      Welcome to <b>Jarvis Minter</b>!
+    </BigP>
+    <P>
+      Our protocol provides you with the ability
+      <br />
+      To self-mint any jAssets by supplying any token as collateral.
+    </P>
+    <CustomButton type="success" onClick={onNext}>
+      SIGN IN
+    </CustomButton>
+  </TutorialContent>
+);

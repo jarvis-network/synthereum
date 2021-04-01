@@ -10,10 +10,8 @@ const subtitle = (
   </>
 );
 
-export const Deposit: React.FC = () => {
-  return (
-    <WithPlaceholder title={title} subtitle={subtitle} skipKey="deposit">
-      <div>Deposit</div>
-    </WithPlaceholder>
-  );
-};
+export const Deposit: React.FC = () => (
+  <WithPlaceholder title={title} subtitle={subtitle} skipKey="deposit">
+    <div>Deposit</div>
+  </WithPlaceholder>
+);
