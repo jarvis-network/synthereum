@@ -65,7 +65,6 @@ export function deepSanitizedClone<T>(x: T) {
   }
 
   const result: Partial<T> = {};
-  // eslint-disable-next-line no-restricted-syntax
   for (const key in x) {
     if (!Object.prototype.hasOwnProperty.call(x, key)) continue;
     result[key] = deepSanitizedClone(x[key]);

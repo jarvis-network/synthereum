@@ -114,7 +114,7 @@ const grid = {
       className: 'flag',
     },
     {
-      key: 'full_name',
+      key: 'fullName',
       type: ColumnType.Text,
       className: 'text',
     },
@@ -137,7 +137,7 @@ const grid = {
   data: [
     {
       flag: 'eur',
-      full_name: 'Euro',
+      fullName: 'Euro',
       type: 'fiat',
       name: 'EUR',
       value: 10,
@@ -145,7 +145,7 @@ const grid = {
     },
     {
       flag: 'chf',
-      full_name: 'Swiss Franc',
+      fullName: 'Swiss Franc',
       type: 'crypto',
       name: 'CHF',
       value: 11,
@@ -153,7 +153,7 @@ const grid = {
     },
     {
       flag: 'us',
-      full_name: 'US Dollar',
+      fullName: 'US Dollar',
       type: 'crypto',
       name: 'USD',
       value: 23,
@@ -161,7 +161,7 @@ const grid = {
     },
     {
       flag: 'gbp',
-      full_name: 'British Pound',
+      fullName: 'British Pound',
       type: 'crypto',
       name: 'GBP',
       value: 1200,
@@ -190,7 +190,7 @@ const customFilter: PropFilterFn = (data, { query }) => {
   return data.filter(
     item =>
       item.name.toLowerCase().includes(q) ||
-      item.full_name.toLowerCase().includes(q),
+      item.fullName.toLowerCase().includes(q),
   );
 };
 
@@ -224,7 +224,7 @@ export const WithTabsAndSplitGridAndFilteringByFullName = () => {
     <StyledSearchBar
       tabs={tabs}
       data={grid.data}
-      queryFilterProp="full_name"
+      queryFilterProp="fullName"
       render={data => {
         const owned = data.filteredData.filter(row => row.owned);
         const other = data.filteredData.filter(row => !row.owned);
@@ -264,7 +264,7 @@ const decodeHtml = (string: string) => {
 export const Knobs = () => {
   const queryFilterProp = select(
     'Query filter data key',
-    ['name', 'full_name'],
+    ['name', 'fullName'],
     'name',
   );
   const placeholder = decodeHtml(text('Placeholder', 'Try "EUR"'));

@@ -32,7 +32,7 @@ export const AssetsRowExpand: React.FC<AssetsRowExpandProps> = ({
     >
       <ExpandContent>
         <Descriptions isGrid>
-          {descriptions.map((item, index) => (
+          {descriptions.map(item => (
             <DescriptionsItemTooltip
               label={item.label}
               isGrid

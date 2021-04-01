@@ -33,7 +33,6 @@ const FormGroupContainer = styled.div<FormGroupProps>`
 `;
 
 export const FormGroup: React.FC<FormGroupProps> = ({
-  stackable = false,
   className,
   children,
   ...props

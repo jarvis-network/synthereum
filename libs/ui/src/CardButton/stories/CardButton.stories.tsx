@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { radios, select, text } from '@storybook/addon-knobs';
 
 import { Emoji } from '../../Emoji';

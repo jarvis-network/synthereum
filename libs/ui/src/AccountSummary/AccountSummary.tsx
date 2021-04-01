@@ -152,7 +152,6 @@ export const AccountSummary: FC<AccountSummaryProps> = ({
 
   const handleLogout = () => {
     setMenuVisible(false);
-    // eslint-disable-next-line no-unused-expressions
     onLogout?.();
   };
 

@@ -50,8 +50,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStateQuery(event.currentTarget.value);
-    // ⬇ this is needed because of eslint bug?
-    // eslint-disable-next-line no-unused-expressions
     inputProps.onChange?.(event);
   };
 

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { styled } from '../Theme';
 
 import { Label } from './Label';

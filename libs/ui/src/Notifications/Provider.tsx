@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 
 import { NotificationTypeWithOptions } from './types';
 import { NotificationsPlacement } from './Placement';

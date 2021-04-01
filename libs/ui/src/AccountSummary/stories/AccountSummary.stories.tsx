@@ -19,13 +19,11 @@ export default {
 const menu = [
   {
     name: 'Account',
-    // eslint-disable-next-line no-alert
-    onClick: () => alert('Clicked Account'),
+    onClick: () => action('Clicked Account'),
   },
   {
     name: 'Contact',
-    // eslint-disable-next-line no-alert
-    onClick: () => alert('Clicked Contact'),
+    onClick: () => action('Clicked Contact'),
   },
 ];
 

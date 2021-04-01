@@ -5,7 +5,6 @@ import { Dropdown } from '../Dropdown';
 import { AccountButton } from '../AccountButton';
 
 import { Button } from '../Button';
-import { RadioGroup } from '../Radio';
 
 import { AccountDropdownProps } from './types';
 
@@ -54,17 +53,6 @@ const CustomLink = styled(Button)`
 const Links = styled.div`
   margin-bottom: 12px;
   margin-top: 19px;
-`;
-
-const CustomRadioGroup = styled(RadioGroup)`
-  margin-top: 15px;
-  display: flex;
-  justify-content: center;
-
-  @media screen and (max-width: ${props =>
-      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
-    padding: 15px 0;
-  }
 `;
 
 const Logout = styled(Button)`

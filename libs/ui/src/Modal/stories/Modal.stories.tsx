@@ -22,7 +22,6 @@ type StatefulModalProps = Omit<ModalProps, 'onClose' | 'isOpened'> & {
 };
 
 const StatefulModal: React.FC<StatefulModalProps> = ({
-  className,
   children,
   ...props
 }) => {

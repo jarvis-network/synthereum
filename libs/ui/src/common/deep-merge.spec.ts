@@ -91,7 +91,7 @@ describe('deepSanitizedClone', () => {
     const buffer = new ArrayBuffer(16);
     const view = new DataView(buffer, 0);
     throws(() => {
-      const result = deepSanitizedClone(view);
+      deepSanitizedClone(view);
     });
   });
 
