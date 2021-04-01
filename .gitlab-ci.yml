@@ -26,21 +26,37 @@ stages:
   - release
   # Jobs:
 
+🎨 lint:
+  <<: *job-config
+  stage: build and deploy
+  variables:
+    TARGET: installed-project
+  script:
+    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
+    - docker buildx bake ${TARGET} --print
+    - docker buildx bake ${TARGET} --progress=plain
+    - docker run --rm
+      --env CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+      --env CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+      --entrypoint /src/scripts/ci_test_affected.bash
+      "${REGISTRY}/${TARGET}:${TAG}"
+      lint
+
 🐳 build & push dapps:
   <<: *job-config
   stage: build and deploy
   parallel:
-      matrix:
-        - TARGET: frontend
-          NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_FRONTEND'
-        - TARGET: borrowing
-          NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BORROWING'
+    matrix:
+      - TARGET: frontend
+        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_FRONTEND'
+      - TARGET: borrowing
+        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BORROWING'
   variables:
     NETLIFY_AUTH_TOKEN: '$NETLIFY_AUTH_TOKEN'
   script:
     - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
     - docker buildx bake ${TARGET} --print
-    - docker buildx bake ${TARGET}  --progress=plain
+    - docker buildx bake ${TARGET} --progress=plain
     - docker run --rm "${REGISTRY}/${TARGET}:${TAG}" netlify deploy --dir /src/out --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
 
 release:

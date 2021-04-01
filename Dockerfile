@@ -29,12 +29,15 @@ WORKDIR /src
 #COPY .yarnrc.yml .yarnrc.yml
 
 # ------------------ Builder image with everything installed ----------------- #
-
 FROM base as install
 COPY --from=yarn_lock /out .
 COPY --from=config_files /out .
 RUN yarn install --frozen-lock
 RUN mkdir -p /out
+
+# -------------- Project Builder image with everything installed ------------- #
+FROM install as installed-project
+COPY . .
 
 # ----------------- Build @jarvis-network/web3-utils library ----------------- #
 FROM install as build-web3-utils

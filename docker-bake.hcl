@@ -39,7 +39,18 @@ target "install" {
   ]
 }
 
-
+target "installed-project" {
+  dockerfile = "Dockerfile"
+  output = ["type=docker"]
+  tags = [
+    "${REGISTRY_NAME}/installed-project:${TAG}"
+  ]
+  platforms = ["linux/amd64"]
+  target = "installed-project"
+  cache-from = [
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}"
+  ]
+}
 
 target "frontend" {
   dockerfile = "Dockerfile"
@@ -60,9 +71,7 @@ target "frontend" {
   }
   target = "frontend"
   cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
-  ]
-  cache-to= [
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}",
     "type=registry,ref=${REGISTRY_NAME}/frontend-cache:${TAG}"
   ]
 }
