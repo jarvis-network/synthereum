@@ -6,8 +6,8 @@
   },
   {
     "contractName": "SynthereumDeployer",
-    "address": "0x8137C08A710281270b852c2F0000944bb473D190",
-    "transactionHash": "0xa1c36710e304b8a1f8809d9556955178b91472c85414860242f062962a438275"
+    "address": "0xb329D42082851641bBb561B63dbA56763C772b44",
+    "transactionHash": "0xbea57c72f5234239ae80d1c268eeeba1355ac4743582bb2b6f475bd0b737f79e"
   },
   {
     "contractName": "SynthereumPoolRegistry",
@@ -16,8 +16,8 @@
   },
   {
     "contractName": "SynthereumFactoryVersioning",
-    "address": "0x2Cb699d8c3D106169118b058cf285D1d99abC22C",
-    "transactionHash": "0xaabbca273b1a33fdcf68644d3fd81397a2b5ab75672503b851eae8bae0372c50"
+    "address": "0xfACb1cb59C11c5223461aEfe39BFC46D99758E00",
+    "transactionHash": "0x5985454023199bac569d347872a9ea2d8b84c3721fb8af486a0621d4846db18e"
   },
   {
     "contractName": "SynthereumSyntheticTokenFactory",
@@ -93,5 +93,35 @@
     "contractName": "SynthereumManager",
     "address": "0x15a2870d62d7e08622bafC5832404e284AF5CdC7",
     "transactionHash": "0x67793795885ddb086a4d99c94d85acea9d56e39833fce1a4411c11533a95f265"
+  },
+  {
+    "contractName": "SelfMintingRegistry",
+    "address": "0xE13A511534748BF35324A045aa1a7e70d788CDFb",
+    "transactionHash": "0x610f07e4a502eda351a49bc8fe014d47e28a75d62c397b354c7b97709746f725"
+  },
+  {
+    "contractName": "SelfMintingPerpetualPositionManagerMultiPartyLib",
+    "address": "0x6BF853d2B55D2D9765fbeB652a091e573B4F39d4",
+    "transactionHash": "0xa6bfe89dabac1af9995a50aac4bb0e397a27cb8f6e388cdd5edc1c7d32709b30"
+  },
+  {
+    "contractName": "SelfMintingPerpetualLiquidatableMultiPartyLib",
+    "address": "0xD054b80485a7B5c2d3B546396A12423c92886818",
+    "transactionHash": "0x027a7702de3a029173a51ece63216a1e1aaf3cdcf7ffc0f0f57e2e79da88956b"
+  },
+  {
+    "contractName": "SelfMintingPerpetualMultiPartyLib",
+    "address": "0xD87970Ffb30E8d6E73013D5a62D717D7f551744E",
+    "transactionHash": "0xc02d5474d535c15c83fe23e0aa08aaa6e3e3caba606b47c8fb1c94cd5c1bbf25"
+  },
+  {
+    "contractName": "SelfMintingDerivativeFactory",
+    "address": "0xbb7087Dc0ad75Dc6f7139Cad0B3Cfde587AAa5D9",
+    "transactionHash": "0xf316847b4c11f522d9a39bda58d0249bbc807dcfeb5ee2f478123c58835f7819"
+  },
+  {
+    "contractName": "SelfMintingController",
+    "address": "0x8cE78d5F064446388D0C9ECD7D559846aa7cB9Cf",
+    "transactionHash": "0xb355f5fadd782f756990a35fc1436bb95b03be0a9b34cf590129abeb017150b4"
   }
 ]
