@@ -8,12 +8,13 @@ import {
   PriceFeed,
   RedeemRequestValidator,
 } from '@jarvis-network/validator-lib';
-import { base, NonPayableTransactionObject } from '@jarvis-network/web3-utils';
 import { delay } from '@jarvis-network/web3-utils/base/async';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import Logger from 'bunyan';
 import { performance } from 'perf_hooks';
 import { ENV } from '../config';
+import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
+import { NonPayableTransactionObject } from '@jarvis-network/web3-utils/eth/contracts/typechain/types';
 type ApproveRejectMethod = (
   id: string | number[],
 ) => NonPayableTransactionObject<void>;
@@ -88,7 +89,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
 
   stop() {
     this.priceFeed.disconnect();
-    clearInterval(base.asserts.assertNotNull(this.interval));
+    clearInterval(assertNotNull(this.interval));
   }
 
   private async checkRequests<T extends [string, string, string, ...unknown[]]>(
