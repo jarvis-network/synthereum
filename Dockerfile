@@ -30,22 +30,11 @@ WORKDIR /src
 
 # ------------------ Builder image with everything installed ----------------- #
 
-FROM base as install_dep
+FROM base as install
 COPY --from=yarn_lock /out .
 COPY --from=config_files /out .
-
-# Install only dependencies (no devDependencies)
-RUN yarn install --production --frozen-lock
-RUN mkdir -p /production_modules
-RUN cp -r node_modules /production_modules
-# ---------- Builder image with everything installed + config files ---------- #
-FROM install_dep as install
-COPY --from=config_files /out .
-# Not strictly necessary, but we do it to ensure that we get the same result as
-# if we had all config files:
 RUN yarn install --frozen-lock
 RUN mkdir -p /out
-
 
 # ----------------- Build @jarvis-network/web3-utils library ----------------- #
 FROM install as build-web3-utils
@@ -120,23 +109,18 @@ RUN yarn nx build borrowing
 RUN cp -r apps/borrowing/out /out
 
 # ---------------------------------------------------------------------------- #
-#                                Build Netlify                                 #
+#                       Frontend deployment final images:                      #
 # ---------------------------------------------------------------------------- #
 
+# ---------------------------- Netlify base image ---------------------------- #
 FROM node:${NODE_VERSION}-alpine as netlify
 RUN yarn global add netlify-cli
 
-# ---------------------------------------------------------------------------- #
-#                                Deploy Frontend                               #
-# ---------------------------------------------------------------------------- #
-
+# ------------------ Exchange frontend Netlify deploy image: ----------------- #
 FROM netlify as frontend
 COPY --from=build-frontend /out /src
 
-# ---------------------------------------------------------------------------- #
-#                                Deploy Borrowing                               #
-# ---------------------------------------------------------------------------- #
-
+# ----------------- Borrowing frontend Netlify deploy image: ----------------- #
 FROM netlify as borrowing
 COPY --from=build-borrowing /out /src
 
@@ -144,12 +128,18 @@ COPY --from=build-borrowing /out /src
 #                               Deploy Validator                               #
 # ---------------------------------------------------------------------------- #
 
+FROM base as prod_install
+# Install only dependencies (no devDependencies)
+RUN yarn install --production --frozen-lock
+RUN mkdir -p /production_modules
+RUN cp -r node_modules /production_modules
+
 FROM node:${NODE_VERSION}-alpine as validator
 WORKDIR /app
 RUN  apk add --update --no-cache \
     ca-certificates \
     bash
-COPY --from=install /production_modules/* node_modules
+COPY --from=prod_install /production_modules/* node_modules
 COPY --from=build-libs /src/node_modules/@jarvis-network node_modules/@jarvis-network
 COPY --from=build-validator  /out/ .
 CMD ["node", "dist/index.js"]
