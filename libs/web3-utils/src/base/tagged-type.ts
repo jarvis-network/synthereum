@@ -1,4 +1,5 @@
-import { Id } from './meta';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Id, Obj } from './meta';
 
 type Empty = null | undefined | never;
 
@@ -141,10 +142,10 @@ export type TagKindOf<TT> = TT extends TaggedValue<infer _, infer Kind, infer _>
  * ```
  */
 export type TagOf<TT> = TT extends TaggedValue<infer _, infer Kind, infer Data>
-  ? Id<{ kind: Kind } & (Data extends null ? {} : Data)>
+  ? Id<{ kind: Kind } & (Data extends null ? Obj : Data)>
   : never;
 
-//#region Test code
+// #region Test code
 type Address = Tagged<string, 'Ethereum Address'>;
 type AddressBaseTypeOf = BaseTypeOf<Address>;
 type AddressTagKind = TagKindOf<Address>;
@@ -177,4 +178,4 @@ type AdvancedAddress2BaseTypeOf = BaseTypeOf<AdvancedAddress2>;
 type AdvancedAddress2TagKind = TagKindOf<AdvancedAddress2>;
 type AdvancedAddress2Tag = TagOf<AdvancedAddress2>;
 const x: AdvancedAddress2 = 'asd' as AdvancedAddress2;
-//#endregion
+// #endregion

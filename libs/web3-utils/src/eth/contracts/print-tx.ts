@@ -42,7 +42,7 @@ export async function logTransactionOutput({
     getContractNameFromEtherscan === true && contractAddress
       ? (await nullOnFailure(getContractSourceCode(contractAddress)))
           ?.ContractName
-      : void 0;
+      : undefined;
 
   const accountBalance = wei(await web3.eth.getBalance(from));
   const timestamp = await getBlockTimestamp(web3, blockNumber);

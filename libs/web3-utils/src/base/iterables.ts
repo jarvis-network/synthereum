@@ -1,12 +1,20 @@
 import { assert } from './asserts';
 
-export const range = (start: number, end: number, step: number) => {
+export function range(
+  start: number,
+  end: number,
+  step: number,
+): Iterable<number> {
   return start < end
     ? ascendingRange(start, end, step)
     : descendingRange(start, end, step);
-};
+}
 
-export const ascendingRange = (start: number, end: number, step: number) => {
+export function ascendingRange(
+  start: number,
+  end: number,
+  step: number,
+): Iterable<number> {
   assert(start < end && step > 0);
   return {
     *[Symbol.iterator]() {
@@ -15,9 +23,13 @@ export const ascendingRange = (start: number, end: number, step: number) => {
       }
     },
   };
-};
+}
 
-export const descendingRange = (start: number, end: number, step: number) => {
+export function descendingRange(
+  start: number,
+  end: number,
+  step: number,
+): Iterable<number> {
   assert(end < start && step > 0);
   return {
     *[Symbol.iterator]() {
@@ -26,4 +38,4 @@ export const descendingRange = (start: number, end: number, step: number) => {
       }
     },
   };
-};
+}

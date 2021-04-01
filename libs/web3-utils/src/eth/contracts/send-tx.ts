@@ -1,8 +1,15 @@
 import type { EventEmitter } from 'events';
+
 import type { PromiEvent, TransactionReceipt } from 'web3-core';
+
+import { throwError } from '../../base/asserts';
+
+import { noop } from '../../base/noop';
+
 import type { AddressOn } from '../address';
 import type { NetworkName, ToNetworkId } from '../networks';
 import { Web3On } from '../web3-instance';
+
 import { logTransactionOutput, TxLogParams } from './print-tx';
 import type {
   NonPayableTransactionObject,
@@ -27,18 +34,9 @@ const nonces: Record<string, number> = {};
 
 export async function sendTx<Result, Net extends NetworkName>(
   tx: NonPayableTransactionObject<Result>,
-  {
-    web3,
-    gasLimit,
-    nonce,
-    from,
-    printInfo,
-    confirmations,
-    ...rest
-  }: FullTxOptions<Net>,
+  { web3, gasLimit, nonce, from, printInfo, ...rest }: FullTxOptions<Net>,
 ): Promise<{ promiEvent: PromiEvent<TransactionReceipt> }> {
-  // If no logging function is provided, default to noop:
-  const log = printInfo?.log ?? (() => {});
+  const log = printInfo?.log ?? noop;
 
   log('Getting tx nonce', { userSpecifiedNonce: nonce });
   if (!nonces[from]) {
@@ -65,10 +63,9 @@ export async function sendTx<Result, Net extends NetworkName>(
     txParams,
   );
   const estimatedGas = await tx.estimateGas(txParams);
-
   gasLimit ??= estimatedGas;
-  (txParams.gas = estimatedGas < gasLimit ? estimatedGas : gasLimit),
-    log('Setting gasLimit: ', txParams.gas);
+  txParams.gas = estimatedGas < gasLimit ? estimatedGas : gasLimit;
+  log('Setting gasLimit: ', txParams.gas);
 
   log(`Sending '${printInfo?.txSummaryText}' tx:`, tx.arguments, txParams);
   return { promiEvent: tx.send(txParams) };
@@ -80,8 +77,7 @@ export async function sendTxAndLog<Result, Net extends NetworkName>(
 ): Promise<TransactionReceipt> {
   const { promiEvent } = await sendTx(tx, options);
 
-  // If no logging function is provided, default to noop:
-  const log = options.printInfo?.log ?? (() => {});
+  const log = options.printInfo?.log ?? noop;
 
   const txReceipt = await logTransactionStatus({
     web3: options.web3,
@@ -126,6 +122,9 @@ export function once<T>(
   return new Promise((resolve, reject) => {
     promiEvent.once('error', reject);
     switch (type) {
+      default:
+        throwError(`Unexpected type: ${type}`);
+        break;
       case 'sending':
         promiEvent.once(type, resolve);
         break;
@@ -137,12 +136,13 @@ export function once<T>(
         promiEvent.once(type, resolve);
         break;
       case 'confirmation':
+        // eslint-disable-next-line no-case-declarations, no-inner-declarations
         function onConfirm(
           confirmations: number,
           receipt: TransactionReceipt,
           blockHash?: string,
         ) {
-          if (confirmations == maxConfirmations) {
+          if (confirmations === maxConfirmations) {
             ((promiEvent as unknown) as EventEmitter).off(
               'confirmation',
               onConfirm,

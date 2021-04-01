@@ -1,9 +1,12 @@
-import { BaseContract } from './typechain/types';
-import { NetworkName, Web3On } from '../web3-instance';
 import type { AbiItem } from 'web3-utils';
+
+import { NetworkName, Web3On } from '../web3-instance';
 import { Tagged } from '../../base/tagged-type';
-import { ContractInfo } from './types';
+
 import { AddressOn } from '../address';
+
+import { ContractInfo } from './types';
+import { BaseContract } from './typechain/types';
 
 export type AbiFor<Contract extends BaseContract> = Tagged<AbiItem[], Contract>;
 

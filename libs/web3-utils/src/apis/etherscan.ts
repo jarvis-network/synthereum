@@ -1,7 +1,9 @@
-import axios from 'axios';
 import { encode } from 'querystring';
+
+import axios from 'axios';
 import type { BlockNumber } from 'web3-core';
 import type { AbiItem } from 'web3-utils';
+
 import { env } from '../config';
 import { AddressOn } from '../eth/address';
 import { NetworkName } from '../eth/networks';
@@ -28,12 +30,12 @@ export interface EtherscanTxInfo {
   confirmations: string;
 }
 
-export async function getContractTxs<Net extends NetworkName>(
+export function getContractTxs<Net extends NetworkName>(
   contract: AddressOn<Net>,
   startBlock: BlockNumber = 0,
   endBlock: BlockNumber = 'latest',
-) {
-  return await makeEtherscanApiCall<EtherscanTxInfo[], Net>({
+): Promise<EtherscanTxInfo[]> {
+  return makeEtherscanApiCall<EtherscanTxInfo[], Net>({
     module: 'account',
     action: 'tokentx',
     contractaddress: contract,
@@ -59,10 +61,10 @@ interface SourceCodeResult<Net extends NetworkName> {
   SwarmSource: string;
 }
 
-export async function getContractSourceCode<Net extends NetworkName>(
+export function getContractSourceCode<Net extends NetworkName>(
   contract: AddressOn<Net>,
-) {
-  return await makeEtherscanApiCall<SourceCodeResult<Net>, Net>({
+): Promise<SourceCodeResult<Net>> {
+  return makeEtherscanApiCall<SourceCodeResult<Net>, Net>({
     module: 'contract',
     action: 'getsourcecode',
     address: contract,
@@ -71,7 +73,7 @@ export async function getContractSourceCode<Net extends NetworkName>(
 
 export async function getContractAbi<Net extends NetworkName>(
   contract: AddressOn<Net>,
-) {
+): Promise<AbiItem[]> {
   return JSON.parse(
     await makeEtherscanApiCall<string, Net>({
       module: 'contract',
@@ -83,13 +85,15 @@ export async function getContractAbi<Net extends NetworkName>(
 
 interface EtherscanPriceResult {
   ethbtc: string; // e.g. '0.0247'
-  ethbtc_timestamp: string; // e.g. '1592638994'
+  ['ethbtc_timestamp']: string; // e.g. '1592638994'
   ethusd: string; // e.g. '229.83'
-  ethusd_timestamp: string; // e.g. '1592638990'
+  ['ethusd_timestamp']: string; // e.g. '1592638990'
 }
 
-export async function getEthUsdBtcPrice<Net extends NetworkName>() {
-  return await makeEtherscanApiCall<EtherscanPriceResult, Net>({
+export function getEthUsdBtcPrice<
+  Net extends NetworkName
+>(): Promise<EtherscanPriceResult> {
+  return makeEtherscanApiCall<EtherscanPriceResult, Net>({
     module: 'stats',
     action: 'ethprice',
   });
@@ -127,7 +131,7 @@ async function makeEtherscanApiCall<R, Net extends NetworkName>(
     );
   }
 
-  if (data.status != '1' || data.error) {
+  if (data.status !== '1' || data.error) {
     let errorMessage;
     if (typeof data.result === 'string') {
       errorMessage = data.result;

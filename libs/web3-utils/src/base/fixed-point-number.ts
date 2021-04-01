@@ -26,7 +26,8 @@ const prepareValue = (val: string | number | BN) => {
     return '0';
   }
 
-  let [whole, fraction] = value.split('.');
+  const [whole, fraction_] = value.split('.');
+  let fraction = fraction_;
   if (fraction && fraction.length > 18) {
     fraction = fraction.substr(0, 18);
     return [whole, fraction].join('.');
@@ -51,9 +52,10 @@ class FixedPointNumber {
   }
 
   static sum(values: FixedPointNumber[]) {
-    return values.reduce((total, current) => {
-      return total.add(current);
-    }, new FixedPointNumber(0));
+    return values.reduce(
+      (total, current) => total.add(current),
+      new FixedPointNumber(0),
+    );
   }
 
   toString(base?: number | 'hex', length?: number) {
@@ -67,13 +69,14 @@ class FixedPointNumber {
   format(decimals = Infinity) {
     if (decimals !== Infinity) {
       const n = fromWei(this.number);
-      let [whole, fraction] = n.split('.');
+      const [whole, fraction_] = n.split('.');
+      let fraction = fraction_;
       if (!decimals) {
         return whole;
       }
 
       fraction = fraction || '';
-      return whole + '.' + fraction.padEnd(decimals, '0').substr(0, decimals);
+      return `${whole}.${fraction.padEnd(decimals, '0').substr(0, decimals)}`;
     }
     return fromWei(this.number);
   }

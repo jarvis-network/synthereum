@@ -1,4 +1,5 @@
 import { sortedUniqBy } from 'lodash';
+
 import { assert } from './asserts';
 
 type AsyncBinarySearchParams = {
@@ -27,11 +28,13 @@ export async function asyncLowerBound({
   getStartIndex,
   getEndIndex,
 }: AsyncBinarySearchParams): Promise<number> {
-  let [lo, hi] = await Promise.all([getStartIndex(), getEndIndex()]);
+  const [lo_, hi] = await Promise.all([getStartIndex(), getEndIndex()]);
+  let lo = lo_;
   let len = hi - lo;
   while (len > 0) {
     const step = len >> 1;
     const mid = lo + step;
+    // eslint-disable-next-line no-await-in-loop
     if (await isLessThanAt(mid)) {
       lo = mid + 1;
       len -= step + 1;
@@ -47,6 +50,8 @@ export type MaybeSortedArray<T, K extends number | string> =
   | SortedArray<T, K>;
 
 export class SortedArray<T, K extends number | string> {
+  // https://github.com/typescript-eslint/typescript-eslint/issues/2592
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   static createFromUnsorted<T, K extends number | string>(
     array: T[],
     cmp: CompareFunction<T>,
@@ -55,6 +60,8 @@ export class SortedArray<T, K extends number | string> {
     return new SortedArray<T, K>(array.sort(cmp), cmp, key);
   }
 
+  // https://github.com/typescript-eslint/typescript-eslint/issues/2592
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   static createFromSortedUnsafe<T, K extends number | string>(
     array: T[],
     cmp: CompareFunction<T>,
@@ -83,7 +90,7 @@ export class SortedArray<T, K extends number | string> {
 
   closestValue(to: number) {
     const lowerBound = this.lowerBound(to);
-    if (lowerBound == 0) return 0;
+    if (lowerBound === 0) return 0;
 
     if (lowerBound >= this.array.length) return this.array.length - 1;
 
@@ -113,7 +120,6 @@ export class SortedArray<T, K extends number | string> {
     while (count > 0) {
       const step = count >> 1;
       let it = first + step;
-      const value = this.key(this.array[it]) as number;
       if (key < this.key(this.array[it])) {
         count = step;
       } else {
@@ -134,14 +140,14 @@ export class SortedArray<T, K extends number | string> {
     leftOver: SortedArray<T, K>;
   } {
     assert(this.cmp === right_.cmp);
-    const left = this.array,
-      right = right_.array,
-      cmp = this.cmp;
+    const left = this.array;
+    const right = right_.array;
+    const { cmp } = this;
     const union: R[] = [];
     const leftOver: T[] = [];
     for (let i = 0, j = 0; i < left.length && j < right.length; ) {
       let res = cmp(left[i], right[j]);
-      if (res == 0) {
+      if (res === 0) {
         union.push(mapFn(left[i++], right[j++]));
       } else if (res < 0) {
         union.push(mapFn(left[i++], null));

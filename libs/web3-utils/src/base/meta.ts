@@ -41,6 +41,7 @@ export type OneOf<
  * type Merged = { a: 1; b: 2; c: 3; }
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type Id<T> = {} & { [K in keyof T]: T[K] };
 
 export type KeyFromValue<V, T extends Record<PropertyKey, PropertyKey>> = {

@@ -1,5 +1,7 @@
 import { Console } from 'console';
 import { relative } from 'path';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const c = require('colors/safe');
 
 export const console = new Console({
@@ -20,15 +22,12 @@ export function log(msg: string, ...args: any[]) {
     loc = `./${relativePath}:${line}:${col}`;
   }
   const now = new Date();
-  const diff = ('+' + (now.getTime() - startTime).toString(10)).padStart(7);
-  const diff2 = ('+' + (now.getTime() - prevTime).toString(10)).padStart(7);
+  const diff = `+${(now.getTime() - startTime).toString(10)}`.padStart(7);
+  const diff2 = `+${(now.getTime() - prevTime).toString(10)}`.padStart(7);
   prevTime = now.getTime();
-  const prefix =
-    `[ ${c.gray(now.toISOString())} | Δt₀: ` +
-    c.yellow(diff) +
-    ` ms | Δtᵢ: ` +
-    c.yellow(diff2) +
-    ` ms | ${c.bgGray(loc)} ]: ${c.bold(msg)}`;
+  const prefix = `[ ${c.gray(now.toISOString())} | Δt₀: ${c.yellow(
+    diff,
+  )} ms | Δtᵢ: ${c.yellow(diff2)} ms | ${c.bgGray(loc)} ]: ${c.bold(msg)}`;
   console.log(prefix, ...args);
 }
 
@@ -36,7 +35,7 @@ export function log(msg: string, ...args: any[]) {
 const callStackFmt = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/i;
 const callStackFmt2 = /at\s+()(.*):(\d*):(\d*)/i;
 
-export function getCallStackInfo(stackIndex: number = 0) {
+export function getCallStackInfo(stackIndex = 0) {
   const callStack = new Error().stack?.split('\n').slice(3) ?? [];
   const callInfo = callStack[stackIndex];
   const matches = callStackFmt.exec(callInfo) ?? callStackFmt2.exec(callInfo);

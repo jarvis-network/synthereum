@@ -85,9 +85,8 @@ export function toNetworkId(network: Network): NetworkId {
       network = assertIsNetworkName(network.substring(0, network.length - 5));
     }
     return networkNameToId[network];
-  } else {
-    return assertIsNetworkId(network);
   }
+  return assertIsNetworkId(network);
 }
 
 export function toNetworkName<Name extends NetworkName>(network: Name): Name;

@@ -1,4 +1,6 @@
 import { BaseContract } from './typechain/types';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const abiDecoder = require('abi-decoder');
 
 type MethodDecodeResult<C extends BaseContract> = {

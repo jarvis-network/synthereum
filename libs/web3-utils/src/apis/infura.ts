@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+
 import { Network, toNetworkName, ValueOnNetwork } from '../eth/networks';
 import { env } from '../config';
 import type { Web3On } from '../eth/web3-instance';
@@ -11,9 +12,9 @@ export function getInfuraEndpoint<Net extends Network>(
   projectId = env.infuraProjectId,
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
-  return (`${protocol}://${networkName}.infura.io` +
-    (protocol === 'wss' ? '/ws' : '') +
-    `/v3/${projectId}`) as ValueOnNetwork<string, Net>;
+  return `${protocol}://${networkName}.infura.io${
+    protocol === 'wss' ? '/ws' : ''
+  }/v3/${projectId}` as ValueOnNetwork<string, Net>;
 }
 
 export function getInfuraWeb3<Net extends Network>(

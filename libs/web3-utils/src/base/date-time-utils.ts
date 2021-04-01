@@ -28,32 +28,32 @@ export function sortByDate<T>(array: T[], extractDate: (x: T) => Date) {
   );
 }
 
-export function addMilliseconds(date: Date, milliseconds: number) {
+export function addMilliseconds(date: Date, milliseconds: number): Date {
   return new Date(date.getTime() + milliseconds);
 }
 
-export function addSeconds(date: Date, seconds: number) {
+export function addSeconds(date: Date, seconds: number): Date {
   return addMilliseconds(date, seconds * 1000);
 }
 
-export function addMinutes(date: Date, minutes: number) {
+export function addMinutes(date: Date, minutes: number): Date {
   return addSeconds(date, minutes * 60);
 }
 
-export function addHours(date: Date, hours: number) {
+export function addHours(date: Date, hours: number): Date {
   return addMinutes(date, hours * 60);
 }
 
-export function addDays(date: Date, days: number) {
+export function addDays(date: Date, days: number): Date {
   return addHours(date, days * 24);
 }
 
 // Returns true if the time component of this Date object is not set (all zeroes).
-export function isDateOnly(date: Date) {
+export function isDateOnly(date: Date): boolean {
   return (
-    date.getUTCHours() == 0 &&
-    date.getUTCMinutes() == 0 &&
-    date.getUTCSeconds() == 0 &&
-    date.getUTCMilliseconds() == 0
+    date.getUTCHours() === 0 &&
+    date.getUTCMinutes() === 0 &&
+    date.getUTCSeconds() === 0 &&
+    date.getUTCMilliseconds() === 0
   );
 }

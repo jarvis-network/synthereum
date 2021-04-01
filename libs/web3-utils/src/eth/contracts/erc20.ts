@@ -1,13 +1,17 @@
 import BN from 'bn.js';
 
+import type { EventData } from 'web3-eth-contract/types';
+
 import { t } from '../../base/meta';
 import { assert, throwError } from '../../base/asserts';
 import { SortedArray } from '../../base/sorting';
 import { Amount, formatAmount, maxUint256 } from '../../base/big-number';
 import { AddressOn } from '../address';
 import { NetworkName, Web3On } from '../web3-instance';
-import { TokenInfo, TimestampedTransferEvent } from './types';
+
 import { getBlockTimestamp } from '../block';
+
+import { TokenInfo, TimestampedTransferEvent } from './types';
 import { sendTx, FullTxOptions } from './send-tx';
 
 /**
@@ -73,7 +77,7 @@ export async function erc20Transfer<Net extends NetworkName>(
     );
   const tokens = weiToTokenAmount({ wei: amount, decimals });
   const tx = instance.methods.transfer(recipient, tokens.toString(10));
-  return await sendTx(tx, txOptions);
+  return sendTx(tx, txOptions);
 }
 
 export function setTokenAllowance<Net extends NetworkName>(
@@ -122,12 +126,12 @@ export function weiToTokenAmount({
   return wei.div(scaleFactor);
 }
 
-export async function getAllTransferEvents<Net extends NetworkName>(
+export function getAllTransferEvents<Net extends NetworkName>(
   { instance }: TokenInfo<Net>,
   address?: string,
   fromBlock = 0,
   toBlock: number | 'latest' = 'latest',
-) {
+): Promise<EventData[]> {
   return instance.getPastEvents('Transfer', {
     address,
     fromBlock,
@@ -181,12 +185,16 @@ export async function getAllTransferInfo<Net extends NetworkName>(
   const eventsWithTimestamp: TimestampedTransferEvent[] = [];
 
   for (const { transactionHash, returnValues } of events) {
+    // FIXME
+    // eslint-disable-next-line no-await-in-loop
     const { blockNumber } = await web3.eth.getTransaction(transactionHash);
 
     if (!blockNumber) {
       continue;
     }
 
+    // FIXME
+    // eslint-disable-next-line no-await-in-loop
     const blockTimestamp = await getBlockTimestamp(web3, blockNumber);
 
     eventsWithTimestamp.push({

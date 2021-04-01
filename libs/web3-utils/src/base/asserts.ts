@@ -6,7 +6,8 @@ type AssertFunc = (value: any, message?: string) => asserts value;
 
 export const assert: AssertFunc =
   process.env.app_env !== 'browser'
-    ? require('assert').strict
+    ? // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('assert').strict
     : (value: any, message?: string) => {
         if (!value) throw new Error(message);
       };
@@ -63,11 +64,11 @@ export function assertIsInteger(x: unknown): number {
 }
 
 export function coerceToFiniteFloatOrUndefined(x: unknown): number | undefined {
-  return x == void 0 ? undefined : parseFiniteFloat(x);
+  return x === undefined ? x : parseFiniteFloat(x);
 }
 
 export function coerceToIntegerOrUndefined(x: unknown): number | undefined {
-  return x == void 0 ? undefined : parseInteger(x);
+  return x === undefined ? x : parseInteger(x);
 }
 
 export function assertIsFiniteNumber(x: unknown): number {

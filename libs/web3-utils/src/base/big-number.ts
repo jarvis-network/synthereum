@@ -1,9 +1,18 @@
 import BN from 'bn.js';
-import { fromWei, toWei } from 'web3-utils';
+import { fromWei, toWei, Unit } from 'web3-utils';
+
 import { mapReduce } from './array-fp-utils';
 import { assertIsInteger, assertIsNumericString, isObject } from './asserts';
 import { Tagged } from './tagged-type';
-import { Unit } from 'web3-utils';
+
+const ether = new BN(10).pow(new BN(18));
+export const zero = new BN(0);
+export const one = new BN(1);
+export const negativeOne = new BN(-1);
+export const maxUint256 = new BN(
+  'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+  'hex',
+);
 
 export type AmountOf<U extends Unit> = Tagged<BN, U>;
 export type Amount = AmountOf<'wei'>;
@@ -32,15 +41,6 @@ export function scale(a: BN, b: number): BN {
   return a.mul(numberToWei(b)).div(ether);
 }
 
-const ether = new BN(10).pow(new BN(18));
-export const zero = new BN(0);
-export const one = new BN(1);
-export const negativeOne = new BN(-1);
-export const maxUint256 = new BN(
-  'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-  'hex',
-);
-
 export function mapSumBN<T, U extends Unit>(
   array: T[],
   getter: (elem: T) => AmountOf<U>,
@@ -59,15 +59,15 @@ export function sumBN<U extends Unit>(
   return mapSumBN(listOfNumbers, x => x);
 }
 
-export function weiToNumber(wei: string) {
-  return fromBNToNumber(new BN(wei));
+export function weiToNumber(weiStr: string): number {
+  return fromBNToNumber(new BN(weiStr));
 }
 
-export function fromBNToDecimalString(bn: BN) {
+export function fromBNToDecimalString(bn: BN): string {
   return fromWei(bn);
 }
 
-export function formatAmount(amount: Amount, decimals = 2) {
+export function formatAmount(amount: Amount, decimals = 2): string {
   const rawStr = amount.toString(10);
   const nativeNumDecimals = 18;
   const integerPart = rawStr.slice(0, -nativeNumDecimals).padStart(1, '0');
@@ -77,18 +77,19 @@ export function formatAmount(amount: Amount, decimals = 2) {
   return `${integerPart}.${decimalPart.slice(0, decimals)}`;
 }
 
-export function fromBNToNumber(bn: BN) {
+export function fromBNToNumber(bn: BN): number {
   return Number.parseFloat(fromBNToDecimalString(bn));
 }
 
-export function toBN(str: string) {
+export function toBN(str: string): BN {
   return new BN(toWei(str.replace(/,/g, '')));
 }
 
-export function replaceBN(obj: unknown) {
+export function replaceBN(obj: unknown): unknown {
   if (BN.isBN(obj)) {
     return formatAmount(obj as Amount);
-  } else if (!isObject(obj)) {
+  }
+  if (!isObject(obj)) {
     return obj;
   }
   const result: any = {};

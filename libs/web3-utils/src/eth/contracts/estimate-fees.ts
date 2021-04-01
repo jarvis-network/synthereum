@@ -1,8 +1,10 @@
 import BN from 'bn.js';
 import { toBN, toWei } from 'web3-utils';
+
 import { getEthUsdBtcPrice } from '../../apis/etherscan';
 import { fromBNToDecimalString } from '../../base/big-number';
 import { assertIsFiniteNumber, assertIsString } from '../../base/asserts';
+
 import { NonPayableTransactionObject, BaseContract } from './typechain/types';
 
 export type TxObjFeeEstimator = <T>(
@@ -23,10 +25,10 @@ export async function estimateFee(
   contract: BaseContract,
 ): Promise<FeeEstimation> {
   const { gas: gas_, gasPrice: gasPrice_ } = contract.options;
-  const gas = assertIsFiniteNumber(gas_);
+  const gasLimit = assertIsFiniteNumber(gas_);
   const gasPrice = assertIsString(gasPrice_);
   const gasPriceBn = toBN(gasPrice);
-  const maxFeeWei = toBN(assertIsFiniteNumber(gas)).mul(gasPriceBn);
+  const maxFeeWei = toBN(assertIsFiniteNumber(gasLimit)).mul(gasPriceBn);
   const { ethusd, ethusd_timestamp } = await getEthUsdBtcPrice();
   const ethUsdBn = toBN(toWei(ethusd));
   const maxFeeEth = fromBNToDecimalString(maxFeeWei);
@@ -34,24 +36,26 @@ export async function estimateFee(
     maxFeeWei.mul(ethUsdBn).div(toBN(1e18)),
   );
   return {
-    gasLimit: gas,
+    gasLimit,
     gasPriceGwei: `${Number.parseFloat(gasPrice) / 1e9} Gwei`,
     usdEthRate: ethusd,
     maxFeeEth,
     maxFeeUsd,
-    usdEthPriceTimestamp: new Date(Number.parseInt(ethusd_timestamp) * 1000),
+    usdEthPriceTimestamp: new Date(
+      Number.parseInt(ethusd_timestamp, 10) * 1000,
+    ),
     estimateFeesForTx: async <T>(txObj: NonPayableTransactionObject<T>) => {
       try {
-        const gas = await txObj.estimateGas();
-        const feeEth = toBN(gas).mul(gasPriceBn);
+        const estimatedGas = await txObj.estimateGas();
+        const feeEth = toBN(estimatedGas).mul(gasPriceBn);
         return {
-          allowance: gas,
-          gas,
+          allowance: estimatedGas,
+          gas: estimatedGas,
           feeEth,
           feeUsd: fromBNToDecimalString(feeEth.mul(ethUsdBn)),
         };
       } catch (err) {
-        return { allowance: gas };
+        return { allowance: gasLimit };
       }
     },
   };
