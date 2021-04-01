@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 interface IRedeemRequest {
   redeem_id: string;
   timestamp: string;

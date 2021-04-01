@@ -23,7 +23,7 @@ export function parseLogLevel(x: unknown): LogLevels {
   return supported.findIndex(s => levelName === s) !== -1
     ? (levelName as LogLevels)
     : throwError(
-        `${x} is not supported. Supported level ids are: ` + `[${supported}]`,
+        `${x} is not supported. Supported level ids are: [${supported}]`,
       );
 }
 

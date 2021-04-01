@@ -1,9 +1,12 @@
+import { URLSearchParams } from 'url';
+
 import WebSocket from 'ws';
 import { isFinite } from '@jarvis-network/web3-utils/base/asserts';
 import axios from 'axios';
-import { URLSearchParams } from 'url';
-import { env } from '../config';
+
 import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config';
+
+import { env } from '../config';
 
 const pairs = Object.values(priceFeedPairsMap);
 
@@ -32,6 +35,7 @@ const cleanCache = () =>
 
 export class PriceFeed {
   cache = cleanCache();
+
   interval?: ReturnType<typeof setInterval>;
 
   private ws?: WebSocket;
@@ -40,20 +44,21 @@ export class PriceFeed {
     if (this.ws) throw new Error('connect already called');
 
     this.ws = new WebSocket(
-      env.PRICE_FEED_API.replace(/^http/, 'ws') +
-        '/subscribe?pairs=' +
-        pairs.join(','),
+      `${env.PRICE_FEED_API.replace(
+        /^http/,
+        'ws',
+      )}/subscribe?pairs=${pairs.join(',')}`,
     );
     this.ws.addEventListener('message', event => {
       try {
         const message = JSON.parse(event.data) as PriceMessage;
         if (typeof message.t === 'number') {
-          const t = message.t;
+          const { t } = message;
           delete message.t;
           for (const i in message) {
-            const _price = (message as PriceUpdate)[i as Pair];
-            const price = i === 'USDCHF' ? 1 / _price : _price;
-            this.cache[i as Pair][t] = price;
+            if (!Object.prototype.hasOwnProperty.call(message, i)) continue;
+            const price = (message as PriceUpdate)[i as Pair];
+            this.cache[i as Pair][t] = i === 'USDCHF' ? 1 / price : price;
           }
         }
       } catch (exception) {
@@ -75,9 +80,10 @@ export class PriceFeed {
       // Clean entries older than every hour
       const timestamp = Math.round(Date.now() / 1000 - 60 * 60).toString();
       for (const i in this.cache) {
+        if (!Object.prototype.hasOwnProperty.call(this.cache, i)) continue;
         const cache = this.cache[i as Pair];
 
-        for (const key of Object.keys(cache).filter(key => key < timestamp)) {
+        for (const key of Object.keys(cache).filter(k => k < timestamp)) {
           delete cache[key];
         }
       }
@@ -99,13 +105,12 @@ export class PriceFeed {
     if (cached) return cached;
 
     const query = new URLSearchParams({ pair, timestamp });
-    const { price: _price, t } = (
+    const { price } = (
       await axios.get<{ price: number; t: number }>(
         `${env.PRICE_FEED_API}/price?${query.toString()}`,
       )
     ).data;
-    if (!isFinite(_price)) return 0;
-    const price = pair === 'USDCHF' ? 1 / _price : _price;
-    return price;
+    if (!isFinite(price)) return 0;
+    return pair === 'USDCHF' ? 1 / price : price;
   }
 }

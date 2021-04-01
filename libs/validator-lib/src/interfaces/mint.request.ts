@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 interface IMintRequest {
   mint_id: string;
   timestamp: string;

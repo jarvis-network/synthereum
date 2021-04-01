@@ -1,8 +1,11 @@
+import { existsSync } from 'fs';
+
+import path from 'path';
+
 import * as Bunyan from 'bunyan';
 import PrettyStream from 'bunyan-prettystream';
-import { existsSync } from 'fs';
 import mkdirp from 'mkdirp';
-import path from 'path';
+
 import { env } from './config';
 
 export interface ILogArgs {

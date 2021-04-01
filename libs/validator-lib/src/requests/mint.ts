@@ -8,6 +8,7 @@ import {
   getTokenBalance,
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
+
 import { PriceFeed } from '../api/jarvis-exchange-price-feed';
 import { ENV } from '../config';
 import { MintRequest } from '../interfaces';
@@ -17,7 +18,9 @@ export class MintRequestValidator {
   private logger = createEverLogger({
     name: 'synthetic-contracts-mint-request',
   });
+
   maxSlippage: number;
+
   constructor(private readonly priceFeed: PriceFeed, { MAX_SLIPPAGE }: ENV) {
     this.maxSlippage = MAX_SLIPPAGE;
   }

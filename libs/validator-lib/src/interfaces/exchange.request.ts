@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 interface IExchangeRequest {
   exchange_id: string;
   timestamp: string;

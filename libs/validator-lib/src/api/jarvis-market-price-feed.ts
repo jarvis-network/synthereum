@@ -1,6 +1,8 @@
+import { URLSearchParams } from 'url';
+
 import { isFinite } from '@jarvis-network/web3-utils/base/asserts';
 import axios from 'axios';
-import { URLSearchParams } from 'url';
+
 import { env } from '../config';
 
 export type OHLC = {
@@ -11,7 +13,7 @@ export type OHLC = {
 };
 
 export async function getPriceFeedOhlc(priceFeed: string, requestTime: string) {
-  //const endpoint = 'https://data.jarvis.exchange/jarvis/prices/history';
+  // const endpoint = 'https://data.jarvis.exchange/jarvis/prices/history';
   const endpoint = env.PRICE_FEED_API;
   const query = new URLSearchParams({
     symbol: priceFeed,

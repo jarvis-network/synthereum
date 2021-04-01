@@ -9,6 +9,7 @@ import {
   getTokenBalance,
   scaleTokenAmountToWei,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
+
 import { PriceFeed } from '../api/jarvis-exchange-price-feed';
 import { ENV } from '../config';
 import { ExchangeRequest } from '../interfaces';
@@ -18,7 +19,9 @@ export class ExchangeRequestValidator {
   private logger = createEverLogger({
     name: 'synthetic-contracts-exchange-request',
   });
+
   maxSlippage: number;
+
   constructor(
     private readonly priceFeed: PriceFeed,
     private readonly realm: SynthereumRealmWithWeb3<SupportedNetworkName>,
