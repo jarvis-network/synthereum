@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 
-require('dotenv').config();
 import {
   createEverLogger,
   getSynthereumRealmWithInfuraWeb3,
 } from '@jarvis-network/validator-lib';
+
 import { env } from './config';
 import SynFiatKeeper from './services/SynFiatKeeper';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 
 const logger = createEverLogger({
   name: 'validator',
 });
 
 process.on('unhandledRejection', (reason, p) => {
-  console.error('Unhandled promise rejection: ', p, 'reason:', reason);
+  logger.error('Unhandled promise rejection: ', p, 'reason:', reason);
   process.exit(13);
 });
 

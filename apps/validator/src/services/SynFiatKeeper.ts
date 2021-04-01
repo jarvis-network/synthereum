@@ -1,3 +1,7 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-await-in-loop */
+import { performance } from 'perf_hooks';
+
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
 import { mapPools } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
@@ -11,10 +15,12 @@ import {
 import { delay } from '@jarvis-network/web3-utils/base/async';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import Logger from 'bunyan';
-import { performance } from 'perf_hooks';
-import { ENV } from '../config';
+
 import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
 import { NonPayableTransactionObject } from '@jarvis-network/web3-utils/eth/contracts/typechain/types';
+
+import { ENV } from '../config';
+
 type ApproveRejectMethod = (
   id: string | number[],
 ) => NonPayableTransactionObject<void>;
@@ -30,12 +36,19 @@ type ExchangeRequest = [
 ];
 export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   interval?: ReturnType<typeof setInterval>;
+
   maxSlippage: number;
+
   frequency: number;
+
   exchangeService: ExchangeRequestValidator;
+
   redeemService: RedeemRequestValidator;
+
   mintService: MintRequestValidator;
+
   priceFeed = new PriceFeed();
+
   constructor(
     private logger: Logger,
     private readonly realm: SynthereumRealmWithWeb3<Net>,
@@ -43,32 +56,32 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
   ) {
     this.frequency = FREQUENCY;
     this.maxSlippage = MAX_SLIPPAGE;
-    const _env = {
+    const env = {
       MAX_SLIPPAGE,
     } as ENV;
     this.exchangeService = new ExchangeRequestValidator(
       this.priceFeed,
       this.realm,
-      _env,
+      env,
     );
-    this.redeemService = new RedeemRequestValidator(this.priceFeed, _env);
-    this.mintService = new MintRequestValidator(this.priceFeed, _env);
+    this.redeemService = new RedeemRequestValidator(this.priceFeed, env);
+    this.mintService = new MintRequestValidator(this.priceFeed, env);
   }
 
   get defaultAccount(): AddressOn<Net> {
     return this.realm.web3.defaultAccount as AddressOn<Net>;
   }
 
-  async start() {
+  async start(): Promise<void> {
     this.priceFeed.connect();
     this.logger.info('Synthereum - entering main polling loop');
 
-    while (true) {
+    for (;;) {
       const started = performance.now();
 
       const all = await Promise.all(
         mapPools(this.realm, 'v1', pool => {
-          console.log(`Checking pool`, pool.symbol);
+          this.logger.info(`Checking pool`, pool.symbol);
           return [
             this.checkMintRequests(pool),
             this.checkRedeemRequests(pool),
@@ -87,7 +100,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
     }
   }
 
-  stop() {
+  stop(): void {
     this.priceFeed.disconnect();
     clearInterval(assertNotNull(this.interval));
   }
@@ -126,15 +139,14 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
       info.instance.methods.approveMint,
       info.instance.methods.rejectMint,
       'mint',
-      async request => {
-        return this.mintService.CheckRequest(info, {
+      request =>
+        this.mintService.CheckRequest(info, {
           mint_id: request[0],
           timestamp: request[1],
           sender: request[2],
           collateral_amount: request[3],
           num_tokens: request[4],
-        });
-      },
+        }),
     );
   }
 
@@ -145,15 +157,14 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
       info.instance.methods.approveRedeem,
       info.instance.methods.rejectRedeem,
       'redeem',
-      async request => {
-        return this.redeemService.CheckRequest(info, {
+      request =>
+        this.redeemService.CheckRequest(info, {
           redeem_id: request[0],
           timestamp: request[1],
           sender: request[2],
           collateral_amount: request[3],
           num_tokens: request[4],
-        });
-      },
+        }),
     );
   }
 
@@ -164,8 +175,8 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
       info.instance.methods.approveExchange,
       info.instance.methods.rejectExchange,
       'exchange',
-      async request => {
-        return this.exchangeService.CheckRequest(info, {
+      request =>
+        this.exchangeService.CheckRequest(info, {
           exchange_id: request[0],
           timestamp: request[1],
           sender: request[2],
@@ -173,8 +184,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
           num_tokens: request[4],
           collateral_amount: request[5],
           dest_num_tokens: request[6],
-        });
-      },
+        }),
     );
   }
 
@@ -182,7 +192,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
     requestId: string,
     resolveCallback: ApproveRejectMethod,
     resolveLabel: string,
-  ) {
+  ): Promise<void> {
     try {
       const from = this.defaultAccount;
       const gasPrice = await this.realm.web3.eth.getGasPrice();
@@ -206,7 +216,7 @@ export default class SynFiatKeeper<Net extends SupportedNetworkName> {
         transaction.transactionHash,
       );
       this.logger.info(
-        `[5/5] getTransactionReceipt succeeded for ${resolveLabel} request ${requestId} in transaction ${transaction.transactionHash}`,
+        `[5/5] getTransactionReceipt succeeded for ${resolveLabel} request ${requestId} in transaction ${transaction.transactionHash} - gas used: ${receipt.gasUsed}`,
       );
     } catch (error) {
       this.logger.error('Unable to finishRequest', error);
