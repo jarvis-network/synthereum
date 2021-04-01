@@ -10,7 +10,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/web3-utils/**/*.ts"]
+            "lintFilePatterns": ["libs/web3-utils/src/**/*.ts"]
           }
         },
         "test": {
@@ -61,7 +61,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/toolkit/**/*.{ts,tsx}"]
+            "lintFilePatterns": ["libs/toolkit/src/**/*.{ts,tsx}"]
           }
         },
         "build": {
@@ -83,7 +83,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/validator-lib/**/*.ts"]
+            "lintFilePatterns": ["libs/validator-lib/src/**/*.ts"]
           }
         },
         "test": {
@@ -112,7 +112,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/contracts/**/*.ts"]
+            "lintFilePatterns": ["libs/contracts/{src,scripts}/**/*.ts"]
           }
         },
         "test": {
@@ -182,7 +182,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/validator/**/*.ts"]
+            "lintFilePatterns": ["apps/validator/src/**/*.ts"]
           }
         },
         "test": {
@@ -310,7 +310,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/cli/**/*.ts"]
+            "lintFilePatterns": ["apps/cli/src/**/*.ts"]
           }
         }
       }
