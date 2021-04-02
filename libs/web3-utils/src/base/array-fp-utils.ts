@@ -41,3 +41,37 @@ export function includes<T>(
 ): element is T {
   return array.includes(element as any);
 }
+
+export function isSumLessThanOrEqualTo<T>(
+  array: T[],
+  mapItemToNumber: (item: T) => number,
+  max: number,
+) {
+  return (
+    accumulateUntil(
+      array,
+      0,
+      (result, next) => result + mapItemToNumber(next),
+      result => result <= max,
+    ) <= max
+  );
+}
+
+export type Iteration<State, Next, Result = State> = (
+  state: State,
+  next: Next,
+) => Result;
+
+export function accumulateUntil<Elem, Result>(
+  array: Elem[],
+  initialState: Result,
+  combine: Iteration<Result, Elem>,
+  shouldContinue: (state: Result) => boolean,
+) {
+  let state = initialState;
+  for (let i = 0; i < array.length; i++) {
+    state = combine(state, array[i]);
+    if (!shouldContinue(state)) break;
+  }
+  return state;
+}

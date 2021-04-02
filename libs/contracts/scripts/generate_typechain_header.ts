@@ -5,6 +5,7 @@ import { strict as assert } from 'assert';
 import { merge as _merge } from 'lodash';
 import { DeepPartial } from '@jarvis-network/web3-utils/base/meta';
 import { assertIsArray } from '@jarvis-network/web3-utils/base/asserts';
+import { isSumLessThanOrEqualTo } from '@jarvis-network/web3-utils/base/array-fp-utils';
 
 main()
   .then(() => process.exit(0))
@@ -337,40 +338,6 @@ function mkList(
     ? newlineIndent + separator.ifBreak
     : separator.ifBreak + newlineIndent;
   return leading + list.join(sep) + ending;
-}
-
-function isSumLessThanOrEqualTo<T>(
-  array: T[],
-  mapItemToNumber: (item: T) => number,
-  max: number,
-) {
-  return (
-    accumulateUntil(
-      array,
-      0,
-      (result, next) => result + mapItemToNumber(next),
-      result => result <= max,
-    ) <= max
-  );
-}
-
-type Iteration<State, Next, Result = State> = (
-  state: State,
-  next: Next,
-) => Result;
-
-function accumulateUntil<Elem, Result>(
-  array: Elem[],
-  initialState: Result,
-  combine: Iteration<Result, Elem>,
-  shouldContinue: (state: Result) => boolean,
-) {
-  let state = initialState;
-  for (let i = 0; i < array.length; i++) {
-    state = combine(state, array[i]);
-    if (!shouldContinue(state)) break;
-  }
-  return state;
 }
 
 /**
