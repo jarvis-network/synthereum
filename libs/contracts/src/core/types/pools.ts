@@ -4,13 +4,14 @@ import {
   TokenInfo,
 } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
+
 import type { SupportedNetworkName, SyntheticSymbol } from '../../config';
 import { priceFeed } from '../../config';
 import {
   IDerivative,
-  SynthereumPool as SynthereumPool_Contract,
-  SynthereumTIC as SynthereumTIC_Contract,
-  SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeed_Contract,
+  SynthereumPool as SynthereumPoolContract,
+  SynthereumTIC as SynthereumTICContract,
+  SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract,
 } from '../../contracts/typechain';
 
 export const poolVersions = ['v1', 'v2', 'v3'] as const;
@@ -26,22 +27,22 @@ export function assertIsSupportedPoolVersion(x: unknown): PoolVersion {
 }
 
 export type PoolContract<Version extends PoolVersion> = Version extends 'v1'
-  ? SynthereumTIC_Contract
+  ? SynthereumTICContract
   : Version extends 'v2'
-  ? SynthereumPool_Contract
+  ? SynthereumPoolContract
   : Version extends 'v3'
-  ? SynthereumPoolOnChainPriceFeed_Contract
+  ? SynthereumPoolOnChainPriceFeedContract
   : never;
 
 export interface SynthereumPool<
   Version extends PoolVersion,
   Net extends SupportedNetworkName = SupportedNetworkName,
-  Symbol extends SyntheticSymbol = SyntheticSymbol
+  SynthSymbol extends SyntheticSymbol = SyntheticSymbol
 > extends ContractInfo<Net, PoolContract<Version>> {
   networkId: ToNetworkId<Net>;
   versionId: Version;
-  symbol: Symbol;
-  priceFeed: typeof priceFeed[Symbol];
+  symbol: SynthSymbol;
+  priceFeed: typeof priceFeed[SynthSymbol];
   collateralToken: TokenInfo<Net>;
   syntheticToken: TokenInfo<Net>;
   derivative: ContractInfo<Net, IDerivative>;
@@ -51,5 +52,5 @@ export type PoolsForVersion<
   Version extends PoolVersion,
   Net extends SupportedNetworkName
 > = {
-  [Symbol in SyntheticSymbol]?: SynthereumPool<Version, Net, Symbol>;
+  [SynthSymbol in SyntheticSymbol]?: SynthereumPool<Version, Net, SynthSymbol>;
 };

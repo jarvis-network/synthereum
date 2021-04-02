@@ -16,6 +16,7 @@ import type {
   NetworkName,
   Web3On,
 } from '@jarvis-network/web3-utils/eth/web3-instance';
+
 import type {
   SynthereumContractDependencies,
   SyntheticSymbol,
@@ -25,6 +26,7 @@ import type {
 import { allSyntheticSymbols, priceFeed, synthereumConfig } from '../config';
 import { ERC20_Abi, SynthereumPoolRegistry_Abi } from '../contracts/abi';
 import { SynthereumPoolRegistry } from '../contracts/typechain';
+
 import { loadPool } from './pool-utils';
 import type {
   PoolsForVersion,
@@ -42,7 +44,7 @@ type PoolVersionsToLoad<Net extends SupportedNetworkName> = {
  * @param web3 Web3 instance to connect to
  * @param netId Integer representing one of the supported network ids
  */
-export async function loadRealm<Net extends SupportedNetworkName>(
+export function loadRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
   versionsToLoad?: PoolVersionsToLoad<Net>,
@@ -64,7 +66,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   config: SynthereumContractDependencies<Net>,
   versionsToLoad: PoolVersionsToLoad<Net> = { v1: null, v2: null, v3: null },
 ): Promise<SynthereumRealmWithWeb3<Net>> {
-  let poolRegistry = getContract(
+  const poolRegistry = getContract(
     web3,
     SynthereumPoolRegistry_Abi,
     config.poolRegistry,
@@ -95,12 +97,14 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 
   const pools: SynthereumRealmWithWeb3<Net>['pools'] = {};
   for (const i in versionsToLoad) {
+    if (!Object.prototype.hasOwnProperty.call(versionsToLoad, i)) continue;
     const version = i as PoolVersion;
     const poolsForVersion = versionsToLoad[version];
     if (typeof poolsForVersion === 'object' && poolsForVersion !== null) {
       continue;
     }
 
+    // eslint-disable-next-line no-await-in-loop
     pools[version] = await loadAllPools(version);
   }
 
@@ -126,7 +130,7 @@ function poolVersionId(version: PoolVersion) {
 
 export async function loadPoolInfo<
   Version extends PoolVersion,
-  Symbol extends SyntheticSymbol,
+  SynthSymbol extends SyntheticSymbol,
   Net extends SupportedNetworkName
 >(
   web3: Web3On<Net>,
@@ -134,8 +138,8 @@ export async function loadPoolInfo<
   poolRegistry: SynthereumPoolRegistry,
   collateralAddress: AddressOn<Net>,
   version: Version,
-  symbol: Symbol,
-): Promise<SynthereumPool<Version, Net, Symbol> | null> {
+  symbol: SynthSymbol,
+): Promise<SynthereumPool<Version, Net, SynthSymbol> | null> {
   const versionId = poolVersionId(version);
   const poolAddresses = await poolRegistry.methods
     .getPools(symbol, collateralAddress, versionId)

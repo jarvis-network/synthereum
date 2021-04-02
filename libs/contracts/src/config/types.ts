@@ -2,7 +2,9 @@ import { StringAmount } from '@jarvis-network/web3-utils/base/big-number';
 import { PerTupleElement } from '@jarvis-network/web3-utils/base/meta';
 import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
 import { ToNetworkName } from '@jarvis-network/web3-utils/eth/networks';
+
 import { PoolVersion } from '../core/types/pools';
+
 import {
   SupportedNetworkId,
   SupportedNetworkIds,
@@ -90,14 +92,14 @@ export interface UmaDerivativeConfig<Net extends SupportedNetworkName> {
 }
 
 export type SyntheticTokens = {
-  [Symbol in SyntheticSymbol]?: SyntheticTokenConfig<Symbol>;
+  [SynthSymbol in SyntheticSymbol]?: SyntheticTokenConfig<SynthSymbol>;
 };
 
 export interface SyntheticTokenConfig<
-  Symbol extends SyntheticSymbol = SyntheticSymbol
+  SynthSymbol extends SyntheticSymbol = SyntheticSymbol
 > {
   syntheticName: string; /// Example: "Jarvis Synthetic Euro",
-  syntheticSymbol: Symbol; /// Example: "jEUR",
+  syntheticSymbol: SynthSymbol; /// Example: "jEUR",
   umaPriceFeedIdentifier: string; /// Example: "EURUSD",
   jarvisPriceFeedIdentifier: string; /// Example: "EURUSD",
   startingCollateralization: string; /// Example: "1527000",

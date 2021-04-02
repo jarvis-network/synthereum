@@ -16,6 +16,17 @@ import {
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
 import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
+
+import { TransactionReceipt } from 'web3-core';
+
+import {
+  FullTxOptions,
+  TxOptions,
+  sendTxAndLog,
+} from '@jarvis-network/web3-utils/eth/contracts/send-tx';
+
+import { executeInSequence } from '@jarvis-network/web3-utils/base/async';
+
 import {
   SupportedNetworkId,
   SupportedNetworkName,
@@ -32,7 +43,9 @@ import {
   IDerivative,
   NonPayableTransactionObject,
 } from '../contracts/typechain';
-import { TransactionReceipt } from 'web3-core';
+
+import { Fees } from '../config/types';
+
 import {
   PoolContract,
   PoolsForVersion,
@@ -41,13 +54,6 @@ import {
   SynthereumPool,
 } from './types/pools';
 import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
-import {
-  FullTxOptions,
-  TxOptions,
-  sendTxAndLog,
-} from '@jarvis-network/web3-utils/eth/contracts/send-tx';
-import { Fees } from '../config/types';
-import { executeInSequence } from '@jarvis-network/web3-utils/base/async';
 
 export function getAvailableSymbols<
   Net extends SupportedNetworkName = SupportedNetworkName,
@@ -69,11 +75,11 @@ export function foreachPool<
     pool: SynthereumPool<OneOf<Version, PoolVersions>, Net, SyntheticSymbol>,
     idx: number,
   ) => void,
-) {
+): void {
   const pools = assertNotNull(realm.pools[version as PoolVersion]);
   let idx = 0;
   for (const key in pools) {
-    if (!pools.hasOwnProperty(key)) continue;
+    if (!Object.prototype.hasOwnProperty.call(pools, key)) continue;
     const pool = pools[key as keyof typeof pools];
     if (!pool) continue;
     callback(
@@ -98,13 +104,13 @@ export function mapPools<
     p: SynthereumPool<OneOf<Version, PoolVersions>, Net, SyntheticSymbol>,
     idx: number,
   ) => Result,
-) {
+): Result[] {
   const array: Result[] = [];
   foreachPool(realm, version, (pool, idx) => array.push(callback(pool, idx)));
   return array;
 }
 
-export interface PoolAddressWithDerivates<Version extends PoolVersion> {
+export interface PoolAddressWithDerivatives<Version extends PoolVersion> {
   result: PoolContract<Version>;
   derivativeAddress: IDerivative;
 }
@@ -116,20 +122,21 @@ export async function loadPool<
   web3: Web3On<Net>,
   version: Version,
   poolAddress: AddressOn<Net>,
-): Promise<PoolAddressWithDerivates<Version>> {
+): Promise<PoolAddressWithDerivatives<Version>> {
   if (version === 'v1') {
     const result = getContract(web3, SynthereumTIC_Abi, poolAddress).instance;
-    const derivatesAddress = (await result.methods
+    const derivativeAddress = (await result.methods
       .derivative()
       .call()) as AddressOn<Net>;
     return {
       result: result as PoolContract<Version>,
-      derivativeAddress: getContract(web3, IDerivative_Abi, derivatesAddress)
+      derivativeAddress: getContract(web3, IDerivative_Abi, derivativeAddress)
         .instance,
     };
-  } else if (version === 'v2') {
+  }
+  if (version === 'v2') {
     const result = getContract(web3, SynthereumPool_Abi, poolAddress).instance;
-    const derivatesAddresses = (await result.methods
+    const derivativeAddresses = (await result.methods
       .getAllDerivatives()
       .call()) as AddressOn<Net>[];
 
@@ -138,16 +145,17 @@ export async function loadPool<
       derivativeAddress: getContract(
         web3,
         IDerivative_Abi,
-        last(derivatesAddresses),
+        last(derivativeAddresses),
       ).instance,
     };
-  } else if (version === 'v3') {
+  }
+  if (version === 'v3') {
     const result = getContract(
       web3,
       SynthereumPoolOnChainPriceFeed_Abi,
       poolAddress,
     ).instance;
-    const derivatesAddresses = (await result.methods
+    const derivativeAddresses = (await result.methods
       .getAllDerivatives()
       .call()) as AddressOn<Net>[];
 
@@ -156,7 +164,7 @@ export async function loadPool<
       derivativeAddress: getContract(
         web3,
         IDerivative_Abi,
-        last(derivatesAddresses),
+        last(derivativeAddresses),
       ).instance,
     };
   }
@@ -166,7 +174,10 @@ export async function loadPool<
 export function getPoolBalances<
   Net extends SupportedNetworkName,
   Version extends PoolVersion
->(realm: SynthereumRealm<Net>, version: Version = 'v1' as Version) {
+>(
+  realm: SynthereumRealm<Net>,
+  version: Version = 'v1' as Version,
+): Promise<[SyntheticSymbol, Amount][]> {
   return Promise.all(
     mapPools(realm, version, async p =>
       t(p.symbol, await getTokenBalance(realm.collateralToken, p.address)),
@@ -174,17 +185,17 @@ export function getPoolBalances<
   );
 }
 
-export async function depositInAllPools<Net extends SupportedNetworkName>(
+export function depositInAllPools<Net extends SupportedNetworkName>(
   realm: SynthereumRealmWithWeb3<Net>,
   version: PoolVersion,
   amount: Amount,
   txOptions: TxOptions,
-) {
+): Promise<TransactionReceipt[]> {
   const poolsCount = Object.keys(realm.pools[version] ?? {}).length;
   const from = assertIsAddress<Net>(realm.web3.defaultAccount);
   const perPool = amount.div(new BN(poolsCount)) as Amount;
-  return await executeInSequence(
-    ...mapPools(realm, version, (pool, i) => () =>
+  return executeInSequence(
+    ...mapPools(realm, version, pool => () =>
       erc20Transfer(realm.collateralToken, pool.address, perPool, {
         ...txOptions,
         web3: realm.web3,
@@ -223,7 +234,7 @@ export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
     allowContractsUpdate,
   }: PoolParameters<Net>,
   _txOpt: TxOptions,
-) {
+): Promise<void> {
   const maintainer = synthereumConfig[realm.netId as SupportedNetworkId].roles
     .maintainer as AddressOn<Net>;
 
@@ -245,7 +256,7 @@ export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
 
       if (allowContractsUpdate) {
         const allowed = await pool.instance.methods.isContractAllowed().call();
-        if (allowed != allowContractsUpdate.enabled) {
+        if (allowed !== allowContractsUpdate.enabled) {
           const tx0 = pool.instance.methods.setIsContractAllowed(
             allowContractsUpdate.enabled,
           );
@@ -274,22 +285,32 @@ export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
   );
 }
 
-export async function changeRole<
+export type Roles<
   Version extends PoolVersion,
   Net extends SupportedNetworkName
+> = Extract<
+  keyof SynthereumPool<Version, Net>['instance']['methods'],
+  `${string}_ROLE`
+>;
+
+export async function changeRole<
+  Version extends PoolVersion,
+  Net extends SupportedNetworkName,
+  RoleName extends Roles<Version, Net>
 >(
-  pool: SynthereumPool<'v2', Net>,
-  roleName: keyof typeof pool.instance.methods,
+  pool: SynthereumPool<Version, Net>,
+  roleName: RoleName,
   role: RoleChange<Net>,
   txOptions: FullTxOptions<Net>,
-) {
-  if (!(roleName in pool.instance.methods)) {
+): Promise<void> {
+  const { methods } = pool.instance;
+
+  if (!(roleName in methods)) {
     throwError(`Role '${roleName}' not found.`);
   }
 
-  const roleId = await ((pool.instance.methods[
-    roleName
-  ] as any)() as NonPayableTransactionObject<string>).call();
+  type Keys = Extract<keyof typeof methods, RoleName>;
+  const roleId = await methods[roleName as Keys]().call();
 
   const hasRole = await pool.instance.methods
     .hasRole(roleId, role.previousAddress)

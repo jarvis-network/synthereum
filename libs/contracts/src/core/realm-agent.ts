@@ -13,23 +13,27 @@ import {
   weiToTokenAmount,
 } from '@jarvis-network/web3-utils/eth/contracts/erc20';
 
-import { SynthereumRealmWithWeb3 } from './types/realm';
-import {
-  SupportedNetworkName,
-  SyntheticSymbol,
-  ExchangeToken,
-} from '../config';
 import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
 import { t } from '@jarvis-network/web3-utils/base/meta';
-import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
+
 import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
-import { mapPools } from './pool-utils';
+
 import {
   FullTxOptions,
   sendTx,
   sendTxAndLog,
   TxOptions,
 } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
+
+import {
+  SupportedNetworkName,
+  SyntheticSymbol,
+  ExchangeToken,
+} from '../config';
+
+import { mapPools } from './pool-utils';
+import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
+import { SynthereumRealmWithWeb3 } from './types/realm';
 
 interface BaseTxParams {
   collateral: Amount;
@@ -63,6 +67,7 @@ export class RealmAgent<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
   public readonly activePools: PoolsForVersion<PoolVersion, Net>;
+
   private readonly defaultTxOptions: FullTxOptions<Net>;
 
   constructor(
@@ -78,13 +83,13 @@ export class RealmAgent<
     };
   }
 
-  async collateralBalance(): Promise<Amount> {
-    return await getTokenBalance(this.realm.collateralToken, this.agentAddress);
+  collateralBalance(): Promise<Amount> {
+    return getTokenBalance(this.realm.collateralToken, this.agentAddress);
   }
 
-  async syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
+  syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
     const asset = assertNotNull(this.activePools[synthetic]).syntheticToken;
-    return await getTokenBalance(asset, this.agentAddress);
+    return getTokenBalance(asset, this.agentAddress);
   }
 
   getAllBalances(): Promise<[ExchangeToken, Amount][]> {
@@ -109,10 +114,10 @@ export class RealmAgent<
   }
 
   mint({
-   collateral,
-   outputAmount,
-   outputSynth,
-   txOptions,
+    collateral,
+    outputAmount,
+    outputSynth,
+    txOptions,
   }: MintParams): SwapResult {
     this.assertV1Pool('mint');
 
@@ -265,17 +270,16 @@ export class RealmAgent<
         decimals: tokenInfo.decimals,
       });
       const tx = setTokenAllowance(tokenInfo, spender, max);
-      return await sendTxAndLog(tx, {
+      return sendTxAndLog(tx, {
         ...this.defaultTxOptions,
         ...txOptions,
       });
-    } else {
-      console.log(
-        `Allowance of ${spender} is ${formatAmount(
-          allowance,
-        )}, which is sufficient`,
-      );
-      return true;
     }
+    console.log(
+      `Allowance of ${spender} is ${formatAmount(
+        allowance,
+      )}, which is sufficient`,
+    );
+    return true;
   }
 }
