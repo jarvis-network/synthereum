@@ -8,8 +8,6 @@ const Link = styled.a`
 
 const text = (
   <>
-    This website uses cookies
-    <br />
     We use cookies to personalise content and ads, to provide social media
     features and to analyse our traffic. We also share information about your
     use of our site with our social media. You can read more on our policies{' '}
