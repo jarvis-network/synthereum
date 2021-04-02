@@ -13,3 +13,4 @@ export * from './useAddThemeClassNameInBody';
 export * from './AuthFlow';
 export * from './useRealmAgentProvider';
 export * from './UnsupportedNetwork';
+export * from './usePrevious';

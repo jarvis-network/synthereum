@@ -8,13 +8,11 @@ import {
   Icon,
   themeValue,
   Card,
-  useNotifications,
   NotificationType,
   NotificationsPlacement,
   Skeleton,
   noColorGrid,
   styledScrollbars,
-  useIsMobile,
   OnDesktop,
   OnMobile,
 } from '@jarvis-network/ui';
@@ -35,14 +33,13 @@ import {
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { AssetPair } from '@/data/assets';
 
+import { createPairs } from '@/utils/createPairs';
+import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { useSwap } from '@/components/exchange/useSwap';
 
 import { resetSwapAction } from '@/state/actions';
-
-import { createPairs } from '@/utils/createPairs';
-
 import { isAppReadySelector } from '@/state/selectors';
 
 import { StyledSearchBar } from './StyledSearchBar';
@@ -231,8 +228,7 @@ const NotificationsContainer = styled.div`
 const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 
 export const ExchangeCard: React.FC = () => {
-  const isMobile = useIsMobile();
-  const notify = useNotifications();
+  const notify = useExchangeNotifications();
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
   const wallet = useReduxSelector(state => state.wallet);
@@ -273,7 +269,6 @@ export const ExchangeCard: React.FC = () => {
     }
 
     dispatch(setSwapLoaderVisible(true));
-    const place = isMobile ? 'global' : 'exchange';
     const time = 8000;
 
     try {
@@ -289,21 +284,11 @@ export const ExchangeCard: React.FC = () => {
       promiEvent.once('transactionHash', () => {
         // transaction confirmed in the wallet app
         reset();
-        notify(
-          'Your transaction has started',
-          NotificationType.pending,
-          place,
-          time,
-        );
+        notify('Your transaction has started', NotificationType.pending, time);
       });
 
       await txPromise;
-      notify(
-        'Your transaction is complete',
-        NotificationType.success,
-        place,
-        time,
-      );
+      notify('Your transaction is complete', NotificationType.success, time);
     } catch (e) {
       if (
         e?.message ===
@@ -312,12 +297,7 @@ export const ExchangeCard: React.FC = () => {
         return;
       }
       console.error('Transaction error', e);
-      notify(
-        'Your transaction has failed',
-        NotificationType.error,
-        place,
-        time,
-      );
+      notify('Your transaction has failed', NotificationType.error, time);
     } finally {
       dispatch(setSwapLoaderVisible(false));
     }

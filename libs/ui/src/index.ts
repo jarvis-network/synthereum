@@ -31,6 +31,7 @@ export {
   useNotifications,
   NotificationType,
 } from './Notifications';
+export type { NotificationTypeWithOptions } from './Notifications';
 export { Tabs } from './Tabs';
 export { Tooltip } from './Tooltip';
 export { AccountButton } from './AccountButton';

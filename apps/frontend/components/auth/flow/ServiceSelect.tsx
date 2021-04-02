@@ -14,10 +14,10 @@ import {
   NotificationType,
   styled,
   themeValue,
-  useIsMobile,
-  useNotifications,
 } from '@jarvis-network/ui';
 import { useAuth } from '@jarvis-network/app-toolkit';
+
+import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -105,23 +105,16 @@ const Content = styled.div`
 `;
 
 export const ServiceSelect: React.FC<PageProps> = () => {
-  const isMobile = useIsMobile();
-  const notify = useNotifications();
   const { login } = useAuth();
+  const notify = useExchangeNotifications();
 
   const logIn = () => {
     login().then(loginSuccessful => {
-      if (loginSuccessful) {
-        const place = isMobile ? 'global' : 'exchange';
-        notify(
-          'You have successfully signed in',
-          {
-            type: NotificationType.success,
-            icon: '👍🏻',
-          },
-          place,
-        );
-      }
+      if (!loginSuccessful) return;
+      notify('You have successfully signed in', {
+        type: NotificationType.success,
+        icon: '👍🏻',
+      });
     });
     requestAnimationFrame(() => {
       const showMoreButton = document.querySelector<HTMLElement>(

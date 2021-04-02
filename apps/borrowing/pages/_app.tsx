@@ -6,7 +6,6 @@ import { Provider as StateProvider } from 'react-redux';
 import {
   BackgroundPreloader,
   NotificationsProvider,
-  NotificationType,
   styled,
   useIsMounted,
 } from '@jarvis-network/ui';
@@ -68,12 +67,6 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
           <NotificationsProvider>
             <AuthProvider loginAction={login} logoutAction={logoutAction}>
               <AuthFlow<typeof store>
-                notify={notify =>
-                  notify('You have successfully signed in', {
-                    type: NotificationType.success,
-                    icon: '👍🏻',
-                  })
-                }
                 ServiceSelect={ServiceSelect}
                 Welcome={Welcome}
                 Terms={Terms}

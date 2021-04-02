@@ -3,11 +3,9 @@ import { useDispatch } from 'react-redux';
 import {
   AccountSummary,
   NotificationType,
-  useNotifications,
   useWindowSize,
   styled,
   Skeleton,
-  useIsMobile,
 } from '@jarvis-network/ui';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import {
@@ -29,6 +27,7 @@ import { State } from '@/state/initialState';
 import { isAppReadySelector } from '@/state/selectors';
 import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
+import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 
 const Container = styled.div<{ hasContent: boolean }>`
   height: 38px;
@@ -58,8 +57,7 @@ const render = (): JSX.Element => {
   const name = usePrettyName((auth?.address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
-  const isMobile = useIsMobile();
-  const notify = useNotifications();
+  const notify = useExchangeNotifications();
 
   const handleLogIn = () => {
     dispatch(setAuthModalVisible(true));
@@ -91,13 +89,11 @@ const render = (): JSX.Element => {
     if (isSigningOut) {
       setTimeout(() => {
         setSigningOut(false);
-        const place = isMobile ? 'global' : 'exchange';
 
-        notify(
-          'You have successfully signed out',
-          { type: NotificationType.error, icon: '👋🏻' },
-          place,
-        );
+        notify('You have successfully signed out', {
+          type: NotificationType.error,
+          icon: '👋🏻',
+        });
       }, 1000);
     }
   }, [isSigningOut]);

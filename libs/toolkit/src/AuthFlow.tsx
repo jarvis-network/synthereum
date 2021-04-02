@@ -7,6 +7,8 @@ import {
   useNotifications,
   useIsMobile,
   noop,
+  NotificationType,
+  NotificationTypeWithOptions,
 } from '@jarvis-network/ui';
 import Onboard from 'bnc-onboard';
 import Web3 from 'web3';
@@ -21,6 +23,7 @@ import { useCoreObservables } from './CoreObservablesContext';
 import { useBehaviorSubject } from './useBehaviorSubject';
 import { getOnboardConfig } from './onboardConfig';
 import { authFactory, useAuthContext } from './AuthContext';
+import { usePrevious } from './usePrevious';
 
 const ModalWrapper = styled.div`
   @media screen and (max-width: ${props =>
@@ -47,7 +50,10 @@ type Page = React.ComponentClass<PageProps> | React.FC<PageProps>;
 type GetState<T> = T extends EnhancedStore<infer U> ? U : never;
 
 export function AuthFlow<
-  Store extends EnhancedStore<{ app: { isAuthModalVisible: boolean } }>
+  Store extends EnhancedStore<{
+    app: { isAuthModalVisible: boolean };
+    auth: null | { address: string };
+  }>
 >({
   appName,
   notify,
@@ -61,9 +67,13 @@ export function AuthFlow<
   defaultNetwork,
 }: {
   appName: string;
-  notify: (
+  // eslint-disable-next-line react/require-default-props
+  notify?: (
     notify: ReturnType<typeof useNotifications>,
     isMobile: boolean,
+    text: string,
+    type?: NotificationTypeWithOptions,
+    time?: number,
   ) => void;
   setAuthModalVisibleAction: (isVisible: boolean) => AnyAction;
   setUnsupportedNetworkModalVisibleAction(payload: boolean): AnyAction;
@@ -76,15 +86,29 @@ export function AuthFlow<
 }): JSX.Element {
   const { web3$, ens$, onboard$, networkId$ } = useCoreObservables();
   const web3 = useBehaviorSubject(web3$);
+  const networkId = useBehaviorSubject(networkId$);
 
   const dispatch = useDispatch();
   const { auth, loginAction, logoutAction } = useAuthContext();
 
   const notifyFn = useNotifications();
   const isMobile = useIsMobile();
+  function postNotification(
+    title: string,
+    options?: NotificationTypeWithOptions,
+  ) {
+    if (notify) {
+      notify(notifyFn, isMobile, title, options);
+    } else {
+      notifyFn(title, options);
+    }
+  }
 
   const isAuthModalVisible = useSelector<GetState<Store>, boolean>(
     state => state.app.isAuthModalVisible,
+  );
+  const address = useSelector<GetState<Store>, string | undefined>(
+    state => state.auth?.address,
   );
 
   const [current, setPage] = useState(0);
@@ -121,21 +145,20 @@ export function AuthFlow<
           const ensInstance = new ENSHelper(web3instance);
           ens$.next(ensInstance);
         },
-        address(address) {
-          dispatch(addressSwitchAction({ address }));
+        address(newAddress) {
+          dispatch(addressSwitchAction({ address: newAddress }));
         },
-        network(networkId) {
-          if (!networkId) return;
+        network(newNetworkId) {
+          if (!newNetworkId) return;
 
-          dispatch(networkSwitchAction({ networkId }));
-          networkId$.next(networkId);
+          dispatch(networkSwitchAction({ networkId: newNetworkId }));
+          networkId$.next(newNetworkId);
 
-          if (!isSupportedNetwork(networkId)) {
+          if (!isSupportedNetwork(newNetworkId)) {
             dispatch(setUnsupportedNetworkModalVisibleAction(true));
             return;
           }
-
-          onboard.config({ networkId });
+          onboard.config({ networkId: newNetworkId });
         },
       },
     });
@@ -143,6 +166,21 @@ export function AuthFlow<
 
     return () => onboard.walletReset();
   }, [web3$, ens$, dispatch]);
+
+  const previousNetworkId = usePrevious(networkId);
+  useEffect(() => {
+    // just logged in
+    if (!previousNetworkId || !address) return;
+    // just logged out
+    if (!networkId) return;
+    // address has changed
+    if (previousNetworkId === networkId) return;
+
+    postNotification('You have switched your network', {
+      type: NotificationType.success,
+      icon: '⚡️',
+    });
+  }, [address, previousNetworkId, networkId]);
 
   useEffect(() => {
     if (isAuthModalVisible) {
@@ -184,11 +222,11 @@ export function AuthFlow<
         if (!loginSuccessful) {
           return;
         }
-        notify(notifyFn, isMobile);
-        // notify('You have successfully signed in', {
-        //   type: NotificationType.success,
-        //   icon: '👍🏻',
-        // });
+
+        postNotification('You have successfully signed in', {
+          type: NotificationType.success,
+          icon: '👍🏻',
+        });
       })
       .catch(noop);
   }, [auth]);
