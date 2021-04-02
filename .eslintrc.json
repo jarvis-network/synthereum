@@ -1,14 +1,33 @@
 {
-  "extends": ["airbnb", "prettier", "prettier/react"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:jest/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "env": {
     "browser": true
   },
-  "ignorePatterns": ["node_modules/"],
-  "plugins": ["@typescript-eslint", "react", "prettier"],
+  "ignorePatterns": ["node_modules/", "storybook-static/"],
+  "plugins": ["@typescript-eslint", "react", "prettier", "jest"],
   "parser": "@typescript-eslint/parser",
   "rules": {
+    "camelcase": [
+      "error",
+      { "ignoreDestructuring": true, "ignoreImports": true }
+    ],
+    "consistent-return": "off",
+    "require-await": "error",
+    "no-bitwise": ["error", { "int32Hint": true }],
     "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+    "no-param-reassign": "off",
+    "no-continue": "off",
+    "no-plusplus": "off",
     "no-confusing-arrow": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
+    "no-useless-constructor": "off",
+    "@typescript-eslint/no-useless-constructor": ["error"],
     "implicit-arrow-linebreak": "off",
     "object-curly-newline": "off",
     "arrow-parens": "off",
@@ -27,7 +46,10 @@
         "newlines-between": "always-and-inside-groups"
       }
     ],
-    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
+    ],
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": [
       "error",
@@ -38,6 +60,7 @@
     "no-nested-ternary": "off",
     "global-require": 0,
     "react/prop-types": 0,
+    "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [
       0,
       {
