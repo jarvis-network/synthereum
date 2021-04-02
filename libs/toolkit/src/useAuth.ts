@@ -22,7 +22,7 @@ export function authAppFactory(
       const onboardState = onboard.getState();
       const walletName = onboardState.wallet.name;
       if (check && walletName) {
-        localStorage.setItem('jarvis-borrowing/autologin', walletName);
+        localStorage.setItem('jarvis/autologin', walletName);
         const { wallet: _, ...state } = onboardState;
         onLogin({ ...state, wallet: walletName });
       }
@@ -30,7 +30,7 @@ export function authAppFactory(
     },
     logout() {
       onboard.walletReset();
-      localStorage.removeItem('jarvis-borrowing/autologin');
+      localStorage.removeItem('jarvis/autologin');
       onLogout();
     },
   };
