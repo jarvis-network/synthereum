@@ -3,6 +3,7 @@ import { dirname, resolve, join } from 'path';
 import { strict as assert } from 'assert';
 
 import { writeHeaderFile } from './code-gen/drivers';
+import { execTask, logSeparate } from './utils';
 
 main()
   .then(() => process.exit(0))
@@ -105,14 +106,4 @@ async function prepareAbiJSONFiles({ to, from }: PrepareAbiOptions) {
   });
 
   return Promise.all(promises).then(() => undefined); // then is to satisfy TS
-}
-
-async function execTask(msg: string, task: () => Promise<void>) {
-  logSeparate(msg);
-  await task();
-  console.log('DONE');
-}
-
-function logSeparate(msg: string) {
-  console.log(`-------------------\n${msg}`);
 }
