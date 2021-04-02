@@ -20,7 +20,7 @@ const Container = styled(motion.div)`
   right: 0;
   top: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 150;
 `;
 
 const Overlay = styled(motion.div)`
