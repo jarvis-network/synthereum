@@ -27,7 +27,8 @@ stages:
   # Jobs:
 
 🎨 lint:
-  <<: *job-config
+  only:
+    - merge_requests
   stage: build and deploy
   variables:
     TARGET: installed-project
