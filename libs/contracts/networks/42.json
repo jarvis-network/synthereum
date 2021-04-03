@@ -123,5 +123,10 @@
     "contractName": "SelfMintingController",
     "address": "0x8cE78d5F064446388D0C9ECD7D559846aa7cB9Cf",
     "transactionHash": "0xb355f5fadd782f756990a35fc1436bb95b03be0a9b34cf590129abeb017150b4"
+  },
+  {
+    "contractName": "SelfMintingPerpetualMultiParty",
+    "contractPath": "contracts/contracts/derivative/self-minting/v1/SelfMintingPerpetualMultiParty.sol",
+    "address": "0x5a055EF972e6cc7771a1bEc07344a2f122d03a19"
   }
 ]

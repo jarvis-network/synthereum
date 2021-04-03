@@ -102,5 +102,50 @@
       "admin": "0x539E625172026F8d2AC50648a55871FA728618e8",
       "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486"
     }
+  ],
+  "0x5a055EF972e6cc7771a1bEc07344a2f122d03a19": [
+    {
+      "positionManagerParams": {
+        "withdrawalLiveness": "7200",
+        "collateralAddress": "0xEC8Fe8Aa79dAdcA065496b791AE1c1338DfBBED1",
+        "tokenAddress": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7",
+        "finderAddress": "0xeD0169a88d267063184b0853BaAAAe66c3c154B2",
+        "priceFeedIdentifier": "0x4555522f4a525400000000000000000000000000000000000000000000000000",
+        "minSponsorTokens": {
+          "rawValue": "20000000000000000000"
+        },
+        "timerAddress": "0x0000000000000000000000000000000000000000",
+        "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7",
+        "version": "1",
+        "daoFee": {
+          "feePercentage": {
+            "rawValue": "2000000000000000"
+          },
+          "feeRecipient": "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
+        },
+        "capMintAmount": {
+          "rawValue": "2000000000000000000000000"
+        },
+        "capDepositRatio": {
+          "rawValue": "7000000000000000000"
+        },
+        "synthereumFinder": "0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34"
+      },
+      "liquidatableParams": {
+        "liquidationLiveness": "7200",
+        "collateralRequirement": {
+          "rawValue": "1300000000000000000"
+        },
+        "disputeBondPct": {
+          "rawValue": "100000000000000000"
+        },
+        "sponsorDisputeRewardPct": {
+          "rawValue": "50000000000000000"
+        },
+        "disputerDisputeRewardPct": {
+          "rawValue": "200000000000000000"
+        }
+      }
+    }
   ]
 }
