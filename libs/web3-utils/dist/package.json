@@ -12,12 +12,8 @@
   "types": "../src/index.ts",
   "scripts": {
     "clean": "git clean -fdx -e .env -e node_modules -- ../",
-    "lint": "tslint -p ../tsconfig.json",
-    "build": "tsc -p ../tsconfig.json",
-    "start": "yarn build",
-    "watch": "tsc -p ../tsconfig.json -w --preserveWatchOutput",
-    "prebulishOnly": "npm ci && npm run build",
-    "test:watch": "nodemon"
+    "lint": "eslint ../src/**/*",
+    "build": "tsc -p ../tsconfig.json"
   },
   "dependencies": {
     "abi-decoder": "2.3.0",
