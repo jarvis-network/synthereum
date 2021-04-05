@@ -58,7 +58,18 @@ stages:
     - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
     - docker buildx bake ${TARGET} --print
     - docker buildx bake ${TARGET} --progress=plain
+    - docker images
     - docker run --rm "${REGISTRY}/${TARGET}:${TAG}" netlify deploy --dir /src/out --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock  aquasec/trivy --severity HIGH,CRITICAL "${REGISTRY}/${TARGET}:${TAG}"
+
+build_install:
+  <<: *job-config
+  stage: build and deploy
+  script:
+    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
+    - docker buildx bake --load install
+    - docker images
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy --severity CRITICAL --timeout 5m  "${REGISTRY}/install:${YARN_LOCK_SHA256}"
 
 release:
   stage: release
