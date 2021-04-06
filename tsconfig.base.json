@@ -5,6 +5,7 @@
     "target": "es2018",
     "lib": ["ES2019"],
     "module": "commonjs",
+    "baseUrl": ".",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -31,8 +32,7 @@
     "noUnusedLocals": false,
 
     // Limit recursive search for type declarations:
-    "typeRoots": ["./node_modules/@types"]
-  },
-  // Set to an empty array, to prevent compilation from the root
-  "files": []
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {}
+  }
 }
