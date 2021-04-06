@@ -23,6 +23,9 @@
     }
   },
   "projects": {
+    "core-utils": {
+      "tags": []
+    },
     "web3-utils": {
       "tags": []
     },

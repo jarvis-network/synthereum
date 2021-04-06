@@ -33,6 +33,8 @@
 
     // Limit recursive search for type declarations:
     "typeRoots": ["./node_modules/@types"],
-    "paths": {}
+    "paths": {
+      "@jarvis-network/core-utils": ["libs/core-utils/src/index.ts"]
+    }
   }
 }

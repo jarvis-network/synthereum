@@ -1,6 +1,38 @@
 {
   "version": 2,
   "projects": {
+    "core-utils": {
+      "root": "libs/core-utils",
+      "sourceRoot": "libs/core-utils/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/core-utils",
+            "tsConfig": "libs/core-utils/tsconfig.lib.json",
+            "packageJson": "libs/core-utils/package.json",
+            "main": "libs/core-utils/src/index.ts",
+            "assets": ["libs/core-utils/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/core-utils/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/core-utils"],
+          "options": {
+            "jestConfig": "libs/core-utils/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "web3-utils": {
       "root": "libs/web3-utils",
       "sourceRoot": "libs/web3-utils/src/",
