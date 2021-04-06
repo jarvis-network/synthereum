@@ -34,35 +34,6 @@
         }
       }
     },
-    "web3-utils": {
-      "root": "libs/web3-utils",
-      "sourceRoot": "libs/web3-utils/src/",
-      "projectType": "library",
-      "generators": {},
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/web3-utils/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/web3-utils/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "./libs/web3-utils/dist",
-            "color": true
-          }
-        }
-      }
-    },
     "ui": {
       "root": "libs/ui",
       "sourceRoot": "libs/ui/src/",

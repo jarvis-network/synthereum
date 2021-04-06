@@ -26,9 +26,6 @@
     "core-utils": {
       "tags": []
     },
-    "web3-utils": {
-      "tags": []
-    },
     "ui": {
       "tags": []
     },
@@ -38,7 +35,7 @@
     },
     "contracts": {
       "tags": [],
-      "implicitDependencies": ["web3-utils"]
+      "implicitDependencies": ["core-utils"]
     },
     "validator": {
       "tags": [],

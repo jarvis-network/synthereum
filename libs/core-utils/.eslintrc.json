@@ -1,1 +1,6 @@
-{ "extends": "../../.eslintrc.json", "ignorePatterns": ["!**/*"], "rules": {} }
+{
+  "extends": "../../.eslintrc.json",
+  "rules": {
+    "no-bitwise": "off"
+  }
+}

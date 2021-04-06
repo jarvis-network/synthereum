@@ -147,11 +147,7 @@ result
 # NODE_PREFIX so all globally installed packages are inside the repo
 .nix-node/
 
-# We place the `package.json` files of packages inside their respective `dist/`
-# folders to allow natural importing from sub folders:
-# e.g.: @jarvis-network/web3-utils/eth/networks
-**/dist/*
-!libs/*/dist/package.json
+dist/
 
 # Frontend assets
 apps/frontend/public/assets
