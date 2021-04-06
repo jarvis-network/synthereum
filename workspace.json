@@ -10,7 +10,8 @@
           "executor": "@nrwl/node:package",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/libs/core-utils",
+            "srcRootForCompilationRoot": "libs/core-utils/src",
+            "outputPath": "libs/core-utils/dist",
             "tsConfig": "libs/core-utils/tsconfig.lib.json",
             "packageJson": "libs/core-utils/package.json",
             "main": "libs/core-utils/src/index.ts",
@@ -20,7 +21,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/core-utils/**/*.ts"]
+            "lintFilePatterns": ["libs/core-utils/src/**/*.ts"]
           }
         },
         "test": {
