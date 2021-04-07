@@ -16,17 +16,28 @@ const Registry = artifacts.require('Registry');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumManager = artifacts.require('SynthereumManager');
+const SelfMintingController = artifacts.require('SelfMintingController');
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
 const TestnetERC20 = artifacts.require('TestnetERC20');
+const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
+const SelfMintingPerpetualMultiPartyLib = artifacts.require(
+  'SelfMintingPerpetualMultiPartyLib',
+);
+const SelfMintingDerivativeFactory = artifacts.require(
+  'SelfMintingDerivativeFactory',
+);
 const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
 const SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
 const PoolMock = artifacts.require('PoolMock');
+const SelfMintingDerivativeFactoryMock = artifacts.require(
+  'SelfMintingDerivativeFactoryMock',
+);
 const PoolFactoryMock = artifacts.require('PoolFactoryMock');
 const DerivativeMock = artifacts.require('DerivativeMock');
 
@@ -96,6 +107,8 @@ contract('Synthereum Deployer', function (accounts) {
     poolVersion = 2;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     manager = (await SynthereumManager.deployed()).address;
+    selfMintingControllerInstanceAddr = (await SelfMintingController.deployed())
+      .address;
     derivativePayload = encodeDerivative(
       collateralAddress,
       priceFeedIdentifier,
@@ -865,6 +878,209 @@ contract('Synthereum Deployer', function (accounts) {
           { from: maintainer },
         ),
         'Pool not registred',
+      );
+    });
+  });
+  describe('Deploy self-minting derivative', async () => {
+    let stdDerivativeAddr;
+    let synthTokenInstance;
+    let selfMintingDerivativeVersion;
+    let selfMintingPayload;
+    let selfMintingCollateralAddress;
+    let selfMintingPriceFeedIdentifier;
+    beforeEach(async () => {
+      const {
+        derivative,
+        pool,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      stdDerivativeAddr = derivative;
+      const deploymentTx = await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+      const stdDerivativeInstance = await PerpetualPoolParty.at(
+        stdDerivativeAddr,
+      );
+      const synthTokenAddress = await stdDerivativeInstance.tokenCurrency.call();
+      synthTokenInstance = await MintableBurnableSyntheticToken.at(
+        synthTokenAddress,
+      );
+      selfMintingDerivativeVersion = 1;
+      selfMintingCollateralAddress = (await TestnetSelfMintingERC20.deployed())
+        .address;
+      selfMintingPriceFeedIdentifier = 'EUR/JRT';
+
+      selfMintingPayload = encodeSelfMintingDerivative(
+        selfMintingCollateralAddress,
+        selfMintingPriceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        synthTokenInstance.address,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        selfMintingDerivativeVersion,
+        daoFee,
+        capMintAmount,
+        capDepositRatio,
+      );
+    });
+    it('Can deploy', async () => {
+      const selfMintingDerivative = await deployerInstance.deployOnlySelfMintingDerivative.call(
+        selfMintingDerivativeVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      const deploymentTx = await deployerInstance.deployOnlySelfMintingDerivative(
+        selfMintingDerivativeVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      truffleAssert.eventEmitted(
+        deploymentTx,
+        'SelfMintingDerivativeDeployed',
+        ev => {
+          return (
+            ev.selfMintingDerivativeVersion == 1 &&
+            ev.selfMintingDerivative == selfMintingDerivative
+          );
+        },
+      );
+      //Check synth token roles
+      const tokenAdmins = await synthTokenInstance.getAdminMembers.call();
+      assert.equal(
+        tokenAdmins.length,
+        1,
+        'Wrong number of admins for the synthetic token',
+      );
+      assert.equal(tokenAdmins[0], manager, 'Manager is not the token admin');
+      const minters = await synthTokenInstance.getMinterMembers.call();
+      assert.equal(
+        minters.length,
+        2,
+        'Wrong number of minters for the synthetic token',
+      );
+      assert.equal(
+        minters[0],
+        stdDerivativeAddr,
+        'First derivative is not the token minter',
+      );
+      assert.equal(
+        minters[1],
+        selfMintingDerivative,
+        'Second derivative is not the token minter',
+      );
+      const burners = await synthTokenInstance.getBurnerMembers.call();
+      assert.equal(
+        burners.length,
+        2,
+        'Wrong number of burners for the synthetic token',
+      );
+      assert.equal(
+        burners[0],
+        stdDerivativeAddr,
+        'First derivative is not the token burner',
+      );
+      assert.equal(
+        burners[1],
+        selfMintingDerivative,
+        'Second derivative is not the token burner',
+      );
+    });
+    it('Revert if synthereum finder of self-minting derivative is different from the deployer one', async () => {
+      const selfMintingPerpetualMultiPartyLibInstance = await SelfMintingPerpetualMultiPartyLib.deployed();
+      await SelfMintingDerivativeFactoryMock.link(
+        selfMintingPerpetualMultiPartyLibInstance,
+      );
+      const umaFinderInstance = await Finder.deployed();
+      const wrongSelfMintingFactory = await SelfMintingDerivativeFactoryMock.new(
+        synthereumFinderAddress,
+        umaFinderInstance.address,
+        ZERO_ADDRESS,
+      );
+      const registryInstance = await Registry.deployed();
+      await registryInstance.addMember(
+        RegistryRolesEnum.CONTRACT_CREATOR,
+        wrongSelfMintingFactory.address,
+      );
+      const factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
+
+      await factoryVersioningInstance.setSelfMintingFactory(
+        1,
+        wrongSelfMintingFactory.address,
+        { from: maintainer },
+      );
+      const newFinder = await SynthereumFinder.new({
+        admin: admin,
+        maintainer: maintainer,
+      });
+      await newFinder.changeImplementationAddress(
+        web3Utils.stringToHex('Deployer'),
+        deployerInstance.address,
+        { from: maintainer },
+      );
+      await newFinder.changeImplementationAddress(
+        web3Utils.stringToHex('SelfMintingController'),
+        selfMintingControllerInstanceAddr,
+        { from: maintainer },
+      );
+      await wrongSelfMintingFactory.setSynthereumFinder(newFinder.address);
+      await truffleAssert.reverts(
+        deployerInstance.deployOnlySelfMintingDerivative(
+          selfMintingDerivativeVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        ),
+        'Wrong finder in self-minting deployment',
+      );
+      await factoryVersioningInstance.setSelfMintingFactory(
+        1,
+        (await SelfMintingDerivativeFactory.deployed()).address,
+        { from: maintainer },
+      );
+    });
+    it('Revert if self-minting version is different from the one using in the deployemnt', async () => {
+      wrongSelfMintingDerivativeVersion = 2;
+      selfMintingPayload = encodeSelfMintingDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        synthTokenInstance.address,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        wrongSelfMintingDerivativeVersion,
+        daoFee,
+        capMintAmount,
+        capDepositRatio,
+      );
+      await truffleAssert.reverts(
+        deployerInstance.deployOnlySelfMintingDerivative(
+          selfMintingDerivativeVersion,
+          selfMintingPayload,
+          { from: maintainer },
+        ),
+        'Wrong version in self-minting deployment',
       );
     });
   });
