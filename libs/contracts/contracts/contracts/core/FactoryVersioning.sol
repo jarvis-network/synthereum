@@ -29,13 +29,43 @@ contract SynthereumFactoryVersioning is
 
   EnumerableMap.UintToAddressMap private _derivativeFactory;
 
-  event AddPoolFactory(uint8 indexed version, address poolFactory);
+  EnumerableMap.UintToAddressMap private _selfMintingFactory;
 
-  event RemovePoolFactory(uint8 indexed version);
+  event AddPoolFactory(uint8 indexed version, address indexed poolFactory);
 
-  event AddDerivativeFactory(uint8 indexed version, address derivativeFactory);
+  event SetPoolFactory(uint8 indexed version, address indexed poolFactory);
 
-  event RemoveDerivativeFactory(uint8 indexed version);
+  event RemovePoolFactory(uint8 indexed version, address indexed poolFactory);
+
+  event AddDerivativeFactory(
+    uint8 indexed version,
+    address indexed derivativeFactory
+  );
+
+  event SetDerivativeFactory(
+    uint8 indexed version,
+    address indexed derivativeFactory
+  );
+
+  event RemoveDerivativeFactory(
+    uint8 indexed version,
+    address indexed derivativeFactory
+  );
+
+  event AddSelfMintingFactory(
+    uint8 indexed version,
+    address indexed selfMintingFactory
+  );
+
+  event SetSelfMintingFactory(
+    uint8 indexed version,
+    address indexed selfMintingFactory
+  );
+
+  event RemoveSelfMintingFactory(
+    uint8 indexed version,
+    address indexed selfMintingFactory
+  );
 
   constructor(Roles memory _roles) public {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
@@ -57,16 +87,19 @@ contract SynthereumFactoryVersioning is
     override
     onlyMaintainer
   {
-    _poolsFactory.set(version, poolFactory);
-    emit AddPoolFactory(version, poolFactory);
+    require(poolFactory != address(0), 'Pool factory cannot be address 0');
+    bool isNewVersion = _poolsFactory.set(version, poolFactory);
+    if (isNewVersion == true) {
+      emit AddPoolFactory(version, poolFactory);
+    } else {
+      emit SetPoolFactory(version, poolFactory);
+    }
   }
 
   function removePoolFactory(uint8 version) external override onlyMaintainer {
-    require(
-      _poolsFactory.remove(version),
-      'Version of the pool factory does not exist'
-    );
-    emit RemovePoolFactory(version);
+    address poolFactoryToRemove = _poolsFactory.get(version);
+    _poolsFactory.remove(version);
+    RemovePoolFactory(version, poolFactoryToRemove);
   }
 
   function setDerivativeFactory(uint8 version, address derivativeFactory)
@@ -74,8 +107,16 @@ contract SynthereumFactoryVersioning is
     override
     onlyMaintainer
   {
-    _derivativeFactory.set(version, derivativeFactory);
-    emit AddDerivativeFactory(version, derivativeFactory);
+    require(
+      derivativeFactory != address(0),
+      'Derivative factory cannot be address 0'
+    );
+    bool isNewVersion = _derivativeFactory.set(version, derivativeFactory);
+    if (isNewVersion == true) {
+      emit AddDerivativeFactory(version, derivativeFactory);
+    } else {
+      emit SetDerivativeFactory(version, derivativeFactory);
+    }
   }
 
   function removeDerivativeFactory(uint8 version)
@@ -83,11 +124,36 @@ contract SynthereumFactoryVersioning is
     override
     onlyMaintainer
   {
+    address derivativeFactoryToRemove = _derivativeFactory.get(version);
+    _derivativeFactory.remove(version);
+    emit RemoveDerivativeFactory(version, derivativeFactoryToRemove);
+  }
+
+  function setSelfMintingFactory(uint8 version, address selfMintingFactory)
+    external
+    override
+    onlyMaintainer
+  {
     require(
-      _derivativeFactory.remove(version),
-      'Version of the pool factory does not exist'
+      selfMintingFactory != address(0),
+      'Self-minting factory cannot be address 0'
     );
-    emit RemoveDerivativeFactory(version);
+    bool isNewVersion = _selfMintingFactory.set(version, selfMintingFactory);
+    if (isNewVersion == true) {
+      emit AddSelfMintingFactory(version, selfMintingFactory);
+    } else {
+      emit SetSelfMintingFactory(version, selfMintingFactory);
+    }
+  }
+
+  function removeSelfMintingFactory(uint8 version)
+    external
+    override
+    onlyMaintainer
+  {
+    address selfMintingFactoryToRemove = _selfMintingFactory.get(version);
+    _selfMintingFactory.remove(version);
+    emit RemoveSelfMintingFactory(version, selfMintingFactoryToRemove);
   }
 
   function getPoolFactoryVersion(uint8 version)
@@ -124,5 +190,23 @@ contract SynthereumFactoryVersioning is
     returns (uint256 numberOfVersions)
   {
     numberOfVersions = _derivativeFactory.length();
+  }
+
+  function getSelfMintingFactoryVersion(uint8 version)
+    external
+    view
+    override
+    returns (address selfMintingFactory)
+  {
+    selfMintingFactory = _selfMintingFactory.get(version);
+  }
+
+  function numberOfVerisonsOfSelfMintingFactory()
+    external
+    view
+    override
+    returns (uint256 numberOfVersions)
+  {
+    numberOfVersions = _selfMintingFactory.length();
   }
 }

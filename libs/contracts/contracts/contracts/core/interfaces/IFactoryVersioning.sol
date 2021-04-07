@@ -11,17 +11,38 @@ interface ISynthereumFactoryVersioning {
 
   function removeDerivativeFactory(uint8 version) external;
 
-  function getPoolFactoryVersion(uint8 version) external view returns (address);
+  function setSelfMintingFactory(uint8 version, address selfMintingFactory)
+    external;
 
-  function numberOfVerisonsOfPoolFactory() external view returns (uint256);
+  function removeSelfMintingFactory(uint8 version) external;
+
+  function getPoolFactoryVersion(uint8 version)
+    external
+    view
+    returns (address poolFactory);
+
+  function numberOfVerisonsOfPoolFactory()
+    external
+    view
+    returns (uint256 numberOfVersions);
 
   function getDerivativeFactoryVersion(uint8 version)
     external
     view
-    returns (address);
+    returns (address derivativeFactory);
 
   function numberOfVerisonsOfDerivativeFactory()
     external
     view
-    returns (uint256);
+    returns (uint256 numberOfVersions);
+
+  function getSelfMintingFactoryVersion(uint8 version)
+    external
+    view
+    returns (address selfMintingFactory);
+
+  function numberOfVerisonsOfSelfMintingFactory()
+    external
+    view
+    returns (uint256 numberOfVersions);
 }
