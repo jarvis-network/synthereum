@@ -9,6 +9,9 @@ import {
   IDerivativeDeployment
 } from '../../derivative/common/interfaces/IDerivativeDeployment.sol';
 import {
+  ISelfMintingDerivativeDeployment
+} from '../../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
+import {
   EnumerableSet
 } from '../../../@openzeppelin/contracts/utils/EnumerableSet.sol';
 
@@ -33,4 +36,9 @@ interface ISynthereumDeployer {
     bytes calldata derivativeParamsData,
     ISynthereumPoolDeployment pool
   ) external returns (IDerivativeDeployment derivative);
+
+  function deployOnlySelfMintingDerivative(
+    uint8 selfMintingDerVersion,
+    bytes calldata selfMintingDerParamsData
+  ) external returns (ISelfMintingDerivativeDeployment selfMintingDerivative);
 }

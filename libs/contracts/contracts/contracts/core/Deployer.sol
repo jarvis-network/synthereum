@@ -8,6 +8,7 @@ import {
   ISynthereumFactoryVersioning
 } from './interfaces/IFactoryVersioning.sol';
 import {ISynthereumPoolRegistry} from './interfaces/IPoolRegistry.sol';
+import {ISelfMintingRegistry} from './interfaces/ISelfMintingRegistry.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
@@ -20,6 +21,9 @@ import {
 import {
   IExtendedDerivativeDeployment
 } from '../derivative/common/interfaces/IExtendedDerivativeDeployment.sol';
+import {
+  ISelfMintingDerivativeDeployment
+} from '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
 import {IRole} from '../base/interfaces/IRole.sol';
 import {SynthereumInterfaces} from './Constants.sol';
 import {Address} from '../../@openzeppelin/contracts/utils/Address.sol';
@@ -63,6 +67,10 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     uint8 indexed derivativeVersion,
     address indexed pool,
     address indexed newDerivative
+  );
+  event SelfMintingDerivativeDeployed(
+    uint8 indexed selfMintingDerivativeVersion,
+    address indexed selfMintingDerivative
   );
 
   modifier onlyMaintainer() {
@@ -189,6 +197,41 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
   }
 
+  function deployOnlySelfMintingDerivative(
+    uint8 selfMintingDerVersion,
+    bytes calldata selfMintingDerParamsData
+  )
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+    returns (ISelfMintingDerivativeDeployment selfMintingDerivative)
+  {
+    ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
+    selfMintingDerivative = deploySelfMintingDerivative(
+      factoryVersioning,
+      selfMintingDerVersion,
+      selfMintingDerParamsData
+    );
+    checkSelfMintingDerivativeDeployment(
+      selfMintingDerivative,
+      selfMintingDerVersion
+    );
+    address tokenCurrency = address(selfMintingDerivative.tokenCurrency());
+    addSyntheticTokenRoles(tokenCurrency, address(selfMintingDerivative));
+    ISelfMintingRegistry selfMintingRegistry = getSelfMintingRegistry();
+    selfMintingRegistry.registerSelfMintingDerivative(
+      selfMintingDerivative.syntheticTokenSymbol(),
+      selfMintingDerivative.collateralToken(),
+      selfMintingDerVersion,
+      address(selfMintingDerivative)
+    );
+    emit SelfMintingDerivativeDeployed(
+      selfMintingDerVersion,
+      address(selfMintingDerivative)
+    );
+  }
+
   function deployDerivative(
     ISynthereumFactoryVersioning factoryVersioning,
     uint8 derivativeVersion,
@@ -227,6 +270,26 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
       );
     pool = ISynthereumPoolDeployment(
       abi.decode(poolDeploymentResult, (address))
+    );
+  }
+
+  function deploySelfMintingDerivative(
+    ISynthereumFactoryVersioning factoryVersioning,
+    uint8 selfMintingDerVersion,
+    bytes calldata selfMintingDerParamsData
+  ) internal returns (ISelfMintingDerivativeDeployment selfMintingDerivative) {
+    address selfMintingDerFactory =
+      factoryVersioning.getSelfMintingFactoryVersion(selfMintingDerVersion);
+    bytes memory selfMintingDerDeploymentResult =
+      selfMintingDerFactory.functionCall(
+        abi.encodePacked(
+          getDeploymentSignature(selfMintingDerFactory),
+          selfMintingDerParamsData
+        ),
+        'Wrong self-minting derivative deployment'
+      );
+    selfMintingDerivative = ISelfMintingDerivativeDeployment(
+      abi.decode(selfMintingDerDeploymentResult, (address))
     );
   }
 
@@ -324,6 +387,18 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
   }
 
+  function getSelfMintingRegistry()
+    internal
+    view
+    returns (ISelfMintingRegistry selfMintingRegister)
+  {
+    selfMintingRegister = ISelfMintingRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.SelfMintingRegistry
+      )
+    );
+  }
+
   function getManager() internal view returns (ISynthereumManager manager) {
     manager = ISynthereumManager(
       synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager)
@@ -394,6 +469,20 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
         address(pool)
       ),
       'Pool not registred'
+    );
+  }
+
+  function checkSelfMintingDerivativeDeployment(
+    ISelfMintingDerivativeDeployment selfMintingDerivative,
+    uint8 version
+  ) internal view {
+    require(
+      selfMintingDerivative.synthereumFinder() == synthereumFinder,
+      'Wrong finder in self-minting deployment'
+    );
+    require(
+      selfMintingDerivative.version() == version,
+      'Wrong version in self-minting deployment'
     );
   }
 }
