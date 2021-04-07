@@ -8,7 +8,7 @@
   "types": "dist",
   "scripts": {
     "clean": "git clean -fdx -e .env -e node_modules -- .",
-    "format": "prettier --write .",
+    "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "build": "yarn build:solidity && yarn build:tsc && yarn build:nx-necessary",
     "build:solidity": "hardhat compile",
@@ -30,8 +30,8 @@
     "add-only-pool": "MIGRATION_TYPE=add_only_pool hardhat test ./test/correct-migration.js",
     "add-only-derivative": "MIGRATION_TYPE=add_only_derivative hardhat test ./test/correct-migration.js",
     "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
-    "test": "MIGRATION_TYPE=all hardhat test",
-    "coverage": "hardhat coverage",
+    "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test",
+    "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat coverage",
     "verify": "./utils/verify.d",
     "start:local-fork": "./local-fork.sh"
   },
