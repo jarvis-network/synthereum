@@ -5,9 +5,9 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "pwa-node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Debug src/get-pool-balance",
       "runtimeArgs": ["-r", "ts-node/register"],
       "envFile": "${workspaceFolder}/apps/cli/.env",
       "skipFiles": ["<node_internals>/**"],
@@ -15,6 +15,20 @@
       "env": {
         "TS_NODE_PROJECT": "${workspaceFolder}/apps/cli/tsconfig.json"
       }
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "nx build core-utils",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/rxjs/internal/**"
+      ],
+      "args": [
+        "${workspaceFolder}/node_modules/@nrwl/cli/bin/nx.js",
+        "build",
+        "core-utils"
+      ]
     }
   ]
 }
