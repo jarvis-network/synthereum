@@ -6,7 +6,9 @@ const {
   encodeDerivative,
   encodePool,
   encodePoolOnChainPriceFeed,
+  encodeSelfMintingDerivative,
 } = require('../utils/encoding.js');
+const { isUnparsedPrepend } = require('typescript');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const TestnetERC20 = artifacts.require('TestnetERC20');
@@ -20,6 +22,11 @@ const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
 const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
   'SynthereumPoolOnChainPriceFeedFactory',
 );
+const SelfMintingDerivativeFactory = artifacts.require(
+  'SelfMintingDerivativeFactory',
+);
+const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
+const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 
 contract('Factories', function (accounts) {
   let derivativeVersion = 1;
@@ -28,6 +35,7 @@ contract('Factories', function (accounts) {
   let collateralAddress;
   let priceFeedIdentifier = 'EUR/USD';
   let secondPriceFeedIdentifier = 'GBP/USD';
+  let selfMintingPriceFeedIdentifier = 'EUR/JRT';
   let syntheticName = 'Jarvis Synthetic Euro';
   let secondSyntheticName = 'Jarvis Synthetic British Pound';
   let syntheticSymbol = 'jEUR';
@@ -49,6 +57,7 @@ contract('Factories', function (accounts) {
   let synthereumFinderAddress;
   let poolVersion;
   let poolOnChainVersion;
+  let selfMintingDerivativeVersion;
   let admin = accounts[0];
   let maintainer = accounts[1];
   let liquidityProvider = accounts[2];
@@ -72,6 +81,13 @@ contract('Factories', function (accounts) {
     feeRecipients,
     feeProportions,
   };
+  let feeRecipient = DAO;
+  let daoFee = {
+    feePercentage,
+    feeRecipient,
+  };
+  let capMintAmount = web3Utils.toWei('1000000');
+  let capDepositRatio = 700;
   //Other params
   let sender = accounts[6];
   let derivativePayload;
@@ -123,24 +139,74 @@ contract('Factories', function (accounts) {
       fee,
     );
   });
-
-  it('Can deploy derivative and pool', async () => {
-    await deployerInstance.deployPoolAndDerivative(
-      derivativeVersion,
-      poolVersion,
-      derivativePayload,
-      poolPayload,
-      { from: maintainer },
-    );
-  });
-  it('Can deploy derivative and on-chain-price pool', async () => {
-    await deployerInstance.deployPoolAndDerivative(
-      derivativeVersion,
-      poolOnChainVersion,
-      derivativePayload,
-      poolOnChainPayload,
-      { from: maintainer },
-    );
+  describe('Can deploy factories', async () => {
+    it('Can deploy derivative and pool', async () => {
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        derivativePayload,
+        poolPayload,
+        { from: maintainer },
+      );
+    });
+    it('Can deploy derivative and on-chain-price pool', async () => {
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolOnChainVersion,
+        derivativePayload,
+        poolOnChainPayload,
+        { from: maintainer },
+      );
+    });
+    it('Can deploy self-minting derivative', async () => {
+      const {
+        derivative,
+        pool,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolOnChainVersion,
+        derivativePayload,
+        poolOnChainPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolOnChainVersion,
+        derivativePayload,
+        poolOnChainPayload,
+        { from: maintainer },
+      );
+      const derivativeInstance = await PerpetualPoolParty.at(derivative);
+      const tokenCurrencyAddress = await derivativeInstance.tokenCurrency.call();
+      selfMintingDerivativeVersion = 1;
+      const selfMintingCollateralAddress = (
+        await TestnetSelfMintingERC20.deployed()
+      ).address;
+      const selfMintingPayload = encodeSelfMintingDerivative(
+        selfMintingCollateralAddress,
+        selfMintingPriceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        tokenCurrencyAddress,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        selfMintingDerivativeVersion,
+        daoFee,
+        capMintAmount,
+        capDepositRatio,
+      );
+      await deployerInstance.deployOnlySelfMintingDerivative(
+        selfMintingDerivativeVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+    });
   });
   describe('Revert if not deployer', async () => {
     it('Revert in derivative factory', async () => {
@@ -195,6 +261,61 @@ contract('Factories', function (accounts) {
         web3.eth.sendTransaction({
           from: sender,
           to: poolOnChainFactoryInstance.address,
+          data: dataPayload,
+        }),
+        'Sender must be Synthereum deployer',
+      );
+    });
+    it('Revert in self-minting factory', async () => {
+      const {
+        derivative,
+        pool,
+      } = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolOnChainVersion,
+        derivativePayload,
+        poolOnChainPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolOnChainVersion,
+        derivativePayload,
+        poolOnChainPayload,
+        { from: maintainer },
+      );
+      const derivativeInstance = await PerpetualPoolParty.at(derivative);
+      const tokenCurrencyAddress = await derivativeInstance.tokenCurrency.call();
+      selfMintingDerivativeVersion = 1;
+      const selfMintingCollateralAddress = (
+        await TestnetSelfMintingERC20.deployed()
+      ).address;
+      const selfMintingPayload = encodeSelfMintingDerivative(
+        selfMintingCollateralAddress,
+        selfMintingPriceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        tokenCurrencyAddress,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        selfMintingDerivativeVersion,
+        daoFee,
+        capMintAmount,
+        capDepositRatio,
+      );
+      const selfMintingFactoryInstance = await SelfMintingDerivativeFactory.deployed();
+      const funcSignature = await selfMintingFactoryInstance.deploymentSignature();
+      const dataPayload = funcSignature + selfMintingPayload.replace('0x', '');
+      await truffleAssert.reverts(
+        web3.eth.sendTransaction({
+          from: sender,
+          to: selfMintingFactoryInstance.address,
           data: dataPayload,
         }),
         'Sender must be Synthereum deployer',
