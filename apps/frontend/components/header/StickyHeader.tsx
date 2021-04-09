@@ -45,7 +45,7 @@ const HeaderContainer = styled.div<{ isAuthModalVisible: boolean }>`
     right: 0;
     background: ${props => props.theme.background.primary};
     border-top: 1px solid ${props => props.theme.border.primary};
-    z-index: 3;
+    z-index: 100;
   }
 `;
 
