@@ -1,7 +1,6 @@
-import styled from './styled';
-
-export { ThemeProvider, useTheme } from './ThemeProvider';
+export { default as styled } from '@emotion/styled';
+export { ThemeProvider } from './ThemeProvider';
 export { ThemeSwitcher } from './ThemeSwitcher';
 export { themeValue } from './themeValue';
-export { styled };
 export type { ThemeNameType, FontSizeType, ThemeConfig } from './types';
+export { useTheme } from './useTheme';

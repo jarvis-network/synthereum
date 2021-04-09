@@ -47,9 +47,8 @@
     ]
   },
   "dependencies": {
-    "@emotion/core": "^10.0.35",
-    "@emotion/styled": "^10.0.27",
-    "emotion-theming": "^10.0.27",
+    "@emotion/react": "^11.4.0",
+    "@emotion/styled": "^11.3.0",
     "framer-motion": "^2.0.0-beta.52",
     "react-icons": "^3.11.0",
     "react-router-dom": "^5.1.2",

@@ -3,8 +3,7 @@ import React, { FC } from 'react';
 import { Switcher } from '../Switcher';
 
 import { ThemeSwitcherProps, ThemesList } from './types';
-
-import { useTheme } from '.';
+import { useTheme } from './useTheme';
 
 export const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ setTheme }) => {
   const theme = useTheme();

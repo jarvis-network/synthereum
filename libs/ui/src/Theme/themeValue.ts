@@ -1,17 +1,19 @@
-import { ThemeConfig, ThemeName } from './types';
+import { Theme } from '@emotion/react';
+
+import { ThemeName } from './types';
 
 export interface ThemeValueProps {
-  theme: ThemeConfig;
+  theme: Theme;
 }
 
-type SelectorFn = (theme: ThemeConfig) => string;
+type SelectorFn = (theme: Theme) => string;
 type SelectorOrValue = SelectorFn | string;
 
 type Config = {
   [key in ThemeName]?: SelectorOrValue;
 };
 
-const getValue = (selectorOrValue: SelectorOrValue, theme: ThemeConfig) => {
+const getValue = (selectorOrValue: SelectorOrValue, theme: Theme) => {
   if (typeof selectorOrValue === 'string') {
     return selectorOrValue;
   }

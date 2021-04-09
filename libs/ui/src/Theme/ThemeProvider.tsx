@@ -1,9 +1,5 @@
+import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
 import React, { FC } from 'react';
-
-import {
-  ThemeProvider as EmotionThemeProvider,
-  useTheme as useThemeEmotion,
-} from 'emotion-theming';
 
 import { deepMerge } from '../common/deep-merge';
 
@@ -24,8 +20,6 @@ const getThemeConfig = ({
 
   return deepMerge($preBuildTheme, custom);
 };
-
-export const useTheme = () => useThemeEmotion<ThemeConfig>();
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({
   children,
