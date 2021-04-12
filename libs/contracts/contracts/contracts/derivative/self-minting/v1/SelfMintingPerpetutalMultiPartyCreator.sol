@@ -148,9 +148,6 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       params.daoFee.feeRecipient != address(0),
       'Fee recipient cannot be 0x0'
     );
-    _requireWhitelistedCollateral(params.collateralAddress);
-    _requireWhitelistedIdentifier(params.priceFeedIdentifier);
-
     require(
       params.withdrawalLiveness < 5200 weeks,
       'Withdrawal liveness too large'
@@ -187,20 +184,5 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       .capMintAmount;
     constructorParams.positionManagerParams.capDepositRatio = params
       .capDepositRatio;
-  }
-
-  function _requireWhitelistedIdentifier(bytes32 priceFeedIdentifier)
-    internal
-    view
-  {
-    FinderInterface finder = FinderInterface(finderAddress);
-    IdentifierWhitelistInterface identifierWhitelist =
-      IdentifierWhitelistInterface(
-        finder.getImplementationAddress(OracleInterfaces.IdentifierWhitelist)
-      );
-    require(
-      identifierWhitelist.isIdentifierSupported(priceFeedIdentifier),
-      'Unsupported price identifier'
-    );
   }
 }

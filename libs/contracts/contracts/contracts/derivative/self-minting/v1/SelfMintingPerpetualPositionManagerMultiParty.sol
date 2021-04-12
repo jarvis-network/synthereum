@@ -13,6 +13,9 @@ import {
   IdentifierWhitelistInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
 import {
+  AddressWhitelist
+} from '../../../../@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist.sol';
+import {
   AdministrateeInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
@@ -170,6 +173,18 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     )
     nonReentrant()
   {
+    require(
+      _getIdentifierWhitelist().isIdentifierSupported(
+        _positionManagerData.priceFeedIdentifier
+      ),
+      'Unsupported price identifier'
+    );
+    require(
+      _getCollateralWhitelist().isOnWhitelist(
+        _positionManagerData.collateralAddress
+      ),
+      'Collateral not whitelisted'
+    );
     positionManagerData.synthereumFinder = _positionManagerData
       .synthereumFinder;
     positionManagerData.withdrawalLiveness = _positionManagerData
@@ -189,10 +204,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     positionManagerData.capDepositRatio = _positionManagerData.capDepositRatio;
   }
 
-  function depositTo(
-    address sponsor,
-    FixedPoint.Unsigned memory collateralAmount
-  )
+  function depositTo(address sponsor, uint256 collateralAmount)
     public
     notEmergencyShutdown()
     noPendingWithdrawal(sponsor)
@@ -204,34 +216,36 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     positionData.depositTo(
       globalPositionData,
       positionManagerData,
-      collateralAmount,
+      FixedPoint.Unsigned(collateralAmount),
       feePayerData,
       sponsor
     );
   }
 
-  function deposit(FixedPoint.Unsigned memory collateralAmount) public {
+  function deposit(uint256 collateralAmount) public {
     depositTo(msg.sender, collateralAmount);
   }
 
-  function withdraw(FixedPoint.Unsigned memory collateralAmount)
+  function withdraw(uint256 collateralAmount)
     public
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
     fees()
     nonReentrant()
-    returns (FixedPoint.Unsigned memory amountWithdrawn)
+    returns (uint256 amountWithdrawn)
   {
     PositionData storage positionData = _getPositionData(msg.sender);
 
-    amountWithdrawn = positionData.withdraw(
+    amountWithdrawn = positionData
+      .withdraw(
       globalPositionData,
-      collateralAmount,
+      FixedPoint.Unsigned(collateralAmount),
       feePayerData
-    );
+    )
+      .rawValue;
   }
 
-  function requestWithdrawal(FixedPoint.Unsigned memory collateralAmount)
+  function requestWithdrawal(uint256 collateralAmount)
     public
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -241,7 +255,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     PositionData storage positionData = _getPositionData(msg.sender);
     positionData.requestWithdrawal(
       positionManagerData,
-      collateralAmount,
+      FixedPoint.Unsigned(collateralAmount),
       actualTime,
       feePayerData
     );
@@ -252,15 +266,13 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     notEmergencyShutdown()
     fees()
     nonReentrant()
-    returns (FixedPoint.Unsigned memory amountWithdrawn)
+    returns (uint256 amountWithdrawn)
   {
     uint256 actualTime = getCurrentTime();
     PositionData storage positionData = _getPositionData(msg.sender);
-    amountWithdrawn = positionData.withdrawPassedRequest(
-      globalPositionData,
-      actualTime,
-      feePayerData
-    );
+    amountWithdrawn = positionData
+      .withdrawPassedRequest(globalPositionData, actualTime, feePayerData)
+      .rawValue;
   }
 
   function cancelWithdrawal() external notEmergencyShutdown() nonReentrant() {
@@ -269,72 +281,75 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   }
 
   function create(
-    FixedPoint.Unsigned memory collateralAmount,
-    FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage
+    uint256 collateralAmount,
+    uint256 numTokens,
+    uint256 feePercentage
   )
     public
     notEmergencyShutdown()
     fees()
     nonReentrant()
-    returns (FixedPoint.Unsigned memory daoFeeAmount)
+    returns (uint256 daoFeeAmount)
   {
     PositionData storage positionData = positions[msg.sender];
-    daoFeeAmount = positionData.create(
+    daoFeeAmount = positionData
+      .create(
       globalPositionData,
       positionManagerData,
-      collateralAmount,
-      numTokens,
-      feePercentage,
+      FixedPoint.Unsigned(collateralAmount),
+      FixedPoint.Unsigned(numTokens),
+      FixedPoint.Unsigned(feePercentage),
       feePayerData
-    );
-  }
-
-  function redeem(
-    FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage
-  )
-    public
-    notEmergencyShutdown()
-    noPendingWithdrawal(msg.sender)
-    fees()
-    nonReentrant()
-    returns (
-      FixedPoint.Unsigned memory amountWithdrawn,
-      FixedPoint.Unsigned memory daoFeeAmount
     )
-  {
-    PositionData storage positionData = _getPositionData(msg.sender);
-
-    (amountWithdrawn, daoFeeAmount) = positionData.redeeem(
-      globalPositionData,
-      positionManagerData,
-      numTokens,
-      feePercentage,
-      feePayerData,
-      msg.sender
-    );
+      .rawValue;
   }
 
-  function repay(
-    FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage
-  )
+  function redeem(uint256 numTokens, uint256 feePercentage)
     public
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
     fees()
     nonReentrant()
-    returns (FixedPoint.Unsigned memory daoFeeAmount)
+    returns (uint256 amountWithdrawn, uint256 daoFeeAmount)
   {
     PositionData storage positionData = _getPositionData(msg.sender);
-    daoFeeAmount = positionData.repay(
-      globalPositionData,
-      positionManagerData,
-      numTokens,
-      feePercentage,
-      feePayerData
-    );
+
+    (
+      FixedPoint.Unsigned memory collateralAmount,
+      FixedPoint.Unsigned memory feeAmount
+    ) =
+      positionData.redeeem(
+        globalPositionData,
+        positionManagerData,
+        FixedPoint.Unsigned(numTokens),
+        FixedPoint.Unsigned(feePercentage),
+        feePayerData,
+        msg.sender
+      );
+
+    amountWithdrawn = collateralAmount.rawValue;
+    daoFeeAmount = feeAmount.rawValue;
+  }
+
+  function repay(uint256 numTokens, uint256 feePercentage)
+    public
+    notEmergencyShutdown()
+    noPendingWithdrawal(msg.sender)
+    fees()
+    nonReentrant()
+    returns (uint256 daoFeeAmount)
+  {
+    PositionData storage positionData = _getPositionData(msg.sender);
+    daoFeeAmount = (
+      positionData.repay(
+        globalPositionData,
+        positionManagerData,
+        FixedPoint.Unsigned(numTokens),
+        FixedPoint.Unsigned(feePercentage),
+        feePayerData
+      )
+    )
+      .rawValue;
   }
 
   function settleEmergencyShutdown()
@@ -342,14 +357,16 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     isEmergencyShutdown()
     fees()
     nonReentrant()
-    returns (FixedPoint.Unsigned memory amountWithdrawn)
+    returns (uint256 amountWithdrawn)
   {
     PositionData storage positionData = positions[msg.sender];
-    amountWithdrawn = positionData.settleEmergencyShutdown(
+    amountWithdrawn = positionData
+      .settleEmergencyShutdown(
       globalPositionData,
       positionManagerData,
       feePayerData
-    );
+    )
+      .rawValue;
   }
 
   function emergencyShutdown()
@@ -384,10 +401,12 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   function trimExcess(IERC20 token)
     external
     nonReentrant()
-    returns (FixedPoint.Unsigned memory amount)
+    returns (uint256 amount)
   {
     FixedPoint.Unsigned memory pfcAmount = _pfc();
-    amount = positionManagerData.trimExcess(token, pfcAmount, feePayerData);
+    amount = positionManagerData
+      .trimExcess(token, pfcAmount, feePayerData)
+      .rawValue;
   }
 
   function setCapMintAmount(FixedPoint.Unsigned memory capMintAmount)
@@ -494,33 +513,33 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     external
     view
     nonReentrantView()
-    returns (FixedPoint.Unsigned memory totalCollateral)
+    returns (uint256)
   {
     return
-      globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-        feePayerData.cumulativeFeeMultiplier
-      );
+      globalPositionData
+        .rawTotalPositionCollateral
+        .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
+        .rawValue;
   }
 
   function emergencyShutdownPrice()
     external
     view
     isEmergencyShutdown()
-    returns (FixedPoint.Unsigned memory)
+    returns (uint256)
   {
-    return positionManagerData.emergencyShutdownPrice;
+    return positionManagerData.emergencyShutdownPrice.rawValue;
   }
 
   function calculateDaoFee(FixedPoint.Unsigned memory numTokens)
     external
     view
-    returns (FixedPoint.Unsigned memory)
+    returns (uint256)
   {
-    positionManagerData.calculateDaoFee(
-      globalPositionData,
-      numTokens,
-      feePayerData
-    );
+    return
+      positionManagerData
+        .calculateDaoFee(globalPositionData, numTokens, feePayerData)
+        .rawValue;
   }
 
   function _pfc()
@@ -543,6 +562,28 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     returns (PositionData storage)
   {
     return positions[sponsor];
+  }
+
+  function _getIdentifierWhitelist()
+    internal
+    view
+    returns (IdentifierWhitelistInterface)
+  {
+    return
+      IdentifierWhitelistInterface(
+        feePayerData.finder.getImplementationAddress(
+          OracleInterfaces.IdentifierWhitelist
+        )
+      );
+  }
+
+  function _getCollateralWhitelist() internal view returns (AddressWhitelist) {
+    return
+      AddressWhitelist(
+        feePayerData.finder.getImplementationAddress(
+          OracleInterfaces.CollateralWhitelist
+        )
+      );
   }
 
   function _onlyCollateralizedPosition(address sponsor) internal view {
