@@ -1,8 +1,8 @@
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/web3-utils/eth/web3-instance';
+import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
+import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
 import { env } from './config';
 

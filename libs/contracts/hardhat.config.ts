@@ -9,8 +9,8 @@ import { task } from 'hardhat/config';
 import {
   NetworkId,
   toNetworkName,
-} from '@jarvis-network/web3-utils/eth/networks';
-import { getInfuraEndpoint } from '@jarvis-network/web3-utils/apis/infura';
+} from '@jarvis-network/core-utils/dist/eth/networks';
+import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 
 task('test')
   .addFlag('debug', 'Compile without optimizer')

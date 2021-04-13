@@ -2,20 +2,20 @@ import BN from 'bn.js';
 import {
   assertNotNull,
   throwError,
-} from '@jarvis-network/web3-utils/base/asserts';
-import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
-import { Amount } from '@jarvis-network/web3-utils/base/big-number';
-import { t, OneOf, keysOf } from '@jarvis-network/web3-utils/base/meta';
+} from '@jarvis-network/core-utils/dist/base/asserts';
+import { last } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
+import { Amount } from '@jarvis-network/core-utils/dist/base/big-number';
+import { t, OneOf, keysOf } from '@jarvis-network/core-utils/dist/base/meta';
 import {
   AddressOn,
   assertIsAddress,
-} from '@jarvis-network/web3-utils/eth/address';
+} from '@jarvis-network/core-utils/dist/eth/address';
 import {
   getTokenBalance,
   erc20Transfer,
-} from '@jarvis-network/web3-utils/eth/contracts/erc20';
-import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
-import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
+} from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
+import { getContract } from '@jarvis-network/core-utils/dist/eth/contracts/get-contract';
+import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
 import { TransactionReceipt } from 'web3-core';
 
@@ -23,9 +23,9 @@ import {
   FullTxOptions,
   TxOptions,
   sendTxAndLog,
-} from '@jarvis-network/web3-utils/eth/contracts/send-tx';
+} from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 
-import { executeInSequence } from '@jarvis-network/web3-utils/base/async';
+import { executeInSequence } from '@jarvis-network/core-utils/dist/base/async';
 
 import {
   SupportedNetworkId,

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { styled, Flag, themeValue } from '@jarvis-network/ui';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
 

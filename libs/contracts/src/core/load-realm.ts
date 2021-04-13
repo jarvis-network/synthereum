@@ -1,21 +1,21 @@
 import {
   parseInteger,
   throwError,
-} from '@jarvis-network/web3-utils/base/asserts';
-import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
-import { t } from '@jarvis-network/web3-utils/base/meta';
+} from '@jarvis-network/core-utils/dist/base/asserts';
+import { last } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
+import { t } from '@jarvis-network/core-utils/dist/base/meta';
 import {
   AddressOn,
   assertIsAddress,
   isAddress,
-} from '@jarvis-network/web3-utils/eth/address';
-import { getContract } from '@jarvis-network/web3-utils/eth/contracts/get-contract';
-import type { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
-import type { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
+} from '@jarvis-network/core-utils/dist/eth/address';
+import { getContract } from '@jarvis-network/core-utils/dist/eth/contracts/get-contract';
+import type { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import type { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import type {
   NetworkName,
   Web3On,
-} from '@jarvis-network/web3-utils/eth/web3-instance';
+} from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
 import type {
   SynthereumContractDependencies,

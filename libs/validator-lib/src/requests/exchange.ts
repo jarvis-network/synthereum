@@ -2,13 +2,13 @@ import BN from 'bn.js';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
 import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
-import { scale } from '@jarvis-network/web3-utils/base/big-number';
-import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
+import { scale } from '@jarvis-network/core-utils/dist/base/big-number';
+import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   getTokenAllowance,
   getTokenBalance,
   scaleTokenAmountToWei,
-} from '@jarvis-network/web3-utils/eth/contracts/erc20';
+} from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 
 import { PriceFeed } from '../api/jarvis-exchange-price-feed';
 import { ENV } from '../config';

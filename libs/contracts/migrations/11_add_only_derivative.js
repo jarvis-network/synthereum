@@ -13,13 +13,15 @@ const SynthereumPool = artifacts.require('SynthereumPool');
 const deployment = require('../data/deployment/only-derivatives.json');
 const assets = require('../data/synthetic-assets.json');
 const derivativeVersions = require('../data/derivative-versions.json');
-const { parseFiniteFloat } = require('@jarvis-network/web3-utils/base/asserts');
+const {
+  parseFiniteFloat,
+} = require('@jarvis-network/core-utils/dist/base/asserts');
 const {
   logTransactionOutput,
-} = require('@jarvis-network/web3-utils/eth/contracts/print-tx');
-const { log } = require('@jarvis-network/web3-utils/logging');
+} = require('@jarvis-network/core-utils/dist/eth/contracts/print-tx');
+const { log } = require('@jarvis-network/core-utils/dist/logging');
 const { encodeDerivative } = require('../utils/encoding.js');
-const { toNetworkId } = require('@jarvis-network/web3-utils/eth/networks');
+const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = toNetworkId(network);

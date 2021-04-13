@@ -4,27 +4,27 @@ import {
   getPoolBalances,
   depositInAllPools,
 } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
+import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import {
   formatAmount,
   numberToWei,
   wei,
-} from '@jarvis-network/web3-utils/base/big-number';
-import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/web3-utils/eth/web3-instance';
+} from '@jarvis-network/core-utils/dist/base/big-number';
+import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import {
   assertNotNull,
   parseFiniteFloat,
-} from '@jarvis-network/web3-utils/base/asserts';
-import { getTokenBalance } from '@jarvis-network/web3-utils/eth/contracts/erc20';
+} from '@jarvis-network/core-utils/dist/base/asserts';
+import { getTokenBalance } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
 import {
   assertIsSupportedPoolVersion,
   PoolVersion,
   poolVersions,
 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
-import { log } from '@jarvis-network/web3-utils/logging';
-import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
-import { t } from '@jarvis-network/web3-utils/base/meta';
+import { log } from '@jarvis-network/core-utils/dist/logging';
+import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
+import { t } from '@jarvis-network/core-utils/dist/base/meta';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();

@@ -2,7 +2,7 @@ import { Epic, ofType } from 'redux-observable';
 import { fromEvent, of } from 'rxjs';
 import { map, mergeMap, concatMap } from 'rxjs/operators';
 
-import { indexOfMaxLexicographicalValue } from '@jarvis-network/web3-utils/base/array-fp-utils';
+import { indexOfMaxLexicographicalValue } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
 import {
   allSyntheticSymbols, // FIXME: this should be dynamic
   reversedPriceFeedPairs,

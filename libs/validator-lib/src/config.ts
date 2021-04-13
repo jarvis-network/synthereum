@@ -4,8 +4,8 @@ import {
   assertIsString,
   parseFiniteFloat,
   throwError,
-} from '@jarvis-network/web3-utils/base/asserts';
-import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
+} from '@jarvis-network/core-utils/dist/base/asserts';
+import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 
 export type LogLevels = 'INFO' | 'DEBUG' | 'WARN' | 'ERROR' | 'FATAL' | 'TRACE';
 const supportedLevels = typeCheck<LogLevels[]>()([

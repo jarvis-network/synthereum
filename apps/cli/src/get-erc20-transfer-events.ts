@@ -1,19 +1,19 @@
 import yargs from 'yargs';
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { getClosestBlock } from '@jarvis-network/web3-utils/eth/web3';
-import { addDays } from '@jarvis-network/web3-utils/base/date-time-utils';
+import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
+import { getClosestBlock } from '@jarvis-network/core-utils/dist/eth/web3';
+import { addDays } from '@jarvis-network/core-utils/dist/base/date-time-utils';
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
-import { assertIsAddress } from '@jarvis-network/web3-utils/eth/address';
+import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
 import { Filter } from 'web3-eth-contract/types';
 import {
   Amount,
   formatAmount,
   wei,
-} from '@jarvis-network/web3-utils/base/big-number';
+} from '@jarvis-network/core-utils/dist/base/big-number';
 
-import { log, console } from '@jarvis-network/web3-utils/logging';
-import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
+import { log, console } from '@jarvis-network/core-utils/dist/logging';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();

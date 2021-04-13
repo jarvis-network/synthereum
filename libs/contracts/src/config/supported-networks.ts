@@ -1,12 +1,12 @@
 import {
   assertIncludes,
   parseInteger,
-} from '@jarvis-network/web3-utils/base/asserts';
-import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
+} from '@jarvis-network/core-utils/dist/base/asserts';
+import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 import {
   NetworkId,
   ToNetworkName,
-} from '@jarvis-network/web3-utils/eth/networks';
+} from '@jarvis-network/core-utils/dist/eth/networks';
 
 export const supportedNetworkIds = typeCheck<NetworkId[]>()([1, 42] as const);
 export type SupportedNetworkIds = typeof supportedNetworkIds;

@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import type { AbiItem } from 'web3-utils';
-import type { Tagged } from '@jarvis-network/web3-utils/base/tagged-type';
+import type { Tagged } from '@jarvis-network/core-utils/dist/base/tagged-type';
 
 import type { AccessControl } from '../typechain/AccessControl';
 export const AccessControl_Abi = require('./AccessControl.json') as Tagged<

@@ -11,7 +11,7 @@ import { setTheme } from '@/state/slices/theme';
 import { State } from '@/state/initialState';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { useAuth } from '@/utils/useAuth';
-import { Address } from '@jarvis-network/web3-utils/eth/address';
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { setAuthModalVisible } from '@/state/slices/app';
 import {
   formatWalletAddress,

@@ -1,6 +1,6 @@
-import { toWeiString } from '@jarvis-network/web3-utils/base/big-number';
-import { typeCheck } from '@jarvis-network/web3-utils/base/meta';
-import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
+import { toWeiString } from '@jarvis-network/core-utils/dist/base/big-number';
+import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
+import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/address';
 
 import {
   FixedPointNumber,

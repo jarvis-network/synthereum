@@ -1,4 +1,4 @@
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { Asset } from '@/data/assets';
 
 import { calcExchange } from './calcExchange';

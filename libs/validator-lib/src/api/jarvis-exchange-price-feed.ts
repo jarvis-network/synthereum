@@ -1,7 +1,7 @@
 import { URLSearchParams } from 'url';
 
 import WebSocket from 'ws';
-import { isFinite } from '@jarvis-network/web3-utils/base/asserts';
+import { isFinite } from '@jarvis-network/core-utils/dist/base/asserts';
 import axios from 'axios';
 
 import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config';

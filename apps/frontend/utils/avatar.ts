@@ -1,4 +1,4 @@
-import { getOrCreateElement } from '@jarvis-network/web3-utils/base/optional';
+import { getOrCreateElement } from '@jarvis-network/core-utils/dist/base/optional';
 
 import blockies from 'ethereum-blockies';
 

@@ -9,7 +9,7 @@ import {
   Skeleton,
   useIsMobile,
 } from '@jarvis-network/ui';
-import { Address } from '@jarvis-network/web3-utils/eth/address';
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   formatWalletAddress,
   usePrettyName,

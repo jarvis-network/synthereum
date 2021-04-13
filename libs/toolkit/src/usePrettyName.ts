@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Address } from '@jarvis-network/web3-utils/eth/address';
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 
 import { useBehaviorSubject } from './useBehaviorSubject';
 import { useCoreObservables } from './CoreObservablesContext';

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';

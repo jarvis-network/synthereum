@@ -5,7 +5,7 @@ import {
   ExchangeToken,
   synthereumConfig,
 } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
 

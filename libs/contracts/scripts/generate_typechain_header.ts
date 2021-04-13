@@ -3,9 +3,9 @@ import { dirname, basename, normalize, resolve, join } from 'path';
 import { strict as assert } from 'assert';
 
 import { merge as _merge } from 'lodash';
-import { DeepPartial } from '@jarvis-network/web3-utils/base/meta';
-import { assertIsArray } from '@jarvis-network/web3-utils/base/asserts';
-import { isSumLessThanOrEqualTo } from '@jarvis-network/web3-utils/base/array-fp-utils';
+import { DeepPartial } from '@jarvis-network/core-utils/dist/base/meta';
+import { assertIsArray } from '@jarvis-network/core-utils/dist/base/asserts';
+import { isSumLessThanOrEqualTo } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
 
 main()
   .then(() => process.exit(0))
@@ -35,7 +35,7 @@ async function main() {
   );
   const importTagged = {
     types: ['Tagged'],
-    module: '@jarvis-network/web3-utils/base/tagged-type',
+    module: '@jarvis-network/core-utils/dist/base/tagged-type',
   };
 
   await execTask('Copying json files to src', () =>

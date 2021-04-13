@@ -2,7 +2,7 @@ import {
   env as validatorLibenv,
   ENV as validatorLibENV,
 } from '@jarvis-network/validator-lib';
-import { parseInteger } from '@jarvis-network/web3-utils/base/asserts';
+import { parseInteger } from '@jarvis-network/core-utils/dist/base/asserts';
 
 const { FREQUENCY } = process.env;
 

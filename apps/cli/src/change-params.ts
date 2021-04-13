@@ -5,23 +5,23 @@ import {
 } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { updateV2PoolParameters } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
-import { getInfuraEndpoint } from '@jarvis-network/web3-utils/apis/infura';
+import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 import { LedgerProvider } from '@umaprotocol/truffle-ledger-provider';
-import { assertIsAddress as A } from '@jarvis-network/web3-utils/eth/address';
-import { wei } from '@jarvis-network/web3-utils/base/big-number';
+import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/address';
+import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
 import {
   setPrivateKey_DevelopmentOnly,
   Web3On,
-} from '@jarvis-network/web3-utils/eth/web3-instance';
-import { log } from '@jarvis-network/web3-utils/logging';
+} from '@jarvis-network/core-utils/dist/eth/web3-instance';
+import { log } from '@jarvis-network/core-utils/dist/logging';
 import {
   assertIsString,
   parseFiniteFloat,
-} from '@jarvis-network/web3-utils/base/asserts';
+} from '@jarvis-network/core-utils/dist/base/asserts';
 import { synthereumConfig } from '@jarvis-network/synthereum-contracts/dist/src/config';
 import { Fees } from '@jarvis-network/synthereum-contracts/dist/src/config/types';
-import { TxOptions } from '@jarvis-network/web3-utils/eth/contracts/send-tx';
-import { t } from '@jarvis-network/web3-utils/base/meta';
+import { TxOptions } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
+import { t } from '@jarvis-network/core-utils/dist/base/meta';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();

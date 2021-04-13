@@ -19,7 +19,7 @@ const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
 
 const poolVersions = require('../data/pool-versions.json');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
-const { toNetworkId } = require('@jarvis-network/web3-utils/eth/networks');
+const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await toNetworkId(network);

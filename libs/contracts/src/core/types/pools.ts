@@ -1,9 +1,9 @@
-import { assertIncludes } from '@jarvis-network/web3-utils/base/asserts';
+import { assertIncludes } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   ContractInfo,
   TokenInfo,
-} from '@jarvis-network/web3-utils/eth/contracts/types';
-import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
+} from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import type { SupportedNetworkName, SyntheticSymbol } from '../../config';
 import { priceFeed } from '../../config';

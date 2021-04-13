@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { last } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
 import {
   AreaChart,
   XAxis,

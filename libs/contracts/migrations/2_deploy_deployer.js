@@ -5,7 +5,7 @@ const {
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
-const { toNetworkId } = require('@jarvis-network/web3-utils/eth/networks');
+const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = toNetworkId(network);

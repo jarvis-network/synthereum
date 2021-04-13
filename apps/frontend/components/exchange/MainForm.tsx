@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
 
 import { State } from '@/state/initialState';

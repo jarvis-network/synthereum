@@ -10,7 +10,7 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
 const MockV3Aggregator = artifacts.require('MockV3Aggregator');
-const { toNetworkId } = require('@jarvis-network/web3-utils/eth/networks');
+const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = await toNetworkId(network);

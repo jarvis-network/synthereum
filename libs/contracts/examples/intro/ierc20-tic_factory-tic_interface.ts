@@ -1,12 +1,12 @@
-import { getInfuraWeb3 } from '@jarvis-network/web3-utils/apis/infura';
-import { assert } from '@jarvis-network/web3-utils/base/asserts';
+import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
+import { assert } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   formatAmount,
   mapSumBN,
   wei,
-} from '@jarvis-network/web3-utils/base/big-number';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+} from '@jarvis-network/core-utils/dist/base/big-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { SupportedNetworkId } from '../../src/config';
 import { parseSupportedNetworkId } from '../../src/config/supported-networks';
 import { loadRealm } from '../../src/core/load-realm';

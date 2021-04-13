@@ -1,9 +1,9 @@
 import {
   ContractInfo,
   TokenInfo,
-} from '@jarvis-network/web3-utils/eth/contracts/types';
-import { Web3On } from '@jarvis-network/web3-utils/eth/web3-instance';
-import { ToNetworkId } from '@jarvis-network/web3-utils/eth/networks';
+} from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
+import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { SupportedNetworkName } from '../../config';
 

@@ -1,7 +1,7 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { assets, Asset } from '@/data/assets';

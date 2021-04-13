@@ -1,5 +1,5 @@
 require('dotenv').config({ path: './.env.migration' });
-const { parseBoolean } = require('@jarvis-network/web3-utils/base/asserts');
+const { parseBoolean } = require('@jarvis-network/core-utils/dist/base/asserts');
 //Synthereum contracts to deploy Synthereum infrastructure for local hardhat test
 const deployFinder = require('../migrations/1_deploy_finder.js');
 const deployDeployer = require('../migrations/2_deploy_deployer.js');

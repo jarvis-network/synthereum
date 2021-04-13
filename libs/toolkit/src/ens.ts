@@ -1,10 +1,10 @@
 import Web3 from 'web3';
-import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   Address,
   assertIsAddress,
-} from '@jarvis-network/web3-utils/eth/address';
-import { getOrCreateElementAsync } from '@jarvis-network/web3-utils/base/optional';
+} from '@jarvis-network/core-utils/dist/eth/address';
+import { getOrCreateElementAsync } from '@jarvis-network/core-utils/dist/base/optional';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const namehash = require('eth-ens-namehash');

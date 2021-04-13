@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { last } from '@jarvis-network/web3-utils/base/array-fp-utils';
+import { last } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
 import type Web3 from 'web3';
 import type { Contract } from 'web3-eth-contract';
 

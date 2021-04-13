@@ -1,4 +1,4 @@
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 export const toUpperFirst = (str: string) =>
   `${str.charAt(0).toUpperCase()}${str.slice(1)}`;

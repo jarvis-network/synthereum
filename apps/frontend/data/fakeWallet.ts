@@ -1,5 +1,5 @@
 import { WalletInfo } from '@/state/initialState';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 export const fakeWallet: { [key: string]: WalletInfo } = {
   jEUR: {

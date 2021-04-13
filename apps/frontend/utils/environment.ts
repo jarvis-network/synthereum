@@ -1,6 +1,6 @@
 import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 export const getPriceFeedEndpoint = () =>
   process.env.NEXT_PUBLIC_PRICE_FEED_ROOT || 'wss://pricefeed.jarvis.exchange';

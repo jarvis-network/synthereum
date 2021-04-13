@@ -12,12 +12,12 @@ import {
   PriceFeed,
   RedeemRequestValidator,
 } from '@jarvis-network/validator-lib';
-import { delay } from '@jarvis-network/web3-utils/base/async';
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+import { delay } from '@jarvis-network/core-utils/dist/base/async';
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import Logger from 'bunyan';
 
-import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
-import { NonPayableTransactionObject } from '@jarvis-network/web3-utils/eth/contracts/typechain/types';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
+import { NonPayableTransactionObject } from '@jarvis-network/core-utils/dist/eth/contracts/typechain/types';
 
 import { ENV } from '../config';
 

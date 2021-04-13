@@ -3,27 +3,27 @@ import {
   Amount,
   formatAmount,
   maxUint256,
-} from '@jarvis-network/web3-utils/base/big-number';
-import { AddressOn } from '@jarvis-network/web3-utils/eth/address';
+} from '@jarvis-network/core-utils/dist/base/big-number';
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   getTokenAllowance,
   getTokenBalance,
   scaleTokenAmountToWei,
   setTokenAllowance,
   weiToTokenAmount,
-} from '@jarvis-network/web3-utils/eth/contracts/erc20';
+} from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 
-import { TokenInfo } from '@jarvis-network/web3-utils/eth/contracts/types';
-import { t } from '@jarvis-network/web3-utils/base/meta';
+import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import { t } from '@jarvis-network/core-utils/dist/base/meta';
 
-import { assertNotNull } from '@jarvis-network/web3-utils/base/asserts';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 import {
   FullTxOptions,
   sendTx,
   sendTxAndLog,
   TxOptions,
-} from '@jarvis-network/web3-utils/eth/contracts/send-tx';
+} from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 
 import {
   SupportedNetworkName,

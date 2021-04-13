@@ -7,7 +7,7 @@ import {
   Select,
   styledScrollbars,
 } from '@jarvis-network/ui';
-import { FPN } from '@jarvis-network/web3-utils/base/fixed-point-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
 import { Days, State } from '@/state/initialState';
