@@ -75,7 +75,13 @@ installing the software listed above.
         yarn
         ```
 
-    3. Build the part of the project that you're interested in (including all dependencies):
+    3. Build all libraries and applications:
+
+        ```sh
+        yarn build:all
+        ```
+
+        Or just part that you're interested in (including its dependencies):
 
         * Frontend:
 
@@ -101,15 +107,15 @@ installing the software listed above.
             yarn build cli --with-deps
             ```
 
-        * Or build everything:
-
-            ```sh
-            yarn nx affected:build --all
-            ```
-
     4. Start it:
 
-        * Frontend:
+        * Jarvis Exchange DApp:
+
+            ```sh
+            yarn start frontend
+            ```
+
+        * Jarvis Borrowing (Self Minting) DApp:
 
             ```sh
             yarn start frontend

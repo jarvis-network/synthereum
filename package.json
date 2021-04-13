@@ -18,6 +18,7 @@
     "build": "nx build",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
+    "build:all": "nx run-many --target=build --all",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
     "affected:build": "nx affected:build",
