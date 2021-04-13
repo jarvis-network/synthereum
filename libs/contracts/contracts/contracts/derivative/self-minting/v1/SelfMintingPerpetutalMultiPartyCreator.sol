@@ -7,6 +7,10 @@ import {
 } from '../../common/interfaces/MintableBurnableIERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
+  ISelfMintingController
+} from '../../../core/interfaces/ISelfMintingController.sol';
+import {SynthereumInterfaces} from '../../../core/Constants.sol';
+import {
   FinderInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
 import {
@@ -56,9 +60,9 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     uint256 liquidationLiveness;
     address excessTokenBeneficiary;
     uint8 version;
-    SelfMintingPerpetualMultiParty.DaoFee daoFee;
-    FixedPoint.Unsigned capMintAmount;
-    FixedPoint.Unsigned capDepositRatio;
+    ISelfMintingController.DaoFee daoFee;
+    uint256 capMintAmount;
+    uint256 capDepositRatio;
   }
 
   ISynthereumFinder public synthereumFinder;
@@ -81,7 +85,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
-  function createPerpetual(Params memory params)
+  function createPerpetual(Params calldata params)
     public
     virtual
     nonReentrant()
@@ -94,7 +98,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     );
     require(
       params.syntheticToken != address(0),
-      'Synthetic token address cannot be 0x0'
+      'Synthetic token address cannot be 0x00'
     );
     address derivative;
     MintableBurnableIERC20 tokenCurrency =
@@ -117,6 +121,13 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       _convertParams(params)
     );
 
+    _setControllerValues(
+      derivative,
+      params.daoFee,
+      params.capMintAmount,
+      params.capDepositRatio
+    );
+
     _registerContract(new address[](0), address(derivative));
 
     emit CreatedPerpetual(address(derivative), msg.sender);
@@ -124,7 +135,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     return address(derivative);
   }
 
-  function _convertParams(Params memory params)
+  function _convertParams(Params calldata params)
     private
     view
     returns (
@@ -142,11 +153,11 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     );
     require(
       params.excessTokenBeneficiary != address(0),
-      'Token Beneficiary cannot be 0x0'
+      'Token Beneficiary cannot be 0x00'
     );
     require(
       params.daoFee.feeRecipient != address(0),
-      'Fee recipient cannot be 0x0'
+      'Fee recipient cannot be 0x00'
     );
     require(
       params.withdrawalLiveness < 5200 weeks,
@@ -179,10 +190,31 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     constructorParams.positionManagerParams.excessTokenBeneficiary = params
       .excessTokenBeneficiary;
     constructorParams.positionManagerParams.version = params.version;
-    constructorParams.positionManagerParams.daoFee = params.daoFee;
-    constructorParams.positionManagerParams.capMintAmount = params
-      .capMintAmount;
-    constructorParams.positionManagerParams.capDepositRatio = params
-      .capDepositRatio;
+  }
+
+  function _setControllerValues(
+    address derivative,
+    ISelfMintingController.DaoFee calldata daoFee,
+    uint256 capMintAmount,
+    uint256 capDepositRatio
+  ) internal {
+    ISelfMintingController selfMintingController =
+      ISelfMintingController(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.SelfMintingController
+        )
+      );
+    address[] memory inputAddress = new address[](1);
+    inputAddress[0] = derivative;
+    ISelfMintingController.DaoFee[] memory inuptFee =
+      new ISelfMintingController.DaoFee[](1);
+    inuptFee[0] = daoFee;
+    uint256[] memory inputCapMint = new uint256[](1);
+    inputCapMint[0] = capMintAmount;
+    uint256[] memory inputCapRatio = new uint256[](1);
+    inputCapRatio[0] = capDepositRatio;
+    selfMintingController.setDaoFee(inputAddress, inuptFee);
+    selfMintingController.setCapMintAmount(inputAddress, inputCapMint);
+    selfMintingController.setCapDepositRatio(inputAddress, inputCapRatio);
   }
 }

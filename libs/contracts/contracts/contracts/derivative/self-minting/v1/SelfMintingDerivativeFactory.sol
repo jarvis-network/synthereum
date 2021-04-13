@@ -32,7 +32,7 @@ contract SelfMintingDerivativeFactory is
     deploymentSignature = this.createPerpetual.selector;
   }
 
-  function createPerpetual(Params memory params)
+  function createPerpetual(Params calldata params)
     public
     override
     returns (address derivative)

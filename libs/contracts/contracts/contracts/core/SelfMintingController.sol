@@ -6,8 +6,11 @@ import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISelfMintingController} from './interfaces/ISelfMintingController.sol';
 import {ISelfMintingRegistry} from './interfaces/ISelfMintingRegistry.sol';
 import {
-  ISelfMinting
-} from '../derivative/self-minting/common/interfaces/ISelfMinting.sol';
+  ISelfMintingDerivativeDeployment
+} from '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
+import {
+  ISynthereumFactoryVersioning
+} from './interfaces/IFactoryVersioning.sol';
 import {SynthereumInterfaces} from './Constants.sol';
 import {
   FixedPoint
@@ -31,16 +34,78 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
 
   ISynthereumFinder public synthereumFinder;
 
+  mapping(address => uint256) private capMint;
+
+  mapping(address => uint256) private capDeposit;
+
+  mapping(address => DaoFee) private fee;
+
+  //----------------------------------------
+  // Events
+  //----------------------------------------
+
+  event SetCapMintAmount(
+    address indexed selfMintingDerivative,
+    uint256 capMintAmount
+  );
+
+  event SetCapDepositRatio(
+    address indexed selfMintingDerivative,
+    uint256 capDepositRatio
+  );
+
+  event SetDaoFee(address indexed selfMintingDerivative, DaoFee daoFee);
+
+  event SetDaoFeePercentage(
+    address indexed selfMintingDerivative,
+    uint256 daoFeePercentage
+  );
+
+  event SetDaoFeeRecipient(
+    address indexed selfMintingDerivative,
+    address daoFeeRecipient
+  );
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
-
   modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
       'Sender must be the maintainer'
     );
     _;
+  }
+
+  modifier onlyMaintainerOrSelfMintingDerivative() {
+    if (hasRole(MAINTAINER_ROLE, msg.sender)) {
+      _;
+    } else {
+      ISynthereumFactoryVersioning factoryVersioning =
+        ISynthereumFactoryVersioning(
+          synthereumFinder.getImplementationAddress(
+            SynthereumInterfaces.FactoryVersioning
+          )
+        );
+      uint256 numberOfFactories =
+        factoryVersioning.numberOfVerisonsOfSelfMintingFactory();
+      uint256 counter = 0;
+      for (uint8 i = 0; counter < numberOfFactories; i++) {
+        try factoryVersioning.getSelfMintingFactoryVersion(i) returns (
+          address factory
+        ) {
+          if (msg.sender == factory) {
+            _;
+            break;
+          } else {
+            counter++;
+          }
+        } catch {}
+      }
+      if (numberOfFactories == counter) {
+        revert('Sender must be the maintainer or a self-minting factory');
+      }
+    }
   }
 
   //----------------------------------------
@@ -72,7 +137,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   function setCapMintAmount(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capMintAmounts
-  ) external override onlyMaintainer {
+  ) external override onlyMaintainerOrSelfMintingDerivative {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -80,12 +145,12 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
       'Number of derivatives and mint cap amounts must be the same'
     );
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ISelfMinting selfMintingDerivative =
-        ISelfMinting(selfMintingDerivatives[j]);
-      checkSelfMintingDerivativeRegistration(selfMintingDerivative);
-      selfMintingDerivative.setCapMintAmount(
-        FixedPoint.Unsigned(capMintAmounts[j])
-      );
+      ISelfMintingDerivativeDeployment selfMintingDerivative =
+        ISelfMintingDerivativeDeployment(selfMintingDerivatives[j]);
+      if (hasRole(MAINTAINER_ROLE, msg.sender)) {
+        checkSelfMintingDerivativeRegistration(selfMintingDerivative);
+      }
+      _setCapMintAmount(address(selfMintingDerivative), capMintAmounts[j]);
     }
   }
 
@@ -97,7 +162,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   function setCapDepositRatio(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capDepositRatios
-  ) external override onlyMaintainer {
+  ) external override onlyMaintainerOrSelfMintingDerivative {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -105,12 +170,12 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
       'Number of derivatives and deposit cap ratios must be the same'
     );
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ISelfMinting selfMintingDerivative =
-        ISelfMinting(selfMintingDerivatives[j]);
-      checkSelfMintingDerivativeRegistration(selfMintingDerivative);
-      selfMintingDerivative.setCapDepositRatio(
-        FixedPoint.Unsigned(capDepositRatios[j])
-      );
+      ISelfMintingDerivativeDeployment selfMintingDerivative =
+        ISelfMintingDerivativeDeployment(selfMintingDerivatives[j]);
+      if (hasRole(MAINTAINER_ROLE, msg.sender)) {
+        checkSelfMintingDerivativeRegistration(selfMintingDerivative);
+      }
+      _setCapDepositRatio(address(selfMintingDerivative), capDepositRatios[j]);
     }
   }
 
@@ -121,19 +186,21 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
    */
   function setDaoFee(
     address[] calldata selfMintingDerivatives,
-    ISelfMinting.DaoFee[] calldata daoFees
-  ) external override onlyMaintainer {
+    DaoFee[] calldata daoFees
+  ) external override onlyMaintainerOrSelfMintingDerivative {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
       selfMintingDerCount == daoFees.length,
-      'Number of derivatives and dao fees must be the same'
+      'Number of derivatives and Dao fees must be the same'
     );
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ISelfMinting selfMintingDerivative =
-        ISelfMinting(selfMintingDerivatives[j]);
-      checkSelfMintingDerivativeRegistration(selfMintingDerivative);
-      selfMintingDerivative.setDaoFee(daoFees[j]);
+      ISelfMintingDerivativeDeployment selfMintingDerivative =
+        ISelfMintingDerivativeDeployment(selfMintingDerivatives[j]);
+      if (hasRole(MAINTAINER_ROLE, msg.sender)) {
+        checkSelfMintingDerivativeRegistration(selfMintingDerivative);
+      }
+      _setDaoFee(address(selfMintingDerivative), daoFees[j]);
     }
   }
 
@@ -153,11 +220,12 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
       'Number of derivatives and dao fee percentages must be the same'
     );
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ISelfMinting selfMintingDerivative =
-        ISelfMinting(selfMintingDerivatives[j]);
+      ISelfMintingDerivativeDeployment selfMintingDerivative =
+        ISelfMintingDerivativeDeployment(selfMintingDerivatives[j]);
       checkSelfMintingDerivativeRegistration(selfMintingDerivative);
-      selfMintingDerivative.setDaoFeePercentage(
-        FixedPoint.Unsigned(daoFeePercentages[j])
+      _setDaoFeePercentage(
+        address(selfMintingDerivative),
+        daoFeePercentages[j]
       );
     }
   }
@@ -175,18 +243,63 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
       selfMintingDerCount == daoFeeRecipients.length,
-      'Number of derivatives and dao fee recipients must be the same'
+      'Number of derivatives and Dao fee recipients must be the same'
     );
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ISelfMinting selfMintingDerivative =
-        ISelfMinting(selfMintingDerivatives[j]);
+      ISelfMintingDerivativeDeployment selfMintingDerivative =
+        ISelfMintingDerivativeDeployment(selfMintingDerivatives[j]);
       checkSelfMintingDerivativeRegistration(selfMintingDerivative);
-      selfMintingDerivative.setDaoFeeRecipient(daoFeeRecipients[j]);
+      _setDaoFeeRecipient(address(selfMintingDerivative), daoFeeRecipients[j]);
     }
   }
 
+  function getCapMintAmount(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (uint256 capMintAmount)
+  {
+    capMintAmount = capMint[selfMintingDerivative];
+  }
+
+  function getCapDepositRatio(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (uint256 capDepositRatio)
+  {
+    capDepositRatio = capDeposit[selfMintingDerivative];
+  }
+
+  function getDaoFee(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (DaoFee memory daoFee)
+  {
+    daoFee = fee[selfMintingDerivative];
+  }
+
+  function getDaoFeePercentage(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (uint256 daoFeePercentage)
+  {
+    daoFeePercentage = fee[selfMintingDerivative].feePercentage;
+  }
+
+  function getDaoFeeRecipient(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (address recipient)
+  {
+    recipient = fee[selfMintingDerivative].feeRecipient;
+  }
+
   function checkSelfMintingDerivativeRegistration(
-    ISelfMinting selfMintingDerivative
+    ISelfMintingDerivativeDeployment selfMintingDerivative
   ) internal view {
     ISelfMintingRegistry selfMintingRegistry =
       ISelfMintingRegistry(
@@ -203,5 +316,68 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
       ),
       'Self-minting derivative not registred'
     );
+  }
+
+  function _setCapMintAmount(
+    address selfMintingDerivative,
+    uint256 capMintAmount
+  ) internal {
+    require(
+      capMint[selfMintingDerivative] != capMintAmount,
+      'Cap mint amount is the same'
+    );
+    capMint[selfMintingDerivative] = capMintAmount;
+    emit SetCapMintAmount(selfMintingDerivative, capMintAmount);
+  }
+
+  function _setCapDepositRatio(
+    address selfMintingDerivative,
+    uint256 capDepositRatio
+  ) internal {
+    require(
+      capDeposit[selfMintingDerivative] != capDepositRatio,
+      'Cap deposit ratio is the same'
+    );
+    capDeposit[selfMintingDerivative] = capDepositRatio;
+    emit SetCapDepositRatio(selfMintingDerivative, capDepositRatio);
+  }
+
+  function _setDaoFee(address selfMintingDerivative, DaoFee calldata daoFee)
+    internal
+  {
+    require(
+      fee[selfMintingDerivative].feePercentage != daoFee.feePercentage ||
+        fee[selfMintingDerivative].feeRecipient != daoFee.feeRecipient,
+      'Dao fee is the same'
+    );
+    fee[selfMintingDerivative] = DaoFee(
+      daoFee.feePercentage,
+      daoFee.feeRecipient
+    );
+    emit SetDaoFee(selfMintingDerivative, daoFee);
+  }
+
+  function _setDaoFeePercentage(
+    address selfMintingDerivative,
+    uint256 daoFeePercentage
+  ) internal {
+    require(
+      fee[selfMintingDerivative].feePercentage != daoFeePercentage,
+      'Dao fee percentage is the same'
+    );
+    fee[selfMintingDerivative].feePercentage = daoFeePercentage;
+    emit SetDaoFeePercentage(selfMintingDerivative, daoFeePercentage);
+  }
+
+  function _setDaoFeeRecipient(
+    address selfMintingDerivative,
+    address daoFeeRecipient
+  ) internal {
+    require(
+      fee[selfMintingDerivative].feeRecipient != daoFeeRecipient,
+      'Dao fee recipient is the same'
+    );
+    fee[selfMintingDerivative].feeRecipient = daoFeeRecipient;
+    emit SetDaoFeeRecipient(selfMintingDerivative, daoFeeRecipient);
   }
 }

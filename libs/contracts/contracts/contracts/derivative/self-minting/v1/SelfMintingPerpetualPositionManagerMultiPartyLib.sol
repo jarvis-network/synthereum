@@ -12,6 +12,10 @@ import {
   MintableBurnableIERC20
 } from '../../common/interfaces/MintableBurnableIERC20.sol';
 import {
+  ISelfMintingController
+} from '../../../core/interfaces/ISelfMintingController.sol';
+import {SynthereumInterfaces} from '../../../core/Constants.sol';
+import {
   OracleInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
 import {
@@ -307,7 +311,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     );
 
     collateralCurrency.safeTransfer(
-      positionManagerData.daoFee.feeRecipient,
+      positionManagerData._getDaoFeeRecipient(),
       feeAmount.rawValue
     );
 
@@ -393,7 +397,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     {
       collateralCurrency.safeTransfer(msg.sender, amountWithdrawn.rawValue);
       collateralCurrency.safeTransfer(
-        positionManagerData.daoFee.feeRecipient,
+        positionManagerData._getDaoFeeRecipient(),
         feeAmount.rawValue
       );
       positionManagerData.tokenCurrency.safeTransferFrom(
@@ -454,7 +458,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     emit Repay(msg.sender, numTokens.rawValue, newTokenCount.rawValue);
 
     feePayerData.collateralCurrency.safeTransfer(
-      positionManagerData.daoFee.feeRecipient,
+      positionManagerData._getDaoFeeRecipient(),
       feeAmount.rawValue
     );
 
@@ -669,9 +673,35 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       _calculateDaoFee(
         globalPositionData,
         numTokens,
-        positionManagerData.daoFee.feePercentage,
+        positionManagerData._getDaoFeePercentage(),
         feePayerData
       );
+  }
+
+  function daoFee(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  )
+    external
+    view
+    returns (FixedPoint.Unsigned memory percentage, address recipient)
+  {
+    percentage = positionManagerData._getDaoFeePercentage();
+    recipient = positionManagerData._getDaoFeeRecipient();
+  }
+
+  function capMintAmount(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory capMint) {
+    capMint = positionManagerData._getCapMintAmount();
+  }
+
+  function capDepositRatio(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory capDeposit) {
+    capDeposit = positionManagerData._getCapDepositRatio();
   }
 
   function _incrementCollateralBalances(
@@ -832,7 +862,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
         positionData
           .tokensOutstanding
       )
-        .isLessThanOrEqual(positionManagerData.capDepositRatio),
+        .isLessThanOrEqual(positionManagerData._getCapDepositRatio()),
       'Position overcomes deposit limit'
     );
   }
@@ -845,7 +875,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
   ) internal view {
     require(
       globalPositionData.totalTokensOutstanding.isLessThanOrEqual(
-        positionManagerData.capMintAmount
+        positionManagerData._getCapMintAmount()
       ),
       'Total minting overcomes mint limit'
     );
@@ -861,7 +891,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     FeePayerPoolParty.FeePayerData storage feePayerData
   ) internal view returns (FixedPoint.Unsigned memory) {
     FixedPoint.Unsigned memory actualFeePercentage =
-      positionManagerData.daoFee.feePercentage;
+      positionManagerData._getDaoFeePercentage();
     require(
       actualFeePercentage.isLessThanOrEqual(feePercentage),
       'User fees are not enough for paying DAO'
@@ -943,6 +973,59 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       IERC20Standard(address(feePayerData.collateralCurrency)).decimals();
     scaledPrice = oraclePrice.div(
       (10**(uint256(18)).sub(collateralDecimalsNumber))
+    );
+  }
+
+  function _getCapMintAmount(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) internal view returns (FixedPoint.Unsigned memory capMint) {
+    capMint = FixedPoint.Unsigned(
+      positionManagerData.getSelfMintingController().getCapMintAmount(
+        address(this)
+      )
+    );
+  }
+
+  function _getCapDepositRatio(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) internal view returns (FixedPoint.Unsigned memory capDeposit) {
+    capDeposit = FixedPoint.Unsigned(
+      positionManagerData.getSelfMintingController().getCapDepositRatio(
+        address(this)
+      )
+    );
+  }
+
+  function _getDaoFeePercentage(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) internal view returns (FixedPoint.Unsigned memory feePercentage) {
+    feePercentage = FixedPoint.Unsigned(
+      positionManagerData.getSelfMintingController().getDaoFeePercentage(
+        address(this)
+      )
+    );
+  }
+
+  function _getDaoFeeRecipient(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) internal view returns (address recipient) {
+    recipient = positionManagerData
+      .getSelfMintingController()
+      .getDaoFeeRecipient(address(this));
+  }
+
+  function getSelfMintingController(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData
+  ) internal view returns (ISelfMintingController selfMintingController) {
+    selfMintingController = ISelfMintingController(
+      positionManagerData.synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.SelfMintingController
+      )
     );
   }
 

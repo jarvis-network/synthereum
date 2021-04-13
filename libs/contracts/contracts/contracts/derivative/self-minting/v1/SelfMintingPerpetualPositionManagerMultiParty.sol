@@ -22,7 +22,6 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from '../common/interfaces/ISelfMintingDerivativeDeployment.sol';
-import {ISelfMinting} from '../common/interfaces/ISelfMinting.sol';
 import {
   OracleInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
@@ -43,7 +42,6 @@ import {FeePayerPoolParty} from '../../v1/FeePayerPoolParty.sol';
 
 contract SelfMintingPerpetualPositionManagerMultiParty is
   ISelfMintingDerivativeDeployment,
-  ISelfMinting,
   FeePayerPoolParty
 {
   using FixedPoint for FixedPoint.Unsigned;
@@ -62,9 +60,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     address timerAddress;
     address excessTokenBeneficiary;
     uint8 version;
-    DaoFee daoFee;
-    FixedPoint.Unsigned capMintAmount;
-    FixedPoint.Unsigned capDepositRatio;
     ISynthereumFinder synthereumFinder;
   }
 
@@ -90,9 +85,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     uint256 emergencyShutdownTimestamp;
     address excessTokenBeneficiary;
     uint8 version;
-    DaoFee daoFee;
-    FixedPoint.Unsigned capMintAmount;
-    FixedPoint.Unsigned capDepositRatio;
   }
 
   mapping(address => PositionData) public positions;
@@ -199,9 +191,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     positionManagerData.excessTokenBeneficiary = _positionManagerData
       .excessTokenBeneficiary;
     positionManagerData.version = _positionManagerData.version;
-    positionManagerData.daoFee = _positionManagerData.daoFee;
-    positionManagerData.capMintAmount = _positionManagerData.capMintAmount;
-    positionManagerData.capDepositRatio = _positionManagerData.capDepositRatio;
   }
 
   function depositTo(address sponsor, uint256 collateralAmount)
@@ -409,54 +398,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
       .rawValue;
   }
 
-  function setCapMintAmount(FixedPoint.Unsigned memory capMintAmount)
-    external
-    override
-    onlySelfMintingController
-  {
-    positionManagerData.capMintAmount = capMintAmount;
-  }
-
-  function setCapDepositRatio(FixedPoint.Unsigned memory capDepositRatio)
-    external
-    override
-    onlySelfMintingController
-  {
-    positionManagerData.capDepositRatio = capDepositRatio;
-  }
-
-  function setDaoFee(DaoFee memory daoFee)
-    external
-    override
-    onlySelfMintingController
-  {
-    require(
-      daoFee.feeRecipient != address(0),
-      'Fee recipient cannot be zero address'
-    );
-    positionManagerData.daoFee = daoFee;
-  }
-
-  function setDaoFeePercentage(FixedPoint.Unsigned memory daoFeePercentage)
-    external
-    override
-    onlySelfMintingController
-  {
-    positionManagerData.daoFee.feePercentage = daoFeePercentage;
-  }
-
-  function setDaoFeeRecipient(address daoFeeRecipient)
-    external
-    override
-    onlySelfMintingController
-  {
-    require(
-      daoFeeRecipient != address(0),
-      'Fee recipient cannot be zero address'
-    );
-    positionManagerData.daoFee.feeRecipient = daoFeeRecipient;
-  }
-
   function deleteSponsorPosition(address sponsor) external onlyThisContract {
     delete positions[sponsor];
   }
@@ -540,6 +481,25 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
       positionManagerData
         .calculateDaoFee(globalPositionData, numTokens, feePayerData)
         .rawValue;
+  }
+
+  function daoFee()
+    external
+    view
+    returns (uint256 feePercentage, address feeRecipient)
+  {
+    (FixedPoint.Unsigned memory percentage, address recipient) =
+      positionManagerData.daoFee();
+    feePercentage = percentage.rawValue;
+    feeRecipient = recipient;
+  }
+
+  function capMintAmount() external view returns (uint256 capMint) {
+    capMint = positionManagerData.capMintAmount().rawValue;
+  }
+
+  function capDepositRatio() external view returns (uint256 capDeposit) {
+    capDeposit = positionManagerData.capDepositRatio().rawValue;
   }
 
   function _pfc()

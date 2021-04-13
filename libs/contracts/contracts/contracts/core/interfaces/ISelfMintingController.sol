@@ -3,11 +3,13 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  ISelfMinting
-} from '../../derivative/self-minting/common/interfaces/ISelfMinting.sol';
 
 interface ISelfMintingController {
+  struct DaoFee {
+    uint256 feePercentage;
+    address feeRecipient;
+  }
+
   /**
    * @notice Allow to set capMintAmount on a list of registered self-minting derivatives
    * @param selfMintingDerivatives Self-minting derivatives
@@ -35,7 +37,7 @@ interface ISelfMintingController {
    */
   function setDaoFee(
     address[] calldata selfMintingDerivatives,
-    ISelfMinting.DaoFee[] calldata daoFees
+    DaoFee[] calldata daoFees
   ) external;
 
   /**
@@ -57,4 +59,29 @@ interface ISelfMintingController {
     address[] calldata selfMintingDerivatives,
     address[] calldata daoFeeRecipients
   ) external;
+
+  function getCapMintAmount(address selfMintingDerivative)
+    external
+    view
+    returns (uint256 capMintAmount);
+
+  function getCapDepositRatio(address selfMintingDerivative)
+    external
+    view
+    returns (uint256 capDepositRatio);
+
+  function getDaoFee(address selfMintingDerivative)
+    external
+    view
+    returns (DaoFee memory daoFee);
+
+  function getDaoFeePercentage(address selfMintingDerivative)
+    external
+    view
+    returns (uint256 daoFeePercentage);
+
+  function getDaoFeeRecipient(address selfMintingDerivative)
+    external
+    view
+    returns (address recipient);
 }
