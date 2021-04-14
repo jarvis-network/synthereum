@@ -138,61 +138,105 @@ installing the software listed above.
 ## Project structure
 
 ```txt
-jarvis/network/exchange/mono-repo/
-├── packages/                | source code
-│   ├── balance-notify/      | source code | utility azure function
-│   ├── client/              | source code | *old* front-end
-│   ├── client-new/          | source code | Jarvis Exchange front-end React.js app
-│   ├── contracts/           | source code | synthereum Solidity implementation
-│   ├── keeper-bot/          | source code | *old* validator node
-│   └── keeper-bot-v2/       | source code | Synthereum validator node
+jarvis-network/exchange/mono-repo/
+├── apps/                    | source code | applications
+│   ├── borrowing/           | source code | Jarvis Borrowing DApp
+│   ├── cli/                 | source code | CLI utilities for interacting with contracts
+│   ├── frontend/            | source code | Jarvis Exchange DApp
+│   ├── validator/           | source code | double tx based mint/redeem/exchange validator (Synthereum V1)
+│   └── validator-meta-tx/   | source code | meta-tx based mint/redeem/exchange validator (Synthereum V2)
+├── libs/                    | source code | libraries (on which the applications depend)
+│   ├── contracts/           | source code | Synthereum Solidity implementation
+│   ├── core-utils/          | source code | @jarvis-network/core-utils - core utility library
+│   ├── toolkit/             | source code | @jarvis-network/app-toolkit - reusable frontend code
+│   ├── ui/                  | source code | @jarvis-network/ui - implements reusable React.js UI components
+│   └── validator-lib/       | source code | @jarvis-network/validator-lib
 │
 ├── scripts/                 | scripts | development utility scripts
-│   └── prepare-release.bash | scripts | release management script
+│   ├── build_frontend.bash
+│   ├── check_commit_range.bash
+│   ├── ci_test_affected.bash
+│   ├── prepare-release.bash
+│   └── repo-cleanup-post-part-1-of-nx.dev-changes.bash
 │
+├── helm/                    | helm | Helm deployment Charts
+│   └── validator            | helm
+│
+├── README.md                | docs | this file
+├── LICENSE                  | docs | MIT license
 ├── docs/                    | docs
+│   ├── security-audits/     | docs
+│   ├── fee-calculations.md  | docs
 │   └── install-nix.md       | docs
-├── README.md                | docs
 │
-├── .gitignore               | git | list of files untracked (ignored) by git
-├── LICENSE                  | git | MIT license file
-├── CODEOWNERS               | gitlab | GitLab merge request approvals config
-├── .gitlab-ci.yml           | gitlab | configuration for GitLab CI/CD
-│
-├── netlify.toml             | netlify
-│
-├── .editorconfig            | code style
-├── .prettierrc              | code style
-│
-├── .envrc                   | nix | direnv configration file; takes care of sourcing nix dev env variables
+├── .envrc                   | nix | direnv config file; takes care of sourcing nix env variables
 ├── flake.nix                | nix | Nix Flake file
 ├── flake.lock               | nix | Nix Flake lock file
 ├── shell.nix                | nix | Nix build-inputs (system dependencies) file
 │
-├── package.json             | yarn
-├── yarn.lock                | yarn
-├── .yarnrc                  | yarn
-├── lerna.json               | yarn
+├── .npmrc                   | yarn | npm publish config
+├── package.json             | yarn | workspace root package.json
+├── yarn.lock                | yarn | lock file
+├── .yarnrc                  | yarn | config file
 │
-└── tsconfig.json            | typescript | global (project-level) TypeScript configuration
+├── nx.json                  | nx | (mono repo dev tools) config
+├── workspace.json           | nx
+│
+├── docker-bake.hcl          | docker | Docker Buildx config
+├── Dockerfile               | docker | Dockerfile containing all image targets
+├── .dockerignore            | docker | Docker ignore file
+│
+├── .gitignore               | git | list of files ignored by git
+├── CODEOWNERS               | gitlab | GitLab merge request approvals config
+├── .gitlab-ci.yml           | gitlab | config for GitLab CI/CD
+│
+├── netlify.toml             | netlify | URL redirects and rewrites
+│
+├── commitlint.config.js     | code style | commit message lint config
+├── .editorconfig            | code style | general editor config
+├── .eslintrc.json           | code style | ESLint
+├── .prettierrc              | code style | Prettier
+├── .prettierignore          | code style | Prettier
+│
+├── jest.config.js           | jest | Jest test framework config
+├── jest.preset.js           | jest
+│
+├── tsconfig.base.json       | typescript | base TypeScript config (shared by the whole repo)
+├── tsconfig.cli.json        | typescript | config for CLI programs (inherits the base one)
+├── tsconfig.frontend.json   | typescript | config for frontend apps (inherits the base one)
+└── tsconfig.node.json       | typescript | config for Node.js apps (inherits the base one)
 ```
 
-### Configure networks
+## Environment Variables
 
-The configuration is specified in `truffle-config.js`.
+Running applications or scripts may require setting environment variables.
+In addition to exporting environnement variables using the shell, they can
+also be set persistently in an `.env` file located  in the respective app / script
+folder. In each folder, where this is relevant there is an `.env.example`
+file that lists the variables that are recognized by the script.
 
-To use an Ethereum client with the Kovan network, set the following environment variables:
-
-* `ETH_WALLET_MNEMONIC` The 12 word seed phrase for the accounts used to test and deploy the SynFiat smart contracts.
-* `ETH_KOVAN_ENDPOINT` The endpoint for the Ethereum client connected to Kovan.
-
-  E.g. `"http://127.0.0.1:8545"` for a local client or `"https://kovan.infura.io/v3/{Infura ID}"` for an Infura client.
-
-Other networks can be created by adding them to the `networks` object. Truffle can connect to these networks using the `--network` parameter.
-
-E.g. `truffle console --network kovan`.
+`.env` files are ignored by git, so they suitable for setting secrets for
+development purposes, such as private keys.
 
 ## Smart contracts
+
+### Hardhat
+
+The tasks of building, testing and migrating the contracts are managed by a [Hardhat](https://hardhat.org/) config file located here: [`libs/contracts/hardhat.config.ts`](libs/contracts/hardhat.config.ts)
+
+Migration scripts (used for deploying the contracts) can be invoked from the [`libs/contracts`](./libs/contracts) folder like so:
+
+```sh
+yarn migrate-<migration script> --network <network name>
+```
+
+For example:
+
+```sh
+yarn migrate-finder --network kovan
+```
+
+### UML Class Diagram (Outdated - covers only v1)
 
 [![mermaid diagram](https://mermaid.ink/img/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG4gICAgVElDRmFjdG9yeSA8fC0tIE93bmFibGVcbiAgICBUSUNGYWN0b3J5IC0tPiBFeHBpcmluZ011bHRpUGFydHlDcmVhdG9yXG4gICAgVElDRmFjdG9yeSAtLT4gVElDXG4gICAgVElDSGVscGVyIC0tIFRJQ1xuICAgIFRJQ0ludGVyZmFjZSAtLXw-IFRJQ1xuICAgIFJlZW50cmFuY3lHdWFyZCAtLXw-IFRJQ1xuICAgIFRJQ0ZhY3RvcnkgPHwtLSBSZWVudHJhbmN5R3VhcmRcbiAgICBUSUMgLS0-IEV4cGlyaW5nTXVsdGlQYXJ0eVxuICAgIFRJQyAtLT4gUlRva2VuXG4gICAgRXhwaXJpbmdNdWx0aVBhcnR5Q3JlYXRvciAtLSogRXhwaXJpbmdNdWx0aVBhcnR5XG4gICAgRXhwaXJpbmdNdWx0aVBhcnR5IC0tPiBTeW50aGV0aWNUb2tlblxuICAgIERBSSA8LS0gVElDXG4gICAgUlRva2VuIC0tfD4gRVJDMjBcbiAgICBEQUkgLS18PiBFUkMyMFxuICAgIENUb2tlbiAtLXw-IEVSQzIwXG4gICAgU3ludGhldGljVG9rZW4gLS18PiBFUkMyMFxuICAgIFJUb2tlbiAtLT4gREFJXG4gICAgQ1Rva2VuIC0tPiBEQUlcbiAgICBSVG9rZW4gLS0-IENUb2tlblxuICAgIGNsYXNzIE93bmFibGV7XG4gICAgICAgICthZGRyZXNzIG93bmVyXG4gICAgICAgICtvbmx5T3duZXIoKVxuICAgIH1cbiAgICBjbGFzcyBSZWVudHJhbmN5R3VhcmQge1xuICAgICAgICArbm9uUmVlbnRyYW50KClcbiAgICB9XG4gICAgY2xhc3MgVElDe1xuICAgICAgICArRXhwaXJpbmdNdWx0aVBhcnR5IGRlcml2YXRpdmVcbiAgICAgICAgK0VSQzIwIGNvbGxhdGVyYWxUb2tlblxuICAgICAgICArRVJDMjAgc3ludGhldGljVG9rZW5cbiAgICAgICAgK2NvbnN0cnVjdG9yKF9kZXJpdmF0aXZlLCBfbGlxdWlkaXR5UHJvdmlkZXIsIF9zdGFydGluZ0NvbGxhdGVyYWxpemF0aW9uLCBfZmVlKVxuICAgICAgICArbWludChjb2xsYXRlcmFsQW1vdW50LCBudW1Ub2tlbnMpXG4gICAgICAgICtkZXBvc2l0KGNvbGxhdGVyYWxBbW91bnQpXG4gICAgICAgICt3aXRoZHJhd1JlcXVlc3QoY29sbGF0ZXJhbEFtb3VudClcbiAgICAgICAgK3dpdGhkcmF3UGFzc2VkUmVxdWVzdCgpXG4gICAgICAgICtzZXR0bGVFeHBpcmVkKClcbiAgICAgICAgK2V4Y2hhbmdlKGRlc3RUSUMsIG51bVRva2VucywgZGVzdE51bVRva2VucylcbiAgICAgICAgK2NhbGN1bGF0ZU1pbnRGZWUoY29sbGF0ZXJhbEFtb3VudClcbiAgICB9XG4gICAgY2xhc3MgVElDRmFjdG9yeXtcbiAgICAgICAgK0V4cGlyaW5nTXVsdGlQYXJ0eUNyZWF0b3IgZGVyaXZhdGl2ZUNyZWF0b3JcbiAgICAgICAgK2NvbnN0cnVjdG9yKF9kZXJpdmF0aXZlQ3JlYXRvcilcbiAgICAgICAgK2NyZWF0ZVRJQyhwYXJhbXMsIGxpcXVpZGl0eVByb3ZpZGVyLCBzdGFydGluZ0NvbGxhdGVyYWxpemF0aW9uLCBmZWVzKVxuICAgICAgICArc3ltYm9sVG9USUMoc3ltYm9sKVxuICAgIH1cbiAgICBjbGFzcyBFUkMyMHtcbiAgICAgICAgK3VpbnQyNTYgdG90YWxTdXBwbHlcbiAgICAgICAgK2JhbGFuY2VPZihhY2NvdW50KVxuICAgICAgICArdHJhbnNmZXIocmVjaXBpZW50LCBhbW91bnQpXG4gICAgICAgICthcHByb3ZlKHNwZW5kZXIsIGFtb3VudClcbiAgICAgICAgK3RyYW5zZmVyRnJvbShzZW5kZXIsIHJlY2lwaWVudCwgYW1vdW50KVxuICAgIH1cbiAgICBjbGFzcyBFeHBpcmluZ011bHRpUGFydHlDcmVhdG9ye1xuICAgICAgICArY3JlYXRlRXhwaXJpbmdNdWx0aVBhcnR5KHBhcmFtcylcbiAgICB9XG4gICAgY2xhc3MgUlRva2Vue1xuICAgICAgICArY3JlYXRlSGF0KHJlY2lwaWVudHMsIHByb3BvcnRpb25zLCBkb0NoYW5nZUhhdClcbiAgICAgICAgK21pbnRXaXRoU2VsZWN0ZWRIYXQobWludEFtb3VudCwgaGF0SUQpXG4gICAgICAgICtyZWRlZW1BbmRUcmFuc2ZlcihyZWRlZW1UbywgcmVkZWVtVG9rZW5zKVxuICAgIH1cbiAgICBjbGFzcyBFeHBpcmluZ011bHRpUGFydHl7XG4gICAgICAgICtFUkMyMCBjb2xsYXRlcmFsQ3VycmVuY3lcbiAgICAgICAgK0VSQzIwIHRva2VuQ3VycmVuY3lcbiAgICAgICAgK0ZpeGVkUG9pbnQgZXhwaXJ5UHJpY2VcbiAgICAgICAgK0ZpeGVkUG9pbnQgdG90YWxUb2tlbnNPdXRzdGFuZGluZ1xuICAgICAgICArRml4ZWRQb2ludCB0b3RhbFBvc2l0aW9uQ29sbGF0ZXJhbFxuICAgICAgICArY3JlYXRlKGNvbGxhdGVyYWxBbW91bnQsIG51bVRva2VucylcbiAgICAgICAgK3JlcXVlc3RXaXRoZHJhd2FsKGNvbGxhdGVyYWxBbW91bnQpXG4gICAgICAgICt3aXRoZHJhd1Bhc3NlZFJlcXVlc3QoKVxuICAgICAgICArZXhwaXJlKClcbiAgICAgICAgK3NldHRsZUV4cGlyZWQoKVxuICAgICAgICArcmVkZWVtKG51bVRva2VucylcbiAgICB9XG4gICAgY2xhc3MgQ1Rva2Vue1xuICAgICAgICArYWNjcnVlSW50ZXJlc3QoKVxuICAgIH0iLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ)](https://mermaid-js.github.io/mermaid-live-editor/#/edit/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG4gICAgVElDRmFjdG9yeSA8fC0tIE93bmFibGVcbiAgICBUSUNGYWN0b3J5IC0tPiBFeHBpcmluZ011bHRpUGFydHlDcmVhdG9yXG4gICAgVElDRmFjdG9yeSAtLT4gVElDXG4gICAgVElDSGVscGVyIC0tIFRJQ1xuICAgIFRJQ0ludGVyZmFjZSAtLXw-IFRJQ1xuICAgIFJlZW50cmFuY3lHdWFyZCAtLXw-IFRJQ1xuICAgIFRJQ0ZhY3RvcnkgPHwtLSBSZWVudHJhbmN5R3VhcmRcbiAgICBUSUMgLS0-IEV4cGlyaW5nTXVsdGlQYXJ0eVxuICAgIFRJQyAtLT4gUlRva2VuXG4gICAgRXhwaXJpbmdNdWx0aVBhcnR5Q3JlYXRvciAtLSogRXhwaXJpbmdNdWx0aVBhcnR5XG4gICAgRXhwaXJpbmdNdWx0aVBhcnR5IC0tPiBTeW50aGV0aWNUb2tlblxuICAgIERBSSA8LS0gVElDXG4gICAgUlRva2VuIC0tfD4gRVJDMjBcbiAgICBEQUkgLS18PiBFUkMyMFxuICAgIENUb2tlbiAtLXw-IEVSQzIwXG4gICAgU3ludGhldGljVG9rZW4gLS18PiBFUkMyMFxuICAgIFJUb2tlbiAtLT4gREFJXG4gICAgQ1Rva2VuIC0tPiBEQUlcbiAgICBSVG9rZW4gLS0-IENUb2tlblxuICAgIGNsYXNzIE93bmFibGV7XG4gICAgICAgICthZGRyZXNzIG93bmVyXG4gICAgICAgICtvbmx5T3duZXIoKVxuICAgIH1cbiAgICBjbGFzcyBSZWVudHJhbmN5R3VhcmQge1xuICAgICAgICArbm9uUmVlbnRyYW50KClcbiAgICB9XG4gICAgY2xhc3MgVElDe1xuICAgICAgICArRXhwaXJpbmdNdWx0aVBhcnR5IGRlcml2YXRpdmVcbiAgICAgICAgK0VSQzIwIGNvbGxhdGVyYWxUb2tlblxuICAgICAgICArRVJDMjAgc3ludGhldGljVG9rZW5cbiAgICAgICAgK2NvbnN0cnVjdG9yKF9kZXJpdmF0aXZlLCBfbGlxdWlkaXR5UHJvdmlkZXIsIF9zdGFydGluZ0NvbGxhdGVyYWxpemF0aW9uLCBfZmVlKVxuICAgICAgICArbWludChjb2xsYXRlcmFsQW1vdW50LCBudW1Ub2tlbnMpXG4gICAgICAgICtkZXBvc2l0KGNvbGxhdGVyYWxBbW91bnQpXG4gICAgICAgICt3aXRoZHJhd1JlcXVlc3QoY29sbGF0ZXJhbEFtb3VudClcbiAgICAgICAgK3dpdGhkcmF3UGFzc2VkUmVxdWVzdCgpXG4gICAgICAgICtzZXR0bGVFeHBpcmVkKClcbiAgICAgICAgK2V4Y2hhbmdlKGRlc3RUSUMsIG51bVRva2VucywgZGVzdE51bVRva2VucylcbiAgICAgICAgK2NhbGN1bGF0ZU1pbnRGZWUoY29sbGF0ZXJhbEFtb3VudClcbiAgICB9XG4gICAgY2xhc3MgVElDRmFjdG9yeXtcbiAgICAgICAgK0V4cGlyaW5nTXVsdGlQYXJ0eUNyZWF0b3IgZGVyaXZhdGl2ZUNyZWF0b3JcbiAgICAgICAgK2NvbnN0cnVjdG9yKF9kZXJpdmF0aXZlQ3JlYXRvcilcbiAgICAgICAgK2NyZWF0ZVRJQyhwYXJhbXMsIGxpcXVpZGl0eVByb3ZpZGVyLCBzdGFydGluZ0NvbGxhdGVyYWxpemF0aW9uLCBmZWVzKVxuICAgICAgICArc3ltYm9sVG9USUMoc3ltYm9sKVxuICAgIH1cbiAgICBjbGFzcyBFUkMyMHtcbiAgICAgICAgK3VpbnQyNTYgdG90YWxTdXBwbHlcbiAgICAgICAgK2JhbGFuY2VPZihhY2NvdW50KVxuICAgICAgICArdHJhbnNmZXIocmVjaXBpZW50LCBhbW91bnQpXG4gICAgICAgICthcHByb3ZlKHNwZW5kZXIsIGFtb3VudClcbiAgICAgICAgK3RyYW5zZmVyRnJvbShzZW5kZXIsIHJlY2lwaWVudCwgYW1vdW50KVxuICAgIH1cbiAgICBjbGFzcyBFeHBpcmluZ011bHRpUGFydHlDcmVhdG9ye1xuICAgICAgICArY3JlYXRlRXhwaXJpbmdNdWx0aVBhcnR5KHBhcmFtcylcbiAgICB9XG4gICAgY2xhc3MgUlRva2Vue1xuICAgICAgICArY3JlYXRlSGF0KHJlY2lwaWVudHMsIHByb3BvcnRpb25zLCBkb0NoYW5nZUhhdClcbiAgICAgICAgK21pbnRXaXRoU2VsZWN0ZWRIYXQobWludEFtb3VudCwgaGF0SUQpXG4gICAgICAgICtyZWRlZW1BbmRUcmFuc2ZlcihyZWRlZW1UbywgcmVkZWVtVG9rZW5zKVxuICAgIH1cbiAgICBjbGFzcyBFeHBpcmluZ011bHRpUGFydHl7XG4gICAgICAgICtFUkMyMCBjb2xsYXRlcmFsQ3VycmVuY3lcbiAgICAgICAgK0VSQzIwIHRva2VuQ3VycmVuY3lcbiAgICAgICAgK0ZpeGVkUG9pbnQgZXhwaXJ5UHJpY2VcbiAgICAgICAgK0ZpeGVkUG9pbnQgdG90YWxUb2tlbnNPdXRzdGFuZGluZ1xuICAgICAgICArRml4ZWRQb2ludCB0b3RhbFBvc2l0aW9uQ29sbGF0ZXJhbFxuICAgICAgICArY3JlYXRlKGNvbGxhdGVyYWxBbW91bnQsIG51bVRva2VucylcbiAgICAgICAgK3JlcXVlc3RXaXRoZHJhd2FsKGNvbGxhdGVyYWxBbW91bnQpXG4gICAgICAgICt3aXRoZHJhd1Bhc3NlZFJlcXVlc3QoKVxuICAgICAgICArZXhwaXJlKClcbiAgICAgICAgK3NldHRsZUV4cGlyZWQoKVxuICAgICAgICArcmVkZWVtKG51bVRva2VucylcbiAgICB9XG4gICAgY2xhc3MgQ1Rva2Vue1xuICAgICAgICArYWNjcnVlSW50ZXJlc3QoKVxuICAgIH0iLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ)
 
