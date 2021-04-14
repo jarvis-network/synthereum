@@ -1,14 +1,9 @@
 {
   "npmScope": "jarvis-network",
-  "affected": {
-    "defaultBase": "dev"
-  },
+  "affected": { "defaultBase": "dev" },
   "implicitDependencies": {
     "workspace.json": "*",
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
+    "package.json": { "dependencies": "*", "devDependencies": "*" },
     "tsconfig.json": "*",
     "tslint.json": "*",
     ".eslintrc.json": "*",
@@ -17,34 +12,16 @@
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["lint", "build"]
-      }
+      "options": { "cacheableOperations": ["lint", "build"] }
     }
   },
   "projects": {
-    "core-utils": {
-      "tags": []
-    },
-    "ui": {
-      "tags": []
-    },
-    "toolkit": {
-      "tags": [],
-      "implicitDependencies": ["ui", "contracts"]
-    },
-    "contracts": {
-      "tags": [],
-      "implicitDependencies": ["core-utils"]
-    },
-    "validator": {
-      "tags": [],
-      "implicitDependencies": ["validator-lib"]
-    },
-    "validator-lib": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
+    "core-utils": { "tags": [] },
+    "ui": { "tags": [] },
+    "toolkit": { "tags": [], "implicitDependencies": ["ui", "contracts"] },
+    "contracts": { "tags": [], "implicitDependencies": ["core-utils"] },
+    "validator": { "tags": [], "implicitDependencies": ["validator-lib"] },
+    "validator-lib": { "tags": [], "implicitDependencies": ["contracts"] },
     "frontend": {
       "tags": [],
       "implicitDependencies": ["ui", "toolkit", "contracts"]
@@ -53,13 +30,7 @@
       "tags": [],
       "implicitDependencies": ["ui", "toolkit", "contracts"]
     },
-    "cli": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    }
+    "cli": { "tags": [], "implicitDependencies": ["contracts"] }
   },
-  "workspaceLayout": {
-    "appsDir": "apps",
-    "libsDir": "libs"
-  }
+  "workspaceLayout": { "appsDir": "apps", "libsDir": "libs" }
 }

@@ -20,9 +20,7 @@
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/core-utils/src/**/*.ts"]
-          }
+          "options": { "lintFilePatterns": ["libs/core-utils/src/**/*.ts"] }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -42,9 +40,7 @@
       "targets": {
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/ui/src/**/*.{ts,tsx}"]
-          }
+          "options": { "lintFilePatterns": ["libs/ui/src/**/*.{ts,tsx}"] }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
@@ -64,9 +60,7 @@
       "targets": {
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/toolkit/src/**/*.{ts,tsx}"]
-          }
+          "options": { "lintFilePatterns": ["libs/toolkit/src/**/*.{ts,tsx}"] }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
@@ -86,9 +80,7 @@
       "targets": {
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/validator-lib/src/**/*.ts"]
-          }
+          "options": { "lintFilePatterns": ["libs/validator-lib/src/**/*.ts"] }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -185,9 +177,7 @@
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/validator/src/**/*.ts"]
-          }
+          "options": { "lintFilePatterns": ["apps/validator/src/**/*.ts"] }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -230,9 +220,7 @@
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/frontend/**/*.{ts,tsx}"]
-          }
+          "options": { "lintFilePatterns": ["apps/frontend/**/*.{ts,tsx}"] }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -275,9 +263,7 @@
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/borrowing/**/*.{ts,tsx}"]
-          }
+          "options": { "lintFilePatterns": ["apps/borrowing/**/*.{ts,tsx}"] }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -313,9 +299,7 @@
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/cli/src/**/*.ts"]
-          }
+          "options": { "lintFilePatterns": ["apps/cli/src/**/*.ts"] }
         }
       }
     }
