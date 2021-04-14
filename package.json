@@ -15,7 +15,7 @@
     "nx": "nx",
     "start": "nx start",
     "test": "nx test",
-    "build": "nx build",
+    "build": "sh -c 'nx build $1 --with-deps ${@:1}' --",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
     "build:all": "nx run-many --target=build --all",

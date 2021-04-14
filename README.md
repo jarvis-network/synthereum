@@ -86,25 +86,25 @@ installing the software listed above.
         * Frontend:
 
             ```sh
-            yarn build frontend --with-deps
+            yarn build frontend
             ```
 
         * Borrowing:
 
             ```sh
-            yarn build borrowing --with-deps
+            yarn build borrowing
             ```
 
         * Validator:
 
             ```sh
-            yarn build validator --with-deps
+            yarn build validator
             ```
 
         * CLI utils:
 
             ```sh
-            yarn build cli --with-deps
+            yarn build cli
             ```
 
     4. Start it:
