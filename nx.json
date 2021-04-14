@@ -17,6 +17,7 @@
   },
   "projects": {
     "core-utils": { "tags": [] },
+    "sol2ts-code-gen": { "tags": [] },
     "ui": { "tags": [] },
     "toolkit": { "tags": [], "implicitDependencies": ["ui", "contracts"] },
     "contracts": { "tags": [], "implicitDependencies": ["core-utils"] },
