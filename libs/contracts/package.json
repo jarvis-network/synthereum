@@ -12,11 +12,10 @@
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "start": "yarn build",
     "watch:tsc": "tsc -p ./tsconfig.json -w --preserveWatchOutput",
-    "build": "yarn build:scripts && yarn build:solidity && yarn build:typechain && yarn build:typechain-index && yarn build:tsc",
-    "build:scripts": "tsc -p ./scripts/tsconfig.json",
+    "build": "yarn build:solidity && yarn build:typechain && yarn build:typechain-index && yarn build:tsc",
     "build:solidity": "truffle compile",
     "build:typechain": "typechain --target web3-v1 --outDir ./src/contracts/typechain './build/contracts/*.json' | { head -n 2; tail -n1; }",
-    "build:typechain-index": "node ./dist/scripts/generate_typechain_header.js ./src/contracts",
+    "build:typechain-index": "sol2ts-code-gen ./src/contracts",
     "build:tsc": "tsc -p ./tsconfig.json",
     "migrate-finder": "MIGRATION_TYPE=finder hardhat test ./test/correct-migration.js",
     "migrate-deployer": "MIGRATION_TYPE=deployer hardhat test ./test/correct-migration.js",
@@ -45,6 +44,7 @@
     "web3": "^1.3.4"
   },
   "devDependencies": {
+    "@jarvis-network/sol2ts-code-gen": "*",
     "@typechain/web3-v1": "^1.0.0",
     "ethers": "^5.0.26",
     "ganache-cli": "^6.12.1",

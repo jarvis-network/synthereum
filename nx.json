@@ -20,7 +20,10 @@
     "sol2ts-code-gen": { "tags": [] },
     "ui": { "tags": [] },
     "toolkit": { "tags": [], "implicitDependencies": ["ui", "contracts"] },
-    "contracts": { "tags": [], "implicitDependencies": ["core-utils"] },
+    "contracts": {
+      "tags": [],
+      "implicitDependencies": ["core-utils", "sol2ts-code-gen"]
+    },
     "validator": { "tags": [], "implicitDependencies": ["validator-lib"] },
     "validator-lib": { "tags": [], "implicitDependencies": ["contracts"] },
     "frontend": {

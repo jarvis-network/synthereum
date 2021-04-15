@@ -45,13 +45,13 @@
             "outputPath": "libs/sol2ts-code-gen/dist",
             "tsConfig": "libs/sol2ts-code-gen/tsconfig.lib.json",
             "packageJson": "libs/sol2ts-code-gen/package.json",
-            "main": "libs/sol2ts-code-gen/src/index.ts",
+            "main": "libs/sol2ts-code-gen/src/generate_typechain_header.ts",
             "assets": ["libs/sol2ts-code-gen/*.md"]
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": { "lintFilePatterns": ["libs/sol2ts-code-gen/**/*.ts"] }
+          "options": { "lintFilePatterns": ["libs/sol2ts-code-gen/src/**/*.ts"] }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
