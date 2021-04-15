@@ -1,27 +1,18 @@
 ARG NODE_VERSION=14.15.1
 
-FROM node:${NODE_VERSION}-alpine as core
-RUN apk add coreutils
+FROM node:${NODE_VERSION}-alpine as base
+RUN apk add coreutils jq g++ git make python3 linux-headers eudev-dev libusb-dev
 WORKDIR /src
 
 # ------------------- Copy package.json and yarn.lock files ------------------ #
-FROM core as yarn_lock
+FROM base as yarn_lock
 COPY . .
 RUN mkdir /out \
-  && find . -maxdepth 1  -name "package.json" -o -name "yarn.lock" -o -name ".npmrc" | \
-    xargs cp -v --parents -t /out
-
-# ----------------- Copy tsconfig.json and nx.dev json files ----------------- #
-FROM core as config_files
-COPY . .
-RUN mkdir /out \
-  && find . -name "tsconfig*.json" -o -name "package.json" -o -name "nx.json" -o -name "workspace.json" -o -name ".eslintrc.json" | \
-    xargs cp -v --parents -t /out
-
-# ---------------------------- Base builder image ---------------------------- #
-FROM node:${NODE_VERSION}-alpine as base
-RUN apk add coreutils g++ git make python3 linux-headers eudev-dev libusb-dev
-WORKDIR /src
+  && JQ_EXPR='{ name, version, license, private, workspaces, resolutions, dependencies, devDependencies,' \
+  && JQ_EXPR="${JQ_EXPR} scripts: .scripts | { preinstall, install, postinstall } | with_entries(select(.value != null)) }" \
+  && git ls-files | grep "package.json" | tr '\n' '\0' | \
+    xargs -0 -n1 sh -c 'x="/out/$1" && mkdir -p "${x%/*}" && cat "$1" | jq "'"$JQ_EXPR"'" > "$x"' -s \
+  && cp yarn.lock /out
 
 #RUN yarn set version berry
 #RUN yarn plugin import typescript
@@ -31,7 +22,6 @@ WORKDIR /src
 # ------------------ Builder image with everything installed ----------------- #
 FROM base as install
 COPY --from=yarn_lock /out .
-COPY --from=config_files /out .
 RUN yarn install --frozen-lock
 RUN mkdir -p /out
 

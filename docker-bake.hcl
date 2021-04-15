@@ -31,7 +31,6 @@ target "install" {
   platforms = ["linux/amd64"]
   target = "install"
   cache-from = [
-    "type=registry,ref=${REGISTRY_NAME}/base-cache:${YARN_LOCK_SHA256}",
     "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}"
   ]
   cache-to=[
@@ -95,6 +94,7 @@ target "borrowing" {
   }
   target = "borrowing"
   cache-from = [
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}",
     "type=registry,ref=${REGISTRY_NAME}/borrowing-cache:${TAG}"
   ]
   cache-to= [
