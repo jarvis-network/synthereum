@@ -2,6 +2,6 @@
   "name": "@jarvis-network/sol2ts-code-gen",
   "version": "0.0.1",
   "bin": {
-    "sol2ts-code-gen": "./dist/index.bin.js"
+    "sol2ts-code-gen": "./cli"
   }
 }

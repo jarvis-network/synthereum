@@ -15,7 +15,7 @@
     "build": "yarn build:solidity && yarn build:typechain && yarn build:typechain-index && yarn build:tsc",
     "build:solidity": "truffle compile",
     "build:typechain": "typechain --target web3-v1 --outDir ./src/contracts/typechain './build/contracts/*.json' | { head -n 2; tail -n1; }",
-    "build:typechain-index": "sol2ts-code-gen ./src/contracts",
+    "build:typechain-index": "node ../sol2ts-code-gen/cli ./src/contracts",
     "build:tsc": "tsc -p ./tsconfig.json",
     "migrate-finder": "MIGRATION_TYPE=finder hardhat test ./test/correct-migration.js",
     "migrate-deployer": "MIGRATION_TYPE=deployer hardhat test ./test/correct-migration.js",
