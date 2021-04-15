@@ -36,12 +36,7 @@ stages:
     - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
     - docker buildx bake ${TARGET} --print
     - docker buildx bake ${TARGET} --progress=plain
-    - docker run --rm
-      --env CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-      --env CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
-      --entrypoint /src/scripts/ci_test_affected.bash
-      "${REGISTRY}/${TARGET}:${TAG}"
-      lint
+    - docker run --rm -t "${REGISTRY}/${TARGET}:${TAG}" yarn lint:all
 
 🐳 build & push dapps:
   <<: *job-config
