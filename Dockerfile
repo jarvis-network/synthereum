@@ -39,54 +39,11 @@ RUN mkdir -p /out
 FROM install as installed-project
 COPY . .
 
-# ----------------- Build @jarvis-network/web3-utils library ----------------- #
-FROM install as build-web3-utils
-COPY libs/web3-utils libs/web3-utils
-RUN yarn nx build web3-utils
-RUN cp -r libs/web3-utils/dist/* /out
-
-# ------------ Build @jarvis-network/synthereum-contracts library ------------ #
-FROM install as build-contract
-COPY libs/contracts libs/contracts
-COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
-RUN yarn nx build contracts
-RUN cp -r libs/contracts/dist /out
-
-# ------------------------------ Build Validator ----------------------------- #
-FROM install as build-validator
-WORKDIR /src
-COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
-COPY libs/validator-lib libs/validator-lib
-RUN yarn nx build validator-lib
-COPY apps/validator apps/validator
-RUN yarn nx build validator
-RUN cp -r apps/validator/dist /out
-
-# ----------------- Build @jarvis-network/ui library ----------------- #
-FROM install as build-ui
-COPY libs/ui libs/ui
-RUN yarn nx build ui
-RUN cp -r libs/ui/dist /out && ls -lah /out
-
-# ----------------- Build @jarvis-network/app-toolkit library ----------------- #
-FROM install as build-toolkit
-COPY --from=build-web3-utils /out  node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
-COPY --from=build-ui /out node_modules/@jarvis-network/ui
-COPY libs/toolkit libs/toolkit
-RUN yarn nx build toolkit
-RUN cp -r libs/toolkit/dist /out && ls -lah /out
-
 # ---------------------------------------------------------------------------- #
 #                                Build Frontend base                           #
 # ---------------------------------------------------------------------------- #
 
-FROM install as build-frontend-base
-COPY --from=build-ui /out node_modules/@jarvis-network/ui
-COPY --from=build-toolkit /out node_modules/@jarvis-network/app-toolkit
-COPY --from=build-web3-utils /out node_modules/@jarvis-network/web3-utils
-COPY --from=build-contract /out node_modules/@jarvis-network/synthereum-contracts
+FROM installed-project as build-frontend-base
 # Keep in sync with docker-bake.hcl and apps/frontend/.env.example
 ARG NEXT_PUBLIC_ONBOARD_API_KEY
 ARG NEXT_PUBLIC_NETWORK_ID
@@ -100,15 +57,13 @@ ARG NEXT_PUBLIC_SUPPORTED_ASSETS
 # ------------------------------ Build Frontend ------------------------------ #
 
 FROM build-frontend-base as build-frontend
-COPY apps/frontend apps/frontend
-RUN yarn nx build frontend
+RUN yarn build frontend
 RUN cp -r apps/frontend/out /out
 
 # ------------------------------ Build Borrowing ------------------------------ #
 
 FROM build-frontend-base as build-borrowing
-COPY apps/borrowing apps/borrowing
-RUN yarn nx build borrowing
+RUN yarn build borrowing
 RUN cp -r apps/borrowing/out /out
 
 # ---------------------------------------------------------------------------- #
