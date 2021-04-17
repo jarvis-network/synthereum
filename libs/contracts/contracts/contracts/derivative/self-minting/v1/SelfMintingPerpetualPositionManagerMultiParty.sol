@@ -110,19 +110,22 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   event PositionCreated(
     address indexed sponsor,
     uint256 indexed collateralAmount,
-    uint256 indexed tokenAmount
+    uint256 indexed tokenAmount,
+    uint256 feeAmount
   );
   event NewSponsor(address indexed sponsor);
   event EndedSponsorPosition(address indexed sponsor);
   event Redeem(
     address indexed sponsor,
     uint256 indexed collateralAmount,
-    uint256 indexed tokenAmount
+    uint256 indexed tokenAmount,
+    uint256 feeAmount
   );
   event Repay(
     address indexed sponsor,
     uint256 indexed numTokensRepaid,
-    uint256 indexed newTokenCount
+    uint256 indexed newTokenCount,
+    uint256 feeAmount
   );
   event EmergencyShutdown(address indexed caller, uint256 shutdownTimestamp);
   event SettleEmergencyShutdown(
@@ -461,6 +464,10 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
         .rawTotalPositionCollateral
         .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
         .rawValue;
+  }
+
+  function totalTokensOutstanding() external view returns (uint256) {
+    return globalPositionData.totalTokensOutstanding.rawValue;
   }
 
   function emergencyShutdownPrice()

@@ -62,19 +62,22 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
   event PositionCreated(
     address indexed sponsor,
     uint256 indexed collateralAmount,
-    uint256 indexed tokenAmount
+    uint256 indexed tokenAmount,
+    uint256 feeAmount
   );
   event NewSponsor(address indexed sponsor);
   event EndedSponsorPosition(address indexed sponsor);
   event Redeem(
     address indexed sponsor,
     uint256 indexed collateralAmount,
-    uint256 indexed tokenAmount
+    uint256 indexed tokenAmount,
+    uint256 feeAmount
   );
   event Repay(
     address indexed sponsor,
     uint256 indexed numTokensRepaid,
-    uint256 indexed newTokenCount
+    uint256 indexed newTokenCount,
+    uint256 feeAmount
   );
   event EmergencyShutdown(address indexed caller, uint256 shutdownTimestamp);
   event SettleEmergencyShutdown(
@@ -238,19 +241,28 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     FixedPoint.Unsigned memory feePercentage,
     FeePayerPoolParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
+    feeAmount = _checkAndCalculateDaoFee(
+      globalPositionData,
+      positionManagerData,
+      numTokens,
+      feePercentage,
+      feePayerData
+    );
+    FixedPoint.Unsigned memory netCollateralAmount =
+      collateralAmount.sub(feeAmount);
     require(
       (_checkCollateralization(
         globalPositionData,
         positionData
           .rawCollateral
           .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-          .add(collateralAmount),
+          .add(netCollateralAmount),
         positionData.tokensOutstanding.add(numTokens),
         feePayerData
       ) ||
         _checkCollateralization(
           globalPositionData,
-          collateralAmount,
+          netCollateralAmount,
           numTokens,
           feePayerData
         )),
@@ -261,6 +273,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       positionData.withdrawalRequestPassTimestamp == 0,
       'Pending withdrawal'
     );
+
     if (positionData.tokensOutstanding.isEqual(0)) {
       require(
         numTokens.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
@@ -269,18 +282,10 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       emit NewSponsor(msg.sender);
     }
 
-    feeAmount = _checkAndCalculateDaoFee(
-      globalPositionData,
-      positionManagerData,
-      numTokens,
-      feePercentage,
-      feePayerData
-    );
-
     _incrementCollateralBalances(
       positionData,
       globalPositionData,
-      collateralAmount,
+      netCollateralAmount,
       feePayerData
     );
 
@@ -299,7 +304,8 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     emit PositionCreated(
       msg.sender,
       collateralAmount.rawValue,
-      numTokens.rawValue
+      numTokens.rawValue,
+      feeAmount.rawValue
     );
 
     IERC20 collateralCurrency = feePayerData.collateralCurrency;
@@ -307,7 +313,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
     collateralCurrency.safeTransferFrom(
       msg.sender,
       address(this),
-      (collateralAmount.add(feeAmount)).rawValue
+      (collateralAmount).rawValue
     );
 
     collateralCurrency.safeTransfer(
@@ -315,10 +321,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       feeAmount.rawValue
     );
 
-    require(
-      positionManagerData.tokenCurrency.mint(msg.sender, numTokens.rawValue),
-      'Minting synthetic tokens failed'
-    );
+    positionManagerData.tokenCurrency.mint(msg.sender, numTokens.rawValue);
   }
 
   function redeeem(
@@ -390,7 +393,12 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
 
     amountWithdrawn = totAmountWithdrawn.sub(feeAmount);
 
-    emit Redeem(msg.sender, amountWithdrawn.rawValue, numTokens.rawValue);
+    emit Redeem(
+      msg.sender,
+      amountWithdrawn.rawValue,
+      numTokens.rawValue,
+      feeAmount.rawValue
+    );
 
     IERC20 collateralCurrency = feePayerData.collateralCurrency;
 
@@ -455,7 +463,12 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
 
     checkDepositLimit(positionData, positionManagerData, feePayerData);
 
-    emit Repay(msg.sender, numTokens.rawValue, newTokenCount.rawValue);
+    emit Repay(
+      msg.sender,
+      numTokens.rawValue,
+      newTokenCount.rawValue,
+      feeAmount.rawValue
+    );
 
     feePayerData.collateralCurrency.safeTransfer(
       positionManagerData._getDaoFeeRecipient(),
