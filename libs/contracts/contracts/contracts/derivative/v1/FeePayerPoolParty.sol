@@ -90,6 +90,7 @@ abstract contract FeePayerPoolParty is
   function collateralCurrency()
     public
     view
+    virtual
     nonReentrantView()
     returns (IERC20)
   {

@@ -9,7 +9,7 @@ import {ISynthereumFinder} from '../../../../core/interfaces/IFinder.sol';
 interface ISelfMintingDerivativeDeployment {
   function synthereumFinder() external view returns (ISynthereumFinder finder);
 
-  function collateralToken() external view returns (IERC20 collateral);
+  function collateralCurrency() external view returns (IERC20 collateral);
 
   function tokenCurrency() external view returns (IERC20 syntheticCurrency);
 

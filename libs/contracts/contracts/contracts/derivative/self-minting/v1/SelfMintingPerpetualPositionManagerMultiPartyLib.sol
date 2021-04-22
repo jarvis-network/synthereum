@@ -890,7 +890,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
       globalPositionData.totalTokensOutstanding.isLessThanOrEqual(
         positionManagerData._getCapMintAmount()
       ),
-      'Total minting overcomes mint limit'
+      'Total amount minted overcomes mint limit'
     );
   }
 

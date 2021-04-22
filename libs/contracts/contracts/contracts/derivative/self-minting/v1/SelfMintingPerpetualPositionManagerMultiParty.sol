@@ -154,11 +154,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     _;
   }
 
-  modifier onlySelfMintingController() {
-    _onlySelfMintingController();
-    _;
-  }
-
   constructor(PositionManagerParams memory _positionManagerData)
     public
     FeePayerPoolParty(
@@ -373,7 +368,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
           SynthereumInterfaces.Manager
         ) ||
         msg.sender == _getFinancialContractsAdminAddress(),
-      'Caller must be a pool or the UMA governor'
+      'Caller must be a Synthereum manager or the UMA governor'
     );
     positionManagerData.emergencyShutdownTimestamp = getCurrentTime();
     positionManagerData.requestOraclePrice(
@@ -430,15 +425,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     synthToken = positionManagerData.tokenCurrency;
   }
 
-  function collateralToken()
-    external
-    view
-    override
-    returns (IERC20 collateral)
-  {
-    collateral = feePayerData.collateralCurrency;
-  }
-
   function syntheticTokenSymbol()
     external
     view
@@ -479,14 +465,14 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     return positionManagerData.emergencyShutdownPrice.rawValue;
   }
 
-  function calculateDaoFee(FixedPoint.Unsigned memory numTokens)
-    external
-    view
-    returns (uint256)
-  {
+  function calculateDaoFee(uint256 numTokens) external view returns (uint256) {
     return
       positionManagerData
-        .calculateDaoFee(globalPositionData, numTokens, feePayerData)
+        .calculateDaoFee(
+        globalPositionData,
+        FixedPoint.Unsigned(numTokens),
+        feePayerData
+      )
         .rawValue;
   }
 
@@ -507,6 +493,15 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
 
   function capDepositRatio() external view returns (uint256 capDeposit) {
     capDeposit = positionManagerData.capDepositRatio().rawValue;
+  }
+
+  function collateralCurrency()
+    public
+    view
+    override(ISelfMintingDerivativeDeployment, FeePayerPoolParty)
+    returns (IERC20 collateral)
+  {
+    collateral = feePayerData.collateralCurrency;
   }
 
   function _pfc()
@@ -581,15 +576,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     require(
       _getPositionData(sponsor).withdrawalRequestPassTimestamp == 0,
       'Pending withdrawal'
-    );
-  }
-
-  function _onlySelfMintingController() internal view {
-    require(
-      positionManagerData.synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.SelfMintingController
-      ) == msg.sender,
-      'Sender must be self-minting controller'
     );
   }
 

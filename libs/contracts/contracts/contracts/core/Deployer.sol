@@ -222,7 +222,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     ISelfMintingRegistry selfMintingRegistry = getSelfMintingRegistry();
     selfMintingRegistry.registerSelfMintingDerivative(
       selfMintingDerivative.syntheticTokenSymbol(),
-      selfMintingDerivative.collateralToken(),
+      selfMintingDerivative.collateralCurrency(),
       selfMintingDerVersion,
       address(selfMintingDerivative)
     );

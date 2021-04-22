@@ -310,7 +310,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     require(
       selfMintingRegistry.isSelfMintingDerivativeDeployed(
         selfMintingDerivative.syntheticTokenSymbol(),
-        selfMintingDerivative.collateralToken(),
+        selfMintingDerivative.collateralCurrency(),
         selfMintingDerivative.version(),
         address(selfMintingDerivative)
       ),
