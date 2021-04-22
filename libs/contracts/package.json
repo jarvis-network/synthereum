@@ -31,7 +31,7 @@
     "add-only-derivative": "MIGRATION_TYPE=add_only_derivative hardhat test ./test/correct-migration.js",
     "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
     "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test",
-    "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat coverage",
+    "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat coverage --solcoverjs ./test/.solcover.js",
     "verify": "./utils/verify.d",
     "start:local-fork": "./local-fork.sh"
   },
