@@ -21,7 +21,7 @@ const TestnetERC20 = artifacts.require('TestnetERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const FinancialContractsAdmin = artifacts.require('FinancialContractsAdmin');
 const Timer = artifacts.require('Timer');
-const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const PerpetualPositionManagerPoolPartyLib = artifacts.require(
   'PerpetualPositionManagerPoolPartyLib',
 );
@@ -202,14 +202,14 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       excessTokenBeneficiary: beneficiary, // _excessTokenBeneficiary
     };
 
-    const feePayerPoolPartyLib = await FeePayerPoolPartyLib.deployed();
+    const feePayerPartyLib = await FeePayerPartyLib.deployed();
     const perpetualPositionManagerPoolPartyLib = await PerpetualPositionManagerPoolPartyLib.deployed();
     if (
-      FeePayerPoolPartyLib.setAsDeployed ||
+      FeePayerPartyLib.setAsDeployed ||
       PerpetualPositionManagerPoolPartyLib.setAsDeployed
     ) {
       try {
-        await PerpetualPositionManagerPoolParty.link(feePayerPoolPartyLib);
+        await PerpetualPositionManagerPoolParty.link(feePayerPartyLib);
         await PerpetualPositionManagerPoolParty.link(
           perpetualPositionManagerPoolPartyLib,
         );
@@ -219,8 +219,8 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     } else {
       // Truffle
       await PerpetualPositionManagerPoolParty.link(
-        FeePayerPoolPartyLib,
-        feePayerPoolPartyLib.address,
+        FeePayePartyLib,
+        feePayerPartyLib.address,
       );
       await PerpetualPositionManagerPoolParty.link(
         PerpetualPositionManagerPoolPartyLib,

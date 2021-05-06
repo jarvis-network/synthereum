@@ -21,7 +21,7 @@ const SynthereumManager = artifacts.require('SynthereumManager');
 const FinancialContractsAdmin = artifacts.require('FinancialContractsAdmin');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const Timer = artifacts.require('Timer');
-const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const SelfMintingPerpetualPositionManagerMultiPartyLib = artifacts.require(
   'SelfMintingPerpetualPositionManagerMultiPartyLib',
 );
@@ -239,16 +239,16 @@ contract('SelfMintingPerpetualPositionManagerMultiParty', function (accounts) {
       synthereumFinder: synthereumFinderInstance.address,
     };
 
-    feePayerPoolPartyLib = await FeePayerPoolPartyLib.deployed();
+    feePayerPartyLib = await FeePayerPartyLib.deployed();
     synthereumManagerInstance = await SynthereumManager.deployed();
     selfMintingPerpetualPositionManagerMultiPartyLib = await SelfMintingPerpetualPositionManagerMultiPartyLib.deployed();
     if (
-      FeePayerPoolPartyLib.setAsDeployed ||
+      FeePayerPartyLib.setAsDeployed ||
       SelfMintingPerpetualPositionManagerMultiPartyLib.setAsDeployed
     ) {
       try {
         await SelfMintingPerpetualPositionManagerMultiParty.link(
-          feePayerPoolPartyLib,
+          feePayerPartyLib,
         );
         await SelfMintingPerpetualPositionManagerMultiParty.link(
           selfMintingPerpetualPositionManagerMultiPartyLib,
@@ -259,8 +259,8 @@ contract('SelfMintingPerpetualPositionManagerMultiParty', function (accounts) {
     } else {
       // Truffle
       await SelfMintingPerpetualPositionManagerMultiParty.link(
-        FeePayerPoolPartyLib,
-        feePayerPoolPartyLib.address,
+        FeePayerPartyLib,
+        feePayerPartyLib.address,
       );
       await SelfMintingPerpetualPositionManagerMultiParty.link(
         SelfMintingPerpetualPositionManagerMultiPartyLib,

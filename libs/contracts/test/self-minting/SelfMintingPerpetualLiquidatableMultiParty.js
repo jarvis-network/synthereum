@@ -43,7 +43,7 @@ const MockOracle = artifacts.require('MockOracle');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const Timer = artifacts.require('Timer');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const SelfMintingPerpetualPositionManagerMultiPartyLib = artifacts.require(
   'SelfMintingPerpetualPositionManagerMultiPartyLib',
 );
@@ -201,23 +201,21 @@ contract('SelfMintingPerpetualLiquidatableMultiParty', function (accounts) {
       liquidatableParams,
     };
 
-    const feePayerPoolPartyLib = await FeePayerPoolPartyLib.deployed();
-    const perpetualPositionManagerPoolPartyLib = await SelfMintingPerpetualPositionManagerMultiPartyLib.deployed();
-    const perpetualLiquidatablePoolPartyLib = await SelfMintingPerpetualLiquidatableMultiPartyLib.deployed();
+    const feePayerPartyLib = await FeePayerPartyLib.deployed();
+    const perpetualPositionManagerMultyPartyLib = await SelfMintingPerpetualPositionManagerMultiPartyLib.deployed();
+    const perpetualLiquidatableMultyPartyLib = await SelfMintingPerpetualLiquidatableMultiPartyLib.deployed();
     if (
-      FeePayerPoolPartyLib.setAsDeployed ||
+      FeePayerPartyLib.setAsDeployed ||
       SelfMintingPerpetualPositionManagerMultiPartyLib.setAsDeployed ||
       SelfMintingPerpetualLiquidatableMultiPartyLib.setAsDeployed
     ) {
       try {
+        await SelfMintingPerpetualLiquidatableMultiParty.link(feePayerPartyLib);
         await SelfMintingPerpetualLiquidatableMultiParty.link(
-          feePayerPoolPartyLib,
+          perpetualPositionManagerMultyPartyLib,
         );
         await SelfMintingPerpetualLiquidatableMultiParty.link(
-          perpetualPositionManagerPoolPartyLib,
-        );
-        await SelfMintingPerpetualLiquidatableMultiParty.link(
-          perpetualLiquidatablePoolPartyLib,
+          perpetualLiquidatableMultyPartyLib,
         );
       } catch (e) {
         // Allow this to fail in the Buidler case.
@@ -225,16 +223,16 @@ contract('SelfMintingPerpetualLiquidatableMultiParty', function (accounts) {
     } else {
       // Truffle
       await SelfMintingPerpetualLiquidatableMultiParty.link(
-        FeePayerPoolPartyLib,
-        feePayerPoolPartyLib.address,
+        FeePayerPartyLib,
+        feePayerPartyLib.address,
       );
       await SelfMintingPerpetualLiquidatableMultiParty.link(
         SelfMintingPerpetualPositionManagerMultiPartyLib,
-        perpetualPositionManagerPoolPartyLib.address,
+        perpetualPositionManagerMultyPartyLib.address,
       );
       await SelfMintingPerpetualLiquidatableMultiParty.link(
         SelfMintingPerpetualLiquidatableMultiPartyLib,
-        perpetualLiquidatablePoolPartyLib.address,
+        perpetualLiquidatableMultyPartyLib.address,
       );
     }
 

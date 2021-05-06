@@ -7,7 +7,7 @@ import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 
 import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import './FeePayerPoolPartyLib.sol';
+import './FeePayerPartyLib.sol';
 import '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
 
 import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
@@ -15,15 +15,11 @@ import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInte
 import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
 
-abstract contract FeePayerPoolParty is
-  AdministrateeInterface,
-  Testable,
-  Lockable
-{
+abstract contract FeePayerParty is AdministrateeInterface, Testable, Lockable {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
-  using FeePayerPoolPartyLib for FeePayerData;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FeePayerData;
   using SafeERC20 for IERC20;
 
   struct FeePayerData {

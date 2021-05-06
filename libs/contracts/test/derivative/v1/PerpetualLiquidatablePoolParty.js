@@ -24,7 +24,7 @@ const Finder = artifacts.require('Finder');
 const MockOracle = artifacts.require('MockOracle');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const Timer = artifacts.require('Timer');
-const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const PerpetualPositionManagerPoolPartyLib = artifacts.require(
   'PerpetualPositionManagerPoolPartyLib',
 );
@@ -184,16 +184,16 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       liquidatableParams,
     };
 
-    const feePayerPoolPartyLib = await FeePayerPoolPartyLib.deployed();
+    const feePayerPartyLib = await FeePayerPartyLib.deployed();
     const perpetualPositionManagerPoolPartyLib = await PerpetualPositionManagerPoolPartyLib.deployed();
     const perpetualLiquidatablePoolPartyLib = await PerpetualLiquidatablePoolPartyLib.deployed();
     if (
-      FeePayerPoolPartyLib.setAsDeployed ||
+      FeePayerPartyLib.setAsDeployed ||
       PerpetualPositionManagerPoolPartyLib.setAsDeployed ||
       PerpetualLiquidatablePoolPartyLib.setAsDeployed
     ) {
       try {
-        await LiquidatablePoolParty.link(feePayerPoolPartyLib);
+        await LiquidatablePoolParty.link(feePayerPartyLib);
         await LiquidatablePoolParty.link(perpetualPositionManagerPoolPartyLib);
         await LiquidatablePoolParty.link(perpetualLiquidatablePoolPartyLib);
       } catch (e) {
@@ -202,8 +202,8 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
     } else {
       // Truffle
       await LiquidatablePoolParty.link(
-        FeePayerPoolPartyLib,
-        feePayerPoolPartyLib.address,
+        FeePayerPartyLib,
+        feePayerPartyLib.address,
       );
       await LiquidatablePoolParty.link(
         PerpetualPositionManagerPoolPartyLib,

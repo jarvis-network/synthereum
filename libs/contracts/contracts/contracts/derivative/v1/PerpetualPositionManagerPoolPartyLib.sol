@@ -11,7 +11,7 @@ import '../common/interfaces/MintableBurnableIERC20.sol';
 import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
 import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
 import './PerpetualPositionManagerPoolParty.sol';
-import './FeePayerPoolPartyLib.sol';
+import '../common/FeePayerPartyLib.sol';
 
 library PerpetualPositionManagerPoolPartyLib {
   using SafeMath for uint256;
@@ -20,9 +20,9 @@ library PerpetualPositionManagerPoolPartyLib {
   using SafeERC20 for MintableBurnableIERC20;
   using PerpetualPositionManagerPoolPartyLib for PerpetualPositionManagerPoolParty.PositionData;
   using PerpetualPositionManagerPoolPartyLib for PerpetualPositionManagerPoolParty.PositionManagerData;
-  using PerpetualPositionManagerPoolPartyLib for FeePayerPoolParty.FeePayerData;
+  using PerpetualPositionManagerPoolPartyLib for FeePayerParty.FeePayerData;
   using PerpetualPositionManagerPoolPartyLib for FixedPoint.Unsigned;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
 
   event Deposit(address indexed sponsor, uint256 indexed collateralAmount);
   event Withdrawal(address indexed sponsor, uint256 indexed collateralAmount);
@@ -67,7 +67,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) external {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
@@ -92,7 +92,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
 
@@ -117,7 +117,7 @@ library PerpetualPositionManagerPoolPartyLib {
       storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     uint256 actualTime,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external {
     require(
       collateralAmount.isGreaterThan(0) &&
@@ -142,7 +142,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
     uint256 actualTime,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     require(
       positionData.withdrawalRequestPassTimestamp != 0 &&
@@ -204,7 +204,7 @@ library PerpetualPositionManagerPoolPartyLib {
       storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external {
     require(
       (_checkCollateralization(
@@ -276,7 +276,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     require(
@@ -376,7 +376,7 @@ library PerpetualPositionManagerPoolPartyLib {
       storage globalPositionData,
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     if (
       positionManagerData.emergencyShutdownPrice.isEqual(
@@ -465,7 +465,7 @@ library PerpetualPositionManagerPoolPartyLib {
       storage positionManagerData,
     IERC20 token,
     FixedPoint.Unsigned memory pfcAmount,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amount) {
     FixedPoint.Unsigned memory balance =
       FixedPoint.Unsigned(token.balanceOf(address(this)));
@@ -484,7 +484,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
     uint256 requestedTime,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external {
     feePayerData._getOracle().requestPrice(
       positionManagerData.priceIdentifier,
@@ -501,7 +501,7 @@ library PerpetualPositionManagerPoolPartyLib {
     FixedPoint.Unsigned memory tokensToRemove,
     FixedPoint.Unsigned memory collateralToRemove,
     FixedPoint.Unsigned memory withdrawalAmountToRemove,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) external {
     if (
@@ -548,14 +548,14 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
     uint256 requestedTime,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external view returns (FixedPoint.Unsigned memory price) {
     return _getOraclePrice(positionManagerData, requestedTime, feePayerData);
   }
 
   function decimalsScalingFactor(
     FixedPoint.Unsigned memory oraclePrice,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external view returns (FixedPoint.Unsigned memory scaledPrice) {
     return _decimalsScalingFactor(oraclePrice, feePayerData);
   }
@@ -565,7 +565,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
-    FeePayerPoolParty.FeePayerData memory feePayerData
+    FeePayerParty.FeePayerData memory feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
     positionData.rawCollateral.addCollateral(
       collateralAmount,
@@ -583,7 +583,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
     positionData.rawCollateral.removeCollateral(
       collateralAmount,
@@ -601,7 +601,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
     positionData.rawCollateral.removeCollateral(
       collateralAmount,
@@ -626,7 +626,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionData storage positionData,
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (bool) {
     return
       _checkCollateralization(
@@ -644,7 +644,7 @@ library PerpetualPositionManagerPoolPartyLib {
       storage globalPositionData,
     FixedPoint.Unsigned memory collateral,
     FixedPoint.Unsigned memory numTokens,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (bool) {
     FixedPoint.Unsigned memory global =
       _getCollateralizationRatio(
@@ -679,7 +679,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionData storage positionToLiquidate,
     PerpetualPositionManagerPoolParty.GlobalPositionData
       storage globalPositionData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) internal returns (FixedPoint.Unsigned memory) {
     FixedPoint.Unsigned memory startingGlobalCollateral =
@@ -711,7 +711,7 @@ library PerpetualPositionManagerPoolPartyLib {
   function _getOracleEmergencyShutdownPrice(
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (FixedPoint.Unsigned memory) {
     return
       positionManagerData._getOraclePrice(
@@ -724,7 +724,7 @@ library PerpetualPositionManagerPoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
     uint256 requestedTime,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (FixedPoint.Unsigned memory price) {
     OracleInterface oracle = feePayerData._getOracle();
     require(
@@ -740,7 +740,7 @@ library PerpetualPositionManagerPoolPartyLib {
     return FixedPoint.Unsigned(uint256(oraclePrice));
   }
 
-  function _getOracle(FeePayerPoolParty.FeePayerData storage feePayerData)
+  function _getOracle(FeePayerParty.FeePayerData storage feePayerData)
     internal
     view
     returns (OracleInterface)
@@ -753,7 +753,7 @@ library PerpetualPositionManagerPoolPartyLib {
 
   function _decimalsScalingFactor(
     FixedPoint.Unsigned memory oraclePrice,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (FixedPoint.Unsigned memory scaledPrice) {
     uint8 collateralDecimalsNumber =
       IERC20Standard(address(feePayerData.collateralCurrency)).decimals();

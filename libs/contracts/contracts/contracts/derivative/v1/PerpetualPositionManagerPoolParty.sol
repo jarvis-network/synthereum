@@ -15,10 +15,10 @@ import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/Identifier
 import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
 
-import './FeePayerPoolParty.sol';
+import '../common/FeePayerParty.sol';
 import '../../../@openzeppelin/contracts/access/AccessControl.sol';
 
-contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerPoolParty {
+contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for MintableBurnableIERC20;
@@ -139,7 +139,7 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerPoolParty {
     Roles memory _roles
   )
     public
-    FeePayerPoolParty(
+    FeePayerParty(
       _positionManagerData.collateralAddress,
       _positionManagerData.finderAddress,
       _positionManagerData.timerAddress

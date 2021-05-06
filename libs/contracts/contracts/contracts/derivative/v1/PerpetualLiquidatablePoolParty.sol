@@ -15,7 +15,7 @@ contract PerpetualLiquidatablePoolParty is PerpetualPositionManagerPoolParty {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
   using PerpetualLiquidatablePoolPartyLib for PerpetualPositionManagerPoolParty.PositionData;
   using PerpetualLiquidatablePoolPartyLib for LiquidationData;
 

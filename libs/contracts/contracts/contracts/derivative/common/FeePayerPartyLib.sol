@@ -3,20 +3,20 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import './FeePayerPoolParty.sol';
+import './FeePayerParty.sol';
 import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
 
-library FeePayerPoolPartyLib {
+library FeePayerPartyLib {
   using FixedPoint for FixedPoint.Unsigned;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
 
   event RegularFeesPaid(uint256 indexed regularFee, uint256 indexed lateFee);
   event FinalFeesPaid(uint256 indexed amount);
 
   function payRegularFees(
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     StoreInterface store,
     uint256 time,
     FixedPoint.Unsigned memory collateralPool
@@ -83,7 +83,7 @@ library FeePayerPoolPartyLib {
   }
 
   function payFinalFees(
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     StoreInterface store,
     address payer,
     FixedPoint.Unsigned memory amount

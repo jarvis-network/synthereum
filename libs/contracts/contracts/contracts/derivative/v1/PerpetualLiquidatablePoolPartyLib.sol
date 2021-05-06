@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import './PerpetualPositionManagerPoolPartyLib.sol';
 import './PerpetualLiquidatablePoolParty.sol';
-import './FeePayerPoolPartyLib.sol';
+import '../common/FeePayerPartyLib.sol';
 import '../common/interfaces/MintableBurnableIERC20.sol';
 
 library PerpetualLiquidatablePoolPartyLib {
@@ -14,7 +14,7 @@ library PerpetualLiquidatablePoolPartyLib {
   using SafeERC20 for MintableBurnableIERC20;
   using FixedPoint for FixedPoint.Unsigned;
   using PerpetualPositionManagerPoolPartyLib for PerpetualPositionManagerPoolParty.PositionData;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
   using PerpetualPositionManagerPoolPartyLib for PerpetualPositionManagerPoolParty.PositionManagerData;
   using PerpetualLiquidatablePoolPartyLib for PerpetualLiquidatablePoolParty.LiquidationData;
   using PerpetualPositionManagerPoolPartyLib for FixedPoint.Unsigned;
@@ -101,7 +101,7 @@ library PerpetualLiquidatablePoolPartyLib {
     PerpetualLiquidatablePoolParty.LiquidatableData storage liquidatableData,
     PerpetualLiquidatablePoolParty.LiquidationData[] storage liquidations,
     CreateLiquidationParams memory params,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external returns (CreateLiquidationReturnParams memory returnValues) {
     FixedPoint.Unsigned memory startCollateral;
     FixedPoint.Unsigned memory startCollateralNetOfWithdrawal;
@@ -211,7 +211,7 @@ library PerpetualLiquidatablePoolPartyLib {
     PerpetualLiquidatablePoolParty.LiquidatableData storage liquidatableData,
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   ) external returns (FixedPoint.Unsigned memory totalPaid) {
@@ -249,7 +249,7 @@ library PerpetualLiquidatablePoolPartyLib {
 
     totalPaid = disputeBondAmount.add(disputedLiquidation.finalFee);
 
-    FeePayerPoolParty(address(this)).payFinalFees(
+    FeePayerParty(address(this)).payFinalFees(
       msg.sender,
       disputedLiquidation.finalFee
     );
@@ -266,7 +266,7 @@ library PerpetualLiquidatablePoolPartyLib {
     PerpetualLiquidatablePoolParty.LiquidatableData storage liquidatableData,
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   )
@@ -415,7 +415,7 @@ library PerpetualLiquidatablePoolPartyLib {
   function calculateNetLiquidation(
     PerpetualPositionManagerPoolParty.PositionData storage positionToLiquidate,
     CreateLiquidationParams memory params,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   )
     internal
     view
@@ -456,7 +456,7 @@ library PerpetualLiquidatablePoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
     PerpetualLiquidatablePoolParty.LiquidatableData storage liquidatableData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     CreateLiquidationCollateral memory liquidationCollateralParams
   )
     internal
@@ -500,7 +500,7 @@ library PerpetualLiquidatablePoolPartyLib {
   function burnAndLiquidateFee(
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     FixedPoint.Unsigned memory tokensLiquidated,
     FixedPoint.Unsigned memory finalFeeBond
   ) internal {
@@ -523,7 +523,7 @@ library PerpetualLiquidatablePoolPartyLib {
     PerpetualPositionManagerPoolParty.PositionManagerData
       storage positionManagerData,
     PerpetualLiquidatablePoolParty.LiquidatableData storage liquidatableData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   ) internal {

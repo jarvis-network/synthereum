@@ -38,11 +38,11 @@ import {
 import {
   SelfMintingPerpetualPositionManagerMultiPartyLib
 } from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
-import {FeePayerPoolParty} from '../../v1/FeePayerPoolParty.sol';
+import {FeePayerParty} from '../../common/FeePayerParty.sol';
 
 contract SelfMintingPerpetualPositionManagerMultiParty is
   ISelfMintingDerivativeDeployment,
-  FeePayerPoolParty
+  FeePayerParty
 {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
@@ -156,7 +156,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
 
   constructor(PositionManagerParams memory _positionManagerData)
     public
-    FeePayerPoolParty(
+    FeePayerParty(
       _positionManagerData.collateralAddress,
       _positionManagerData.finderAddress,
       _positionManagerData.timerAddress
@@ -498,7 +498,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   function collateralCurrency()
     public
     view
-    override(ISelfMintingDerivativeDeployment, FeePayerPoolParty)
+    override(ISelfMintingDerivativeDeployment, FeePayerParty)
     returns (IERC20 collateral)
   {
     collateral = feePayerData.collateralCurrency;

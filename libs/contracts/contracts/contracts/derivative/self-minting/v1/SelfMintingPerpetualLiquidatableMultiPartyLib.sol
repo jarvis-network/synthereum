@@ -15,11 +15,11 @@ import {
 import {
   SafeERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import {FeePayerPoolPartyLib} from '../../v1/FeePayerPoolPartyLib.sol';
+import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {
   SelfMintingPerpetualPositionManagerMultiPartyLib
 } from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
-import {FeePayerPoolParty} from '../../v1/FeePayerPoolParty.sol';
+import {FeePayerParty} from '../../common/FeePayerParty.sol';
 import {
   SelfMintingPerpetualLiquidatableMultiParty
 } from './SelfMintingPerpetualLiquidatableMultiParty.sol';
@@ -33,7 +33,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
   using SafeERC20 for MintableBurnableIERC20;
   using FixedPoint for FixedPoint.Unsigned;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionData;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData;
   using SelfMintingPerpetualLiquidatableMultiPartyLib for SelfMintingPerpetualLiquidatableMultiParty.LiquidationData;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for FixedPoint.Unsigned;
@@ -123,7 +123,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     SelfMintingPerpetualLiquidatableMultiParty.LiquidationData[]
       storage liquidations,
     CreateLiquidationParams memory params,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   ) external returns (CreateLiquidationReturnParams memory returnValues) {
     FixedPoint.Unsigned memory startCollateral;
     FixedPoint.Unsigned memory startCollateralNetOfWithdrawal;
@@ -235,7 +235,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       storage liquidatableData,
     SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   ) external returns (FixedPoint.Unsigned memory totalPaid) {
@@ -273,7 +273,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
 
     totalPaid = disputeBondAmount.add(disputedLiquidation.finalFee);
 
-    FeePayerPoolParty(address(this)).payFinalFees(
+    FeePayerParty(address(this)).payFinalFees(
       msg.sender,
       disputedLiquidation.finalFee
     );
@@ -292,7 +292,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       storage liquidatableData,
     SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   )
@@ -446,7 +446,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     SelfMintingPerpetualPositionManagerMultiParty.PositionData
       storage positionToLiquidate,
     CreateLiquidationParams memory params,
-    FeePayerPoolParty.FeePayerData storage feePayerData
+    FeePayerParty.FeePayerData storage feePayerData
   )
     internal
     view
@@ -489,7 +489,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       storage positionManagerData,
     SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
       storage liquidatableData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     CreateLiquidationCollateral memory liquidationCollateralParams
   )
     internal
@@ -533,7 +533,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
   function burnAndLiquidateFee(
     SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     FixedPoint.Unsigned memory tokensLiquidated,
     FixedPoint.Unsigned memory finalFeeBond
   ) internal {
@@ -558,7 +558,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       storage positionManagerData,
     SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
       storage liquidatableData,
-    FeePayerPoolParty.FeePayerData storage feePayerData,
+    FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   ) internal {

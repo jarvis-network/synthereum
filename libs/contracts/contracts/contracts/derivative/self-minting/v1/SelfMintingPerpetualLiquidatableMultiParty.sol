@@ -12,7 +12,7 @@ import {
 import {
   SafeERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import {FeePayerPoolPartyLib} from '../../v1/FeePayerPoolPartyLib.sol';
+import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {
   SelfMintingPerpetualPositionManagerMultiPartyLib
 } from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
@@ -29,7 +29,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   using FixedPoint for FixedPoint.Unsigned;
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
-  using FeePayerPoolPartyLib for FixedPoint.Unsigned;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
   using SelfMintingPerpetualLiquidatableMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionData;
   using SelfMintingPerpetualLiquidatableMultiPartyLib for LiquidationData;
 

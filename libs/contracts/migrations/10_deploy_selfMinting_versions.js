@@ -7,7 +7,7 @@ const { getExistingInstance } = require('../dist/migration-utils/deployment');
 const umaContracts = require('../data/uma-contract-dependencies.json');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const SelfMintingPerpetualLiquidatableMultiPartyLib = artifacts.require(
   'SelfMintingPerpetualLiquidatableMultiPartyLib',
 );
@@ -94,31 +94,31 @@ module.exports = async function (deployer, network, accounts) {
         .send({ from: keys.deployer });
     }
     //hardat
-    if (FeePayerPoolPartyLib.setAsDeployed) {
-      const feePayerPoolPartyLib = await FeePayerPoolPartyLib.at(
-        (await getExistingInstance(web3, FeePayerPoolPartyLib)).options.address,
+    if (FeePayerPartyLib.setAsDeployed) {
+      const feePayerPartyLib = await FeePayerPartyLib.at(
+        (await getExistingInstance(web3, FeePayerPartyLib)).options.address,
       );
 
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
         await SelfMintingPerpetualPositionManagerMultiPartyLib.link(
-          feePayerPoolPartyLib,
+          feePayerPartyLib,
         );
         await SelfMintingPerpetualLiquidatableMultiPartyLib.link(
-          feePayerPoolPartyLib,
+          feePayerPartyLib,
         );
-        await SelfMintingPerpetualMultiPartyLib.link(feePayerPoolPartyLib);
+        await SelfMintingPerpetualMultiPartyLib.link(feePayerPartyLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
     } else {
       // Truffle
-      await deploy(deployer, network, FeePayerPoolPartyLib, {
+      await deploy(deployer, network, FeePayerPartyLib, {
         from: keys.deployer,
         overwrite: false,
       });
-      await deployer.link(FeePayerPoolPartyLib, [
+      await deployer.link(FeePayerPartyLib, [
         SelfMintingPerpetualPositionManagerMultiPartyLib,
         SelfMintingPerpetualLiquidatableMultiPartyLib,
         SelfMintingPerpetualMultiPartyLib,

@@ -7,7 +7,7 @@ const { getExistingInstance } = require('../dist/migration-utils/deployment');
 const umaContracts = require('../data/uma-contract-dependencies.json');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const FeePayerPoolPartyLib = artifacts.require('FeePayerPoolPartyLib');
+const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const PerpetualLiquidatablePoolPartyLib = artifacts.require(
   'PerpetualLiquidatablePoolPartyLib',
 );
@@ -114,29 +114,29 @@ module.exports = async function (deployer, network, accounts) {
       SynthereumSyntheticTokenFactory,
     );
     //hardat
-    if (FeePayerPoolPartyLib.setAsDeployed) {
-      const { contract: feePayerPoolPartyLib } = await deploy(
+    if (FeePayerPartyLib.setAsDeployed) {
+      const { contract: feePayerPartyLib } = await deploy(
         deployer,
         network,
-        FeePayerPoolPartyLib,
+        FeePayerPartyLib,
         { from: keys.deployer },
       );
 
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
-        await PerpetualPositionManagerPoolPartyLib.link(feePayerPoolPartyLib);
-        await PerpetualLiquidatablePoolPartyLib.link(feePayerPoolPartyLib);
-        await PerpetualPoolPartyLib.link(feePayerPoolPartyLib);
+        await PerpetualPositionManagerPoolPartyLib.link(feePayerPartyLib);
+        await PerpetualLiquidatablePoolPartyLib.link(feePayerPartyLib);
+        await PerpetualPoolPartyLib.link(feePayerPartyLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
     } else {
       // Truffle
-      await deploy(deployer, network, FeePayerPoolPartyLib, {
+      await deploy(deployer, network, FeePayerPartyLib, {
         from: keys.deployer,
       });
-      await deployer.link(FeePayerPoolPartyLib, [
+      await deployer.link(FeePayerPartyLib, [
         PerpetualPositionManagerPoolPartyLib,
         PerpetualLiquidatablePoolPartyLib,
         PerpetualPoolPartyLib,
