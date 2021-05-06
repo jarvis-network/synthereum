@@ -2,11 +2,11 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../common/interfaces/MintableBurnableIERC20.sol';
-import '../../oracle/implementation/ContractCreator.sol';
-import '../../common/implementation/Testable.sol';
-import '../../common/implementation/AddressWhitelist.sol';
-import '../../common/implementation/Lockable.sol';
+import '../common/interfaces/MintableBurnableIERC20.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/ContractCreator.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 import '../common/MintableBurnableTokenFactory.sol';
 import './PerpetualPoolPartyLib.sol';
 

@@ -2,11 +2,11 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../common/implementation/FixedPoint.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import './PerpetualPositionManagerPoolPartyLib.sol';
 import './PerpetualLiquidatablePoolParty.sol';
-import '../common/FeePayerPoolPartyLib.sol';
-import '../../common/interfaces/MintableBurnableIERC20.sol';
+import './FeePayerPoolPartyLib.sol';
+import '../common/interfaces/MintableBurnableIERC20.sol';
 
 library PerpetualLiquidatablePoolPartyLib {
   using SafeMath for uint256;

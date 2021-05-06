@@ -2,8 +2,8 @@
 pragma solidity ^0.6.0;
 
 import './MintableBurnableSyntheticToken.sol';
-import '../../common/interfaces/MintableBurnableIERC20.sol';
-import '../../common/implementation/Lockable.sol';
+import './interfaces/MintableBurnableIERC20.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 
 contract MintableBurnableTokenFactory is Lockable {
   function createToken(

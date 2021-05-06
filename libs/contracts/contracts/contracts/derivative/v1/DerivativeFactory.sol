@@ -6,9 +6,7 @@ import {
 } from '../../core/interfaces/IDeploymentSignature.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  PerpetualPoolPartyCreator
-} from '../../../@jarvis-network/uma-core/contracts/financial-templates/perpetual-poolParty/PerpetutalPoolPartyCreator.sol';
+import {PerpetualPoolPartyCreator} from './PerpetutalPoolPartyCreator.sol';
 
 contract SynthereumDerivativeFactory is
   PerpetualPoolPartyCreator,

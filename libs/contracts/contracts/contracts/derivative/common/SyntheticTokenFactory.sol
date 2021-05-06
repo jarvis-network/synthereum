@@ -5,13 +5,9 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumFactoryVersioning
 } from '../../core/interfaces/IFactoryVersioning.sol';
-import {
-  MintableBurnableIERC20
-} from '../../../@jarvis-network/uma-core/contracts/common/interfaces/MintableBurnableIERC20.sol';
+import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  MintableBurnableTokenFactory
-} from '../../../@jarvis-network/uma-core/contracts/financial-templates/common/MintableBurnableTokenFactory.sol';
+import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 
 contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
   address public synthereumFinder;

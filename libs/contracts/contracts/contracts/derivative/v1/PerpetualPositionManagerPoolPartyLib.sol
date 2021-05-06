@@ -2,16 +2,16 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../../../@openzeppelin/contracts/math/SafeMath.sol';
-import '../../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '../../../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import '../../common/interfaces/IERC20Standard.sol';
-import '../../common/implementation/FixedPoint.sol';
-import '../../common/interfaces/MintableBurnableIERC20.sol';
-import '../../oracle/interfaces/OracleInterface.sol';
-import '../../oracle/implementation/Constants.sol';
+import '../../../@openzeppelin/contracts/math/SafeMath.sol';
+import '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/interfaces/IERC20Standard.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import '../common/interfaces/MintableBurnableIERC20.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
 import './PerpetualPositionManagerPoolParty.sol';
-import '../common/FeePayerPoolPartyLib.sol';
+import './FeePayerPoolPartyLib.sol';
 
 library PerpetualPositionManagerPoolPartyLib {
   using SafeMath for uint256;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.0;
 
-import '../../../../../@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '../../../../../@openzeppelin/contracts/access/AccessControl.sol';
-import '../interfaces/MintableBurnableIERC20.sol';
+import '../../../@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import '../../../@openzeppelin/contracts/access/AccessControl.sol';
+import './interfaces/MintableBurnableIERC20.sol';
 
 contract MintableBurnableERC20 is ERC20, MintableBurnableIERC20, AccessControl {
   bytes32 public constant MINTER_ROLE = keccak256('Minter');

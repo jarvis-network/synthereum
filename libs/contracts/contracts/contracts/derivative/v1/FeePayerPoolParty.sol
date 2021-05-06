@@ -2,18 +2,18 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '../../../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 
-import '../../common/implementation/Lockable.sol';
-import '../../common/implementation/FixedPoint.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import './FeePayerPoolPartyLib.sol';
-import '../../common/implementation/Testable.sol';
+import '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
 
-import '../../oracle/interfaces/StoreInterface.sol';
-import '../../oracle/interfaces/FinderInterface.sol';
-import '../../oracle/interfaces/AdministrateeInterface.sol';
-import '../../oracle/implementation/Constants.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
+import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
 
 abstract contract FeePayerPoolParty is
   AdministrateeInterface,
