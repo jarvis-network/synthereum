@@ -18,8 +18,8 @@ contract SelfMintingDerivativeFactory is
   bytes4 public override deploymentSignature;
 
   constructor(
-    address _synthereumFinder,
     address _umaFinder,
+    address _synthereumFinder,
     address _timerAddress
   )
     public

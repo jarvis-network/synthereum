@@ -2,7 +2,9 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import './SelfMintingPerpetualLiquidatableMultiParty.sol';
+import {
+  SelfMintingPerpetualLiquidatableMultiParty
+} from './SelfMintingPerpetualLiquidatableMultiParty.sol';
 
 contract SelfMintingPerpetualMultiParty is
   SelfMintingPerpetualLiquidatableMultiParty

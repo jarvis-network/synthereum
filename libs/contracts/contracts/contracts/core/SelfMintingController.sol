@@ -77,7 +77,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     _;
   }
 
-  modifier onlyMaintainerOrSelfMintingDerivative() {
+  modifier onlyMaintainerOrSelfMintingFactory() {
     if (hasRole(MAINTAINER_ROLE, msg.sender)) {
       _;
     } else {
@@ -137,7 +137,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   function setCapMintAmount(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capMintAmounts
-  ) external override onlyMaintainerOrSelfMintingDerivative {
+  ) external override onlyMaintainerOrSelfMintingFactory {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -162,7 +162,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   function setCapDepositRatio(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capDepositRatios
-  ) external override onlyMaintainerOrSelfMintingDerivative {
+  ) external override onlyMaintainerOrSelfMintingFactory {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -187,7 +187,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   function setDaoFee(
     address[] calldata selfMintingDerivatives,
     DaoFee[] calldata daoFees
-  ) external override onlyMaintainerOrSelfMintingDerivative {
+  ) external override onlyMaintainerOrSelfMintingFactory {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(

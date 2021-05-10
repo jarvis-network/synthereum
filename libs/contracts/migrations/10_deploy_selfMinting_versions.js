@@ -235,10 +235,10 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SelfMintingDerivativeFactory,
-      synthereumFinder.options.address,
       umaDeployment
         ? (await getExistingInstance(web3, UmaFinder)).options.address
         : umaContracts[networkId].finderAddress,
+      synthereumFinder.options.address,
       umaDeployment
         ? (await getExistingInstance(web3, Timer)).options.address
         : ZERO_ADDRESS,

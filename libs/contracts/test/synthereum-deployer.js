@@ -1008,8 +1008,8 @@ contract('Synthereum Deployer', function (accounts) {
       );
       const umaFinderInstance = await Finder.deployed();
       const wrongSelfMintingFactory = await SelfMintingDerivativeFactoryMock.new(
-        synthereumFinderAddress,
         umaFinderInstance.address,
+        synthereumFinderAddress,
         ZERO_ADDRESS,
       );
       const registryInstance = await Registry.deployed();
