@@ -211,33 +211,12 @@ contract PerpetualPositionManagerPoolParty is
       .excessTokenBeneficiary;
   }
 
-  function depositTo(
-    address sponsor,
-    FixedPoint.Unsigned memory collateralAmount
-  )
-    public
-    onlyPool()
-    notEmergencyShutdown()
-    noPendingWithdrawal(sponsor)
-    fees()
-    nonReentrant()
-  {
-    PositionData storage positionData = _getPositionData(sponsor);
-
-    positionData.depositTo(
-      globalPositionData,
-      collateralAmount,
-      feePayerData,
-      sponsor
-    );
-  }
-
-  function deposit(FixedPoint.Unsigned memory collateralAmount) public {
+  function deposit(FixedPoint.Unsigned memory collateralAmount) external {
     depositTo(msg.sender, collateralAmount);
   }
 
   function withdraw(FixedPoint.Unsigned memory collateralAmount)
-    public
+    external
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -255,7 +234,7 @@ contract PerpetualPositionManagerPoolParty is
   }
 
   function requestWithdrawal(FixedPoint.Unsigned memory collateralAmount)
-    public
+    external
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -301,7 +280,7 @@ contract PerpetualPositionManagerPoolParty is
   function create(
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
-  ) public onlyPool() notEmergencyShutdown() fees() nonReentrant() {
+  ) external onlyPool() notEmergencyShutdown() fees() nonReentrant() {
     PositionData storage positionData = positions[msg.sender];
 
     positionData.create(
@@ -314,7 +293,7 @@ contract PerpetualPositionManagerPoolParty is
   }
 
   function redeem(FixedPoint.Unsigned memory numTokens)
-    public
+    external
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -334,7 +313,7 @@ contract PerpetualPositionManagerPoolParty is
   }
 
   function repay(FixedPoint.Unsigned memory numTokens)
-    public
+    external
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -462,13 +441,34 @@ contract PerpetualPositionManagerPoolParty is
     return members;
   }
 
+  function depositTo(
+    address sponsor,
+    FixedPoint.Unsigned memory collateralAmount
+  )
+    public
+    onlyPool()
+    notEmergencyShutdown()
+    noPendingWithdrawal(sponsor)
+    fees()
+    nonReentrant()
+  {
+    PositionData storage positionData = _getPositionData(sponsor);
+
+    positionData.depositTo(
+      globalPositionData,
+      collateralAmount,
+      feePayerData,
+      sponsor
+    );
+  }
+
   function collateralCurrency()
     public
     view
     override(IDerivativeDeployment, FeePayerParty)
     returns (IERC20 collateral)
   {
-    collateral = feePayerData.collateralCurrency;
+    collateral = FeePayerParty.collateralCurrency();
   }
 
   function _pfc()

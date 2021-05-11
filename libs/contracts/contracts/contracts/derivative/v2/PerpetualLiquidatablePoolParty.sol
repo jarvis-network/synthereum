@@ -242,7 +242,7 @@ contract PerpetualLiquidatablePoolParty is PerpetualPositionManagerPoolParty {
   }
 
   function withdrawLiquidation(uint256 liquidationId, address sponsor)
-    public
+    external
     withdrawable(liquidationId, sponsor)
     fees()
     nonReentrant()
@@ -263,19 +263,19 @@ contract PerpetualLiquidatablePoolParty is PerpetualPositionManagerPoolParty {
     return rewardsData;
   }
 
+  function deleteLiquidation(uint256 liquidationId, address sponsor)
+    external
+    onlyThisContract
+  {
+    delete liquidations[sponsor][liquidationId];
+  }
+
   function getLiquidations(address sponsor)
     external
     view
     returns (LiquidationData[] memory liquidationData)
   {
     return liquidations[sponsor];
-  }
-
-  function deleteLiquidation(uint256 liquidationId, address sponsor)
-    external
-    onlyThisContract
-  {
-    delete liquidations[sponsor][liquidationId];
   }
 
   function _pfc() internal view override returns (FixedPoint.Unsigned memory) {

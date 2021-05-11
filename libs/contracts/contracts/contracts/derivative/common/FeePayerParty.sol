@@ -69,6 +69,23 @@ abstract contract FeePayerParty is AdministrateeInterface, Testable, Lockable {
     feePayerData.cumulativeFeeMultiplier = FixedPoint.fromUnscaledUint(1);
   }
 
+  function payFinalFees(address payer, FixedPoint.Unsigned memory amount)
+    external
+    onlyThisContract
+  {
+    _payFinalFees(payer, amount);
+  }
+
+  function collateralCurrency()
+    public
+    view
+    virtual
+    nonReentrantView()
+    returns (IERC20)
+  {
+    return feePayerData.collateralCurrency;
+  }
+
   function payRegularFees()
     public
     nonReentrant()
@@ -81,13 +98,6 @@ abstract contract FeePayerParty is AdministrateeInterface, Testable, Lockable {
     return totalPaid;
   }
 
-  function payFinalFees(address payer, FixedPoint.Unsigned memory amount)
-    external
-    onlyThisContract
-  {
-    _payFinalFees(payer, amount);
-  }
-
   function pfc()
     public
     view
@@ -96,16 +106,6 @@ abstract contract FeePayerParty is AdministrateeInterface, Testable, Lockable {
     returns (FixedPoint.Unsigned memory)
   {
     return _pfc();
-  }
-
-  function collateralCurrency()
-    public
-    view
-    virtual
-    nonReentrantView()
-    returns (IERC20)
-  {
-    return feePayerData.collateralCurrency;
   }
 
   function _payFinalFees(address payer, FixedPoint.Unsigned memory amount)

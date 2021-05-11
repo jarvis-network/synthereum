@@ -141,6 +141,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
       params.liquidatableParams.collateralRequirement.isGreaterThan(1),
       'CR is more than 100%'
     );
+
     require(
       params
         .liquidatableParams
@@ -245,7 +246,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   }
 
   function withdrawLiquidation(uint256 liquidationId, address sponsor)
-    public
+    external
     withdrawable(liquidationId, sponsor)
     fees()
     nonReentrant()
@@ -266,6 +267,13 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     return rewardsData;
   }
 
+  function deleteLiquidation(uint256 liquidationId, address sponsor)
+    external
+    onlyThisContract
+  {
+    delete liquidations[sponsor][liquidationId];
+  }
+
   function getLiquidations(address sponsor)
     external
     view
@@ -273,13 +281,6 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     returns (LiquidationData[] memory liquidationData)
   {
     return liquidations[sponsor];
-  }
-
-  function deleteLiquidation(uint256 liquidationId, address sponsor)
-    external
-    onlyThisContract
-  {
-    delete liquidations[sponsor][liquidationId];
   }
 
   function _pfc() internal view override returns (FixedPoint.Unsigned memory) {

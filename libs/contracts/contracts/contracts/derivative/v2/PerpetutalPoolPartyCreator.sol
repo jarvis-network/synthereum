@@ -136,7 +136,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     Params memory params,
     MintableBurnableIERC20 newTokenCurrency
   )
-    private
+    internal
     view
     returns (PerpetualPoolParty.ConstructorParams memory constructorParams)
   {

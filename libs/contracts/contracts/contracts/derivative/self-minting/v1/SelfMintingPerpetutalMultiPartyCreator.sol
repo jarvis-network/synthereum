@@ -136,7 +136,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
   }
 
   function _convertParams(Params calldata params)
-    private
+    internal
     view
     returns (
       SelfMintingPerpetualMultiParty.ConstructorParams memory constructorParams

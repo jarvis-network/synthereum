@@ -191,30 +191,12 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     positionManagerData.version = _positionManagerData.version;
   }
 
-  function depositTo(address sponsor, uint256 collateralAmount)
-    public
-    notEmergencyShutdown()
-    noPendingWithdrawal(sponsor)
-    fees()
-    nonReentrant()
-  {
-    PositionData storage positionData = _getPositionData(sponsor);
-
-    positionData.depositTo(
-      globalPositionData,
-      positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      feePayerData,
-      sponsor
-    );
-  }
-
-  function deposit(uint256 collateralAmount) public {
+  function deposit(uint256 collateralAmount) external {
     depositTo(msg.sender, collateralAmount);
   }
 
   function withdraw(uint256 collateralAmount)
-    public
+    external
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
     fees()
@@ -233,7 +215,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   }
 
   function requestWithdrawal(uint256 collateralAmount)
-    public
+    external
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
     nonReentrant()
@@ -272,7 +254,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     uint256 numTokens,
     uint256 feePercentage
   )
-    public
+    external
     notEmergencyShutdown()
     fees()
     nonReentrant()
@@ -292,7 +274,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   }
 
   function redeem(uint256 numTokens, uint256 feePercentage)
-    public
+    external
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
     fees()
@@ -319,7 +301,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   }
 
   function repay(uint256 numTokens, uint256 feePercentage)
-    public
+    external
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
     fees()
@@ -495,13 +477,31 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     capDeposit = positionManagerData.capDepositRatio().rawValue;
   }
 
+  function depositTo(address sponsor, uint256 collateralAmount)
+    public
+    notEmergencyShutdown()
+    noPendingWithdrawal(sponsor)
+    fees()
+    nonReentrant()
+  {
+    PositionData storage positionData = _getPositionData(sponsor);
+
+    positionData.depositTo(
+      globalPositionData,
+      positionManagerData,
+      FixedPoint.Unsigned(collateralAmount),
+      feePayerData,
+      sponsor
+    );
+  }
+
   function collateralCurrency()
     public
     view
     override(ISelfMintingDerivativeDeployment, FeePayerParty)
     returns (IERC20 collateral)
   {
-    collateral = feePayerData.collateralCurrency;
+    collateral = FeePayerParty.collateralCurrency();
   }
 
   function _pfc()

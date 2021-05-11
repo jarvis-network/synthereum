@@ -637,52 +637,6 @@ library PerpetualPositionManagerPoolPartyLib {
       );
   }
 
-  function _checkPositionCollateralization(
-    PerpetualPositionManagerPoolParty.PositionData storage positionData,
-    PerpetualPositionManagerPoolParty.GlobalPositionData
-      storage globalPositionData,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (bool) {
-    return
-      _checkCollateralization(
-        globalPositionData,
-        positionData.rawCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
-        positionData.tokensOutstanding,
-        feePayerData
-      );
-  }
-
-  function _checkCollateralization(
-    PerpetualPositionManagerPoolParty.GlobalPositionData
-      storage globalPositionData,
-    FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory numTokens,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (bool) {
-    FixedPoint.Unsigned memory global =
-      _getCollateralizationRatio(
-        globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
-        globalPositionData.totalTokensOutstanding
-      );
-    FixedPoint.Unsigned memory thisChange =
-      _getCollateralizationRatio(collateral, numTokens);
-    return !global.isGreaterThan(thisChange);
-  }
-
-  function _getCollateralizationRatio(
-    FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory numTokens
-  ) internal pure returns (FixedPoint.Unsigned memory ratio) {
-    return
-      numTokens.isLessThanOrEqual(0)
-        ? FixedPoint.fromUnscaledUint(0)
-        : collateral.div(numTokens);
-  }
-
   function _resetWithdrawalRequest(
     PerpetualPositionManagerPoolParty.PositionData storage positionData
   ) internal {
@@ -721,6 +675,42 @@ library PerpetualPositionManagerPoolPartyLib {
           feePayerData.cumulativeFeeMultiplier
         )
       );
+  }
+
+  function _checkPositionCollateralization(
+    PerpetualPositionManagerPoolParty.PositionData storage positionData,
+    PerpetualPositionManagerPoolParty.GlobalPositionData
+      storage globalPositionData,
+    FeePayerParty.FeePayerData storage feePayerData
+  ) internal view returns (bool) {
+    return
+      _checkCollateralization(
+        globalPositionData,
+        positionData.rawCollateral.getFeeAdjustedCollateral(
+          feePayerData.cumulativeFeeMultiplier
+        ),
+        positionData.tokensOutstanding,
+        feePayerData
+      );
+  }
+
+  function _checkCollateralization(
+    PerpetualPositionManagerPoolParty.GlobalPositionData
+      storage globalPositionData,
+    FixedPoint.Unsigned memory collateral,
+    FixedPoint.Unsigned memory numTokens,
+    FeePayerParty.FeePayerData storage feePayerData
+  ) internal view returns (bool) {
+    FixedPoint.Unsigned memory global =
+      _getCollateralizationRatio(
+        globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
+          feePayerData.cumulativeFeeMultiplier
+        ),
+        globalPositionData.totalTokensOutstanding
+      );
+    FixedPoint.Unsigned memory thisChange =
+      _getCollateralizationRatio(collateral, numTokens);
+    return !global.isGreaterThan(thisChange);
   }
 
   function _getOracleEmergencyShutdownPrice(
@@ -775,5 +765,15 @@ library PerpetualPositionManagerPoolPartyLib {
     scaledPrice = oraclePrice.div(
       (10**(uint256(18)).sub(collateralDecimalsNumber))
     );
+  }
+
+  function _getCollateralizationRatio(
+    FixedPoint.Unsigned memory collateral,
+    FixedPoint.Unsigned memory numTokens
+  ) internal pure returns (FixedPoint.Unsigned memory ratio) {
+    return
+      numTokens.isLessThanOrEqual(0)
+        ? FixedPoint.fromUnscaledUint(0)
+        : collateral.div(numTokens);
   }
 }

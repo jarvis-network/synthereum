@@ -442,44 +442,6 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     return rewards;
   }
 
-  function calculateNetLiquidation(
-    SelfMintingPerpetualPositionManagerMultiParty.PositionData
-      storage positionToLiquidate,
-    CreateLiquidationParams memory params,
-    FeePayerParty.FeePayerData storage feePayerData
-  )
-    internal
-    view
-    returns (
-      FixedPoint.Unsigned memory startCollateral,
-      FixedPoint.Unsigned memory startCollateralNetOfWithdrawal,
-      FixedPoint.Unsigned memory tokensLiquidated
-    )
-  {
-    tokensLiquidated = FixedPoint.min(
-      params.maxTokensToLiquidate,
-      positionToLiquidate.tokensOutstanding
-    );
-    require(tokensLiquidated.isGreaterThan(0), 'Liquidating 0 tokens');
-
-    require(params.actualTime <= params.deadline, 'Mined after deadline');
-
-    startCollateral = positionToLiquidate
-      .rawCollateral
-      .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
-    startCollateralNetOfWithdrawal = FixedPoint.fromUnscaledUint(0);
-
-    if (
-      positionToLiquidate.withdrawalRequestAmount.isLessThanOrEqual(
-        startCollateral
-      )
-    ) {
-      startCollateralNetOfWithdrawal = startCollateral.sub(
-        positionToLiquidate.withdrawalRequestAmount
-      );
-    }
-  }
-
   function liquidateCollateral(
     SelfMintingPerpetualPositionManagerMultiParty.PositionData
       storage positionToLiquidate,
@@ -599,5 +561,43 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       liquidationId,
       disputeSucceeded
     );
+  }
+
+  function calculateNetLiquidation(
+    SelfMintingPerpetualPositionManagerMultiParty.PositionData
+      storage positionToLiquidate,
+    CreateLiquidationParams memory params,
+    FeePayerParty.FeePayerData storage feePayerData
+  )
+    internal
+    view
+    returns (
+      FixedPoint.Unsigned memory startCollateral,
+      FixedPoint.Unsigned memory startCollateralNetOfWithdrawal,
+      FixedPoint.Unsigned memory tokensLiquidated
+    )
+  {
+    tokensLiquidated = FixedPoint.min(
+      params.maxTokensToLiquidate,
+      positionToLiquidate.tokensOutstanding
+    );
+    require(tokensLiquidated.isGreaterThan(0), 'Liquidating 0 tokens');
+
+    require(params.actualTime <= params.deadline, 'Mined after deadline');
+
+    startCollateral = positionToLiquidate
+      .rawCollateral
+      .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
+    startCollateralNetOfWithdrawal = FixedPoint.fromUnscaledUint(0);
+
+    if (
+      positionToLiquidate.withdrawalRequestAmount.isLessThanOrEqual(
+        startCollateral
+      )
+    ) {
+      startCollateralNetOfWithdrawal = startCollateral.sub(
+        positionToLiquidate.withdrawalRequestAmount
+      );
+    }
   }
 }

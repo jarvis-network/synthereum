@@ -6,7 +6,7 @@ import {PerpetualPoolParty} from './PerpetualPoolParty.sol';
 
 library PerpetualPoolPartyLib {
   function deploy(PerpetualPoolParty.ConstructorParams memory params)
-    public
+    external
     returns (address)
   {
     PerpetualPoolParty derivative = new PerpetualPoolParty(params);

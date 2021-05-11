@@ -9,7 +9,7 @@ import {
 library SelfMintingPerpetualMultiPartyLib {
   function deploy(
     SelfMintingPerpetualMultiParty.ConstructorParams memory params
-  ) public returns (address) {
+  ) external returns (address) {
     SelfMintingPerpetualMultiParty derivative =
       new SelfMintingPerpetualMultiParty(params);
     return address(derivative);

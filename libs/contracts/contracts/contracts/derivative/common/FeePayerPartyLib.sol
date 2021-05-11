@@ -121,13 +121,6 @@ library FeePayerPartyLib {
     return rawCollateral._getFeeAdjustedCollateral(cumulativeFeeMultiplier);
   }
 
-  function convertToRawCollateral(
-    FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory cumulativeFeeMultiplier
-  ) external pure returns (FixedPoint.Unsigned memory rawCollateral) {
-    return collateral._convertToRawCollateral(cumulativeFeeMultiplier);
-  }
-
   function removeCollateral(
     FixedPoint.Unsigned storage rawCollateral,
     FixedPoint.Unsigned memory collateralToRemove,
@@ -156,6 +149,13 @@ library FeePayerPartyLib {
     addedCollateral = rawCollateral
       ._getFeeAdjustedCollateral(cumulativeFeeMultiplier)
       .sub(initialBalance);
+  }
+
+  function convertToRawCollateral(
+    FixedPoint.Unsigned memory collateral,
+    FixedPoint.Unsigned memory cumulativeFeeMultiplier
+  ) external pure returns (FixedPoint.Unsigned memory rawCollateral) {
+    return collateral._convertToRawCollateral(cumulativeFeeMultiplier);
   }
 
   function _adjustCumulativeFeeMultiplier(
