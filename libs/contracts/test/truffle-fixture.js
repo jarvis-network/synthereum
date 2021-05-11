@@ -1,13 +1,20 @@
+/* eslint-disable no-console */
+/* eslint-disable no-await-in-loop */
+const fs = require('fs');
+const path = require('path');
+
 require('dotenv').config({ path: './.env.migration' });
 const {
   parseBoolean,
 } = require('@jarvis-network/core-utils/dist/base/asserts');
 
-const fs = require('fs');
-const path = require('path');
-
-module.exports = async ({ network, web3 }) => {
+module.exports = async ({
+  network,
+  web3,
+  migrationScript: scriptName = process.env.MIGRATION_TYPE,
+}) => {
   async function runMigration(
+    // eslint-disable-next-line no-shadow
     scriptName,
     networkName,
     accounts,
@@ -25,7 +32,7 @@ module.exports = async ({ network, web3 }) => {
   }
 
   function index(filename) {
-    return parseInt(filename.split('_')[0]);
+    return parseInt(filename.split('_')[0], 10);
   }
 
   const accounts = await web3.eth.getAccounts();
@@ -46,28 +53,24 @@ module.exports = async ({ network, web3 }) => {
         index(x) <= 11,
     )
     .sort((a, b) => index(a) - index(b));
-  const scriptName = process.env.MIGRATION_TYPE;
   const realScriptName = migrationScripts.find(
-    x => x.split('.js')[0].split('_').slice(1).join('_') == scriptName,
+    x => x.split('.js')[0].split('_').slice(2).join('_') === scriptName,
   );
   const newUmaDeployment =
     parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE) ?? false;
 
   if (
-    (networkId != 1 && networkId != 3 && networkId != 4 && networkId != 42) ||
+    (networkId !== 1 &&
+      networkId !== 3 &&
+      networkId !== 4 &&
+      networkId !== 42) ||
     newUmaDeployment
   ) {
     for (const script of umaBaseMigrationScripts) {
       await runMigration(script, network.name, accounts, true);
     }
   }
-  if (scriptName === 'all') {
-    for (const script of migrationScripts.filter(
-      x => index(x) >= 1 && index(x) <= 12,
-    )) {
-      await runMigration(script, network.name, accounts);
-    }
-  } else if (realScriptName) {
+  if (realScriptName) {
     await runMigration(realScriptName, network.name, accounts);
   } else {
     console.log(`Migration script '${scriptName}' not found.`);

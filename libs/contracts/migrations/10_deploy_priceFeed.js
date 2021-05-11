@@ -2,7 +2,6 @@ const rolesConfig = require('../data/roles.json');
 const aggregators = require('../data/aggregators.json');
 const { getExistingInstance } = require('../dist/migration-utils/deployment');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const SynthereumInterfaces = artifacts.require('SynthereumInterfaces');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',

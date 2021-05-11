@@ -4,7 +4,6 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumSyntheticTokenFactory = artifacts.require(
   'SynthereumSyntheticTokenFactory',
 );
-const SynthereumInterfaces = artifacts.require('SynthereumInterfaces');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 

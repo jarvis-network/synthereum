@@ -16,17 +16,11 @@ const PerpetualPositionManagerPoolPartyLib = artifacts.require(
 );
 const PerpetualPoolPartyLib = artifacts.require('PerpetualPoolPartyLib');
 
-const MintableBurnableTokenFactory = artifacts.require(
-  'MintableBurnableTokenFactory',
-);
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
 const SynthereumDerivativeFactory = artifacts.require(
   'SynthereumDerivativeFactory',
-);
-const SynthereumSyntheticTokenFactory = artifacts.require(
-  'SynthereumSyntheticTokenFactory',
 );
 const UmaFinder = artifacts.require('Finder');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
@@ -100,10 +94,6 @@ module.exports = async function (deployer, network, accounts) {
         .addSupportedIdentifier(identifierBytes)
         .send({ from: keys.deployer });
     }
-    const synthereumSyntheticTokenFactory = await getExistingInstance(
-      web3,
-      SynthereumSyntheticTokenFactory,
-    );
     //hardat
     if (FeePayerPartyLib.setAsDeployed) {
       const { contract: feePayerPartyLib } = await deploy(

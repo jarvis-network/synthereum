@@ -1,7 +1,5 @@
-const config = require('../truffle-config.js');
 const rolesConfig = require('../data/roles.json');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const SynthereumInterfaces = artifacts.require('SynthereumInterfaces');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
