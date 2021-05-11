@@ -45,7 +45,7 @@ module.exports = async function (deployer, network, accounts) {
       let derivativePayload = '';
       let pool =
         deployment[networkId]?.Pool?.[asset.syntheticSymbol] ?? ZERO_ADDRESS;
-      if (deployment[networkId].Derivative === 1) {
+      if (deployment[networkId].Derivative === 2) {
         derivativeVersion =
           derivativeVersions[networkId]['DerivativeFactory'].version;
         derivativePayload = encodeDerivative(

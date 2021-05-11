@@ -2,7 +2,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import './PerpetualPoolParty.sol';
+import {PerpetualPoolParty} from './PerpetualPoolParty.sol';
 
 library PerpetualPoolPartyLib {
   function deploy(PerpetualPoolParty.ConstructorParams memory params)

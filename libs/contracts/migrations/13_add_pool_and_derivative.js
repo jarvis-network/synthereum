@@ -56,7 +56,7 @@ module.exports = async function (deployer, network, accounts) {
       let derivativePayload = '';
       let poolPayload = '';
 
-      if (deployment[networkId].Derivative === 1) {
+      if (deployment[networkId].Derivative === 2) {
         derivativeVersion =
           derivativeVersions[networkId]['DerivativeFactory'].version;
         const synthSymbol = asset.syntheticSymbol;

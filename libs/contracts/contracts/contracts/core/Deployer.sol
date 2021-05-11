@@ -298,11 +298,12 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     ISynthereumPoolDeployment pool,
     bool isOnlyDerivative
   ) internal {
+    IRole derivativeRoles = IRole(address(derivative));
     if (!isOnlyDerivative) {
-      derivative.grantRole(POOL_ROLE, address(pool));
+      derivativeRoles.grantRole(POOL_ROLE, address(pool));
     }
-    derivative.grantRole(ADMIN_ROLE, address(getManager()));
-    derivative.renounceRole(ADMIN_ROLE, address(this));
+    derivativeRoles.grantRole(ADMIN_ROLE, address(getManager()));
+    derivativeRoles.renounceRole(ADMIN_ROLE, address(this));
   }
 
   function setSyntheticTokenRoles(IDerivativeDeployment derivative) internal {

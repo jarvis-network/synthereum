@@ -10,31 +10,49 @@ import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 
 contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
-  address public synthereumFinder;
+  ISynthereumFinder public synthereumFinder;
 
-  uint8 public derivativeVersion;
+  modifier onlyDerivativeFactory() {
+    ISynthereumFactoryVersioning factoryVersioning =
+      ISynthereumFactoryVersioning(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.FactoryVersioning
+        )
+      );
+    uint256 numberOfFactories =
+      factoryVersioning.numberOfVerisonsOfDerivativeFactory();
+    uint256 counter = 0;
+    for (uint8 i = 0; counter < numberOfFactories; i++) {
+      try factoryVersioning.getDerivativeFactoryVersion(i) returns (
+        address factory
+      ) {
+        if (msg.sender == factory) {
+          _;
+          break;
+        } else {
+          counter++;
+        }
+      } catch {}
+    }
+    if (numberOfFactories == counter) {
+      revert('Sender must be a derivative factory');
+    }
+  }
 
-  constructor(address _synthereumFinder, uint8 _derivativeVersion) public {
-    synthereumFinder = _synthereumFinder;
-    derivativeVersion = _derivativeVersion;
+  constructor(address _synthereumFinder) public {
+    synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
   function createToken(
     string calldata tokenName,
     string calldata tokenSymbol,
     uint8 tokenDecimals
-  ) public override returns (MintableBurnableIERC20 newToken) {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        ISynthereumFinder(synthereumFinder).getImplementationAddress(
-          SynthereumInterfaces.FactoryVersioning
-        )
-      );
-    require(
-      msg.sender ==
-        factoryVersioning.getDerivativeFactoryVersion(derivativeVersion),
-      'Sender must be a Derivative Factory'
-    );
+  )
+    public
+    override
+    onlyDerivativeFactory
+    returns (MintableBurnableIERC20 newToken)
+  {
     newToken = super.createToken(tokenName, tokenSymbol, tokenDecimals);
   }
 }

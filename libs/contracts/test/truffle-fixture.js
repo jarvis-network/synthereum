@@ -63,7 +63,7 @@ module.exports = async ({ network, web3 }) => {
   }
   if (scriptName === 'all') {
     for (const script of migrationScripts.filter(
-      x => index(x) >= 1 && index(x) <= 11,
+      x => index(x) >= 1 && index(x) <= 12,
     )) {
       await runMigration(script, network.name, accounts);
     }

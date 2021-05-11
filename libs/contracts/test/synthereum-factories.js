@@ -29,7 +29,7 @@ const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 
 contract('Factories', function (accounts) {
-  let derivativeVersion = 1;
+  let derivativeVersion = 2;
 
   // Derivative params
   let collateralAddress;
@@ -231,7 +231,7 @@ contract('Factories', function (accounts) {
           18,
           { from: sender },
         ),
-        'Sender must be a Derivative Factory',
+        'Sender must be a derivative factory',
       );
     });
     it('Revert in pool factory', async () => {

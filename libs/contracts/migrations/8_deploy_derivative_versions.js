@@ -58,15 +58,6 @@ module.exports = async function (deployer, network, accounts) {
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   if (derivativeVersions[networkId]?.DerivativeFactory?.isEnabled ?? true) {
     const keys = getKeysForNetwork(network, accounts);
-    await deploy(
-      deployer,
-      network,
-      SynthereumSyntheticTokenFactory,
-      synthereumFinder.options.address,
-      derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
-      { from: keys.deployer },
-    );
-
     if (umaDeployment == true) {
       // Deploy CollateralWhitelist.
       await deploy(deployer, network, AddressWhitelist, {
@@ -230,11 +221,10 @@ module.exports = async function (deployer, network, accounts) {
       deployer,
       network,
       SynthereumDerivativeFactory,
-      synthereumFinder.options.address,
       umaDeployment
         ? (await getExistingInstance(web3, UmaFinder)).options.address
         : umaContracts[networkId].finderAddress,
-      synthereumSyntheticTokenFactory.options.address,
+      synthereumFinder.options.address,
       umaDeployment
         ? (await getExistingInstance(web3, Timer)).options.address
         : ZERO_ADDRESS,
@@ -247,7 +237,7 @@ module.exports = async function (deployer, network, accounts) {
     );
     await synthereumFactoryVersioning.methods
       .setDerivativeFactory(
-        derivativeVersions[networkId]?.DerivativeFactory?.version ?? 1,
+        derivativeVersions[networkId]?.DerivativeFactory?.version ?? 2,
         derivativeFactory.options.address,
       )
       .send({ from: maintainer });

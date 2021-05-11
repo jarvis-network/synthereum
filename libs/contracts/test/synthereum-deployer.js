@@ -42,7 +42,7 @@ const PoolFactoryMock = artifacts.require('PoolFactoryMock');
 const DerivativeMock = artifacts.require('DerivativeMock');
 
 contract('Synthereum Deployer', function (accounts) {
-  let derivativeVersion = 1;
+  let derivativeVersion = 2;
 
   // Derivative params
   let collateralAddress;
@@ -165,7 +165,7 @@ contract('Synthereum Deployer', function (accounts) {
       });
       truffleAssert.eventEmitted(deploymentTx, 'DerivativeDeployed', ev => {
         return (
-          ev.derivativeVersion == 1 &&
+          ev.derivativeVersion == 2 &&
           ev.pool == pool &&
           ev.newDerivative == derivative
         );
@@ -651,7 +651,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       truffleAssert.eventEmitted(deploymentTx, 'DerivativeDeployed', ev => {
         return (
-          ev.derivativeVersion == 1 &&
+          ev.derivativeVersion == 2 &&
           ev.pool == pool &&
           ev.newDerivative == newDerivative
         );

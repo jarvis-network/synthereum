@@ -12,20 +12,16 @@ contract SynthereumDerivativeFactory is
   PerpetualPoolPartyCreator,
   IDeploymentSignature
 {
-  address public synthereumFinder;
-
   bytes4 public override deploymentSignature;
 
   constructor(
-    address _synthereumFinder,
     address _umaFinder,
-    address _tokenFactoryAddress,
+    address _synthereumFinder,
     address _timerAddress
   )
     public
-    PerpetualPoolPartyCreator(_umaFinder, _tokenFactoryAddress, _timerAddress)
+    PerpetualPoolPartyCreator(_umaFinder, _synthereumFinder, _timerAddress)
   {
-    synthereumFinder = _synthereumFinder;
     deploymentSignature = this.createPerpetual.selector;
   }
 

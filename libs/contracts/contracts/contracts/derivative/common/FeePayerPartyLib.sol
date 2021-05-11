@@ -2,10 +2,17 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import './FeePayerParty.sol';
-import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
+import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  StoreInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
+import {
+  SafeERC20
+} from '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {
+  FixedPoint
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {FeePayerParty} from './FeePayerParty.sol';
 
 library FeePayerPartyLib {
   using FixedPoint for FixedPoint.Unsigned;

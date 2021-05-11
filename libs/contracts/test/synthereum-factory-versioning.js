@@ -39,7 +39,7 @@ contract('Factory versioning', function (accounts) {
     });
     it('Update existing derivative factory', async () => {
       let derivativeFactoryAddressStored = await factoryVersioningInstance.getDerivativeFactoryVersion.call(
-        1,
+        2,
       );
       assert.equal(
         derivativeFactoryAddressStored,
@@ -47,12 +47,12 @@ contract('Factory versioning', function (accounts) {
         'Wrong initial derivative factory',
       );
       const updateTx = await factoryVersioningInstance.setDerivativeFactory(
-        1,
+        2,
         testDerivativeFactory,
         { from: maintainer },
       );
       derivativeFactoryAddressStored = await factoryVersioningInstance.getDerivativeFactoryVersion.call(
-        1,
+        2,
       );
       assert.equal(
         derivativeFactoryAddressStored,
@@ -60,26 +60,26 @@ contract('Factory versioning', function (accounts) {
         'Wrong derivative factory after update',
       );
       truffleAssert.eventEmitted(updateTx, 'SetDerivativeFactory', ev => {
-        return ev.version == 1 && ev.derivativeFactory == testDerivativeFactory;
+        return ev.version == 2 && ev.derivativeFactory == testDerivativeFactory;
       });
       await factoryVersioningInstance.setDerivativeFactory(
-        1,
+        2,
         derivativeFactoryAddress,
         { from: maintainer },
       );
     });
     it('Insert new derivative factory', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.getDerivativeFactoryVersion.call(2),
+        factoryVersioningInstance.getDerivativeFactoryVersion.call(3),
         'EnumerableMap: nonexistent key',
       );
       const insertTx = await factoryVersioningInstance.setDerivativeFactory(
-        2,
+        3,
         testDerivativeFactory,
         { from: maintainer },
       );
       derivativeFactoryAddressStored = await factoryVersioningInstance.getDerivativeFactoryVersion.call(
-        2,
+        3,
       );
       assert.equal(
         derivativeFactoryAddressStored,
@@ -87,12 +87,12 @@ contract('Factory versioning', function (accounts) {
         'Wrong derivative factory after insert',
       );
       truffleAssert.eventEmitted(insertTx, 'AddDerivativeFactory', ev => {
-        return ev.version == 2 && ev.derivativeFactory == testDerivativeFactory;
+        return ev.version == 3 && ev.derivativeFactory == testDerivativeFactory;
       });
     });
     it('Remove derivative factory', async () => {
       let derivativeFactoryAddressStored = await factoryVersioningInstance.getDerivativeFactoryVersion.call(
-        2,
+        3,
       );
       assert.equal(
         derivativeFactoryAddressStored,
@@ -100,15 +100,15 @@ contract('Factory versioning', function (accounts) {
         'Wrong initial derivative factory',
       );
       const removeTx = await factoryVersioningInstance.removeDerivativeFactory(
-        2,
+        3,
         { from: maintainer },
       );
       await truffleAssert.reverts(
-        factoryVersioningInstance.getDerivativeFactoryVersion.call(2),
+        factoryVersioningInstance.getDerivativeFactoryVersion.call(3),
         'EnumerableMap: nonexistent key',
       );
       truffleAssert.eventEmitted(removeTx, 'RemoveDerivativeFactory', ev => {
-        return ev.version == 2 && ev.derivativeFactory == testDerivativeFactory;
+        return ev.version == 3 && ev.derivativeFactory == testDerivativeFactory;
       });
     });
     it('Revert if try to set a zero address factory', async () => {

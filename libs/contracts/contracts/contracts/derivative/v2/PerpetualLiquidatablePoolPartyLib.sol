@@ -2,11 +2,28 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import './PerpetualPositionManagerPoolPartyLib.sol';
-import './PerpetualLiquidatablePoolParty.sol';
-import '../common/FeePayerPartyLib.sol';
-import '../common/interfaces/MintableBurnableIERC20.sol';
+import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  MintableBurnableIERC20
+} from '../common/interfaces/MintableBurnableIERC20.sol';
+import {SafeMath} from '../../../@openzeppelin/contracts/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {
+  FixedPoint
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {FeePayerPartyLib} from '../common/FeePayerPartyLib.sol';
+import {
+  PerpetualPositionManagerPoolPartyLib
+} from './PerpetualPositionManagerPoolPartyLib.sol';
+import {FeePayerParty} from '../common/FeePayerParty.sol';
+import {
+  PerpetualLiquidatablePoolParty
+} from './PerpetualLiquidatablePoolParty.sol';
+import {
+  PerpetualPositionManagerPoolParty
+} from './PerpetualPositionManagerPoolParty.sol';
 
 library PerpetualLiquidatablePoolPartyLib {
   using SafeMath for uint256;

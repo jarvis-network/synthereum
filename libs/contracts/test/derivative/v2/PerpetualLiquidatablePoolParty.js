@@ -12,6 +12,7 @@ const { toWei, fromWei, hexToUtf8, toBN } = web3.utils;
 const Token = artifacts.require('MintableBurnableERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const TestnetERC20 = artifacts.require('TestnetERC20');
+const SynthereumFinder = artifacts.require('SynthereumFinder');
 
 // Contracts to unit test
 const LiquidatablePoolParty = artifacts.require(
@@ -21,6 +22,7 @@ const LiquidatablePoolParty = artifacts.require(
 // Other UMA related contracts and mocks
 const Store = artifacts.require('Store');
 const Finder = artifacts.require('Finder');
+const AddressWhitelist = artifacts.require('AddressWhitelist');
 const MockOracle = artifacts.require('MockOracle');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const Timer = artifacts.require('Timer');
@@ -31,11 +33,13 @@ const PerpetualPositionManagerPoolPartyLib = artifacts.require(
 const PerpetualLiquidatablePoolPartyLib = artifacts.require(
   'PerpetualLiquidatablePoolPartyLib',
 );
+const SynthereumManager = artifacts.require('SynthereumManager');
 
 contract('PerpetualLiquidatablePoolParty', function (accounts) {
   // Roles
   const contractDeployer = accounts[0];
-  const sponsor = accounts[1];
+  const maintainer = accounts[1];
+  const sponsor = accounts[4];
   const liquidator = accounts[2];
   const disputer = accounts[3];
   const beneficiary = accounts[5];
@@ -93,6 +97,9 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
   let finder;
   let store;
   let timer;
+  let synthereumFinder;
+  let manager;
+  let collateralTokenWhitelist;
 
   // Constructor
   let constructorParams;
@@ -118,6 +125,8 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       18,
       { from: contractDeployer },
     );
+    collateralTokenWhitelist = await AddressWhitelist.deployed();
+    await collateralTokenWhitelist.addToWhitelist(collateralToken.address);
     syntheticToken = await SyntheticToken.new(
       'Test Synthetic Token',
       'SYNTH',
@@ -152,6 +161,8 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       },
     );
 
+    synthereumFinder = await SynthereumFinder.deployed();
+
     const positionManagerParams = {
       withdrawalLiveness: withdrawalLiveness.toString(),
       collateralAddress: collateralToken.address,
@@ -161,6 +172,7 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       minSponsorTokens: { rawValue: minSponsorTokens.toString() },
       timerAddress: timer.address,
       excessTokenBeneficiary: beneficiary,
+      synthereumFinder: synthereumFinder.address,
     };
 
     const roles = {
@@ -283,6 +295,7 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
 
     // Get store
     store = await Store.deployed();
+    manager = await SynthereumManager.deployed();
   });
 
   const expectNoExcessCollateralToTrim = async () => {
@@ -441,7 +454,10 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       );
     });
     it('Fails if contract does not have Burner role', async () => {
-      await liquidationContract.renounceSyntheticTokenBurner({ from: sponsor });
+      await syntheticToken.revokeRole(
+        web3.utils.soliditySha3('Burner'),
+        liquidationContract.address,
+      );
 
       // This liquidation should normally succeed using the same parameters as other successful liquidations,
       // such as in the previous test.
@@ -2162,7 +2178,9 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       });
 
       // Emergency shutdown the priceless position manager via the financialContractsAdmin.
-      await liquidationContract.emergencyShutdown({ from: sponsor });
+      await manager.emergencyShutdown([liquidationContract.address], {
+        from: maintainer,
+      });
 
       // At this point a liquidation should not be able to be created.
       assert(
@@ -2206,7 +2224,9 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       );
 
       // Shuts down the position manager.
-      await liquidationContract.emergencyShutdown({ from: sponsor });
+      await manager.emergencyShutdown([liquidationContract.address], {
+        from: maintainer,
+      });
     });
     it('Can dispute the liquidation', async () => {
       await liquidationContract.dispute(
@@ -2304,6 +2324,7 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       USDCConstructorParameters.positionManagerParams.minSponsorTokens = {
         rawValue: minSponsorTokens.div(USDCScalingFactor).toString(),
       };
+      await collateralTokenWhitelist.addToWhitelist(collateralToken.address);
       USDCLiquidationContract = await LiquidatablePoolParty.new(
         USDCConstructorParameters,
         {
@@ -2315,7 +2336,7 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
       await syntheticToken.addBurner(USDCLiquidationContract.address);
 
       // Approve the contract to spend the tokens on behalf of the sponsor & liquidator. Simplify this process in a loop
-      for (let i = 1; i < 4; i++) {
+      for (let i = 1; i < 5; i++) {
         await syntheticToken.approve(
           USDCLiquidationContract.address,
           toWei('100000'),

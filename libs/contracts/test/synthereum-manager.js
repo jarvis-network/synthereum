@@ -20,7 +20,7 @@ const Derivative = artifacts.require('PerpetualPoolParty');
 const SynthereumManager = artifacts.require('SynthereumManager');
 
 contract('Synthereum manager', function (accounts) {
-  let derivativeVersion = 1;
+  let derivativeVersion = 2;
 
   // Derivative params
   let collateralAddress;
@@ -145,11 +145,16 @@ contract('Synthereum manager', function (accounts) {
     synthTokenInstance = await MintableBurnableSyntheticToken.at(
       synthTokenAddr,
     );
+
     managerInstance = await SynthereumManager.deployed();
     adminRole = '0x00';
     poolRole = web3Utils.soliditySha3('Pool');
     minterRole = web3Utils.soliditySha3('Minter');
     burnerRole = web3Utils.soliditySha3('Burner');
+    console.log(
+      'fine: ' +
+        (await derivativeInstance.positionManagerData.call()).synthereumFinder,
+    );
   });
 
   describe('Roles of derivative', async () => {

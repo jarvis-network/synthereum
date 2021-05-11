@@ -2,18 +2,33 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import './FeePayerPartyLib.sol';
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
-
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
+import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  AdministrateeInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
+import {
+  StoreInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
+import {
+  FinderInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
+import {
+  OracleInterfaces
+} from '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
+import {SafeMath} from '../../../@openzeppelin/contracts/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {
+  FixedPoint
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {FeePayerPartyLib} from './FeePayerPartyLib.sol';
+import {
+  Testable
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
+import {
+  Lockable
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 
 abstract contract FeePayerParty is AdministrateeInterface, Testable, Lockable {
   using SafeMath for uint256;

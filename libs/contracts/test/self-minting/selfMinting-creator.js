@@ -42,7 +42,7 @@ const PoolFactoryMock = artifacts.require('PoolFactoryMock');
 const DerivativeMock = artifacts.require('DerivativeMock');
 
 contract('Self-minting creator', function (accounts) {
-  let derivativeVersion = 1;
+  let derivativeVersion = 2;
 
   // Derivative params
   let collateralAddress;

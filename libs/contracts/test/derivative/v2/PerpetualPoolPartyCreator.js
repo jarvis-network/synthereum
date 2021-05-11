@@ -21,6 +21,11 @@ const MintableBurnableSyntheticToken = artifacts.require(
 const MintableBurnableTokenFactory = artifacts.require(
   'MintableBurnableTokenFactory',
 );
+const SynthereumFinder = artifacts.require('SynthereumFinder');
+const SynthereumFactoryVersioning = artifacts.require(
+  'SynthereumFactoryVersioning',
+);
+const SynthereumManager = artifacts.require('SynthereumManager');
 const Timer = artifacts.require('Timer');
 const Finder = artifacts.require('Finder');
 const Registry = artifacts.require('Registry');
@@ -32,6 +37,7 @@ const { RegistryRolesEnum } = require('@jarvis-network/uma-common');
 
 contract('PerpetualCreator', function (accounts) {
   let contractCreator = accounts[0];
+  let maintainer = accounts[1];
 
   // Contract variables
   let collateralToken;
@@ -39,6 +45,10 @@ contract('PerpetualCreator', function (accounts) {
   let registry;
   let collateralTokenWhitelist;
   let store;
+  let finder;
+  let synthereumFinder;
+  let factoryVersioning;
+  let manager;
 
   // Re-used variables
   let constructorParams;
@@ -49,7 +59,8 @@ contract('PerpetualCreator', function (accounts) {
     });
     registry = await Registry.deployed();
 
-    const finderAddress = (await Finder.deployed()).address;
+    finderAddress = (await Finder.deployed()).address;
+    synthereumFinder = await SynthereumFinder.deployed();
     mintableBurnableTokenFactory = await MintableBurnableTokenFactory.new();
     const timerAddress = (await Timer.deployed()).address;
     const perpetualPoolPartyLib = await PerpetualPoolPartyLib.deployed();
@@ -69,7 +80,7 @@ contract('PerpetualCreator', function (accounts) {
 
     perpetualPoolPartyCreator = await PerpetualPoolPartyCreator.new(
       finderAddress,
-      mintableBurnableTokenFactory.address,
+      synthereumFinder.address,
       timerAddress,
     );
     await registry.addMember(
@@ -112,13 +123,13 @@ contract('PerpetualCreator', function (accounts) {
         from: contractCreator,
       },
     );
-  });
-
-  it('MintableBurnableTokenFactory address should be set on construction', async function () {
-    assert.equal(
-      await perpetualPoolPartyCreator.tokenFactoryAddress(),
-      mintableBurnableTokenFactory.address,
+    factoryVersioning = await SynthereumFactoryVersioning.deployed();
+    await factoryVersioning.setDerivativeFactory(
+      2,
+      perpetualPoolPartyCreator.address,
+      { from: maintainer },
     );
+    manager = await SynthereumManager.deployed();
   });
 
   it('Cannot have empty synthetic token symbol', async function () {
@@ -339,7 +350,7 @@ contract('PerpetualCreator', function (accounts) {
     assert.isTrue(await tokenContract.isBurner(perpetualAddress));
     assert.equal(
       (await tokenContract.getAdminMembers.call())[0],
-      perpetualAddress,
+      manager.address,
     );
     assert.equal(
       (await tokenContract.getMinterMembers.call())[0],

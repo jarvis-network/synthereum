@@ -2,23 +2,51 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../@openzeppelin/contracts/math/SafeMath.sol';
-import '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+import {
+  MintableBurnableIERC20
+} from '../common/interfaces/MintableBurnableIERC20.sol';
+import {
+  OracleInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
+import {
+  IdentifierWhitelistInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
+import {
+  AdministrateeInterface
+} from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {
+  IDerivativeDeployment
+} from '../common/interfaces/IDerivativeDeployment.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {
+  OracleInterfaces
+} from '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
+import {SafeMath} from '../../../@openzeppelin/contracts/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {
+  FixedPoint
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {
+  PerpetualPositionManagerPoolPartyLib
+} from './PerpetualPositionManagerPoolPartyLib.sol';
+import {
+  AccessControl
+} from '../../../@openzeppelin/contracts/access/AccessControl.sol';
+import {
+  AddressWhitelist
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist.sol';
+import {FeePayerParty} from '../common/FeePayerParty.sol';
 
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import '../common/interfaces/MintableBurnableIERC20.sol';
-import './PerpetualPositionManagerPoolPartyLib.sol';
-
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
-
-import '../common/FeePayerParty.sol';
-import '../../../@openzeppelin/contracts/access/AccessControl.sol';
-
-contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
+contract PerpetualPositionManagerPoolParty is
+  IDerivativeDeployment,
+  AccessControl,
+  FeePayerParty
+{
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for MintableBurnableIERC20;
@@ -41,6 +69,7 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
     FixedPoint.Unsigned minSponsorTokens;
     address timerAddress;
     address excessTokenBeneficiary;
+    ISynthereumFinder synthereumFinder;
   }
 
   struct PositionData {
@@ -56,6 +85,7 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
   }
 
   struct PositionManagerData {
+    ISynthereumFinder synthereumFinder;
     MintableBurnableIERC20 tokenCurrency;
     bytes32 priceIdentifier;
     uint256 withdrawalLiveness;
@@ -152,6 +182,12 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
       ),
       'Unsupported price identifier'
     );
+    require(
+      _getCollateralWhitelist().isOnWhitelist(
+        _positionManagerData.collateralAddress
+      ),
+      'Collateral not whitelisted'
+    );
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(POOL_ROLE, DEFAULT_ADMIN_ROLE);
     for (uint256 j = 0; j < _roles.admins.length; j++) {
@@ -160,6 +196,8 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
     for (uint256 j = 0; j < _roles.pools.length; j++) {
       _setupRole(POOL_ROLE, _roles.pools[j]);
     }
+    positionManagerData.synthereumFinder = _positionManagerData
+      .synthereumFinder;
     positionManagerData.withdrawalLiveness = _positionManagerData
       .withdrawalLiveness;
     positionManagerData.tokenCurrency = MintableBurnableIERC20(
@@ -330,9 +368,12 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
     nonReentrant()
   {
     require(
-      hasRole(POOL_ROLE, msg.sender) ||
+      msg.sender ==
+        positionManagerData.synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.Manager
+        ) ||
         msg.sender == _getFinancialContractsAdminAddress(),
-      'Caller must be a pool or the UMA governor'
+      'Caller must be a Synthereum manager or the UMA governor'
     );
     positionManagerData.emergencyShutdownTimestamp = getCurrentTime();
     positionManagerData.requestOraclePrice(
@@ -362,81 +403,23 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
     delete positions[sponsor];
   }
 
-  function addPool(address pool) external {
-    grantRole(POOL_ROLE, pool);
-  }
-
-  function addAdmin(address admin) external {
-    grantRole(DEFAULT_ADMIN_ROLE, admin);
-  }
-
-  function addAdminAndPool(address adminAndPool) external {
-    grantRole(DEFAULT_ADMIN_ROLE, adminAndPool);
-    grantRole(POOL_ROLE, adminAndPool);
-  }
-
-  function renouncePool() external {
-    renounceRole(POOL_ROLE, msg.sender);
-  }
-
-  function renounceAdmin() external {
-    renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
-  }
-
-  function renounceAdminAndPool() external {
-    renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    renounceRole(POOL_ROLE, msg.sender);
-  }
-
-  function addSyntheticTokenMinter(address derivative) external onlyPool() {
-    positionManagerData.tokenCurrency.addMinter(derivative);
-  }
-
-  function addSyntheticTokenBurner(address derivative) external onlyPool() {
-    positionManagerData.tokenCurrency.addBurner(derivative);
-  }
-
-  function addSyntheticTokenAdmin(address derivative) external onlyPool() {
-    positionManagerData.tokenCurrency.addAdmin(derivative);
-  }
-
-  function addSyntheticTokenAdminAndMinterAndBurner(address derivative)
-    external
-    onlyPool()
-  {
-    positionManagerData.tokenCurrency.addAdminAndMinterAndBurner(derivative);
-  }
-
-  function renounceSyntheticTokenMinter() external onlyPool() {
-    positionManagerData.tokenCurrency.renounceMinter();
-  }
-
-  function renounceSyntheticTokenBurner() external onlyPool() {
-    positionManagerData.tokenCurrency.renounceBurner();
-  }
-
-  function renounceSyntheticTokenAdmin() external onlyPool() {
-    positionManagerData.tokenCurrency.renounceAdmin();
-  }
-
-  function renounceSyntheticTokenAdminAndMinterAndBurner() external onlyPool() {
-    positionManagerData.tokenCurrency.renounceAdminAndMinterAndBurner();
-  }
-
   function getCollateral(address sponsor)
     external
     view
     nonReentrantView()
     returns (FixedPoint.Unsigned memory collateralAmount)
   {
-    return
-      positions[sponsor].rawCollateral.getFeeAdjustedCollateral(
-        feePayerData.cumulativeFeeMultiplier
-      );
+    collateralAmount = positions[sponsor]
+      .rawCollateral
+      .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
   }
 
-  function tokenCurrency() external view nonReentrantView() returns (IERC20) {
-    return positionManagerData.tokenCurrency;
+  function synthereumFinder() external view returns (ISynthereumFinder finder) {
+    finder = positionManagerData.synthereumFinder;
+  }
+
+  function tokenCurrency() external view override returns (IERC20 token) {
+    token = positionManagerData.tokenCurrency;
   }
 
   function totalPositionCollateral()
@@ -445,23 +428,21 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
     nonReentrantView()
     returns (FixedPoint.Unsigned memory totalCollateral)
   {
-    return
-      globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-        feePayerData.cumulativeFeeMultiplier
-      );
+    totalCollateral = globalPositionData
+      .rawTotalPositionCollateral
+      .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
   }
 
   function emergencyShutdownPrice()
     external
     view
     isEmergencyShutdown()
-    nonReentrantView()
     returns (FixedPoint.Unsigned memory)
   {
     return positionManagerData.emergencyShutdownPrice;
   }
 
-  function getAdminMembers() external view returns (address[] memory) {
+  function getAdminMembers() external view override returns (address[] memory) {
     uint256 numberOfMembers = getRoleMemberCount(DEFAULT_ADMIN_ROLE);
     address[] memory members = new address[](numberOfMembers);
     for (uint256 j = 0; j < numberOfMembers; j++) {
@@ -471,7 +452,7 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
     return members;
   }
 
-  function getPoolMembers() external view returns (address[] memory) {
+  function getPoolMembers() external view override returns (address[] memory) {
     uint256 numberOfMembers = getRoleMemberCount(POOL_ROLE);
     address[] memory members = new address[](numberOfMembers);
     for (uint256 j = 0; j < numberOfMembers; j++) {
@@ -479,6 +460,15 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
       members[j] = newMember;
     }
     return members;
+  }
+
+  function collateralCurrency()
+    public
+    view
+    override(IDerivativeDeployment, FeePayerParty)
+    returns (IERC20 collateral)
+  {
+    collateral = feePayerData.collateralCurrency;
   }
 
   function _pfc()
@@ -512,6 +502,15 @@ contract PerpetualPositionManagerPoolParty is AccessControl, FeePayerParty {
       IdentifierWhitelistInterface(
         feePayerData.finder.getImplementationAddress(
           OracleInterfaces.IdentifierWhitelist
+        )
+      );
+  }
+
+  function _getCollateralWhitelist() internal view returns (AddressWhitelist) {
+    return
+      AddressWhitelist(
+        feePayerData.finder.getImplementationAddress(
+          OracleInterfaces.CollateralWhitelist
         )
       );
   }

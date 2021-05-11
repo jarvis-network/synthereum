@@ -2,14 +2,24 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../../../@openzeppelin/contracts/math/SafeMath.sol';
-import '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-
-import './PerpetualPositionManagerPoolParty.sol';
-
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import './PerpetualPositionManagerPoolPartyLib.sol';
-import './PerpetualLiquidatablePoolPartyLib.sol';
+import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {SafeMath} from '../../../@openzeppelin/contracts/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '../../../@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {
+  FixedPoint
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {FeePayerPartyLib} from '../common/FeePayerPartyLib.sol';
+import {
+  PerpetualPositionManagerPoolPartyLib
+} from './PerpetualPositionManagerPoolPartyLib.sol';
+import {
+  PerpetualLiquidatablePoolPartyLib
+} from './PerpetualLiquidatablePoolPartyLib.sol';
+import {
+  PerpetualPositionManagerPoolParty
+} from './PerpetualPositionManagerPoolParty.sol';
 
 contract PerpetualLiquidatablePoolParty is PerpetualPositionManagerPoolParty {
   using FixedPoint for FixedPoint.Unsigned;
@@ -251,6 +261,14 @@ contract PerpetualLiquidatablePoolParty is PerpetualPositionManagerPoolParty {
       );
 
     return rewardsData;
+  }
+
+  function getLiquidations(address sponsor)
+    external
+    view
+    returns (LiquidationData[] memory liquidationData)
+  {
+    return liquidations[sponsor];
   }
 
   function deleteLiquidation(uint256 liquidationId, address sponsor)

@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.0;
 
-import './MintableBurnableSyntheticToken.sol';
-import './interfaces/MintableBurnableIERC20.sol';
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+import {
+  MintableBurnableSyntheticToken
+} from './MintableBurnableSyntheticToken.sol';
+import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
+import {
+  Lockable
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 
 contract MintableBurnableTokenFactory is Lockable {
   function createToken(

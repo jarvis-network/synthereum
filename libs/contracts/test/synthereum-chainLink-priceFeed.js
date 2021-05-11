@@ -29,7 +29,7 @@ const MockV3Aggregator = artifacts.require('MockV3Aggregator');
 const PriceFeedGetter = artifacts.require('PriceFeedGetter');
 
 contract('Synthereum pool with on chain price feed', function (accounts) {
-  let derivativeVersion = 1;
+  let derivativeVersion = 2;
 
   // Derivative params
   let collateralAddress;
@@ -105,6 +105,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
     aggregator = await MockV3Aggregator.deployed();
     checkingPrice = web3Utils.toWei('1.2');
     priceFeedId = web3Utils.toHex('EUR/USD');
+    console.log('price feed id ' + priceFeedId);
   });
   describe('Aggregators managment', async () => {
     it('Add aggregator', async () => {
@@ -305,6 +306,15 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         { from: maintainer },
       );
       poolInstance = await SynthereumPoolOnChainPriceFeed.at(poolAddress);
+      derivat = await Derivative.at(derivativeAddress);
+      console.log('DER address   : ' + derivativeAddress);
+      console.log(
+        'pool price: ' + (await poolInstance.getPriceFeedIdentifier()),
+      );
+      console.log(JSON.stringify(await derivat.positionManagerData()));
+      console.log(
+        'deriv price  ' + (await derivat.positionManagerData().priceIdentifier),
+      );
       expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
       collateralAmount = web3Utils.toWei('120', 'mwei');
       numTokens = web3Utils.toWei('99.8');

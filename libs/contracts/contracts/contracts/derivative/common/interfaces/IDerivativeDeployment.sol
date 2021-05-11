@@ -4,9 +4,8 @@ pragma solidity ^0.6.12;
 import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IRole} from '../../../base/interfaces/IRole.sol';
 
-interface IDerivativeDeployment is IRole {
+interface IDerivativeDeployment {
   function collateralCurrency() external view returns (IERC20 collateral);
 
   function tokenCurrency() external view returns (IERC20 syntheticCurrency);

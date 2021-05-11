@@ -25,7 +25,7 @@ const SelfMintingRegistry = artifacts.require('SelfMintingRegistry');
 const { toWei, toBN, stringToHex } = web3Utils;
 
 contract('Self-minting controller', function (accounts) {
-  let derivativeVersion = 1;
+  let derivativeVersion = 2;
 
   // Derivative params
   let collateralAddress;

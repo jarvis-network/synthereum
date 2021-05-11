@@ -2,13 +2,31 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import '../common/interfaces/MintableBurnableIERC20.sol';
-import '../../../@jarvis-network/uma-core/contracts/oracle/implementation/ContractCreator.sol';
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist.sol';
-import '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
-import '../common/MintableBurnableTokenFactory.sol';
-import './PerpetualPoolPartyLib.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {
+  MintableBurnableIERC20
+} from '../common/interfaces/MintableBurnableIERC20.sol';
+import {
+  IMintableBurnableTokenFactory
+} from '../common/interfaces/IMintableBurnableTokenFactory.sol';
+import {
+  FixedPoint
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+import {PerpetualPoolPartyLib} from './PerpetualPoolPartyLib.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {
+  ContractCreator
+} from '../../../@jarvis-network/uma-core/contracts/oracle/implementation/ContractCreator.sol';
+import {
+  Testable
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
+import {
+  Lockable
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+import {
+  MintableBurnableTokenFactory
+} from '../common/MintableBurnableTokenFactory.sol';
+import {PerpetualPoolParty} from './PerpetualPoolParty.sol';
 
 contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
   using FixedPoint for FixedPoint.Unsigned;
@@ -31,7 +49,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     address[] pools;
   }
 
-  address public tokenFactoryAddress;
+  ISynthereumFinder public synthereumFinder;
 
   event CreatedPerpetual(
     address indexed perpetualAddress,
@@ -39,16 +57,16 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
   );
 
   constructor(
-    address _finderAddress,
-    address _tokenFactoryAddress,
+    address _umaFinderAddress,
+    address _synthereumFinder,
     address _timerAddress
   )
     public
-    ContractCreator(_finderAddress)
+    ContractCreator(_umaFinderAddress)
     Testable(_timerAddress)
     nonReentrant()
   {
-    tokenFactoryAddress = _tokenFactoryAddress;
+    synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
   function createPerpetual(Params memory params)
@@ -62,17 +80,28 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
       bytes(params.syntheticSymbol).length != 0,
       'Missing synthetic symbol'
     );
-    MintableBurnableTokenFactory tf =
-      MintableBurnableTokenFactory(tokenFactoryAddress);
     address derivative;
     if (params.syntheticToken == address(0)) {
+      IMintableBurnableTokenFactory tokenFactory =
+        IMintableBurnableTokenFactory(
+          ISynthereumFinder(synthereumFinder).getImplementationAddress(
+            SynthereumInterfaces.TokenFactory
+          )
+        );
       MintableBurnableIERC20 tokenCurrency =
-        tf.createToken(params.syntheticName, params.syntheticSymbol, 18);
+        tokenFactory.createToken(
+          params.syntheticName,
+          params.syntheticSymbol,
+          18
+        );
       derivative = PerpetualPoolPartyLib.deploy(
         _convertParams(params, tokenCurrency)
       );
-
-      tokenCurrency.addAdminAndMinterAndBurner(derivative);
+      tokenCurrency.addMinter(derivative);
+      tokenCurrency.addBurner(derivative);
+      tokenCurrency.addAdmin(
+        synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager)
+      );
       tokenCurrency.renounceAdmin();
     } else {
       MintableBurnableIERC20 tokenCurrency =
@@ -112,6 +141,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     returns (PerpetualPoolParty.ConstructorParams memory constructorParams)
   {
     constructorParams.positionManagerParams.finderAddress = finderAddress;
+    constructorParams.positionManagerParams.synthereumFinder = synthereumFinder;
     constructorParams.positionManagerParams.timerAddress = timerAddress;
 
     require(params.withdrawalLiveness != 0, 'Withdrawal liveness cannot be 0');
@@ -124,7 +154,6 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
       'Token Beneficiary cannot be 0x0'
     );
     require(params.admins.length > 0, 'No admin addresses set');
-    _requireWhitelistedCollateral(params.collateralAddress);
 
     require(
       params.withdrawalLiveness < 5200 weeks,

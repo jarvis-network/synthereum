@@ -2,6 +2,7 @@
 const {
   didContractThrow,
   interfaceName,
+  ZERO_ADDRESS,
 } = require('@jarvis-network/uma-common');
 const truffleAssert = require('truffle-assertions');
 const { assert } = require('chai');
@@ -14,10 +15,12 @@ const PerpetualPositionManagerPoolParty = artifacts.require(
 // Other UMA related contracts and mocks
 const Store = artifacts.require('Store');
 const Finder = artifacts.require('Finder');
+const AddressWhitelist = artifacts.require('AddressWhitelist');
 const MockOracle = artifacts.require('MockOracle');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const MarginToken = artifacts.require('MintableBurnableERC20');
 const TestnetERC20 = artifacts.require('TestnetERC20');
+const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const FinancialContractsAdmin = artifacts.require('FinancialContractsAdmin');
 const Timer = artifacts.require('Timer');
@@ -25,11 +28,13 @@ const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
 const PerpetualPositionManagerPoolPartyLib = artifacts.require(
   'PerpetualPositionManagerPoolPartyLib',
 );
+const SynthereumManager = artifacts.require('SynthereumManager');
 
 contract('PerpetualPositionManagerPoolParty', function (accounts) {
   const { toWei, hexToUtf8, toBN, utf8ToHex } = web3.utils;
   const contractDeployer = accounts[0];
-  const sponsor = accounts[1];
+  const maintainer = accounts[1];
+  const sponsor = accounts[6];
   const tokenHolder = accounts[2];
   const other = accounts[3];
   const collateralOwner = accounts[4];
@@ -44,8 +49,11 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
   let timer;
   let finder;
   let store;
+  let synthereumFinder;
   let positionManagerData;
   let roles;
+  let collateralTokenWhitelist;
+  let manager;
 
   // Initial constant values
   const initialPositionTokens = toBN(toWei('1000'));
@@ -146,6 +154,8 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     await collateral.addMinter(collateralOwner, { from: collateralOwner });
     await collateral.mint(sponsor, toWei('1000000'), { from: collateralOwner });
     await collateral.mint(other, toWei('1000000'), { from: collateralOwner });
+    collateralTokenWhitelist = await AddressWhitelist.deployed();
+    await collateralTokenWhitelist.addToWhitelist(collateral.address);
 
     tokenCurrency = await SyntheticToken.new(
       syntheticName,
@@ -186,10 +196,14 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       },
     );
 
+    manager = await SynthereumManager.deployed();
+
     roles = {
-      admins: [sponsor],
+      admins: [manager.address],
       pools: [sponsor],
     };
+
+    synthereumFinder = await SynthereumFinder.deployed();
 
     positionManagerData = {
       withdrawalLiveness: withdrawalLiveness, // _withdrawalLiveness
@@ -200,6 +214,7 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       minSponsorTokens: { rawValue: minSponsorTokens }, // _minSponsorTokens
       timerAddress: timer.address, // _timerAddress
       excessTokenBeneficiary: beneficiary, // _excessTokenBeneficiary
+      synthereumFinder: synthereumFinder.address,
     };
 
     const feePayerPartyLib = await FeePayerPartyLib.deployed();
@@ -354,14 +369,22 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
   it('Lifecycle', async function () {
     // Create an initial large and lowly collateralized positionManager.
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await collateral.approve(
       positionManager.address,
       initialPositionCollateral,
       { from: other },
     );
     // Revert if the positionManager contract has not role of minter in the syntetic token contract
-    await positionManager.renounceSyntheticTokenMinter({ from: sponsor });
+    await tokenCurrency.revokeRole(
+      web3.utils.soliditySha3('Minter'),
+      positionManager.address,
+    );
     assert(
       await didContractThrow(
         positionManager.create(
@@ -377,7 +400,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       { rawValue: initialPositionTokens.toString() },
       { from: other },
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     // Periodic check for no excess collateral.
     await expectNoExcessCollateralToTrim();
@@ -520,7 +548,10 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       expectedSponsorCollateral.toString(),
     );
     // Check that redeem fails if missing Burner role.
-    await positionManager.renounceSyntheticTokenBurner({ from: sponsor });
+    await tokenCurrency.revokeRole(
+      web3.utils.soliditySha3('Burner'),
+      positionManager.address,
+    );
     assert(
       await didContractThrow(
         redeem({ rawValue: redeemTokens }, { from: sponsor }),
@@ -564,7 +595,10 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       { from: sponsor },
     );
     // Check that create fails if missing Minter role.
-    await positionManager.renounceSyntheticTokenMinter({ from: sponsor });
+    await tokenCurrency.revokeRole(
+      web3.utils.soliditySha3('Minter'),
+      positionManager.address,
+    );
     assert(
       await didContractThrow(
         positionManager.create(
@@ -635,7 +669,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
   it('Cannot instantly withdraw all of the collateral in the position', async function () {
     // Create an initial large and lowly collateralized positionManager so that we can call `withdraw()`.
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await collateral.approve(
       positionManager.address,
       initialPositionCollateral,
@@ -646,7 +685,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       { rawValue: initialPositionTokens.toString() },
       { from: other },
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     // Create the initial positionManager.
     const createTokens = toWei('100');
@@ -673,7 +717,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
   it('Withdrawal request', async function () {
     // Create an initial large and lowly collateralized positionManager.
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await collateral.approve(
       positionManager.address,
       initialPositionCollateral,
@@ -684,7 +733,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       { rawValue: initialPositionTokens.toString() },
       { from: other },
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     const startTime = await positionManager.getCurrentTime();
     // Approve large amounts of token and collateral currencies: this test case isn't checking for that.
@@ -953,8 +1007,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       from: other,
     });
 
-    await positionManager.addPool(other, { from: sponsor });
-
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     // Create the initial positionManager, with a 150% collateralization ratio.
     await positionManager.create(
       { rawValue: toWei('150') },
@@ -1057,7 +1115,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       ),
     );
     await positionManager.withdraw({ rawValue: toWei('2') }, { from: other });
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it('Non sponsor can use depositTo', async function () {
@@ -1068,7 +1131,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       from: sponsor,
     });
 
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     const numTokens = toWei('1');
 
@@ -1093,7 +1161,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       (await positionManager.getCollateral.call(other)).toString(),
       '0',
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it("Non sponsor can't deposit, redeem, or withdraw", async function () {
@@ -1104,7 +1177,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       { from: other },
     );
 
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await positionManager.create(
       { rawValue: initialPositionCollateral.toString() },
       { rawValue: initialPositionTokens.toString() },
@@ -1142,7 +1220,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
         positionManager.redeem({ rawValue: toWei('1') }, { from: sponsor }),
       ),
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it("Can't redeem more than position size", async function () {
@@ -1155,7 +1238,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     await collateral.approve(positionManager.address, toWei('1000'), {
       from: sponsor,
     });
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     const numTokens = toWei('1');
     const numCombinedTokens = toWei('2');
@@ -1185,7 +1273,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
         positionManager.redeem({ rawValue: numTokens }, { from: sponsor }),
       ),
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it('Existing sponsor can use depositTo on other account', async function () {
@@ -1196,8 +1289,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       from: sponsor,
     });
 
-    await positionManager.addPool(other, { from: sponsor });
-
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     const numTokens = toWei('1');
     await positionManager.create(
       { rawValue: toWei('1') },
@@ -1225,7 +1322,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       (await positionManager.getCollateral(other)).toString(),
       toWei('1'),
     );
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it('Sponsor use depositTo on own account', async function () {
@@ -1278,7 +1380,10 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     );
 
     // Check that repay fails if missing Burner role.
-    await positionManager.renounceSyntheticTokenBurner({ from: sponsor });
+    await tokenCurrency.revokeRole(
+      web3.utils.soliditySha3('Burner'),
+      positionManager.address,
+    );
     assert(
       await didContractThrow(
         positionManager.repay({ rawValue: toWei('40') }, { from: sponsor }),
@@ -1376,7 +1481,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       from: sponsor,
     });
 
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     // Set up another position that is less collateralized so sponsor can withdraw freely.
     await positionManager.create(
@@ -1448,7 +1558,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     );
 
     // Test that regular fees accrue after an emergency shutdown is triggered.
-    await positionManager.emergencyShutdown({ from: sponsor });
+    await manager.emergencyShutdown([positionManager.address], {
+      from: maintainer,
+    });
 
     // Ensure that the maximum fee % of pfc charged is 100%. Advance > 100 seconds from the last payment time to attempt to
     // pay > 100% fees on the PfC. This should pay a maximum of 100% of the PfC without reverting.
@@ -1487,7 +1599,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     );
     const payZeroFeesResult = await payRegularFees();
     truffleAssert.eventNotEmitted(payZeroFeesResult, 'RegularFeesPaid');
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it('Emergency shutdown: lifecycle', async function () {
@@ -1510,7 +1627,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       from: sponsor,
     });
 
-    await positionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
 
     // Some time passes and the UMA token holders decide that Emergency shutdown needs to occur.
     const shutdownTimestamp =
@@ -1524,17 +1646,19 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       ),
     );
 
-    // Should revert if emergency shutdown initialized by non-Pool.
+    // Should revert if emergency shutdown initialized by not manager or UMA Dao.
     assert(
       await didContractThrow(
-        positionManager.emergencyShutdown({ from: other }),
+        positionManager.emergencyShutdown({ from: maintainer }),
       ),
     );
 
     // Pool can initiate emergency shutdown.
-    const emergencyShutdownTx = await positionManager.emergencyShutdown({
-      from: sponsor,
-    });
+    const emergencyShutdownTx = await manager.emergencyShutdown(
+      [positionManager.address],
+      { from: maintainer },
+    );
+
     assert.equal(
       (await positionManager.positionManagerData.call())
         .emergencyShutdownTimestamp,
@@ -1544,12 +1668,6 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       (await positionManager.emergencyShutdownPrice.call()).toString(),
       0,
     );
-
-    // Check EmergencyShutdown event
-    truffleAssert.eventEmitted(emergencyShutdownTx, 'EmergencyShutdown', ev => {
-      // There should be 98.99 + 0.99 = 99.98 collateral remaining in the contract.
-      return ev.caller == sponsor && ev.shutdownTimestamp == shutdownTimestamp;
-    });
 
     // Emergency shutdown should not be able to be called a second time.
     assert(
@@ -1632,7 +1750,10 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       },
     );
     // Check that settlement fails if missing Burner role.
-    await positionManager.renounceSyntheticTokenBurner({ from: sponsor });
+    await tokenCurrency.revokeRole(
+      web3.utils.soliditySha3('Burner'),
+      positionManager.address,
+    );
     assert(
       await didContractThrow(
         positionManager.settleEmergencyShutdown({ from: tokenHolder }),
@@ -1724,7 +1845,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // The token Sponsor should have no synthetic positions left after settlement.
     assert.equal(sponsorFinalSynthetic, 0);
-    await positionManager.renouncePool({ from: tokenHolder });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
   });
 
   it('Financial admin can call emergency shutdown', async function () {
@@ -1747,7 +1873,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       from: sponsor,
     });
 
-    await positionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
 
     // Some time passes and the UMA token holders decide that Emergency shutdown needs to occur.
     const shutdownTimestamp =
@@ -1845,7 +1976,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     it('settleEmergencyShutdown() returns the same amount of collateral that totalPositionCollateral is decreased by', async () => {
       // Emergency shutdown the contract
       const emergencyShutdownTime = await positionManager.getCurrentTime();
-      await positionManager.emergencyShutdown({ from: sponsor });
+      await manager.emergencyShutdown([positionManager.address], {
+        from: maintainer,
+      });
 
       // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 1.2 Stock/USD for the price
       // feed. With 20 units of outstanding tokens this results in a token redemption value of: TRV = 20 * 1.2 = 24 USD.
@@ -1877,7 +2010,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       const tokenHolderInitialCollateral = await collateral.balanceOf.call(
         tokenHolder,
       );
-      await positionManager.addPool(tokenHolder, { from: sponsor });
+      await manager.grantSynthereumRole(
+        [positionManager.address],
+        [web3.utils.soliditySha3('Pool')],
+        [tokenHolder],
+        { from: maintainer },
+      );
       await positionManager.settleEmergencyShutdown({ from: tokenHolder });
       const tokenHolderFinalCollateral = await collateral.balanceOf.call(
         tokenHolder,
@@ -1977,7 +2115,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
       // Drain excess collateral left because of precision loss.
       await expectAndDrainExcessCollateral();
-      await positionManager.renouncePool({ from: tokenHolder });
+      await manager.revokeSynthereumRole(
+        [positionManager.address],
+        [web3.utils.soliditySha3('Pool')],
+        [tokenHolder],
+        { from: maintainer },
+      );
     });
     it('withdraw() returns the same amount of collateral that totalPositionCollateral is decreased by', async () => {
       // The sponsor requests to withdraw 12 collateral.
@@ -2094,7 +2237,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Emergency shutdown contract to enable settlement.
     const emergencyShutdownTime = await positionManager.getCurrentTime();
-    await positionManager.emergencyShutdown({ from: sponsor });
+    await manager.emergencyShutdown([positionManager.address], {
+      from: maintainer,
+    });
 
     // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 1.2 Stock/USD for the price
     // feed. With 200 units of outstanding tokens this results in a token redemption value of: TRV = 200 * 1.2 = 240 USD.
@@ -2106,7 +2251,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Token holder should receive 120 collateral tokens for their 100 synthetic tokens.
     let initialCollateral = await collateral.balanceOf.call(tokenHolder);
-    await positionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
     await positionManager.settleEmergencyShutdown({ from: tokenHolder });
     let collateralPaid = (await collateral.balanceOf.call(tokenHolder)).sub(
       initialCollateral,
@@ -2150,14 +2300,29 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Second token holder should receive the same payout as the first despite the oracle price being changed.
     initialCollateral = await collateral.balanceOf.call(other);
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await positionManager.settleEmergencyShutdown({ from: other });
     collateralPaid = (await collateral.balanceOf.call(other)).sub(
       initialCollateral,
     );
     assert.equal(collateralPaid, toWei('120'));
-    await positionManager.renouncePool({ from: tokenHolder });
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it('Oracle price can resolve to 0', async function () {
@@ -2183,7 +2348,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Emergency shutdown contract to enable settlement.
     const emergencyShutdownTime = await positionManager.getCurrentTime();
-    await positionManager.emergencyShutdown({ from: sponsor });
+    await manager.emergencyShutdown([positionManager.address], {
+      from: maintainer,
+    });
 
     // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 0. This means that
     // each token debt is worth 0 and the sponsor should get back their full collateral, even though they dont have all
@@ -2196,7 +2363,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Token holder should receive 0 collateral tokens for their 100 synthetic tokens as the price is 0.
     let initialCollateral = await collateral.balanceOf.call(tokenHolder);
-    await positionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
     await positionManager.settleEmergencyShutdown({ from: tokenHolder });
     let collateralPaid = (await collateral.balanceOf(tokenHolder)).sub(
       initialCollateral,
@@ -2210,7 +2382,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       initialCollateral,
     );
     assert.equal(collateralPaid, toWei('300'));
-    await positionManager.renouncePool({ from: tokenHolder });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
   });
 
   it('Oracle price can resolve less than 0', async function () {
@@ -2236,7 +2413,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Emergency shutdown contract to enable settlement.
     const emergencyShutdownTime = await positionManager.getCurrentTime();
-    await positionManager.emergencyShutdown({ from: sponsor });
+    await manager.emergencyShutdown([positionManager.address], {
+      from: maintainer,
+    });
 
     // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at valu eless than 0. This means that
     // each token debt is worth 0 and the sponsor should get back their full collateral, even though they dont have all
@@ -2249,7 +2428,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Token holder should receive 0 collateral tokens for their 100 synthetic tokens as the price is 0.
     let initialCollateral = await collateral.balanceOf.call(tokenHolder);
-    await positionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
     await positionManager.settleEmergencyShutdown({ from: tokenHolder });
     let collateralPaid = (await collateral.balanceOf(tokenHolder)).sub(
       initialCollateral,
@@ -2263,7 +2447,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       initialCollateral,
     );
     assert.equal(collateralPaid, toWei('300'));
-    await positionManager.renouncePool({ from: tokenHolder });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
   });
 
   it('Undercapitalized contract', async function () {
@@ -2289,7 +2478,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       { rawValue: toWei('100') },
       { from: sponsor },
     );
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await positionManager.create(
       { rawValue: toWei('150') },
       { rawValue: toWei('100') },
@@ -2306,7 +2500,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // Emergency shutdown contract to enable settlement.
     const emergencyShutdownTime = await positionManager.getCurrentTime();
-    await positionManager.emergencyShutdown({ from: sponsor });
+    await manager.emergencyShutdown([positionManager.address], {
+      from: maintainer,
+    });
 
     // Settle the price to 1, meaning the overcollateralized sponsor has 50 units of excess collateral.
     await mockOracle.pushPrice(
@@ -2318,7 +2514,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     // Token holder is the first to settle -- they should receive the entire value of their tokens (100) because they
     // were first.
     let startingBalance = await collateral.balanceOf.call(tokenHolder);
-    await positionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
     await positionManager.settleEmergencyShutdown({
       from: tokenHolder,
     });
@@ -2344,8 +2545,18 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       (await collateral.balanceOf.call(sponsor)).toString(),
       startingBalance.add(toBN('0')),
     );
-    await positionManager.renouncePool({ from: tokenHolder });
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
   });
 
   it('Cannot create position smaller than min sponsor size', async function () {
@@ -2453,6 +2664,7 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     let newPositionManagerData = positionManagerData;
     newPositionManagerData.collateralAddress = USDCToken.address;
     newPositionManagerData.tokenAddress = nonStandardToken.address;
+    await collateralTokenWhitelist.addToWhitelist(USDCToken.address);
 
     let custompositionManager = await PerpetualPositionManagerPoolParty.new(
       newPositionManagerData,
@@ -2551,7 +2763,9 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
     // To settle positions the DVM needs to be to be queried to get the price at the settlement time.
     const emergencyShutdownTime = await positionManager.getCurrentTime.call();
-    await custompositionManager.emergencyShutdown({ from: sponsor });
+    await manager.emergencyShutdown([custompositionManager.address], {
+      from: maintainer,
+    });
 
     // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 1.2 Stock/USD for the price
     // feed. With 100 units of outstanding tokens this results in a token redemption value of: TRV = 100 * 1.2 = 120 USD.
@@ -2581,7 +2795,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       },
     );
 
-    await custompositionManager.addPool(tokenHolder, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [custompositionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
     let settleEmergencyShutdownResult = await custompositionManager.settleEmergencyShutdown(
       {
         from: tokenHolder,
@@ -2667,7 +2886,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     assert.equal(sponsorsPosition.withdrawalRequestPassTimestamp.toString(), 0);
     assert.equal(sponsorsPosition.withdrawalRequestAmount.rawValue, 0);
 
-    await custompositionManager.renouncePool({ from: tokenHolder });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [tokenHolder],
+      { from: maintainer },
+    );
   });
 
   it('Existing void remargin function', async function () {
@@ -2694,7 +2918,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
 
   it('Check position manager roles', async () => {
     // Check Pool role
-    await positionManager.addPool(other, { from: sponsor });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     await collateral.approve(
       positionManager.address,
       initialPositionCollateral,
@@ -2709,7 +2938,12 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     assert.equal(pools.length, 2);
     assert.equal(pools[0], sponsor);
     assert.equal(pools[1], other);
-    await positionManager.renouncePool({ from: other });
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
+    );
     const redeemAmount = toBN(toWei('10'));
     assert(
       await didContractThrow(
@@ -2720,130 +2954,37 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       ),
     );
     // Check Admin role
-    await positionManager.addAdmin(other, { from: sponsor });
-    await positionManager.addPool(other, { from: other });
+    await manager.grantSynthereumRole(
+      [positionManager.address],
+      [ZERO_ADDRESS],
+      [other],
+      { from: maintainer },
+    );
+    await positionManager.grantRole(web3.utils.soliditySha3('Pool'), other, {
+      from: other,
+    });
     let admins = await positionManager.getAdminMembers.call();
     assert.equal(admins.length, 2);
-    assert.equal(admins[0], sponsor);
+    assert.equal(admins[0], manager.address);
     assert.equal(admins[1], other);
-    await positionManager.renouncePool({ from: other });
-    await positionManager.renounceAdmin({ from: other });
-    assert(
-      await didContractThrow(positionManager.addPool(other, { from: other })),
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [web3.utils.soliditySha3('Pool')],
+      [other],
+      { from: maintainer },
     );
-    // Check admin and Pool roles
-    await positionManager.addAdminAndPool(other, { from: sponsor });
-    await collateral.approve(
-      positionManager.address,
-      initialPositionCollateral,
-      { from: other },
+    await manager.revokeSynthereumRole(
+      [positionManager.address],
+      [ZERO_ADDRESS],
+      [other],
+      { from: maintainer },
     );
-    await positionManager.create(
-      { rawValue: initialPositionCollateral.toString() },
-      { rawValue: initialPositionTokens.toString() },
-      { from: other },
-    );
-    await positionManager.addPool(tokenHolder, { from: other });
-    await positionManager.renouncePool({ from: tokenHolder });
-    await positionManager.renounceAdminAndPool({ from: other });
     assert(
       await didContractThrow(
-        positionManager.redeem(
-          { rawValue: redeemAmount.toString() },
-          { from: other },
-        ),
+        positionManager.grantRole(web3.utils.soliditySha3('Pool'), other, {
+          from: other,
+        }),
       ),
-    );
-    assert(
-      await didContractThrow(positionManager.addPool(other, { from: other })),
-    );
-  });
-
-  it('Check position manager roles', async () => {
-    // Check add single roles
-    assert.equal(
-      await tokenCurrency.isAdmin.call(positionManager.address),
-      false,
-    );
-    await tokenCurrency.addAdmin(positionManager.address, {
-      from: contractDeployer,
-    });
-    assert.equal(
-      await tokenCurrency.isAdmin.call(positionManager.address),
-      true,
-    );
-    assert.equal(await tokenCurrency.isAdmin.call(other), false);
-    await positionManager.addSyntheticTokenAdmin(other, { from: sponsor });
-    assert.equal(await tokenCurrency.isAdmin.call(other), true);
-    assert.equal(await tokenCurrency.isMinter.call(other), false);
-    await positionManager.addSyntheticTokenMinter(other, { from: sponsor });
-    assert.equal(await tokenCurrency.isMinter.call(other), true);
-    assert.equal(await tokenCurrency.isBurner.call(other), false);
-    await positionManager.addSyntheticTokenBurner(other, { from: sponsor });
-    assert.equal(await tokenCurrency.isBurner.call(other), true);
-    assert.equal(await tokenCurrency.isAdmin.call(tokenHolder), false);
-    assert.equal(await tokenCurrency.isMinter.call(tokenHolder), false);
-    assert.equal(await tokenCurrency.isBurner.call(tokenHolder), false);
-    // Check add all roles
-    await positionManager.addSyntheticTokenAdminAndMinterAndBurner(
-      tokenHolder,
-      { from: sponsor },
-    );
-    assert.equal(await tokenCurrency.isAdmin.call(tokenHolder), true);
-    assert.equal(await tokenCurrency.isMinter.call(tokenHolder), true);
-    assert.equal(await tokenCurrency.isBurner.call(tokenHolder), true);
-    // Check renounce single role
-    await positionManager.renounceSyntheticTokenMinter({ from: sponsor });
-    assert.equal(
-      await tokenCurrency.isMinter.call(positionManager.address),
-      false,
-    );
-    await positionManager.renounceSyntheticTokenBurner({ from: sponsor });
-    assert.equal(
-      await tokenCurrency.isBurner.call(positionManager.address),
-      false,
-    );
-    await positionManager.renounceSyntheticTokenAdmin({ from: sponsor });
-    assert.equal(
-      await tokenCurrency.isAdmin.call(positionManager.address),
-      false,
-    );
-    // Check renounce all roles
-    await tokenCurrency.addAdmin(positionManager.address, {
-      from: contractDeployer,
-    });
-    await tokenCurrency.addMinter(positionManager.address, {
-      from: contractDeployer,
-    });
-    await tokenCurrency.addBurner(positionManager.address, {
-      from: contractDeployer,
-    });
-    assert.equal(
-      await tokenCurrency.isAdmin.call(positionManager.address),
-      true,
-    );
-    assert.equal(
-      await tokenCurrency.isMinter.call(positionManager.address),
-      true,
-    );
-    assert.equal(
-      await tokenCurrency.isBurner.call(positionManager.address),
-      true,
-    );
-    await positionManager.renounceSyntheticTokenAdminAndMinterAndBurner({
-      from: sponsor,
-    });
-    assert.equal(
-      await tokenCurrency.isAdmin.call(positionManager.address),
-      false,
-    );
-    assert.equal(
-      await tokenCurrency.isMinter.call(positionManager.address),
-      false,
-    );
-    assert.equal(
-      await tokenCurrency.isBurner.call(positionManager.address),
-      false,
     );
   });
 });

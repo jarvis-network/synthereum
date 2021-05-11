@@ -5,6 +5,7 @@ pragma experimental ABIEncoderV2;
 import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   FinderInterface
 } from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
@@ -21,6 +22,7 @@ interface IDerivativeMain {
   }
 
   struct PositionManagerData {
+    ISynthereumFinder synthereumFinder;
     IERC20 tokenCurrency;
     bytes32 priceIdentifier;
     uint256 withdrawalLiveness;
