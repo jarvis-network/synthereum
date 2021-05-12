@@ -7,7 +7,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "postinstall": "patch-package",
     "clean": "yarn clean:build-artifacts-only",
     "clean:build-artifacts-only": "git clean -fdx -e .env -e .direnv -e node_modules -e hush -- . && rm -rf node_modules/.cache",
     "clean:node_modules": "git clean -fdx -e .env -e .direnv -e hush -- .",
@@ -115,9 +114,7 @@
     }
   },
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "patch-package": "^6.2.2",
-    "postinstall-postinstall": "^2.1.0"
+    "dotenv": "^8.2.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
