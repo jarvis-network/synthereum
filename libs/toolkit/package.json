@@ -8,7 +8,10 @@
     "type": "git"
   },
   "keywords": [
-    "react", "ethereum", "toolkit", "web3"
+    "react",
+    "ethereum",
+    "toolkit",
+    "web3"
   ],
   "license": "MIT",
   "version": "0.1.0",
@@ -38,7 +41,7 @@
     "bnc-onboard": "^1.19.2",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
-    "web3": "^1.3.4"
+    "web3": "^1.3.5"
   },
   "peerDependencies": {},
   "devDependencies": {}
