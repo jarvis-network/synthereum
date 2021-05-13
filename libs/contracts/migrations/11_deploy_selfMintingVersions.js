@@ -1,45 +1,56 @@
-require('dotenv').config({ path: './.env.migration' });
-const {
-  parseBoolean,
-} = require('@jarvis-network/core-utils/dist/base/asserts');
-const rolesConfig = require('../data/roles.json');
-const { getExistingInstance } = require('../dist/migration-utils/deployment');
-const umaContracts = require('../data/uma-contract-dependencies.json');
-const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
-const SynthereumFinder = artifacts.require('SynthereumFinder');
-const FeePayerPartyLib = artifacts.require('FeePayerPartyLib');
-const SelfMintingPerpetualLiquidatableMultiPartyLib = artifacts.require(
+module.exports = require('../utils/getContractsFactory')(migrate, [
+  'SynthereumFinder',
+  'FeePayerPartyLib',
   'SelfMintingPerpetualLiquidatableMultiPartyLib',
-);
-const SelfMintingPerpetualPositionManagerMultiPartyLib = artifacts.require(
   'SelfMintingPerpetualPositionManagerMultiPartyLib',
-);
-const SelfMintingPerpetualMultiPartyLib = artifacts.require(
   'SelfMintingPerpetualMultiPartyLib',
-);
-
-const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
-);
-const SelfMintingDerivativeFactory = artifacts.require(
   'SelfMintingDerivativeFactory',
-);
-const UmaFinder = artifacts.require('Finder');
-const AddressWhitelist = artifacts.require('AddressWhitelist');
-const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
-const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
-const Timer = artifacts.require('Timer');
-const Registry = artifacts.require('Registry');
-const selfMintingVersions = require('../data/selfMinting-versions.json');
-const {
-  RegistryRolesEnum,
-  getKeysForNetwork,
-  interfaceName,
-  deploy,
-} = require('@jarvis-network/uma-common');
-const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
+  'Finder',
+  'AddressWhitelist',
+  'IdentifierWhitelist',
+  'TestnetSelfMintingERC20',
+  'Timer',
+  'Registry',
+]);
 
-module.exports = async function (deployer, network, accounts) {
+async function migrate(deployer, network, accounts) {
+  require('dotenv').config({ path: './.env.migration' });
+  const {
+    parseBoolean,
+  } = require('@jarvis-network/core-utils/dist/base/asserts');
+  const rolesConfig = require('../data/roles.json');
+  const {
+    getExistingInstance,
+  } = require('../dist/migration-utils/deployment');
+  const umaContracts = require('../data/uma-contract-dependencies.json');
+  const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+  const {
+    SynthereumFinder,
+    FeePayerPartyLib,
+    SelfMintingPerpetualLiquidatableMultiPartyLib,
+    SelfMintingPerpetualPositionManagerMultiPartyLib,
+    SelfMintingPerpetualMultiPartyLib,
+    SynthereumFactoryVersioning,
+    SelfMintingDerivativeFactory,
+    Finder: UmaFinder,
+    AddressWhitelist,
+    IdentifierWhitelist,
+    TestnetSelfMintingERC20,
+    Timer,
+    Registry,
+  } = migrate.getContracts(artifacts);
+
+  const selfMintingVersions = require('../data/selfMinting-versions.json');
+  const {
+    RegistryRolesEnum,
+    getKeysForNetwork,
+    deploy,
+  } = require('@jarvis-network/uma-common');
+  const {
+    toNetworkId,
+  } = require('@jarvis-network/core-utils/dist/eth/networks');
+
   const networkId = await toNetworkId(network);
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
@@ -271,4 +282,4 @@ module.exports = async function (deployer, network, accounts) {
         .send({ from: keys.deployer });
     }
   }
-};
+}

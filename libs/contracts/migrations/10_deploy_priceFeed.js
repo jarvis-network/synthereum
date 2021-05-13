@@ -1,15 +1,25 @@
-const rolesConfig = require('../data/roles.json');
-const aggregators = require('../data/aggregators.json');
-const { getExistingInstance } = require('../dist/migration-utils/deployment');
-const SynthereumFinder = artifacts.require('SynthereumFinder');
-const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
-const SynthereumChainlinkPriceFeed = artifacts.require(
+module.exports = require('../utils/getContractsFactory')(migrate, [
+  'SynthereumFinder',
   'SynthereumChainlinkPriceFeed',
-);
-const MockV3Aggregator = artifacts.require('MockV3Aggregator');
-const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
+  'MockV3Aggregator',
+]);
 
-module.exports = async function (deployer, network, accounts) {
+async function migrate(deployer, network, accounts) {
+  const rolesConfig = require('../data/roles.json');
+  const aggregators = require('../data/aggregators.json');
+  const {
+    getExistingInstance,
+  } = require('../dist/migration-utils/deployment');
+  const {
+    SynthereumFinder,
+    SynthereumChainlinkPriceFeed,
+    MockV3Aggregator,
+  } = migrate.getContracts(artifacts);
+  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    toNetworkId,
+  } = require('@jarvis-network/core-utils/dist/eth/networks');
+
   const networkId = await toNetworkId(network);
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
@@ -67,4 +77,4 @@ module.exports = async function (deployer, network, accounts) {
       console.log(`   Add '${aggregatorsData[j].asset}' aggregator`);
     }
   }
-};
+}

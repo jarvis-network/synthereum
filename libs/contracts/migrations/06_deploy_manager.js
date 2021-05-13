@@ -1,11 +1,21 @@
-const rolesConfig = require('../data/roles.json');
-const { getExistingInstance } = require('../dist/migration-utils/deployment');
-const SynthereumManager = artifacts.require('SynthereumManager');
-const SynthereumFinder = artifacts.require('SynthereumFinder');
-const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
-const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
+module.exports = require('../utils/getContractsFactory')(migrate, [
+  'SynthereumFinder',
+  'SynthereumManager',
+]);
 
-module.exports = async function (deployer, network, accounts) {
+async function migrate(deployer, network, accounts) {
+  const rolesConfig = require('../data/roles.json');
+  const {
+    getExistingInstance,
+  } = require('../dist/migration-utils/deployment');
+  const { SynthereumManager, SynthereumFinder } = migrate.getContracts(
+    artifacts,
+  );
+  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    toNetworkId,
+  } = require('@jarvis-network/core-utils/dist/eth/networks');
+
   const networkId = toNetworkId(network);
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
@@ -29,4 +39,4 @@ module.exports = async function (deployer, network, accounts) {
     )
     .send({ from: maintainer });
   console.log('SynthereumManager added to SynthereumFinder');
-};
+}

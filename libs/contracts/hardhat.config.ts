@@ -4,22 +4,20 @@ import '@nomiclabs/hardhat-web3';
 import 'solidity-coverage';
 
 import 'hardhat-gas-reporter';
-import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
-import { TASK_TEST } from 'hardhat/builtin-tasks/task-names';
+
+import { dirname, basename, join, resolve } from 'path';
+import { promises as fs, constants as fsConstants } from 'fs';
+
+import { TASK_COMPILE, TASK_TEST } from 'hardhat/builtin-tasks/task-names';
+
 import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
 import type { HardhatUserConfig } from 'hardhat/config';
-import { task } from 'hardhat/config';
+import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
 
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 /* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/first */
-
-// eslint-disable-next-line spaced-comment
-/// <reference path="./espree.d.ts" />
-
-import { dirname, basename, join, resolve } from 'path';
-import { promises as fs, constants as fsConstants } from 'fs';
 
 import {
   NetworkId,
@@ -32,13 +30,10 @@ import {
   generateArtifacts,
 } from '@jarvis-network/sol2ts-code-gen/dist/src/full-build-pipeline';
 
-import { task as createOrModifyHardhatTask } from 'hardhat/config';
 import { parse } from '@solidity-parser/parser';
-import { Token } from '@solidity-parser/parser/dist/types';
+import { Token } from '@solidity-parser/parser/dist/src/types';
 import globby from 'globby';
 import rmrf from 'rmrf';
-import { parse as esParse } from 'espree';
-import esquery from 'esquery';
 import { exec } from 'child-process-promise';
 
 createOrModifyHardhatTask(TASK_TEST)
@@ -310,12 +305,9 @@ createOrModifyHardhatTask(
         : (await getDeployedContractsForNetwork(network as NetworkName)).length;
 
       // Search for calls to artifacts.require and get value of first argument
-      const contractNames = esquery(
-        esParse(await fs.readFile(migrationScriptPath, 'utf-8'), {
-          ecmaVersion: 12,
-        }) as any,
-        'CallExpression[callee.object.name="artifacts"][callee.property.name="require"]',
-      ).map(node => (node as any).arguments[0].value) as string[];
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const contractNames = require(migrationScriptPath).getContracts() as string[];
+      delete require.cache[require.resolve(migrationScriptPath)];
 
       /* eslint-disable no-await-in-loop */
       for (const contractName of contractNames) {

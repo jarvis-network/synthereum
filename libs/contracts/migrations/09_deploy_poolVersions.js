@@ -1,21 +1,36 @@
-const rolesConfig = require('../data/roles.json');
-const { getExistingInstance } = require('../dist/migration-utils/deployment');
-const SynthereumFinder = artifacts.require('SynthereumFinder');
-const SynthereumPoolOnChainPriceFeedLib = artifacts.require(
-  'SynthereumPoolOnChainPriceFeedLib',
-);
-const SynthereumFactoryVersioning = artifacts.require(
+module.exports = require('../utils/getContractsFactory')(migrate, [
+  'SynthereumFinder',
   'SynthereumFactoryVersioning',
-);
-const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
+  'SynthereumTICHelper',
+  'SynthereumTICFactory',
+  'SynthereumPoolLib',
+  'SynthereumPoolFactory',
+  'SynthereumPoolOnChainPriceFeedLib',
   'SynthereumPoolOnChainPriceFeedFactory',
-);
+]);
 
-const poolVersions = require('../data/pool-versions.json');
-const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
-const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
+async function migrate(deployer, network, accounts) {
+  const rolesConfig = require('../data/roles.json');
+  const {
+    getExistingInstance,
+  } = require('../dist/migration-utils/deployment');
+  const {
+    SynthereumFinder,
+    SynthereumFactoryVersioning,
+    SynthereumTICHelper,
+    SynthereumTICFactory,
+    SynthereumPoolLib,
+    SynthereumPoolFactory,
+    SynthereumPoolOnChainPriceFeedLib,
+    SynthereumPoolOnChainPriceFeedFactory,
+  } = migrate.getContracts(artifacts);
 
-module.exports = async function (deployer, network, accounts) {
+  const poolVersions = require('../data/pool-versions.json');
+  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    toNetworkId,
+  } = require('@jarvis-network/core-utils/dist/eth/networks');
+
   const networkId = await toNetworkId(network);
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
@@ -77,4 +92,4 @@ module.exports = async function (deployer, network, accounts) {
       'PoolOnChainPriceFeedFactory added to SynthereumFactoryVersioning',
     );
   }
-};
+}
