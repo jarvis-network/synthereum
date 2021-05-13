@@ -3,7 +3,10 @@ module.exports = function getContractsFactory(migrate, contracts) {
     if (artifacts) {
       const map = {};
       for (const contract of contracts) {
-        map[contract] = artifacts.require(contract);
+        const toRequire = contract.includes('/')
+          ? contract.split('/').reverse()[0]
+          : contract;
+        map[toRequire] = artifacts.require(toRequire);
       }
 
       return map;

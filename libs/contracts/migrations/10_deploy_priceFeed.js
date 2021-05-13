@@ -1,7 +1,7 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumChainlinkPriceFeed',
-  'MockV3Aggregator',
+  '@chainlink/contracts/src/v0.6/tests/MockV3Aggregator',
 ]);
 
 async function migrate(deployer, network, accounts) {

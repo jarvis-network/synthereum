@@ -177,26 +177,33 @@ async function findContract({ dir, name }: { dir: string; name: string }) {
   throw new Error(`Contract with name '${name}' not found`);
 }
 
+function getModuleName(path: string) {
+  const partsOfPath = path.split('/');
+  return path[0] === '@'
+    ? `${partsOfPath[0]}/${partsOfPath[1]}`
+    : partsOfPath[0];
+}
+
 async function gatherFiles(
   contractPath: string,
   dir: string,
+  moduleName?: string,
   gathered: string[] = [contractPath],
 ) {
   const contractDir = dirname(resolve(contractPath));
-  const contractRelativePath = contractDir.split(__dirname)[1];
-  const contractCopyPath = join(
-    dir,
-    contractRelativePath,
-    basename(contractPath),
-  );
+  const contractCopyPath = moduleName
+    ? join(
+        dir,
+        relative(contractDir.split(moduleName)[0], contractDir),
+        basename(contractPath),
+      )
+    : join(dir, relative(dirname(dir), contractDir), basename(contractPath));
 
-  const mainContractContent = await fs.readFile(contractPath, 'utf-8');
+  let mainContractContent = await fs.readFile(contractPath, 'utf-8');
 
   await fs.mkdir(dirname(contractCopyPath), { recursive: true });
 
-  await fs.writeFile(contractCopyPath, mainContractContent, {
-    encoding: 'utf-8',
-  });
+  const externalImports: Record<string, string> = {};
 
   const { children } = ((await parse(mainContractContent)) as unknown) as {
     children: Token[];
@@ -209,24 +216,40 @@ async function gatherFiles(
         path: string;
       };
 
+      let externalModule: string | undefined;
+      let abosolutePath: string;
       if (
         importedContractPath.indexOf('./') !== 0 &&
         importedContractPath.indexOf('../') !== 0
       ) {
-        throw new Error(
-          `Unsupported contract import '${importedContractPath}'`,
-        );
+        externalModule = getModuleName(importedContractPath);
+        abosolutePath = require.resolve(importedContractPath);
+        externalImports[importedContractPath] = `${relative(
+          dirname(contractCopyPath),
+          dir,
+        )}/${importedContractPath}`;
+      } else {
+        if (moduleName) externalModule = moduleName;
+        // eslint-disable-next-line no-await-in-loop
+        abosolutePath = await resolve(contractDir, importedContractPath);
       }
 
-      // eslint-disable-next-line no-await-in-loop
-      const abosolutePath = await resolve(contractDir, importedContractPath);
       if (!gathered.includes(abosolutePath)) {
         gathered.push(abosolutePath);
         // eslint-disable-next-line no-await-in-loop
-        await gatherFiles(abosolutePath, dir, gathered);
+        await gatherFiles(abosolutePath, dir, externalModule, gathered);
       }
     }
   }
+
+  // eslint-disable-next-line guard-for-in
+  for (const i in externalImports) {
+    mainContractContent = mainContractContent.replace(i, externalImports[i]);
+  }
+
+  await fs.writeFile(contractCopyPath, mainContractContent, {
+    encoding: 'utf-8',
+  });
 
   return contractCopyPath;
 }
@@ -344,15 +367,20 @@ createOrModifyHardhatTask(
       /* eslint-disable no-await-in-loop */
       const srcPath = resolve('./contracts');
       const contractPaths = await Promise.all(
-        contractNames.map(async name =>
-          gatherFiles(
+        contractNames.map(async name => {
+          if (name.includes('/')) {
+            const resolvedPath = require.resolve(`${name}.sol`);
+            return gatherFiles(resolvedPath, sources, getModuleName(name));
+          }
+
+          return gatherFiles(
             await findContract({
               name,
               dir: srcPath,
             }),
             sources,
-          ),
-        ),
+          );
+        }),
       );
       /* eslint-enable no-await-in-loop */
 

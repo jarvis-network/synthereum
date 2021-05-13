@@ -6,12 +6,12 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'PerpetualPoolPartyLib',
   'SynthereumFactoryVersioning',
   'SynthereumDerivativeFactory',
-  'Finder',
-  'AddressWhitelist',
-  'IdentifierWhitelist',
-  'TestnetERC20',
-  'Timer',
-  'Registry',
+  '@jarvis-network/uma-core/contracts/oracle/implementation/Finder',
+  '@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist',
+  '@jarvis-network/uma-core/contracts/oracle/implementation/IdentifierWhitelist',
+  '@jarvis-network/uma-core/contracts/common/implementation/TestnetERC20',
+  '@jarvis-network/uma-core/contracts/common/implementation/Timer',
+  '@jarvis-network/uma-core/contracts/oracle/implementation/Registry',
 ]);
 
 async function migrate(deployer, network, accounts) {
