@@ -307,25 +307,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   function setSyntheticTokenRoles(IDerivativeDeployment derivative) internal {
-    ISynthereumManager manager = getManager();
     IRole tokenCurrency = IRole(address(derivative.tokenCurrency()));
-    if (!tokenCurrency.hasRole(ADMIN_ROLE, address(manager))) {
-      IExtendedDerivativeDeployment extDerivative =
-        IExtendedDerivativeDeployment(address(derivative));
-      address[] memory contracts = new address[](1);
-      bytes32[] memory roles = new bytes32[](1);
-      address[] memory accounts = new address[](1);
-      contracts[0] = address(extDerivative);
-      roles[0] = POOL_ROLE;
-      accounts[0] = address(this);
-      manager.grantSynthereumRole(contracts, roles, accounts);
-      extDerivative.addSyntheticTokenAdmin(address(manager));
-      extDerivative.renouncePool();
-      contracts[0] = address(tokenCurrency);
-      roles[0] = ADMIN_ROLE;
-      accounts[0] = address(extDerivative);
-      manager.revokeSynthereumRole(contracts, roles, accounts);
-    }
     if (
       !tokenCurrency.hasRole(MINTER_ROLE, address(derivative)) ||
       !tokenCurrency.hasRole(BURNER_ROLE, address(derivative))
