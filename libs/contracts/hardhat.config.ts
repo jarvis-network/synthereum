@@ -10,7 +10,11 @@ import { promises as fs, constants as fsConstants } from 'fs';
 
 import { TASK_COMPILE, TASK_TEST } from 'hardhat/builtin-tasks/task-names';
 
-import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
+import {
+  TASK_VERIFY_VERIFY,
+  TASK_VERIFY_GET_MINIMUM_BUILD,
+  TASK_VERIFY_VERIFY_MINIMUM_BUILD,
+} from '@nomiclabs/hardhat-etherscan/dist/src/constants';
 import type { HardhatUserConfig } from 'hardhat/config';
 import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
 
@@ -35,6 +39,14 @@ import { Token } from '@solidity-parser/parser/dist/src/types';
 import globby from 'globby';
 import rmrf from 'rmrf';
 import { exec } from 'child-process-promise';
+
+createOrModifyHardhatTask(TASK_VERIFY_GET_MINIMUM_BUILD).setAction(() =>
+  Promise.resolve(1),
+);
+
+createOrModifyHardhatTask(TASK_VERIFY_VERIFY_MINIMUM_BUILD).setAction(() =>
+  Promise.resolve(false),
+);
 
 createOrModifyHardhatTask(TASK_COMPILE).setAction((args, hre, runSuper) =>
   ((hre as unknown) as { skipCompile?: boolean }).skipCompile
@@ -193,10 +205,10 @@ async function gatherFiles(
   const contractDir = dirname(resolve(contractPath));
   const contractCopyPath = moduleName
     ? join(
-        dir,
-        relative(contractDir.split(moduleName)[0], contractDir),
-        basename(contractPath),
-      )
+      dir,
+      relative(contractDir.split(moduleName)[0], contractDir),
+      basename(contractPath),
+    )
     : join(dir, relative(dirname(dir), contractDir), basename(contractPath));
 
   let mainContractContent = await fs.readFile(contractPath, 'utf-8');
