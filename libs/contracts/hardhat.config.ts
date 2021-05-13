@@ -5,7 +5,7 @@ import 'solidity-coverage';
 
 import 'hardhat-gas-reporter';
 
-import { dirname, basename, join, resolve } from 'path';
+import { dirname, basename, join, resolve, relative } from 'path';
 import { promises as fs, constants as fsConstants } from 'fs';
 
 import { TASK_COMPILE, TASK_TEST } from 'hardhat/builtin-tasks/task-names';
@@ -36,6 +36,35 @@ import globby from 'globby';
 import rmrf from 'rmrf';
 import { exec } from 'child-process-promise';
 
+createOrModifyHardhatTask(TASK_COMPILE).setAction((args, hre, runSuper) =>
+  ((hre as unknown) as { skipCompile?: boolean }).skipCompile
+    ? Promise.resolve()
+    : runSuper(args),
+);
+
+/*
+// Alternate method to fix `Fail - Unable to verify` error when verifying
+createOrModifyHardhatTask(TASK_VERIFY_GET_CONTRACT_INFORMATION).setAction(
+  async (args, _hre, runSuper) => {
+    const result = await runSuper(args);
+
+    const { libraries } = result.compilerInput.settings;
+    if (libraries) {
+      if (!result.libraryLinks) {
+        result.libraryLinks = {};
+      }
+      // eslint-disable-next-line guard-for-in
+      for (const library in libraries) {
+        result.libraryLinks[library] = libraries[library];
+      }
+    }
+    delete result.compilerInput.settings.libraries;
+
+    return result;
+  },
+);
+*/
+
 createOrModifyHardhatTask(TASK_TEST)
   .addFlag('debug', 'Compile without optimizer')
   .setAction(async (taskArgs, hre, runSuper) => {
@@ -55,7 +84,7 @@ createOrModifyHardhatTask(
   'accounts',
   'Prints the list of accounts',
   async (_, hre) => {
-    const accounts = await (hre as any).web3.eth.getAccounts();
+    const accounts = await hre.web3.eth.getAccounts();
     console.log(accounts);
   },
 );
@@ -155,7 +184,7 @@ async function gatherFiles(
 ) {
   const contractDir = dirname(resolve(contractPath));
   const contractRelativePath = contractDir.split(__dirname)[1];
-  const tmpMainContractPath = join(
+  const contractCopyPath = join(
     dir,
     contractRelativePath,
     basename(contractPath),
@@ -163,9 +192,9 @@ async function gatherFiles(
 
   const mainContractContent = await fs.readFile(contractPath, 'utf-8');
 
-  await fs.mkdir(dirname(tmpMainContractPath), { recursive: true });
+  await fs.mkdir(dirname(contractCopyPath), { recursive: true });
 
-  await fs.writeFile(tmpMainContractPath, mainContractContent, {
+  await fs.writeFile(contractCopyPath, mainContractContent, {
     encoding: 'utf-8',
   });
 
@@ -199,7 +228,7 @@ async function gatherFiles(
     }
   }
 
-  return tmpMainContractPath;
+  return contractCopyPath;
 }
 
 const migrationsGlobPattern = './migrations/??_deploy_*.js';
@@ -214,8 +243,11 @@ async function getMigrationScriptPath(
   throw new Error(`Migration script '${migrationScript}' not supported`);
 }
 
+function getNetworkFile(network: NetworkName) {
+  return `./networks/${networkNameToId[network]}.json`;
+}
 async function getDeployedContractsForNetwork(network: NetworkName) {
-  const path = `./networks/${networkNameToId[network]}.json`;
+  const path = getNetworkFile(network);
   if (!exists(path)) return [];
 
   return JSON.parse(await fs.readFile(path, 'utf-8')) as {
@@ -310,15 +342,18 @@ createOrModifyHardhatTask(
       delete require.cache[require.resolve(migrationScriptPath)];
 
       /* eslint-disable no-await-in-loop */
-      for (const contractName of contractNames) {
-        await gatherFiles(
-          await findContract({
-            name: contractName,
-            dir: resolve('./contracts'),
-          }),
-          sources,
-        );
-      }
+      const srcPath = resolve('./contracts');
+      const contractPaths = await Promise.all(
+        contractNames.map(async name =>
+          gatherFiles(
+            await findContract({
+              name,
+              dir: srcPath,
+            }),
+            sources,
+          ),
+        ),
+      );
       /* eslint-enable no-await-in-loop */
 
       // Check https://gitlab.com/jarvis-network/base/tools/hardhat/-/blob/jarvis-publish/hardhat-etherscan@0.1.0/packages/hardhat-etherscan/src/index.ts
@@ -343,18 +378,29 @@ contract('${migrationScript}', accounts => {
       );
       await hre.run(TASK_TEST, { testFiles: [testPath] });
 
+      const findContractPathInProject = (contractName: string) =>
+        `${relative(
+          __dirname,
+          contractPaths[contractNames.indexOf(contractName)],
+        )}:${contractName}`;
+
       if (!noVerify && !localNetwork) {
         const contracts = await getDeployedContractsForNetwork(
           network as NetworkName,
         );
-        /* eslint-disable no-await-in-loop */
-        for (const { contractName, address } of Array.from({
+        const newDeployedContracts = Array.from({
           length: contracts.length - lengthBefore,
-        }).map((_, index) => contracts[lengthBefore + index])) {
-          await clean(false);
+        }).map((_, index) => contracts[lengthBefore + index]);
+
+        /* eslint-disable no-await-in-loop */
+        for (const { contractName, address } of newDeployedContracts) {
+          const contract = findContractPathInProject(contractName);
 
           for (; ;) {
             try {
+              ((hre as unknown) as {
+                skipCompile?: boolean;
+              }).skipCompile = true;
               await hre.run(TASK_VERIFY_VERIFY, {
                 address,
                 constructorArguments: (
@@ -362,7 +408,10 @@ contract('${migrationScript}', accounts => {
                     network as NetworkName,
                   )
                 )[address],
+                contract,
               });
+              delete ((hre as unknown) as { skipCompile?: boolean })
+                .skipCompile;
               break;
             } catch (error) {
               if (
@@ -395,7 +444,7 @@ contract('${migrationScript}', accounts => {
                 stdout,
                 stderr,
               } = await exec(
-                `hardhat verify ${address} --constructor-args ${constructorArgs} --network ${network}`,
+                `hardhat verify ${address} --constructor-args ${constructorArgs} --contract '${contract}' --network ${network}`,
                 { capture: ['stderr', 'stdout'] },
               );
               process.stdout.write(stdout);
