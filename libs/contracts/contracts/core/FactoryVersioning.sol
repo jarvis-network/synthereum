@@ -8,6 +8,9 @@ import {
 import {EnumerableMap} from '@openzeppelin/contracts/utils/EnumerableMap.sol';
 import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
 
+/**
+ * @title Provides addresses of different versions of pools factory and derivative factory
+ */
 contract SynthereumFactoryVersioning is
   ISynthereumFactoryVersioning,
   AccessControl
@@ -16,12 +19,17 @@ contract SynthereumFactoryVersioning is
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
+  //Describe role structure
   struct Roles {
     address admin;
     address maintainer;
   }
 
   mapping(bytes32 => EnumerableMap.UintToAddressMap) private factories;
+
+  //----------------------------------------
+  // Events
+  //----------------------------------------
 
   event AddFactory(
     bytes32 indexed factoryType,
@@ -41,12 +49,19 @@ contract SynthereumFactoryVersioning is
     address indexed factory
   );
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
   constructor(Roles memory _roles) public {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
+
+  //----------------------------------------
+  // Modifiers
+  //----------------------------------------
 
   modifier onlyMaintainer() {
     require(
@@ -55,6 +70,10 @@ contract SynthereumFactoryVersioning is
     );
     _;
   }
+
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
 
   function setFactory(
     bytes32 factoryType,
@@ -81,6 +100,10 @@ contract SynthereumFactoryVersioning is
     selectedFactories.remove(version);
     RemoveFactory(factoryType, version, factoryToRemove);
   }
+
+  //----------------------------------------
+  // External view functions
+  //----------------------------------------
 
   function getFactoryVersion(bytes32 factoryType, uint8 version)
     external

@@ -12,9 +12,23 @@ contract SynthereumDerivativeFactory is
   PerpetualPoolPartyCreator,
   IDeploymentSignature
 {
+  //----------------------------------------
+  // State variables
+  //----------------------------------------
+
   bytes4 public override deploymentSignature;
 
-  constructor(
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs the SynthereumDerivativeFactory contract
+   * @param _umaFinder Finder of UMA DVM protocol
+   * @param _synthereumFinder Synthereum finder contract
+   * @param _timerAddress Address of UMA Timer contract
+   */
+   constructor(
     address _umaFinder,
     address _synthereumFinder,
     address _timerAddress
@@ -25,6 +39,11 @@ contract SynthereumDerivativeFactory is
     deploymentSignature = this.createPerpetual.selector;
   }
 
+  /**
+   * @notice Check if the sender is the deployer and deploy a perpetual derivative
+   * @param params input parameters of perpetual derivative
+   * @return derivative address of the derivative created
+   */
   function createPerpetual(Params memory params)
     public
     override

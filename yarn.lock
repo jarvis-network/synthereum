@@ -28323,6 +28323,18 @@ string.prototype.padstart@^3.0.0:
     define-properties "^1.1.3"
     es-abstract "^1.18.0-next.2"
 
+string.prototype.replaceall@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/string.prototype.replaceall/-/string.prototype.replaceall-1.0.5.tgz#3eae8b115c588ece949b14fa2993d86fc8ec87b1"
+  integrity sha512-YUjdWElI9pgKo7mrPOMKHFZxcAa0v1uqoJkMHtlJW63rMkPLkQH71ao2XNkKY2ksHKHC8ZUFwNjN9Vry+QyCvg==
+  dependencies:
+    call-bind "^1.0.2"
+    define-properties "^1.1.3"
+    es-abstract "^1.18.0-next.2"
+    get-intrinsic "^1.1.1"
+    has-symbols "^1.0.1"
+    is-regex "^1.1.2"
+
 string.prototype.trim@^1.2.1:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/string.prototype.trim/-/string.prototype.trim-1.2.3.tgz#d23a22fde01c1e6571a7fadcb9be11decd8061a7"

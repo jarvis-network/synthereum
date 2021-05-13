@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 
+/**
+ * @title Provides addresses of different versions of pools factory and derivative factory
+ */
 interface ISynthereumFactoryVersioning {
   function setFactory(
     bytes32 factoryType,

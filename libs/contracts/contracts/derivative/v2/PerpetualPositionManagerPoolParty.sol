@@ -415,6 +415,10 @@ contract PerpetualPositionManagerPoolParty is
     finder = positionManagerData.synthereumFinder;
   }
 
+  /**
+   * @notice Get emergency shutdown price
+   * @return token Synthetic token
+   */
   function tokenCurrency() external view override returns (IERC20 token) {
     token = positionManagerData.tokenCurrency;
   }

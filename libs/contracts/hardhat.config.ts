@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="string.prototype.replaceall.d.ts" />
+
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-web3';
@@ -9,6 +12,8 @@ import { dirname, basename, join, resolve, relative } from 'path';
 import { promises as fs, constants as fsConstants } from 'fs';
 
 import { TASK_COMPILE, TASK_TEST } from 'hardhat/builtin-tasks/task-names';
+
+import replaceAll from 'string.prototype.replaceall';
 
 import {
   TASK_VERIFY_VERIFY,
@@ -256,7 +261,11 @@ async function gatherFiles(
 
   // eslint-disable-next-line guard-for-in
   for (const i in externalImports) {
-    mainContractContent = mainContractContent.replace(i, externalImports[i]);
+    mainContractContent = replaceAll(
+      mainContractContent,
+      i,
+      externalImports[i],
+    );
   }
 
   await fs.writeFile(contractCopyPath, mainContractContent, {

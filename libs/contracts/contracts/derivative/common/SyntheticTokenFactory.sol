@@ -13,7 +13,15 @@ import {
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 
 contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
+  //----------------------------------------
+  // State variables
+  //----------------------------------------
+
   ISynthereumFinder public synthereumFinder;
+
+  //----------------------------------------
+  // Modifiers
+  //----------------------------------------
 
   modifier onlyDerivativeFactory() {
     ISynthereumFactoryVersioning factoryVersioning =
@@ -47,10 +55,25 @@ contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
     }
   }
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs SynthereumSyntheticTokenFactory contract
+   * @param _synthereumFinder Synthereum finder contract
+   */
   constructor(address _synthereumFinder) public {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
+  /**
+   * @notice Check if the sender is a derivative Factory and deploy a new synthetic token
+   * @param tokenName used to describe the new token
+   * @param tokenSymbol short ticker abbreviation of the name. Ideally < 5 chars
+   * @param tokenDecimals used to define the precision used in the token's numerical representation
+   * @return newToken an instance of the newly created token interface.
+   */
   function createToken(
     string calldata tokenName,
     string calldata tokenSymbol,
