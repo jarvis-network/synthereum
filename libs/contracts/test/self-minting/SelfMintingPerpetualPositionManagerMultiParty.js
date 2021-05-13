@@ -386,7 +386,7 @@ contract('SelfMintingPerpetualPositionManagerMultiParty', function (accounts) {
     );
   });
 
-  it('Valid identifier in the constructor', async function () {
+  it('Valid collateral in the constructor', async function () {
     let newPositionManagerData = positionManagerParams;
     newPositionManagerData.collateralAddress = (
       await TestnetSelfMintingERC20.new('UNREGISTERED COIN', 'WRONG TEST', 18)

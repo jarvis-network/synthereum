@@ -453,6 +453,30 @@ contract('PerpetualLiquidatablePoolParty', function (accounts) {
         liquidationParams.liquidationId.toString(),
       );
     });
+    it('Liquidaton is stored', async () => {
+      await liquidationContract.createLiquidation(
+        sponsor,
+        { rawValue: '0' },
+        { rawValue: pricePerToken.toString() },
+        { rawValue: amountOfSynthetic.toString() },
+        unreachableDeadline,
+        { from: liquidator },
+      );
+      const liquidations = await liquidationContract.getLiquidations.call(
+        sponsor,
+      );
+      assert.equal(liquidations.length, 1, 'Liquidation not stored');
+      assert.equal(
+        liquidations[0].sponsor,
+        sponsor,
+        'Wrong sponsor in liquidation',
+      );
+      assert.equal(
+        liquidations[0].liquidator,
+        liquidator,
+        'Wrong liquidator in liquidation',
+      );
+    });
     it('Fails if contract does not have Burner role', async () => {
       await syntheticToken.revokeRole(
         web3.utils.soliditySha3('Burner'),

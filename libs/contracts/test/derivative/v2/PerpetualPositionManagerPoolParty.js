@@ -272,6 +272,10 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
       collateral.address,
     );
     assert.equal(
+      await positionManager.synthereumFinder.call(),
+      synthereumFinder.address,
+    );
+    assert.equal(
       await positionManager.tokenCurrency.call(),
       tokenCurrency.address,
     );
@@ -302,19 +306,32 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     assert.equal(await tokenCurrency.symbol.call(), syntheticSymbol);
   });
 
-  it('Valid constructor params', async function () {
+  it('Valid identifier in the constructor', async function () {
     let newPositionManagerData = positionManagerData;
     newPositionManagerData.priceFeedIdentifier = web3.utils.padRight(
       utf8ToHex('UNREGISTERED'),
       64,
     );
     // Pricefeed identifier must be whitelisted.
-    assert(
-      await didContractThrow(
-        PerpetualPositionManagerPoolParty.new(newPositionManagerData, roles, {
-          from: contractDeployer,
-        }),
-      ),
+    await truffleAssert.reverts(
+      PerpetualPositionManagerPoolParty.new(newPositionManagerData, roles, {
+        from: contractDeployer,
+      }),
+      'Unsupported price identifier',
+    );
+  });
+
+  it('Valid collateral in the constructor', async function () {
+    let newPositionManagerData = positionManagerData;
+    newPositionManagerData.collateralAddress = (
+      await TestnetERC20.new('UNREGISTERED COIN', 'WRONG TEST', 18)
+    ).address;
+    // Pricefeed identifier must be whitelisted.
+    await truffleAssert.reverts(
+      PerpetualPositionManagerPoolParty.new(newPositionManagerData, roles, {
+        from: contractDeployer,
+      }),
+      'Collateral not whitelisted',
     );
   });
 
