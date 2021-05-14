@@ -21,8 +21,6 @@ const {
 const { log } = require('@jarvis-network/core-utils/dist/logging');
 const {
   encodeDerivative,
-  encodeTIC,
-  encodePool,
   encodePoolOnChainPriceFeed,
 } = require('../utils/encoding.js');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -78,46 +76,7 @@ module.exports = async function (deployer, network, accounts) {
           [],
         );
       }
-      if (deployment[networkId].Pool === 1) {
-        poolVersion = poolVersions[networkId]['TICFactory'].version;
-        poolPayload = encodeTIC(
-          ZERO_ADDRESS,
-          synthereumFinder.options.address,
-          poolVersion,
-          {
-            admin: admin,
-            maintainer: maintainer,
-            liquidityProvider: liquidityProvider,
-            validator: validator,
-          },
-          asset.startingCollateralization,
-          {
-            feePercentage: fees[networkId].feePercentage,
-            feeRecipients: fees[networkId].feeRecipients,
-            feeProportions: fees[networkId].feeProportions,
-          },
-        );
-      } else if (deployment[networkId].Pool === 2) {
-        poolVersion = poolVersions[networkId]['PoolFactory'].version;
-        poolPayload = encodePool(
-          ZERO_ADDRESS,
-          synthereumFinder.options.address,
-          poolVersion,
-          {
-            admin: admin,
-            maintainer: maintainer,
-            liquidityProvider: liquidityProvider,
-            validator: validator,
-          },
-          asset.isContractAllowed,
-          asset.startingCollateralization,
-          {
-            feePercentage: fees[networkId].feePercentage,
-            feeRecipients: fees[networkId].feeRecipients,
-            feeProportions: fees[networkId].feeProportions,
-          },
-        );
-      } else if (deployment[networkId].Pool === 3) {
+      if (deployment[networkId].Pool === 3) {
         poolVersion =
           poolVersions[networkId]['PoolOnChainPriceFeedFactory'].version;
         poolPayload = encodePoolOnChainPriceFeed(

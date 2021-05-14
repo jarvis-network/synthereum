@@ -7,7 +7,7 @@ const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
   encodeDerivative,
-  encodePool,
+  encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
 } = require('../utils/encoding.js');
 const Finder = artifacts.require('Finder');
@@ -32,8 +32,12 @@ const SelfMintingPerpetualMultiPartyLib = artifacts.require(
 const SelfMintingDerivativeFactory = artifacts.require(
   'SelfMintingDerivativeFactory',
 );
-const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
-const SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
+const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
+  'SynthereumPoolOnChainPriceFeedFactory',
+);
+const SynthereumPoolOnChainPriceFeedLib = artifacts.require(
+  'SynthereumPoolOnChainPriceFeedLib',
+);
 const PoolMock = artifacts.require('PoolMock');
 const SelfMintingDerivativeFactoryMock = artifacts.require(
   'SelfMintingDerivativeFactoryMock',
@@ -104,7 +108,7 @@ contract('Synthereum Deployer', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 2;
+    poolVersion = 3;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     manager = (await SynthereumManager.deployed()).address;
     selfMintingControllerInstanceAddr = (await SelfMintingController.deployed())
@@ -126,7 +130,7 @@ contract('Synthereum Deployer', function (accounts) {
       derivativeAdmins,
       derivativePools,
     );
-    poolPayload = encodePool(
+    poolPayload = encodePoolOnChainPriceFeed(
       derivativeAddress,
       synthereumFinderAddress,
       poolVersion,
@@ -158,7 +162,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
         return (
-          ev.poolVersion == 2 &&
+          ev.poolVersion == 3 &&
           ev.derivative == derivative &&
           ev.newPool == pool
         );
@@ -440,7 +444,7 @@ contract('Synthereum Deployer', function (accounts) {
     });
     it('Revert if Synthereum finder of pool is different from the deployer one', async () => {
       synthereumFinderAddress = firstWrongAddress;
-      poolPayload = encodePool(
+      poolPayload = encodePoolOnChainPriceFeed(
         derivativeAddress,
         synthereumFinderAddress,
         poolVersion,
@@ -461,8 +465,8 @@ contract('Synthereum Deployer', function (accounts) {
       );
     });
     it('Revert if pool version is different from the one using in the deployemnt', async () => {
-      const wrongPoolVersion = 3;
-      poolPayload = encodePool(
+      const wrongPoolVersion = 4;
+      poolPayload = encodePoolOnChainPriceFeed(
         derivativeAddress,
         synthereumFinderAddress,
         wrongPoolVersion,
@@ -503,11 +507,12 @@ contract('Synthereum Deployer', function (accounts) {
         tempDerivative,
       );
       const syntheticTokenDeployed = await tempDerivativeInstance.tokenCurrency.call();
-      const poolLibInstance = await SynthereumPoolLib.deployed();
+      const poolLibInstance = await SynthereumPoolOnChainPriceFeedLib.deployed();
       await PoolFactoryMock.link(poolLibInstance);
       const wrongDerivativeInstance = await DerivativeMock.new(
         collateralAddress,
         syntheticTokenDeployed,
+        web3Utils.utf8ToHex(priceFeedIdentifier),
       );
       const wrongPoolFactory = await PoolFactoryMock.new(
         synthereumFinderAddress,
@@ -515,7 +520,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       const factoryVersioninginstance = await SynthereumFactoryVersioning.deployed();
       await factoryVersioninginstance.setPoolFactory(
-        2,
+        3,
         wrongPoolFactory.address,
         { from: maintainer },
       );
@@ -547,8 +552,8 @@ contract('Synthereum Deployer', function (accounts) {
         'Pool doesnt support derivative',
       );
       await factoryVersioninginstance.setPoolFactory(
-        2,
-        (await SynthereumPoolFactory.deployed()).address,
+        3,
+        (await SynthereumPoolOnChainPriceFeedFactory.deployed()).address,
         { from: maintainer },
       );
     });
@@ -586,7 +591,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
         return (
-          ev.poolVersion == 2 &&
+          ev.poolVersion == 3 &&
           ev.derivative == derivative &&
           ev.newPool == secondPool
         );

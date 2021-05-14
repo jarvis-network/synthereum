@@ -7,7 +7,7 @@ const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
   encodeDerivative,
-  encodePool,
+  encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
 } = require('../../utils/encoding.js');
 const Finder = artifacts.require('Finder');
@@ -26,20 +26,6 @@ const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
-const SelfMintingPerpetualMultiPartyLib = artifacts.require(
-  'SelfMintingPerpetualMultiPartyLib',
-);
-const SelfMintingDerivativeFactory = artifacts.require(
-  'SelfMintingDerivativeFactory',
-);
-const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
-const SynthereumPoolLib = artifacts.require('SynthereumPoolLib');
-const PoolMock = artifacts.require('PoolMock');
-const SelfMintingDerivativeFactoryMock = artifacts.require(
-  'SelfMintingDerivativeFactoryMock',
-);
-const PoolFactoryMock = artifacts.require('PoolFactoryMock');
-const DerivativeMock = artifacts.require('DerivativeMock');
 
 contract('Self-minting creator', function (accounts) {
   let derivativeVersion = 2;
@@ -110,7 +96,7 @@ contract('Self-minting creator', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 2;
+    poolVersion = 3;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     manager = (await SynthereumManager.deployed()).address;
     selfMintingControllerInstanceAddr = (await SelfMintingController.deployed())
@@ -132,7 +118,7 @@ contract('Self-minting creator', function (accounts) {
       derivativeAdmins,
       derivativePools,
     );
-    poolPayload = encodePool(
+    poolPayload = encodePoolOnChainPriceFeed(
       derivativeAddress,
       synthereumFinderAddress,
       poolVersion,

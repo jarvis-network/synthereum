@@ -4,7 +4,6 @@ const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
   encodeDerivative,
-  encodePool,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
 } = require('../utils/encoding.js');
@@ -18,7 +17,6 @@ const SynthereumSyntheticTokenFactory = artifacts.require(
 const SynthereumDerivativeFactory = artifacts.require(
   'SynthereumDerivativeFactory',
 );
-const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
 const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
   'SynthereumPoolOnChainPriceFeedFactory',
 );
@@ -99,7 +97,6 @@ contract('Factories', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 2;
     poolOnChainVersion = 3;
     feePercentageWei = web3Utils.toWei(feePercentage);
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
@@ -120,15 +117,6 @@ contract('Factories', function (accounts) {
       derivativeAdmins,
       derivativePools,
     );
-    poolPayload = encodePool(
-      derivativeAddress,
-      synthereumFinderAddress,
-      poolVersion,
-      roles,
-      isContractAllowed,
-      startingCollateralization,
-      fee,
-    );
     poolOnChainPayload = encodePoolOnChainPriceFeed(
       derivativeAddress,
       synthereumFinderAddress,
@@ -140,15 +128,6 @@ contract('Factories', function (accounts) {
     );
   });
   describe('Can deploy factories', async () => {
-    it('Can deploy derivative and pool', async () => {
-      await deployerInstance.deployPoolAndDerivative(
-        derivativeVersion,
-        poolVersion,
-        derivativePayload,
-        poolPayload,
-        { from: maintainer },
-      );
-    });
     it('Can deploy derivative and on-chain-price pool', async () => {
       await deployerInstance.deployPoolAndDerivative(
         derivativeVersion,
@@ -232,22 +211,6 @@ contract('Factories', function (accounts) {
           { from: sender },
         ),
         'Sender must be a derivative factory',
-      );
-    });
-    it('Revert in pool factory', async () => {
-      const poolFactoryInstance = await SynthereumPoolFactory.deployed();
-      const funcSignature = await poolFactoryInstance.deploymentSignature();
-      const dataPayload =
-        funcSignature +
-        web3Utils.padRight(ZERO_ADDRESS.replace('0x', ''), '64') +
-        poolPayload.replace('0x', '');
-      await truffleAssert.reverts(
-        web3.eth.sendTransaction({
-          from: sender,
-          to: poolFactoryInstance.address,
-          data: dataPayload,
-        }),
-        'Sender must be Synthereum deployer',
       );
     });
     it('Revert in on-chain-price pool factory', async () => {

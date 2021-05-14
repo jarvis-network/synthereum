@@ -6,15 +6,12 @@ const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
   encodeDerivative,
-  encodePool,
+  encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
 } = require('../../utils/encoding.js');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SelfMintingController = artifacts.require('SelfMintingController');
-const SynthereumFactoryVersioning = artifacts.require(
-  'SynthereumFactoryVersioning',
-);
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
@@ -97,7 +94,7 @@ contract('Self-minting controller', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 2;
+    poolVersion = 3;
     synthereumFinderInstance = await SynthereumFinder.deployed();
     synthereumFinderAddress = synthereumFinderInstance.address;
     controllerInstance = await SelfMintingController.deployed();
@@ -120,7 +117,7 @@ contract('Self-minting controller', function (accounts) {
       derivativeAdmins,
       derivativePools,
     );
-    poolPayload = encodePool(
+    poolPayload = encodePoolOnChainPriceFeed(
       derivativeAddress,
       synthereumFinderAddress,
       poolVersion,

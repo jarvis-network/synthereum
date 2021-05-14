@@ -5,15 +5,24 @@ import {
   IExtendedDerivative
 } from '../derivative/common/interfaces/IExtendedDerivative.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {ISynthereumPool} from '../synthereum-pool/v2/interfaces/IPool.sol';
-import {SynthereumPool} from '../synthereum-pool/v2/Pool.sol';
+import {
+  ISynthereumPoolOnChainPriceFeed
+} from '../synthereum-pool/v3/interfaces/IPoolOnChainPriceFeed.sol';
+import {
+  SynthereumPoolOnChainPriceFeed
+} from '../synthereum-pool/v3/PoolOnChainPriceFeed.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   IDeploymentSignature
 } from '../core/interfaces/IDeploymentSignature.sol';
-import {SynthereumPoolCreator} from '../synthereum-pool/v2/PoolCreator.sol';
+import {
+  SynthereumPoolOnChainPriceFeedCreator
+} from '../synthereum-pool/v3/PoolOnChainPriceFeedCreator.sol';
 
-contract PoolFactoryMock is SynthereumPoolCreator, IDeploymentSignature {
+contract PoolFactoryMock is
+  SynthereumPoolOnChainPriceFeedCreator,
+  IDeploymentSignature
+{
   address public synthereumFinder;
 
   bytes4 public override deploymentSignature;
@@ -32,11 +41,11 @@ contract PoolFactoryMock is SynthereumPoolCreator, IDeploymentSignature {
     IExtendedDerivative derivative,
     ISynthereumFinder finder,
     uint8 version,
-    ISynthereumPool.Roles memory roles,
+    ISynthereumPoolOnChainPriceFeed.Roles memory roles,
     bool isContractAllowed,
     uint256 startingCollateralization,
-    ISynthereumPool.Fee memory fee
-  ) public override returns (SynthereumPool poolDeployed) {
+    ISynthereumPoolOnChainPriceFeed.Fee memory fee
+  ) public override returns (SynthereumPoolOnChainPriceFeed poolDeployed) {
     address deployer =
       ISynthereumFinder(synthereumFinder).getImplementationAddress(
         SynthereumInterfaces.Deployer

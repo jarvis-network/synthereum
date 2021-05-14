@@ -4,7 +4,7 @@ const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
   encodeDerivative,
-  encodePool,
+  encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
 } = require('../utils/encoding.js');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
@@ -73,7 +73,7 @@ contract('Synthereum Pool Register', function (accounts) {
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 2;
+    poolVersion = 3;
     derivativePayload = encodeDerivative(
       collateralAddress,
       priceFeedIdentifier,
@@ -91,7 +91,7 @@ contract('Synthereum Pool Register', function (accounts) {
       derivativeAdmins,
       derivativePools,
     );
-    poolPayload = encodePool(
+    poolPayload = encodePoolOnChainPriceFeed(
       derivativeAddress,
       synthereumFinderAddress,
       poolVersion,

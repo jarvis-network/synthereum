@@ -1,7 +1,7 @@
 {
   "42": {
     "isEnabled": true,
-    "Derivative": 1,
+    "Derivative": 2,
     "Pool": {
       "jEUR": "0x1D79C29E9cA15dE979c0748DB7c569fDac4Bb9d7"
     },

@@ -7,7 +7,9 @@ const SynthereumDerivativeFactory = artifacts.require(
 const SelfMintingDerivativeFactory = artifacts.require(
   'SelfMintingDerivativeFactory',
 );
-const SynthereumPoolFactory = artifacts.require('SynthereumPoolFactory');
+const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
+  'SynthereumPoolOnChainPriceFeedFactory',
+);
 const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
@@ -27,7 +29,9 @@ contract('Factory versioning', function (accounts) {
     factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
     derivativeFactoryAddress = (await SynthereumDerivativeFactory.deployed())
       .address;
-    poolFactoryAddress = (await SynthereumPoolFactory.deployed()).address;
+    poolFactoryAddress = (
+      await SynthereumPoolOnChainPriceFeedFactory.deployed()
+    ).address;
     selfMintingFactoryAddress = (await SelfMintingDerivativeFactory.deployed())
       .address;
   });
@@ -151,11 +155,11 @@ contract('Factory versioning', function (accounts) {
   describe('Pool Factory', () => {
     it('Get correct number of pool versions', async () => {
       const numberOfVersions = await factoryVersioningInstance.numberOfVerisonsOfPoolFactory.call();
-      assert.equal(numberOfVersions, 3, 'wrong number of pool versions');
+      assert.equal(numberOfVersions, 1, 'wrong number of pool versions');
     });
     it('Update existing pool factory', async () => {
       let poolFactoryAddressStored = await factoryVersioningInstance.getPoolFactoryVersion.call(
-        2,
+        3,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -163,12 +167,12 @@ contract('Factory versioning', function (accounts) {
         'Wrong initial pool factory',
       );
       const updateTx = await factoryVersioningInstance.setPoolFactory(
-        2,
+        3,
         testPoolFactory,
         { from: maintainer },
       );
       poolFactoryAddressStored = await factoryVersioningInstance.getPoolFactoryVersion.call(
-        2,
+        3,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -176,9 +180,9 @@ contract('Factory versioning', function (accounts) {
         'Wrong pool factory after update',
       );
       truffleAssert.eventEmitted(updateTx, 'SetPoolFactory', ev => {
-        return ev.version == 2 && ev.poolFactory == testPoolFactory;
+        return ev.version == 3 && ev.poolFactory == testPoolFactory;
       });
-      await factoryVersioningInstance.setPoolFactory(2, poolFactoryAddress, {
+      await factoryVersioningInstance.setPoolFactory(3, poolFactoryAddress, {
         from: maintainer,
       });
     });
