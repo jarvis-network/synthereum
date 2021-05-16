@@ -6,7 +6,7 @@ const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
-} = require('../utils/encoding.js');
+} = require('../../utils/encoding.js');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');

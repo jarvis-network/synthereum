@@ -6,7 +6,7 @@ const web3Utils = require('web3-utils');
 const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
-} = require('../utils/encoding.js');
+} = require('../../utils/encoding.js');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
