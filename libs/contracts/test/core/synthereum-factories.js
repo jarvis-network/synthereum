@@ -97,7 +97,7 @@ contract('Factories', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolOnChainVersion = 3;
+    poolOnChainVersion = 4;
     feePercentageWei = web3Utils.toWei(feePercentage);
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativePayload = encodeDerivative(

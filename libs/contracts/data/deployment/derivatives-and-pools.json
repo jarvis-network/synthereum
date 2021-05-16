@@ -2,7 +2,7 @@
   "42": {
     "isEnabled": true,
     "Derivative": 2,
-    "Pool": 3,
+    "Pool": 4,
     "SynthToken": {
       "jEUR": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7"
     }
@@ -10,6 +10,6 @@
   "1": {
     "isEnabled": true,
     "Derivative": 2,
-    "Pool": 3
+    "Pool": 4
   }
 }

@@ -80,10 +80,6 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
     uint256 expiration;
   }
 
-  enum DerivativeRoles {ADMIN, POOL, ADMIN_AND_POOL}
-
-  enum SynthTokenRoles {ADMIN, MINTER, BURNER, ADMIN_AND_MINTER_AND_BURNER}
-
   /**
    * @notice Add a derivate to be controlled by this pool
    * @param derivative A perpetual derivative
@@ -195,12 +191,6 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
   ) external returns (uint256 amountWithdrawn);
 
   /**
-   * @notice Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
-   * @param derivative Derivative on which the emergency shutdown is called
-   */
-  function emergencyShutdown(IExtendedDerivative derivative) external;
-
-  /**
    * @notice Redeem tokens after contract emergency shutdown
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
@@ -237,40 +227,6 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    */
   function setStartingCollateralization(uint256 startingCollateralRatio)
     external;
-
-  /**
-   * @notice Add a role into derivative to another contract
-   * @param derivative Derivative in which a role is added
-   * @param derivativeRole Role to add
-   * @param addressToAdd address of EOA or smart contract to add with a role in derivative
-   */
-  function addRoleInDerivative(
-    IExtendedDerivative derivative,
-    DerivativeRoles derivativeRole,
-    address addressToAdd
-  ) external;
-
-  /**
-   * @notice This pool renounce a role in the derivative
-   * @param derivative Derivative in which a role is renounced
-   * @param derivativeRole Role to renounce
-   */
-  function renounceRoleInDerivative(
-    IExtendedDerivative derivative,
-    DerivativeRoles derivativeRole
-  ) external;
-
-  /**
-   * @notice Add a role into synthetic token to another contract
-   * @param derivative Derivative in which a role is added
-   * @param synthTokenRole Role to add
-   * @param addressToAdd address of EOA or smart contract to add with a role in derivative
-   */
-  function addRoleInSynthToken(
-    IExtendedDerivative derivative,
-    SynthTokenRoles synthTokenRole,
-    address addressToAdd
-  ) external;
 
   /**
    * @notice Set the possibility to accept only EOA meta-tx

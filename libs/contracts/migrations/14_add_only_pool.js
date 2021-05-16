@@ -50,7 +50,7 @@ module.exports = async function (deployer, network, accounts) {
       let poolVersion = '';
       let poolPayload = '';
       let derivative = deployment[networkId].Derivatives[asset.syntheticSymbol];
-      if (deployment[networkId].Pool === 3) {
+      if (deployment[networkId].Pool === 4) {
         poolVersion =
           poolVersions[networkId]['PoolOnChainPriceFeedFactory'].version;
         poolPayload = encodePoolOnChainPriceFeed(

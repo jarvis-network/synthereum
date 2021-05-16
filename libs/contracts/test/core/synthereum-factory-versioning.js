@@ -159,7 +159,7 @@ contract('Factory versioning', function (accounts) {
     });
     it('Update existing pool factory', async () => {
       let poolFactoryAddressStored = await factoryVersioningInstance.getPoolFactoryVersion.call(
-        3,
+        4,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -167,12 +167,12 @@ contract('Factory versioning', function (accounts) {
         'Wrong initial pool factory',
       );
       const updateTx = await factoryVersioningInstance.setPoolFactory(
-        3,
+        4,
         testPoolFactory,
         { from: maintainer },
       );
       poolFactoryAddressStored = await factoryVersioningInstance.getPoolFactoryVersion.call(
-        3,
+        4,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -180,24 +180,24 @@ contract('Factory versioning', function (accounts) {
         'Wrong pool factory after update',
       );
       truffleAssert.eventEmitted(updateTx, 'SetPoolFactory', ev => {
-        return ev.version == 3 && ev.poolFactory == testPoolFactory;
+        return ev.version == 4 && ev.poolFactory == testPoolFactory;
       });
-      await factoryVersioningInstance.setPoolFactory(3, poolFactoryAddress, {
+      await factoryVersioningInstance.setPoolFactory(4, poolFactoryAddress, {
         from: maintainer,
       });
     });
     it('Insert new pool factory', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.getPoolFactoryVersion.call(4),
+        factoryVersioningInstance.getPoolFactoryVersion.call(5),
         'EnumerableMap: nonexistent key',
       );
       const insertTx = await factoryVersioningInstance.setPoolFactory(
-        4,
+        5,
         testPoolFactory,
         { from: maintainer },
       );
       poolFactoryAddressStored = await factoryVersioningInstance.getPoolFactoryVersion.call(
-        4,
+        5,
       );
       assert.equal(
         poolFactoryAddressStored,
@@ -205,32 +205,32 @@ contract('Factory versioning', function (accounts) {
         'Wrong pool factory after insert',
       );
       truffleAssert.eventEmitted(insertTx, 'AddPoolFactory', ev => {
-        return ev.version == 4 && ev.poolFactory == testPoolFactory;
+        return ev.version == 5 && ev.poolFactory == testPoolFactory;
       });
     });
     it('Remove pool factory', async () => {
       let poolFactoryAddressStored = await factoryVersioningInstance.getPoolFactoryVersion.call(
-        4,
+        5,
       );
       assert.equal(
         poolFactoryAddressStored,
         testPoolFactory,
         'Wrong initial pool factory',
       );
-      const removeTx = await factoryVersioningInstance.removePoolFactory(4, {
+      const removeTx = await factoryVersioningInstance.removePoolFactory(5, {
         from: maintainer,
       });
       await truffleAssert.reverts(
-        factoryVersioningInstance.getPoolFactoryVersion.call(4),
+        factoryVersioningInstance.getPoolFactoryVersion.call(5),
         'EnumerableMap: nonexistent key',
       );
       truffleAssert.eventEmitted(removeTx, 'RemovePoolFactory', ev => {
-        return ev.version == 4 && ev.poolFactory == testPoolFactory;
+        return ev.version == 5 && ev.poolFactory == testPoolFactory;
       });
     });
     it('Revert if try to set a zero address factory', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.setPoolFactory(2, ZERO_ADDRESS, {
+        factoryVersioningInstance.setPoolFactory(4, ZERO_ADDRESS, {
           from: maintainer,
         }),
         'Pool factory cannot be address 0',
@@ -238,7 +238,7 @@ contract('Factory versioning', function (accounts) {
     });
     it('Revert if try to remove a not existing version', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.removePoolFactory(4, {
+        factoryVersioningInstance.removePoolFactory(5, {
           from: maintainer,
         }),
         'EnumerableMap: nonexistent key',
@@ -246,7 +246,7 @@ contract('Factory versioning', function (accounts) {
     });
     it('Revert if a non-maintener user try to set factory', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.setPoolFactory(1, testDerivativeFactory, {
+        factoryVersioningInstance.setPoolFactory(4, testDerivativeFactory, {
           from: sender,
         }),
         'Sender must be the maintainer',
@@ -254,7 +254,7 @@ contract('Factory versioning', function (accounts) {
     });
     it('Revert if a non-maintener user try to remove factory', async () => {
       await truffleAssert.reverts(
-        factoryVersioningInstance.removePoolFactory(1, {
+        factoryVersioningInstance.removePoolFactory(4, {
           from: sender,
         }),
         'Sender must be the maintainer',

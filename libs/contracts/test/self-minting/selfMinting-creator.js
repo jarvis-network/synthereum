@@ -96,7 +96,7 @@ contract('Self-minting creator', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 3;
+    poolVersion = 4;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     manager = (await SynthereumManager.deployed()).address;
     selfMintingControllerInstanceAddr = (await SelfMintingController.deployed())

@@ -1,7 +1,7 @@
 {
   "42": {
     "isEnabled": true,
-    "Pool": 3,
+    "Pool": 4,
     "Derivatives": {
       "jEUR": "0x00051f5d33412144a4576E3e3cdE5f913B9F4d62",
       "jCHF": "0xa4c13deF899b04FfA5C1bB4a3ad5095EDC049669",
@@ -11,7 +11,7 @@
   },
   "1": {
     "isEnabled": true,
-    "Pool": 3,
+    "Pool": 4,
     "Derivatives": {
       "jEUR": "0x48546bDD57D34Cb110f011Cdd1CcaaE75Ee17a70",
       "jCHF": "0x496B179D5821d1a8B6C875677e3B89a9229AAB77",

@@ -111,7 +111,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 3;
+    poolVersion = 4;
     feePercentageWei = web3Utils.toWei(feePercentage);
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativePayload = encodeDerivative(

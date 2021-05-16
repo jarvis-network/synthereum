@@ -108,7 +108,7 @@ contract('Synthereum Deployer', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 3;
+    poolVersion = 4;
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     manager = (await SynthereumManager.deployed()).address;
     selfMintingControllerInstanceAddr = (await SelfMintingController.deployed())
@@ -162,7 +162,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
         return (
-          ev.poolVersion == 3 &&
+          ev.poolVersion == 4 &&
           ev.derivative == derivative &&
           ev.newPool == pool
         );
@@ -465,7 +465,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
     });
     it('Revert if pool version is different from the one using in the deployemnt', async () => {
-      const wrongPoolVersion = 4;
+      const wrongPoolVersion = 5;
       poolPayload = encodePoolOnChainPriceFeed(
         derivativeAddress,
         synthereumFinderAddress,
@@ -520,7 +520,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       const factoryVersioninginstance = await SynthereumFactoryVersioning.deployed();
       await factoryVersioninginstance.setPoolFactory(
-        3,
+        4,
         wrongPoolFactory.address,
         { from: maintainer },
       );
@@ -552,7 +552,7 @@ contract('Synthereum Deployer', function (accounts) {
         'Pool doesnt support derivative',
       );
       await factoryVersioninginstance.setPoolFactory(
-        3,
+        4,
         (await SynthereumPoolOnChainPriceFeedFactory.deployed()).address,
         { from: maintainer },
       );
@@ -591,7 +591,7 @@ contract('Synthereum Deployer', function (accounts) {
       );
       truffleAssert.eventEmitted(deploymentTx, 'PoolDeployed', ev => {
         return (
-          ev.poolVersion == 3 &&
+          ev.poolVersion == 4 &&
           ev.derivative == derivative &&
           ev.newPool == secondPool
         );

@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import {
   ISynthereumPoolOnChainPriceFeed
-} from '../synthereum-pool/v3/interfaces/IPoolOnChainPriceFeed.sol';
+} from '../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract ContractAllowedOnChanPriceFeed {

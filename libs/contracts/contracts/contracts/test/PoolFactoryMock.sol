@@ -7,17 +7,17 @@ import {
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
-} from '../synthereum-pool/v3/interfaces/IPoolOnChainPriceFeed.sol';
+} from '../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 import {
   SynthereumPoolOnChainPriceFeed
-} from '../synthereum-pool/v3/PoolOnChainPriceFeed.sol';
+} from '../synthereum-pool/v4/PoolOnChainPriceFeed.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
 import {
   IDeploymentSignature
 } from '../core/interfaces/IDeploymentSignature.sol';
 import {
   SynthereumPoolOnChainPriceFeedCreator
-} from '../synthereum-pool/v3/PoolOnChainPriceFeedCreator.sol';
+} from '../synthereum-pool/v4/PoolOnChainPriceFeedCreator.sol';
 
 contract PoolFactoryMock is
   SynthereumPoolOnChainPriceFeedCreator,

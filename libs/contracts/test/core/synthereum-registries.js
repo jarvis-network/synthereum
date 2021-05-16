@@ -73,7 +73,7 @@ contract('Synthereum Pool Register', function (accounts) {
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 3;
+    poolVersion = 4;
     derivativePayload = encodeDerivative(
       collateralAddress,
       priceFeedIdentifier,

@@ -67,7 +67,7 @@ module.exports = async function (deployer, network, accounts) {
     );
     await synthereumFactoryVersioning.methods
       .setPoolFactory(
-        poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.version ?? 3,
+        poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.version ?? 4,
         synthereumPoolOnChainPriceFeedFactory.options.address,
       )
       .send({ from: maintainer });

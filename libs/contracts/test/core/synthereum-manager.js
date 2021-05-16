@@ -94,7 +94,7 @@ contract('Synthereum manager', function (accounts) {
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
     derivativePools = [];
-    poolVersion = 3;
+    poolVersion = 4;
     feePercentageWei = web3Utils.toWei(feePercentage);
     synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
     derivativePayload = encodeDerivative(
@@ -151,10 +151,6 @@ contract('Synthereum manager', function (accounts) {
     poolRole = web3Utils.soliditySha3('Pool');
     minterRole = web3Utils.soliditySha3('Minter');
     burnerRole = web3Utils.soliditySha3('Burner');
-    console.log(
-      'fine: ' +
-        (await derivativeInstance.positionManagerData.call()).synthereumFinder,
-    );
   });
 
   describe('Roles of derivative', async () => {

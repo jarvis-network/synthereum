@@ -349,19 +349,6 @@ contract SynthereumPoolOnChainPriceFeed is
   }
 
   /**
-   * @notice Activate emergency shutdown on a derivative in order to liquidate the token holders in case of emergency
-   * @param derivative Derivative on which emergency shutdown is called
-   */
-  function emergencyShutdown(IExtendedDerivative derivative)
-    external
-    override
-    onlyMaintainer
-    nonReentrant
-  {
-    poolStorage.emergencyShutdown(derivative);
-  }
-
-  /**
    * @notice Redeem tokens after derivative emergency shutdown
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
@@ -416,46 +403,6 @@ contract SynthereumPoolOnChainPriceFeed is
     poolStorage.setStartingCollateralization(
       FixedPoint.Unsigned(startingCollateralRatio)
     );
-  }
-
-  /**
-   * @notice Add a role into derivative to another contract
-   * @param derivative Derivative in which a role is being added
-   * @param derivativeRole Role to add
-   * @param addressToAdd address of EOA or smart contract to add with a role in derivative
-   */
-  function addRoleInDerivative(
-    IExtendedDerivative derivative,
-    DerivativeRoles derivativeRole,
-    address addressToAdd
-  ) external override onlyMaintainer nonReentrant {
-    poolStorage.addRoleInDerivative(derivative, derivativeRole, addressToAdd);
-  }
-
-  /**
-   * @notice Removing a role from a derivative contract
-   * @param derivative Derivative in which to remove a role
-   * @param derivativeRole Role to remove
-   */
-  function renounceRoleInDerivative(
-    IExtendedDerivative derivative,
-    DerivativeRoles derivativeRole
-  ) external override onlyMaintainer nonReentrant {
-    poolStorage.renounceRoleInDerivative(derivative, derivativeRole);
-  }
-
-  /**
-   * @notice Add a role into synthetic token to another contract
-   * @param derivative Derivative in which adding role
-   * @param synthTokenRole Role to add
-   * @param addressToAdd address of EOA or smart contract to add with a role in derivative
-   */
-  function addRoleInSynthToken(
-    IExtendedDerivative derivative,
-    SynthTokenRoles synthTokenRole,
-    address addressToAdd
-  ) external override onlyMaintainer nonReentrant {
-    poolStorage.addRoleInSynthToken(derivative, synthTokenRole, addressToAdd);
   }
 
   /**
