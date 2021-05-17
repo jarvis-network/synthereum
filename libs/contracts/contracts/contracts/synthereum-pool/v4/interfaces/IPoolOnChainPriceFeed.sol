@@ -48,6 +48,8 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
     uint256 feePercentage;
     // Expiration time of the transaction
     uint256 expiration;
+    // Address to which send synthetic tokens minted
+    address recipient;
   }
 
   struct RedeemParams {
@@ -61,6 +63,8 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
     uint256 feePercentage;
     // Expiration time of the transaction
     uint256 expiration;
+    // Address to which send collateral tokens redeemed
+    address recipient;
   }
 
   struct ExchangeParams {
@@ -78,6 +82,8 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
     uint256 feePercentage;
     // Expiration time of the transaction
     uint256 expiration;
+    // Address to which send synthetic tokens exchanged
+    address recipient;
   }
 
   /**

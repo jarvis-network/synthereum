@@ -315,6 +315,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       collateralInstance = await TestnetERC20.deployed();
       await collateralInstance.allocateTo(poolAddress, poolStartingDeposit);

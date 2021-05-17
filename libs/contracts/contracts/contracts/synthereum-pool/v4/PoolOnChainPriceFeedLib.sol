@@ -87,7 +87,8 @@ library SynthereumPoolOnChainPriceFeedLib {
     address indexed pool,
     uint256 collateralSent,
     uint256 numTokensReceived,
-    uint256 feePaid
+    uint256 feePaid,
+    address recipient
   );
 
   event Redeem(
@@ -95,7 +96,8 @@ library SynthereumPoolOnChainPriceFeedLib {
     address indexed pool,
     uint256 numTokensSent,
     uint256 collateralReceived,
-    uint256 feePaid
+    uint256 feePaid,
+    address recipient
   );
 
   event Exchange(
@@ -104,7 +106,8 @@ library SynthereumPoolOnChainPriceFeedLib {
     address indexed destPool,
     uint256 numTokensSent,
     uint256 destNumTokensReceived,
-    uint256 feePaid
+    uint256 feePaid,
+    address recipient
   );
 
   event Settlement(
@@ -266,7 +269,8 @@ library SynthereumPoolOnChainPriceFeedLib {
         collateralAmount,
         feeAmount,
         totCollateralAmount
-      )
+      ),
+      mintParams.recipient
     );
     syntheticTokensMinted = numTokens.rawValue;
     feePaid = feeAmount.rawValue;
@@ -319,7 +323,8 @@ library SynthereumPoolOnChainPriceFeedLib {
         collateralAmount,
         feeAmount,
         totCollateralAmount
-      )
+      ),
+      redeemParams.recipient
     );
     feePaid = feeAmount.rawValue;
     collateralRedeemed = collateralAmount.rawValue;
@@ -387,7 +392,8 @@ library SynthereumPoolOnChainPriceFeedLib {
         feeAmount,
         totCollateralAmount,
         destNumTokens
-      )
+      ),
+      exchangeParams.recipient
     );
 
     destNumTokensMinted = destNumTokens.rawValue;
@@ -695,11 +701,13 @@ library SynthereumPoolOnChainPriceFeedLib {
    * @param self Data type the library is attached tfo
    * @param derivative Derivative to use
    * @param executeMintParams Params for execution of mint (see ExecuteMintParams struct)
+   * @param recipient Address to which send synthetic tokens minted
    */
   function executeMint(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     IExtendedDerivative derivative,
-    ExecuteMintParams memory executeMintParams
+    ExecuteMintParams memory executeMintParams,
+    address recipient
   ) internal {
     // Sending amount must be different from 0
     require(
@@ -737,7 +745,7 @@ library SynthereumPoolOnChainPriceFeedLib {
     );
 
     // Transfer synthetic assets to the user
-    self.transferSynTokens(msg.sender, executeMintParams.numTokens);
+    self.transferSynTokens(recipient, executeMintParams.numTokens);
 
     // Send fees
     self.sendFee(executeMintParams.feeAmount);
@@ -747,7 +755,8 @@ library SynthereumPoolOnChainPriceFeedLib {
       address(this),
       executeMintParams.totCollateralAmount.rawValue,
       executeMintParams.numTokens.rawValue,
-      executeMintParams.feeAmount.rawValue
+      executeMintParams.feeAmount.rawValue,
+      recipient
     );
   }
 
@@ -756,11 +765,13 @@ library SynthereumPoolOnChainPriceFeedLib {
    * @param self Data type the library is attached tfo
    * @param derivative Derivative to use
    * @param executeRedeemParams Params for execution of redeem (see ExecuteRedeemParams struct)
+   * @param recipient Address to which send collateral tokens redeemed
    */
   function executeRedeem(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     IExtendedDerivative derivative,
-    ExecuteRedeemParams memory executeRedeemParams
+    ExecuteRedeemParams memory executeRedeemParams,
+    address recipient
   ) internal {
     // Sending amount must be different from 0
     require(
@@ -780,7 +791,7 @@ library SynthereumPoolOnChainPriceFeedLib {
 
     //Send net amount of collateral to the user that submited the redeem request
     self.collateralToken.safeTransfer(
-      msg.sender,
+      recipient,
       executeRedeemParams.collateralAmount.rawValue
     );
     // Send fees collected
@@ -791,7 +802,8 @@ library SynthereumPoolOnChainPriceFeedLib {
       address(this),
       executeRedeemParams.numTokens.rawValue,
       executeRedeemParams.collateralAmount.rawValue,
-      executeRedeemParams.feeAmount.rawValue
+      executeRedeemParams.feeAmount.rawValue,
+      recipient
     );
   }
 
@@ -802,13 +814,15 @@ library SynthereumPoolOnChainPriceFeedLib {
    * @param destPool Pool of synthetic token to receive
    * @param destDerivative Derivative of the pool of synthetic token to receive
    * @param executeExchangeParams Params for execution of exchange (see ExecuteExchangeParams struct)
+   * @param recipient Address to which send synthetic tokens exchanged
    */
   function executeExchange(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     IExtendedDerivative derivative,
     ISynthereumPoolGeneral destPool,
     IExtendedDerivative destDerivative,
-    ExecuteExchangeParams memory executeExchangeParams
+    ExecuteExchangeParams memory executeExchangeParams,
+    address recipient
   ) internal {
     // Sending amount must be different from 0
     require(
@@ -844,7 +858,7 @@ library SynthereumPoolOnChainPriceFeedLib {
 
     // Transfer the new tokens to the user
     destDerivative.tokenCurrency().safeTransfer(
-      msg.sender,
+      recipient,
       executeExchangeParams.destNumTokens.rawValue
     );
 
@@ -854,7 +868,8 @@ library SynthereumPoolOnChainPriceFeedLib {
       address(destPool),
       executeExchangeParams.numTokens.rawValue,
       executeExchangeParams.destNumTokens.rawValue,
-      executeExchangeParams.feeAmount.rawValue
+      executeExchangeParams.feeAmount.rawValue,
+      recipient
     );
   }
 

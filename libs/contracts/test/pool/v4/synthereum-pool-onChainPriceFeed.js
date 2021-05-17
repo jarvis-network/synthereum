@@ -85,6 +85,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
   let wrongSender = accounts[8];
   let wrongDerivativeAddr = accounts[9];
   let newAdmin = accounts[10];
+  let recipientAddr = accounts[11];
   let derivativePayload;
   let poolPayload;
   let collateralInstance;
@@ -189,6 +190,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
 
       const prevSynthTokenBalance = await synthTokenInstance.balanceOf.call(
@@ -199,6 +201,10 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       const prevCollatLPBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
+      const prevRecipientSynthTokenBalance = await synthTokenInstance.balanceOf.call(
+        recipientAddr,
+      );
+
       const mintTx = await poolInstance.mint(MintParameters, {
         from: sender,
       });
@@ -208,7 +214,8 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
           ev.pool == poolAddress &&
           ev.collateralSent == collateralAmount &&
           ev.numTokensReceived == numTokens &&
-          ev.feePaid == feeAmount
+          ev.feePaid == feeAmount &&
+          ev.recipient == recipientAddr
         );
       });
       const actualSynthTokenBalance = await synthTokenInstance.balanceOf.call(
@@ -223,14 +230,22 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       const actualCollatLPBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
+      const actualRecipientSynthTokenBalance = await synthTokenInstance.balanceOf.call(
+        recipientAddr,
+      );
 
       // Check correct balances after mint
       assert.equal(
-        actualSynthTokenBalance.eq(
-          prevSynthTokenBalance.add(web3Utils.toBN(numTokens)),
-        ),
+        actualSynthTokenBalance.eq(prevSynthTokenBalance),
         true,
         'Wrong Synth token balance after mint',
+      );
+      assert.equal(
+        actualRecipientSynthTokenBalance.eq(
+          prevRecipientSynthTokenBalance.add(web3Utils.toBN(numTokens)),
+        ),
+        true,
+        'Wrong Synth token recipient balance',
       );
       assert.equal(
         prevCollatBalance.eq(
@@ -274,6 +289,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -290,6 +306,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: wrongExpiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -306,6 +323,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: wrongFeePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -326,6 +344,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: newMaxCollateral,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -346,6 +365,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -363,6 +383,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: wrongCollateral,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -385,6 +406,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -403,6 +425,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await poolInstance.mint(MintParameters, {
         from: sender,
@@ -419,6 +442,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.mint(MintParameters, {
@@ -452,6 +476,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       const mintTx = await poolInstance.mint(MintParameters, {
         from: sender,
@@ -468,11 +493,15 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       const prevSynthTokenBalance = await synthTokenInstance.balanceOf.call(
         sender,
       );
       const prevCollatBalance = await collateralInstance.balanceOf.call(sender);
+      const prevRecipientCollatBalance = await collateralInstance.balanceOf.call(
+        recipientAddr,
+      );
       const prevCollatDaoBalance = await collateralInstance.balanceOf.call(DAO);
       const prevCollatLPBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
@@ -486,7 +515,8 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
           ev.pool == poolAddress &&
           ev.numTokensSent == tokensToRedeem &&
           ev.collateralReceived == collateralToReceive &&
-          ev.feePaid == feeAmountRedeem
+          ev.feePaid == feeAmountRedeem &&
+          ev.recipient == recipientAddr
         );
       });
       const actualSynthTokenBalance = await synthTokenInstance.balanceOf.call(
@@ -494,6 +524,9 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       );
       const actualCollatBalance = await collateralInstance.balanceOf.call(
         sender,
+      );
+      const actualRecipientCollatBalance = await collateralInstance.balanceOf.call(
+        recipientAddr,
       );
       const actualCollatDaoBalance = await collateralInstance.balanceOf.call(
         DAO,
@@ -510,11 +543,16 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         'Wrong Synth token balance after redeem',
       );
       assert.equal(
-        actualCollatBalance.eq(
-          prevCollatBalance.add(web3Utils.toBN(collateralToReceive)),
-        ),
+        actualCollatBalance.eq(prevCollatBalance),
         true,
         'Wrong collateral balance after redeem',
+      );
+      assert.equal(
+        actualRecipientCollatBalance.eq(
+          prevRecipientCollatBalance.add(web3Utils.toBN(collateralToReceive)),
+        ),
+        true,
+        'Wrong recipient collateral balance after redeem',
       );
       assert.equal(
         actualCollatDaoBalance.eq(
@@ -539,6 +577,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await poolInstance.redeem(RedeemParameters, {
         from: sender,
@@ -554,6 +593,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -570,6 +610,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: wrongExpiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -586,6 +627,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: wrongFeePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -606,6 +648,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -623,6 +666,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: wrongMinCollateral,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -650,6 +694,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -667,6 +712,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: collateralToReceive,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -685,6 +731,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: newMinCollateral,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await poolInstance.redeem(RedeemParameters, {
         from: sender,
@@ -698,6 +745,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minCollateral: newMinCollateral,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.redeem(RedeemParameters, {
@@ -779,6 +827,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       await poolInstance.mint(MintParameters, { from: sender });
       await synthTokenInstance.approve(poolAddress, numTokens, {
@@ -818,12 +867,16 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       const prevSynthTokenBalance = await synthTokenInstance.balanceOf.call(
         sender,
       );
       const prevDestSynthTokenBalance = await destSynthTokenInstance.balanceOf.call(
         sender,
+      );
+      const prevDestSynthTokenRecipientBalance = await destSynthTokenInstance.balanceOf.call(
+        recipientAddr,
       );
       const prevCollatDaoBalance = await collateralInstance.balanceOf.call(DAO);
       const prevCollatLPBalance = await collateralInstance.balanceOf.call(
@@ -839,7 +892,8 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
           ev.destPool == destPoolInstance.address &&
           ev.numTokensSent == numTokensExchange &&
           ev.destNumTokensReceived == destNumeTokensExchange &&
-          ev.feePaid == feeAmountExchange
+          ev.feePaid == feeAmountExchange &&
+          ev.recipient == recipientAddr
         );
       });
       const actualSynthTokenBalance = await synthTokenInstance.balanceOf.call(
@@ -847,6 +901,9 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       );
       const actualDestSynthTokenBalance = await destSynthTokenInstance.balanceOf.call(
         sender,
+      );
+      const actualDestSynthTokenRecipientBalance = await destSynthTokenInstance.balanceOf.call(
+        recipientAddr,
       );
       const actualCollatDaoBalance = await collateralInstance.balanceOf.call(
         DAO,
@@ -862,11 +919,18 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         'Wrong Synth token balance after exchange',
       );
       assert.equal(
-        actualDestSynthTokenBalance.eq(
-          prevDestSynthTokenBalance.add(web3Utils.toBN(destNumeTokensExchange)),
+        actualDestSynthTokenBalance.eq(prevDestSynthTokenBalance),
+        true,
+        'Wrong destination token balance after exchange',
+      );
+      assert.equal(
+        actualDestSynthTokenRecipientBalance.eq(
+          prevDestSynthTokenRecipientBalance.add(
+            web3Utils.toBN(destNumeTokensExchange),
+          ),
         ),
         true,
-        'Wrong collateral balance after exchange',
+        'Wrong recipient destination token balance after exchange',
       );
       assert.equal(
         actualCollatDaoBalance.eq(
@@ -904,6 +968,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await poolInstance.exchange(ExchangeParameters, {
         from: sender,
@@ -921,6 +986,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -998,6 +1064,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -1030,6 +1097,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -1050,6 +1118,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -1073,6 +1142,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: destNumeTokensExchange,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -1092,6 +1162,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: wrongDestNumTokens,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -1113,6 +1184,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: newMinDestNumTokens,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await poolInstance.exchange(ExchangeParameters, {
         from: sender,
@@ -1131,6 +1203,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         minDestNumTokens: newMinDestNumTokens,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: recipientAddr,
       };
       await truffleAssert.reverts(
         poolInstance.exchange(ExchangeParameters, {
@@ -1150,6 +1223,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       await poolInstance.mint(MintParameters, {
         from: sender,
@@ -1243,6 +1317,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       await secondPoolInstance.mint(MintParameters, {
         from: sender,
@@ -1312,6 +1387,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       await poolInstance.mint(MintParameters, {
         from: sender,
@@ -1426,6 +1502,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: sender,
       };
       await poolInstance.mint(MintParameters, {
         from: sender,
@@ -1443,6 +1520,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: secondCollateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: secondSender,
       };
       await poolInstance.mint(MintParameters, {
         from: secondSender,
@@ -1910,6 +1988,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         collateralAmount: collateralAmount,
         feePercentage: feePercentageWei,
         expiration: expiration,
+        recipient: proxyContract.address,
       };
       await collateralInstance.allocateTo(proxyContract.address, testAmount);
     });

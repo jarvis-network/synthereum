@@ -68,7 +68,8 @@ contract SynthereumPoolOnChainPriceFeed is
     address indexed pool,
     uint256 collateralSent,
     uint256 numTokensReceived,
-    uint256 feePaid
+    uint256 feePaid,
+    address recipient
   );
 
   event Redeem(
@@ -76,7 +77,8 @@ contract SynthereumPoolOnChainPriceFeed is
     address indexed pool,
     uint256 numTokensSent,
     uint256 collateralReceived,
-    uint256 feePaid
+    uint256 feePaid,
+    address recipient
   );
 
   event Exchange(
@@ -85,7 +87,8 @@ contract SynthereumPoolOnChainPriceFeed is
     address indexed destPool,
     uint256 numTokensSent,
     uint256 destNumTokensReceived,
-    uint256 feePaid
+    uint256 feePaid,
+    address recipient
   );
 
   event Settlement(
