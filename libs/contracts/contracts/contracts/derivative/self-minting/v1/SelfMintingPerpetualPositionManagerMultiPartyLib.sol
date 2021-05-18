@@ -13,7 +13,7 @@ import {
 } from '../../common/interfaces/MintableBurnableIERC20.sol';
 import {
   ISelfMintingController
-} from '../../../core/interfaces/ISelfMintingController.sol';
+} from '../common/interfaces/ISelfMintingController.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   OracleInterface

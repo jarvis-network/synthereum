@@ -2,22 +2,24 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {ISynthereumFinder} from './interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ISelfMintingController} from './interfaces/ISelfMintingController.sol';
-import {ISelfMintingRegistry} from './interfaces/ISelfMintingRegistry.sol';
+import {
+  ISelfMintingRegistry
+} from '../../../core/interfaces/ISelfMintingRegistry.sol';
 import {
   ISelfMintingDerivativeDeployment
-} from '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
+} from './interfaces/ISelfMintingDerivativeDeployment.sol';
 import {
   ISynthereumFactoryVersioning
-} from './interfaces/IFactoryVersioning.sol';
-import {SynthereumInterfaces} from './Constants.sol';
+} from '../../../core/interfaces/IFactoryVersioning.sol';
+import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
-} from '../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '../../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {
   AccessControl
-} from '../../@openzeppelin/contracts/access/AccessControl.sol';
+} from '../../../../@openzeppelin/contracts/access/AccessControl.sol';
 
 contract SelfMintingController is ISelfMintingController, AccessControl {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
