@@ -1,10 +1,10 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumFactoryVersioning',
-  'SynthereumTICHelper',
-  'SynthereumTICFactory',
-  'SynthereumPoolLib',
-  'SynthereumPoolFactory',
+  // 'SynthereumTICHelper',
+  // 'SynthereumTICFactory',
+  // 'SynthereumPoolLib',
+  // 'SynthereumPoolFactory',
   'SynthereumPoolOnChainPriceFeedLib',
   'SynthereumPoolOnChainPriceFeedFactory',
 ]);
@@ -17,10 +17,6 @@ async function migrate(deployer, network, accounts) {
   const {
     SynthereumFinder,
     SynthereumFactoryVersioning,
-    SynthereumTICHelper,
-    SynthereumTICFactory,
-    SynthereumPoolLib,
-    SynthereumPoolFactory,
     SynthereumPoolOnChainPriceFeedLib,
     SynthereumPoolOnChainPriceFeedFactory,
   } = migrate.getContracts(artifacts);

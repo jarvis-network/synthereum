@@ -16,5 +16,19 @@
       "version": 4,
       "isEnabled": true
     }
+  },
+  "31337": {
+    "TICFactory": {
+      "version": 1,
+      "isEnabled": false
+    },
+    "PoolFactory": {
+      "version": 2,
+      "isEnabled": true
+    },
+    "PoolOnChainPriceFeedFactory": {
+      "version": 3,
+      "isEnabled": true
+    }
   }
 }
