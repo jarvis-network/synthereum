@@ -9,7 +9,7 @@ mkShell {
     which
     pkg-config
     git
-    gccStdenv
+    stdenv
     gnumake
     python3
     libusb1.dev
