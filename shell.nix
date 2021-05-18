@@ -4,19 +4,19 @@ let
 in
 mkShell {
   buildInputs = [
-    ldc
-    fish
-    git
-    (docker.override { buildxSupport = true; })
-    docker-compose
     node
     (yarn.override { nodejs = node; })
+    which
+    pkg-config
+    git
+    gccStdenv
     gnumake
     python3
-    gccStdenv
     libusb1.dev
-    pkg-config
-    which
+    ldc
+    fish
+    (docker.override { buildxSupport = true; })
+    docker-compose
   ] ++ lib.optional (! stdenv.isDarwin) [ eudev ];
 
   shellHook = ''
