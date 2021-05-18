@@ -17,6 +17,7 @@
     "test": "nx test",
     "build": "sh -c 'nx build $1 --with-deps ${@:1}' --",
     "lint": "nx lint",
+    "deploy": "yarn workspace @jarvis-network/synthereum-contracts deploy",
     "e2e": "nx e2e",
     "build:all": "nx run-many --target=build --all",
     "lint:all": "nx workspace-lint && nx run-many --target=lint --all",
