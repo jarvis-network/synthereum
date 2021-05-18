@@ -57,11 +57,7 @@ async function migrate(deployer, network, accounts) {
     SynthereumFactoryVersioning,
   );
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
-  const newUmaDeployment =
-    parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE) ?? false;
-  const umaDeployment =
-    (networkId != 1 && networkId != 3 && networkId != 4 && networkId != 42) ||
-    newUmaDeployment;
+  const umaDeployment = parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE);
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   if (
     selfMintingVersions[networkId]?.SelfMintingDerivativeFactory?.isEnabled ??

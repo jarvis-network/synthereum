@@ -45,6 +45,8 @@ import globby from 'globby';
 import rmrf from 'rmrf';
 import { exec } from 'child-process-promise';
 import removeComments from 'strip-comments';
+import { parseBoolean } from '@jarvis-network/core-utils/dist/base/asserts';
+import fse from 'fs-extra';
 
 createOrModifyHardhatTask(TASK_VERIFY_GET_MINIMUM_BUILD).setAction(() =>
   Promise.resolve(1),
@@ -360,7 +362,8 @@ createOrModifyHardhatTask(
       {
         migrationScript,
         noVerify,
-      }: { migrationScript: string; noVerify: boolean },
+        skipUma,
+      }: { migrationScript: string; noVerify: boolean; skipUma: false },
       hre,
     ) => {
       const { sources, artifacts, cache } = hre.config.paths;
@@ -377,6 +380,47 @@ createOrModifyHardhatTask(
 
       await clean();
 
+      const { name: network } = hre.network;
+      if (
+        !skipUma &&
+        (((network !== 'mainnet' &&
+          network !== 'ropsten' &&
+          network !== 'rinkeby' &&
+          network !== 'kovan') ||
+          parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE)) ??
+          false)
+      ) {
+        await fse.copy(
+          resolve(
+            dirname(require.resolve('@jarvis-network/uma-core')),
+            'contracts',
+          ),
+          './deploy',
+        );
+
+        (hre as {
+          migrationScript?: string;
+        }).migrationScript = 'uma'; // Used in test/truffle-fixture.js
+        const testPath = `./cache/test-uma.js`;
+        await fs.writeFile(
+          testPath,
+          `
+  contract('uma', accounts => {
+    it('Migration is ok', async () => {
+      assert.equal(1, 1);
+    });
+  });
+        `,
+          'utf-8',
+        );
+
+        await hre.run(TASK_TEST, { testFiles: [testPath] });
+
+        process.env.NEW_UMA_INFRASTRUCTURE = 'true';
+
+        await clean();
+      }
+
       if (migrationScript === 'all') {
         for (const migrationScriptPath of await globby(migrationsGlobPattern)) {
           // eslint-disable-next-line no-await-in-loop
@@ -387,14 +431,15 @@ createOrModifyHardhatTask(
               .split('_deploy_')[1]
               .split('.js')[0],
             noVerify,
+            skipUma: true,
           });
         }
+
         return;
       }
 
       const migrationScriptPath = await getMigrationScriptPath(migrationScript);
 
-      const { name: network } = hre.network;
       const localNetwork = !network || network.endsWith('_fork');
 
       const lengthBefore = localNetwork

@@ -56,20 +56,13 @@ module.exports = async ({
   const realScriptName = migrationScripts.find(
     x => x.split('.js')[0].split('_').slice(2).join('_') === scriptName,
   );
-  const newUmaDeployment =
-    parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE) ?? false;
 
-  if (
-    (networkId !== 1 &&
-      networkId !== 3 &&
-      networkId !== 4 &&
-      networkId !== 42) ||
-    newUmaDeployment
-  ) {
+  if (scriptName === 'uma') {
     for (const script of umaBaseMigrationScripts) {
       await runMigration(script, network.name, accounts, true);
     }
   }
+  if (scriptName === 'uma') return;
   if (realScriptName) {
     await runMigration(realScriptName, network.name, accounts);
   } else {
