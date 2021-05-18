@@ -44,6 +44,7 @@ import { Token } from '@solidity-parser/parser/dist/src/types';
 import globby from 'globby';
 import rmrf from 'rmrf';
 import { exec } from 'child-process-promise';
+import removeComments from 'strip-comments';
 
 createOrModifyHardhatTask(TASK_VERIFY_GET_MINIMUM_BUILD).setAction(() =>
   Promise.resolve(1),
@@ -312,6 +313,26 @@ async function getDeployedContractsConstructorArgumentsForNetwork(
   ) as Record<string, unknown[]>;
 }
 
+function minifyCode(originalCode: string): string {
+  const firstLine =
+    originalCode.startsWith('// SPDX-License-Identifier') ||
+    originalCode.startsWith('//SPDX-License-Identifier')
+      ? originalCode.split('\n')[0]
+      : '';
+
+  const withoutComments = removeComments(originalCode);
+  const withoutTrailingWhitespace = withoutComments.replace(/^\s+$/gm, '');
+  return (
+    firstLine + withoutTrailingWhitespace.replace(/(\r\n|\r|\n){3,}/gm, '\n\n')
+  );
+}
+
+async function getAllFilesLength(files: string[]): Promise<number> {
+  return (
+    await Promise.all(files.map(async file => (await fs.stat(file)).size))
+  ).reduce((a, b) => a + b);
+}
+
 async function writeArgumentsFileForAddress(
   network: NetworkName,
   address: string,
@@ -405,10 +426,30 @@ createOrModifyHardhatTask(
       );
       /* eslint-enable no-await-in-loop */
 
-      // Check https://gitlab.com/jarvis-network/base/tools/hardhat/-/blob/jarvis-publish/hardhat-etherscan@0.1.0/packages/hardhat-etherscan/src/index.ts
-      // if (stripComments) { // TODO: If too big (do only in npm first)
-      //   files = minifyContracts(files);
-      // }
+      if (!noVerify && !localNetwork) {
+        // Etherscan has a limit of 500k chars when verifying contracts
+        const files = (await globby(`${resolve(sources)}/**/*.sol`)).sort(); // Starts with folders that begin with `@` if any
+
+        /* eslint-disable no-await-in-loop */
+        // 480_000 wasn't enough
+        for (let i = 0; (await getAllFilesLength(files)) > 470_000; i++) {
+          if (i >= files.length) {
+            throw new Error(
+              'Could not decrease contracts enough to pass verification',
+            );
+          }
+
+          const file = files[i];
+          await fs.writeFile(
+            file,
+            // eslint-disable-next-line no-await-in-loop
+            minifyCode(await fs.readFile(file, 'utf-8')),
+            'utf-8',
+          );
+          console.log(`Removed comments from ${basename(file)}`);
+        }
+        /* eslint-enable no-await-in-loop */
+      }
 
       (hre as {
         migrationScript?: string;
