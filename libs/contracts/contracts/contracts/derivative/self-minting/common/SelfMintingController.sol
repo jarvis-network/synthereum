@@ -5,8 +5,8 @@ pragma experimental ABIEncoderV2;
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ISelfMintingController} from './interfaces/ISelfMintingController.sol';
 import {
-  ISelfMintingRegistry
-} from '../../../core/registries/interfaces/ISelfMintingRegistry.sol';
+  ISynthereumRegistry
+} from '../../../core/registries/interfaces/IRegistry.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from './interfaces/ISelfMintingDerivativeDeployment.sol';
@@ -303,14 +303,14 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   function checkSelfMintingDerivativeRegistration(
     ISelfMintingDerivativeDeployment selfMintingDerivative
   ) internal view {
-    ISelfMintingRegistry selfMintingRegistry =
-      ISelfMintingRegistry(
+    ISynthereumRegistry selfMintingRegistry =
+      ISynthereumRegistry(
         synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.SelfMintingRegistry
         )
       );
     require(
-      selfMintingRegistry.isSelfMintingDerivativeDeployed(
+      selfMintingRegistry.isDeployed(
         selfMintingDerivative.syntheticTokenSymbol(),
         selfMintingDerivative.collateralCurrency(),
         selfMintingDerivative.version(),

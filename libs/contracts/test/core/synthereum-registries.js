@@ -104,7 +104,7 @@ contract('Synthereum Pool Register', function (accounts) {
   });
   describe('Pool registry', async () => {
     it('Can write in the registry', async () => {
-      let pools = await poolRegistryInstance.getPools.call(
+      let pools = await poolRegistryInstance.getElements.call(
         syntheticSymbol,
         collateralAddress,
         poolVersion,
@@ -112,6 +112,10 @@ contract('Synthereum Pool Register', function (accounts) {
       assert.equal(pools.length, 0, 'Pools not void');
       let collaterals = await poolRegistryInstance.getCollaterals.call();
       assert.equal(collaterals.length, 0, 'Collaterals not void');
+      let synthTokens = await poolRegistryInstance.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 0, 'Synthetic tokens not void');
+      let versions = await poolRegistryInstance.getVersions.call();
+      assert.equal(versions.length, 0, 'Versions not void');
       const {
         derivative,
         pool,
@@ -129,14 +133,14 @@ contract('Synthereum Pool Register', function (accounts) {
         poolPayload,
         { from: maintainer },
       );
-      let isDeployed = await poolRegistryInstance.isPoolDeployed.call(
+      let isDeployed = await poolRegistryInstance.isDeployed.call(
         syntheticSymbol,
         collateralAddress,
         poolVersion,
         pool,
       );
       assert.equal(isDeployed, true, 'Wrong deployment status');
-      pools = await poolRegistryInstance.getPools.call(
+      pools = await poolRegistryInstance.getElements.call(
         syntheticSymbol,
         collateralAddress,
         poolVersion,
@@ -150,10 +154,16 @@ contract('Synthereum Pool Register', function (accounts) {
         collateralAddress,
         'Collateral address wrong',
       );
+      synthTokens = await poolRegistryInstance.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 1, 'Wrong synthetic tokens number');
+      assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
+      versions = await poolRegistryInstance.getVersions.call();
+      assert.equal(versions.length, 1, 'Wrong versions number');
+      assert.equal(versions[0], 4, 'Wrong version');
     });
     it('Revert if an address different from deployer write', async () => {
       await truffleAssert.reverts(
-        poolRegistryInstance.registerPool(
+        poolRegistryInstance.register(
           syntheticSymbol,
           collateralAddress,
           poolVersion,
@@ -228,7 +238,7 @@ contract('Synthereum Pool Register', function (accounts) {
       selfMintingRegistryInstance = await SelfMintingRegistry.deployed();
     });
     it('Can write in the registry', async () => {
-      let selfMintingDerivatives = await selfMintingRegistryInstance.getSelfMintingDerivatives.call(
+      let selfMintingDerivatives = await selfMintingRegistryInstance.getElements.call(
         syntheticSymbol,
         selfMintingCollateralAddress,
         selfMintingVersion,
@@ -240,6 +250,10 @@ contract('Synthereum Pool Register', function (accounts) {
       );
       let collaterals = await selfMintingRegistryInstance.getCollaterals.call();
       assert.equal(collaterals.length, 0, 'Collaterals not void');
+      let synthTokens = await selfMintingRegistryInstance.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 0, 'Synthetic tokens not void');
+      let versions = await selfMintingRegistryInstance.getVersions.call();
+      assert.equal(versions.length, 0, 'Versions not void');
       const selfMintingDerivative = await deployerInstance.deployOnlySelfMintingDerivative.call(
         selfMintingVersion,
         selfMintingPayload,
@@ -250,14 +264,14 @@ contract('Synthereum Pool Register', function (accounts) {
         selfMintingPayload,
         { from: maintainer },
       );
-      let isDeployed = await selfMintingRegistryInstance.isSelfMintingDerivativeDeployed.call(
+      let isDeployed = await selfMintingRegistryInstance.isDeployed.call(
         syntheticSymbol,
         selfMintingCollateralAddress,
         selfMintingVersion,
         selfMintingDerivative,
       );
       assert.equal(isDeployed, true, 'Wrong deployment status');
-      selfMintingDerivatives = await selfMintingRegistryInstance.getSelfMintingDerivatives.call(
+      selfMintingDerivatives = await selfMintingRegistryInstance.getElements.call(
         syntheticSymbol,
         selfMintingCollateralAddress,
         selfMintingVersion,
@@ -279,10 +293,16 @@ contract('Synthereum Pool Register', function (accounts) {
         selfMintingCollateralAddress,
         'Collateral address wrong',
       );
+      synthTokens = await selfMintingRegistryInstance.getSyntheticTokens.call();
+      assert.equal(synthTokens.length, 1, 'Wrong synthetic tokens number');
+      assert.equal(synthTokens[0], 'jEUR', 'Wrong synthetic token symbol');
+      versions = await selfMintingRegistryInstance.getVersions.call();
+      assert.equal(versions.length, 1, 'Wrong versions number');
+      assert.equal(versions[0], 1, 'Wrong version');
     });
     it('Revert if an address different from deployer write', async () => {
       await truffleAssert.reverts(
-        selfMintingRegistryInstance.registerSelfMintingDerivative(
+        selfMintingRegistryInstance.register(
           syntheticSymbol,
           selfMintingCollateralAddress,
           selfMintingVersion,

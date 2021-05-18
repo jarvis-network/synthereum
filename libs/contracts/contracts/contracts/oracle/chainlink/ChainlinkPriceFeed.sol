@@ -4,8 +4,8 @@ pragma experimental ABIEncoderV2;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
-  ISynthereumPoolRegistry
-} from '../../core/registries/interfaces/IPoolRegistry.sol';
+  ISynthereumRegistry
+} from '../../core/registries/interfaces/IRegistry.sol';
 import {
   ISynthereumPoolDeployment
 } from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';
@@ -80,15 +80,15 @@ contract SynthereumChainlinkPriceFeed is
 
   modifier onlyPools() {
     if (msg.sender != tx.origin) {
-      ISynthereumPoolRegistry poolRegister =
-        ISynthereumPoolRegistry(
+      ISynthereumRegistry poolRegister =
+        ISynthereumRegistry(
           synthereumFinder.getImplementationAddress(
             SynthereumInterfaces.PoolRegistry
           )
         );
       ISynthereumPoolDeployment pool = ISynthereumPoolDeployment(msg.sender);
       require(
-        poolRegister.isPoolDeployed(
+        poolRegister.isDeployed(
           pool.syntheticTokenSymbol(),
           pool.collateralToken(),
           pool.version(),

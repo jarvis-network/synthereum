@@ -7,12 +7,7 @@ import {ISynthereumDeployer} from './interfaces/IDeployer.sol';
 import {
   ISynthereumFactoryVersioning
 } from './interfaces/IFactoryVersioning.sol';
-import {
-  ISynthereumPoolRegistry
-} from './registries/interfaces/IPoolRegistry.sol';
-import {
-  ISelfMintingRegistry
-} from './registries/interfaces/ISelfMintingRegistry.sol';
+import {ISynthereumRegistry} from './registries/interfaces/IRegistry.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
@@ -119,8 +114,8 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     checkPoolAndDerivativeMatching(pool, derivative, true);
     setDerivativeRoles(derivative, pool, false);
     setSyntheticTokenRoles(derivative);
-    ISynthereumPoolRegistry poolRegistry = getPoolRegistry();
-    poolRegistry.registerPool(
+    ISynthereumRegistry poolRegistry = getPoolRegistry();
+    poolRegistry.register(
       pool.syntheticTokenSymbol(),
       pool.collateralToken(),
       poolVersion,
@@ -155,8 +150,8 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     checkPoolDeployment(pool, poolVersion);
     checkPoolAndDerivativeMatching(pool, derivative, true);
     setPoolRole(derivative, pool);
-    ISynthereumPoolRegistry poolRegistry = getPoolRegistry();
-    poolRegistry.registerPool(
+    ISynthereumRegistry poolRegistry = getPoolRegistry();
+    poolRegistry.register(
       pool.syntheticTokenSymbol(),
       pool.collateralToken(),
       poolVersion,
@@ -220,8 +215,8 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
     address tokenCurrency = address(selfMintingDerivative.tokenCurrency());
     addSyntheticTokenRoles(tokenCurrency, address(selfMintingDerivative));
-    ISelfMintingRegistry selfMintingRegistry = getSelfMintingRegistry();
-    selfMintingRegistry.registerSelfMintingDerivative(
+    ISynthereumRegistry selfMintingRegistry = getSelfMintingRegistry();
+    selfMintingRegistry.register(
       selfMintingDerivative.syntheticTokenSymbol(),
       selfMintingDerivative.collateralCurrency(),
       selfMintingDerVersion,
@@ -362,9 +357,9 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   function getPoolRegistry()
     internal
     view
-    returns (ISynthereumPoolRegistry poolRegistry)
+    returns (ISynthereumRegistry poolRegistry)
   {
-    poolRegistry = ISynthereumPoolRegistry(
+    poolRegistry = ISynthereumRegistry(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.PoolRegistry
       )
@@ -374,9 +369,9 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   function getSelfMintingRegistry()
     internal
     view
-    returns (ISelfMintingRegistry selfMintingRegister)
+    returns (ISynthereumRegistry selfMintingRegister)
   {
-    selfMintingRegister = ISelfMintingRegistry(
+    selfMintingRegister = ISynthereumRegistry(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.SelfMintingRegistry
       )
@@ -444,9 +439,9 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   function checkPoolRegistration(ISynthereumPoolDeployment pool) internal view {
-    ISynthereumPoolRegistry poolRegistry = getPoolRegistry();
+    ISynthereumRegistry poolRegistry = getPoolRegistry();
     require(
-      poolRegistry.isPoolDeployed(
+      poolRegistry.isDeployed(
         pool.syntheticTokenSymbol(),
         pool.collateralToken(),
         pool.version(),

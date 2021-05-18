@@ -18,8 +18,8 @@ import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {IRole} from '../../base/interfaces/IRole.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
-  ISynthereumPoolRegistry
-} from '../../core/registries/interfaces/IPoolRegistry.sol';
+  ISynthereumRegistry
+} from '../../core/registries/interfaces/IRegistry.sol';
 import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
@@ -1100,12 +1100,12 @@ library SynthereumPoolOnChainPriceFeedLib {
     );
     ISynthereumFinder finder = self.finder;
     require(finder == poolToCheck.synthereumFinder(), 'Finders do not match');
-    ISynthereumPoolRegistry poolRegister =
-      ISynthereumPoolRegistry(
+    ISynthereumRegistry poolRegister =
+      ISynthereumRegistry(
         finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
       );
     require(
-      poolRegister.isPoolDeployed(
+      poolRegister.isDeployed(
         poolToCheck.syntheticTokenSymbol(),
         collateralToken,
         poolToCheck.version(),
