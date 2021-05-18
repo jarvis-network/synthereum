@@ -324,9 +324,7 @@ contract('SelfMintingPerpetualPositionManagerMultiParty', function (accounts) {
       finder.address,
     );
     assert.equal(
-      hexToUtf8(
-        (await positionManager.positionManagerData.call()).priceIdentifier,
-      ),
+      hexToUtf8(await positionManager.priceIdentifier.call()),
       hexToUtf8(priceFeedIdentifier),
     );
     assert.equal(

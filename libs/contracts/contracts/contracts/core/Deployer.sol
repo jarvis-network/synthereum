@@ -19,9 +19,6 @@ import {
   IDerivativeDeployment
 } from '../derivative/common/interfaces/IDerivativeDeployment.sol';
 import {
-  IExtendedDerivativeDeployment
-} from '../derivative/common/interfaces/IExtendedDerivativeDeployment.sol';
-import {
   ISelfMintingDerivativeDeployment
 } from '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
 import {IRole} from '../base/interfaces/IRole.sol';

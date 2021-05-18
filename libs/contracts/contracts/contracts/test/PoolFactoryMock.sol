@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
-import {
-  IExtendedDerivative
-} from '../derivative/common/interfaces/IExtendedDerivative.sol';
+import {IDerivative} from '../derivative/common/interfaces/IDerivative.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
@@ -27,18 +25,16 @@ contract PoolFactoryMock is
 
   bytes4 public override deploymentSignature;
 
-  IExtendedDerivative mockDerivative;
+  IDerivative mockDerivative;
 
-  constructor(address _synthereumFinder, IExtendedDerivative _mockDerivative)
-    public
-  {
+  constructor(address _synthereumFinder, IDerivative _mockDerivative) public {
     synthereumFinder = _synthereumFinder;
     deploymentSignature = this.createPool.selector;
     mockDerivative = _mockDerivative;
   }
 
   function createPool(
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     ISynthereumFinder finder,
     uint8 version,
     ISynthereumPoolOnChainPriceFeed.Roles memory roles,

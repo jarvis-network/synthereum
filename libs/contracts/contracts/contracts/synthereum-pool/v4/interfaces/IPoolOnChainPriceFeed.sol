@@ -9,8 +9,8 @@ import {
   IERC20
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  IExtendedDerivative
-} from '../../../derivative/common/interfaces/IExtendedDerivative.sol';
+  IDerivative
+} from '../../../derivative/common/interfaces/IDerivative.sol';
 import {ISynthereumDeployer} from '../../../core/interfaces/IDeployer.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
@@ -39,7 +39,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
 
   struct MintParams {
     // Derivative to use
-    IExtendedDerivative derivative;
+    IDerivative derivative;
     // Minimum amount of synthetic tokens that a user wants to mint using collateral (anti-slippage)
     uint256 minNumTokens;
     // Amount of collateral that a user wants to spend for minting
@@ -54,7 +54,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
 
   struct RedeemParams {
     // Derivative to use
-    IExtendedDerivative derivative;
+    IDerivative derivative;
     // Amount of synthetic tokens that user wants to use for redeeming
     uint256 numTokens;
     // Minimium amount of collateral that user wants to redeem (anti-slippage)
@@ -69,11 +69,11 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
 
   struct ExchangeParams {
     // Derivative of source pool
-    IExtendedDerivative derivative;
+    IDerivative derivative;
     // Destination pool
     ISynthereumPoolGeneral destPool;
     // Derivative of destination pool
-    IExtendedDerivative destDerivative;
+    IDerivative destDerivative;
     // Amount of source synthetic tokens that user wants to use for exchanging
     uint256 numTokens;
     // Minimum Amount of destination synthetic tokens that user wants to receive (anti-slippage)
@@ -90,13 +90,13 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    * @notice Add a derivate to be controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function addDerivative(IExtendedDerivative derivative) external;
+  function addDerivative(IDerivative derivative) external;
 
   /**
    * @notice Remove a derivative controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function removeDerivative(IExtendedDerivative derivative) external;
+  function removeDerivative(IDerivative derivative) external;
 
   /**
    * @notice Mint synthetic tokens using fixed amount of collateral
@@ -143,8 +143,8 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    * @param numTokens The number of new tokens to mint
    */
   function exchangeMint(
-    IExtendedDerivative srcDerivative,
-    IExtendedDerivative derivative,
+    IDerivative srcDerivative,
+    IDerivative derivative,
     uint256 collateralAmount,
     uint256 numTokens
   ) external;
@@ -161,7 +161,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     uint256 collateralAmount
   ) external;
 
@@ -171,17 +171,15 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    * @param derivative Derivative from which collateral withdrawal is requested
    * @param collateralAmount The amount of excess collateral to withdraw
    */
-  function slowWithdrawRequest(
-    IExtendedDerivative derivative,
-    uint256 collateralAmount
-  ) external;
+  function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
+    external;
 
   /**
    * @notice Withdraw collateral after a withdraw request has passed it's liveness period
    * @param derivative Derivative from which collateral withdrawal is requested
    * @return amountWithdrawn Amount of collateral withdrawn by slow withdrawal
    */
-  function slowWithdrawPassedRequest(IExtendedDerivative derivative)
+  function slowWithdrawPassedRequest(IDerivative derivative)
     external
     returns (uint256 amountWithdrawn);
 
@@ -191,17 +189,16 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
-  function fastWithdraw(
-    IExtendedDerivative derivative,
-    uint256 collateralAmount
-  ) external returns (uint256 amountWithdrawn);
+  function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
+    external
+    returns (uint256 amountWithdrawn);
 
   /**
    * @notice Redeem tokens after contract emergency shutdown
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
    */
-  function settleEmergencyShutdown(IExtendedDerivative derivative)
+  function settleEmergencyShutdown(IDerivative derivative)
     external
     returns (uint256 amountSettled);
 
@@ -244,10 +241,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
    * @notice Get all the derivatives associated to this pool
    * @return Return list of all derivatives
    */
-  function getAllDerivatives()
-    external
-    view
-    returns (IExtendedDerivative[] memory);
+  function getAllDerivatives() external view returns (IDerivative[] memory);
 
   /**
    * @notice Get the starting collateral ratio of the pool

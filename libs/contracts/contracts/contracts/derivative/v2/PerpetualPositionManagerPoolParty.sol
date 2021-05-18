@@ -8,6 +8,10 @@ import {
   MintableBurnableIERC20
 } from '../common/interfaces/MintableBurnableIERC20.sol';
 import {
+  IDerivativeDeployment
+} from '../common/interfaces/IDerivativeDeployment.sol';
+import {IDerivativeMain} from '../common/interfaces/IDerivativeMain.sol';
+import {
   OracleInterface
 } from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
 import {
@@ -17,9 +21,7 @@ import {
   AdministrateeInterface
 } from '../../../@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  IDerivativeDeployment
-} from '../common/interfaces/IDerivativeDeployment.sol';
+import {IDerivative} from '../common/interfaces/IDerivative.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   OracleInterfaces
@@ -43,7 +45,7 @@ import {
 import {FeePayerParty} from '../common/FeePayerParty.sol';
 
 contract PerpetualPositionManagerPoolParty is
-  IDerivativeDeployment,
+  IDerivative,
   AccessControl,
   FeePayerParty
 {
@@ -55,11 +57,6 @@ contract PerpetualPositionManagerPoolParty is
 
   bytes32 public constant POOL_ROLE = keccak256('Pool');
 
-  struct Roles {
-    address[] admins;
-    address[] pools;
-  }
-
   struct PositionManagerParams {
     uint256 withdrawalLiveness;
     address collateralAddress;
@@ -70,6 +67,11 @@ contract PerpetualPositionManagerPoolParty is
     address timerAddress;
     address excessTokenBeneficiary;
     ISynthereumFinder synthereumFinder;
+  }
+
+  struct Roles {
+    address[] admins;
+    address[] pools;
   }
 
   struct PositionData {
@@ -211,12 +213,16 @@ contract PerpetualPositionManagerPoolParty is
       .excessTokenBeneficiary;
   }
 
-  function deposit(FixedPoint.Unsigned memory collateralAmount) external {
+  function deposit(FixedPoint.Unsigned memory collateralAmount)
+    external
+    override
+  {
     depositTo(msg.sender, collateralAmount);
   }
 
   function withdraw(FixedPoint.Unsigned memory collateralAmount)
     external
+    override
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -235,6 +241,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function requestWithdrawal(FixedPoint.Unsigned memory collateralAmount)
     external
+    override
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -252,6 +259,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function withdrawPassedRequest()
     external
+    override
     onlyPool()
     notEmergencyShutdown()
     fees()
@@ -269,6 +277,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function cancelWithdrawal()
     external
+    override
     onlyPool()
     notEmergencyShutdown()
     nonReentrant()
@@ -280,7 +289,7 @@ contract PerpetualPositionManagerPoolParty is
   function create(
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
-  ) external onlyPool() notEmergencyShutdown() fees() nonReentrant() {
+  ) external override onlyPool() notEmergencyShutdown() fees() nonReentrant() {
     PositionData storage positionData = positions[msg.sender];
 
     positionData.create(
@@ -294,6 +303,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function redeem(FixedPoint.Unsigned memory numTokens)
     external
+    override
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -314,6 +324,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function repay(FixedPoint.Unsigned memory numTokens)
     external
+    override
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(msg.sender)
@@ -326,6 +337,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function settleEmergencyShutdown()
     external
+    override
     onlyPool()
     isEmergencyShutdown()
     fees()
@@ -342,7 +354,7 @@ contract PerpetualPositionManagerPoolParty is
 
   function emergencyShutdown()
     external
-    override
+    override(IDerivativeMain, AdministrateeInterface)
     notEmergencyShutdown()
     nonReentrant()
   {
@@ -365,12 +377,16 @@ contract PerpetualPositionManagerPoolParty is
     );
   }
 
-  function remargin() external override {
+  function remargin()
+    external
+    override(IDerivativeMain, AdministrateeInterface)
+  {
     return;
   }
 
   function trimExcess(IERC20 token)
     external
+    override
     nonReentrant()
     returns (FixedPoint.Unsigned memory amount)
   {
@@ -385,6 +401,7 @@ contract PerpetualPositionManagerPoolParty is
   function getCollateral(address sponsor)
     external
     view
+    override
     nonReentrantView()
     returns (FixedPoint.Unsigned memory collateralAmount)
   {
@@ -393,7 +410,12 @@ contract PerpetualPositionManagerPoolParty is
       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
   }
 
-  function synthereumFinder() external view returns (ISynthereumFinder finder) {
+  function synthereumFinder()
+    external
+    view
+    override
+    returns (ISynthereumFinder finder)
+  {
     finder = positionManagerData.synthereumFinder;
   }
 
@@ -401,9 +423,29 @@ contract PerpetualPositionManagerPoolParty is
     token = positionManagerData.tokenCurrency;
   }
 
+  function syntheticTokenSymbol()
+    external
+    view
+    override
+    returns (string memory symbol)
+  {
+    symbol = IStandardERC20(address(positionManagerData.tokenCurrency))
+      .symbol();
+  }
+
+  function priceIdentifier()
+    external
+    view
+    override
+    returns (bytes32 identifier)
+  {
+    identifier = positionManagerData.priceIdentifier;
+  }
+
   function totalPositionCollateral()
     external
     view
+    override
     nonReentrantView()
     returns (FixedPoint.Unsigned memory totalCollateral)
   {
@@ -412,9 +454,19 @@ contract PerpetualPositionManagerPoolParty is
       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
   }
 
+  function totalTokensOutstanding()
+    external
+    view
+    override
+    returns (FixedPoint.Unsigned memory totalTokens)
+  {
+    totalTokens = globalPositionData.totalTokensOutstanding;
+  }
+
   function emergencyShutdownPrice()
     external
     view
+    override
     isEmergencyShutdown()
     returns (FixedPoint.Unsigned memory)
   {
@@ -446,6 +498,7 @@ contract PerpetualPositionManagerPoolParty is
     FixedPoint.Unsigned memory collateralAmount
   )
     public
+    override
     onlyPool()
     notEmergencyShutdown()
     noPendingWithdrawal(sponsor)

@@ -304,6 +304,10 @@ contract('PerpetualPositionManagerPoolParty', function (accounts) {
     // Synthetic token
     assert.equal(await tokenCurrency.name.call(), syntheticName);
     assert.equal(await tokenCurrency.symbol.call(), syntheticSymbol);
+    assert.equal(
+      await positionManager.syntheticTokenSymbol.call(),
+      syntheticSymbol,
+    );
   });
 
   it('Valid identifier in the constructor', async function () {

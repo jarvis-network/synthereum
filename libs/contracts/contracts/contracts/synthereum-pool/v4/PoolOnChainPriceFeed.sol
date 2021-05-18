@@ -4,9 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IExtendedDerivative
-} from '../../derivative/common/interfaces/IExtendedDerivative.sol';
+import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
 } from './interfaces/IPoolOnChainPriceFeed.sol';
@@ -143,7 +141,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param _fee The fee structure
    */
   constructor(
-    IExtendedDerivative _derivative,
+    IDerivative _derivative,
     ISynthereumFinder _finder,
     uint8 _version,
     Roles memory _roles,
@@ -175,7 +173,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @notice Add a derivate to be controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function addDerivative(IExtendedDerivative derivative)
+  function addDerivative(IDerivative derivative)
     external
     override
     onlyMaintainer
@@ -188,7 +186,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @notice Remove a derivative controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function removeDerivative(IExtendedDerivative derivative)
+  function removeDerivative(IDerivative derivative)
     external
     override
     onlyMaintainer
@@ -257,8 +255,8 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param numTokens The number of new tokens to mint
    */
   function exchangeMint(
-    IExtendedDerivative srcDerivative,
-    IExtendedDerivative derivative,
+    IDerivative srcDerivative,
+    IDerivative derivative,
     uint256 collateralAmount,
     uint256 numTokens
   ) external override nonReentrant {
@@ -289,7 +287,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param collateralAmount The amount of collateral to move into derivative
    */
   function depositIntoDerivative(
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     uint256 collateralAmount
   ) external override onlyLiquidityProvider nonReentrant {
     poolStorage.depositIntoDerivative(
@@ -304,10 +302,12 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param derivative Derivative from which the collateral withdrawal is requested
    * @param collateralAmount The amount of excess collateral to withdraw
    */
-  function slowWithdrawRequest(
-    IExtendedDerivative derivative,
-    uint256 collateralAmount
-  ) external override onlyLiquidityProvider nonReentrant {
+  function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
+    external
+    override
+    onlyLiquidityProvider
+    nonReentrant
+  {
     poolStorage.slowWithdrawRequest(
       derivative,
       FixedPoint.Unsigned(collateralAmount)
@@ -319,7 +319,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param derivative Derivative from which collateral withdrawal was requested
    * @return amountWithdrawn Amount of collateral withdrawn by slow withdrawal
    */
-  function slowWithdrawPassedRequest(IExtendedDerivative derivative)
+  function slowWithdrawPassedRequest(IDerivative derivative)
     external
     override
     onlyLiquidityProvider
@@ -335,10 +335,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
-  function fastWithdraw(
-    IExtendedDerivative derivative,
-    uint256 collateralAmount
-  )
+  function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
     external
     override
     onlyLiquidityProvider
@@ -356,7 +353,7 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
    */
-  function settleEmergencyShutdown(IExtendedDerivative derivative)
+  function settleEmergencyShutdown(IDerivative derivative)
     external
     override
     nonReentrant
@@ -480,14 +477,13 @@ contract SynthereumPoolOnChainPriceFeed is
     external
     view
     override
-    returns (IExtendedDerivative[] memory)
+    returns (IDerivative[] memory)
   {
     EnumerableSet.AddressSet storage derivativesSet = poolStorage.derivatives;
     uint256 numberOfDerivatives = derivativesSet.length();
-    IExtendedDerivative[] memory derivatives =
-      new IExtendedDerivative[](numberOfDerivatives);
+    IDerivative[] memory derivatives = new IDerivative[](numberOfDerivatives);
     for (uint256 j = 0; j < numberOfDerivatives; j++) {
-      derivatives[j] = (IExtendedDerivative(derivativesSet.at(j)));
+      derivatives[j] = (IDerivative(derivativesSet.at(j)));
     }
     return derivatives;
   }

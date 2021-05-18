@@ -14,9 +14,7 @@ import {
 } from '../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IExtendedDerivative
-} from '../../derivative/common/interfaces/IExtendedDerivative.sol';
+import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {IRole} from '../../base/interfaces/IRole.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumPoolRegistry} from '../../core/interfaces/IPoolRegistry.sol';
@@ -40,7 +38,7 @@ library SynthereumPoolOnChainPriceFeedLib {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SynthereumPoolOnChainPriceFeedLib for ISynthereumPoolOnChainPriceFeedStorage.Storage;
-  using SynthereumPoolOnChainPriceFeedLib for IExtendedDerivative;
+  using SynthereumPoolOnChainPriceFeedLib for IDerivative;
   using EnumerableSet for EnumerableSet.AddressSet;
   using SafeERC20 for IERC20;
 
@@ -130,7 +128,7 @@ library SynthereumPoolOnChainPriceFeedLib {
   // Check that derivative must be whitelisted in this pool
   modifier checkDerivative(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative
+    IDerivative derivative
   ) {
     require(self.derivatives.contains(address(derivative)), 'Wrong derivative');
     _;
@@ -167,7 +165,7 @@ library SynthereumPoolOnChainPriceFeedLib {
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     uint8 _version,
     ISynthereumFinder _finder,
-    IExtendedDerivative _derivative,
+    IDerivative _derivative,
     FixedPoint.Unsigned memory _startingCollateralization,
     bool _isContractAllowed
   ) external {
@@ -177,7 +175,7 @@ library SynthereumPoolOnChainPriceFeedLib {
     self.isContractAllowed = _isContractAllowed;
     self.collateralToken = getDerivativeCollateral(_derivative);
     self.syntheticToken = _derivative.tokenCurrency();
-    self.priceIdentifier = _derivative.positionManagerData().priceIdentifier;
+    self.priceIdentifier = _derivative.priceIdentifier();
     self.derivatives.add(address(_derivative));
     emit AddDerivative(address(this), address(_derivative));
   }
@@ -189,7 +187,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function addDerivative(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative
+    IDerivative derivative
   ) external {
     require(
       self.collateralToken == getDerivativeCollateral(derivative),
@@ -213,7 +211,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function removeDerivative(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative
+    IDerivative derivative
   ) external {
     require(
       self.derivatives.remove(address(derivative)),
@@ -411,8 +409,8 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function exchangeMint(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative srcDerivative,
-    IExtendedDerivative derivative,
+    IDerivative srcDerivative,
+    IDerivative derivative,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) external {
@@ -471,7 +469,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function depositIntoDerivative(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     FixedPoint.Unsigned memory collateralAmount
   ) external checkDerivative(self, derivative) {
     self.collateralToken.safeApprove(
@@ -490,7 +488,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function slowWithdrawRequest(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     FixedPoint.Unsigned memory collateralAmount
   ) external checkDerivative(self, derivative) {
     derivative.requestWithdrawal(collateralAmount);
@@ -504,7 +502,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function slowWithdrawPassedRequest(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative
+    IDerivative derivative
   )
     external
     checkDerivative(self, derivative)
@@ -528,7 +526,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function fastWithdraw(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     FixedPoint.Unsigned memory collateralAmount
   )
     external
@@ -553,7 +551,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function settleEmergencyShutdown(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     bytes32 liquidity_provider_role
   ) external returns (uint256 amountSettled) {
     IERC20 tokenCurrency = self.syntheticToken;
@@ -705,7 +703,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function executeMint(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     ExecuteMintParams memory executeMintParams,
     address recipient
   ) internal {
@@ -769,7 +767,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function executeRedeem(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     ExecuteRedeemParams memory executeRedeemParams,
     address recipient
   ) internal {
@@ -818,9 +816,9 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function executeExchange(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     ISynthereumPoolGeneral destPool,
-    IExtendedDerivative destDerivative,
+    IDerivative destDerivative,
     ExecuteExchangeParams memory executeExchangeParams,
     address recipient
   ) internal {
@@ -898,7 +896,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function mintSynTokens(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
   ) internal {
@@ -933,10 +931,10 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function redeemForCollateral(
     address tokenHolder,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     FixedPoint.Unsigned memory numTokens
   ) internal returns (FixedPoint.Unsigned memory amountWithdrawn) {
-    IERC20 tokenCurrency = derivative.positionManagerData().tokenCurrency;
+    IERC20 tokenCurrency = derivative.tokenCurrency();
     require(
       tokenCurrency.balanceOf(tokenHolder) >= numTokens.rawValue,
       'Token balance less than token to redeem'
@@ -1009,7 +1007,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    */
   function checkParams(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    IExtendedDerivative derivative,
+    IDerivative derivative,
     uint256 feePercentage,
     uint256 expiration
   ) internal view checkDerivative(self, derivative) {
@@ -1025,7 +1023,7 @@ library SynthereumPoolOnChainPriceFeedLib {
    * @param derivative Address of the perpetual derivative
    * @return collateral Address of the collateral of perpetual derivative
    */
-  function getDerivativeCollateral(IExtendedDerivative derivative)
+  function getDerivativeCollateral(IDerivative derivative)
     internal
     view
     returns (IERC20 collateral)
@@ -1038,13 +1036,13 @@ library SynthereumPoolOnChainPriceFeedLib {
    * @param derivative Perpetual derivative contract
    * @return The global collateralization ratio
    */
-  function getGlobalCollateralizationRatio(IExtendedDerivative derivative)
+  function getGlobalCollateralizationRatio(IDerivative derivative)
     internal
     view
     returns (FixedPoint.Unsigned memory)
   {
     FixedPoint.Unsigned memory totalTokensOutstanding =
-      derivative.globalPositionData().totalTokensOutstanding;
+      derivative.totalTokensOutstanding();
     if (totalTokensOutstanding.isGreaterThan(0)) {
       return derivative.totalPositionCollateral().div(totalTokensOutstanding);
     } else {
@@ -1087,7 +1085,7 @@ library SynthereumPoolOnChainPriceFeedLib {
   function checkPool(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     ISynthereumPoolGeneral poolToCheck,
-    IExtendedDerivative derivativeToCheck
+    IDerivative derivativeToCheck
   ) internal view {
     require(
       poolToCheck.isDerivativeAdmitted(address(derivativeToCheck)),

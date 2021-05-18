@@ -417,8 +417,12 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
       .symbol();
   }
 
-  function version() external view override returns (uint8 selfMintingversion) {
-    selfMintingversion = positionManagerData.version;
+  function version() external view override returns (uint8 contractVersion) {
+    contractVersion = positionManagerData.version;
+  }
+
+  function priceIdentifier() external view returns (bytes32 identifier) {
+    identifier = positionManagerData.priceIdentifier;
   }
 
   function totalPositionCollateral()

@@ -7,48 +7,10 @@ import {
 } from '../../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
-  FinderInterface
-} from '../../../../@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
-import {
   FixedPoint
 } from '../../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 
 interface IDerivativeMain {
-  struct FeePayerData {
-    IERC20 collateralCurrency;
-    FinderInterface finder;
-    uint256 lastPaymentTime;
-    FixedPoint.Unsigned cumulativeFeeMultiplier;
-  }
-
-  struct PositionManagerData {
-    ISynthereumFinder synthereumFinder;
-    IERC20 tokenCurrency;
-    bytes32 priceIdentifier;
-    uint256 withdrawalLiveness;
-    FixedPoint.Unsigned minSponsorTokens;
-    FixedPoint.Unsigned emergencyShutdownPrice;
-    uint256 emergencyShutdownTimestamp;
-    address excessTokenBeneficiary;
-  }
-
-  struct GlobalPositionData {
-    FixedPoint.Unsigned totalTokensOutstanding;
-    FixedPoint.Unsigned rawTotalPositionCollateral;
-  }
-
-  function feePayerData() external view returns (FeePayerData memory data);
-
-  function positionManagerData()
-    external
-    view
-    returns (PositionManagerData memory data);
-
-  function globalPositionData()
-    external
-    view
-    returns (GlobalPositionData memory data);
-
   function depositTo(
     address sponsor,
     FixedPoint.Unsigned memory collateralAmount
@@ -97,10 +59,21 @@ interface IDerivativeMain {
     view
     returns (FixedPoint.Unsigned memory collateralAmount);
 
+  function synthereumFinder() external view returns (ISynthereumFinder finder);
+
+  function syntheticTokenSymbol() external view returns (string memory symbol);
+
+  function priceIdentifier() external view returns (bytes32 identifier);
+
   function totalPositionCollateral()
     external
     view
     returns (FixedPoint.Unsigned memory totalCollateral);
+
+  function totalTokensOutstanding()
+    external
+    view
+    returns (FixedPoint.Unsigned memory totalTokens);
 
   function emergencyShutdownPrice()
     external

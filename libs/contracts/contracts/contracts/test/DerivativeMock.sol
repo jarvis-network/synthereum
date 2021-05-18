@@ -9,21 +9,9 @@ import {
 } from '../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 
 contract DerivativeMock {
-  struct PositionManagerParams {
-    uint256 withdrawalLiveness;
-    address collateralAddress;
-    address tokenAddress;
-    address finderAddress;
-    bytes32 priceFeedIdentifier;
-    FixedPoint.Unsigned minSponsorTokens;
-    address timerAddress;
-    address excessTokenBeneficiary;
-    ISynthereumFinder synthereumFinder;
-  }
-
   IERC20 private collateral;
   IERC20 private token;
-  PositionManagerParams public positionManagerData;
+  bytes32 private priceFeedIdentifier;
 
   constructor(
     IERC20 _collateral,
@@ -32,7 +20,7 @@ contract DerivativeMock {
   ) public {
     collateral = _collateral;
     token = _token;
-    positionManagerData.priceFeedIdentifier = _priceFeedIdentifier;
+    priceFeedIdentifier = _priceFeedIdentifier;
   }
 
   function collateralCurrency() external view returns (IERC20) {
@@ -41,5 +29,9 @@ contract DerivativeMock {
 
   function tokenCurrency() external view returns (IERC20 syntheticCurrency) {
     return token;
+  }
+
+  function priceIdentifier() external view returns (bytes32 priceId) {
+    priceId = priceFeedIdentifier;
   }
 }

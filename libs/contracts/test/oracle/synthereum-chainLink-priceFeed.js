@@ -28,7 +28,7 @@ const UmaFinder = artifacts.require('Finder');
 const MockV3Aggregator = artifacts.require('MockV3Aggregator');
 const PriceFeedGetter = artifacts.require('PriceFeedGetter');
 
-contract('Synthereum pool with on chain price feed', function (accounts) {
+contract('Synthereum chainlink price feed', function (accounts) {
   let derivativeVersion = 2;
 
   // Derivative params
