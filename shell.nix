@@ -1,6 +1,6 @@
 { pkgs ? import <nixpkgs> { } }: with pkgs;
 let
-  yarn = pkgs.callPackage ./nix/pkgs/yarn/default.nix { inherit stdenv; };
+  node = nodejs-14_x;
 in
 mkShell {
   buildInputs = [
@@ -9,8 +9,8 @@ mkShell {
     git
     (docker.override { buildxSupport = true; })
     docker-compose
-    nodejs-14_x
-    (yarn.override { nodejs = nodejs-14_x; })
+    node
+    (yarn.override { nodejs = node; })
     gnumake
     python3
     gccStdenv
