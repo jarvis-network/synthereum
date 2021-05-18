@@ -6,7 +6,7 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ISelfMintingController} from './interfaces/ISelfMintingController.sol';
 import {
   ISelfMintingRegistry
-} from '../../../core/interfaces/ISelfMintingRegistry.sol';
+} from '../../../core/registries/interfaces/ISelfMintingRegistry.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from './interfaces/ISelfMintingDerivativeDeployment.sol';

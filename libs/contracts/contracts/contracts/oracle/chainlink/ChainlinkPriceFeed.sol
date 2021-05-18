@@ -3,7 +3,9 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {ISynthereumPoolRegistry} from '../../core/interfaces/IPoolRegistry.sol';
+import {
+  ISynthereumPoolRegistry
+} from '../../core/registries/interfaces/IPoolRegistry.sol';
 import {
   ISynthereumPoolDeployment
 } from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';

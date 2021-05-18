@@ -2,15 +2,15 @@
 pragma solidity ^0.6.12;
 
 import {ISynthereumPoolRegistry} from './interfaces/IPoolRegistry.sol';
-import {ISynthereumFinder} from './interfaces/IFinder.sol';
-import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {SynthereumInterfaces} from './Constants.sol';
+import {ISynthereumFinder} from '../interfaces/IFinder.sol';
+import {IERC20} from '../../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {SynthereumInterfaces} from '../Constants.sol';
 import {
   EnumerableSet
-} from '../../@openzeppelin/contracts/utils/EnumerableSet.sol';
+} from '../../../@openzeppelin/contracts/utils/EnumerableSet.sol';
 import {
   Lockable
-} from '../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+} from '../../../@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 
 contract SynthereumPoolRegistry is ISynthereumPoolRegistry, Lockable {
   using EnumerableSet for EnumerableSet.AddressSet;

@@ -17,7 +17,9 @@ import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {IRole} from '../../base/interfaces/IRole.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {ISynthereumPoolRegistry} from '../../core/interfaces/IPoolRegistry.sol';
+import {
+  ISynthereumPoolRegistry
+} from '../../core/registries/interfaces/IPoolRegistry.sol';
 import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';

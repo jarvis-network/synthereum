@@ -7,8 +7,12 @@ import {ISynthereumDeployer} from './interfaces/IDeployer.sol';
 import {
   ISynthereumFactoryVersioning
 } from './interfaces/IFactoryVersioning.sol';
-import {ISynthereumPoolRegistry} from './interfaces/IPoolRegistry.sol';
-import {ISelfMintingRegistry} from './interfaces/ISelfMintingRegistry.sol';
+import {
+  ISynthereumPoolRegistry
+} from './registries/interfaces/IPoolRegistry.sol';
+import {
+  ISelfMintingRegistry
+} from './registries/interfaces/ISelfMintingRegistry.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IERC20} from '../../@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
