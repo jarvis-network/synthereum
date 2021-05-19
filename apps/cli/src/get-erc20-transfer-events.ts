@@ -12,7 +12,11 @@ import {
   wei,
 } from '@jarvis-network/core-utils/dist/base/big-number';
 
-import { log, console } from '@jarvis-network/core-utils/dist/logging';
+import {
+  log,
+  logTable,
+  logError,
+} from '@jarvis-network/core-utils/dist/logging';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -75,7 +79,7 @@ async function main() {
   const formatAddr = (addr: string) =>
     `0x${addr.slice(2, 6)}..${addr.slice(-4)}`;
 
-  console.table(
+  logTable(
     events.map(
       ({
         transactionHash,
@@ -95,6 +99,6 @@ async function main() {
 main()
   .then(_ => process.exit(0))
   .catch(err => {
-    console.log(err);
+    logError(err);
     process.exit(1);
   });
