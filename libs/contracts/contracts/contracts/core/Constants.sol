@@ -11,3 +11,9 @@ library SynthereumInterfaces {
   bytes32 public constant Manager = 'Manager';
   bytes32 public constant SelfMintingController = 'SelfMintingController';
 }
+
+library FactoryInterfaces {
+  bytes32 public constant PoolFactory = 'PoolFactory';
+  bytes32 public constant DerivativeFactory = 'DerivativeFactory';
+  bytes32 public constant SelfMintingFactory = 'SelfMintingFactory';
+}

@@ -6,7 +6,10 @@ import {
   ISynthereumFactoryVersioning
 } from '../../core/interfaces/IFactoryVersioning.sol';
 import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
-import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {
+  SynthereumInterfaces,
+  FactoryInterfaces
+} from '../../core/Constants.sol';
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 
 contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
@@ -20,12 +23,17 @@ contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
         )
       );
     uint256 numberOfFactories =
-      factoryVersioning.numberOfVerisonsOfDerivativeFactory();
+      factoryVersioning.numberOfVerisonsOfFactory(
+        FactoryInterfaces.DerivativeFactory
+      );
     uint256 counter = 0;
     for (uint8 i = 0; counter < numberOfFactories; i++) {
-      try factoryVersioning.getDerivativeFactoryVersion(i) returns (
-        address factory
-      ) {
+      try
+        factoryVersioning.getFactoryVersion(
+          FactoryInterfaces.DerivativeFactory,
+          i
+        )
+      returns (address factory) {
         if (msg.sender == factory) {
           _;
           break;

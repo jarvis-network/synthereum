@@ -249,8 +249,10 @@ module.exports = async function (deployer, network, accounts) {
       web3,
       SelfMintingDerivativeFactory,
     );
+    const factoryInterface = await web3.utils.stringToHex('SelfMintingFactory');
     await synthereumFactoryVersioning.methods
-      .setSelfMintingFactory(
+      .setFactory(
+        factoryInterface,
         selfMintingVersions[networkId]?.SelfMintingDerivativeFactory?.version ??
           1,
         selfMintingDerivativeFactory.options.address,

@@ -21,7 +21,7 @@ import {
   ISelfMintingDerivativeDeployment
 } from '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
 import {IRole} from '../base/interfaces/IRole.sol';
-import {SynthereumInterfaces} from './Constants.sol';
+import {SynthereumInterfaces, FactoryInterfaces} from './Constants.sol';
 import {Address} from '../../@openzeppelin/contracts/utils/Address.sol';
 import {
   EnumerableSet
@@ -234,7 +234,10 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     bytes memory derivativeParamsData
   ) internal returns (IDerivativeDeployment derivative) {
     address derivativeFactory =
-      factoryVersioning.getDerivativeFactoryVersion(derivativeVersion);
+      factoryVersioning.getFactoryVersion(
+        FactoryInterfaces.DerivativeFactory,
+        derivativeVersion
+      );
     bytes memory derivativeDeploymentResult =
       derivativeFactory.functionCall(
         abi.encodePacked(
@@ -254,7 +257,11 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     IDerivativeDeployment derivative,
     bytes memory poolParamsData
   ) internal returns (ISynthereumPoolDeployment pool) {
-    address poolFactory = factoryVersioning.getPoolFactoryVersion(poolVersion);
+    address poolFactory =
+      factoryVersioning.getFactoryVersion(
+        FactoryInterfaces.PoolFactory,
+        poolVersion
+      );
     bytes memory poolDeploymentResult =
       poolFactory.functionCall(
         abi.encodePacked(
@@ -275,7 +282,10 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     bytes calldata selfMintingDerParamsData
   ) internal returns (ISelfMintingDerivativeDeployment selfMintingDerivative) {
     address selfMintingDerFactory =
-      factoryVersioning.getSelfMintingFactoryVersion(selfMintingDerVersion);
+      factoryVersioning.getFactoryVersion(
+        FactoryInterfaces.SelfMintingFactory,
+        selfMintingDerVersion
+      );
     bytes memory selfMintingDerDeploymentResult =
       selfMintingDerFactory.functionCall(
         abi.encodePacked(

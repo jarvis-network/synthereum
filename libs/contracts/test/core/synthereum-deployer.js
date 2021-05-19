@@ -519,7 +519,8 @@ contract('Synthereum Deployer', function (accounts) {
         wrongDerivativeInstance.address,
       );
       const factoryVersioninginstance = await SynthereumFactoryVersioning.deployed();
-      await factoryVersioninginstance.setPoolFactory(
+      await factoryVersioninginstance.setFactory(
+        web3.utils.stringToHex('PoolFactory'),
         4,
         wrongPoolFactory.address,
         { from: maintainer },
@@ -551,7 +552,8 @@ contract('Synthereum Deployer', function (accounts) {
         ),
         'Pool doesnt support derivative',
       );
-      await factoryVersioninginstance.setPoolFactory(
+      await factoryVersioninginstance.setFactory(
+        await web3.utils.stringToHex('PoolFactory'),
         4,
         (await SynthereumPoolOnChainPriceFeedFactory.deployed()).address,
         { from: maintainer },
@@ -1024,7 +1026,8 @@ contract('Synthereum Deployer', function (accounts) {
       );
       const factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
 
-      await factoryVersioningInstance.setSelfMintingFactory(
+      await factoryVersioningInstance.setFactory(
+        web3.utils.stringToHex('SelfMintingFactory'),
         1,
         wrongSelfMintingFactory.address,
         { from: maintainer },
@@ -1052,7 +1055,8 @@ contract('Synthereum Deployer', function (accounts) {
         ),
         'Wrong finder in self-minting deployment',
       );
-      await factoryVersioningInstance.setSelfMintingFactory(
+      await factoryVersioningInstance.setFactory(
+        web3.utils.stringToHex('SelfMintingFactory'),
         1,
         (await SelfMintingDerivativeFactory.deployed()).address,
         { from: maintainer },

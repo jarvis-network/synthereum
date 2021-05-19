@@ -124,7 +124,8 @@ contract('PerpetualCreator', function (accounts) {
       },
     );
     factoryVersioning = await SynthereumFactoryVersioning.deployed();
-    await factoryVersioning.setDerivativeFactory(
+    await factoryVersioning.setFactory(
+      web3.utils.stringToHex('DerivativeFactory'),
       2,
       perpetualPoolPartyCreator.address,
       { from: maintainer },

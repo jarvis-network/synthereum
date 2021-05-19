@@ -13,7 +13,10 @@ import {
 import {
   ISynthereumFactoryVersioning
 } from '../../../core/interfaces/IFactoryVersioning.sol';
-import {SynthereumInterfaces} from '../../../core/Constants.sol';
+import {
+  SynthereumInterfaces,
+  FactoryInterfaces
+} from '../../../core/Constants.sol';
 import {
   FixedPoint
 } from '../../../../@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
@@ -90,12 +93,17 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
           )
         );
       uint256 numberOfFactories =
-        factoryVersioning.numberOfVerisonsOfSelfMintingFactory();
+        factoryVersioning.numberOfVerisonsOfFactory(
+          FactoryInterfaces.SelfMintingFactory
+        );
       uint256 counter = 0;
       for (uint8 i = 0; counter < numberOfFactories; i++) {
-        try factoryVersioning.getSelfMintingFactoryVersion(i) returns (
-          address factory
-        ) {
+        try
+          factoryVersioning.getFactoryVersion(
+            FactoryInterfaces.SelfMintingFactory,
+            i
+          )
+        returns (address factory) {
           if (msg.sender == factory) {
             _;
             break;

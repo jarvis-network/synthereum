@@ -235,8 +235,10 @@ module.exports = async function (deployer, network, accounts) {
       web3,
       SynthereumDerivativeFactory,
     );
+    const factoryInterface = await web3.utils.stringToHex('DerivativeFactory');
     await synthereumFactoryVersioning.methods
-      .setDerivativeFactory(
+      .setFactory(
+        factoryInterface,
         derivativeVersions[networkId]?.DerivativeFactory?.version ?? 2,
         derivativeFactory.options.address,
       )

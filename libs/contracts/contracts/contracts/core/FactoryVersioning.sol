@@ -25,46 +25,24 @@ contract SynthereumFactoryVersioning is
     address maintainer;
   }
 
-  EnumerableMap.UintToAddressMap private _poolsFactory;
+  mapping(bytes32 => EnumerableMap.UintToAddressMap) private factories;
 
-  EnumerableMap.UintToAddressMap private _derivativeFactory;
-
-  EnumerableMap.UintToAddressMap private _selfMintingFactory;
-
-  event AddPoolFactory(uint8 indexed version, address indexed poolFactory);
-
-  event SetPoolFactory(uint8 indexed version, address indexed poolFactory);
-
-  event RemovePoolFactory(uint8 indexed version, address indexed poolFactory);
-
-  event AddDerivativeFactory(
+  event AddFactory(
+    bytes32 indexed factoryType,
     uint8 indexed version,
-    address indexed derivativeFactory
+    address indexed factory
   );
 
-  event SetDerivativeFactory(
+  event SetFactory(
+    bytes32 indexed factoryType,
     uint8 indexed version,
-    address indexed derivativeFactory
+    address indexed factory
   );
 
-  event RemoveDerivativeFactory(
+  event RemoveFactory(
+    bytes32 indexed factoryType,
     uint8 indexed version,
-    address indexed derivativeFactory
-  );
-
-  event AddSelfMintingFactory(
-    uint8 indexed version,
-    address indexed selfMintingFactory
-  );
-
-  event SetSelfMintingFactory(
-    uint8 indexed version,
-    address indexed selfMintingFactory
-  );
-
-  event RemoveSelfMintingFactory(
-    uint8 indexed version,
-    address indexed selfMintingFactory
+    address indexed factory
   );
 
   constructor(Roles memory _roles) public {
@@ -82,131 +60,47 @@ contract SynthereumFactoryVersioning is
     _;
   }
 
-  function setPoolFactory(uint8 version, address poolFactory)
-    external
-    override
-    onlyMaintainer
-  {
-    require(poolFactory != address(0), 'Pool factory cannot be address 0');
-    bool isNewVersion = _poolsFactory.set(version, poolFactory);
+  function setFactory(
+    bytes32 factoryType,
+    uint8 version,
+    address factory
+  ) external override onlyMaintainer {
+    require(factory != address(0), 'Factory cannot be address 0');
+    bool isNewVersion = factories[factoryType].set(version, factory);
     if (isNewVersion == true) {
-      emit AddPoolFactory(version, poolFactory);
+      emit AddFactory(factoryType, version, factory);
     } else {
-      emit SetPoolFactory(version, poolFactory);
+      emit SetFactory(factoryType, version, factory);
     }
   }
 
-  function removePoolFactory(uint8 version) external override onlyMaintainer {
-    address poolFactoryToRemove = _poolsFactory.get(version);
-    _poolsFactory.remove(version);
-    RemovePoolFactory(version, poolFactoryToRemove);
-  }
-
-  function setDerivativeFactory(uint8 version, address derivativeFactory)
+  function removeFactory(bytes32 factoryType, uint8 version)
     external
     override
     onlyMaintainer
   {
-    require(
-      derivativeFactory != address(0),
-      'Derivative factory cannot be address 0'
-    );
-    bool isNewVersion = _derivativeFactory.set(version, derivativeFactory);
-    if (isNewVersion == true) {
-      emit AddDerivativeFactory(version, derivativeFactory);
-    } else {
-      emit SetDerivativeFactory(version, derivativeFactory);
-    }
+    EnumerableMap.UintToAddressMap storage selectedFactories =
+      factories[factoryType];
+    address factoryToRemove = selectedFactories.get(version);
+    selectedFactories.remove(version);
+    RemoveFactory(factoryType, version, factoryToRemove);
   }
 
-  function removeDerivativeFactory(uint8 version)
-    external
-    override
-    onlyMaintainer
-  {
-    address derivativeFactoryToRemove = _derivativeFactory.get(version);
-    _derivativeFactory.remove(version);
-    emit RemoveDerivativeFactory(version, derivativeFactoryToRemove);
-  }
-
-  function setSelfMintingFactory(uint8 version, address selfMintingFactory)
-    external
-    override
-    onlyMaintainer
-  {
-    require(
-      selfMintingFactory != address(0),
-      'Self-minting factory cannot be address 0'
-    );
-    bool isNewVersion = _selfMintingFactory.set(version, selfMintingFactory);
-    if (isNewVersion == true) {
-      emit AddSelfMintingFactory(version, selfMintingFactory);
-    } else {
-      emit SetSelfMintingFactory(version, selfMintingFactory);
-    }
-  }
-
-  function removeSelfMintingFactory(uint8 version)
-    external
-    override
-    onlyMaintainer
-  {
-    address selfMintingFactoryToRemove = _selfMintingFactory.get(version);
-    _selfMintingFactory.remove(version);
-    emit RemoveSelfMintingFactory(version, selfMintingFactoryToRemove);
-  }
-
-  function getPoolFactoryVersion(uint8 version)
+  function getFactoryVersion(bytes32 factoryType, uint8 version)
     external
     view
     override
-    returns (address poolFactory)
+    returns (address factory)
   {
-    poolFactory = _poolsFactory.get(version);
+    factory = factories[factoryType].get(version);
   }
 
-  function numberOfVerisonsOfPoolFactory()
+  function numberOfVerisonsOfFactory(bytes32 factoryType)
     external
     view
     override
     returns (uint256 numberOfVersions)
   {
-    numberOfVersions = _poolsFactory.length();
-  }
-
-  function getDerivativeFactoryVersion(uint8 version)
-    external
-    view
-    override
-    returns (address derivativeFactory)
-  {
-    derivativeFactory = _derivativeFactory.get(version);
-  }
-
-  function numberOfVerisonsOfDerivativeFactory()
-    external
-    view
-    override
-    returns (uint256 numberOfVersions)
-  {
-    numberOfVersions = _derivativeFactory.length();
-  }
-
-  function getSelfMintingFactoryVersion(uint8 version)
-    external
-    view
-    override
-    returns (address selfMintingFactory)
-  {
-    selfMintingFactory = _selfMintingFactory.get(version);
-  }
-
-  function numberOfVerisonsOfSelfMintingFactory()
-    external
-    view
-    override
-    returns (uint256 numberOfVersions)
-  {
-    numberOfVersions = _selfMintingFactory.length();
+    numberOfVersions = factories[factoryType].length();
   }
 }

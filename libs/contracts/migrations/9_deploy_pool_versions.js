@@ -65,8 +65,10 @@ module.exports = async function (deployer, network, accounts) {
       web3,
       SynthereumPoolOnChainPriceFeedFactory,
     );
+    const factoryInterface = await web3.utils.stringToHex('PoolFactory');
     await synthereumFactoryVersioning.methods
-      .setPoolFactory(
+      .setFactory(
+        factoryInterface,
         poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.version ?? 4,
         synthereumPoolOnChainPriceFeedFactory.options.address,
       )
