@@ -13,7 +13,7 @@ export const console = new Console({
 const startTime = new Date().getTime();
 let prevTime = startTime;
 
-export function log(msg: string, ...args: any[]) {
+export function log<Args extends unknown[]>(msg: string, ...args: Args): void {
   const info = getCallStackInfo();
   let loc = '';
   if (info) {
@@ -31,11 +31,19 @@ export function log(msg: string, ...args: any[]) {
   console.log(prefix, ...args);
 }
 
+export interface CallStackInfo {
+  path: string;
+  line: string;
+  col: string;
+  method: string;
+  callStack: string[];
+}
+
 // https://v8.dev/docs/stack-trace-api
 const callStackFmt = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/i;
 const callStackFmt2 = /at\s+()(.*):(\d*):(\d*)/i;
 
-export function getCallStackInfo(stackIndex = 0) {
+export function getCallStackInfo(stackIndex = 0): CallStackInfo | null {
   const callStack = new Error().stack?.split('\n').slice(3) ?? [];
   const callInfo = callStack[stackIndex];
   const matches = callStackFmt.exec(callInfo) ?? callStackFmt2.exec(callInfo);
