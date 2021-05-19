@@ -35,9 +35,11 @@ function log<Args extends unknown[]>(msg: string, ...args: Args): void {
   const diff = `+${(now.getTime() - startTime).toString(10)}`.padStart(7);
   const diff2 = `+${(now.getTime() - prevTime).toString(10)}`.padStart(7);
   prevTime = now.getTime();
-  const prefix = `[ ${c.gray(now.toISOString())} | Δt₀: ${c.yellow(
-    diff,
-  )} ms | Δtᵢ: ${c.yellow(diff2)} ms | ${c.bgGray(loc)} ]: ${c.bold(msg)}`;
+  const whitespace = info?.inConsoleClass === true ? '\n' : ' ';
+  const prefix =
+    `[ ${c.gray(now.toISOString())} | Δt₀: ${c.yellow(diff)} ms | ` +
+    `Δtᵢ: ${c.yellow(diff2)} ms | ${c.bgGray(loc)} ]:` +
+    `${whitespace}${c.bold(msg)}`;
   defaultLog(prefix, ...args);
 }
 
@@ -47,6 +49,7 @@ export interface CallStackInfo {
   col: string;
   method: string;
   callStack: string[];
+  inConsoleClass: boolean;
 }
 
 // https://v8.dev/docs/stack-trace-api
@@ -62,8 +65,12 @@ export function getCallStackInfo(stackIndex = 0): CallStackInfo | null {
    * v8::internal::Isolate::CaptureSimpleStackTrace https://github.com/nodejs/node/blob/f37c26b8a2e10d0a53a60a2fad5b0133ad33308a/deps/v8/src/execution/isolate.cc#L1134
    */
 
-  const callStack = new Error().stack?.split('\n').slice(3) ?? [];
-  const callInfo = callStack[stackIndex];
+  const callStack = new Error().stack?.split('\n') ?? [];
+  const inConsoleClass =
+    callStack[3]?.indexOf('internal/console') >= 0 ?? false;
+  const offset = inConsoleClass ? 5 : 3;
+  const userCallStack = callStack.slice(offset);
+  const callInfo = userCallStack[stackIndex];
   const matches = callStackFmt.exec(callInfo) ?? callStackFmt2.exec(callInfo);
   if (!matches || matches.length !== 5) return null;
   const path = matches[2];
@@ -72,6 +79,7 @@ export function getCallStackInfo(stackIndex = 0): CallStackInfo | null {
     line: matches[3],
     col: matches[4],
     method: matches[1],
-    callStack,
+    callStack: userCallStack,
+    inConsoleClass,
   };
 }
