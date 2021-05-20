@@ -471,30 +471,28 @@ createOrModifyHardhatTask(
       );
       /* eslint-enable no-await-in-loop */
 
-      if (!noVerify && !localNetwork) {
-        // Etherscan has a limit of 500k chars when verifying contracts
-        const files = (await globby(`${resolve(sources)}/**/*.sol`)).sort(); // Starts with folders that begin with `@` if any
+      // Etherscan has a limit of 500k chars when verifying contracts
+      const files = (await globby(`${resolve(sources)}/**/*.sol`)).sort(); // Starts with folders that begin with `@` if any
 
-        /* eslint-disable no-await-in-loop */
-        // 480_000 wasn't enough
-        for (let i = 0; (await getAllFilesLength(files)) > 470_000; i++) {
-          if (i >= files.length) {
-            throw new Error(
-              'Could not decrease contracts enough to pass verification',
-            );
-          }
-
-          const file = files[i];
-          await fs.writeFile(
-            file,
-            // eslint-disable-next-line no-await-in-loop
-            minifyCode(await fs.readFile(file, 'utf-8')),
-            'utf-8',
+      /* eslint-disable no-await-in-loop */
+      // 480_000 wasn't enough
+      for (let i = 0; (await getAllFilesLength(files)) > 470_000; i++) {
+        if (i >= files.length) {
+          throw new Error(
+            'Could not decrease contracts enough to pass verification',
           );
-          console.log(`Removed comments from ${basename(file)}`);
         }
-        /* eslint-enable no-await-in-loop */
+
+        const file = files[i];
+        await fs.writeFile(
+          file,
+          // eslint-disable-next-line no-await-in-loop
+          minifyCode(await fs.readFile(file, 'utf-8')),
+          'utf-8',
+        );
+        console.log(`Removed comments from ${basename(file)}`);
       }
+      /* eslint-enable no-await-in-loop */
 
       (hre as {
         migrationScript?: string;
