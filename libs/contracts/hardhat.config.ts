@@ -32,6 +32,7 @@ import {
   NetworkId,
   NetworkName,
   networkNameToId,
+  toNetworkId,
   toNetworkName,
 } from '@jarvis-network/core-utils/dist/eth/networks';
 import {
@@ -318,7 +319,7 @@ async function getDeployedContractsConstructorArgumentsForNetwork(
 function minifyCode(originalCode: string): string {
   const firstLine =
     originalCode.startsWith('// SPDX-License-Identifier') ||
-    originalCode.startsWith('//SPDX-License-Identifier')
+      originalCode.startsWith('//SPDX-License-Identifier')
       ? originalCode.split('\n')[0]
       : '';
 
@@ -381,12 +382,13 @@ createOrModifyHardhatTask(
       await clean();
 
       const { name: network } = hre.network;
+      const networkId = toNetworkId(network as NetworkName);
       if (
         !skipUma &&
-        (((network !== 'mainnet' &&
-          network !== 'ropsten' &&
-          network !== 'rinkeby' &&
-          network !== 'kovan') ||
+        (((networkId !== 1 &&
+          networkId !== 3 &&
+          networkId !== 4 &&
+          networkId !== 42) ||
           parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE)) ??
           false)
       ) {
