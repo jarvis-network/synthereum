@@ -80,7 +80,6 @@ contract('Synthereum Deployer', function (accounts) {
     liquidityProvider,
     validator,
   };
-  let isContractAllowed = false;
   let startingCollateralization = '1586700';
   let feePercentage = 0.02;
   let DAO = accounts[5];
@@ -135,7 +134,6 @@ contract('Synthereum Deployer', function (accounts) {
       synthereumFinderAddress,
       poolVersion,
       roles,
-      isContractAllowed,
       startingCollateralization,
       fee,
     );
@@ -449,7 +447,6 @@ contract('Synthereum Deployer', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         startingCollateralization,
         fee,
       );
@@ -471,7 +468,6 @@ contract('Synthereum Deployer', function (accounts) {
         synthereumFinderAddress,
         wrongPoolVersion,
         roles,
-        isContractAllowed,
         startingCollateralization,
         fee,
       );

@@ -24,7 +24,6 @@ const SynthereumPoolOnChainPriceFeedLib = artifacts.require(
 const Derivative = artifacts.require('PerpetualPoolParty');
 const Timer = artifacts.require('Timer');
 const MockOracle = artifacts.require('MockOracle');
-const ContractAllowed = artifacts.require('ContractAllowedOnChanPriceFeed');
 const UmaFinder = artifacts.require('Finder');
 const MockV3Aggregator = artifacts.require('MockV3Aggregator');
 
@@ -63,7 +62,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
     maintainer,
     liquidityProvider,
   };
-  let isContractAllowed = false;
   let startingCollateralization = '1500000';
   let secondStartingCollateralization = '1700000';
   let feePercentage = '0.002';
@@ -137,7 +135,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       synthereumFinderAddress,
       poolVersion,
       roles,
-      isContractAllowed,
       startingCollateralization,
       fee,
     );
@@ -793,7 +790,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         secondStartingCollateralization,
         fee,
       );
@@ -1028,7 +1024,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         secondStartingCollateralization,
         fee,
       );
@@ -1085,7 +1080,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         secondStartingCollateralization,
         feeScaled,
       );
@@ -1284,7 +1278,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         startingCollateralization,
         fee,
       );
@@ -1742,7 +1735,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         secondStartingCollateralization,
         fee,
       );
@@ -1788,7 +1780,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         startingCollateralization,
         fee,
       );
@@ -1970,47 +1961,6 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
       });
       const ratio = await poolInstance.getStartingCollateralization.call();
       assert.equal(ratio, newRatio, 'Wrong starting ratio');
-    });
-  });
-
-  describe('Check if access is allowed to contracts', async () => {
-    let proxyContract;
-    let proxyMintParams;
-    let testAmount = web3Utils.toWei('1000', 'mwei');
-    beforeEach(async () => {
-      proxyContract = await ContractAllowed.new(
-        poolAddress,
-        collateralInstance.address,
-      );
-      proxyMintParams = {
-        derivative: derivativeAddress,
-        minNumTokens: numTokens,
-        collateralAmount: collateralAmount,
-        feePercentage: feePercentageWei,
-        expiration: expiration,
-        recipient: proxyContract.address,
-      };
-      await collateralInstance.allocateTo(proxyContract.address, testAmount);
-    });
-    it('Revert if contracts are not allowed ', async () => {
-      await truffleAssert.reverts(
-        proxyContract.mintInPool(proxyMintParams, testAmount),
-        'Account must be an EOA',
-      );
-    });
-    it('Check success if contract is allowed ', async () => {
-      const prevStatus = await poolInstance.isContractAllowed.call();
-      assert.equal(prevStatus, false, 'Wrong previous status');
-      await poolInstance.setIsContractAllowed(true, { from: maintainer });
-      const actualStatus = await poolInstance.isContractAllowed.call();
-      assert.equal(actualStatus, true, 'Wrong actual status');
-      await proxyContract.mintInPool(proxyMintParams, testAmount);
-    });
-    it('Revert if set the same status ', async () => {
-      await truffleAssert.reverts(
-        poolInstance.setIsContractAllowed(false, { from: maintainer }),
-        'Contract flag already set',
-      );
     });
   });
 });

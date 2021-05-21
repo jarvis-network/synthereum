@@ -86,125 +86,11 @@ function encodeDerivative(
   return derivativePayload;
 }
 
-function encodeTIC(
-  derivativeAddress,
-  synthereumFinderAddress,
-  poolVersion,
-  roles,
-  startingCollateralization,
-  fee,
-) {
-  ticPayload = Web3EthAbi.encodeParameters(
-    [
-      'address',
-      'address',
-      'uint8',
-      {
-        roles: {
-          admin: 'address',
-          maintainer: 'address',
-          liquidityProvider: 'address',
-          validator: 'address',
-        },
-      },
-      'uint256',
-      {
-        fee: {
-          feePercentage: {
-            rawValue: 'uint256',
-          },
-          feeRecipients: 'address[]',
-          feeProportions: 'uint32[]',
-        },
-      },
-    ],
-    [
-      derivativeAddress,
-      synthereumFinderAddress,
-      poolVersion,
-      {
-        admin: roles.admin,
-        maintainer: roles.maintainer,
-        liquidityProvider: roles.liquidityProvider,
-        validator: roles.validator,
-      },
-      startingCollateralization,
-      {
-        feePercentage: {
-          rawValue: web3Utils.toWei(fee.feePercentage.toString()),
-        },
-        feeRecipients: fee.feeRecipients,
-        feeProportions: fee.feeProportions,
-      },
-    ],
-  );
-  return '0x' + ticPayload.substring(66);
-}
-
-function encodePool(
-  derivativeAddress,
-  synthereumFinderAddress,
-  poolVersion,
-  roles,
-  isContractAllowed,
-  startingCollateralization,
-  fee,
-) {
-  poolPayload = Web3EthAbi.encodeParameters(
-    [
-      'address',
-      'address',
-      'uint8',
-      {
-        roles: {
-          admin: 'address',
-          maintainer: 'address',
-          liquidityProvider: 'address',
-          validator: 'address',
-        },
-      },
-      'bool',
-      'uint256',
-      {
-        fee: {
-          feePercentage: {
-            rawValue: 'uint256',
-          },
-          feeRecipients: 'address[]',
-          feeProportions: 'uint32[]',
-        },
-      },
-    ],
-    [
-      derivativeAddress,
-      synthereumFinderAddress,
-      poolVersion,
-      {
-        admin: roles.admin,
-        maintainer: roles.maintainer,
-        liquidityProvider: roles.liquidityProvider,
-        validator: roles.validator,
-      },
-      isContractAllowed,
-      startingCollateralization,
-      {
-        feePercentage: {
-          rawValue: web3Utils.toWei(fee.feePercentage.toString()),
-        },
-        feeRecipients: fee.feeRecipients,
-        feeProportions: fee.feeProportions,
-      },
-    ],
-  );
-  return '0x' + poolPayload.substring(66);
-}
-
 function encodePoolOnChainPriceFeed(
   derivativeAddress,
   synthereumFinderAddress,
   poolVersion,
   roles,
-  isContractAllowed,
   startingCollateralization,
   fee,
 ) {
@@ -220,7 +106,6 @@ function encodePoolOnChainPriceFeed(
           liquidityProvider: 'address',
         },
       },
-      'bool',
       'uint256',
       {
         fee: {
@@ -241,7 +126,6 @@ function encodePoolOnChainPriceFeed(
         maintainer: roles.maintainer,
         liquidityProvider: roles.liquidityProvider,
       },
-      isContractAllowed,
       startingCollateralization,
       {
         feePercentage: {
@@ -358,8 +242,6 @@ function encodeSelfMintingDerivative(
 
 module.exports = {
   encodeDerivative,
-  encodeTIC,
-  encodePool,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
 };

@@ -232,12 +232,6 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
     external;
 
   /**
-   * @notice Set the possibility to accept only EOA meta-tx
-   * @param isContractAllowed Flag that represent options to receive tx by a contract or only EOA
-   */
-  function setIsContractAllowed(bool isContractAllowed) external;
-
-  /**
    * @notice Get all the derivatives associated to this pool
    * @return Return list of all derivatives
    */
@@ -251,12 +245,6 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolDeployment {
     external
     view
     returns (uint256 startingCollateralRatio);
-
-  /**
-   * @notice Returns if pool can accept only EOA meta-tx or also contract meta-tx
-   * @return isAllowed True if accept also contract, false if only EOA
-   */
-  function isContractAllowed() external view returns (bool isAllowed);
 
   /**
    * @notice Returns infos about fee set

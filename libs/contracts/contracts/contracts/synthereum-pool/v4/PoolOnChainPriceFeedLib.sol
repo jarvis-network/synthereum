@@ -136,16 +136,6 @@ library SynthereumPoolOnChainPriceFeedLib {
     _;
   }
 
-  // Check that the sender must be an EOA if the flag isContractAllowed is false
-  modifier checkIsSenderContract(
-    ISynthereumPoolOnChainPriceFeedStorage.Storage storage self
-  ) {
-    if (!self.isContractAllowed) {
-      require(tx.origin == msg.sender, 'Account must be an EOA');
-    }
-    _;
-  }
-
   //----------------------------------------
   // External function
   //----------------------------------------
@@ -161,20 +151,17 @@ library SynthereumPoolOnChainPriceFeedLib {
    * @param _finder Synthereum finder
    * @param _derivative The perpetual derivative
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
-   * @param _isContractAllowed Enable or disable the option to accept meta-tx only by an EOA for security reason
    */
   function initialize(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     uint8 _version,
     ISynthereumFinder _finder,
     IDerivative _derivative,
-    FixedPoint.Unsigned memory _startingCollateralization,
-    bool _isContractAllowed
+    FixedPoint.Unsigned memory _startingCollateralization
   ) external {
     self.version = _version;
     self.finder = _finder;
     self.startingCollateralization = _startingCollateralization;
-    self.isContractAllowed = _isContractAllowed;
     self.collateralToken = getDerivativeCollateral(_derivative);
     self.syntheticToken = _derivative.tokenCurrency();
     self.priceIdentifier = _derivative.priceIdentifier();
@@ -234,11 +221,7 @@ library SynthereumPoolOnChainPriceFeedLib {
   function mint(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  )
-    external
-    checkIsSenderContract(self)
-    returns (uint256 syntheticTokensMinted, uint256 feePaid)
-  {
+  ) external returns (uint256 syntheticTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory totCollateralAmount =
       FixedPoint.Unsigned(mintParams.collateralAmount);
     FixedPoint.Unsigned memory feeAmount =
@@ -288,11 +271,7 @@ library SynthereumPoolOnChainPriceFeedLib {
   function redeem(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
-  )
-    external
-    checkIsSenderContract(self)
-    returns (uint256 collateralRedeemed, uint256 feePaid)
-  {
+  ) external returns (uint256 collateralRedeemed, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(redeemParams.numTokens);
     FixedPoint.Unsigned memory totCollateralAmount =
@@ -341,11 +320,7 @@ library SynthereumPoolOnChainPriceFeedLib {
   function exchange(
     ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
     ISynthereumPoolOnChainPriceFeed.ExchangeParams memory exchangeParams
-  )
-    external
-    checkIsSenderContract(self)
-    returns (uint256 destNumTokensMinted, uint256 feePaid)
-  {
+  ) external returns (uint256 destNumTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(exchangeParams.numTokens);
 
@@ -674,22 +649,6 @@ library SynthereumPoolOnChainPriceFeedLib {
     FixedPoint.Unsigned memory startingCollateralRatio
   ) external {
     self.startingCollateralization = startingCollateralRatio;
-  }
-
-  /**
-   * @notice Set the possibility to accept only EOA meta-tx
-   * @param self Data type the library is attached to
-   * @param isContractAllowed Flag that represent options to receive tx by a contract or only EOA
-   */
-  function setIsContractAllowed(
-    ISynthereumPoolOnChainPriceFeedStorage.Storage storage self,
-    bool isContractAllowed
-  ) external {
-    require(
-      self.isContractAllowed != isContractAllowed,
-      'Contract flag already set'
-    );
-    self.isContractAllowed = isContractAllowed;
   }
 
   //----------------------------------------

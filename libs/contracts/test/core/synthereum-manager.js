@@ -54,7 +54,6 @@ contract('Synthereum manager', function (accounts) {
     maintainer,
     liquidityProvider,
   };
-  let isContractAllowed = false;
   let startingCollateralization = '1500000';
   let secondStartingCollateralization = '1700000';
   let feePercentage = '0.002';
@@ -119,7 +118,6 @@ contract('Synthereum manager', function (accounts) {
       synthereumFinderAddress,
       poolVersion,
       roles,
-      isContractAllowed,
       startingCollateralization,
       fee,
     );

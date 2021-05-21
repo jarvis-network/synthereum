@@ -62,7 +62,6 @@ contract('Self-minting creator', function (accounts) {
     liquidityProvider,
     validator,
   };
-  let isContractAllowed = false;
   let startingCollateralization = '1586700';
   let feePercentage = 0.02;
   let DAO = accounts[5];
@@ -123,7 +122,6 @@ contract('Self-minting creator', function (accounts) {
       synthereumFinderAddress,
       poolVersion,
       roles,
-      isContractAllowed,
       startingCollateralization,
       fee,
     );

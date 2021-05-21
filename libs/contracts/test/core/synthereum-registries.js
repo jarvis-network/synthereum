@@ -51,7 +51,6 @@ contract('Synthereum Pool Register', function (accounts) {
     liquidityProvider,
     validator,
   };
-  let isContractAllowed = false;
   let startingCollateralization = '1586700';
   let feePercentage = 0.02;
   let feeRecipients = [liquidityProvider, DAO];
@@ -96,7 +95,6 @@ contract('Synthereum Pool Register', function (accounts) {
       synthereumFinderAddress,
       poolVersion,
       roles,
-      isContractAllowed,
       startingCollateralization,
       fee,
     );

@@ -23,7 +23,6 @@ const SynthereumPoolOnChainPriceFeedLib = artifacts.require(
 const Derivative = artifacts.require('PerpetualPoolParty');
 const Timer = artifacts.require('Timer');
 const MockOracle = artifacts.require('MockOracle');
-const ContractAllowed = artifacts.require('ContractAllowedOnChanPriceFeed');
 const UmaFinder = artifacts.require('Finder');
 const MockV3Aggregator = artifacts.require('MockV3Aggregator');
 const PriceFeedGetter = artifacts.require('PriceFeedGetter');
@@ -61,7 +60,6 @@ contract('Synthereum chainlink price feed', function (accounts) {
   let newAggregatorAddress = accounts[4];
   let secondNewAggregatorAddress = accounts[5];
   let newAggregatorIdentifier = web3Utils.toHex('TEST/USD');
-  let isContractAllowed = false;
   let startingCollateralization = '1500000';
   let secondStartingCollateralization = '1700000';
   let feePercentage = '0.002';
@@ -284,7 +282,6 @@ contract('Synthereum chainlink price feed', function (accounts) {
         synthereumFinderAddress,
         poolVersion,
         roles,
-        isContractAllowed,
         startingCollateralization,
         fee,
       );

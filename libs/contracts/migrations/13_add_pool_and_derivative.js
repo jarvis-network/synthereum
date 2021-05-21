@@ -88,7 +88,6 @@ module.exports = async function (deployer, network, accounts) {
             maintainer: maintainer,
             liquidityProvider: liquidityProvider,
           },
-          asset.isContractAllowed,
           asset.startingCollateralization,
           {
             feePercentage: fees[networkId].feePercentage,

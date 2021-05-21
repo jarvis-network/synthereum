@@ -38,7 +38,6 @@ contract PoolFactoryMock is
     ISynthereumFinder finder,
     uint8 version,
     ISynthereumPoolOnChainPriceFeed.Roles memory roles,
-    bool isContractAllowed,
     uint256 startingCollateralization,
     ISynthereumPoolOnChainPriceFeed.Fee memory fee
   ) public override returns (SynthereumPoolOnChainPriceFeed poolDeployed) {
@@ -52,7 +51,6 @@ contract PoolFactoryMock is
       finder,
       version,
       roles,
-      isContractAllowed,
       startingCollateralization,
       fee
     );

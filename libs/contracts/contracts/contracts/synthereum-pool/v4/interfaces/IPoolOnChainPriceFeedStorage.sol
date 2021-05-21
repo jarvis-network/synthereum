@@ -23,8 +23,6 @@ interface ISynthereumPoolOnChainPriceFeedStorage {
     IERC20 collateralToken;
     // Synthetic token
     IERC20 syntheticToken;
-    // Restrict access to only EOA account
-    bool isContractAllowed;
     // Derivatives supported
     EnumerableSet.AddressSet derivatives;
     // Starting collateralization ratio

@@ -7,7 +7,6 @@
       "collateralRequirement": "1300000000000000000",
       "startingCollateralization": "1819800",
       "minSponsorTokens": "20000000000000000000",
-      "isContractAllowed": true,
       "capMintAmount": "2000000000000000000000000",
       "capDepositRatio": 7
     },
@@ -18,7 +17,6 @@
       "collateralRequirement": "1300000000000000000",
       "startingCollateralization": "1684000",
       "minSponsorTokens": "22000000000000000000",
-      "isContractAllowed": true,
       "capMintAmount": "2000000000000000000000000",
       "capDepositRatio": 7
     },
@@ -29,7 +27,6 @@
       "collateralRequirement": "1300000000000000000",
       "startingCollateralization": "2085900",
       "minSponsorTokens": "18000000000000000000",
-      "isContractAllowed": true,
       "capMintAmount": "2000000000000000000000000",
       "capDepositRatio": 7
     },
@@ -40,7 +37,6 @@
       "collateralRequirement": "1300000000000000000",
       "startingCollateralization": "2728000000",
       "minSponsorTokens": "13000000000000000",
-      "isContractAllowed": true,
       "capMintAmount": "2000000000000000000000000",
       "capDepositRatio": 7
     }
@@ -52,8 +48,7 @@
       "priceFeedIdentifier": "EURUSD",
       "collateralRequirement": "1100000000000000000",
       "startingCollateralization": "1820250",
-      "minSponsorTokens": "0",
-      "isContractAllowed": true
+      "minSponsorTokens": "0"
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
@@ -61,8 +56,7 @@
       "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1100000000000000000",
       "startingCollateralization": "1685100",
-      "minSponsorTokens": "0",
-      "isContractAllowed": true
+      "minSponsorTokens": "0"
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
@@ -70,8 +64,7 @@
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1100000000000000000",
       "startingCollateralization": "2086650",
-      "minSponsorTokens": "0",
-      "isContractAllowed": true
+      "minSponsorTokens": "0"
     }
   ]
 }

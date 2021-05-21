@@ -136,7 +136,6 @@ contract SynthereumPoolOnChainPriceFeed is
    * @param _finder The Synthereum finder
    * @param _version Synthereum version
    * @param _roles The addresses of admin, maintainer, liquidity provider and validator
-   * @param _isContractAllowed Enable or disable the option to accept meta-tx only by an EOA for security reason
    * @param _startingCollateralization Collateralization ratio to use before a global one is set
    * @param _fee The fee structure
    */
@@ -145,7 +144,6 @@ contract SynthereumPoolOnChainPriceFeed is
     ISynthereumFinder _finder,
     uint8 _version,
     Roles memory _roles,
-    bool _isContractAllowed,
     uint256 _startingCollateralization,
     Fee memory _fee
   ) public nonReentrant {
@@ -159,8 +157,7 @@ contract SynthereumPoolOnChainPriceFeed is
       _version,
       _finder,
       _derivative,
-      FixedPoint.Unsigned(_startingCollateralization),
-      _isContractAllowed
+      FixedPoint.Unsigned(_startingCollateralization)
     );
     poolStorage.setFeePercentage(_fee.feePercentage);
     poolStorage.setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
@@ -405,19 +402,6 @@ contract SynthereumPoolOnChainPriceFeed is
     );
   }
 
-  /**
-   * @notice Set the possibility to accept only EOA meta-tx
-   * @param isContractAllowed Flag that represent options to receive tx by a contract or only EOA
-   */
-  function setIsContractAllowed(bool isContractAllowed)
-    external
-    override
-    onlyMaintainer
-    nonReentrant
-  {
-    poolStorage.setIsContractAllowed(isContractAllowed);
-  }
-
   //----------------------------------------
   // External view functions
   //----------------------------------------
@@ -526,14 +510,6 @@ contract SynthereumPoolOnChainPriceFeed is
     returns (string memory symbol)
   {
     symbol = IStandardERC20(address(poolStorage.syntheticToken)).symbol();
-  }
-
-  /**
-   * @notice Returns if pool can accept only EOA meta-tx or also contract meta-tx
-   * @return isAllowed True if accept also contract, false if only EOA
-   */
-  function isContractAllowed() external view override returns (bool isAllowed) {
-    isAllowed = poolStorage.isContractAllowed;
   }
 
   /**
