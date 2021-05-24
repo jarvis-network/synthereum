@@ -16,8 +16,8 @@ export function isString(x: unknown): x is string {
   return typeof x === 'string';
 }
 
-export function isNumericString(str: string) {
-  return isFinite(parseFloat(assertIsString(str)));
+export function isNumericString(str: unknown): boolean {
+  return typeof str === 'string' && isFinite(parseFloat(str));
 }
 
 export function assertIsNumericString(x: string): string {

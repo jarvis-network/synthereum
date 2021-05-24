@@ -1,4 +1,10 @@
-import { assert, isInteger, isString } from '../base/asserts';
+import {
+  isInteger,
+  isNumericString,
+  isString,
+  parseInteger,
+  throwError,
+} from '../base/asserts';
 import type { InverseOf, KeysToKeys } from '../base/meta';
 import { Tagged } from '../base/tagged-type';
 
@@ -52,8 +58,7 @@ export function isNetworkId(x: unknown): x is NetworkId {
 }
 
 export function assertIsNetworkId(x: unknown): NetworkId {
-  assert(isNetworkId(x));
-  return x;
+  return isNetworkId(x) ? x : throwError(`'${x}' is not a valid network id`);
 }
 
 export function isNetworkName(x: unknown): x is NetworkName {
@@ -61,8 +66,9 @@ export function isNetworkName(x: unknown): x is NetworkName {
 }
 
 export function assertIsNetworkName(x: unknown): NetworkName {
-  assert(isNetworkName(x));
-  return x;
+  return isNetworkName(x)
+    ? x
+    : throwError(`'${x}' is not a valid network name`);
 }
 
 export type ToNetworkName<Net extends Network> = (typeof networkIdToName &
@@ -88,10 +94,20 @@ export function toNetworkId(network: Network): NetworkId {
   }
   return assertIsNetworkId(network);
 }
+export function parseNetworkId(x: unknown): NetworkId {
+  return typeof x === 'number' || isNumericString(x)
+    ? assertIsNetworkId(parseInteger(x))
+    : networkNameToId[assertIsNetworkName(x)];
+}
 
 export function toNetworkName<Name extends NetworkName>(network: Name): Name;
 export function toNetworkName<Id extends NetworkId>(id: Id): ToNetworkName<Id>;
 export function toNetworkName(network: Network): NetworkName;
 export function toNetworkName(network: Network): NetworkName {
   return isNetworkId(network) ? networkIdToName[network] : network;
+}
+export function parseNetworkName(x: unknown): NetworkName {
+  return (x as string) in networkNameToId
+    ? (x as NetworkName)
+    : networkIdToName[assertIsNetworkId(parseInteger(x))];
 }
