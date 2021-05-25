@@ -49,6 +49,8 @@ import removeComments from 'strip-comments';
 import { parseBoolean } from '@jarvis-network/core-utils/dist/base/asserts';
 import fse from 'fs-extra';
 
+const TASK_DEPLOY = 'deploy';
+
 createOrModifyHardhatTask(TASK_VERIFY_GET_MINIMUM_BUILD).setAction(() =>
   Promise.resolve(1),
 );
@@ -86,10 +88,33 @@ createOrModifyHardhatTask(TASK_VERIFY_GET_CONTRACT_INFORMATION).setAction(
 );
 */
 
+function shouldDeployUma(networkId: number) {
+  return (
+    networkId !== 1 && networkId !== 3 && networkId !== 4 && networkId !== 42
+  );
+}
+
 createOrModifyHardhatTask(TASK_TEST)
   .addFlag('debug', 'Compile without optimizer')
   .setAction(async (taskArgs, hre, runSuper) => {
     const { debug } = taskArgs;
+    const { name: network } = hre.network;
+    const networkId = toNetworkId(network as NetworkName);
+    if (
+      ((hre as unknown) as { fromDeployScript?: boolean }).fromDeployScript !==
+      true
+    ) {
+      console.log(0, { TASK_TEST, taskArgs });
+      await hre.run(TASK_DEPLOY, {
+        noVerify: true,
+        migrationScript: 'all',
+      });
+      await gatherFiles(
+        require.resolve('./contracts/test/ImportAll.sol'),
+        resolve('./deploy'),
+      );
+    }
+
     if (debug) {
       console.log(
         'Debug test mode enabled - unlimited block gas limit and contract size',
@@ -98,7 +123,7 @@ createOrModifyHardhatTask(TASK_TEST)
       hre.config.networks.hardhat.blockGasLimit = 0x1fffffffffffff;
       hre.config.networks.hardhat.gas = 12000000;
     }
-    await runSuper(taskArgs);
+    await await runSuper(taskArgs);
   });
 
 createOrModifyHardhatTask(
@@ -184,10 +209,10 @@ async function findContract({ dir, name }: { dir: string; name: string }) {
         child =>
           child.type === 'ContractDefinition' &&
           name ===
-          ((child as unknown) as {
-            type: 'ContractDefinition';
-            name: string;
-          }).name,
+            ((child as unknown) as {
+              type: 'ContractDefinition';
+              name: string;
+            }).name,
       )
     ) {
       return solidityFile;
@@ -214,10 +239,10 @@ async function gatherFiles(
   const contractDir = dirname(resolve(contractPath));
   const contractCopyPath = moduleName
     ? join(
-      dir,
-      relative(contractDir.split(moduleName)[0], contractDir),
-      basename(contractPath),
-    )
+        dir,
+        relative(contractDir.split(moduleName)[0], contractDir),
+        basename(contractPath),
+      )
     : join(dir, relative(dirname(dir), contractDir), basename(contractPath));
 
   let mainContractContent = await fs.readFile(contractPath, 'utf-8');
@@ -319,7 +344,7 @@ async function getDeployedContractsConstructorArgumentsForNetwork(
 function minifyCode(originalCode: string): string {
   const firstLine =
     originalCode.startsWith('// SPDX-License-Identifier') ||
-      originalCode.startsWith('//SPDX-License-Identifier')
+    originalCode.startsWith('//SPDX-License-Identifier')
       ? originalCode.split('\n')[0]
       : '';
 
@@ -348,7 +373,6 @@ async function writeArgumentsFileForAddress(
   await fs.writeFile(path, `module.exports = ${JSON.stringify(args)}`, 'utf-8');
 }
 
-const TASK_DEPLOY = 'deploy';
 createOrModifyHardhatTask(
   TASK_DEPLOY,
   'Tests, deploys, and verifies a contract',
@@ -364,7 +388,15 @@ createOrModifyHardhatTask(
         migrationScript,
         noVerify,
         skipUma,
-      }: { migrationScript: string; noVerify: boolean; skipUma: false },
+        skipTest,
+        skipClean,
+      }: {
+        migrationScript: string;
+        noVerify: boolean;
+        skipUma: false;
+        skipTest: boolean;
+        skipClean: boolean;
+      },
       hre,
     ) => {
       const { sources, artifacts, cache } = hre.config.paths;
@@ -379,16 +411,15 @@ createOrModifyHardhatTask(
         ]);
       }
 
-      await clean();
+      if (!skipClean) await clean();
+
+      console.log('1', { skipTest, skipUma, migrationScript, skipClean });
 
       const { name: network } = hre.network;
       const networkId = toNetworkId(network as NetworkName);
       if (
         !skipUma &&
-        (((networkId !== 1 &&
-          networkId !== 3 &&
-          networkId !== 4 &&
-          networkId !== 42) ||
+        ((shouldDeployUma(networkId) ||
           parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE)) ??
           false)
       ) {
@@ -416,11 +447,21 @@ createOrModifyHardhatTask(
           'utf-8',
         );
 
+        (hre as {
+          fromDeployScript?: boolean;
+        }).fromDeployScript = true;
         await hre.run(TASK_TEST, { testFiles: [testPath] });
+        delete (hre as {
+          fromDeployScript?: boolean;
+        }).fromDeployScript;
 
         process.env.NEW_UMA_INFRASTRUCTURE = 'true';
 
         await clean();
+      }
+
+      if (migrationScript === 'uma') {
+        return;
       }
 
       if (migrationScript === 'all') {
@@ -434,6 +475,8 @@ createOrModifyHardhatTask(
               .split('.js')[0],
             noVerify,
             skipUma: true,
+            skipTest,
+            skipClean,
           });
         }
 
@@ -478,7 +521,13 @@ createOrModifyHardhatTask(
 
       /* eslint-disable no-await-in-loop */
       // 480_000 wasn't enough
-      for (let i = 0; (await getAllFilesLength(files)) > 470_000; i++) {
+      for (
+        let i = 0;
+        skipClean
+          ? i >= files.length
+          : (await getAllFilesLength(files)) > 470_000;
+        i++
+      ) {
         if (i >= files.length) {
           throw new Error(
             'Could not decrease contracts enough to pass verification',
@@ -511,7 +560,17 @@ contract('${migrationScript}', accounts => {
       `,
         'utf-8',
       );
-      await hre.run(TASK_TEST, { testFiles: [testPath] });
+
+      (hre as {
+        fromDeployScript?: boolean;
+      }).fromDeployScript = true; // Used in test/truffle-fixture.js
+
+      if (!skipTest) {
+        await hre.run(TASK_TEST, { testFiles: [testPath] });
+      }
+      delete (hre as {
+        fromDeployScript?: boolean;
+      }).fromDeployScript;
 
       const findContractPathInProject = (contractName: string) =>
         `${relative(
@@ -531,7 +590,7 @@ contract('${migrationScript}', accounts => {
         for (const { contractName, address } of newDeployedContracts) {
           const contract = findContractPathInProject(contractName);
 
-          for (; ;) {
+          for (;;) {
             try {
               ((hre as unknown) as {
                 skipCompile?: boolean;
