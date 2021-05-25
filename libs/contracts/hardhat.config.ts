@@ -182,7 +182,7 @@ function addPublicNetwork(config: HardhatUserConfig, chainId: NetworkId) {
   config.networks ??= {};
   config.networks[networkName] = {
     chainId,
-    url: getInfuraEndpoint(chainId, 'https'),
+    url: process.env.RPC_URL ?? getInfuraEndpoint(chainId, 'https'),
     accounts: {
       mnemonic:
         process.env.MNEMONIC ??

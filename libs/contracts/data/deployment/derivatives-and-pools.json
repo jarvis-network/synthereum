@@ -4,7 +4,9 @@
     "Derivative": 2,
     "Pool": 4,
     "SynthToken": {
-      "jEUR": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7"
+      "jEUR": "0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7",
+      "jCHF": "0x7AF02727268E1914eF39241B9Aa3220c9B9CF0a3",
+      "jGBP": "0x08654C14d7807cEc6042e86F19B79Bab64c3D648"
     }
   },
   "1": {
