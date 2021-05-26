@@ -104,11 +104,20 @@ createOrModifyHardhatTask(TASK_TEST)
       ((hre as unknown) as { fromDeployScript?: boolean }).fromDeployScript !==
       true
     ) {
-      console.log(0, { TASK_TEST, taskArgs });
-      await hre.run(TASK_DEPLOY, {
-        noVerify: true,
-        migrationScript: 'all',
+      console.log(0, {
+        TASK_TEST,
+        taskArgs,
+        'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
       });
+      if (
+        !process.env.MIGRATION_TYPE ||
+        !process.env.MIGRATION_TYPE.startsWith('add_')
+      ) {
+        await hre.run(TASK_DEPLOY, {
+          noVerify: true,
+          migrationScript: 'all',
+        });
+      }
       await gatherFiles(
         require.resolve('./contracts/test/ImportAll.sol'),
         resolve('./deploy'),

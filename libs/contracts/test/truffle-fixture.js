@@ -65,6 +65,13 @@ module.exports = async ({
   if (scriptName === 'uma') return;
   if (realScriptName) {
     await runMigration(realScriptName, network.name, accounts);
+  } else if (scriptName.startsWith('add_')) {
+    const fileName = migrationScripts.find(x => x.includes(scriptName));
+    if (!fileName) {
+      throw new Error(`Migration script '${scriptName}' not found.`);
+    }
+    console.log({ realScriptName, scriptName, fileName });
+    await runMigration(fileName, network.name, accounts);
   } else {
     console.log(`Migration script '${scriptName}' not found.`);
     process.exit(1);
