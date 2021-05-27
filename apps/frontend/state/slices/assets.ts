@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
-import { initialState } from '@/state/initialState';
+import { initialAppState } from '@/state/initialState';
 import { PricesMap, SubscriptionPair } from '@/utils/priceFeed';
 
 interface Action<T> {
@@ -13,7 +13,7 @@ type SetAssetsPriceAction = Action<PricesMap>;
 
 const assetsSlice = createSlice({
   name: 'assets',
-  initialState: initialState.assets,
+  initialState: initialAppState.assets,
   reducers: {
     setAssetsPrice(state, { payload }: SetAssetsPriceAction) {
       const pairs = Object.keys(payload) as SubscriptionPair[];

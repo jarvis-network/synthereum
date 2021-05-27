@@ -4,8 +4,8 @@ import { ExchangeToken } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
-import { logoutAction } from '@/state/actions';
-import { initialState } from '@/state/initialState';
+import { logoutAction, addressSwitch } from '@/state/actions';
+import { initialAppState } from '@/state/initialState';
 
 interface Action<T> {
   payload: T;
@@ -37,9 +37,11 @@ export const subscribeWalletBalances = createAsyncThunk(
   },
 );
 
+const initialState = initialAppState.wallet;
+
 const walletSlice = createSlice({
   name: 'wallet',
-  initialState: initialState.wallet,
+  initialState,
   reducers: {},
   extraReducers: {
     [fetchWalletBalances.fulfilled.type]: (
@@ -51,7 +53,10 @@ const walletSlice = createSlice({
       });
     },
     [logoutAction.type]() {
-      return initialState.wallet;
+      return initialState;
+    },
+    [addressSwitch.type]() {
+      return initialState;
     },
   },
 });

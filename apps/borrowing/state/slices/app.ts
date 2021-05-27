@@ -1,14 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { initialState } from '@/state/initialState';
+import { initialAppState } from '@/state/initialState';
 
 interface SetModalVisibilityAction {
   payload: boolean;
 }
 
+const initialState = initialAppState.app;
+
 const appSlice = createSlice({
   name: 'app',
-  initialState: initialState.app,
+  initialState,
   reducers: {
     setAuthModalVisible(state, action: SetModalVisibilityAction) {
       return {

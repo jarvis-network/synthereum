@@ -45,6 +45,7 @@ export function AuthFlow<
   appName,
   notify,
   setAuthModalVisibleAction,
+  addressSwitchAction,
   Welcome,
   Terms,
   ServiceSelect,
@@ -55,6 +56,7 @@ export function AuthFlow<
     isMobile: boolean,
   ) => void;
   setAuthModalVisibleAction: (isVisible: boolean) => AnyAction;
+  addressSwitchAction: (payload: { address: string }) => AnyAction;
   Welcome: Page;
   Terms: Page;
   ServiceSelect: Page;
@@ -88,7 +90,7 @@ export function AuthFlow<
     const onboardInstance = Onboard({
       ...getOnboardConfig(),
       subscriptions: {
-        wallet: wallet => {
+        wallet(wallet) {
           if (!wallet.provider) {
             const currentAuth = authFactory(
               onboardInstance,
@@ -106,10 +108,13 @@ export function AuthFlow<
           const ensInstance = new ENSHelper(web3instance);
           ens$.next(ensInstance);
         },
+        address(address) {
+          dispatch(addressSwitchAction({ address }));
+        },
       },
     });
     onboard$.next(onboardInstance);
-  }, []);
+  }, [web3$, ens$, dispatch]);
 
   useEffect(() => {
     if (isAuthModalVisible) {

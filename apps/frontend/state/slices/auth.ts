@@ -1,15 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { logoutAction } from '@/state/actions';
-import { initialState, State } from '@/state/initialState';
+import { initialAppState, State } from '@/state/initialState';
+import { logoutAction, addressSwitch } from '@/state/actions';
 
-interface LoginActionPayload {
-  payload: State['auth'];
+interface Action<T> {
+  payload: T;
 }
+
+type LoginActionPayload = Action<State['auth']>;
+
+const initialState = initialAppState.auth;
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: initialState.auth,
+  initialState,
   reducers: {
     login(_, action: LoginActionPayload) {
       return action.payload;
@@ -17,7 +21,15 @@ const authSlice = createSlice({
   },
   extraReducers: {
     [logoutAction.type]() {
-      return initialState.auth;
+      return initialState;
+    },
+    [addressSwitch.type](
+      state,
+      { payload: { address } }: Action<{ address: string }>,
+    ) {
+      if (!state) return state;
+      state.address = address;
+      return state;
     },
   },
 });

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { initialState, State } from '@/state/initialState';
+import { initialAppState, State } from '@/state/initialState';
 import { resetSwapAction } from '@/state/actions';
 
 interface SetChooseAssetAction {
@@ -33,7 +33,7 @@ interface SetChartDays {
 
 const exchangeSlice = createSlice({
   name: 'exchange',
-  initialState: initialState.exchange,
+  initialState: initialAppState.exchange,
   reducers: {
     setChooseAsset(state, action: SetChooseAssetAction) {
       state.chooseAssetActive = action.payload;
@@ -68,7 +68,7 @@ const exchangeSlice = createSlice({
   },
   extraReducers: {
     [resetSwapAction.type](state) {
-      const { base, pay, receive } = initialState.exchange;
+      const { base, pay, receive } = initialAppState.exchange;
 
       return {
         ...state,

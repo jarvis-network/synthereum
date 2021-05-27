@@ -5,14 +5,14 @@ import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
 import { getPriceFeedEndpoint } from '@/utils/environment';
 import { PriceFeed } from '@/utils/priceFeed';
 import { Dependencies } from '@/utils/epics';
-import { State, initialState } from '@/state/initialState';
+import { State, initialAppState } from '@/state/initialState';
 import { reducer } from '@/state/reducer';
 import { epic } from '@/state/epic';
 import { createPersistMiddleware } from '@/state/persist';
 
 let cachedStore: Store | undefined;
 
-function initStore(preloadedState: State = initialState) {
+function initStore(preloadedState: State = initialAppState) {
   // Create redux-observable middleware
   const epicMiddleware: EpicMiddleware<
     any,

@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { configureStore, Store, getDefaultMiddleware } from '@reduxjs/toolkit';
 
-import { State, initialState } from '@/state/initialState';
+import { State, initialAppState } from '@/state/initialState';
 import { reducer } from '@/state/reducer';
 import { createPersistMiddleware } from '@/state/persist';
 
 let cachedStore: Store | undefined;
 
-function initStore(preloadedState: State = initialState) {
+function initStore(preloadedState: State = initialAppState) {
   const middleware = [
     ...getDefaultMiddleware(),
     createPersistMiddleware([

@@ -3,8 +3,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit';
 import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-ts/dist/config';
 import { formatDate } from '@jarvis-network/app-toolkit';
 
-import { initialState, PricePoint } from '@/state/initialState';
-
+import { initialAppState, PricePoint } from '@/state/initialState';
 import {
   PriceUpdate,
   HistoricalPrices,
@@ -21,11 +20,11 @@ const isPairReversed = (pair: SubscriptionPair) =>
 
 const pricesSlice = createSlice({
   name: 'prices',
-  initialState: initialState.prices,
+  initialState: initialAppState.prices,
   reducers: {
     saveCachedHistory(
       _,
-      { payload }: SavePricePointsAction<typeof initialState.prices>,
+      { payload }: SavePricePointsAction<typeof initialAppState.prices>,
     ) {
       // Override prices state by cached data as cache should store latest valid value
       return payload;

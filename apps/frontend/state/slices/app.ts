@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { initialState } from '@/state/initialState';
+import { initialAppState } from '@/state/initialState';
 
 import { resetSwapAction } from '../actions';
 
@@ -17,7 +17,7 @@ interface SetMobileTabAction {
 
 const appSlice = createSlice({
   name: 'app',
-  initialState: initialState.app,
+  initialState: initialAppState.app,
   reducers: {
     setAccountOverviewModalVisible(state, action: SetModalVisibilityAction) {
       return {

@@ -91,7 +91,7 @@ export interface State {
   };
 }
 
-export const initialState: State = {
+export const initialAppState: State = {
   theme: cache.get<ThemeNameType | null>('jarvis/state/theme') || 'light',
   app: {
     isAccountOverviewModalVisible: Boolean(

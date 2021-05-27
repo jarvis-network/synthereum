@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { initialState, State } from '@/state/initialState';
+import { initialAppState, State } from '@/state/initialState';
 
 interface SetThemeAction {
   payload: {
@@ -10,7 +10,7 @@ interface SetThemeAction {
 
 const themeSlice = createSlice({
   name: 'theme',
-  initialState: initialState.theme,
+  initialState: initialAppState.theme,
   reducers: {
     setTheme(state, action: SetThemeAction) {
       return action.payload.theme;

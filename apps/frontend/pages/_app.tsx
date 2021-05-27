@@ -33,7 +33,7 @@ import { Welcome } from '@/components/auth/flow/Welcome';
 import { setAuthModalVisible } from '@/state/slices/app';
 import { Terms } from '@/components/auth/flow/Terms';
 import { login } from '@/state/slices/auth';
-import { logoutAction } from '@/state/actions';
+import { addressSwitch, logoutAction } from '@/state/actions';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -80,6 +80,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
                 Terms={Terms}
                 appName="jarvis"
                 setAuthModalVisibleAction={setAuthModalVisible}
+                addressSwitchAction={addressSwitch}
               />
               <BackgroundPreloader backgrounds={backgroundList} />
               <MainWrapper>

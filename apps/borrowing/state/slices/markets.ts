@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { FlagKeys } from '@jarvis-network/ui';
 
-import { initialState, State } from '@/state/initialState';
+import { addressSwitch } from '@/state/actions';
+import { initialAppState, State } from '@/state/initialState';
 
 export type MarketAssetFlag = FlagKeys | null;
 
@@ -24,9 +25,11 @@ interface Action<T> {
   payload: T;
 }
 
+const initialState = initialAppState.markets;
+
 const marketsSlice = createSlice({
   name: 'markets',
-  initialState: initialState.markets,
+  initialState,
   reducers: {
     setMarketsList(state, { payload: list }: Action<State['markets']['list']>) {
       return {
@@ -51,6 +54,11 @@ const marketsSlice = createSlice({
         ...state,
         filterQuery,
       };
+    },
+  },
+  extraReducers: {
+    [addressSwitch.type]() {
+      return initialState;
     },
   },
 });
