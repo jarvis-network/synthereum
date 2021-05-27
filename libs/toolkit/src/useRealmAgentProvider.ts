@@ -4,6 +4,7 @@ import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
 import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 import {
   PoolsForVersion,
@@ -11,18 +12,27 @@ import {
 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
-import { useStore } from '@/state/store';
 
 import { NETWORK_ID } from './environment';
 
 const poolVersion = (process.env.NEXT_PUBLIC_POOL_VERSION ||
   'v1') as PoolVersion;
 
+interface Store {
+  getState(): { auth: { address: string } | null };
+  subscribe(callback: () => void): () => void;
+}
+
 export function useRealmAgentProvider(
-  store: ReturnType<typeof useStore>,
-  web3$: BehaviorSubject<Web3 | null>,
-  realmAgent$: BehaviorSubject<RealmAgent | null>,
-) {
+  store: Store,
+  {
+    web3$,
+    realmAgent$,
+  }: {
+    web3$: BehaviorSubject<Web3 | null>;
+    realmAgent$: BehaviorSubject<RealmAgent | null>;
+  },
+): void {
   const poolsRef = useRef<PoolsForVersion<
     typeof poolVersion,
     SupportedNetworkName
@@ -41,7 +51,7 @@ export function useRealmAgentProvider(
     loadRealm(web3 as Web3On<SupportedNetworkName>, NETWORK_ID, {
       [poolVersion]: poolsRef.current,
     }).then(realm => {
-      poolsRef.current = realm.pools[poolVersion]!;
+      poolsRef.current = assertNotNull(realm.pools[poolVersion]);
       realmAgent$.next(
         new RealmAgent(
           realm,

@@ -21,12 +21,12 @@ import { BehaviorSubject } from 'rxjs';
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
 import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
-import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
 import {
   CoreObservablesContextProvider,
   ENSHelper,
   useConstant,
   AuthFlow,
+  useRealmAgentProvider,
 } from '@jarvis-network/app-toolkit';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
 
   const store = useStore(pageProps.initialReduxState);
 
-  useRealmAgentProvider(store, subjects.web3$, subjects.realmAgent$);
+  useRealmAgentProvider(store, subjects);
 
   const isMounted = useIsMounted();
   if (!isMounted) return null;

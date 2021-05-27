@@ -18,6 +18,7 @@ import {
   ENSHelper,
   useConstant,
   AuthFlow,
+  useRealmAgentProvider,
 } from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
@@ -28,7 +29,6 @@ import { FullScreenLoader } from '@/components/FullScreenLoader';
 
 import './_app.scss';
 import 'react-table/react-table.css';
-import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
 import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 import { GDPRPopup } from '@/components/GDPRPopup';
 import { backgroundList } from '@/data/backgrounds';
@@ -55,7 +55,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const store = useStore(pageProps.initialReduxState);
 
-  useRealmAgentProvider(store, subjects.web3$, subjects.realmAgent$);
+  useRealmAgentProvider(store, subjects);
 
   const isMounted = useIsMounted();
   if (!isMounted) return null;
