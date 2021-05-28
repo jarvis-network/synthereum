@@ -41,8 +41,8 @@ export function isBoolean(x: unknown): x is boolean {
   return x === true || x === false;
 }
 
-export function assertNotNull<T>(x: T | Empty): T {
-  assert(x != null);
+export function assertNotNull<T>(x: T | Empty, message?: string): T {
+  assert(x != null, message);
   return x;
 }
 

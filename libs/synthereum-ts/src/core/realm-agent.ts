@@ -75,7 +75,10 @@ export class RealmAgent<
     public readonly agentAddress: AddressOn<Net>,
     public readonly poolVersion: PoolVersion,
   ) {
-    this.activePools = assertNotNull(realm.pools[poolVersion]);
+    this.activePools = assertNotNull(
+      realm.pools[poolVersion],
+      'realm.pools[poolVersion] is null',
+    );
     this.defaultTxOptions = {
       from: this.agentAddress,
       web3: this.realm.web3,
@@ -88,7 +91,10 @@ export class RealmAgent<
   }
 
   syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
-    const asset = assertNotNull(this.activePools[synthetic]).syntheticToken;
+    const asset = assertNotNull(
+      this.activePools[synthetic],
+      'this.activePools[synthetic] is null',
+    ).syntheticToken;
     return getTokenBalance(asset, this.agentAddress);
   }
 
@@ -167,8 +173,10 @@ export class RealmAgent<
     this.assertV1Pool('mint');
     const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
 
-    const destinationTicAddress = assertNotNull(this.activePools[outputSynth])
-      .address;
+    const destinationTicAddress = assertNotNull(
+      this.activePools[outputSynth],
+      'this.activePools[outputSynth] is null',
+    ).address;
 
     const allowancePromise = this.ensureSufficientAllowanceFor(
       inputTic.syntheticToken,
