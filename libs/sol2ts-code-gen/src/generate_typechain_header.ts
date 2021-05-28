@@ -43,13 +43,13 @@ async function main() {
     }),
   );
   await execTask('Generating index.ts of all *.json ABI files', () =>
-    writeHeaderFile(contractsAbiDir, {
+    writeHeaderFile(contractsAbiDir, contractsDistAbiDir, {
       ext: '.json',
       imports: [{ types: ['AbiItem'], module: 'web3-utils' }, importTagged],
     }),
   );
   await execTask('Generating index.ts of all *.d.ts TypeChain', () =>
-    writeHeaderFile(`${contractsDir}/typechain`, {
+    writeHeaderFile(`${contractsDir}/typechain`, `${contractsDir}/typechain`, {
       ext: '.d.ts',
       unionName: 'KnownContract',
       unionTypeMapFun: type => `Tagged<${type}, '${type}'>`,

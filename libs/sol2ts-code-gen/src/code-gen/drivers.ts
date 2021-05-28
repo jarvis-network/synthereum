@@ -17,14 +17,15 @@ import {
 } from './mk-code';
 
 export async function writeHeaderFile(
-  dir: string,
+  dirToScan: string,
+  headerFileOutputDir: string,
   headerGenParams: HeaderGenParams,
 ): Promise<void> {
-  const path = normalize(dir);
-  const files = await fs.readdir(dir);
+  const path = normalize(headerFileOutputDir);
+  const files = await fs.readdir(dirToScan);
   const entries = files
     .filter(f => basename(f) !== 'index.ts')
-    .map(f => normalize(`${dir}/${f}`));
+    .map(f => normalize(`${dirToScan}/${f}`));
   if (entries.length !== files.length) {
     console.log(`'${path}/index.ts' exists - overwriting.`);
   }
