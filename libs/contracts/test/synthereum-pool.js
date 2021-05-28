@@ -3,7 +3,7 @@ const { interfaceName } = require('@jarvis-network/uma-common');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
-const ethers = require('ethers');
+const { mnemonicToPrivateKey } = require('@jarvis-network/crypto-utils');
 const { encodeDerivative, encodePool } = require('../utils/encoding.js');
 const {
   generateMintSignature,
@@ -106,8 +106,7 @@ contract('Synthereum pool', function (accounts) {
   const mnemonic =
     'test test test test test test test test test test test junk';
   const path = "m/44'/60'/0'/0/3";
-  const wallet = ethers.Wallet.fromMnemonic(mnemonic, path);
-  let validatorPrivKey = wallet.privateKey.replace('0x', '');
+  let validatorPrivKey = mnemonicToPrivateKey(mnemonic, path);
 
   beforeEach(async () => {
     collateralAddress = (await TestnetERC20.deployed()).address;

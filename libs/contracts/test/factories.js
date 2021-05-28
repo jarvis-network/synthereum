@@ -2,7 +2,6 @@
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
-const ethers = require('ethers');
 const {
   encodeDerivative,
   encodePool,
