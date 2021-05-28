@@ -5,7 +5,7 @@ import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
 import { logoutAction, addressSwitch } from '@/state/actions';
-import { initialAppState } from '@/state/initialState';
+import { initialAppState, State } from '@/state/initialState';
 
 interface Action<T> {
   payload: T;
@@ -16,26 +16,25 @@ export interface WalletBalance {
   amount: FPN;
 }
 
-export const fetchWalletBalances = createAsyncThunk(
-  'wallet/fetch',
-  async (realmAgent: RealmAgent): Promise<WalletBalance[]> => {
-    const balances = await realmAgent.getAllBalances();
+type PrivateState = {
+  walletPrivate: {
+    fetchingBalancesFor: { address: string; blockNumber: number } | null;
+  };
+};
 
-    return balances.map(([asset, amount]) => ({
-      asset,
-      amount: FPN.fromWei(amount),
-    }));
-  },
-);
-
-export const subscribeWalletBalances = createAsyncThunk(
-  'wallet/subscribe',
-  (realmAgent: RealmAgent, thunkAPI): void => {
-    const callback = () => thunkAPI.dispatch(fetchWalletBalances(realmAgent));
-    setInterval(callback, 5000);
-    callback();
-  },
-);
+type FetchWalletBalancesArgument = RealmAgent;
+export const fetchWalletBalances = createAsyncThunk<
+  WalletBalance[],
+  FetchWalletBalancesArgument,
+  { state: State & PrivateState }
+>('wallet/fetch', async (realmAgent, { signal }) => {
+  const balances = await realmAgent.getAllBalances();
+  if (signal.aborted) throw new Error('fetchWalletBalances aborted');
+  return balances.map(([asset, amount]) => ({
+    asset,
+    amount: FPN.fromWei(amount),
+  }));
+});
 
 const initialState = initialAppState.wallet;
 

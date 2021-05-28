@@ -13,13 +13,7 @@ import { ChartExchangeCards } from '@/components/ChartExchangeCards';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setWindowLoaded } from '@/state/slices/app';
 import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
-import { subscribeTransactionsHistory } from '@/state/slices/transactions';
-import { subscribeWalletBalances } from '@/state/slices/wallet';
 import { backgroundMap } from '@/data/backgrounds';
-import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
 
 const Layout = styled.div`
   display: flex;
@@ -79,7 +73,6 @@ const Rotate = styled.div`
 export default function Home() {
   const dispatch = useDispatch();
   const theme = useReduxSelector(state => state.theme);
-  const realmAgent = useBehaviorSubject(useCoreObservables().realmAgent$);
   const url = backgroundMap[theme];
 
   useEffect(() => {
@@ -98,15 +91,6 @@ export default function Home() {
       dispatch(closeConnection());
     };
   }, []);
-
-  useEffect(() => {
-    if (!realmAgent) {
-      return;
-    }
-
-    dispatch(subscribeWalletBalances(realmAgent));
-    dispatch(subscribeTransactionsHistory(realmAgent));
-  }, [realmAgent]);
 
   return (
     <StickyHeader>

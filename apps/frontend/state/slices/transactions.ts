@@ -1,6 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-
-import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
+import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutAction, addressSwitch } from '@/state/actions';
 import { initialAppState } from '@/state/initialState';
@@ -10,22 +8,6 @@ interface Action<T> {
   payload: T;
 }
 
-export const fetchTransactionsHistory = createAsyncThunk(
-  'transactions/fetch',
-  (_: RealmAgent): Promise<Transaction[]> =>
-    // @todo some logic here
-    Promise.resolve([]),
-);
-
-export const subscribeTransactionsHistory = createAsyncThunk(
-  'transactions/subscribe',
-  (realmAgent: RealmAgent, thunkAPI): void => {
-    const callback = () =>
-      thunkAPI.dispatch(fetchTransactionsHistory(realmAgent));
-    setInterval(callback, 5000);
-    callback();
-  },
-);
 const initialState = initialAppState.transactions;
 
 const transactionsSlice = createSlice({
@@ -37,12 +19,6 @@ const transactionsSlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchTransactionsHistory.fulfilled.type]: (
-      state,
-      { payload: transactions }: Action<Transaction[]>,
-    ) => {
-      state.list = transactions;
-    },
     [addressSwitch.type]() {
       return initialState;
     },
