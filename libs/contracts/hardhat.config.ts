@@ -1,16 +1,22 @@
-require('dotenv').config();
-import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-etherscan';
-import 'solidity-coverage';
-import 'hardhat-gas-reporter';
+import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-web3';
+import 'solidity-coverage';
+
+import 'hardhat-gas-reporter';
+import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import type { HardhatUserConfig } from 'hardhat/config';
 import { task } from 'hardhat/config';
+
+import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 import {
   NetworkId,
   toNetworkName,
 } from '@jarvis-network/core-utils/dist/eth/networks';
-import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
+import {
+  Config,
+  generateArtifacts,
+} from '@jarvis-network/sol2ts-code-gen/dist/src/full-build-pipeline';
 
 task('test')
   .addFlag('debug', 'Compile without optimizer')
@@ -30,6 +36,29 @@ task('test')
 task('accounts', 'Prints the list of accounts', async (_, hre) => {
   const accounts = await hre.web3.eth.getAccounts();
   console.log(accounts);
+});
+
+task(TASK_COMPILE, async (args, hre, runSuper) => {
+  await runSuper();
+
+  const distBaseDir = './dist/src/contracts';
+  const srcBaseDir = './src/contracts';
+
+  const config: Config = {
+    outputPaths: {
+      rootDir: hre.config.paths.root,
+      abiDir: `${distBaseDir}/abi`,
+      abiIndexDir: `${srcBaseDir}/abi`,
+      typechainSrcDir: `${srcBaseDir}/typechain`,
+      typechainDistDir: `${distBaseDir}/typechain`,
+    },
+    getAllFullyQualifiedNames: () => hre.artifacts.getAllFullyQualifiedNames(),
+    readArtifact: filename => hre.artifacts.readArtifact(filename),
+    clear: true,
+    flat: true,
+  };
+
+  await generateArtifacts(config);
 });
 
 function addPublicNetwork(config: HardhatUserConfig, chainId: NetworkId) {

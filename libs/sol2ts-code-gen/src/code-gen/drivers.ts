@@ -78,8 +78,8 @@ function generateHeader(
 
 function generateDTsImport(filename: string, name: string): string {
   assert(
-    filename.slice(-5) === '.d.ts',
-    `Expected '.d.ts' file extension, but got filename: '${filename}'`,
+    filename.match(/(\.d\.)?\.ts$/),
+    `Expected '(.d)?.ts' file extension, but got filename: '${filename}'`,
   );
   const allExportedSymbols = getAllModuleExports(filename);
 
@@ -116,7 +116,7 @@ export function getAllModuleExports(moduleFileName: string): string[] {
 
 function shouldGenerateAbiJsonImport(filename: string) {
   const json = JSON.parse(readFileSync(filename, 'utf-8'));
-  return assertIsArray(json.abi).length > 0;
+  return assertIsArray(json).length > 0;
 }
 
 /**

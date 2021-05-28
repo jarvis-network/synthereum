@@ -149,7 +149,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/contracts/{src,scripts}/**/*.ts"]
+            "lintFilePatterns": ["libs/contracts/src/**/*.ts"]
           }
         },
         "test": {
@@ -163,22 +163,6 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": ["yarn run build"],
-            "cwd": "./libs/contracts",
-            "color": true
-          }
-        },
-        "build-solidity": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build:solidity"],
-            "cwd": "./libs/contracts",
-            "color": true
-          }
-        },
-        "build-contracts-ts": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build:contracts-ts"],
             "cwd": "./libs/contracts",
             "color": true
           }

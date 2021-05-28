@@ -3,5 +3,10 @@
   "version": "0.0.1",
   "bin": {
     "sol2ts-code-gen": "./cli"
+  },
+  "dependencies": {
+    "@typechain/web3-v1": "^3.0.0",
+    "rxjs": "^7.1.0",
+    "typechain": "^5.0.0"
   }
 }
