@@ -9,3 +9,4 @@ export * from './useBehaviorSubject';
 export * from './useConstant';
 export * from './useLocalStorage';
 export * from './usePrettyName';
+export * from './useAddThemeClassNameInBody';

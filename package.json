@@ -109,6 +109,7 @@
         "package.json",
         "docker",
         "k8s",
+        "toolkit",
         "validator-lib"
       ]
     }

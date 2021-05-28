@@ -5,7 +5,6 @@ import {
   NotificationType,
   styled,
   useNotifications,
-  useTheme,
 } from '@jarvis-network/ui';
 import Onboard from 'bnc-onboard';
 import Web3 from 'web3';
@@ -45,7 +44,6 @@ const AuthFlow: React.FC = () => {
   const web3 = useBehaviorSubject(web3$);
 
   const dispatch = useDispatch();
-  const theme = useTheme();
   const auth = useAuth();
   const { login } = auth || {};
 
@@ -143,16 +141,6 @@ const AuthFlow: React.FC = () => {
       dispatch(setAuthModalVisible(false));
     }
   }, [web3]);
-
-  useEffect(() => {
-    const { name } = theme;
-    Array.from(document.body.classList).forEach(cls => {
-      if (cls.startsWith('theme-')) {
-        document.body.classList.remove(cls);
-      }
-    });
-    document.body.classList.add(`theme-${name}`);
-  }, [theme.name]);
 
   return (
     <ModalWrapper>
