@@ -4,7 +4,7 @@ export * from './ens';
 export * from './environment';
 export * from './format';
 export * from './onboardConfig';
-export * from './useAuth';
+export * from './AuthContext';
 export * from './useBehaviorSubject';
 export * from './useConstant';
 export * from './useLocalStorage';

@@ -17,7 +17,7 @@ import {
   useIsMobile,
   useNotifications,
 } from '@jarvis-network/ui';
-import { useAuth } from '@/utils/useAuth';
+import { useAuth } from '@jarvis-network/app-toolkit';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -107,10 +107,10 @@ const Content = styled.div`
 export const ServiceSelect: React.FC<PageProps> = () => {
   const isMobile = useIsMobile();
   const notify = useNotifications();
-  const authLogin = useAuth();
+  const { login } = useAuth();
 
   const logIn = () => {
-    authLogin?.login().then(loginSuccessful => {
+    login().then(loginSuccessful => {
       if (loginSuccessful) {
         const place = isMobile ? 'global' : 'exchange';
         notify(

@@ -13,6 +13,7 @@ import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   formatWalletAddress,
   usePrettyName,
+  useAuth,
 } from '@jarvis-network/app-toolkit';
 
 import { setTheme } from '@/state/slices/theme';
@@ -23,7 +24,6 @@ import {
 import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
-import { useAuth } from '@/utils/useAuth';
 import { isAppReadySelector } from '@/state/selectors';
 
 const Container = styled.div<{ hasContent: boolean }>`
@@ -46,11 +46,11 @@ const Container = styled.div<{ hasContent: boolean }>`
 
 const noop = () => undefined;
 
-const render = () => {
+const render = (): JSX.Element => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
   const isApplicationReady = useReduxSelector(isAppReadySelector);
-  const { logout } = useAuth() || {};
+  const { logout } = useAuth();
   const name = usePrettyName((auth?.address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
@@ -62,7 +62,7 @@ const render = () => {
   };
 
   const handleLogOut = () => {
-    logout!();
+    logout();
     setSigningOut(true);
   };
 

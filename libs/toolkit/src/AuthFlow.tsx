@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AnyAction, Dispatch } from 'redux';
+import { AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
@@ -15,6 +15,7 @@ import { ENSHelper } from './ens';
 import { useCoreObservables } from './CoreObservablesContext';
 import { useBehaviorSubject } from './useBehaviorSubject';
 import { getOnboardConfig } from './onboardConfig';
+import { authFactory, useAuthContext } from './AuthContext';
 
 const ModalWrapper = styled.div`
   @media screen and (max-width: ${props =>
@@ -44,8 +45,6 @@ export function AuthFlow<
   appName,
   notify,
   setAuthModalVisibleAction,
-  useAuth,
-  authFactory,
   Welcome,
   Terms,
   ServiceSelect,
@@ -56,11 +55,6 @@ export function AuthFlow<
     isMobile: boolean,
   ) => void;
   setAuthModalVisibleAction: (isVisible: boolean) => AnyAction;
-  useAuth: () => { login: (wallet?: string) => Promise<boolean> } | null;
-  authFactory: (
-    onboard: ReturnType<typeof Onboard>,
-    dispatch: Dispatch,
-  ) => { logout: () => void };
   Welcome: Page;
   Terms: Page;
   ServiceSelect: Page;
@@ -69,8 +63,7 @@ export function AuthFlow<
   const web3 = useBehaviorSubject(web3$);
 
   const dispatch = useDispatch();
-  const auth = useAuth();
-  const { login } = auth || {};
+  const { auth, loginAction, logoutAction } = useAuthContext();
 
   const notifyFn = useNotifications();
   const isMobile = useIsMobile();
@@ -97,7 +90,12 @@ export function AuthFlow<
       subscriptions: {
         wallet: wallet => {
           if (!wallet.provider) {
-            const currentAuth = authFactory(onboardInstance, dispatch);
+            const currentAuth = authFactory(
+              onboardInstance,
+              dispatch,
+              loginAction,
+              logoutAction,
+            );
             currentAuth.logout();
             web3$.next(null);
             ens$.next(null);
@@ -136,10 +134,6 @@ export function AuthFlow<
   };
 
   useEffect(() => {
-    if (!login) {
-      return;
-    }
-
     const autoLoginWallet = localStorage.getItem(`${appName}/autologin`);
 
     if (!autoLoginWallet) {
@@ -151,7 +145,8 @@ export function AuthFlow<
       return;
     }
 
-    login(autoLoginWallet)
+    auth
+      .login(autoLoginWallet)
       .then(loginSuccessful => {
         if (!loginSuccessful) {
           return;
@@ -163,7 +158,7 @@ export function AuthFlow<
         // });
       })
       .catch(noop);
-  }, [login]);
+  }, [auth]);
 
   useEffect(() => {
     if (web3) {

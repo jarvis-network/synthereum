@@ -15,6 +15,7 @@ import {
   AuthFlow,
   useRealmAgentProvider,
   useSubjects,
+  AuthProvider,
 } from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
@@ -29,9 +30,10 @@ import { GDPRPopup } from '@/components/GDPRPopup';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { Welcome } from '@/components/auth/flow/Welcome';
-import { authFactory, useAuth } from '@/utils/useAuth';
 import { setAuthModalVisible } from '@/state/slices/app';
 import { Terms } from '@/components/auth/flow/Terms';
+import { login } from '@/state/slices/auth';
+import { logoutAction } from '@/state/actions';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -61,31 +63,31 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
       <StateProvider store={store}>
         <AppThemeProvider>
           <NotificationsProvider>
-            <AuthFlow<Parameters<typeof useStore>['0']>
-              notify={(notify, isMobile) =>
-                notify(
-                  'You have successfully signed in',
-                  {
-                    type: NotificationType.success,
-                    icon: '👍🏻',
-                  },
-                  isMobile ? 'global' : 'exchange',
-                )
-              }
-              ServiceSelect={ServiceSelect}
-              Welcome={Welcome}
-              Terms={Terms}
-              appName="jarvis"
-              authFactory={authFactory}
-              useAuth={useAuth}
-              setAuthModalVisibleAction={setAuthModalVisible}
-            />
-            <BackgroundPreloader backgrounds={backgroundList} />
-            <MainWrapper>
-              <FullScreenLoader />
-              <Component {...pageProps} />
-              <GDPRPopup />
-            </MainWrapper>
+            <AuthProvider loginAction={login} logoutAction={logoutAction}>
+              <AuthFlow<Parameters<typeof useStore>['0']>
+                notify={(notify, isMobile) =>
+                  notify(
+                    'You have successfully signed in',
+                    {
+                      type: NotificationType.success,
+                      icon: '👍🏻',
+                    },
+                    isMobile ? 'global' : 'exchange',
+                  )
+                }
+                ServiceSelect={ServiceSelect}
+                Welcome={Welcome}
+                Terms={Terms}
+                appName="jarvis"
+                setAuthModalVisibleAction={setAuthModalVisible}
+              />
+              <BackgroundPreloader backgrounds={backgroundList} />
+              <MainWrapper>
+                <FullScreenLoader />
+                <Component {...pageProps} />
+                <GDPRPopup />
+              </MainWrapper>
+            </AuthProvider>
           </NotificationsProvider>
         </AppThemeProvider>
       </StateProvider>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   AccountSummary,
+  noop,
   NotificationType,
   useNotifications,
   useWindowSize,
@@ -10,20 +11,18 @@ import {
 import { setTheme } from '@/state/slices/theme';
 import { State } from '@/state/initialState';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { useAuth } from '@/utils/useAuth';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { setAuthModalVisible } from '@/state/slices/app';
 import {
   formatWalletAddress,
+  useAuth,
   usePrettyName,
 } from '@jarvis-network/app-toolkit';
 
-const noop = () => undefined;
-
-const UserHeader = () => {
+const UserHeader = (): JSX.Element => {
   const dispatch = useDispatch();
   const auth = useReduxSelector(state => state.auth);
-  const { logout } = useAuth() || {};
+  const { logout } = useAuth();
   const name = usePrettyName((auth?.address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
@@ -34,7 +33,7 @@ const UserHeader = () => {
   };
 
   const handleLogOut = () => {
-    logout!();
+    logout();
     setSigningOut(true);
   };
 
