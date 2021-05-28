@@ -6,6 +6,7 @@ import { Provider as StateProvider } from 'react-redux';
 import {
   BackgroundPreloader,
   NotificationsProvider,
+  NotificationType,
   styled,
 } from '@jarvis-network/ui';
 
@@ -15,7 +16,6 @@ import { useStore } from '@/state/store';
 import './_app.scss';
 import './_onboard.scss';
 import 'react-table/react-table.css';
-import { AuthFlow } from '@/components/auth/AuthFlow';
 import { BehaviorSubject } from 'rxjs';
 import Web3 from 'web3';
 import Onboard from 'bnc-onboard';
@@ -25,8 +25,14 @@ import {
   CoreObservablesContextProvider,
   ENSHelper,
   useConstant,
+  AuthFlow,
 } from '@jarvis-network/app-toolkit';
 import { backgroundList } from '@/data/backgrounds';
+import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
+import { Welcome } from '@/components/auth/flow/Welcome';
+import { Terms } from '@/components/auth/flow/Terms';
+import { authFactory, useAuth } from '@/utils/useAuth';
+import { setAuthModalVisible } from '@/state/slices/app';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -65,7 +71,21 @@ function MyApp({ Component, pageProps }: AppProps) {
       <StateProvider store={store}>
         <AppThemeProvider>
           <NotificationsProvider>
-            <AuthFlow />
+            <AuthFlow<Parameters<typeof useStore>['0']>
+              notify={notify =>
+                notify('You have successfully signed in', {
+                  type: NotificationType.success,
+                  icon: '👍🏻',
+                })
+              }
+              ServiceSelect={ServiceSelect}
+              Welcome={Welcome}
+              Terms={Terms}
+              appName="jarvis-borrowing"
+              authFactory={authFactory}
+              useAuth={useAuth}
+              setAuthModalVisibleAction={setAuthModalVisible}
+            />
             <BackgroundPreloader backgrounds={backgroundList} />
             <MainWrapper>
               <Component {...pageProps} />

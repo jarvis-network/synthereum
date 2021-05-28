@@ -9,12 +9,14 @@ import Onboard from 'bnc-onboard';
 import {
   BackgroundPreloader,
   NotificationsProvider,
+  NotificationType,
   styled,
 } from '@jarvis-network/ui';
 import {
   CoreObservablesContextProvider,
   ENSHelper,
   useConstant,
+  AuthFlow,
 } from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
@@ -22,7 +24,6 @@ import '@/utils/consoleErrorFilter';
 import { useStore } from '@/state/store';
 import { AppThemeProvider } from '@/components/AppThemeProvider';
 import { FullScreenLoader } from '@/components/FullScreenLoader';
-import { AuthFlow } from '@/components/auth/AuthFlow';
 
 import './_app.scss';
 import 'react-table/react-table.css';
@@ -30,6 +31,11 @@ import { useRealmAgentProvider } from '@/utils/useRealmAgentProvider';
 import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 import { GDPRPopup } from '@/components/GDPRPopup';
 import { backgroundList } from '@/data/backgrounds';
+import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
+import { Welcome } from '@/components/auth/flow/Welcome';
+import { authFactory, useAuth } from '@/utils/useAuth';
+import { setAuthModalVisible } from '@/state/slices/app';
+import { Terms } from '@/components/auth/flow/Terms';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -68,7 +74,25 @@ function MyApp({ Component, pageProps }: AppProps) {
       <StateProvider store={store}>
         <AppThemeProvider>
           <NotificationsProvider>
-            <AuthFlow />
+            <AuthFlow<Parameters<typeof useStore>['0']>
+              notify={(notify, isMobile) =>
+                notify(
+                  'You have successfully signed in',
+                  {
+                    type: NotificationType.success,
+                    icon: '👍🏻',
+                  },
+                  isMobile ? 'global' : 'exchange',
+                )
+              }
+              ServiceSelect={ServiceSelect}
+              Welcome={Welcome}
+              Terms={Terms}
+              appName="jarvis"
+              authFactory={authFactory}
+              useAuth={useAuth}
+              setAuthModalVisibleAction={setAuthModalVisible}
+            />
             <BackgroundPreloader backgrounds={backgroundList} />
             <MainWrapper>
               <FullScreenLoader />

@@ -1,28 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { AnyAction, Dispatch } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal,
-  NotificationType,
   styled,
   useNotifications,
+  useIsMobile,
+  noop,
 } from '@jarvis-network/ui';
 import Onboard from 'bnc-onboard';
 import Web3 from 'web3';
 
-import { Welcome } from '@/components/auth/flow/Welcome';
-import { Terms } from '@/components/auth/flow/Terms';
-import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
-import { useReduxSelector } from '@/state/useReduxSelector';
-import { setAuthModalVisible } from '@/state/slices/app';
-import { useAuth, authFactory } from '@/utils/useAuth';
-import {
-  ENSHelper,
-  getOnboardConfig,
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
-
-const noop = () => undefined;
+import { ENSHelper } from './ens';
+import { useCoreObservables } from './CoreObservablesContext';
+import { useBehaviorSubject } from './useBehaviorSubject';
+import { getOnboardConfig } from './onboardConfig';
 
 const ModalWrapper = styled.div`
   @media screen and (max-width: ${props =>
@@ -39,7 +31,40 @@ const ModalWrapper = styled.div`
   }
 `;
 
-const AuthFlow: React.FC = () => {
+interface PageProps {
+  onNext(): void;
+  onPrev(): void;
+}
+
+type Page = React.ComponentClass<PageProps> | React.FC<PageProps>;
+
+export function AuthFlow<
+  State extends { app: { isAuthModalVisible: boolean } }
+>({
+  appName,
+  notify,
+  setAuthModalVisibleAction,
+  useAuth,
+  authFactory,
+  Welcome,
+  Terms,
+  ServiceSelect,
+}: {
+  appName: string;
+  notify: (
+    notify: ReturnType<typeof useNotifications>,
+    isMobile: boolean,
+  ) => void;
+  setAuthModalVisibleAction: (isVisible: boolean) => AnyAction;
+  useAuth: () => { login: (wallet?: string) => Promise<boolean> } | null;
+  authFactory: (
+    onboard: ReturnType<typeof Onboard>,
+    dispatch: Dispatch,
+  ) => { logout: () => void };
+  Welcome: Page;
+  Terms: Page;
+  ServiceSelect: Page;
+}): JSX.Element {
   const { web3$, ens$, onboard$ } = useCoreObservables();
   const web3 = useBehaviorSubject(web3$);
 
@@ -47,14 +72,17 @@ const AuthFlow: React.FC = () => {
   const auth = useAuth();
   const { login } = auth || {};
 
-  const notify = useNotifications();
+  const notifyFn = useNotifications();
+  const isMobile = useIsMobile();
 
-  const { isAuthModalVisible } = useReduxSelector(state => state.app);
+  const isAuthModalVisible = useSelector<State, boolean>(
+    state => state.app.isAuthModalVisible,
+  );
 
   const [current, setPage] = useState(0);
   const next = () => {
     if (current === 1) {
-      localStorage.setItem('jarvis-borrowing/tos-accepted', 'true');
+      localStorage.setItem(`${appName}/tos-accepted`, 'true');
     }
     setPage(p => p + 1);
   };
@@ -87,7 +115,7 @@ const AuthFlow: React.FC = () => {
 
   useEffect(() => {
     if (isAuthModalVisible) {
-      if (localStorage.getItem('jarvis-borrowing/tos-accepted') === 'true') {
+      if (localStorage.getItem(`${appName}/tos-accepted`) === 'true') {
         setPage(2);
         return;
       }
@@ -104,7 +132,7 @@ const AuthFlow: React.FC = () => {
       return;
     }
 
-    dispatch(setAuthModalVisible(false));
+    dispatch(setAuthModalVisibleAction(false));
   };
 
   useEffect(() => {
@@ -112,7 +140,7 @@ const AuthFlow: React.FC = () => {
       return;
     }
 
-    const autoLoginWallet = localStorage.getItem('jarvis-borrowing/autologin');
+    const autoLoginWallet = localStorage.getItem(`${appName}/autologin`);
 
     if (!autoLoginWallet) {
       return;
@@ -124,21 +152,22 @@ const AuthFlow: React.FC = () => {
     }
 
     login(autoLoginWallet)
-      .then(loginResult => {
-        if (!loginResult) {
+      .then(loginSuccessful => {
+        if (!loginSuccessful) {
           return;
         }
-        notify('You have successfully signed in', {
-          type: NotificationType.success,
-          icon: '👍🏻',
-        });
+        notify(notifyFn, isMobile);
+        // notify('You have successfully signed in', {
+        //   type: NotificationType.success,
+        //   icon: '👍🏻',
+        // });
       })
       .catch(noop);
   }, [login]);
 
   useEffect(() => {
     if (web3) {
-      dispatch(setAuthModalVisible(false));
+      dispatch(setAuthModalVisibleAction(false));
     }
   }, [web3]);
 
@@ -154,6 +183,4 @@ const AuthFlow: React.FC = () => {
       </Modal>
     </ModalWrapper>
   );
-};
-
-export { AuthFlow };
+}
