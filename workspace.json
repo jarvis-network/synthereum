@@ -362,7 +362,8 @@
           "executor": "@nrwl/node:package",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/libs/crypto-utils",
+            "srcRootForCompilationRoot": "libs/crypto-utils/src",
+            "outputPath": "libs/crypto-utils/dist",
             "tsConfig": "libs/crypto-utils/tsconfig.lib.json",
             "packageJson": "libs/crypto-utils/package.json",
             "main": "libs/crypto-utils/src/index.ts",
