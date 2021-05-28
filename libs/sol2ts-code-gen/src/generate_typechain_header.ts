@@ -56,12 +56,6 @@ async function main() {
       imports: [importTagged],
     }),
   );
-  await execTask('Preparing optimized ABI json files', () =>
-    prepareAbiJSONFiles({
-      from: contractsBuildDir,
-      to: [contractsAbiDir, contractsDistAbiDir],
-    }),
-  );
   logSeparate('All header files generated successfully.');
 }
 
@@ -78,31 +72,6 @@ async function copyJsonFiles({ from, to }: CopyOptions) {
     const fromPath = join(from, fname);
     const toPath = join(to, fname);
     await fs.copyFile(fromPath, toPath);
-  });
-
-  return Promise.all(promises).then(() => undefined); // then is to satisfy TS
-}
-
-interface PrepareAbiOptions {
-  from: string;
-  to: string[];
-}
-
-async function prepareAbiJSONFiles({ to, from }: PrepareAbiOptions) {
-  await Promise.all(to.map(t => fs.mkdir(t, { recursive: true })));
-
-  const list = (await fs.readdir(from)).filter(fname =>
-    fname.toLowerCase().endsWith('.json'),
-  );
-  console.info(list.join(', '));
-  const promises = list.map(async fname => {
-    const contents = JSON.parse(String(await fs.readFile(join(from, fname))));
-    if (!contents.abi) {
-      throw new Error(`File ${fname} has no abi field.`);
-    }
-    await Promise.all(
-      to.map(t => fs.writeFile(join(t, fname), JSON.stringify(contents.abi))),
-    );
   });
 
   return Promise.all(promises).then(() => undefined); // then is to satisfy TS
