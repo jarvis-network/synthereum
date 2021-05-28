@@ -14,6 +14,8 @@ import {
   formatWalletAddress,
   usePrettyName,
   useAuth,
+  useBehaviorSubject,
+  useCoreObservables,
 } from '@jarvis-network/app-toolkit';
 
 import { setTheme } from '@/state/slices/theme';
@@ -25,6 +27,8 @@ import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { isAppReadySelector } from '@/state/selectors';
+import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 
 const Container = styled.div<{ hasContent: boolean }>`
   height: 38px;
@@ -65,6 +69,15 @@ const render = (): JSX.Element => {
     logout();
     setSigningOut(true);
   };
+
+  const networkId = useBehaviorSubject(useCoreObservables().networkId$);
+  const mode = auth
+    ? networkId === Network.mainnet
+      ? 'real'
+      : isSupportedNetwork(networkId)
+      ? 'demo'
+      : undefined
+    : undefined;
 
   const handleSetTheme = (theme: State['theme']) => {
     dispatch(setTheme({ theme }));
@@ -127,7 +140,7 @@ const render = (): JSX.Element => {
       wallet={getAddress()}
       image={image}
       menu={links}
-      mode="demo"
+      mode={mode}
       contentOnTop={innerWidth <= 1080}
       onLogout={isSigningOut ? noop : handleLogOut}
       onLogin={isSigningOut ? noop : handleLogIn}

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { FlagKeys } from '@jarvis-network/ui';
 
-import { addressSwitch } from '@/state/actions';
+import { addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 
 export type MarketAssetFlag = FlagKeys | null;
@@ -58,6 +58,9 @@ const marketsSlice = createSlice({
   },
   extraReducers: {
     [addressSwitch.type]() {
+      return initialState;
+    },
+    [networkSwitch.type]() {
       return initialState;
     },
   },

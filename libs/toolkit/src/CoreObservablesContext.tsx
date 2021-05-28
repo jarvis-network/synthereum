@@ -12,6 +12,7 @@ type Context = {
   web3$: BehaviorSubject<Web3 | null>;
   ens$: BehaviorSubject<ENSHelper | null>;
   realmAgent$: BehaviorSubject<RealmAgent | null>;
+  networkId$: BehaviorSubject<number>;
 };
 
 const CoreObservablesContext = createContext<Context | null>(null);
@@ -37,5 +38,6 @@ export function useSubjects(): Context {
     ens$: new BehaviorSubject<ENSHelper | null>(null),
     onboard$: new BehaviorSubject<ReturnType<typeof Onboard> | null>(null),
     realmAgent$: new BehaviorSubject<RealmAgent | null>(null),
+    networkId$: new BehaviorSubject<number>(0),
   }));
 }

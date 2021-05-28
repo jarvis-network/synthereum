@@ -30,6 +30,8 @@ export type NetworkId = keyof typeof networkIdToName;
 export type NetworkName = typeof networkIdToName[NetworkId];
 export type Network = NetworkId | NetworkName;
 
+export const Network = { ...networkIdToName, ...networkNameToId };
+
 export type ValueOnNetwork<Value, Net extends Network> = Tagged<
   Value,
   { network: ToNetworkName<Net> }

@@ -4,7 +4,7 @@ import { ExchangeToken } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
-import { logoutAction, addressSwitch } from '@/state/actions';
+import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 
 interface Action<T> {
@@ -55,6 +55,9 @@ const walletSlice = createSlice({
       return initialState;
     },
     [addressSwitch.type]() {
+      return initialState;
+    },
+    [networkSwitch.type]() {
       return initialState;
     },
   },

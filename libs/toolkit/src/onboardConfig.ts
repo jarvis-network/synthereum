@@ -1,10 +1,9 @@
 import { Initialization } from 'bnc-onboard/dist/src/interfaces';
 import { filterEmpty } from '@jarvis-network/core-utils/dist/base/optional';
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
+import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
+import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { NETWORK_ID } from './environment';
-
-const MAIN_NETWORK_ID = 1;
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;
 
 // Note: UI crashes instantly when walletConnect is used without an key
@@ -33,9 +32,9 @@ const getPortis = () => {
   };
 };
 
-const getFortmatic = () => {
+const getFortmatic = (networkId: SupportedNetworkId) => {
   const KEY =
-    NETWORK_ID === MAIN_NETWORK_ID
+    networkId === Network.mainnet
       ? process.env.NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET
       : process.env.NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET;
   if (!KEY) {
@@ -48,14 +47,17 @@ const getFortmatic = () => {
   };
 };
 
-const getRPCWalletConfig = <T extends string>(walletName: T) => {
+const getRPCWalletConfig = <T extends string>(
+  walletName: T,
+  networkId: SupportedNetworkId,
+) => {
   if (!process.env.NEXT_PUBLIC_INFURA_API_KEY) {
     return null;
   }
   return {
     walletName,
     rpcUrl: getInfuraEndpoint(
-      NETWORK_ID,
+      networkId,
       'https',
       process.env.NEXT_PUBLIC_INFURA_API_KEY,
     ),
@@ -63,15 +65,10 @@ const getRPCWalletConfig = <T extends string>(walletName: T) => {
   };
 };
 
-type OnboardConfig = Pick<
-  Initialization,
-  'dappId' | 'networkId' | 'walletSelect' | 'hideBranding' | 'walletCheck'
->;
-
-const getOnboardConfig = (): OnboardConfig => ({
+const getOnboardConfig = (networkId: SupportedNetworkId): Initialization => ({
   dappId: ONBOARD_API_KEY,
   hideBranding: true,
-  networkId: NETWORK_ID,
+  networkId,
   walletCheck: [
     { checkName: 'connect' },
     { checkName: 'network' },
@@ -85,7 +82,7 @@ const getOnboardConfig = (): OnboardConfig => ({
       { walletName: 'metamask', preferred: true },
       getWalletConnect(),
       getPortis(),
-      getFortmatic(),
+      getFortmatic(networkId),
       { walletName: 'authereum', preferred: true },
       { walletName: 'trust', preferred: true },
       { walletName: 'opera', preferred: true },
@@ -93,8 +90,8 @@ const getOnboardConfig = (): OnboardConfig => ({
       { walletName: 'operaTouch', preferred: true },
       { walletName: 'status', preferred: true },
       { walletName: 'torus', preferred: true },
-      getRPCWalletConfig('walletLink'),
-      getRPCWalletConfig('ledger'),
+      getRPCWalletConfig('walletLink', networkId),
+      getRPCWalletConfig('ledger', networkId),
     ]),
   },
 });

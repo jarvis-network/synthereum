@@ -14,7 +14,10 @@ export type {
   SyntheticSymbol,
 } from './types';
 export { synthereumConfig, priceFeed, reversedPriceFeedPairs } from './data';
-export { parseSupportedNetworkId } from './supported-networks';
+export {
+  parseSupportedNetworkId,
+  isSupportedNetwork,
+} from './supported-networks';
 export type {
   SupportedNetworkId,
   SupportedNetworkName,

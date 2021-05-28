@@ -33,8 +33,9 @@ import { Welcome } from '@/components/auth/flow/Welcome';
 import { setAuthModalVisible } from '@/state/slices/app';
 import { Terms } from '@/components/auth/flow/Terms';
 import { login } from '@/state/slices/auth';
-import { addressSwitch, logoutAction } from '@/state/actions';
+import { addressSwitch, logoutAction, networkSwitch } from '@/state/actions';
 import { useFetchWalletBalancesOnNewBlock } from '@/utils/useFetchWalletBalancesOnNewBlock';
+import { DEFAULT_NETWORK } from '@/utils/environment';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -83,6 +84,8 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
                 appName="jarvis"
                 setAuthModalVisibleAction={setAuthModalVisible}
                 addressSwitchAction={addressSwitch}
+                networkSwitchAction={networkSwitch}
+                defaultNetwork={DEFAULT_NETWORK}
               />
               <BackgroundPreloader backgrounds={backgroundList} />
               <MainWrapper>

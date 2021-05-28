@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { logoutAction, addressSwitch } from '@/state/actions';
+import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState } from '@/state/initialState';
 import { Transaction } from '@/data/transactions';
 
@@ -23,6 +23,9 @@ const transactionsSlice = createSlice({
       return initialState;
     },
     [logoutAction.type]() {
+      return initialState;
+    },
+    [networkSwitch.type]() {
       return initialState;
     },
   },

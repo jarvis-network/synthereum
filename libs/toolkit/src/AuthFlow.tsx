@@ -10,6 +10,10 @@ import {
 } from '@jarvis-network/ui';
 import Onboard from 'bnc-onboard';
 import Web3 from 'web3';
+import {
+  isSupportedNetwork,
+  SupportedNetworkId,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { ENSHelper } from './ens';
 import { useCoreObservables } from './CoreObservablesContext';
@@ -46,9 +50,11 @@ export function AuthFlow<
   notify,
   setAuthModalVisibleAction,
   addressSwitchAction,
+  networkSwitchAction,
   Welcome,
   Terms,
   ServiceSelect,
+  defaultNetwork,
 }: {
   appName: string;
   notify: (
@@ -57,11 +63,13 @@ export function AuthFlow<
   ) => void;
   setAuthModalVisibleAction: (isVisible: boolean) => AnyAction;
   addressSwitchAction: (payload: { address: string }) => AnyAction;
+  networkSwitchAction: (payload: { networkId: number }) => AnyAction;
   Welcome: Page;
   Terms: Page;
   ServiceSelect: Page;
+  defaultNetwork: SupportedNetworkId;
 }): JSX.Element {
-  const { web3$, ens$, onboard$ } = useCoreObservables();
+  const { web3$, ens$, onboard$, networkId$ } = useCoreObservables();
   const web3 = useBehaviorSubject(web3$);
 
   const dispatch = useDispatch();
@@ -87,13 +95,13 @@ export function AuthFlow<
   const Page = pages[current];
 
   useEffect(() => {
-    const onboardInstance = Onboard({
-      ...getOnboardConfig(),
+    const onboard = Onboard({
+      ...getOnboardConfig(defaultNetwork),
       subscriptions: {
         wallet(wallet) {
           if (!wallet.provider) {
             const currentAuth = authFactory(
-              onboardInstance,
+              onboard,
               dispatch,
               loginAction,
               logoutAction,
@@ -111,9 +119,23 @@ export function AuthFlow<
         address(address) {
           dispatch(addressSwitchAction({ address }));
         },
+        network(networkId) {
+          if (!networkId) return;
+
+          dispatch(networkSwitchAction({ networkId }));
+          networkId$.next(networkId);
+
+          if (!isSupportedNetwork(networkId)) {
+            return;
+          }
+
+          onboard.config({ networkId });
+        },
       },
     });
-    onboard$.next(onboardInstance);
+    onboard$.next(onboard);
+
+    return () => onboard.walletReset();
   }, [web3$, ens$, dispatch]);
 
   useEffect(() => {
