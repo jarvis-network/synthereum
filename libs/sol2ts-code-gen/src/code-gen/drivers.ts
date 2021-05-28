@@ -24,7 +24,9 @@ export async function writeHeaderFile(
   const path = normalize(headerFileOutputDir);
   const files = await fs.readdir(dirToScan);
   const entries = files
-    .filter(f => basename(f) !== 'index.ts')
+    .filter(
+      f => !basename(f).startsWith('index') && f.endsWith(headerGenParams.ext),
+    )
     .map(f => normalize(`${dirToScan}/${f}`));
   if (entries.length !== files.length) {
     console.log(`'${path}/index.ts' exists - overwriting.`);
