@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
@@ -8,6 +8,7 @@ import {
   NotificationsProvider,
   NotificationType,
   styled,
+  useIsMounted,
 } from '@jarvis-network/ui';
 
 import { AppThemeProvider } from '@/components/AppThemeProvider';
@@ -41,7 +42,7 @@ const MainWrapper = styled.div`
   color: ${props => props.theme.text.primary};
 `;
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
   const subjects = useConstant({
     web3$: new BehaviorSubject<Web3 | null>(null),
     ens$: new BehaviorSubject<ENSHelper | null>(null),
@@ -53,11 +54,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useRealmAgentProvider(store, subjects.web3$, subjects.realmAgent$);
 
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  const isMounted = useIsMounted();
   if (!isMounted) return null;
 
   return (

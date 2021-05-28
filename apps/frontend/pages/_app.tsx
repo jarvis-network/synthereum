@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
@@ -11,6 +11,7 @@ import {
   NotificationsProvider,
   NotificationType,
   styled,
+  useIsMounted,
 } from '@jarvis-network/ui';
 import {
   CoreObservablesContextProvider,
@@ -56,11 +57,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useRealmAgentProvider(store, subjects.web3$, subjects.realmAgent$);
 
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  const isMounted = useIsMounted();
   if (!isMounted) return null;
 
   return (
