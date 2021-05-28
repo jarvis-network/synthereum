@@ -35,7 +35,8 @@
     "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@jarvis-network/core-utils": ["libs/core-utils/src/index.ts"],
-      "@jarvis-network/sol2ts-code-gen": ["libs/sol2ts-code-gen/src/index.ts"]
+      "@jarvis-network/sol2ts-code-gen": ["libs/sol2ts-code-gen/src/index.ts"],
+      "@jarvis-network/crypto-utils": ["libs/crypto-utils/src/index.ts"]
     }
   }
 }
