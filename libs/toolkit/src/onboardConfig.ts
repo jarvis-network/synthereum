@@ -71,7 +71,6 @@ const getOnboardConfig = (networkId: SupportedNetworkId): Initialization => ({
   networkId,
   walletCheck: [
     { checkName: 'connect' },
-    { checkName: 'network' },
     { checkName: 'derivationPath' },
     { checkName: 'accounts' },
   ],

@@ -23,15 +23,20 @@ import {
   useRealmAgentProvider,
   useSubjects,
   AuthProvider,
+  UnsupportedNetworkModal,
 } from '@jarvis-network/app-toolkit';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { Welcome } from '@/components/auth/flow/Welcome';
 import { Terms } from '@/components/auth/flow/Terms';
-import { setAuthModalVisible } from '@/state/slices/app';
+import {
+  setAuthModalVisible,
+  setUnsupportedNetworkModalVisible,
+} from '@/state/slices/app';
 import { login } from '@/state/slices/auth';
 import { addressSwitch, logoutAction, networkSwitch } from '@/state/actions';
 import { DEFAULT_NETWORK } from '@/utils/environment';
+import { TutorialContent } from '@/components/auth/flow/ModalComponents';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -62,7 +67,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
         <AppThemeProvider>
           <NotificationsProvider>
             <AuthProvider loginAction={login} logoutAction={logoutAction}>
-              <AuthFlow<Parameters<typeof useStore>['0']>
+              <AuthFlow<typeof store>
                 notify={notify =>
                   notify('You have successfully signed in', {
                     type: NotificationType.success,
@@ -74,9 +79,18 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
                 Terms={Terms}
                 appName="jarvis-borrowing"
                 setAuthModalVisibleAction={setAuthModalVisible}
+                setUnsupportedNetworkModalVisibleAction={
+                  setUnsupportedNetworkModalVisible
+                }
                 addressSwitchAction={addressSwitch}
                 networkSwitchAction={networkSwitch}
                 defaultNetwork={DEFAULT_NETWORK}
+              />
+              <UnsupportedNetworkModal<typeof store>
+                setUnsupportedNetworkModalVisibleAction={
+                  setUnsupportedNetworkModalVisible
+                }
+                TutorialContent={TutorialContent}
               />
               <BackgroundPreloader backgrounds={backgroundList} />
               <MainWrapper>

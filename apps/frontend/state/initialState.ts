@@ -59,6 +59,7 @@ export interface State {
     isExchangeConfirmationVisible: boolean;
     isWindowLoaded: boolean;
     isExchangeLoaded: boolean;
+    isUnsupportedNetworkModalVisible: boolean;
     mobileTab: number;
   };
   auth: AuthState;
@@ -110,6 +111,7 @@ export const initialAppState: State = {
     isExchangeConfirmationVisible: false,
     isWindowLoaded: false,
     isExchangeLoaded: true, // will become false on user sign in
+    isUnsupportedNetworkModalVisible: false,
     mobileTab: 1,
   },
   auth: null,

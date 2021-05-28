@@ -13,6 +13,7 @@ export interface State {
   theme: ThemeNameType;
   app: {
     isAuthModalVisible: boolean;
+    isUnsupportedNetworkModalVisible: boolean;
   };
   auth: AuthState;
   markets: {
@@ -26,6 +27,7 @@ export const initialAppState: State = {
   theme: cache.get<ThemeNameType | null>('jarvis/state/theme') || 'light',
   app: {
     isAuthModalVisible: false,
+    isUnsupportedNetworkModalVisible: false,
   },
   auth: null,
   markets: {

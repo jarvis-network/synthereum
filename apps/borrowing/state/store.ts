@@ -25,7 +25,9 @@ function initStore(preloadedState: State = initialAppState) {
   return configureStore({ reducer, preloadedState, middleware });
 }
 
-export const initializeStore = (preloadedState: State) => {
+export const initializeStore = (
+  preloadedState: State,
+): ReturnType<typeof initStore> => {
   let store = cachedStore ?? initStore(preloadedState);
 
   // After navigating to a page with an initial Redux state, merge that state
@@ -48,6 +50,6 @@ export const initializeStore = (preloadedState: State) => {
   return store;
 };
 
-export function useStore(state: State) {
+export function useStore(state: State): ReturnType<typeof initializeStore> {
   return useMemo(() => initializeStore(state), [state]);
 }

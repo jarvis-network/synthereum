@@ -12,3 +12,4 @@ export * from './usePrettyName';
 export * from './useAddThemeClassNameInBody';
 export * from './AuthFlow';
 export * from './useRealmAgentProvider';
+export * from './UnsupportedNetwork';

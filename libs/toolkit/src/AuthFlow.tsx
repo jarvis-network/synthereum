@@ -14,6 +14,7 @@ import {
   isSupportedNetwork,
   SupportedNetworkId,
 } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { EnhancedStore } from '@reduxjs/toolkit';
 
 import { ENSHelper } from './ens';
 import { useCoreObservables } from './CoreObservablesContext';
@@ -43,12 +44,15 @@ interface PageProps {
 
 type Page = React.ComponentClass<PageProps> | React.FC<PageProps>;
 
+type GetState<T> = T extends EnhancedStore<infer U> ? U : never;
+
 export function AuthFlow<
-  State extends { app: { isAuthModalVisible: boolean } }
+  Store extends EnhancedStore<{ app: { isAuthModalVisible: boolean } }>
 >({
   appName,
   notify,
   setAuthModalVisibleAction,
+  setUnsupportedNetworkModalVisibleAction,
   addressSwitchAction,
   networkSwitchAction,
   Welcome,
@@ -62,6 +66,7 @@ export function AuthFlow<
     isMobile: boolean,
   ) => void;
   setAuthModalVisibleAction: (isVisible: boolean) => AnyAction;
+  setUnsupportedNetworkModalVisibleAction(payload: boolean): AnyAction;
   addressSwitchAction: (payload: { address: string }) => AnyAction;
   networkSwitchAction: (payload: { networkId: number }) => AnyAction;
   Welcome: Page;
@@ -78,7 +83,7 @@ export function AuthFlow<
   const notifyFn = useNotifications();
   const isMobile = useIsMobile();
 
-  const isAuthModalVisible = useSelector<State, boolean>(
+  const isAuthModalVisible = useSelector<GetState<Store>, boolean>(
     state => state.app.isAuthModalVisible,
   );
 
@@ -126,6 +131,7 @@ export function AuthFlow<
           networkId$.next(networkId);
 
           if (!isSupportedNetwork(networkId)) {
+            dispatch(setUnsupportedNetworkModalVisibleAction(true));
             return;
           }
 

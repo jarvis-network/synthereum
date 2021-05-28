@@ -61,6 +61,12 @@ const appSlice = createSlice({
         isWindowLoaded: action.payload,
       };
     },
+    setUnsupportedNetworkModalVisible(state, action: SetModalVisibilityAction) {
+      return {
+        ...state,
+        isUnsupportedNetworkModalVisible: action.payload,
+      };
+    },
     setMobileTab(state, action: SetMobileTabAction) {
       return {
         ...state,
@@ -99,6 +105,7 @@ export const {
   setAuthModalVisible,
   setExchangeConfirmationVisible,
   setWindowLoaded,
+  setUnsupportedNetworkModalVisible,
   setMobileTab,
 } = appSlice.actions;
 export const { reducer } = appSlice;
