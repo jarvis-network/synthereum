@@ -5,6 +5,7 @@ module.exports = {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
     },
+    Uint8Array: Uint8Array,
   },
   testEnvironment: 'node',
   transform: {

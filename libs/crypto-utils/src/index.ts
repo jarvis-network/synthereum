@@ -1,1 +1,1 @@
-export * from './lib/crypto-utils';
+export * from './mnemonic-to-pk';
