@@ -17,16 +17,11 @@ import { useStore } from '@/state/store';
 import './_app.scss';
 import './_onboard.scss';
 import 'react-table/react-table.css';
-import { BehaviorSubject } from 'rxjs';
-import Web3 from 'web3';
-import Onboard from 'bnc-onboard';
-import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 import {
   CoreObservablesContextProvider,
-  ENSHelper,
-  useConstant,
   AuthFlow,
   useRealmAgentProvider,
+  useSubjects,
 } from '@jarvis-network/app-toolkit';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
@@ -43,12 +38,7 @@ const MainWrapper = styled.div`
 `;
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
-  const subjects = useConstant({
-    web3$: new BehaviorSubject<Web3 | null>(null),
-    ens$: new BehaviorSubject<ENSHelper | null>(null),
-    onboard$: new BehaviorSubject<ReturnType<typeof Onboard> | null>(null),
-    realmAgent$: new BehaviorSubject<RealmAgent | null>(null),
-  });
+  const subjects = useSubjects();
 
   const store = useStore(pageProps.initialReduxState);
 

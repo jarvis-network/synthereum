@@ -2,9 +2,6 @@ import React from 'react';
 import type { AppProps /* , AppContext */ } from 'next/app';
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
-import { BehaviorSubject } from 'rxjs';
-import Web3 from 'web3';
-import Onboard from 'bnc-onboard';
 
 import {
   BackgroundPreloader,
@@ -15,10 +12,9 @@ import {
 } from '@jarvis-network/ui';
 import {
   CoreObservablesContextProvider,
-  ENSHelper,
-  useConstant,
   AuthFlow,
   useRealmAgentProvider,
+  useSubjects,
 } from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
@@ -29,7 +25,6 @@ import { FullScreenLoader } from '@/components/FullScreenLoader';
 
 import './_app.scss';
 import 'react-table/react-table.css';
-import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
 import { GDPRPopup } from '@/components/GDPRPopup';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
@@ -45,13 +40,8 @@ const MainWrapper = styled.div`
   color: ${props => props.theme.text.primary};
 `;
 
-function MyApp({ Component, pageProps }: AppProps) {
-  const subjects = useConstant({
-    web3$: new BehaviorSubject<Web3 | null>(null),
-    ens$: new BehaviorSubject<ENSHelper | null>(null),
-    onboard$: new BehaviorSubject<ReturnType<typeof Onboard> | null>(null),
-    realmAgent$: new BehaviorSubject<RealmAgent | null>(null),
-  });
+function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
+  const subjects = useSubjects();
 
   const store = useStore(pageProps.initialReduxState);
 
