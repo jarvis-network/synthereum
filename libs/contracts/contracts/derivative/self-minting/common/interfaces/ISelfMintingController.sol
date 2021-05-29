@@ -4,7 +4,10 @@ pragma experimental ABIEncoderV2;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
+/** @title Interface for interacting with the SelfMintingController
+ */
 interface ISelfMintingController {
+  //Describe fee structure
   struct DaoFee {
     uint256 feePercentage;
     address feeRecipient;
@@ -60,26 +63,51 @@ interface ISelfMintingController {
     address[] calldata daoFeeRecipients
   ) external;
 
+  /**
+   * @notice Gets the set CapMintAmount of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return capMintAmount Limit amount for minting
+   */
   function getCapMintAmount(address selfMintingDerivative)
     external
     view
     returns (uint256 capMintAmount);
 
+  /**
+   * @notice Gets the set CapDepositRatio of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return capDepositRatio Limit ratio for a user deposit
+   */
   function getCapDepositRatio(address selfMintingDerivative)
     external
     view
     returns (uint256 capDepositRatio);
 
+  /**
+   * @notice Gets the set DAO fee of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return daoFee Dao fee info (percent + recipient)
+   */
   function getDaoFee(address selfMintingDerivative)
     external
     view
     returns (DaoFee memory daoFee);
 
+  /**
+   * @notice Gets the set DAO fee percentage of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return daoFeePercentage Dao fee percent
+   */
   function getDaoFeePercentage(address selfMintingDerivative)
     external
     view
     returns (uint256 daoFeePercentage);
 
+  /**
+   * @notice Gets the set DAO fee recipient of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return recipient Dao fee recipient
+   */
   function getDaoFeeRecipient(address selfMintingDerivative)
     external
     view

@@ -19,7 +19,7 @@ contract SynthereumManager is ISynthereumManager, AccessControl {
   }
 
   //----------------------------------------
-  // State variables
+  // Storage
   //----------------------------------------
 
   ISynthereumFinder public synthereumFinder;

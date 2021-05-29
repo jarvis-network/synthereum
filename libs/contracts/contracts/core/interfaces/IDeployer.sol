@@ -36,7 +36,7 @@ interface ISynthereumDeployer {
     returns (IDerivativeDeployment derivative, ISynthereumPoolDeployment pool);
 
   /**
-   * @notice Deploys pool and links it with an already existing derivative
+   * @notice Deploys a pool and links it with an already existing derivative
    * @param poolVersion Version of the pool contract
    * @param poolParamsData Input params of pool constructor
    * @param derivative Existing derivative contract to link with the new pool
@@ -49,7 +49,7 @@ interface ISynthereumDeployer {
   ) external returns (ISynthereumPoolDeployment pool);
 
   /**
-   * @notice Deploys derivative and links it with an already existing pool
+   * @notice Deploys a derivative and option to links it with an already existing pool
    * @param derivativeVersion Version of the derivative contract
    * @param derivativeParamsData Input params of derivative constructor
    * @param pool Existing pool contract to link with the new derivative

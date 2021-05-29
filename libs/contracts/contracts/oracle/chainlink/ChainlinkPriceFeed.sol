@@ -34,7 +34,7 @@ contract SynthereumChainlinkPriceFeed is
   }
 
   //----------------------------------------
-  // State variables
+  // Storage
   //----------------------------------------
 
   ISynthereumFinder public synthereumFinder;
@@ -103,7 +103,7 @@ contract SynthereumChainlinkPriceFeed is
   //----------------------------------------
 
   /**
-   * @notice Set the address of aggregator associated to a pricee identifier
+   * @notice Set the address of aggregator associated to a price identifier
    * @param priceIdentifier Price feed identifier
    * @param aggregator Address of chainlink proxy aggregator
    */

@@ -14,7 +14,7 @@ interface IDerivativeDeployment {
   function collateralCurrency() external view returns (IERC20 collateral);
 
   /**
-   * @notice Get emergency shutdown price
+   * @notice Get the token currency of the derivative
    * @return syntheticCurrency Synthetic token
    */
   function tokenCurrency() external view returns (IERC20 syntheticCurrency);

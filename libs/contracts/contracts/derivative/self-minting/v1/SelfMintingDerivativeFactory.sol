@@ -11,12 +11,28 @@ import {
   SelfMintingPerpetutalMultiPartyCreator
 } from './SelfMintingPerpetutalMultiPartyCreator.sol';
 
+/** @title Contract factory of self-minting derivatives
+ */
 contract SelfMintingDerivativeFactory is
   SelfMintingPerpetutalMultiPartyCreator,
   IDeploymentSignature
 {
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
+
   bytes4 public override deploymentSignature;
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs the SelfMintingDerivativeFactory contract
+   * @param _umaFinder UMA protocol Finder used to discover other protocol contracts.
+   * @param _synthereumFinder Synthereum Finder address used to discover other contracts
+   * @param _timerAddress Contract that stores the current time in a testing environment.
+   */
   constructor(
     address _umaFinder,
     address _synthereumFinder,
@@ -32,6 +48,11 @@ contract SelfMintingDerivativeFactory is
     deploymentSignature = this.createPerpetual.selector;
   }
 
+  /**
+   * @notice Check if the sender is the deployer and deploy a perpetual self-minting derivative
+   * @param params input parameters of perpetual self-minting derivative
+   * @return derivative Address of the self-minting derivative contract
+   */
   function createPerpetual(Params calldata params)
     public
     override

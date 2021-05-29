@@ -17,6 +17,10 @@ contract SynthereumFinder is ISynthereumFinder, AccessControl {
     address maintainer;
   }
 
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
+
   mapping(bytes32 => address) public interfacesImplemented;
 
   //----------------------------------------

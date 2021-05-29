@@ -199,7 +199,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
   }
 
   /**
-   * @notice Deploys a derivative and links it with an already existing pool
+   * @notice Deploys a derivative and option to links it with an already existing pool
    * @param derivativeVersion Version of the derivative contract
    * @param derivativeParamsData Input params of derivative constructor
    * @param pool Existing pool contract to link with the new derivative
@@ -375,7 +375,6 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
   }
 
-  //TO-DO
   /**
    * @notice Grants admin role of derivative contract to Manager contract
    * Assing POOL_ROLE of the derivative contract to a pool if bool set to True
@@ -396,7 +395,6 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     derivativeRoles.renounceRole(ADMIN_ROLE, address(this));
   }
 
-  //TO-DO
   /**
    * @notice Sets roles of the synthetic token contract to a derivative
    * @param derivative Derivative contract
@@ -411,9 +409,8 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     }
   }
 
-  //TO-DO
   /**
-   * @notice Adds roles of the synthetic token contract to the Manager contract
+   * @notice Grants minter and burner role of syntehtic token to derivative
    * @param tokenCurrency Address of the token contract
    * @param derivative Derivative contract
    */
@@ -433,9 +430,8 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     manager.grantSynthereumRole(contracts, roles, accounts);
   }
 
-  //TO-DO
   /**
-   * @notice Sets roles of the pool contract to the Manager contract
+   * @notice Grants pool role of derivative to pool
    * @param derivative Derivative contract
    * @param pool Pool contract
    */
@@ -459,7 +455,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
 
   /**
    * @notice Get factory versioning contract from the finder
-   * @param factoryVersioning Factory versioning contract
+   * @return factoryVersioning Factory versioning contract
    */
   function getFactoryVersioning()
     internal
@@ -475,6 +471,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
 
   /**
    * @notice Get pool registry contract from the finder
+   * @return poolRegistry Registry of pools
    */
   function getPoolRegistry()
     internal
@@ -490,13 +487,14 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
 
   /**
    * @notice Get self minting registry contract from the finder
+   * @return selfMintingRegistry Registry of self-minting derivatives
    */
   function getSelfMintingRegistry()
     internal
     view
-    returns (ISynthereumRegistry selfMintingRegister)
+    returns (ISynthereumRegistry selfMintingRegistry)
   {
-    selfMintingRegister = ISynthereumRegistry(
+    selfMintingRegistry = ISynthereumRegistry(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.SelfMintingRegistry
       )
@@ -505,6 +503,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
 
   /**
    * @notice Get manager contract from the finder
+   * @return manager Synthereum manager
    */
   function getManager() internal view returns (ISynthereumManager manager) {
     manager = ISynthereumManager(
@@ -512,17 +511,17 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
     );
   }
 
-  //TO-DO?
   /**
    * @notice Get signature of function to deploy a contract
-   * @param deploymentContract Contract to be deployed
+   * @param factory Factory contract
+   * @return signature Signature of deployment function of the factory
    */
-  function getDeploymentSignature(address deploymentContract)
+  function getDeploymentSignature(address factory)
     internal
     view
     returns (bytes4 signature)
   {
-    signature = IDeploymentSignature(deploymentContract).deploymentSignature();
+    signature = IDeploymentSignature(factory).deploymentSignature();
   }
 
   /**
@@ -563,6 +562,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
    * @notice Check correct collateral and synthetic token matching between pool and derivative
    * @param pool Pool contract
    * @param derivative Derivative contract
+   * @param isPoolLinked Flag that defines if pool is linked with derivative
    */
   function checkPoolAndDerivativeMatching(
     ISynthereumPoolDeployment pool,

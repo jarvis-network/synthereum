@@ -28,6 +28,16 @@ import {
 } from '../common/MintableBurnableTokenFactory.sol';
 import {PerpetualPoolParty} from './PerpetualPoolParty.sol';
 
+/**
+ * @title Perpetual Contract creator.
+ * @notice Factory contract to create and register new instances of perpetual contracts.
+ * Responsible for constraining the parameters used to construct a new perpetual. This creator contains a number of constraints
+ * that are applied to newly created  contract. These constraints can evolve over time and are
+ * initially constrained to conservative values in this first iteration. Technically there is nothing in the
+ * Perpetual contract requiring these constraints. However, because `createPerpetual()` is intended
+ * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
+  we can enforce deployment configurations here.
+ */
 contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
   using FixedPoint for FixedPoint.Unsigned;
 
@@ -49,13 +59,32 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     address[] pools;
   }
 
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
+
+  // Address of Synthereum Finder
   ISynthereumFinder public synthereumFinder;
+
+  //----------------------------------------
+  // Events
+  //----------------------------------------
 
   event CreatedPerpetual(
     address indexed perpetualAddress,
     address indexed deployerAddress
   );
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs the Perpetual contract.
+   * @param _umaFinderAddress UMA protocol Finder used to discover other protocol contracts.
+   * @param _synthereumFinder Synthereum Finder address used to discover other contracts
+   * @param _timerAddress Contract that stores the current time in a testing environment.
+   */
   constructor(
     address _umaFinderAddress,
     address _synthereumFinder,
@@ -69,12 +98,22 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+
+  /**
+   * @notice Creates an instance of perpetual and registers it within the registry.
+   * @param params is a `ConstructorParams` object from Perpetual.
+   * @return address of the deployed contract.
+   */
   function createPerpetual(Params memory params)
     public
     virtual
     nonReentrant()
     returns (address)
   {
+    // Create a new synthetic token using the params.
     require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
     require(
       bytes(params.syntheticSymbol).length != 0,
@@ -82,6 +121,8 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     );
     address derivative;
     if (params.syntheticToken == address(0)) {
+      // If the collateral token does not have a `decimals()` method,
+      // then a default precision of 18 will be applied to the newly created synthetic token.
       IMintableBurnableTokenFactory tokenFactory =
         IMintableBurnableTokenFactory(
           ISynthereumFinder(synthereumFinder).getImplementationAddress(
@@ -97,6 +138,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
       derivative = PerpetualPoolPartyLib.deploy(
         _convertParams(params, tokenCurrency)
       );
+      // Give permissions to new derivative contract and then hand over ownership.
       tokenCurrency.addMinter(derivative);
       tokenCurrency.addBurner(derivative);
       tokenCurrency.addAdmin(
@@ -132,6 +174,11 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     return address(derivative);
   }
 
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
+
+  // Converts createPerpetual params to Perpetual constructor params.
   function _convertParams(
     Params memory params,
     MintableBurnableIERC20 newTokenCurrency
@@ -140,10 +187,12 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     view
     returns (PerpetualPoolParty.ConstructorParams memory constructorParams)
   {
+    // Known from creator deployment.
     constructorParams.positionManagerParams.finderAddress = finderAddress;
     constructorParams.positionManagerParams.synthereumFinder = synthereumFinder;
     constructorParams.positionManagerParams.timerAddress = timerAddress;
 
+    // Enforce configuration constraints.
     require(params.withdrawalLiveness != 0, 'Withdrawal liveness cannot be 0');
     require(
       params.liquidationLiveness != 0,
@@ -155,6 +204,11 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     );
     require(params.admins.length > 0, 'No admin addresses set');
 
+    // We don't want perpetual deployers to be able to intentionally or unintentionally set
+    // liveness periods that could induce arithmetic overflow, but we also don't want
+    // to be opinionated about what livenesses are "correct", so we will somewhat
+    // arbitrarily set the liveness upper bound to 100 years (5200 weeks). In practice, liveness
+    // periods even greater than a few days would make the perpetual unusable for most users.
     require(
       params.withdrawalLiveness < 5200 weeks,
       'Withdrawal liveness too large'
@@ -163,6 +217,8 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
       params.liquidationLiveness < 5200 weeks,
       'Liquidation liveness too large'
     );
+
+    // Input from function call.
 
     constructorParams.positionManagerParams.tokenAddress = address(
       newTokenCurrency

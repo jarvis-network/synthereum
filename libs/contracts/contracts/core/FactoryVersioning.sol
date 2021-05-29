@@ -25,6 +25,10 @@ contract SynthereumFactoryVersioning is
     address maintainer;
   }
 
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
+
   mapping(bytes32 => EnumerableMap.UintToAddressMap) private factories;
 
   //----------------------------------------
@@ -75,6 +79,11 @@ contract SynthereumFactoryVersioning is
   // External functions
   //----------------------------------------
 
+  /** @notice Sets a Factory
+   * @param factoryType Type of factory
+   * @param version Version of the factory to be set
+   * @param factory The pool factory address to be set
+   */
   function setFactory(
     bytes32 factoryType,
     uint8 version,
@@ -89,6 +98,10 @@ contract SynthereumFactoryVersioning is
     }
   }
 
+  /** @notice Removes a factory
+   * @param factoryType The type of factory to be removed
+   * @param version Version of the factory to be removed
+   */
   function removeFactory(bytes32 factoryType, uint8 version)
     external
     override
@@ -105,6 +118,11 @@ contract SynthereumFactoryVersioning is
   // External view functions
   //----------------------------------------
 
+  /** @notice Gets a factory contract address
+   * @param factoryType The type of factory to be checked
+   * @param version Version of the factory to be checked
+   * @return factory Address of the factory contract
+   */
   function getFactoryVersion(bytes32 factoryType, uint8 version)
     external
     view
@@ -114,6 +132,10 @@ contract SynthereumFactoryVersioning is
     factory = factories[factoryType].get(version);
   }
 
+  /** @notice Gets the number of factory versions for a specific type
+   * @param factoryType The type of factory to be checked
+   * @return numberOfVersions Total number of versions for a specific factory
+   */
   function numberOfVerisonsOfFactory(bytes32 factoryType)
     external
     view

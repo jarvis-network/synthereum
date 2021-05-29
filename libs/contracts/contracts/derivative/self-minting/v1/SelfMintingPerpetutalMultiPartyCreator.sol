@@ -38,6 +38,16 @@ import {
   Lockable
 } from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 
+/**
+ * @title Self-Minting Perpetual Contract creator.
+ * @notice Factory contract to create and register new instances of self-minting perpetual contracts.
+ * Responsible for constraining the parameters used to construct a new self-minting perpetual. This creator contains a number of constraints
+ * that are applied to newly created  contracts. These constraints can evolve over time and are
+ * initially constrained to conservative values in this first iteration. Technically there is nothing in the
+ * Perpetual contract requiring these constraints. However, because `createPerpetual()` is intended
+ * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
+  we can enforce deployment configurations here.
+ */
 contract SelfMintingPerpetutalMultiPartyCreator is
   ContractCreator,
   Testable,
@@ -65,13 +75,27 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     uint256 capDepositRatio;
   }
 
+  // Address of Synthereum Finder
   ISynthereumFinder public synthereumFinder;
 
+  //----------------------------------------
+  // Events
+  //----------------------------------------
   event CreatedPerpetual(
     address indexed perpetualAddress,
     address indexed deployerAddress
   );
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs the Perpetual contract.
+   * @param _umaFinderAddress UMA protocol Finder used to discover other protocol contracts.
+   * @param _synthereumFinder Synthereum Finder address used to discover other contracts
+   * @param _timerAddress Contract that stores the current time in a testing environment.
+   */
   constructor(
     address _umaFinderAddress,
     address _synthereumFinder,
@@ -85,12 +109,22 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+
+  /**
+   * @notice Creates an instance of perpetual and registers it within the registry.
+   * @param params is a `ConstructorParams` object from Perpetual.
+   * @return address of the deployed contract.
+   */
   function createPerpetual(Params calldata params)
     public
     virtual
     nonReentrant()
     returns (address)
   {
+    // Create a new synthetic token using the params.
     require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
     require(
       bytes(params.syntheticSymbol).length != 0,
@@ -101,6 +135,8 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       'Synthetic token address cannot be 0x00'
     );
     address derivative;
+    // If the collateral token does not have a `decimals()` method,
+    // then a default precision of 18 will be applied to the newly created synthetic token.
     MintableBurnableIERC20 tokenCurrency =
       MintableBurnableIERC20(params.syntheticToken);
     require(
@@ -135,6 +171,11 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     return address(derivative);
   }
 
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
+
+  // Converts createPerpetual params to Perpetual constructor params.
   function _convertParams(Params calldata params)
     internal
     view
@@ -142,10 +183,13 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       SelfMintingPerpetualMultiParty.ConstructorParams memory constructorParams
     )
   {
+    // Known from creator deployment.
+
     constructorParams.positionManagerParams.finderAddress = finderAddress;
     constructorParams.positionManagerParams.synthereumFinder = synthereumFinder;
     constructorParams.positionManagerParams.timerAddress = timerAddress;
 
+    // Enforce configuration constraints.
     require(params.withdrawalLiveness != 0, 'Withdrawal liveness cannot be 0');
     require(
       params.liquidationLiveness != 0,
@@ -159,6 +203,11 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       params.daoFee.feeRecipient != address(0),
       'Fee recipient cannot be 0x00'
     );
+    // We don't want perpetual deployers to be able to intentionally or unintentionally set
+    // liveness periods that could induce arithmetic overflow, but we also don't want
+    // to be opinionated about what livenesses are "correct", so we will somewhat
+    // arbitrarily set the liveness upper bound to 100 years (5200 weeks). In practice, liveness
+    // periods even greater than a few days would make the perpetual unusable for most users.
     require(
       params.withdrawalLiveness < 5200 weeks,
       'Withdrawal liveness too large'
@@ -168,6 +217,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       'Liquidation liveness too large'
     );
 
+    // Input from function call.
     constructorParams.positionManagerParams.tokenAddress = params
       .syntheticToken;
     constructorParams.positionManagerParams.collateralAddress = params
@@ -192,6 +242,13 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     constructorParams.positionManagerParams.version = params.version;
   }
 
+  /** @notice Sets the controller values for a self-minting derivative
+   * @param derivative Address of the derivative to set controller values
+   * @param daoFee The DAO fee that will be paid when interacting with the self-minting derivative
+   * @param capMintAmount Cap on mint amount. How much synthetic tokens can be minted through a self-minting derivative.
+   * This value is updatable
+   * @param capDepositRatio The cap set on the deposit ratio for a self-minting derivative. This value is updatable.
+   */
   function _setControllerValues(
     address derivative,
     ISelfMintingController.DaoFee calldata daoFee,

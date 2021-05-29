@@ -127,10 +127,13 @@ library PerpetualLiquidatablePoolPartyLib {
       returnValues.tokensLiquidated
     ) = calculateNetLiquidation(positionToLiquidate, params, feePayerData);
 
+    // Scoping to get rid of a stack too deep error.
     {
       FixedPoint.Unsigned memory startTokens =
         positionToLiquidate.tokensOutstanding;
 
+      // The Position's collateralization ratio must be between [minCollateralPerToken, maxCollateralPerToken].
+      // maxCollateralPerToken >= startCollateralNetOfWithdrawal / startTokens.
       require(
         params.maxCollateralPerToken.mul(startTokens).isGreaterThanOrEqual(
           startCollateralNetOfWithdrawal
@@ -138,6 +141,7 @@ library PerpetualLiquidatablePoolPartyLib {
         'CR is more than max liq. price'
       );
 
+      // minCollateralPerToken >= startCollateralNetOfWithdrawal / startTokens.
       require(
         params.minCollateralPerToken.mul(startTokens).isLessThanOrEqual(
           startCollateralNetOfWithdrawal
@@ -146,6 +150,7 @@ library PerpetualLiquidatablePoolPartyLib {
       );
     }
     {
+      // Compute final fee at time of liquidation.
       returnValues.finalFeeBond = params.finalFee;
 
       CreateLiquidationCollateral memory liquidationCollateral =
@@ -169,6 +174,9 @@ library PerpetualLiquidatablePoolPartyLib {
         liquidationCollateral
       );
 
+      // Construct liquidation object.
+      // Note: All dispute-related values are zeroed out until a dispute occurs. liquidationId is the index of the new
+      // LiquidationData that is pushed into the array, which is equal to the current length of the array pre-push.
       returnValues.liquidationId = liquidations.length;
       liquidations.push(
         PerpetualLiquidatablePoolParty.LiquidationData({
@@ -189,6 +197,13 @@ library PerpetualLiquidatablePoolPartyLib {
       );
     }
 
+    // If this liquidation is a subsequent liquidation on the position, and the liquidation size is larger than
+    // some "griefing threshold", then re-set the liveness. This enables a liquidation against a withdraw request to be
+    // "dragged out" if the position is very large and liquidators need time to gather funds. The griefing threshold
+    // is enforced so that liquidations for trivially small # of tokens cannot drag out an honest sponsor's slow withdrawal.
+
+    // We arbitrarily set the "griefing threshold" to `minSponsorTokens` because it is the only parameter
+    // denominated in token currency units and we can avoid adding another parameter.
     {
       FixedPoint.Unsigned memory griefingThreshold =
         positionManagerData.minSponsorTokens;
@@ -230,6 +245,7 @@ library PerpetualLiquidatablePoolPartyLib {
     uint256 liquidationId,
     address sponsor
   ) external returns (FixedPoint.Unsigned memory totalPaid) {
+    // Multiply by the unit collateral so the dispute bond is a percentage of the locked collateral after fees.
     FixedPoint.Unsigned memory disputeBondAmount =
       disputedLiquidation
         .lockedCollateral
@@ -244,11 +260,13 @@ library PerpetualLiquidatablePoolPartyLib {
       feePayerData.cumulativeFeeMultiplier
     );
 
+    // Request a price from DVM. Liquidation is pending dispute until DVM returns a price.
     disputedLiquidation.state = PerpetualLiquidatablePoolParty
       .Status
       .PendingDispute;
     disputedLiquidation.disputer = msg.sender;
 
+    // Enqueue a request with the DVM.
     positionManagerData.requestOraclePrice(
       disputedLiquidation.liquidationTime,
       feePayerData
@@ -264,11 +282,13 @@ library PerpetualLiquidatablePoolPartyLib {
 
     totalPaid = disputeBondAmount.add(disputedLiquidation.finalFee);
 
+    // Pay the final fee for requesting price from the DVM.
     FeePayerParty(address(this)).payFinalFees(
       msg.sender,
       disputedLiquidation.finalFee
     );
 
+    // Transfer the dispute bond amount from the caller to this contract.
     feePayerData.collateralCurrency.safeTransferFrom(
       msg.sender,
       address(this),
@@ -288,6 +308,7 @@ library PerpetualLiquidatablePoolPartyLib {
     external
     returns (PerpetualLiquidatablePoolParty.RewardsData memory rewards)
   {
+    // Settles the liquidation if necessary. This call will revert if the price has not resolved yet.
     liquidation._settle(
       positionManagerData,
       liquidatableData,
@@ -298,6 +319,8 @@ library PerpetualLiquidatablePoolPartyLib {
 
     SettleParams memory settleParams;
 
+    // Calculate rewards as a function of the TRV.
+    // Note: all payouts are scaled by the unit collateral value so all payouts are charged the fees pro rata.
     settleParams.feeAttenuation = liquidation
       .rawUnitCollateral
       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
@@ -322,24 +345,38 @@ library PerpetualLiquidatablePoolPartyLib {
       settleParams.feeAttenuation
     );
 
+    // There are three main outcome states: either the dispute succeeded, failed or was not updated.
+    // Based on the state, different parties of a liquidation receive different amounts.
+    // After assigning rewards based on the liquidation status, decrease the total collateral held in this contract
+    // by the amount to pay each party. The actual amounts withdrawn might differ if _removeCollateral causes
+    // precision loss.
     if (
       liquidation.state ==
       PerpetualLiquidatablePoolParty.Status.DisputeSucceeded
     ) {
+      // If the dispute is successful then all three users should receive rewards:
+
+      // Pay DISPUTER: disputer reward + dispute bond + returned final fee
       rewards.payToDisputer = settleParams
         .disputerDisputeReward
         .add(settleParams.disputeBondAmount)
         .add(settleParams.finalFee);
 
+      // Pay SPONSOR: remaining collateral (collateral - TRV) + sponsor reward
       rewards.payToSponsor = settleParams.sponsorDisputeReward.add(
         settleParams.collateral.sub(settleParams.tokenRedemptionValue)
       );
 
+      // Pay LIQUIDATOR: TRV - dispute reward - sponsor reward
+      // If TRV > Collateral, then subtract rewards from collateral
+      // NOTE: This should never be below zero since we prevent (sponsorDisputePct+disputerDisputePct) >= 0 in
+      // the constructor when these params are set.
       rewards.payToLiquidator = settleParams
         .tokenRedemptionValue
         .sub(settleParams.sponsorDisputeReward)
         .sub(settleParams.disputerDisputeReward);
 
+      // Transfer rewards and debit collateral
       rewards.paidToLiquidator = liquidatableData
         .rawLiquidationCollateral
         .removeCollateral(
@@ -371,14 +408,17 @@ library PerpetualLiquidatablePoolPartyLib {
         liquidation.sponsor,
         rewards.paidToSponsor.rawValue
       );
+      // In the case of a failed dispute only the liquidator can withdraw.
     } else if (
       liquidation.state == PerpetualLiquidatablePoolParty.Status.DisputeFailed
     ) {
+      // Pay LIQUIDATOR: collateral + dispute bond + returned final fee
       rewards.payToLiquidator = settleParams
         .collateral
         .add(settleParams.disputeBondAmount)
         .add(settleParams.finalFee);
 
+      // Transfer rewards and debit collateral
       rewards.paidToLiquidator = liquidatableData
         .rawLiquidationCollateral
         .removeCollateral(
@@ -390,13 +430,17 @@ library PerpetualLiquidatablePoolPartyLib {
         liquidation.liquidator,
         rewards.paidToLiquidator.rawValue
       );
+      // If the state is pre-dispute but time has passed liveness then there was no dispute. We represent this
+      // state as a dispute failed and the liquidator can withdraw.
     } else if (
       liquidation.state == PerpetualLiquidatablePoolParty.Status.PreDispute
     ) {
+      // Pay LIQUIDATOR: collateral + returned final fee
       rewards.payToLiquidator = settleParams.collateral.add(
         settleParams.finalFee
       );
 
+      // Transfer rewards and debit collateral
       rewards.paidToLiquidator = liquidatableData
         .rawLiquidationCollateral
         .removeCollateral(
@@ -419,6 +463,7 @@ library PerpetualLiquidatablePoolPartyLib {
       settleParams.settlementPrice.rawValue
     );
 
+    // Free up space after collateral is withdrawn by removing the liquidation object from the array.
     PerpetualLiquidatablePoolParty(address(this)).deleteLiquidation(
       liquidationId,
       sponsor
@@ -443,18 +488,24 @@ library PerpetualLiquidatablePoolPartyLib {
       FixedPoint.Unsigned memory liquidatedCollateral
     )
   {
+    // Scoping to get rid of a stack too deep error.
     {
       FixedPoint.Unsigned memory ratio =
         liquidationCollateralParams.tokensLiquidated.div(
           positionToLiquidate.tokensOutstanding
         );
 
+      // The actual amount of collateral that gets moved to the liquidation.
       lockedCollateral = liquidationCollateralParams.startCollateral.mul(ratio);
 
+      // For purposes of disputes, it's actually this liquidatedCollateral value that's used. This value is net of
+      // withdrawal requests.
       liquidatedCollateral = liquidationCollateralParams
         .startCollateralNetOfWithdrawal
         .mul(ratio);
 
+      // Part of the withdrawal request is also removed. Ideally:
+      // liquidatedCollateral + withdrawalAmountToRemove = lockedCollateral
       FixedPoint.Unsigned memory withdrawalAmountToRemove =
         positionToLiquidate.withdrawalRequestAmount.mul(ratio);
 
@@ -469,6 +520,8 @@ library PerpetualLiquidatablePoolPartyLib {
       );
     }
 
+    // Add to the global liquidation collateral count
+
     liquidatableData.rawLiquidationCollateral.addCollateral(
       lockedCollateral.add(liquidationCollateralParams.finalFeeBond),
       feePayerData.cumulativeFeeMultiplier
@@ -482,6 +535,7 @@ library PerpetualLiquidatablePoolPartyLib {
     FixedPoint.Unsigned memory tokensLiquidated,
     FixedPoint.Unsigned memory finalFeeBond
   ) internal {
+    // Destroy tokens
     positionManagerData.tokenCurrency.safeTransferFrom(
       msg.sender,
       address(this),
@@ -489,6 +543,7 @@ library PerpetualLiquidatablePoolPartyLib {
     );
     positionManagerData.tokenCurrency.burn(tokensLiquidated.rawValue);
 
+    // Pull final fee from liquidator.
     feePayerData.collateralCurrency.safeTransferFrom(
       msg.sender,
       address(this),
@@ -496,6 +551,8 @@ library PerpetualLiquidatablePoolPartyLib {
     );
   }
 
+  // This settles a liquidation if it is in the PendingDispute state. If not, it will immediately return.
+  // If the liquidation is in the PendingDispute state, but a price is not available, this will revert.
   function _settle(
     PerpetualLiquidatablePoolParty.LiquidationData storage liquidation,
     PerpetualPositionManagerPoolParty.PositionManagerData
@@ -505,12 +562,15 @@ library PerpetualLiquidatablePoolPartyLib {
     uint256 liquidationId,
     address sponsor
   ) internal {
+    // Settlement only happens when state == PendingDispute and will only happen once per liquidation.
+    // If this liquidation is not ready to be settled, this method should return immediately.
     if (
       liquidation.state != PerpetualLiquidatablePoolParty.Status.PendingDispute
     ) {
       return;
     }
 
+    // Get the returned price from the oracle. If this has not yet resolved will revert.
     FixedPoint.Unsigned memory oraclePrice =
       positionManagerData.getOraclePrice(
         liquidation.liquidationTime,
@@ -521,12 +581,16 @@ library PerpetualLiquidatablePoolPartyLib {
       feePayerData
     );
 
+    // Find the value of the tokens in the underlying collateral.
     FixedPoint.Unsigned memory tokenRedemptionValue =
       liquidation.tokensOutstanding.mul(liquidation.settlementPrice);
 
+    // The required collateral is the value of the tokens in underlying * required collateral ratio.
     FixedPoint.Unsigned memory requiredCollateral =
       tokenRedemptionValue.mul(liquidatableData.collateralRequirement);
 
+    // If the position has more than the required collateral it is solvent and the dispute is valid(liquidation is invalid)
+    // Note that this check uses the liquidatedCollateral not the lockedCollateral as this considers withdrawals.
     bool disputeSucceeded =
       liquidation.liquidatedCollateral.isGreaterThanOrEqual(requiredCollateral);
     liquidation.state = disputeSucceeded
@@ -556,14 +620,18 @@ library PerpetualLiquidatablePoolPartyLib {
       FixedPoint.Unsigned memory tokensLiquidated
     )
   {
+    // Check that this transaction was mined pre-deadline.
     tokensLiquidated = FixedPoint.min(
       params.maxTokensToLiquidate,
       positionToLiquidate.tokensOutstanding
     );
     require(tokensLiquidated.isGreaterThan(0), 'Liquidating 0 tokens');
 
+    // Check that this transaction was mined pre-deadline.
     require(params.actualTime <= params.deadline, 'Mined after deadline');
 
+    // Starting values for the Position being liquidated. If withdrawal request amount is > position's collateral,
+    // then set this to 0, otherwise set it to (startCollateral - withdrawal request amount).
     startCollateral = positionToLiquidate
       .rawCollateral
       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);

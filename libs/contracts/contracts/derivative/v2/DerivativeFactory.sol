@@ -8,12 +8,14 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {PerpetualPoolPartyCreator} from './PerpetutalPoolPartyCreator.sol';
 
+/** @title Contract factory of derivatives
+ */
 contract SynthereumDerivativeFactory is
   PerpetualPoolPartyCreator,
   IDeploymentSignature
 {
   //----------------------------------------
-  // State variables
+  // Storage
   //----------------------------------------
 
   bytes4 public override deploymentSignature;
@@ -24,11 +26,11 @@ contract SynthereumDerivativeFactory is
 
   /**
    * @notice Constructs the SynthereumDerivativeFactory contract
-   * @param _umaFinder Finder of UMA DVM protocol
-   * @param _synthereumFinder Synthereum finder contract
-   * @param _timerAddress Address of UMA Timer contract
+   * @param _umaFinder UMA protocol Finder used to discover other protocol contracts.
+   * @param _synthereumFinder Synthereum Finder address used to discover other contracts
+   * @param _timerAddress Contract that stores the current time in a testing environment.
    */
-   constructor(
+  constructor(
     address _umaFinder,
     address _synthereumFinder,
     address _timerAddress

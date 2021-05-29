@@ -22,6 +22,10 @@ import {
 } from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
 import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
 
+/**
+ * @title SelfMintingController
+ * Set capMintAmount, capDepositRatio and daofee of each self-minting derivative
+ */
 contract SelfMintingController is ISelfMintingController, AccessControl {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
@@ -32,7 +36,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   }
 
   //----------------------------------------
-  // State variables
+  // Storage
   //----------------------------------------
 
   ISynthereumFinder public synthereumFinder;
@@ -123,7 +127,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
   /**
    * @notice Constructs the SynthereumManager contract
    * @param _synthereumFinder Synthereum finder contract
-   * @param _roles Admin and Mainteiner roles
+   * @param _roles Admin and maintainer roles
    */
   constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) public {
     synthereumFinder = _synthereumFinder;
@@ -261,6 +265,11 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     }
   }
 
+  /**
+   * @notice Gets the set CapMintAmount of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return capMintAmount Limit amount for minting
+   */
   function getCapMintAmount(address selfMintingDerivative)
     external
     view
@@ -270,6 +279,11 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     capMintAmount = capMint[selfMintingDerivative];
   }
 
+  /**
+   * @notice Gets the set CapDepositRatio of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return capDepositRatio Limit ratio for a user deposit
+   */
   function getCapDepositRatio(address selfMintingDerivative)
     external
     view
@@ -279,6 +293,11 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     capDepositRatio = capDeposit[selfMintingDerivative];
   }
 
+  /**
+   * @notice Gets the set DAO fee of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return daoFee Dao fee info (percent + recipient)
+   */
   function getDaoFee(address selfMintingDerivative)
     external
     view
@@ -288,6 +307,11 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     daoFee = fee[selfMintingDerivative];
   }
 
+  /**
+   * @notice Gets the set DAO fee percentage of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return daoFeePercentage Dao fee percent
+   */
   function getDaoFeePercentage(address selfMintingDerivative)
     external
     view
@@ -297,6 +321,11 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     daoFeePercentage = fee[selfMintingDerivative].feePercentage;
   }
 
+  /**
+   * @notice Gets the set DAO fee recipient of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return recipient Dao fee recipient
+   */
   function getDaoFeeRecipient(address selfMintingDerivative)
     external
     view
@@ -306,6 +335,14 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     recipient = fee[selfMintingDerivative].feeRecipient;
   }
 
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
+
+  /**
+   * @notice Check if a self-minting derivative is registered with the SelfMintingRegistry
+   * @param selfMintingDerivative Self-minting derivative contract
+   */
   function checkSelfMintingDerivativeRegistration(
     ISelfMintingDerivativeDeployment selfMintingDerivative
   ) internal view {
@@ -326,6 +363,9 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     );
   }
 
+  /**
+   * @notice Internal helper function for setCapMintAmount function
+   */
   function _setCapMintAmount(
     address selfMintingDerivative,
     uint256 capMintAmount
@@ -338,6 +378,9 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     emit SetCapMintAmount(selfMintingDerivative, capMintAmount);
   }
 
+  /**
+   * @notice Internal helper function for setCapDepositRatio function
+   */
   function _setCapDepositRatio(
     address selfMintingDerivative,
     uint256 capDepositRatio
@@ -350,6 +393,9 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     emit SetCapDepositRatio(selfMintingDerivative, capDepositRatio);
   }
 
+  /**
+   * @notice Internal helper function for setDaoFee function
+   */
   function _setDaoFee(address selfMintingDerivative, DaoFee calldata daoFee)
     internal
   {
@@ -365,6 +411,9 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     emit SetDaoFee(selfMintingDerivative, daoFee);
   }
 
+  /**
+   * @notice Internal helper function for setDaoFeePercentage function
+   */
   function _setDaoFeePercentage(
     address selfMintingDerivative,
     uint256 daoFeePercentage
@@ -377,6 +426,9 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
     emit SetDaoFeePercentage(selfMintingDerivative, daoFeePercentage);
   }
 
+  /**
+   * @notice Internal helper function for setDaoFeeRecipient function
+   */
   function _setDaoFeeRecipient(
     address selfMintingDerivative,
     address daoFeeRecipient

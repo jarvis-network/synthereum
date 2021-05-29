@@ -23,6 +23,8 @@ import {
   SelfMintingPerpetualPositionManagerMultiParty
 } from './SelfMintingPerpetualPositionManagerMultiParty.sol';
 
+/** @title A library for SelfMintingPerpetualLiquidatableMultiParty contract
+ */
 library SelfMintingPerpetualLiquidatableMultiPartyLib {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
@@ -60,6 +62,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     FixedPoint.Unsigned finalFeeBond;
   }
 
+  // Stores the parameters for a settlement after liquidation process
   struct SettleParams {
     FixedPoint.Unsigned feeAttenuation;
     FixedPoint.Unsigned settlementPrice;
@@ -71,6 +74,10 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     FixedPoint.Unsigned finalFee;
     FixedPoint.Unsigned withdrawalAmount;
   }
+
+  //----------------------------------------
+  // Events
+  //----------------------------------------
 
   event LiquidationCreated(
     address indexed sponsor,
@@ -107,6 +114,21 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     uint256 settlementPrice
   );
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+
+  /**
+   * @notice A function used by createLiquidation from SelfMintingPerpetualLiquidatableMultiParty contract
+   * to return all necessary parameters for a liquidation and perform the liquidation
+   * @param positionToLiquidate The position to be liquidated
+   * @param globalPositionData Global data for the position that will be liquidated fetched from storage
+   * @param positionManagerData Specific position data fetched from storage
+   * @param liquidatableData Data for the liquidation fetched from storage
+   * @param liquidations Array containing actual existing liquidations
+   * @param params Parameters for the liquidation process
+   * @param feePayerData Fees and distribution data fetched from storage
+   */
   function createLiquidation(
     SelfMintingPerpetualPositionManagerMultiParty.PositionData
       storage positionToLiquidate,
@@ -224,6 +246,16 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     );
   }
 
+  /**
+   * @notice A function used by dispute function from SelfMintingPerpetualLiquidatableMultiParty contract
+   * to return all necessary parameters for a dispute and perform the dispute
+   * @param disputedLiquidation The liquidation to be disputed fetched from storage
+   * @param liquidatableData Data for the liquidation fetched from storage
+   * @param positionManagerData Data for specific position of a sponsor fetched from storage
+   * @param feePayerData Fees and distribution data fetched from storage
+   * @param liquidationId The id of the liquidation to be disputed
+   * @param sponsor The address of the token sponsor on which a liqudation was performed
+   */
   function dispute(
     SelfMintingPerpetualLiquidatableMultiParty.LiquidationData
       storage disputedLiquidation,
@@ -281,6 +313,16 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     );
   }
 
+  /**
+   * @notice A function used by withdrawLiquidation function from SelfMintingPerpetualLiquidatableMultiParty contract
+   * to withdraw any proceeds after a successfull liquidation on a token sponsor position
+   * @param liquidation The liquidation for which proceeds will be withdrawn fetched from storage
+   * @param liquidatableData Data for the liquidation fetched from storage
+   * @param positionManagerData Data for specific position of a sponsor fetched from storage
+   * @param feePayerData Fees and distribution data fetched from storage
+   * @param liquidationId The id of the liquidation for which to withdraw proceeds
+   * @param sponsor The address of the token sponsor on which a liqudation was performed
+   */
   function withdrawLiquidation(
     SelfMintingPerpetualLiquidatableMultiParty.LiquidationData
       storage liquidation,
@@ -438,6 +480,18 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     return rewards;
   }
 
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
+  /**
+   * @notice Calculate the amount of collateral received after liquidation
+   * @param positionToLiquidate The position which will be liquidated fetched from storage
+   * @param globalPositionData Data for the global position fetched from storage
+   * @param positionManagerData Data for specific position of a sponsor fetched from storage
+   * @param liquidatableData Data for the liquidation fetched from storage
+   * @param feePayerData Fees and distribution data fetched from storage
+   * @param liquidationCollateralParams Collateral parameters passed to a liquidation process fetched from storage
+   */
   function liquidateCollateral(
     SelfMintingPerpetualPositionManagerMultiParty.PositionData
       storage positionToLiquidate,
@@ -488,6 +542,13 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     );
   }
 
+  /**
+   * @notice Burn an amount of synthetic tokens and post liquidate fee
+   * @param positionManagerData Data for specific position of a sponsor fetched from storage
+   * @param feePayerData Fees and distribution data fetched from storage
+   * @param tokensLiquidated The amount of synthetic tokens to be used for liquidation
+   * @param finalFeeBond The amount of fee posted as a bond when triggering liquidation
+   */
   function burnAndLiquidateFee(
     SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
@@ -509,6 +570,15 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     );
   }
 
+  /**
+   * @notice Settle a liquidation
+   * @param liquidation The liquidation performed fetched from storage
+   * @param positionManagerData Data for a certain tokens sponsor position fetched from storage
+   * @param liquidatableData Data used for the liquidation fetched from storage
+   * @param feePayerData Fees and distribution data fetched from storage
+   * @param liquidationId The id of the liquidation performed
+   * @param sponsor The address of the token sponsor on which a liquidation was performed
+   */
   function _settle(
     SelfMintingPerpetualLiquidatableMultiParty.LiquidationData
       storage liquidation,
@@ -559,6 +629,12 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     );
   }
 
+  /**
+   * @notice Calculate the net output of a liquidation
+   * @param positionToLiquidate Position to be liquidated fetched from storage
+   * @param params Parameters to be passed to the liquidation creation
+   * @param feePayerData Fees and distribution data fetched from storage
+   */
   function calculateNetLiquidation(
     SelfMintingPerpetualPositionManagerMultiParty.PositionData
       storage positionToLiquidate,

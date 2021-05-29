@@ -20,7 +20,7 @@ contract SynthereumPoolOnChainPriceFeedFactory is
   IDeploymentSignature
 {
   //----------------------------------------
-  // State variables
+  // Storage
   //----------------------------------------
 
   address public synthereumFinder;
@@ -53,7 +53,7 @@ contract SynthereumPoolOnChainPriceFeedFactory is
    * @param derivative The perpetual derivative
    * @param finder The Synthereum finder
    * @param version Synthereum version
-   * @param roles The addresses of admin, maintainer, liquidity provider and validator
+   * @param roles The addresses of admin, maintainer, liquidity provider
    * @param startingCollateralization Collateralization ratio to use before a global one is set
    * @param fee The fee structure
    * @return poolDeployed Pool contract deployed

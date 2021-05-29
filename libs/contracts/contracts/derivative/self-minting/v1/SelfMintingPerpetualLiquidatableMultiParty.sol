@@ -19,6 +19,15 @@ import {
   SelfMintingPerpetualPositionManagerMultiParty
 } from './SelfMintingPerpetualPositionManagerMultiParty.sol';
 
+/**
+ * @title SelfMintingPerpetualLiquidatableMultiParty
+ * @notice Adds logic to a position-managing contract that enables callers to liquidate an undercollateralized position.
+ * @dev The liquidation has a liveness period before expiring successfully, during which someone can "dispute" the
+ * liquidation, which sends a price request to the relevant Oracle to settle the final collateralization ratio based on
+ * a DVM price. The contract enforces dispute rewards in order to incentivize disputers to correctly dispute false
+ * liquidations and compensate position sponsors who had their position incorrectly liquidated. Importantly, a
+ * prospective disputer must deposit a dispute bond that they can lose in the case of an unsuccessful dispute.
+ */
 contract SelfMintingPerpetualLiquidatableMultiParty is
   SelfMintingPerpetualPositionManagerMultiParty
 {
@@ -29,6 +38,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   using SelfMintingPerpetualLiquidatableMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionData;
   using SelfMintingPerpetualLiquidatableMultiPartyLib for LiquidationData;
 
+  // Because of the check in withdrawable(), the order of these enum values should not change.
   enum Status {
     Uninitialized,
     PreDispute,
@@ -37,6 +47,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     DisputeFailed
   }
 
+  // Store parameters for liquidation
   struct LiquidatableParams {
     uint256 liquidationLiveness;
     FixedPoint.Unsigned collateralRequirement;
@@ -46,33 +57,62 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   }
 
   struct LiquidationData {
-    address sponsor;
-    address liquidator;
-    Status state;
-    uint256 liquidationTime;
-    FixedPoint.Unsigned tokensOutstanding;
-    FixedPoint.Unsigned lockedCollateral;
+    // Following variables set upon creation of liquidation:
+    address sponsor; // Address of the liquidated position's sponsor
+    address liquidator; // Address who created this liquidation
+    Status state; // Liquidated (and expired or not), Pending a Dispute, or Dispute has resolved
+    uint256 liquidationTime; // Time when liquidation is initiated, needed to get price from Oracle
+    // Following variables determined by the position that is being liquidated:
+    FixedPoint.Unsigned tokensOutstanding; // Synthetic tokens required to be burned by liquidator to initiate dispute
+    FixedPoint.Unsigned lockedCollateral; // Collateral locked by contract and released upon expiry or post-dispute
+    // Amount of collateral being liquidated, which could be different from
+    // lockedCollateral if there were pending withdrawals at the time of liquidation
     FixedPoint.Unsigned liquidatedCollateral;
+    // Unit value (starts at 1) that is used to track the fees per unit of collateral over the course of the liquidation.
     FixedPoint.Unsigned rawUnitCollateral;
+    // Following variable set upon initiation of a dispute:
     address disputer;
-    FixedPoint.Unsigned settlementPrice;
-    FixedPoint.Unsigned finalFee;
+    // Following variable set upon a resolution of a dispute:
+    FixedPoint.Unsigned settlementPrice; // Final price as determined by an Oracle following a dispute
+    FixedPoint.Unsigned finalFee; // Final fee paid following a dispute
   }
 
+  // Define the contract's constructor parameters as a struct to enable more variables to be specified.
+  // This is required to enable more params, over and above Solidity's limits.
   struct ConstructorParams {
+    // Params for PricelessPositionManager only
     SelfMintingPerpetualPositionManagerMultiParty.PositionManagerParams positionManagerParams;
+    // Params specifically for Liquidatable.
     LiquidatableParams liquidatableParams;
   }
 
   struct LiquidatableData {
+    // Total collateral in liquidation.
     FixedPoint.Unsigned rawLiquidationCollateral;
+    // Immutable contract parameters:
+    // Amount of time for pending liquidation before expiry.
+    // !!Note: The lower the liquidation liveness value, the more risk incurred by sponsors.
+    //       Extremely low liveness values increase the chance that opportunistic invalid liquidations
+    //       expire without dispute, thereby decreasing the usability for sponsors and increasing the risk
+    //       for the contract as a whole. An insolvent contract is extremely risky for any sponsor or synthetic
+    //       token holder for the contract.
     uint256 liquidationLiveness;
+    // Required collateral:TRV ratio for a position to be considered sufficiently collateralized.
     FixedPoint.Unsigned collateralRequirement;
+    // Percent of a Liquidation/Position's lockedCollateral to be deposited by a potential disputer
     FixedPoint.Unsigned disputeBondPct;
+    // Percent of oraclePrice paid to sponsor in the Disputed state (i.e. following a successful dispute)
+    // Represented as a multiplier, see above.
     FixedPoint.Unsigned sponsorDisputeRewardPct;
+    // Percent of oraclePrice paid to disputer in the Disputed state (i.e. following a successful dispute)
+    // Represented as a multiplier, see above.
     FixedPoint.Unsigned disputerDisputeRewardPct;
   }
 
+  // This struct is used in the `withdrawLiquidation` method that disperses liquidation and dispute rewards.
+  // `payToX` stores the total collateral to withdraw from the contract to pay X. This value might differ
+  // from `paidToX` due to precision loss between accounting for the `rawCollateral` versus the
+  // fee-adjusted collateral. These variables are stored within a struct to avoid the stack too deep error.
   struct RewardsData {
     FixedPoint.Unsigned payToSponsor;
     FixedPoint.Unsigned payToLiquidator;
@@ -82,9 +122,18 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     FixedPoint.Unsigned paidToDisputer;
   }
 
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
+
+  // Liquidations are unique by ID per sponsor
   mapping(address => LiquidationData[]) public liquidations;
 
   LiquidatableData public liquidatableData;
+
+  //----------------------------------------
+  // Events
+  //----------------------------------------
 
   event LiquidationCreated(
     address indexed sponsor,
@@ -119,6 +168,10 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     uint256 settlementPrice
   );
 
+  //----------------------------------------
+  // Modifiers
+  //----------------------------------------
+
   modifier disputable(uint256 liquidationId, address sponsor) {
     _disputable(liquidationId, sponsor);
     _;
@@ -129,6 +182,15 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     _;
   }
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs the SelfMintingPerpetualPositionManagerMultiParty contract
+   * @param params struct to define input parameters for construction of Liquidatable. Some params
+   * are fed directly into the PositionManager's constructor within the inheritance tree.
+   */
   constructor(ConstructorParams memory params)
     public
     SelfMintingPerpetualPositionManagerMultiParty(params.positionManagerParams)
@@ -162,6 +224,25 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
       .disputerDisputeRewardPct;
   }
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+
+  /**
+   * @notice Liquidates the sponsor's position if the caller has enough
+   * synthetic tokens to retire the position's outstanding tokens. Liquidations above
+   * a minimum size also reset an ongoing "slow withdrawal"'s liveness.
+   * @dev This method generates an ID that will uniquely identify liquidation for the sponsor. This contract must be
+   * approved to spend at least `tokensLiquidated` of `tokenCurrency` and at least `finalFeeBond` of `feePayerData.collateralCurrency`.
+   * @param sponsor address of the sponsor to liquidate.
+   * @param minCollateralPerToken abort the liquidation if the position's collateral per token is below this value.
+   * @param maxCollateralPerToken abort the liquidation if the position's collateral per token exceeds this value.
+   * @param maxTokensToLiquidate max number of tokens to liquidate.
+   * @param deadline abort the liquidation if the transaction is mined after this timestamp.
+   * @return liquidationId ID of the newly created liquidation.
+   * @return tokensLiquidated amount of synthetic tokens removed and liquidated from the `sponsor`'s position.
+   * @return finalFeeBond amount of collateral to be posted by liquidator and returned if not disputed successfully.
+   */
   function createLiquidation(
     address sponsor,
     FixedPoint.Unsigned calldata minCollateralPerToken,
@@ -179,10 +260,12 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
       FixedPoint.Unsigned memory finalFeeBond
     )
   {
+    // Retrieve Position data for sponsor
     PositionData storage positionToLiquidate = _getPositionData(sponsor);
 
     LiquidationData[] storage TokenSponsorLiquidations = liquidations[sponsor];
 
+    // Compute final fee at time of liquidation
     FixedPoint.Unsigned memory finalFee = _computeFinalFees();
 
     uint256 actualTime = getCurrentTime();
@@ -222,6 +305,16 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     );
   }
 
+  /**
+   * @notice Disputes a liquidation, if the caller has enough collateral to post a dispute bond
+   * and pay a fixed final fee charged on each price request.
+   * @dev Can only dispute a liquidation before the liquidation expires and if there are no other pending disputes.
+   * This contract must be approved to spend at least the dispute bond amount of `feePayerData.collateralCurrency`. This dispute
+   * bond amount is calculated from `disputeBondPct` times the collateral in the liquidation.
+   * @param liquidationId of the disputed liquidation.
+   * @param sponsor the address of the sponsor whose liquidation is being disputed.
+   * @return totalPaid amount of collateral charged to disputer (i.e. final fee bond + dispute bond).
+   */
   function dispute(uint256 liquidationId, address sponsor)
     external
     disputable(liquidationId, sponsor)
@@ -241,6 +334,16 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     );
   }
 
+  /**
+   * @notice After a dispute has settled or after a non-disputed liquidation has expired,
+   * anyone can call this method to disperse payments to the sponsor, liquidator, and disputer.
+   * @dev If the dispute SUCCEEDED: the sponsor, liquidator, and disputer are eligible for payment.
+   * If the dispute FAILED: only the liquidator receives payment. This method deletes the liquidation data.
+   * This method will revert if rewards have already been dispersed.
+   * @param liquidationId uniquely identifies the sponsor's liquidation.
+   * @param sponsor address of the sponsor associated with the liquidation.
+   * @return rewardsData Data about rewards paid out.
+   */
   function withdrawLiquidation(uint256 liquidationId, address sponsor)
     external
     withdrawable(liquidationId, sponsor)
@@ -263,6 +366,11 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     return rewardsData;
   }
 
+  /**
+   * @notice Delete liquidation of a TokenSponsor (This function can only be called by the contract itself)
+   * @param liquidationId id of the liquidation.
+   * @param sponsor address of the TokenSponsor.
+   */
   function deleteLiquidation(uint256 liquidationId, address sponsor)
     external
     onlyThisContract
@@ -270,6 +378,11 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     delete liquidations[sponsor][liquidationId];
   }
 
+  /**
+   * @notice Gets an array of liquidations performed on a token sponsor
+   * @param sponsor address of the TokenSponsor.
+   * @return liquidationData An array of data for all liquidations performed on a token sponsor
+   */
   function getLiquidations(address sponsor)
     external
     view
@@ -278,6 +391,10 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   {
     return liquidations[sponsor];
   }
+
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
 
   function _pfc() internal view override returns (FixedPoint.Unsigned memory) {
     return
@@ -288,13 +405,16 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
       );
   }
 
+  /** @notice A helper function for getLiquidationData function
+   */
   function _getLiquidationData(address sponsor, uint256 liquidationId)
     internal
     view
     returns (LiquidationData storage liquidation)
   {
     LiquidationData[] storage liquidationArray = liquidations[sponsor];
-
+    // Revert if the caller is attempting to access an invalid liquidation
+    // (one that has never been created or one has never been initialized).
     require(
       liquidationId < liquidationArray.length &&
         liquidationArray[liquidationId].state != Status.Uninitialized,
@@ -303,6 +423,8 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     return liquidationArray[liquidationId];
   }
 
+  /** @notice A helper function to get the expiry of a liquidation with added liquidation liveness
+   */
   function _getLiquidationExpiry(LiquidationData storage liquidation)
     internal
     view
@@ -312,6 +434,8 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
       liquidation.liquidationTime.add(liquidatableData.liquidationLiveness);
   }
 
+  // These internal functions are supposed to act identically to modifiers, but re-used modifiers
+  // unnecessarily increase contract bytecode size.
   function _disputable(uint256 liquidationId, address sponsor) internal view {
     LiquidationData storage liquidation =
       _getLiquidationData(sponsor, liquidationId);
@@ -322,11 +446,13 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
     );
   }
 
+  /** @notice A helper function to check if the proceeds of a liquidation are withdrawable
+   */
   function _withdrawable(uint256 liquidationId, address sponsor) internal view {
     LiquidationData storage liquidation =
       _getLiquidationData(sponsor, liquidationId);
     Status state = liquidation.state;
-
+    // Must be disputed or the liquidation has passed expiry.
     require(
       (state > Status.PreDispute) ||
         ((_getLiquidationExpiry(liquidation) <= getCurrentTime()) &&

@@ -48,7 +48,7 @@ contract SynthereumPoolOnChainPriceFeed is
     keccak256('Liquidity Provider');
 
   //----------------------------------------
-  // State variables
+  // Storage
   //----------------------------------------
 
   Storage private poolStorage;

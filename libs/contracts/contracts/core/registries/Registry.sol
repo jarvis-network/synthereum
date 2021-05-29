@@ -6,15 +6,16 @@ import {ISynthereumRegistry} from './interfaces/IRegistry.sol';
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
 import {EnumerableBytesSet} from '../../base/utils/EnumerableBytesSet.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
 import {
   Lockable
 } from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
 
+/**
+ * @title Register and track all the pools deployed
+ */
 contract SynthereumRegistry is ISynthereumRegistry, Lockable {
   using EnumerableSet for EnumerableSet.AddressSet;
   using EnumerableSet for EnumerableSet.UintSet;
@@ -22,12 +23,16 @@ contract SynthereumRegistry is ISynthereumRegistry, Lockable {
   using StringUtils for string;
   using StringUtils for bytes32;
 
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
+
   string public registryType;
 
   ISynthereumFinder public synthereumFinder;
 
   mapping(string => mapping(IERC20 => mapping(uint8 => EnumerableSet.AddressSet)))
-    private symbolToPools;
+    private symbolToElements;
 
   EnumerableBytesSet.BytesSet private syntheticTokens;
 
@@ -35,6 +40,15 @@ contract SynthereumRegistry is ISynthereumRegistry, Lockable {
 
   EnumerableSet.UintSet private versions;
 
+  //----------------------------------------
+  // Constructor
+  //----------------------------------------
+
+  /**
+   * @notice Constructs the SynthereumRegistry contract
+   * @param _registryType Type of registry
+   * @param _synthereumFinder Synthereum finder contract
+   */
   constructor(string memory _registryType, ISynthereumFinder _synthereumFinder)
     public
   {
@@ -42,48 +56,78 @@ contract SynthereumRegistry is ISynthereumRegistry, Lockable {
     registryType = _registryType;
   }
 
+  /**
+   * @notice Allow the deployer to register an element
+   * @param syntheticTokenSymbol Symbol of the syntheticToken
+   * @param collateralToken Collateral ERC20 token of the element deployed
+   * @param version Version of the element deployed
+   * @param element Address of the element deployed
+   */
   function register(
     string calldata syntheticTokenSymbol,
     IERC20 collateralToken,
-    uint8 poolVersion,
-    address pool
+    uint8 version,
+    address element
   ) external override nonReentrant {
     address deployer =
       ISynthereumFinder(synthereumFinder).getImplementationAddress(
         SynthereumInterfaces.Deployer
       );
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
-    symbolToPools[syntheticTokenSymbol][collateralToken][poolVersion].add(pool);
+    symbolToElements[syntheticTokenSymbol][collateralToken][version].add(
+      element
+    );
     syntheticTokens.add(syntheticTokenSymbol.stringToBytes32());
     collaterals.add(address(collateralToken));
-    versions.add(poolVersion);
+    versions.add(version);
   }
 
+  /**
+   * @notice Returns if a particular element exists or not
+   * @param syntheticTokenSymbol Synthetic token symbol of the element
+   * @param collateralToken ERC20 contract of collateral currency
+   * @param version Version of the element
+   * @param element Contract of the element to check
+   * @return isElementDeployed Returns true if a particular element exists, otherwise false
+   */
   function isDeployed(
-    string calldata poolSymbol,
-    IERC20 collateral,
-    uint8 poolVersion,
-    address pool
+    string calldata syntheticTokenSymbol,
+    IERC20 collateralToken,
+    uint8 version,
+    address element
   ) external view override returns (bool isElementDeployed) {
-    isElementDeployed = symbolToPools[poolSymbol][collateral][poolVersion]
-      .contains(pool);
+    isElementDeployed = symbolToElements[syntheticTokenSymbol][collateralToken][
+      version
+    ]
+      .contains(element);
   }
 
+  /**
+   * @notice Returns all the elements with partcular symbol, collateral and version
+   * @param syntheticTokenSymbol Synthetic token symbol of the element
+   * @param collateralToken ERC20 contract of collateral currency
+   * @param version Version of the element
+   * @return List of all elements
+   */
   function getElements(
-    string calldata poolSymbol,
-    IERC20 collateral,
-    uint8 poolVersion
+    string calldata syntheticTokenSymbol,
+    IERC20 collateralToken,
+    uint8 version
   ) external view override returns (address[] memory) {
-    EnumerableSet.AddressSet storage poolSet =
-      symbolToPools[poolSymbol][collateral][poolVersion];
-    uint256 numberOfPools = poolSet.length();
-    address[] memory pools = new address[](numberOfPools);
-    for (uint256 j = 0; j < numberOfPools; j++) {
-      pools[j] = poolSet.at(j);
+    EnumerableSet.AddressSet storage elementSet =
+      symbolToElements[syntheticTokenSymbol][collateralToken][version];
+    uint256 numberOfElements = elementSet.length();
+    address[] memory elements = new address[](numberOfElements);
+    for (uint256 j = 0; j < numberOfElements; j++) {
+      elements[j] = elementSet.at(j);
     }
-    return pools;
+    return elements;
   }
 
+  /**
+   * @notice Returns all the synthetic token symbol used
+   * @return List of all synthetic token symbol
+   */
   function getSyntheticTokens()
     external
     view
@@ -98,6 +142,10 @@ contract SynthereumRegistry is ISynthereumRegistry, Lockable {
     return synthTokens;
   }
 
+  /**
+   * @notice Returns all the versions used
+   * @return List of all versions
+   */
   function getVersions() external view override returns (uint8[] memory) {
     uint256 numberOfVersions = versions.length();
     uint8[] memory actualVersions = new uint8[](numberOfVersions);
@@ -107,6 +155,10 @@ contract SynthereumRegistry is ISynthereumRegistry, Lockable {
     return actualVersions;
   }
 
+  /**
+   * @notice Returns all the collaterals used
+   * @return List of all collaterals
+   */
   function getCollaterals() external view override returns (address[] memory) {
     uint256 numberOfCollaterals = collaterals.length();
     address[] memory collateralAddresses = new address[](numberOfCollaterals);
