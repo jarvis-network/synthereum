@@ -111,6 +111,7 @@
         "k8s",
         "toolkit",
         "claim",
+        "cli",
         "validator-lib"
       ]
     }
