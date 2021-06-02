@@ -373,7 +373,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/crypto-utils/**/*.ts"]
+            "lintFilePatterns": ["libs/crypto-utils/src/**/*.ts"]
           }
         },
         "test": {
