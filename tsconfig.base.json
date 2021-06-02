@@ -36,7 +36,8 @@
     "paths": {
       "@jarvis-network/core-utils": ["libs/core-utils/src/index.ts"],
       "@jarvis-network/sol2ts-code-gen": ["libs/sol2ts-code-gen/src/index.ts"],
-      "@jarvis-network/crypto-utils": ["libs/crypto-utils/src/index.ts"]
+      "@jarvis-network/crypto-utils": ["libs/crypto-utils/src/index.ts"],
+      "@jarvis-network/synthereum-ts": ["libs/synthereum-ts/src/index.ts"]
     }
   }
 }

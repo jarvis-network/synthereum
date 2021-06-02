@@ -369,6 +369,38 @@
           }
         }
       }
+    },
+    "synthereum-ts": {
+      "root": "libs/synthereum-ts",
+      "sourceRoot": "libs/synthereum-ts/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/synthereum-ts",
+            "tsConfig": "libs/synthereum-ts/tsconfig.lib.json",
+            "packageJson": "libs/synthereum-ts/package.json",
+            "main": "libs/synthereum-ts/src/index.ts",
+            "assets": ["libs/synthereum-ts/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/synthereum-ts/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/synthereum-ts"],
+          "options": {
+            "jestConfig": "libs/synthereum-ts/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }
