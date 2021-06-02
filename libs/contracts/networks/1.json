@@ -96,5 +96,60 @@
     "contractName": "SynthereumManager",
     "address": "0xddFeF53637848fAccB683564F981f579B9089955",
     "transactionHash": "0x0d1128b6496938ccff2ebffb3498ff45e57d28c589dd30f848f05d65b912ab32"
+  },
+  {
+    "contractName": "SynthereumSyntheticTokenFactory",
+    "address": "0xd0B5376b91E06Fb1296F803AE8879B49740cE89f",
+    "transactionHash": "0x10f9e2c2d25da393985b4f3abd37fa2455271c06b00fb3d1f54c0b315513b44a"
+  },
+  {
+    "contractName": "FeePayerPartyLib",
+    "address": "0x97D884D049cD705d681aE83B5cBa3EfAad0d2C32",
+    "transactionHash": "0x3684a26db1c2adb8cefdca69ddea0fe43985335b989cfedd77df2023fdf3eff9"
+  },
+  {
+    "contractName": "PerpetualPositionManagerPoolPartyLib",
+    "address": "0x1418830Ad554bECAF76a4058eEc6BEe9AC002e19",
+    "transactionHash": "0xd2f18c832d5975d6b6a34f29aac7921d142d44086cf41a577121bceb3dfe2de5"
+  },
+  {
+    "contractName": "PerpetualLiquidatablePoolPartyLib",
+    "address": "0xfbF14c09079E1AAc83BE279b6354da710b0cFC5E",
+    "transactionHash": "0x1a8c65f098075f8ed618eba70d26a74c4cee579d8b37d296fcef1f5496401273"
+  },
+  {
+    "contractName": "PerpetualPoolPartyLib",
+    "address": "0x348E4B25077c5133450eDad060EA4d8dB667913d",
+    "transactionHash": "0xa5d4110086cbccb4810f0a577fd51f5e9817d347082a0273bca341af14df7fb2"
+  },
+  {
+    "contractName": "SynthereumDerivativeFactory",
+    "address": "0x811F78b7d6bCF1C0E94493C2eC727B50eE32B974",
+    "transactionHash": "0x7895a30c7582fd5971e0b468c50ad14a9a636764ffa5c1ea2e9174a3068182ee"
+  },
+  {
+    "contractName": "SelfMintingPerpetualPositionManagerMultiPartyLib",
+    "address": "0xe88178d7E2363c32663Abe70e442A0FF2F8B3CCe",
+    "transactionHash": "0xbf5fd051d08e0baed9bfb2091e748d04940e1fd7358cdc15a34fd603db26a949"
+  },
+  {
+    "contractName": "SelfMintingPerpetualLiquidatableMultiPartyLib",
+    "address": "0x2aA25770E92DE3D61544E1c5245e8C968DdC34C5",
+    "transactionHash": "0x02456d3a052eaf0bf98cc2a5827e7e1d0d3db6b33d70496e873381de4f9e4483"
+  },
+  {
+    "contractName": "SelfMintingPerpetualMultiPartyLib",
+    "address": "0x586cCe2D7CE78e9C9Fd5c062ec6Ee59880eAc78f",
+    "transactionHash": "0x7671c62c72cd7bfca45e53aa2e137d6c62e67610027011a50d2c5e693946e759"
+  },
+  {
+    "contractName": "SelfMintingDerivativeFactory",
+    "address": "0x930A54D8Af945F6D1BED5AAF63b63fAb50a8197f",
+    "transactionHash": "0xd38d05a814bed4bd9ecfd63668412c4d9a191c9b0fe00a137242b3d3d1463dff"
+  },
+  {
+    "contractName": "SelfMintingController",
+    "address": "0x697240b2124bEd2B19FB003Ec4e4cFb5b125B0D1",
+    "transactionHash": "0x5beb1f39d394691e53703609b9504c2fcfd4058f69178507c819334675a4a955"
   }
 ]
