@@ -26,45 +26,46 @@
     "core-utils": {
       "tags": []
     },
+    "crypto-utils": {
+      "tags": []
+    },
     "sol2ts-code-gen": {
       "tags": []
     },
     "ui": {
       "tags": []
     },
-    "toolkit": {
-      "tags": [],
-      "implicitDependencies": ["ui", "contracts"]
-    },
     "contracts": {
       "tags": [],
-      "implicitDependencies": ["core-utils", "sol2ts-code-gen"]
+      "implicitDependencies": []
+    },
+    "synthereum-ts": {
+      "tags": [],
+      "implicitDependencies": ["contracts"]
     },
     "validator": {
       "tags": [],
-      "implicitDependencies": ["validator-lib"]
+      "implicitDependencies": []
     },
     "validator-lib": {
       "tags": [],
-      "implicitDependencies": ["contracts"]
+      "implicitDependencies": ["synthereum-ts"]
+    },
+    "toolkit": {
+      "tags": [],
+      "implicitDependencies": ["synthereum-ts"]
     },
     "frontend": {
       "tags": [],
-      "implicitDependencies": ["ui", "toolkit", "contracts"]
+      "implicitDependencies": ["toolkit"]
     },
     "borrowing": {
       "tags": [],
-      "implicitDependencies": ["ui", "toolkit", "contracts"]
+      "implicitDependencies": ["toolkit"]
     },
     "cli": {
       "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
-    "crypto-utils": {
-      "tags": []
-    },
-    "synthereum-ts": {
-      "tags": []
+      "implicitDependencies": ["synthereum-ts"]
     }
   },
   "workspaceLayout": {

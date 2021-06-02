@@ -19,7 +19,7 @@
     "prepublishOnly": "yarn && yarn build"
   },
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "*",
+    "@jarvis-network/synthereum-ts": "*",
     "@jarvis-network/core-utils": "*",
     "bunyan": "^1.8.14",
     "bunyan-prettystream": "^0.1.3",

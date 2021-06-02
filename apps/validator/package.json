@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@jarvis-network/synthereum-contracts": "*",
+    "@jarvis-network/synthereum-ts": "*",
     "@jarvis-network/validator-lib": "*",
     "@jarvis-network/core-utils": "*",
     "axios": "^0.20.0",
