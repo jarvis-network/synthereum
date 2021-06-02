@@ -68,7 +68,10 @@ function addPublicNetwork(config: HardhatUserConfig, chainId: NetworkId) {
     chainId,
     url: getInfuraEndpoint(chainId, 'https'),
     accounts: {
-      mnemonic: process.env.MNEMONIC,
+      mnemonic:
+        process.env.MNEMONIC ??
+        // contents are irrelevant, only used for CI builds
+        'ripple ship viable club inquiry act trap draft supply type again document',
     },
     timeout: 60e3,
   };
