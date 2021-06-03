@@ -66,6 +66,9 @@
     "cli": {
       "tags": [],
       "implicitDependencies": ["synthereum-ts"]
+    },
+    "examples": {
+      "tags": []
     }
   },
   "workspaceLayout": {

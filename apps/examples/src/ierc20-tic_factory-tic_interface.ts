@@ -1,3 +1,4 @@
+/* eslint-disable spaced-comment */
 import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import { assert } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
@@ -7,10 +8,12 @@ import {
 } from '@jarvis-network/core-utils/dist/base/big-number';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
-import { SupportedNetworkId } from '../../src/config';
-import { parseSupportedNetworkId } from '../../src/config/supported-networks';
-import { loadRealm } from '../../src/core/load-realm';
-import { RealmAgent } from '../../src/core/realm-agent';
+import {
+  SupportedNetworkId,
+  parseSupportedNetworkId,
+} from '@jarvis-network/synthereum-ts/dist/config';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
 /**
  * Apps building on top of Synthereum need to work with a single class - the
@@ -31,7 +34,7 @@ export async function example() {
   // Use `parseSupportedNetworkId` to validate that a network id from the
   // outside environment is indeed supported. This function will throw an
   // exception if it isn't:
-  const id: string = '42'; // a number would also work fine
+  const id = '42'; // a number would also work fine
   const netId: SupportedNetworkId = parseSupportedNetworkId(id);
 
   // Get a Web3 instance. We use Infura here for simplicity:

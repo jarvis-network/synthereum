@@ -1,0 +1,7 @@
+{
+  "name": "@jarvis-network/synthereum-examples",
+  "version": "0.0.1",
+  "dependencies": {
+    "@jarvis-network/synthereum-ts": "*"
+  }
+}

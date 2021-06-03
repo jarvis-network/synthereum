@@ -1,5 +1,9 @@
 {
   "version": 2,
+  "cli": {
+    "defaultCollection": "@nrwl/node"
+  },
+  "defaultProject": "frontend",
   "projects": {
     "core-utils": {
       "root": "libs/core-utils",
@@ -399,6 +403,39 @@
           "outputs": ["coverage/libs/synthereum-ts"],
           "options": {
             "jestConfig": "libs/synthereum-ts/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "examples": {
+      "root": "apps/examples",
+      "sourceRoot": "apps/examples/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "apps/examples/dist",
+            "srcRootForCompilationRoot": "apps/examples/src",
+            "tsConfig": "apps/examples/tsconfig.app.json",
+            "packageJson": "apps/examples/package.json",
+            "main": "apps/examples/src/index.ts",
+            "assets": ["apps/examples/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/examples/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/examples"],
+          "options": {
+            "jestConfig": "apps/examples/jest.config.js",
             "passWithNoTests": true
           }
         }
