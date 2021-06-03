@@ -2,7 +2,7 @@ import {
   ExchangeToken,
   priceFeed as priceFeedPairsMap,
   primaryCollateralSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-ts/dist/config';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { DataItem, PricePoint } from '@/state/initialState';

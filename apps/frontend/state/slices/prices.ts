@@ -1,6 +1,6 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
-import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { reversedPriceFeedPairs } from '@jarvis-network/synthereum-ts/dist/config';
 import { formatDate } from '@jarvis-network/app-toolkit';
 
 import { initialState, PricePoint } from '@/state/initialState';

@@ -1,9 +1,9 @@
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
+import { parseSupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/config';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
 import {
   getPoolBalances,
   depositInAllPools,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
+} from '@jarvis-network/synthereum-ts/dist/core/pool-utils';
 import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import {
   formatAmount,
@@ -16,12 +16,12 @@ import {
   parseFiniteFloat,
 } from '@jarvis-network/core-utils/dist/base/asserts';
 import { getTokenBalance } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
-import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
+import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-ts/dist/core/types/realm';
 import {
   assertIsSupportedPoolVersion,
   PoolVersion,
   poolVersions,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
+} from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import { log } from '@jarvis-network/core-utils/dist/logging';
 import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
 import { t } from '@jarvis-network/core-utils/dist/base/meta';

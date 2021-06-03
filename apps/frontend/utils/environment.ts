@@ -1,5 +1,5 @@
-import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
+import { parseSupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 export const getPriceFeedEndpoint = () =>

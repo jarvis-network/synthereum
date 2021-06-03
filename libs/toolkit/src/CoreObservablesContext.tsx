@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react';
 import type Onboard from 'bnc-onboard';
 import { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
-import type { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import type { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
 import type { ENSHelper } from './ens';
 import { useConstant } from './useConstant';

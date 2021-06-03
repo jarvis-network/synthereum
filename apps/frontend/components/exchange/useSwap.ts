@@ -1,6 +1,6 @@
 import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
 import { useExchangeValues } from '@/utils/useExchangeValues';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 import {
   useBehaviorSubject,

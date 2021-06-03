@@ -7,7 +7,7 @@ import { hideBin } from 'yargs/helpers';
 import {
   parseSupportedNetworkId,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-ts/dist/config';
 
 export function getCliBuilder(
   scriptName: string,

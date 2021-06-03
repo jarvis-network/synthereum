@@ -21,7 +21,7 @@ import {
 } from '@/state/slices/exchange';
 import { useDispatch } from 'react-redux';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { createPairs } from '@/utils/createPairs';
 import { isAppReadySelector } from '@/state/selectors';
 

@@ -3,7 +3,7 @@ import { weeks } from 'milliseconds';
 import {
   priceFeed as priceFeedPairsMap,
   SyntheticSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-ts/dist/config';
 
 import { formatDate } from '@jarvis-network/app-toolkit';
 

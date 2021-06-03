@@ -2,8 +2,8 @@ import yargs from 'yargs';
 import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import { getClosestBlock } from '@jarvis-network/core-utils/dist/eth/web3';
 import { addDays } from '@jarvis-network/core-utils/dist/base/date-time-utils';
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
+import { parseSupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/config';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
 import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
 import { Filter } from 'web3-eth-contract/types';
 import {

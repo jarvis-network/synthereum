@@ -1,5 +1,7 @@
-import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
+import {
+  parseSupportedNetworkId,
+  SupportedNetworkId,
+} from '@jarvis-network/synthereum-ts/dist/config';
 import {
   assertIsString,
   parseFiniteFloat,

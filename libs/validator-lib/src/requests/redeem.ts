@@ -1,6 +1,6 @@
 import BN from 'bn.js';
-import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
+import { SupportedNetworkName } from '@jarvis-network/synthereum-ts/dist/config';
+import { SynthereumPool } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import { scale } from '@jarvis-network/core-utils/dist/base/big-number';
 import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
 import {

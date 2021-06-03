@@ -10,7 +10,7 @@ import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import {
   ExchangeToken,
   primaryCollateralSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-ts/dist/config';
 
 import { AssetRow, AssetRowProps } from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
 import { logoutAction } from '@/state/actions';
 import { initialState } from '@/state/initialState';

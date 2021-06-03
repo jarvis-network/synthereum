@@ -6,7 +6,7 @@ import { indexOfMaxLexicographicalValue } from '@jarvis-network/core-utils/dist/
 import {
   allSyntheticSymbols, // FIXME: this should be dynamic
   reversedPriceFeedPairs,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-ts/dist/config';
 
 import { Dependencies } from '@/utils/epics';
 import {

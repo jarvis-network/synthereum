@@ -2,10 +2,10 @@
 /* eslint-disable no-await-in-loop */
 import { performance } from 'perf_hooks';
 
-import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-contracts/dist/src/core/types/realm';
-import { mapPools } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
-import { SynthereumPool } from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
+import { SupportedNetworkName } from '@jarvis-network/synthereum-ts/dist/config';
+import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-ts/dist/core/types/realm';
+import { mapPools } from '@jarvis-network/synthereum-ts/dist/core/pool-utils';
+import { SynthereumPool } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import {
   ExchangeRequestValidator,
   MintRequestValidator,

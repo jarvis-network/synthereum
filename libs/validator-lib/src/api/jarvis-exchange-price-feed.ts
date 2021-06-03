@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 import { isFinite } from '@jarvis-network/core-utils/dist/base/asserts';
 import axios from 'axios';
 
-import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { priceFeed as priceFeedPairsMap } from '@jarvis-network/synthereum-ts/dist/config';
 
 import { env } from '../config';
 

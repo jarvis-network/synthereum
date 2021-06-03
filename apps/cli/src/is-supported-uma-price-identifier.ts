@@ -1,4 +1,7 @@
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
+import {
+  parseSupportedNetworkId,
+  synthereumConfig,
+} from '@jarvis-network/synthereum-ts/dist/config';
 import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import {
   log,
@@ -7,7 +10,6 @@ import {
 } from '@jarvis-network/core-utils/dist/logging';
 import { getContract } from '@jarvis-network/core-utils/dist/eth/contracts/get-contract';
 import { IdentifierWhitelist_Abi } from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
-import { synthereumConfig } from '@jarvis-network/synthereum-contracts/dist/src/config/data';
 import { utf8ToHex } from 'web3-utils';
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 

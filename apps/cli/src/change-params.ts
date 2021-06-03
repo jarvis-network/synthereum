@@ -1,10 +1,12 @@
 import Web3 from 'web3';
 import {
+  Fees,
   parseSupportedNetworkId,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
-import { updateV2PoolParameters } from '@jarvis-network/synthereum-contracts/dist/src/core/pool-utils';
+  synthereumConfig,
+} from '@jarvis-network/synthereum-ts/dist/config';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { updateV2PoolParameters } from '@jarvis-network/synthereum-ts/dist/core/pool-utils';
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 import { LedgerProvider } from '@umaprotocol/truffle-ledger-provider';
 import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/address';
@@ -18,8 +20,6 @@ import {
   assertIsString,
   parseFiniteFloat,
 } from '@jarvis-network/core-utils/dist/base/asserts';
-import { synthereumConfig } from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { Fees } from '@jarvis-network/synthereum-contracts/dist/src/config/types';
 import { TxOptions } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 import { t } from '@jarvis-network/core-utils/dist/base/meta';
 

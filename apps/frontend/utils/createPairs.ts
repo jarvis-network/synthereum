@@ -1,5 +1,5 @@
 import { Asset, AssetPair } from '@/data/assets';
-import { ExchangeToken } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { ExchangeToken } from '@jarvis-network/synthereum-ts/dist/config';
 
 const getRealSymbol = (symbol: ExchangeToken): string => {
   if (symbol === 'USDC') {

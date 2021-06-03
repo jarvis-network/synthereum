@@ -15,7 +15,7 @@ import {
   themeValue,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 
 import {
   setChooseAsset,

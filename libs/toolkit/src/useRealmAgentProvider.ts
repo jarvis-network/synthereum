@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
-import { SupportedNetworkName } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
-import { loadRealm } from '@jarvis-network/synthereum-contracts/dist/src/core/load-realm';
-import { RealmAgent } from '@jarvis-network/synthereum-contracts/dist/src/core/realm-agent';
+import { SupportedNetworkName } from '@jarvis-network/synthereum-ts/dist/config';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 import {
   PoolsForVersion,
   PoolVersion,
-} from '@jarvis-network/synthereum-contracts/dist/src/core/types/pools';
+} from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
 

@@ -4,7 +4,7 @@ import {
   PerAsset,
   ExchangeToken,
   synthereumConfig,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
