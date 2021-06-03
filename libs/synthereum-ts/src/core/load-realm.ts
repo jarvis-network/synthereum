@@ -1,4 +1,9 @@
 import {
+  ERC20_Abi,
+  SynthereumPoolRegistry_Abi,
+} from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
+import { SynthereumPoolRegistry } from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+import {
   parseInteger,
   throwError,
 } from '@jarvis-network/core-utils/dist/base/asserts';
@@ -24,8 +29,6 @@ import type {
   SupportedNetworkName,
 } from '../config';
 import { allSyntheticSymbols, priceFeed, synthereumConfig } from '../config';
-import { ERC20_Abi, SynthereumPoolRegistry_Abi } from '../contracts/abi';
-import { SynthereumPoolRegistry } from '../contracts/typechain';
 
 import { loadPool } from './pool-utils';
 import type {

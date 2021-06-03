@@ -4,7 +4,5 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  // Intentionally exclude ./scripts/ as we want to build them separately,
-  // before the rest of the package (this):
-  "include": ["src/**/*", "examples/**/*"]
+  "include": ["**/*.ts"]
 }

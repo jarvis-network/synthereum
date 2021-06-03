@@ -3,13 +3,15 @@ import { PerTupleElement } from '@jarvis-network/core-utils/dist/base/meta';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { PoolVersion } from '../core/types/pools';
-
 import {
   SupportedNetworkId,
   SupportedNetworkIds,
   SupportedNetworkName,
 } from './supported-networks';
+
+export const poolVersions = ['v1', 'v2', 'v3'] as const;
+export type PoolVersions = typeof poolVersions;
+export type PoolVersion = PoolVersions[number];
 
 export const allSyntheticSymbols = [
   'jEUR',

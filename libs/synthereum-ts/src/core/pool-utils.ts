@@ -1,5 +1,15 @@
 import BN from 'bn.js';
 import {
+  IDerivative_Abi,
+  SynthereumPoolOnChainPriceFeed_Abi,
+  SynthereumPool_Abi,
+  SynthereumTIC_Abi,
+} from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
+import {
+  IDerivative,
+  NonPayableTransactionObject,
+} from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+import {
   assertNotNull,
   throwError,
 } from '@jarvis-network/core-utils/dist/base/asserts';
@@ -28,23 +38,12 @@ import {
 import { executeInSequence } from '@jarvis-network/core-utils/dist/base/async';
 
 import {
+  Fees,
   SupportedNetworkId,
   SupportedNetworkName,
   synthereumConfig,
   SyntheticSymbol,
 } from '../config';
-import {
-  IDerivative_Abi,
-  SynthereumPool_Abi,
-  SynthereumPoolOnChainPriceFeed_Abi,
-  SynthereumTIC_Abi,
-} from '../contracts/abi';
-import {
-  IDerivative,
-  NonPayableTransactionObject,
-} from '../contracts/typechain';
-
-import { Fees } from '../config/types';
 
 import {
   PoolContract,
@@ -306,7 +305,7 @@ export async function changeRole<
   const { methods } = pool.instance;
 
   if (!(roleName in methods)) {
-    throwError(`Role '${roleName}' not found.`);
+    throwError(`Role '${roleName.toString()}' not found.`);
   }
 
   type Keys = Extract<keyof typeof methods, RoleName>;
@@ -318,7 +317,9 @@ export async function changeRole<
 
   if (!hasRole) {
     throwError(
-      `Expected address '${role.previousAddress}' to have role '${roleName} at pool ${pool.address}'`,
+      `Expected address '${
+        role.previousAddress
+      }' to have role '${roleName.toString()} at pool ${pool.address}'`,
     );
   }
 
@@ -329,13 +330,13 @@ export async function changeRole<
   await sendTxWithMsg(
     tx1,
     { ...txOptions, from },
-    `Revoking '${roleName}' Role`,
+    `Revoking '${roleName.toString()}' Role`,
   );
   const tx2 = pool.instance.methods.grantRole(roleId, role.newAddress);
   await sendTxWithMsg(
     tx2,
     { ...txOptions, from },
-    `Granting '${roleName}' Role`,
+    `Granting '${roleName.toString()}' Role`,
   );
 }
 

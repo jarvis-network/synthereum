@@ -1,3 +1,9 @@
+import {
+  IDerivative,
+  SynthereumPool as SynthereumPoolContract,
+  SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract,
+  SynthereumTIC as SynthereumTICContract,
+} from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
 import { assertIncludes } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   ContractInfo,
@@ -5,14 +11,11 @@ import {
 } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import type { SupportedNetworkName, SyntheticSymbol } from '../../config';
-import { priceFeed } from '../../config';
-import {
-  IDerivative,
-  SynthereumPool as SynthereumPoolContract,
-  SynthereumTIC as SynthereumTICContract,
-  SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract,
-} from '../../contracts/typechain';
+import type {
+  SupportedNetworkName,
+  SyntheticSymbol,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 export const poolVersions = ['v1', 'v2', 'v3'] as const;
 export type PoolVersions = typeof poolVersions;

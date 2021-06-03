@@ -1,8 +1,13 @@
 export {
   poolVersions,
+  parseSupportedNetworkId,
   allSyntheticSymbols,
+  synthereumConfig,
   primaryCollateralSymbol,
-} from './types';
+  priceFeed,
+  reversedPriceFeedPairs,
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
+
 export type {
   PoolVersion,
   PoolVersions,
@@ -12,10 +17,6 @@ export type {
   SynthereumConfig,
   SynthereumContractDependencies,
   SyntheticSymbol,
-} from './types';
-export { synthereumConfig, priceFeed, reversedPriceFeedPairs } from './data';
-export { parseSupportedNetworkId } from './supported-networks';
-export type {
   SupportedNetworkId,
   SupportedNetworkName,
-} from './supported-networks';
+} from '@jarvis-network/synthereum-contracts/dist/src/config';

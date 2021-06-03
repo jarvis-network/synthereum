@@ -1,3 +1,4 @@
+import { SynthereumPoolRegistry as SynthereumPoolRegistryContract } from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
 import {
   ContractInfo,
   TokenInfo,
@@ -6,8 +7,6 @@ import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { SupportedNetworkName } from '../../config';
-
-import { SynthereumPoolRegistry as SynthereumPoolRegistryContract } from '../../contracts/typechain';
 
 import { PoolsForVersion, PoolVersion } from './pools';
 

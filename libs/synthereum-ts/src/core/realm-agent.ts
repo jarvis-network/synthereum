@@ -29,7 +29,7 @@ import {
   SupportedNetworkName,
   SyntheticSymbol,
   ExchangeToken,
-} from '../config';
+} from '@jarvis-network/synthereum-contracts/dist/src/config';
 
 import { mapPools } from './pool-utils';
 import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
