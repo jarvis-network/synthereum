@@ -98,25 +98,27 @@ createOrModifyHardhatTask(TASK_TEST)
   .addFlag('debug', 'Compile without optimizer')
   .setAction(async (taskArgs, hre, runSuper) => {
     const { debug } = taskArgs;
-    const { name: network } = hre.network;
-    const networkId = toNetworkId(network as NetworkName);
-    if (
+    const prepare =
       ((hre as unknown) as { fromDeployScript?: boolean }).fromDeployScript !==
-      true
-    ) {
+      true;
+    const deployUma =
+      !process.env.MIGRATION_TYPE ||
+      !process.env.MIGRATION_TYPE.startsWith('add_');
+
+    if (prepare) {
       console.log(0, {
         TASK_TEST,
         taskArgs,
         'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
       });
-      if (
-        !process.env.MIGRATION_TYPE ||
-        !process.env.MIGRATION_TYPE.startsWith('add_')
-      ) {
+      if (deployUma) {
         await hre.run(TASK_DEPLOY, {
           noVerify: true,
-          migrationScript: 'all',
+          migrationScript: 'uma',
         });
+        (hre as {
+          migrationScript?: string;
+        }).migrationScript = 'all';
       }
       await gatherFiles(
         require.resolve('./contracts/test/ImportAll.sol'),
@@ -132,7 +134,22 @@ createOrModifyHardhatTask(TASK_TEST)
       hre.config.networks.hardhat.blockGasLimit = 0x1fffffffffffff;
       hre.config.networks.hardhat.gas = 12000000;
     }
-    await await runSuper(taskArgs);
+
+    console.log(3, {
+      TASK_TEST,
+      taskArgs,
+      'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
+    });
+    console.log('hello', { taskArgs });
+
+    await runSuper(taskArgs);
+
+    if (prepare && deployUma) {
+      delete (hre as {
+        migrationScript?: string;
+      }).migrationScript;
+    }
+    console.log('goodbye');
   });
 
 createOrModifyHardhatTask(
@@ -572,11 +589,14 @@ contract('${migrationScript}', accounts => {
 
       (hre as {
         fromDeployScript?: boolean;
-      }).fromDeployScript = true; // Used in test/truffle-fixture.js
+      }).fromDeployScript = true;
 
       if (!skipTest) {
         await hre.run(TASK_TEST, { testFiles: [testPath] });
       }
+      delete (hre as {
+        migrationScript?: string;
+      }).migrationScript;
       delete (hre as {
         fromDeployScript?: boolean;
       }).fromDeployScript;

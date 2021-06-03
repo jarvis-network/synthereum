@@ -4,9 +4,6 @@ const fs = require('fs');
 const path = require('path');
 
 require('dotenv').config({ path: './.env.migration' });
-const {
-  parseBoolean,
-} = require('@jarvis-network/core-utils/dist/base/asserts');
 
 module.exports = async ({
   network,
@@ -36,7 +33,6 @@ module.exports = async ({
   }
 
   const accounts = await web3.eth.getAccounts();
-  const networkId = await web3.eth.net.getId();
   const baseDir = path.resolve(__dirname, '..', 'migrations');
   const migrationScripts = fs
     .readdirSync(baseDir)
@@ -61,8 +57,10 @@ module.exports = async ({
     for (const script of umaBaseMigrationScripts) {
       await runMigration(script, network.name, accounts, true);
     }
+
+    return;
   }
-  if (scriptName === 'uma') return;
+
   if (realScriptName) {
     await runMigration(realScriptName, network.name, accounts);
   } else if (scriptName.startsWith('add_')) {
@@ -72,6 +70,14 @@ module.exports = async ({
     }
     console.log({ realScriptName, scriptName, fileName });
     await runMigration(fileName, network.name, accounts);
+  } else if (scriptName === 'all') {
+    // Run only by 'hardhat test'
+    for (const script of migrationScripts
+      .filter(x => !path.basename(x).slice(3).startsWith('add_'))
+      .sort()) {
+      console.log('deploy all in order', { script });
+      await runMigration(script, network.name, accounts);
+    }
   } else {
     console.log(`Migration script '${scriptName}' not found.`);
     process.exit(1);
