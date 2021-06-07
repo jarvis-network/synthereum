@@ -140,6 +140,10 @@ export function Claim(): JSX.Element {
   }, [web3, claim, contractInfo, auth, networkId, dispatch]);
 
   const lastClaimRef = useRef<typeof claim>(null);
+  const address = auth?.address;
+  useEffect(() => {
+    lastClaimRef.current = null;
+  }, [address]);
   if (claim) {
     lastClaimRef.current = claim;
   }
