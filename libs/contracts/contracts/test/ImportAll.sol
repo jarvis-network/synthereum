@@ -72,3 +72,4 @@ import '../derivative/v2/PerpetualPositionManagerPoolPartyLib.sol';
 import '../derivative/v2/PerpetualLiquidatablePoolPartyLib.sol';
 import '../derivative/v2/PerpetutalPoolPartyCreator.sol';
 import '../derivative/v2/PerpetualLiquidatablePoolParty.sol';
+import '../extensions/atomic-swap/AtomicSwap.sol';
