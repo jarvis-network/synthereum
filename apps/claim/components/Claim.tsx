@@ -20,6 +20,9 @@ import {
 } from '@jarvis-network/core-utils/dist/eth/address';
 import { sendTx } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 import { useAerariumMilitare } from '@/utils/useAerariumMilitare';
+import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/src/config';
+
+import { MessageContainer } from './MessageContainer';
 
 const Container = styled.div`
   display: flex;
@@ -155,12 +158,9 @@ export function Claim(): JSX.Element {
     }
   }, [lastClaim]);
 
-  if (!lastClaim)
-    return (
-      <div style={{ height: 275, textAlign: 'center', paddingTop: 100 }}>
-        Loading...
-      </div>
-    );
+  if (!isSupportedNetwork(networkId))
+    return <MessageContainer>Unsupported Network</MessageContainer>;
+  if (!lastClaim) return <MessageContainer>Loading...</MessageContainer>;
 
   const shouldLiquidate = lastClaim.endTime * 1000 < Date.now();
   const investorInfo = new FPN(lastClaim.investorInfo, true);

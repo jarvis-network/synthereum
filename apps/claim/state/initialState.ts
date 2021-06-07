@@ -21,6 +21,11 @@ export interface State {
     claimableJRT: string; // big number
     claimedAmount: string; // big number
   } | null;
+  history: {
+    amount: string;
+    timestamp: number;
+    transactionHash: string;
+  }[];
 }
 
 export const initialAppState: State = {
@@ -30,5 +35,6 @@ export const initialAppState: State = {
     isUnsupportedNetworkModalVisible: false,
   },
   auth: null,
+  history: [],
   claim: null,
 };
