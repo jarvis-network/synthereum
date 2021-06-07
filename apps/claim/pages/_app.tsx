@@ -81,8 +81,8 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
               <BackgroundPreloader backgrounds={backgroundList} />
               <Container>
                 <Component {...pageProps} />
-                <Header />
               </Container>
+              <Header />
             </AuthProvider>
           </NotificationsProvider>
         </AppThemeProvider>

@@ -13,9 +13,12 @@ const MainWrapper = styled.div<{ image: string }>`
   background-color: ${props => props.theme.background.medium};
   background-size: cover;
   height: 100%;
+  padding-bottom: 61px;
 
   @media screen and (min-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    padding-top: 61px;
+    padding-bottom: 0;
     flex-direction: column-reverse;
   }
 `;
