@@ -26,6 +26,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "bnc-onboard": "^1.19.2",
     "damlev": "^1.0.0",
+    "fuse.js": "^6.4.6",
     "milliseconds": "^1.0.3",
     "next": "9.5.3",
     "next-pwa": "^5.0.6",

@@ -16,7 +16,7 @@ import {
   OnDesktop,
   OnMobile,
 } from '@jarvis-network/ui';
-import damlev from 'damlev';
+import Fuse from 'fuse.js';
 
 import { MainForm } from '@/components/exchange/MainForm';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
@@ -245,6 +245,13 @@ export const ExchangeCard: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const pairsList = useMemo(() => createPairs(list), [list]);
+  const searcher = useMemo(
+    () =>
+      new Fuse(pairsList, {
+        keys: ['name'],
+      }),
+    [pairsList],
+  );
 
   const { fee, paySymbol, assetPay, assetReceive } = useExchangeValues();
 
@@ -326,27 +333,8 @@ export const ExchangeCard: React.FC = () => {
     () => ({
       placeholder: 'Try "jEUR"',
       data: pairsList,
-      filter: (
-        data: AssetPair[],
-        { query: searchQuery }: { query: string },
-      ) => {
-        searchQuery = searchQuery.toLowerCase().replace(/\//g, '');
-
-        return data.filter(item => {
-          const index = item.index.toLowerCase();
-
-          // Early return on match
-          if (index.includes(searchQuery)) {
-            return true;
-          }
-
-          // Calculate distance, but not added chairs (ie. uds <> usdeur has distance 4)
-          const distance =
-            damlev(searchQuery, index) - (6 - searchQuery.length);
-
-          return distance < 2;
-        });
-      },
+      filter: (data: AssetPair[], { query: searchQuery }: { query: string }) =>
+        searcher.search(searchQuery).map(result => result.item),
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value);
 
@@ -358,7 +346,7 @@ export const ExchangeCard: React.FC = () => {
       value: query,
       open: searchOpen,
     }),
-    [searchOpen, query],
+    [searchOpen, query, searcher],
   );
 
   if (searchOpen) {

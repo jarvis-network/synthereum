@@ -23,7 +23,6 @@ export interface AssetPair {
   input: Asset;
   output: Asset;
   name: string;
-  index: string; // used for easier filtering
 }
 
 export const PRIMARY_STABLE_COIN_TEXT_SYMBOL = '$';
