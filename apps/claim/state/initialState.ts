@@ -14,6 +14,13 @@ export interface State {
     isUnsupportedNetworkModalVisible: boolean;
   };
   auth: AuthState;
+  claim: {
+    investorInfo: string; // big number
+    endTime: number; // timestamp in seconds
+    startTime: number; // timestamp in seconds
+    claimableJRT: string; // big number
+    claimedAmount: string; // big number
+  } | null;
 }
 
 export const initialAppState: State = {
@@ -23,4 +30,5 @@ export const initialAppState: State = {
     isUnsupportedNetworkModalVisible: false,
   },
   auth: null,
+  claim: null,
 };

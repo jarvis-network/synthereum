@@ -17,8 +17,33 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
+  display: flex;
+  flex-direction: column;
   background-color: ${props => props.theme.background.primary};
   flex-grow: 1;
+
+  > div:last-child {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    > div:first-child {
+      height: 50px;
+      > div {
+        height: 50px;
+        line-height: 50px;
+        > [role='button'] {
+          margin-left: 16px;
+        }
+      }
+    }
+
+    > div:last-child {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+  }
 
   @media screen and (min-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
@@ -27,6 +52,19 @@ const Content = styled.div`
     min-width: 500px;
     min-height: 0;
     flex-grow: 0;
+
+    > div:last-child {
+      > div:first-child {
+        height: 60px;
+        > div {
+          height: 60px;
+          line-height: 60px;
+          > [role='button'] {
+            margin-left: 24px;
+          }
+        }
+      }
+    }
   }
 `;
 
