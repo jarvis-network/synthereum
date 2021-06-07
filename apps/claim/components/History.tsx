@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { soliditySha3, toBN } from 'web3-utils';
 import {
   useBehaviorSubject,
   useCoreObservables,
 } from '@jarvis-network/app-toolkit';
 import { useERC20Contract } from '@/utils/useERC20Contract';
+import { useDebouncedValue } from '@/utils/useDebouncedValue';
 import { addresses } from '@/data/addresses';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { NetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
@@ -98,7 +99,7 @@ export function History(): JSX.Element | null {
   const { web3$, networkId$ } = useCoreObservables();
   const web3 = useBehaviorSubject(web3$);
   const networkId = useBehaviorSubject(networkId$);
-  const history = useReduxSelector(state => state.history);
+  const history = useDebouncedValue(useReduxSelector(state => state.history));
   const auth = useReduxSelector(state => state.auth);
   const dispatch = useDispatch();
 
@@ -152,7 +153,7 @@ export function History(): JSX.Element | null {
   return (
     <Container>
       {results.map(result => (
-        <>
+        <React.Fragment key={result[0].timestamp}>
           <DateLabel>{formatDayLabel(result[0].timestamp)}</DateLabel>
           {result.map(item => (
             <HistoryItem
@@ -161,7 +162,7 @@ export function History(): JSX.Element | null {
               networkId={networkId}
             />
           ))}
-        </>
+        </React.Fragment>
       ))}
     </Container>
   );
