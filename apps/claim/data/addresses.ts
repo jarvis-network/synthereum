@@ -19,7 +19,7 @@ export const addresses: {
     JRT: A('0x8a9c67fee641579deba04928c4bc45f66e26343a'),
   },
   [networkNameToId.kovan]: {
-    AerariumMilitare: A('0xB66eB5590471A21A3957A44C7B663821015c093c'),
+    AerariumMilitare: A('0x2478E5ed3C328b6c2cf2B89E445b69671a0fFD15'),
     JRT: A('0xEC8Fe8Aa79dAdcA065496b791AE1c1338DfBBED1'),
   },
 } as const;
