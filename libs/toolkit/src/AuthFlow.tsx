@@ -205,7 +205,7 @@ export function AuthFlow<
   };
 
   useEffect(() => {
-    const autoLoginWallet = localStorage.getItem(`${appName}/autologin`);
+    const autoLoginWallet = localStorage.getItem(`jarvis/autologin`);
 
     if (!autoLoginWallet) {
       return;

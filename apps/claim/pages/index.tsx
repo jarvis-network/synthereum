@@ -1,8 +1,10 @@
-import { Tabs, styled } from '@jarvis-network/ui';
+import { Tabs, styled, Button } from '@jarvis-network/ui';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Claim } from '@/components/Claim';
 import { History } from '@/components/History';
+import { useDispatch } from 'react-redux';
+import { setAuthModalVisible } from '@/state/slices/app';
 
 const Container = styled.div`
   flex: 1;
@@ -83,8 +85,26 @@ const CustomTabs = styled(Tabs)`
   }
 `;
 
+const SignIn = styled.div`
+  display: flex;
+  padding: 16px;
+  flex-direction: column-reverse !important;
+
+  > button {
+    width: 100%;
+    text-align: center;
+  }
+
+  @media screen and (min-width: ${props =>
+      props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
+    height: calc(275px + 60px);
+    padding: 24px;
+  }
+`;
+
 export default function Home(): JSX.Element {
   const auth = useReduxSelector(state => state.auth);
+  const dispatch = useDispatch();
 
   return (
     <Container>
@@ -99,7 +119,14 @@ export default function Home(): JSX.Element {
             ]}
           />
         ) : (
-          <div>Log in first</div>
+          <SignIn>
+            <Button
+              type="success"
+              onClick={() => dispatch(setAuthModalVisible(true))}
+            >
+              Sign in
+            </Button>
+          </SignIn>
         )}
       </Content>
     </Container>
