@@ -1,4 +1,4 @@
-import { assertIncludes } from '@jarvis-network/core-utils/dist/base/asserts';
+import { throwError } from '@jarvis-network/core-utils/dist/base/asserts';
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 import {
   NetworkId,
@@ -10,18 +10,24 @@ export const supportedNetworkIds = typeCheck<NetworkId[]>()([1, 42] as const);
 export type SupportedNetworkIds = typeof supportedNetworkIds;
 export type SupportedNetworkId = SupportedNetworkIds[number];
 export type SupportedNetworkName = ToNetworkName<SupportedNetworkId>;
+export type SupportedNetwork =
+  | SupportedNetworkName
+  | SupportedNetworkId
+  | `${SupportedNetworkId}`;
 
 export function parseSupportedNetworkId(x: unknown): SupportedNetworkId {
-  return assertIncludes(
-    supportedNetworkIds,
-    parseNetworkId(x),
-    `${x} is not a supported networkId. Supported network ids are: ` +
-      `[${supportedNetworkIds}]`,
-  );
+  return isSupportedNetwork(x)
+    ? (parseNetworkId(x) as SupportedNetworkId)
+    : throwError(
+        `${x} is not a supported networkId. Supported network ids are: ` +
+          `[${supportedNetworkIds}]`,
+      );
 }
 
 export function isSupportedNetwork(
-  networkId: unknown,
-): networkId is SupportedNetworkId {
-  return supportedNetworkIds.includes(networkId as SupportedNetworkId);
+  network: unknown,
+): network is SupportedNetwork {
+  return supportedNetworkIds.includes(
+    parseNetworkId(network) as SupportedNetworkId,
+  );
 }
