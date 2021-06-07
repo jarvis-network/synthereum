@@ -9,7 +9,6 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const deployment = require('../data/deployment/selfMinting-derivatives.json');
 const assets = require('../data/synthetic-assets.json');
-const selfMintingDerivativeVersions = require('../data/derivative-versions.json');
 const selfMintingData = require('../data/selfMinting-data.json');
 const {
   parseFiniteFloat,
@@ -40,8 +39,7 @@ module.exports = async function (deployer, network, accounts) {
       let selfMintingDerivativeVersion = '';
       let selfMintingDerivativePayload = '';
       if (deployment[networkId].SelfMintingDerivative === 1) {
-        selfMintingDerivativeVersion =
-          selfMintingDerivativeVersions[networkId]['DerivativeFactory'].version;
+        selfMintingDerivativeVersion = selfMintingData[networkId].version;
         selfMintingDerivativePayload = encodeSelfMintingDerivative(
           selfMintingData[networkId].collateralAddress,
           asset.priceFeedIdentifier,
@@ -78,12 +76,6 @@ module.exports = async function (deployer, network, accounts) {
         )
         .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
-        const derivativeToDeploy = await synthereumDeployer.methods
-          .deployOnlySelfMintingDerivative(
-            txData[j].selfMintingDerivativeVersion,
-            txData[j].selfMintingDerivativePayload,
-          )
-          .call({ from: maintainer });
         const tx = await synthereumDeployer.methods
           .deployOnlySelfMintingDerivative(
             txData[j].selfMintingDerivativeVersion,
@@ -96,7 +88,7 @@ module.exports = async function (deployer, network, accounts) {
           web3,
           txhash: transactionHash,
           contractName: txData[j].asset,
-          txSummaryText: 'deployOnlyPool',
+          txSummaryText: 'deploySelfMintingDerivative',
         });
       }
     }

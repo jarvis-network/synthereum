@@ -88,13 +88,6 @@ module.exports = async function (deployer, network, accounts) {
         )
         .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
-        const poolToDeploy = await synthereumDeployer.methods
-          .deployOnlyPool(
-            txData[j].poolVersion,
-            txData[j].poolPayload,
-            txData[j].derivative,
-          )
-          .call({ from: maintainer });
         const tx = await synthereumDeployer.methods
           .deployOnlyPool(
             txData[j].poolVersion,
