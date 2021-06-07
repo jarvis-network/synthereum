@@ -47,6 +47,8 @@ stages:
         NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_FRONTEND'
       - TARGET: borrowing
         NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BORROWING'
+      - TARGET: claim
+        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_CLAIM'
   variables:
     NETLIFY_AUTH_TOKEN: '$NETLIFY_AUTH_TOKEN'
   script:

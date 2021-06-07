@@ -95,6 +95,12 @@ installing the software listed above.
             yarn build borrowing
             ```
 
+        * Claim:
+
+            ```sh
+            yarn build claim
+            ```
+
         * Validator:
 
             ```sh
@@ -121,6 +127,12 @@ installing the software listed above.
             yarn start frontend
             ```
 
+        * Jarvis Claim JRT DApp:
+
+            ```sh
+            yarn start claim
+            ```
+
         * Validator:
 
             ```sh
@@ -141,6 +153,7 @@ installing the software listed above.
 jarvis-network/exchange/mono-repo/
 ├── apps/                    | source code | applications
 │   ├── borrowing/           | source code | Jarvis Borrowing DApp
+│   ├── claim/               | source code | Jarvis Claim DApp
 │   ├── cli/                 | source code | CLI utilities for interacting with contracts
 │   ├── frontend/            | source code | Jarvis Exchange DApp
 │   ├── validator/           | source code | double tx based mint/redeem/exchange validator (Synthereum V1)

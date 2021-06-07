@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body.theme-light {
+  background: rgb(241, 241, 241);
+  color: rgb(0, 0, 0);
+}
+
+body.theme-dark {
+  background: rgb(41, 41, 41);
+  color: rgb(255, 255, 255);
+}
+
+body.theme-night {
+  background: rgb(46, 53, 65);
+  color: rgb(255, 255, 255);
+}
+
+@supports (padding: max(0px)) {
+  html,
+  body,
+  #__next {
+    padding-left: min(0vmin, env(safe-area-inset-left));
+    padding-right: min(0vmin, env(safe-area-inset-right));
+  }
+}

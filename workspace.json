@@ -310,6 +310,49 @@
         }
       }
     },
+    "claim": {
+      "root": "apps/claim",
+      "sourceRoot": "apps/claim",
+      "projectType": "application",
+      "generators": {},
+      "targets": {
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "cwd": "apps/claim",
+            "color": true
+          }
+        },
+        "start": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn start"],
+            "cwd": "apps/claim",
+            "color": true
+          }
+        },
+        "start:server": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn start-dev"],
+            "cwd": "apps/claim",
+            "color": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": { "lintFilePatterns": ["apps/claim/**/*.{ts,tsx}"] }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/claim/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "cli": {
       "root": "apps/cli",
       "sourceRoot": "apps/cli/src",

@@ -101,3 +101,30 @@ target "borrowing" {
     "type=registry,ref=${REGISTRY_NAME}/borrowing-cache:${TAG}"
   ]
 }
+
+target "claim" {
+  dockerfile = "Dockerfile"
+  output = ["type=docker"]
+  tags = [
+    "${REGISTRY_NAME}/claim:${TAG}"
+  ]
+  platforms = ["linux/amd64"]
+  args = {
+    NEXT_PUBLIC_ONBOARD_API_KEY = "${NEXT_PUBLIC_ONBOARD_API_KEY}"
+    NEXT_PUBLIC_NETWORK_ID = "${NEXT_PUBLIC_NETWORK_ID}"
+    NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET = "${NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET}"
+    NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET = "${NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET}"
+    NEXT_PUBLIC_INFURA_API_KEY = "${NEXT_PUBLIC_INFURA_API_KEY}"
+    NEXT_PUBLIC_PORTIS_API_KEY = "${NEXT_PUBLIC_PORTIS_API_KEY}"
+    NEXT_PUBLIC_PRICE_FEED_ROOT = "${NEXT_PUBLIC_PRICE_FEED_ROOT}"
+    NEXT_PUBLIC_SUPPORTED_ASSETS = "${NEXT_PUBLIC_SUPPORTED_ASSETS}"
+  }
+  target = "claim"
+  cache-from = [
+    "type=registry,ref=${REGISTRY_NAME}/install-cache:${YARN_LOCK_SHA256}",
+    "type=registry,ref=${REGISTRY_NAME}/claim-cache:${TAG}"
+  ]
+  cache-to= [
+    "type=registry,ref=${REGISTRY_NAME}/claim-cache:${TAG}"
+  ]
+}

@@ -110,6 +110,7 @@
         "docker",
         "k8s",
         "toolkit",
+        "claim",
         "validator-lib"
       ]
     }

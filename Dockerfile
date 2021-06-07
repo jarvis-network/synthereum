@@ -56,6 +56,12 @@ FROM build-frontend-base as build-borrowing
 RUN yarn build borrowing
 RUN cp -r apps/borrowing/out /out
 
+# -------------------------------- Build Claim -------------------------------- #
+
+FROM build-frontend-base as build-claim
+RUN yarn build claim
+RUN cp -r apps/claim/out /out
+
 # ---------------------------------------------------------------------------- #
 #                       Frontend deployment final images:                      #
 # ---------------------------------------------------------------------------- #
@@ -71,6 +77,10 @@ COPY --from=build-frontend /out /src
 # ----------------- Borrowing frontend Netlify deploy image: ----------------- #
 FROM netlify as borrowing
 COPY --from=build-borrowing /out /src
+
+# ------------------- Claim frontend Netlify deploy image: ------------------- #
+FROM netlify as claim
+COPY --from=build-claim /out /src
 
 # ---------------------------------------------------------------------------- #
 #                               Deploy Validator                               #
