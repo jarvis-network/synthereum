@@ -48,6 +48,15 @@ const MainWrapper = styled.div`
   color: ${props => props.theme.text.primary};
 `;
 
+/*
+
+Technical maintenance:
+
+1. Add `import { TechnicalMaintenance } from '@/components/TechnicalMaintenance';` (don't forget about ESLint import/order)
+2. Add `return <TechnicalMaintenance />;` as the first line in `MyApp`
+
+*/
+
 function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
   const subjects = useSubjects();
 
