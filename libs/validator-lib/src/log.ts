@@ -1,10 +1,9 @@
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 
 import path from 'path';
 
 import * as Bunyan from 'bunyan';
 import PrettyStream from 'bunyan-prettystream';
-import mkdirp from 'mkdirp';
 
 import { env } from './config';
 
@@ -20,7 +19,7 @@ prettyStdOut.pipe(process.stdout);
 
 export function createEverLogger({ name }: ILogArgs): Bunyan {
   if (!isLogsFolderExists) {
-    mkdirp.sync(env.LOGS_PATH);
+    mkdirSync(env.LOGS_PATH, { recursive: true });
     isLogsFolderExists = true;
   }
 
