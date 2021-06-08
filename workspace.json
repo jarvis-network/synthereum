@@ -371,10 +371,7 @@
         "start": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "command": "./scripts/run.sh",
-            "forwardAllArgs": true,
-            "cwd": "./apps/cli",
-            "color": true
+            "command": "echo 'Use `yarn start:cli` instead.'; exit 1;"
           }
         },
         "lint": {

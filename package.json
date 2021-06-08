@@ -13,6 +13,7 @@
     "clean:all": "git clean -fdx -e .env -e hush -- .",
     "nx": "nx",
     "start": "nx start",
+    "start:cli": "./apps/cli/scripts/run.sh",
     "test": "nx test",
     "build": "sh -c 'nx build $1 --with-deps ${@:1}' --",
     "lint": "nx lint",
