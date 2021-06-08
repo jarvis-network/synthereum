@@ -29,3 +29,9 @@ export function buildCli(
       coerce: x => parseSupportedNetworkId(x),
     });
 }
+
+export function arrayCliArg(arg: string[] = []): string[] {
+  return Array.isArray(arg) && arg.length === 1 && arg[0].indexOf(',') > -1
+    ? arg[0].split(',')
+    : arg;
+}

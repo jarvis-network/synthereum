@@ -13,15 +13,12 @@ import { IdentifierWhitelist_Abi } from '@jarvis-network/synthereum-contracts/di
 import { utf8ToHex } from 'web3-utils';
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { buildCli } from './common/cli-config';
+import { arrayCliArg, buildCli } from './common/cli-config';
 
 const { argv } = buildCli(__filename).option('identifiers', {
   array: true,
   type: 'string',
-  coerce: (x: string[] | undefined) =>
-    Array.isArray(x) && x.length === 1 && x[0].indexOf(',') > 0
-      ? x[0].split(',')
-      : x,
+  coerce: x => arrayCliArg(x),
 });
 
 async function main() {
