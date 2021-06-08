@@ -9,7 +9,7 @@ import { networkNameToId } from '@jarvis-network/core-utils/dist/eth/networks';
 import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
-import { getCliBuilder } from './common/cli-config';
+import { buildCli } from './common/cli-config';
 
 const FAUCET_CONTRACT_ADDRESS = A('0x600103d518cc5e8f3319d532eb4e5c268d32e604');
 
@@ -94,7 +94,7 @@ const aaveTokens = {
   },
 } as const;
 
-const { argv } = getCliBuilder(__filename)
+const { argv } = buildCli(__filename)
   .option('token', {
     type: 'string',
     required: true,

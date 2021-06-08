@@ -9,7 +9,7 @@ import {
   SupportedNetworkId,
 } from '@jarvis-network/synthereum-ts/dist/config';
 
-export function getCliBuilder(
+export function buildCli(
   scriptName: string,
 ): Argv<{
   network: SupportedNetworkId;

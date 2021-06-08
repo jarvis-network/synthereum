@@ -13,9 +13,9 @@ import { IdentifierWhitelist_Abi } from '@jarvis-network/synthereum-contracts/di
 import { utf8ToHex } from 'web3-utils';
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { getCliBuilder } from './common/cli-config';
+import { buildCli } from './common/cli-config';
 
-const { argv } = getCliBuilder(__filename).option('identifiers', {
+const { argv } = buildCli(__filename).option('identifiers', {
   array: true,
   type: 'string',
   coerce: (x: string[] | undefined) =>
