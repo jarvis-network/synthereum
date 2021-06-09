@@ -8,7 +8,7 @@ const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
-} = require('../../utils/encoding.js');
+} = require('../../../utils/encoding.js');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SelfMintingController = artifacts.require('SelfMintingController');
