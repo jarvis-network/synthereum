@@ -4,5 +4,6 @@ module.exports = {
     '@jarvis-network',
     '@openzeppelin',
     'contracts/test',
+    'contracts/extensions',
   ],
 };
