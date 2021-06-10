@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 
 import { styled } from '../Theme';
 
-import { SelectProps, IOptions } from './types';
+import { SelectProps, TOption } from './types';
 
 const SELECT_WIDTH = '100%';
 const ZERO_PADDING = 0;
@@ -58,7 +58,7 @@ const SelectWrapper = styled.div`
       border: none;
       border-bottom: ${SELECT_DEFAULT_BORDER};
       border-top: ${SELECT_DEFAULT_BORDER};
-      background: ${props => props.theme.background.secondary};
+      background: ${props => props.theme.background.primary};
       border-radius: ${props => props.theme.borderRadius.xs};
       box-shadow: none;
       margin: 0;
@@ -74,12 +74,11 @@ const SelectWrapper = styled.div`
     &__option {
       background: transparent;
       color: ${props => props.theme.text.medium};
-      font-size: ${props => props.theme.font.sizes.xs};
-      border-radius: ${props => props.theme.borderRadius.xs};
+      font-size: ${props => props.theme.font.sizes.s};
       padding: 5px 6px;
 
       &:not(:last-child) {
-        border-bottom: 1px solid ${props => props.theme.border.primary};
+        border-bottom: 1px solid ${props => props.theme.border.secondary};
       }
 
       &:hover {
@@ -89,47 +88,55 @@ const SelectWrapper = styled.div`
   }
 `;
 
-const makeIOption = (
-  rowsText: SelectProps['rowsText'],
-  opt: string | number | IOptions,
-) => {
+function makeOption<Option>(
+  rowsText: SelectProps<TOption<Option>>['rowsText'],
+  opt: TOption<Option>,
+): TOption<Option> {
   if (typeof opt === 'string' || typeof opt === 'number') {
     const suffix = rowsText ? ` ${rowsText}` : '';
 
     return {
-      value: opt,
+      value: (opt as unknown) as string | number,
       label: String(opt) + suffix,
-    };
+    } as TOption<Option>;
   }
   return opt;
-};
+}
 
-export const Select: React.FC<SelectProps> = ({
+export interface Select<Option> {
+  (e: SelectProps<Option>): JSX.Element;
+}
+export function Select<Option>({
   onChange,
   selected,
   rowsText,
   options,
   className,
-}) => {
-  const iOptions = useMemo(
-    () => options.map(makeIOption.bind(null, rowsText)),
+  optionComponent: Option,
+  singleValueComponent: SingleValue,
+}: SelectProps<Option>) {
+  const formattedOptions = useMemo(
+    () =>
+      options.map(item =>
+        makeOption<Option>(rowsText, item as TOption<Option>),
+      ),
     [options, rowsText],
   );
 
   const selectedItem =
     typeof selected === 'string' || typeof selected === 'number'
-      ? iOptions.find(opt => String(opt.value) === String(selected))!
+      ? formattedOptions.find(opt => String(opt.value) === String(selected))!
       : selected;
 
   return (
     <SelectWrapper className={className}>
       <ReactSelect
         value={selectedItem}
-        options={iOptions}
+        options={formattedOptions}
         onChange={onChange}
         isSearchable={false}
         menuPlacement="auto"
-        components={{ IndicatorSeparator: null }}
+        components={{ IndicatorSeparator: null, Option, SingleValue }}
         hideSelectedOptions={false}
         classNamePrefix="react-select"
         theme={theme => ({
@@ -143,4 +150,6 @@ export const Select: React.FC<SelectProps> = ({
       />
     </SelectWrapper>
   );
-};
+}
+
+export const { Option, SingleValue } = components;
