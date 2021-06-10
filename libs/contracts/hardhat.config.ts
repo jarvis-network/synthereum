@@ -101,9 +101,11 @@ createOrModifyHardhatTask(TASK_TEST)
     const prepare =
       ((hre as unknown) as { fromDeployScript?: boolean }).fromDeployScript !==
       true;
-    const deployUma =
-      !process.env.MIGRATION_TYPE ||
-      !process.env.MIGRATION_TYPE.startsWith('add_');
+    const { name: network } = hre.network;
+    const deployUmaAndAll =
+      !network.endsWith('_fork') &&
+      (!process.env.MIGRATION_TYPE ||
+        !process.env.MIGRATION_TYPE.startsWith('add_'));
 
     if (prepare) {
       console.log(0, {
@@ -111,7 +113,7 @@ createOrModifyHardhatTask(TASK_TEST)
         taskArgs,
         'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
       });
-      if (deployUma) {
+      if (deployUmaAndAll) {
         await hre.run(TASK_DEPLOY, {
           noVerify: true,
           migrationScript: 'uma',
@@ -144,7 +146,7 @@ createOrModifyHardhatTask(TASK_TEST)
 
     await runSuper(taskArgs);
 
-    if (prepare && deployUma) {
+    if (prepare && deployUmaAndAll) {
       delete (hre as {
         migrationScript?: string;
       }).migrationScript;
