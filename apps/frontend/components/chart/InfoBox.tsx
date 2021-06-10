@@ -5,7 +5,11 @@ import {
   Skeleton,
   Icon,
   Select,
+  Option as OptionWrapper,
+  SingleValue,
   styledScrollbars,
+  SingleValueProps,
+  OptionProps,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
@@ -55,20 +59,20 @@ const Flags = styled.div`
   z-index: 1;
   margin-right: 5px;
   display: block;
-  height: 29px;
+  height: 24px;
 
-  > * {
+  > img {
     position: relative;
-    height: 29px;
-    width: 29px;
-  }
+    height: 24px;
+    width: 24px;
 
-  > *:first-child {
-    z-index: 2;
-  }
+    &:first-child {
+      z-index: 2;
+    }
 
-  > *:last-child {
-    left: -4px;
+    &:last-child {
+      left: -4px;
+    }
   }
 `;
 
@@ -94,11 +98,6 @@ const Change = styled.div<{ pastHidden: boolean }>`
   span {
     visibility: ${props => (props.pastHidden ? 'hidden' : 'visible')};
   }
-`;
-
-const CustomFlag = styled(Flag)`
-  height: 24px;
-  width: 24px;
 `;
 
 const DayButton = styled.button<{ active: boolean }>`
@@ -143,10 +142,10 @@ const InfoBoxTwoIcons = styled(TwoIconsButton)`
   transform: rotate(-90deg);
 `;
 
-const CustomSelect = styled(Select)`
+const CustomSelect = styled(Select as Select<Option>)`
   min-width: 100px;
   width: auto;
-  margin: 0;
+  margin: 0 0 0 -4px;
   padding: 0;
 
   .react-select__control {
@@ -165,10 +164,49 @@ const CustomSelect = styled(Select)`
   .react-select__menu-list {
     ${props =>
       styledScrollbars(props.theme, {
-        background: props.theme.background.secondary,
+        background: props.theme.background.primary,
       })}
   }
-`; //
+`;
+
+const AlignVertically = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+`;
+
+interface Option {
+  value: string;
+  label: string;
+  icon: JSX.Element;
+}
+
+function OptionComponent(props: OptionProps<Option, false>) {
+  const {
+    data: { icon, label },
+  } = props;
+  return (
+    <OptionWrapper {...props}>
+      <AlignVertically>
+        {icon}
+        {label}
+      </AlignVertically>
+    </OptionWrapper>
+  );
+}
+function SelectValue(props: SingleValueProps<Option>) {
+  const {
+    data: { icon, label },
+  } = props;
+  return (
+    <SingleValue {...props}>
+      <AlignVertically>
+        {icon}
+        {label}
+      </AlignVertically>
+    </SingleValue>
+  );
+}
 
 const InfoBox: React.FC<Props> = ({
   value,
@@ -183,8 +221,6 @@ const InfoBox: React.FC<Props> = ({
   const {
     paySymbol,
     receiveSymbol,
-    assetPay,
-    assetReceive,
     base,
     payString,
     receiveString,
@@ -192,15 +228,22 @@ const InfoBox: React.FC<Props> = ({
 
   const isApplicationReady = useReduxSelector(isAppReadySelector);
 
-  const payFlag = assetPay?.icon ? <CustomFlag flag={assetPay.icon} /> : null;
-  const receiveFlag = assetReceive?.icon ? (
-    <CustomFlag flag={assetReceive.icon} />
-  ) : null;
-
   const allAssets = useReduxSelector(state => state.assets.list);
-  const pairsList = useMemo(
+  const options = useMemo(
     () =>
-      createPairs(allAssets).map(p => `${p.input.symbol} / ${p.output.symbol}`),
+      createPairs(allAssets).map<Option>(p => {
+        const label = `${p.input.symbol} / ${p.output.symbol}`;
+        return {
+          value: label,
+          label,
+          icon: (
+            <Flags>
+              {p.input.icon && <Flag flag={p.input.icon} />}
+              {p.output.icon && <Flag flag={p.output.icon} />}
+            </Flags>
+          ),
+        };
+      }),
     [allAssets],
   );
 
@@ -243,16 +286,14 @@ const InfoBox: React.FC<Props> = ({
   const content = isInfoBoxVisible() ? (
     <>
       <Symbols>
-        <Flags>
-          {payFlag}
-          {receiveFlag}
-        </Flags>
         <CurrencySymbol>
           <CustomSelect
             selected={selectedPair}
             onChange={val => handlePairChange(String(val!.value))}
             rowsText=""
-            options={pairsList}
+            options={options}
+            optionComponent={OptionComponent}
+            singleValueComponent={SelectValue}
           />
         </CurrencySymbol>
         <InfoBoxTwoIcons onClick={flipValues}>
