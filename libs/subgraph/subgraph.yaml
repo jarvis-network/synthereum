@@ -1,0 +1,82 @@
+specVersion: 0.0.2
+description: ''
+schema:
+  file: ./synthereum.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: SynthereumDerivativeFactoryContract
+    network: mainnet
+    source:
+      address: '0x98c1f29a478fb4e5da14c2bca0380e67ac2a964a' #TAG:deriv-factory-1
+      abi: SynthereumDerivativeFactoryContract
+      startBlock: 11654110 #TAG:deriv-factory-1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: SynthereumDerivativeFactoryContract
+          file: ../contracts/dist/src/contracts/abi/SynthereumDerivativeFactory.json
+        - name: PerpetualPoolPartyContractABI
+          file: ../contracts/dist/src/contracts/abi/PerpetualPoolParty.json
+        - name: IERC20Contract
+          file: ../contracts/dist/src/contracts/abi/ERC20.json
+        - name: MintableBurnableSyntheticTokenABI
+          file: ../contracts/dist/src/contracts/abi/MintableBurnableIERC20.json
+      callHandlers:
+        - function: createPerpetual((address,bytes32,string,string,address,(uint256),(uint256),(uint256),(uint256),(uint256),uint256,uint256,address,address[],address[]))
+          handler: handleCreatePerpetual
+      file: ./src/mapping.ts
+templates:
+  ##########################################
+  - kind: ethereum/contract
+    name: PerpetualPoolPartyContract
+    network: mainnet
+    source:
+      abi: PerpetualPoolPartyContractABI
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: PerpetualPoolPartyContractABI
+          file: ../contracts/dist/src/contracts/abi/PerpetualPoolParty.json
+        - name: IERC20Contract
+          file: ../contracts/dist/src/contracts/abi/ERC20.json
+        - name: SynthereumPoolContract
+          file: ../contracts/dist/src/contracts/abi/SynthereumPool.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/mapping.ts
+  ##########################################
+  - kind: ethereum/contract
+    name: SynthereumPoolContract
+    network: mainnet
+    source:
+      abi: SynthereumPoolContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Exchange
+        - Mint
+        - Redeem
+      abis:
+        - name: SynthereumPoolContract
+          file: ../contracts/dist/src/contracts/abi/SynthereumPool.json
+        - name: IERC20Contract
+          file: ../contracts/dist/src/contracts/abi/ERC20.json
+      eventHandlers:
+        - event: Exchange(indexed address,indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleExchange
+        - event: Mint(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleMint
+        - event: Redeem(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleRedeem
+      file: ./src/mapping.ts

@@ -448,6 +448,28 @@
         }
       }
     },
+    "subgraph": {
+      "root": "libs/subgraph",
+      "sourceRoot": "libs/subgraph/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "outputs": ["libs/subgraph/generated", "libs/subgraph/build"],
+          "options": {
+            "command": "yarn run build",
+            "cwd": "./libs/subgraph",
+            "color": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/subgraph/**/*.ts"]
+          }
+        }
+      }
+    },
     "examples": {
       "root": "apps/examples",
       "sourceRoot": "apps/examples/src",

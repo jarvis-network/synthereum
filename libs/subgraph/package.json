@@ -1,0 +1,23 @@
+{
+  "name": "@jarvis-network/synthereum-subgraph",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "git clean -fdx -e .env -e .direnv -e node_modules",
+    "build": "yarn build:codegen && yarn build:graph",
+    "build:codegen-kovan-yaml": "ts-node gen-yaml.ts",
+    "build:codegen": "graph codegen",
+    "build:graph": "graph build",
+    "deploy-graph": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ ",
+    "deploy:mainnet": "yarn deploy-graph jarvis-network/synthereum subgraph.yaml",
+    "deploy:kovan": "yarn build:codegen-kovan-yaml && yarn deploy-graph jarvis-network/synthereum-kovan temporary-subgraph-kovan.yaml"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.20.0",
+    "@graphprotocol/graph-ts": "0.20.0"
+  },
+  "devDependencies": {
+    "keytar": "^7.4.0"
+  },
+  "license": "MIT"
+}

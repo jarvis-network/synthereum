@@ -32,6 +32,10 @@
     "sol2ts-code-gen": {
       "tags": []
     },
+    "subgraph": {
+      "tags": [],
+      "implicitDependencies": ["contracts"]
+    },
     "ui": {
       "tags": []
     },

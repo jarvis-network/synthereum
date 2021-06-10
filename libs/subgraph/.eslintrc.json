@@ -1,0 +1,7 @@
+{
+  "extends": "../../.eslintrc.json",
+  "rules": {
+    "prefer-destructuring": "off",
+    "prefer-const": "off"
+  }
+}
