@@ -6,5 +6,13 @@
       "feePercentage": 0.002,
       "feeRecipient": "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
     }
+  },
+  "1": {
+    "version": 1,
+    "collateralAddress": "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828",
+    "daoFee": {
+      "feePercentage": 0.00165,
+      "feeRecipient": "0x8eF00583bAa186094D9A34a0A4750C1D1BB86831"
+    }
   }
 }

@@ -8,5 +8,14 @@
       "jGBP": "0x08654C14d7807cEc6042e86F19B79Bab64c3D648",
       "jXAU": "0x146C289dC304838C90dec023c67dcA8031bbfda3"
     }
+  },
+  "1": {
+    "isEnabled": true,
+    "SelfMintingDerivative": 1,
+    "SyntheticTokenAddress": {
+      "jEUR": "0x0f17BC9a994b87b5225cFb6a2Cd4D667ADb4F20B",
+      "jCHF": "0x53dfEa0A8CC2A2A2e425E1C174Bc162999723ea0",
+      "jGBP": "0x7409856CAE628f5d578B285B45669b36E7005283"
+    }
   }
 }
