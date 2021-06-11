@@ -2,10 +2,10 @@ import { writeFile } from 'fs/promises';
 import { basename, join } from 'path';
 
 import Web3V1 from '@typechain/web3-v1';
-import prettier from 'prettier';
 
 import { startingComments } from './drivers';
 import { FileInfo } from './types';
+import { formatWithPrettier } from './prettier';
 
 export function initTypechain(): Web3V1 {
   return new Web3V1({
@@ -60,11 +60,7 @@ function outputFilename(outputDir: string, name: string) {
 
 async function formatAndSaveFile({ contents, path }: FileInfo) {
   const output = startingComments + contents;
-  const prettierConfig = (await prettier.resolveConfig(path)) ?? {};
-  const formatted = prettier.format(output, {
-    ...prettierConfig,
-    parser: 'typescript',
-  });
+  const formatted = await formatWithPrettier({ path, contents: output });
   console.log('Saving TS file:', path);
   await writeFile(path, formatted);
 }
