@@ -29,6 +29,8 @@ export function compileTypeScriptFiles({
     tsConfigDir,
   );
 
+  options.outDir = tsConfigDir;
+
   const outDir = assertNotNull(
     options.outDir,
     'tsconfig.json: `outDir` must be specified',

@@ -1,7 +1,7 @@
 import { Initialization } from 'bnc-onboard/dist/src/interfaces';
 import { filterEmpty } from '@jarvis-network/core-utils/dist/base/optional';
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
-import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/src/config/supported-networks';
+import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/config';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 
 const ONBOARD_API_KEY = process.env.NEXT_PUBLIC_ONBOARD_API_KEY;

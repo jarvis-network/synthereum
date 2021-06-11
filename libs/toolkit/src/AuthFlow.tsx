@@ -15,7 +15,7 @@ import Web3 from 'web3';
 import {
   isSupportedNetwork,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
 import { EnhancedStore } from '@reduxjs/toolkit';
 
 import { ENSHelper } from './ens';

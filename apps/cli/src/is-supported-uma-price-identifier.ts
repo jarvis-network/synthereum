@@ -1,7 +1,7 @@
 import { synthereumConfig } from '@jarvis-network/synthereum-ts/dist/config';
 import { log, logTable } from '@jarvis-network/core-utils/dist/logging';
 import { getContract } from '@jarvis-network/core-utils/dist/eth/contracts/get-contract';
-import { IdentifierWhitelist_Abi } from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
+import { IdentifierWhitelist_Abi } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import { utf8ToHex } from 'web3-utils';
 
 import { arrayCliArg, buildCli } from './common/cli-config';

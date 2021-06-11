@@ -1,8 +1,8 @@
 import {
   ERC20_Abi,
   SynthereumPoolRegistry_Abi,
-} from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
-import { SynthereumPoolRegistry } from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+} from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
+import { SynthereumPoolRegistry } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   parseInteger,
   throwError,

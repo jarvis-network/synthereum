@@ -12,7 +12,7 @@ import {
   NetworkName,
   Web3On,
 } from '@jarvis-network/core-utils/dist/eth/web3-instance';
-import { ERC20_Abi as abi } from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
+import { ERC20_Abi as abi } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import { useMemo } from 'react';
 
 export function useERC20Contract(

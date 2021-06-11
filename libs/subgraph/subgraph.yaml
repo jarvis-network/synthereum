@@ -17,13 +17,13 @@ dataSources:
       entities: []
       abis:
         - name: SynthereumDerivativeFactoryContract
-          file: ../contracts/dist/src/contracts/abi/SynthereumDerivativeFactory.json
+          file: ../contracts/dist/contracts/abi/SynthereumDerivativeFactory.json
         - name: PerpetualPoolPartyContractABI
-          file: ../contracts/dist/src/contracts/abi/PerpetualPoolParty.json
+          file: ../contracts/dist/contracts/abi/PerpetualPoolParty.json
         - name: IERC20Contract
-          file: ../contracts/dist/src/contracts/abi/ERC20.json
+          file: ../contracts/dist/contracts/abi/ERC20.json
         - name: MintableBurnableSyntheticTokenABI
-          file: ../contracts/dist/src/contracts/abi/MintableBurnableIERC20.json
+          file: ../contracts/dist/contracts/abi/MintableBurnableIERC20.json
       callHandlers:
         - function: createPerpetual((address,bytes32,string,string,address,(uint256),(uint256),(uint256),(uint256),(uint256),uint256,uint256,address,address[],address[]))
           handler: handleCreatePerpetual
@@ -42,11 +42,11 @@ templates:
       entities: []
       abis:
         - name: PerpetualPoolPartyContractABI
-          file: ../contracts/dist/src/contracts/abi/PerpetualPoolParty.json
+          file: ../contracts/dist/contracts/abi/PerpetualPoolParty.json
         - name: IERC20Contract
-          file: ../contracts/dist/src/contracts/abi/ERC20.json
+          file: ../contracts/dist/contracts/abi/ERC20.json
         - name: SynthereumPoolContract
-          file: ../contracts/dist/src/contracts/abi/SynthereumPool.json
+          file: ../contracts/dist/contracts/abi/SynthereumPool.json
       eventHandlers:
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -69,9 +69,9 @@ templates:
         - Redeem
       abis:
         - name: SynthereumPoolContract
-          file: ../contracts/dist/src/contracts/abi/SynthereumPool.json
+          file: ../contracts/dist/contracts/abi/SynthereumPool.json
         - name: IERC20Contract
-          file: ../contracts/dist/src/contracts/abi/ERC20.json
+          file: ../contracts/dist/contracts/abi/ERC20.json
       eventHandlers:
         - event: Exchange(indexed address,indexed address,indexed address,uint256,uint256,uint256)
           handler: handleExchange

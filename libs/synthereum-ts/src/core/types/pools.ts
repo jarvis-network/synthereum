@@ -3,7 +3,7 @@ import {
   SynthereumPool as SynthereumPoolContract,
   SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract,
   SynthereumTIC as SynthereumTICContract,
-} from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+} from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import { assertIncludes } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   ContractInfo,
@@ -14,8 +14,8 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import type {
   SupportedNetworkName,
   SyntheticSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
-import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
+import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/config';
 
 export const poolVersions = ['v1', 'v2', 'v3'] as const;
 export type PoolVersions = typeof poolVersions;

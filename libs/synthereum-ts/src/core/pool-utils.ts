@@ -4,11 +4,11 @@ import {
   SynthereumPoolOnChainPriceFeed_Abi,
   SynthereumPool_Abi,
   SynthereumTIC_Abi,
-} from '@jarvis-network/synthereum-contracts/dist/src/contracts/abi';
+} from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import {
   IDerivative,
   NonPayableTransactionObject,
-} from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+} from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   assertNotNull,
   throwError,

@@ -1,4 +1,4 @@
-import { SynthereumPoolRegistry as SynthereumPoolRegistryContract } from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+import { SynthereumPoolRegistry as SynthereumPoolRegistryContract } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   ContractInfo,
   TokenInfo,

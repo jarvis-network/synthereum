@@ -12,7 +12,7 @@
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "build": "yarn build:solidity && yarn build:tsc && yarn build:nx-necessary",
     "build:solidity": "hardhat compile",
-    "build:tsc": "tsc -p ./tsconfig.json",
+    "build:tsc": "tsc -p ./tsconfig.lib.json",
     "build:nx-necessary": "cp ./package.json ./dist/",
     "migrate-finder": "MIGRATION_TYPE=deploy_finder hardhat test ./test/correct-migration.js",
     "migrate-deployer": "MIGRATION_TYPE=deploy_deployer hardhat test ./test/correct-migration.js",

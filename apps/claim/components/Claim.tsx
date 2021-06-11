@@ -13,14 +13,14 @@ import {
   NetworkName,
   Web3On,
 } from '@jarvis-network/core-utils/dist/eth/web3-instance';
-import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/src/contracts/typechain';
+import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   Address,
   AddressOn,
 } from '@jarvis-network/core-utils/dist/eth/address';
 import { sendTx } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 import { useAerariumMilitare } from '@/utils/useAerariumMilitare';
-import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/src/config';
+import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/config';
 
 import { MessageContainer } from './MessageContainer';
 

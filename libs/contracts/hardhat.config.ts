@@ -41,7 +41,7 @@ task('accounts', 'Prints the list of accounts', async (_, hre) => {
 task(TASK_COMPILE, async (args, hre, runSuper) => {
   await runSuper();
 
-  const distBaseDir = './dist/src/contracts';
+  const distBaseDir = './dist/contracts';
 
   const config: Config = {
     outputPaths: {

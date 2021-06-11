@@ -6,7 +6,7 @@ export {
   primaryCollateralSymbol,
   priceFeed,
   reversedPriceFeedPairs,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
 
 export type {
   PoolVersion,
@@ -19,4 +19,4 @@ export type {
   SyntheticSymbol,
   SupportedNetworkId,
   SupportedNetworkName,
-} from '@jarvis-network/synthereum-contracts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
