@@ -59,10 +59,48 @@ createOrModifyHardhatTask(TASK_VERIFY_VERIFY_MINIMUM_BUILD).setAction(() =>
   Promise.resolve(false),
 );
 
-createOrModifyHardhatTask(TASK_COMPILE).setAction((args, hre, runSuper) =>
-  ((hre as unknown) as { skipCompile?: boolean }).skipCompile
-    ? Promise.resolve()
-    : runSuper(args),
+function gatherAllFiles() {
+  return gatherFiles(
+    require.resolve('./contracts/test/ImportAll.sol'),
+    resolve('./deploy'),
+  );
+}
+
+async function clean(
+  {
+    sources,
+    artifacts,
+    cache,
+  }: { sources: string; artifacts: string; cache: string },
+  withSources = true,
+) {
+  if (withSources) rmrf(sources);
+  rmrf(artifacts);
+  rmrf(cache);
+  await Promise.all([
+    withSources ? fs.mkdir(sources) : Promise.resolve(),
+    fs.mkdir(artifacts),
+    fs.mkdir(cache),
+  ]);
+}
+
+createOrModifyHardhatTask(TASK_COMPILE).setAction(
+  async (args, hre, runSuper) => {
+    if (((hre as unknown) as { skipCompile?: boolean }).skipCompile) return;
+
+    const prepare =
+      ((hre as unknown) as { fromDeployScript?: boolean }).fromDeployScript !==
+        true &&
+      ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript !==
+        true;
+
+    if (prepare) {
+      clean(hre.config.paths);
+      await gatherAllFiles();
+    }
+
+    await runSuper(args);
+  },
 );
 
 /*
@@ -122,10 +160,7 @@ createOrModifyHardhatTask(TASK_TEST)
           migrationScript?: string;
         }).migrationScript = 'all';
       }
-      await gatherFiles(
-        require.resolve('./contracts/test/ImportAll.sol'),
-        resolve('./deploy'),
-      );
+      await gatherAllFiles();
     }
 
     if (debug) {
@@ -143,8 +178,9 @@ createOrModifyHardhatTask(TASK_TEST)
       'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
     });
     console.log('hello', { taskArgs });
-
+    ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript = true;
     await runSuper(taskArgs);
+    delete ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript;
 
     if (prepare && deployUmaAndAll) {
       delete (hre as {
@@ -427,19 +463,7 @@ createOrModifyHardhatTask(
       },
       hre,
     ) => {
-      const { sources, artifacts, cache } = hre.config.paths;
-      async function clean(withSources = true) {
-        if (withSources) rmrf(sources);
-        rmrf(artifacts);
-        rmrf(cache);
-        await Promise.all([
-          withSources ? fs.mkdir(sources) : Promise.resolve(),
-          fs.mkdir(artifacts),
-          fs.mkdir(cache),
-        ]);
-      }
-
-      if (!skipClean) await clean();
+      if (!skipClean) await clean(hre.config.paths);
 
       console.log('1', { skipTest, skipUma, migrationScript, skipClean });
 
@@ -485,7 +509,7 @@ createOrModifyHardhatTask(
 
         process.env.NEW_UMA_INFRASTRUCTURE = 'true';
 
-        await clean();
+        await clean(hre.config.paths);
       }
 
       if (migrationScript === 'uma') {
@@ -526,6 +550,7 @@ createOrModifyHardhatTask(
 
       /* eslint-disable no-await-in-loop */
       const srcPath = resolve('./contracts');
+      const { sources, cache } = hre.config.paths;
       const contractPaths = await Promise.all(
         contractNames.map(async name => {
           if (name.includes('/')) {
