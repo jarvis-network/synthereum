@@ -5,11 +5,7 @@ import Web3V1 from '@typechain/web3-v1';
 import prettier from 'prettier';
 
 import { startingComments } from './drivers';
-
-export interface FileInfo {
-  path: string;
-  contents: string;
-}
+import { FileInfo } from './types';
 
 export function initTypechain(): Web3V1 {
   return new Web3V1({

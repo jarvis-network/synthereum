@@ -106,6 +106,7 @@
         "borrowing",
         "ui",
         "core-utils",
+        "sol2ts-code-gen",
         "contracts",
         "package.json",
         "docker",
