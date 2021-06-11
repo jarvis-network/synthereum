@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 
-import { mkdir, rmdir, writeFile } from 'fs/promises';
+import { mkdir, rmdir, writeFile, rm } from 'fs/promises';
 import { join, resolve } from 'path';
 
 import { from, lastValueFrom } from 'rxjs';
@@ -14,6 +14,7 @@ import {
 } from './code-gen/typechain';
 import { writeHeaderFile } from './code-gen/drivers';
 import { execTask } from './utils';
+import { compileTypeScriptFiles } from './code-gen/typescript';
 
 export interface Artifact {
   contractName: string;
@@ -25,9 +26,7 @@ export interface Config {
   outputPaths: {
     rootDir: string;
     abiDir: string;
-    abiIndexDir: string;
-    typechainDistDir: string;
-    typechainSrcDir: string;
+    typechainDir: string;
   };
   getAllFullyQualifiedNames: () => Promise<string[]>;
   readArtifact: (fullName: string) => Promise<Artifact>;
@@ -38,7 +37,9 @@ export interface Config {
 }
 
 export async function generateArtifacts(config: Config): Promise<void> {
-  const { abiDir, abiIndexDir, typechainSrcDir } = config.outputPaths;
+  const { abiDir, typechainDir, rootDir } = config.outputPaths;
+
+  console.log('Starting sol2-ts-code-gen');
 
   const typechain = initTypechain();
 
@@ -64,9 +65,9 @@ export async function generateArtifacts(config: Config): Promise<void> {
           await writeFile(path, contents, 'utf-8');
           return { path, contents };
         }),
-        mergeMap(info => runTypeChain(typechain, info, typechainSrcDir)),
+        mergeMap(info => runTypeChain(typechain, info, typechainDir)),
       )
-      .pipe(mergeWith(from(saveCommonTypes(typechain, typechainSrcDir)))),
+      .pipe(mergeWith(from(saveCommonTypes(typechain, typechainDir)))),
   );
 
   const importTagged = {
@@ -75,20 +76,35 @@ export async function generateArtifacts(config: Config): Promise<void> {
   };
 
   await execTask('Generating index.ts of all *.json ABI files', () =>
-    writeHeaderFile(abiDir, abiIndexDir, {
+    writeHeaderFile(abiDir, abiDir, {
       ext: '.json',
       imports: [{ types: ['AbiItem'], module: 'web3-utils' }, importTagged],
     }),
   );
 
   await execTask('Generating index.ts of all *.d.ts TypeChain', () =>
-    writeHeaderFile(typechainSrcDir, typechainSrcDir, {
-      ext: '.ts',
+    writeHeaderFile(typechainDir, typechainDir, {
+      ext: '.d.ts',
       unionName: 'KnownContract',
       unionTypeMapFun: type => `Tagged<${type}, '${type}'>`,
       imports: [importTagged],
     }),
   );
+
+  await execTask('Compiling index.ts files', async () => {
+    const files = [
+      resolve(rootDir, abiDir, 'index.ts'),
+      resolve(rootDir, typechainDir, 'index.ts'),
+    ];
+    compileTypeScriptFiles({
+      files,
+      tsConfigDir: rootDir,
+    });
+    for (const file of files) {
+      await rm(file);
+      console.log('Deleted:', file);
+    }
+  });
 }
 
 async function prepareOutputDirs(config: Config) {

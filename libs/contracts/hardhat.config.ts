@@ -42,15 +42,12 @@ task(TASK_COMPILE, async (args, hre, runSuper) => {
   await runSuper();
 
   const distBaseDir = './dist/src/contracts';
-  const srcBaseDir = './src/contracts';
 
   const config: Config = {
     outputPaths: {
       rootDir: hre.config.paths.root,
       abiDir: `${distBaseDir}/abi`,
-      abiIndexDir: `${srcBaseDir}/abi`,
-      typechainSrcDir: `${srcBaseDir}/typechain`,
-      typechainDistDir: `${distBaseDir}/typechain`,
+      typechainDir: `${distBaseDir}/typechain`,
     },
     getAllFullyQualifiedNames: () => hre.artifacts.getAllFullyQualifiedNames(),
     readArtifact: filename => hre.artifacts.readArtifact(filename),

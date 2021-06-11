@@ -55,7 +55,7 @@ export async function saveCommonTypes(
 }
 
 function outputFilename(outputDir: string, name: string) {
-  return join(outputDir, basename(name).replace(/\.d\.ts$/, '.ts'));
+  return join(outputDir, basename(name).replace(/\.d\.ts$/, '.d.ts'));
 }
 
 async function formatAndSaveFile({ contents, path }: FileInfo) {
