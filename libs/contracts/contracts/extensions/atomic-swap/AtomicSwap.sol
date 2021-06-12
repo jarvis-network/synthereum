@@ -136,7 +136,7 @@ contract AtomicSwap {
     )[1];
   }
 
-  /* function swapETHAndMint(
+  function swapETHAndMint(
     uint256 collateralAmountOutMin,
     address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
@@ -144,14 +144,18 @@ contract AtomicSwap {
   )
     public
     payable
-    returns (uint256 collateralOut, uint256 syntheticTokensMinted)
+    returns (
+      uint256 collateralOut,
+      IERC20 synthToken,
+      uint256 syntheticTokensMinted
+    )
   {
-    IERC20 collateralInstance = synthereumPool.collateralToken();
-     require(
+    IERC20 collateralInstance = checkPoolRegistration(synthereumPool);
+    require(
       address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
       'Wrong collateral instance'
     );
-    IERC20 synth = synthereumPool.syntheticToken();
+    synthToken = synthereumPool.syntheticToken();
 
     collateralOut = uniswapRouter.swapExactETHForTokens(
       collateralAmountOutMin,
@@ -164,40 +168,51 @@ contract AtomicSwap {
 
     mintParams.collateralAmount = collateralOut;
     (syntheticTokensMinted, ) = synthereumPool.mint(mintParams);
-
-    synth.safeTransfer(mintParams.recipient, syntheticTokensMinted);
   }
 
   function redeemAndSwapETH(
     uint256 amountTokenOutMin,
     address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
-    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
-  ) public returns (uint256 tokenOut, uint256 collateralRedeemed) {
-    IERC20 synth = synthereumPool.syntheticToken();
-    IERC20 collateral = synthereumPool.collateralToken();
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    address recipient
+  )
+    public
+    returns (
+      uint256 collateralRedeemed,
+      IERC20 outputToken,
+      uint256 outputTokenAmount
+    )
+  {
+    IERC20 collateralInstance = checkPoolRegistration(synthereumPool);
+    require(
+      address(collateralInstance) == tokenSwapPath[0],
+      'Wrong collateral instance'
+    );
 
-    synth.safeTransferFrom(msg.sender, address(this), redeemParams.numTokens);
-    synth.safeApprove(address(synthereumPool), redeemParams.numTokens);
+    IERC20 synthToken = synthereumPool.syntheticToken();
+    outputToken = IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
 
+    synthToken.safeTransferFrom(
+      msg.sender,
+      address(this),
+      redeemParams.numTokens
+    );
+    synthToken.safeApprove(address(synthereumPool), redeemParams.numTokens);
+
+    redeemParams.recipient = address(this);
     (collateralRedeemed, ) = synthereumPool.redeem(redeemParams);
 
-    collateral.safeApprove(address(uniswapRouter), collateralRedeemed);
+    collateralInstance.safeApprove(address(uniswapRouter), collateralRedeemed);
 
-    address[] memory tmpSwapPath = new address[](tokenSwapPath.length + 1);
-    tmpSwapPath[0] = address(collateral);
-    for (uint256 i = 0; i < tokenSwapPath.length; i++) {
-      tmpSwapPath[i + 1] = tokenSwapPath[i];
-    }
-
-    tokenOut = uniswapRouter.swapExactTokensForETH(
+    outputTokenAmount = uniswapRouter.swapExactTokensForETH(
       collateralRedeemed,
       amountTokenOutMin,
-      tmpSwapPath,
-      msg.sender,
+      tokenSwapPath,
+      recipient,
       redeemParams.expiration
     )[1];
-  }*/
+  }
 
   function checkPoolRegistration(ISynthereumPoolOnChainPriceFeed synthereumPool)
     internal
