@@ -2,23 +2,34 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
-import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
-import './interfaces/IUniswapV2Factory.sol';
-import './interfaces/IUniswapV2Router01.sol';
-import './interfaces/IUniswapV2Router02.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {IUniswapV2Router02} from './interfaces/IUniswapV2Router02.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {
+  ISynthereumRegistry
+} from '../../core/registries/interfaces/IRegistry.sol';
+import {
+  ISynthereumPoolOnChainPriceFeed
+} from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 
 contract AtomicSwap {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
   // Variables
+  ISynthereumFinder public synthereumFinder;
 
-  IUniswapV2Router02 uniswapRouter;
+  IUniswapV2Router02 public uniswapRouter;
 
-  constructor(address uniswapRouterAddress) public {
-    uniswapRouter = IUniswapV2Router02(uniswapRouterAddress);
+  constructor(
+    ISynthereumFinder _synthereumFinder,
+    IUniswapV2Router02 _uniswapRouter
+  ) public {
+    synthereumFinder = _synthereumFinder;
+    uniswapRouter = _uniswapRouter;
   }
 
   // Functions
@@ -37,19 +48,30 @@ contract AtomicSwap {
     address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public returns (uint256 collateralOut, uint256 syntheticTokensMinted) {
-    IERC20 collateralInstance = synthereumPool.collateralToken();
+  )
+    public
+    returns (
+      uint256 collateralOut,
+      IERC20 synthToken,
+      uint256 syntheticTokensMinted
+    )
+  {
+    IERC20 collateralInstance = checkPoolRegistration(synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
       'Wrong collateral instance'
     );
 
-    IERC20 synth = synthereumPool.syntheticToken();
-    IERC20 tokenInstance = IERC20(tokenSwapPath[0]);
+    synthToken = synthereumPool.syntheticToken();
+    IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
 
-    tokenInstance.safeTransferFrom(msg.sender, address(this), tokenAmountIn);
+    inputTokenInstance.safeTransferFrom(
+      msg.sender,
+      address(this),
+      tokenAmountIn
+    );
 
-    tokenInstance.safeApprove(address(uniswapRouter), tokenAmountIn);
+    inputTokenInstance.safeApprove(address(uniswapRouter), tokenAmountIn);
 
     collateralOut = uniswapRouter.swapExactTokensForTokens(
       tokenAmountIn,
@@ -80,14 +102,22 @@ contract AtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) public returns (uint256 tokenOut, uint256 collateralRedeemed) {
-    IERC20 collateralInstance = synthereumPool.collateralToken();
+  )
+    public
+    returns (
+      uint256 collateralRedeemed,
+      IERC20 outputToken,
+      uint256 outputTokenAmount
+    )
+  {
+    IERC20 collateralInstance = checkPoolRegistration(synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[0],
       'Wrong collateral instance'
     );
 
     IERC20 synth = synthereumPool.syntheticToken();
+    outputToken = IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
 
     synth.safeTransferFrom(msg.sender, address(this), redeemParams.numTokens);
     synth.safeApprove(address(synthereumPool), redeemParams.numTokens);
@@ -97,7 +127,7 @@ contract AtomicSwap {
 
     collateralInstance.safeApprove(address(uniswapRouter), collateralRedeemed);
 
-    tokenOut = uniswapRouter.swapExactTokensForTokens(
+    outputTokenAmount = uniswapRouter.swapExactTokensForTokens(
       collateralRedeemed,
       amountTokenOutMin,
       tokenSwapPath,
@@ -107,7 +137,6 @@ contract AtomicSwap {
   }
 
   /* function swapETHAndMint(
-    uint256 tokenAmountIn,
     uint256 collateralAmountOutMin,
     address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
@@ -118,23 +147,15 @@ contract AtomicSwap {
     returns (uint256 collateralOut, uint256 syntheticTokensMinted)
   {
     IERC20 collateralInstance = synthereumPool.collateralToken();
+     require(
+      address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
+      'Wrong collateral instance'
+    );
     IERC20 synth = synthereumPool.syntheticToken();
-    IERC20 tokenInstance = IERC20(tokenSwapPath[0]);
-
-    tokenInstance.safeTransferFrom(msg.sender, address(this), tokenAmountIn);
-
-    tokenInstance.safeApprove(address(uniswapRouter), tokenAmountIn);
-
-    address[] memory tmpSwapPath = new address[](tokenSwapPath.length + 1);
-    for (uint256 i = 0; i < tokenSwapPath.length; i++) {
-      tmpSwapPath[i] = tokenSwapPath[i];
-    }
-    tmpSwapPath[tmpSwapPath.length - 1] = address(collateralInstance);
 
     collateralOut = uniswapRouter.swapExactETHForTokens(
-      tokenAmountIn,
       collateralAmountOutMin,
-      tmpSwapPath,
+      tokenSwapPath,
       address(this),
       mintParams.expiration
     )[1];
@@ -144,7 +165,7 @@ contract AtomicSwap {
     mintParams.collateralAmount = collateralOut;
     (syntheticTokensMinted, ) = synthereumPool.mint(mintParams);
 
-    synth.safeTransfer(msg.sender, syntheticTokensMinted);
+    synth.safeTransfer(mintParams.recipient, syntheticTokensMinted);
   }
 
   function redeemAndSwapETH(
@@ -177,4 +198,29 @@ contract AtomicSwap {
       redeemParams.expiration
     )[1];
   }*/
+
+  function checkPoolRegistration(ISynthereumPoolOnChainPriceFeed synthereumPool)
+    internal
+    view
+    returns (IERC20 collateralInstance)
+  {
+    ISynthereumRegistry poolRegistry =
+      ISynthereumRegistry(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.PoolRegistry
+        )
+      );
+    string memory synthTokenSymbol = synthereumPool.syntheticTokenSymbol();
+    collateralInstance = synthereumPool.collateralToken();
+    uint8 version = synthereumPool.version();
+    require(
+      poolRegistry.isDeployed(
+        synthTokenSymbol,
+        collateralInstance,
+        version,
+        address(synthereumPool)
+      ),
+      'Pool not registred'
+    );
+  }
 }

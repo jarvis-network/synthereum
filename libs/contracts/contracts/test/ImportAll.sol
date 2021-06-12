@@ -73,3 +73,6 @@ import '../derivative/v2/PerpetualLiquidatablePoolPartyLib.sol';
 import '../derivative/v2/PerpetutalPoolPartyCreator.sol';
 import '../derivative/v2/PerpetualLiquidatablePoolParty.sol';
 import '../extensions/atomic-swap/AtomicSwap.sol';
+import '../extensions/atomic-swap/interfaces/IUniswapV2Factory.sol';
+import '../extensions/atomic-swap/interfaces/IUniswapV2Router01.sol';
+import '../extensions/atomic-swap/interfaces/IUniswapV2Router02.sol';
