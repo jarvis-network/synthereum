@@ -1,6 +1,17 @@
 {
   "name": "@jarvis-network/crypto-utils",
   "version": "0.0.1",
+  "author": "Petar Kirov",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
+    "build": "tsc -p ./tsconfig.lib.json"
+  },
   "dependencies": {
     "ethereum-cryptography": "^0.1.3",
     "ethereumjs-wallet": "^1.0.1"
