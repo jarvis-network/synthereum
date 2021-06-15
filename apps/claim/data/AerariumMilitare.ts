@@ -29,7 +29,7 @@ type Callback<T> = (error: Error, result: T) => void;
 export interface AerariumMilitare extends BaseContract {
   methods: {
     claimedAmount(address: Address): NonPayableTransactionObject<string>;
-    investorInfo(address: Address): NonPayableTransactionObject<string>;
+    userTotalAmount(address: Address): NonPayableTransactionObject<string>;
     claimableJRT(address: Address): NonPayableTransactionObject<string>;
 
     startTime(): NonPayableTransactionObject<string>;

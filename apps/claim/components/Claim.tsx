@@ -109,7 +109,7 @@ export function Claim(): JSX.Element {
       if (web3NetworkId !== networkId) return;
 
       Promise.all([
-        contract.methods.investorInfo(auth.address as Address).call(),
+        contract.methods.userTotalAmount(auth.address as Address).call(),
         contract.methods.endTime().call(),
         contract.methods.startTime().call(),
         contract.methods
