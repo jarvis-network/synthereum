@@ -13,9 +13,7 @@ export const addresses: {
   [key in SupportedNetworks]: { AerariumMilitare: Address; JRT: Address };
 } = {
   [networkNameToId.mainnet]: {
-    AerariumMilitare: A(
-      '0xe88178d7E2363c32663Abe70e442A0FF2F8B3CCe', // TODO: Fix
-    ),
+    AerariumMilitare: A('0x090eE8EcBE4Ebe8938Cb5c54c023d69D2DA1cc75'),
     JRT: A('0x8a9c67fee641579deba04928c4bc45f66e26343a'),
   },
   [networkNameToId.kovan]: {
