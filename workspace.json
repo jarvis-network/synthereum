@@ -159,7 +159,7 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn build contracts", "yarn --cwd libs/contracts test"],
+            "commands": ["yarn build contracts", "yarn --cwd libs/contracts test --no-compile"],
             "color": true,
             "parallel": false
           }
