@@ -7,6 +7,7 @@ const IUniswapV2Router01 = artifacts.require('IUniswapV2Router01');
 const IUniswapV2Factory = artifacts.require('IUniswapV2Factory');
 const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
+const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 
@@ -123,7 +124,20 @@ contract('AtomicSwap', function (accounts) {
     await JEURInstance.transfer(receiver, totalBalance, { from: sender });
   }
 
-  describe('Should swap and mint through AtomicSwap contract', async function () {
+  async function calculateTransactionFee(txnReceipt) {
+    try {
+      var transactionHash = txnReceipt.transactionHash;
+      var transaction = await web3.eth.getTransaction(transactionHash);
+      var cost = web3.utils
+        .toBN(txnReceipt.gasUsed)
+        .mul(web3.utils.toBN(transaction.gasPrice));
+      return cost.toString();
+    } catch (error) {
+      return '0';
+    }
+  }
+
+  describe('Should swap ERC20 and mint through AtomicSwap contract', async function () {
     it('Can swap and emit event', async function () {
       //Swap and mint
       //WBTC --> USDC --> JEUR
@@ -150,7 +164,7 @@ contract('AtomicSwap', function (accounts) {
 
       //call swapAndMint
 
-      const receipt = await atomicSwapInstance.swapAndMint(
+      const txOutput = await atomicSwapInstance.swapAndMint(
         tokenAmountIn,
         0,
         tokenPathSwap,
@@ -163,7 +177,7 @@ contract('AtomicSwap', function (accounts) {
 
       let tokensReceived;
 
-      truffleAssert.eventEmitted(receipt, 'Swap', ev => {
+      truffleAssert.eventEmitted(txOutput, 'Swap', ev => {
         tokensReceived = ev.outputAmount.toString();
         return (
           ev.inpuToken == WBTCaddress &&
@@ -185,7 +199,7 @@ contract('AtomicSwap', function (accounts) {
     });
   });
 
-  describe('Should redeem and swap through AtomicSwap contract', async function () {
+  describe('Should redeem and swap ERC20 through AtomicSwap contract', async function () {
     beforeEach(async () => {
       const tokenAmountIn = 10000;
       const tokenPathSwap = [WBTCaddress, USDCaddress];
@@ -228,7 +242,7 @@ contract('AtomicSwap', function (accounts) {
         minCollateral: 0,
         feePercentage: feePercentage,
         expiration: deadline,
-        recipient: destinatary,
+        recipient: ZERO_ADDRESS,
       };
 
       //do approve before
@@ -238,9 +252,9 @@ contract('AtomicSwap', function (accounts) {
 
       const destinataryBalance = await WBTCInstance.balanceOf.call(destinatary);
 
-      //call swapAndMint
+      //call redeemAndSwap
 
-      const receipt = await atomicSwapInstance.redeemAndSwap(
+      const txOutput = await atomicSwapInstance.redeemAndSwap(
         0,
         tokenPathSwap,
         synthereumPool,
@@ -253,7 +267,7 @@ contract('AtomicSwap', function (accounts) {
 
       let tokensReceived;
 
-      truffleAssert.eventEmitted(receipt, 'Swap', ev => {
+      truffleAssert.eventEmitted(txOutput, 'Swap', ev => {
         tokensReceived = ev.outputAmount.toString();
         return (
           ev.inpuToken == JEURaddress &&
@@ -270,6 +284,160 @@ contract('AtomicSwap', function (accounts) {
       assert.equal(
         destinataryBalance.add(web3Utils.toBN(tokensReceived)).toString(),
         (await WBTCInstance.balanceOf.call(destinatary)).toString(),
+        'Wrong destinatary balance',
+      );
+    });
+  });
+
+  describe('Should swap ETH and mint through AtomicSwap contract', async function () {
+    it('Can swap and emit event', async function () {
+      //Swap and mint
+      //WBTC --> USDC --> JEUR
+
+      const EthAmountIn = web3Utils.toWei('1');
+      const tokenPathSwap = [WETHaddress, USDCaddress];
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: destinatary,
+      };
+
+      const testerBalance = await web3.eth.getBalance(tester);
+      const destintaryBalance = await JEURInstance.balanceOf.call(destinatary);
+
+      //call swapETHAndMint
+
+      const txOutput = await atomicSwapInstance.swapETHAndMint(
+        0,
+        tokenPathSwap,
+        synthereumPool,
+        mintParams,
+        {
+          from: tester,
+          value: EthAmountIn,
+        },
+      );
+
+      let tokensReceived;
+
+      truffleAssert.eventEmitted(txOutput, 'Swap', ev => {
+        tokensReceived = ev.outputAmount.toString();
+        return (
+          ev.inpuToken == ZERO_ADDRESS &&
+          ev.inputAmount.toString() == EthAmountIn.toString() &&
+          ev.outputToken == JEURaddress
+        );
+      });
+      const feePaid = await calculateTransactionFee(txOutput.receipt);
+      assert.equal(
+        web3Utils
+          .toBN(testerBalance)
+          .sub(web3Utils.toBN(EthAmountIn))
+          .sub(web3Utils.toBN(feePaid))
+          .toString(),
+        (await web3.eth.getBalance(tester)).toString(),
+        'Wrong tester balance',
+      );
+      assert.equal(
+        destintaryBalance.add(web3Utils.toBN(tokensReceived)).toString(),
+        (await JEURInstance.balanceOf.call(destinatary)).toString(),
+        'Wrong destinatary balance',
+      );
+    });
+  });
+
+  describe('Should redeem and swap ETH through AtomicSwap contract', async function () {
+    beforeEach(async () => {
+      const tokenAmountIn = 10000;
+      const tokenPathSwap = [WBTCaddress, USDCaddress];
+
+      let mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: tester,
+      };
+
+      //do approve before
+      await WBTCInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      await atomicSwapInstance.swapAndMint(
+        tokenAmountIn,
+        0,
+        tokenPathSwap,
+        synthereumPool,
+        mintParams,
+        {
+          from: tester,
+        },
+      );
+    });
+    it('Can swap and emit event', async function () {
+      //Redeem and swap ETH
+      //JEUR --> USDC --> ETH
+      const testerBalance = await JEURInstance.balanceOf.call(tester);
+      const tokenAmountIn = testerBalance;
+
+      const tokenPathSwap = [USDCaddress, WETHaddress];
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: tokenAmountIn.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: ZERO_ADDRESS,
+      };
+
+      //do approve before
+      await JEURInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      const destinataryBalance = await web3.eth.getBalance(destinatary);
+
+      //call redeemAndSwapETH
+
+      const txOutput = await atomicSwapInstance.redeemAndSwapETH(
+        0,
+        tokenPathSwap,
+        synthereumPool,
+        redeemParams,
+        destinatary,
+        {
+          from: tester,
+        },
+      );
+
+      let ethReceived;
+
+      truffleAssert.eventEmitted(txOutput, 'Swap', ev => {
+        ethReceived = ev.outputAmount.toString();
+        return (
+          ev.inpuToken == JEURaddress &&
+          ev.inputAmount.toString() == tokenAmountIn.toString() &&
+          ev.outputToken == ZERO_ADDRESS
+        );
+      });
+
+      assert.equal(
+        testerBalance.sub(web3Utils.toBN(tokenAmountIn)).toString(),
+        (await JEURInstance.balanceOf.call(tester)).toString(),
+        'Wrong tester balance',
+      );
+      assert.equal(
+        web3Utils
+          .toBN(destinataryBalance)
+          .add(web3Utils.toBN(ethReceived))
+          .toString(),
+        (await web3.eth.getBalance(destinatary)).toString(),
         'Wrong destinatary balance',
       );
     });
