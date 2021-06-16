@@ -157,10 +157,11 @@
           }
         },
         "test": {
-          "executor": "@nrwl/jest:jest",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "jestConfig": "libs/contracts/jest.config.js",
-            "passWithNoTests": true
+            "commands": ["yarn build contracts", "yarn --cwd libs/contracts test"],
+            "color": true,
+            "parallel": false
           }
         },
         "build": {

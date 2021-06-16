@@ -22,59 +22,53 @@ before_script:
     - production
 
 stages:
-  - build and deploy
-  - release
-  # Jobs:
+  - prepare
+  - test and deploy
+  - security scan
 
-🎨 lint:
+build `install` image:
+  stage: prepare
   only:
     - merge_requests
-  stage: build and deploy
   variables:
-    TARGET: installed-project
+    TARGET: install
   script:
     - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
     - docker buildx bake ${TARGET} --print
     - docker buildx bake ${TARGET} --progress=plain
-    - docker run --rm -t "${REGISTRY}/${TARGET}:${TAG}" yarn lint:all
 
-🐳 build & push dapps:
-  <<: *job-config
-  stage: build and deploy
-  parallel:
-    matrix:
-      - TARGET: frontend
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_FRONTEND'
-      - TARGET: borrowing
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_BORROWING'
-      - TARGET: claim
-        NETLIFY_SITE_ID: '$NETLIFY_SITE_ID_CLAIM'
-  variables:
-    NETLIFY_AUTH_TOKEN: '$NETLIFY_AUTH_TOKEN'
-  script:
-    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
-    - docker buildx bake ${TARGET} --print
-    - docker buildx bake ${TARGET} --progress=plain
-    - docker images
-    - docker run --rm "${REGISTRY}/${TARGET}:${TAG}" netlify deploy --dir /src/out --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock  aquasec/trivy --severity HIGH,CRITICAL "${REGISTRY}/${TARGET}:${TAG}"
+generate pipeline:
+  image: alpine
+  stage: prepare
+  only:
+    - merge_requests
+  before_script:
+    - apk add bash
+  script: ./scripts/generate-pipeline.sh > generated-pipeline.yml
+  artifacts:
+    paths:
+      - generated-pipeline.yml
 
-build_install:
+execute pipeline:
+  stage: test and deploy
+  needs:
+    - generate pipeline
+    - build `install` image
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+  trigger:
+    include:
+      - artifact: generated-pipeline.yml
+        job: generate pipeline
+    strategy: depend
+
+security scan:
   <<: *job-config
-  stage: build and deploy
+  stage: security scan
+  only:
+    - merge_requests
   script:
     - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
     - docker buildx bake --load install
     - docker images
     - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy --severity CRITICAL --timeout 5m  "${REGISTRY}/install:${YARN_LOCK_SHA256}"
-
-release:
-  stage: release
-  only:
-    refs:
-      - production
-  script:
-    - apk add bash npm git
-    - npm install -g yarn
-    - npm install -g semantic-release-commit-filter semantic-release @semantic-release/gitlab @semantic-release/exec @semantic-release/changelog @semantic-release/git @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/commit-analyzer
-    - yarn --cwd libs/web3-utils/dist semantic-release
