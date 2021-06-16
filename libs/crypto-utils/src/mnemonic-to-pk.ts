@@ -52,11 +52,11 @@ export function deriveWalletsFromBip39Mnemonic({
   };
 }
 
-export function mnemonicToPrivateKey(mnemonic: string, path: string): string {
+export function mnemonicToPrivateKey(mnemonic: string, path: string): Buffer {
   const result = deriveWalletsFromBip39Mnemonic({
     phrase: mnemonic,
     walletHdPath: path,
     deriveExact: true,
   });
-  return result.wallets[result.accounts[0]].getPrivateKeyString();
+  return result.wallets[result.accounts[0]].getPrivateKey();
 }

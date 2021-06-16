@@ -274,8 +274,7 @@ function createExchangeMessageBody(
 }
 
 function sign(message, privKey) {
-  const privKeyHex = new Uint8Array(Buffer.from(privKey, 'hex'));
-  const sigHex = secp256k1.ecdsaSign(message, privKeyHex);
+  const sigHex = secp256k1.ecdsaSign(message, privKey);
   const sig = Buffer.from(sigHex.signature).toString('hex');
   const hexInit = '0x';
   const rSig = hexInit.concat(sig.substr(0, 64));
