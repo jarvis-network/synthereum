@@ -1,7 +1,5 @@
 const rolesConfig = require('../data/roles.json');
-const {
-  getExistingInstance,
-} = require('../dist/src/migration-utils/deployment');
+const { getExistingInstance } = require('../dist/migration-utils/deployment');
 const SynthereumManager = artifacts.require('SynthereumManager');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');

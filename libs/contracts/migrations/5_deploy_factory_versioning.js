@@ -1,7 +1,5 @@
 const rolesConfig = require('../data/roles.json');
-const {
-  getExistingInstance,
-} = require('../dist/src/migration-utils/deployment');
+const { getExistingInstance } = require('../dist/migration-utils/deployment');
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );

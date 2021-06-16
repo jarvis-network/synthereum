@@ -2,9 +2,7 @@ const web3Utils = require('web3-utils');
 const rolesConfig = require('../data/roles.json');
 const umaContracts = require('../data/uma-contract-dependencies.json');
 const umaConfig = require('../data/uma-config.json');
-const {
-  getExistingInstance,
-} = require('../dist/src/migration-utils/deployment');
+const { getExistingInstance } = require('../dist/migration-utils/deployment');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
