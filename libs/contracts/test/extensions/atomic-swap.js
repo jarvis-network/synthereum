@@ -10,6 +10,7 @@ const truffleAssert = require('truffle-assertions');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
+const PoolMock = artifacts.require('PoolMock');
 
 const { deploy } = require('@jarvis-network/uma-common');
 
@@ -197,6 +198,47 @@ contract('AtomicSwap', function (accounts) {
         'Wrong destinatary balance',
       );
     });
+    it('Can not use a not registred pool', async function () {
+      const poolMockInstance = await PoolMock.new(
+        4,
+        USDCaddress,
+        'jEUR',
+        JEURaddress,
+      );
+
+      const tokenAmountIn = 10000;
+      const tokenPathSwap = [WBTCaddress, USDCaddress];
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: destinatary,
+      };
+
+      //do approve before
+      await WBTCInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      //revert swapAndMint
+
+      await truffleAssert.reverts(
+        atomicSwapInstance.swapAndMint(
+          tokenAmountIn,
+          0,
+          tokenPathSwap,
+          poolMockInstance.address,
+          mintParams,
+          {
+            from: tester,
+          },
+        ),
+        'Pool not registred',
+      );
+    });
   });
 
   describe('Should redeem and swap ERC20 through AtomicSwap contract', async function () {
@@ -287,6 +329,48 @@ contract('AtomicSwap', function (accounts) {
         'Wrong destinatary balance',
       );
     });
+    it('Can not use a not registred pool', async function () {
+      const poolMockInstance = await PoolMock.new(
+        4,
+        USDCaddress,
+        'jEUR',
+        JEURaddress,
+      );
+
+      const testerBalance = await JEURInstance.balanceOf.call(tester);
+      const tokenAmountIn = testerBalance;
+
+      const tokenPathSwap = [USDCaddress, WBTCaddress];
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: tokenAmountIn.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: ZERO_ADDRESS,
+      };
+
+      //do approve before
+      await JEURInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      //revert redeemAndSwap
+
+      await truffleAssert.reverts(
+        atomicSwapInstance.redeemAndSwap(
+          0,
+          tokenPathSwap,
+          poolMockInstance.address,
+          redeemParams,
+          destinatary,
+          {
+            from: tester,
+          },
+        ),
+        'Pool not registred',
+      );
+    });
   });
 
   describe('Should swap ETH and mint through AtomicSwap contract', async function () {
@@ -346,6 +430,42 @@ contract('AtomicSwap', function (accounts) {
         destintaryBalance.add(web3Utils.toBN(tokensReceived)).toString(),
         (await JEURInstance.balanceOf.call(destinatary)).toString(),
         'Wrong destinatary balance',
+      );
+    });
+    it('Can not use a not registred pool', async function () {
+      const poolMockInstance = await PoolMock.new(
+        4,
+        USDCaddress,
+        'jEUR',
+        JEURaddress,
+      );
+
+      const EthAmountIn = web3Utils.toWei('1');
+      const tokenPathSwap = [WETHaddress, USDCaddress];
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: destinatary,
+      };
+
+      //revert swapETHAndMint
+
+      await truffleAssert.reverts(
+        atomicSwapInstance.swapETHAndMint(
+          0,
+          tokenPathSwap,
+          poolMockInstance.address,
+          mintParams,
+          {
+            from: tester,
+            value: EthAmountIn,
+          },
+        ),
+        'Pool not registred',
       );
     });
   });
@@ -439,6 +559,47 @@ contract('AtomicSwap', function (accounts) {
           .toString(),
         (await web3.eth.getBalance(destinatary)).toString(),
         'Wrong destinatary balance',
+      );
+    });
+    it('Can not use a not registred pool', async function () {
+      const poolMockInstance = await PoolMock.new(
+        4,
+        USDCaddress,
+        'jEUR',
+        JEURaddress,
+      );
+
+      const testerBalance = await JEURInstance.balanceOf.call(tester);
+      const tokenAmountIn = testerBalance;
+
+      const tokenPathSwap = [USDCaddress, WETHaddress];
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: tokenAmountIn.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: ZERO_ADDRESS,
+      };
+
+      //do approve before
+      await JEURInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      //revert redeemAndSwapETH
+      await truffleAssert.reverts(
+        atomicSwapInstance.redeemAndSwapETH(
+          0,
+          tokenPathSwap,
+          poolMockInstance.address,
+          redeemParams,
+          destinatary,
+          {
+            from: tester,
+          },
+        ),
+        'Pool not registred',
       );
     });
   });
