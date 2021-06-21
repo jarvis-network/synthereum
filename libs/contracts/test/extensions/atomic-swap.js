@@ -33,6 +33,7 @@ contract('AtomicSwap', function (accounts) {
   let WBTCaddress = '0xd3A691C852CDB01E281545A27064741F0B7f6825';
   let USDCaddress = '0xe22da380ee6b445bb8273c81944adeb6e8450422';
   let JEURaddress = '0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7';
+  let USDTaddress = '0xf3e0d7bF58c5d455D31ef1c2d5375904dF525105';
   let uniFactory = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f';
   let synthereumPool = '0x9541A4A4D1082ce2f463585c1f519f955147c848';
   let derivative = '0xA332832C1321eCfBb35Cc31bCb7d68FC0dB10395';
@@ -239,6 +240,40 @@ contract('AtomicSwap', function (accounts) {
         'Pool not registred',
       );
     });
+    it('Can not use a pivot token different from the collateral of the pool', async function () {
+      const tokenAmountIn = 10000;
+      const tokenPathSwap = [WBTCaddress, USDTaddress];
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: destinatary,
+      };
+
+      //do approve before
+      await WBTCInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      //revert swapAndMint
+
+      await truffleAssert.reverts(
+        atomicSwapInstance.swapAndMint(
+          tokenAmountIn,
+          0,
+          tokenPathSwap,
+          synthereumPool,
+          mintParams,
+          {
+            from: tester,
+          },
+        ),
+        'Wrong collateral instance',
+      );
+    });
   });
 
   describe('Should redeem and swap ERC20 through AtomicSwap contract', async function () {
@@ -371,6 +406,41 @@ contract('AtomicSwap', function (accounts) {
         'Pool not registred',
       );
     });
+    it('Can not use a pivot token different from the collateral of the pool', async function () {
+      const testerBalance = await JEURInstance.balanceOf.call(tester);
+      const tokenAmountIn = testerBalance;
+
+      const tokenPathSwap = [USDTaddress, WBTCaddress];
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: tokenAmountIn.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: ZERO_ADDRESS,
+      };
+
+      //do approve before
+      await JEURInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      //revert redeemAndSwap
+
+      await truffleAssert.reverts(
+        atomicSwapInstance.redeemAndSwap(
+          0,
+          tokenPathSwap,
+          synthereumPool,
+          redeemParams,
+          destinatary,
+          {
+            from: tester,
+          },
+        ),
+        'Wrong collateral instance',
+      );
+    });
   });
 
   describe('Should swap ETH and mint through AtomicSwap contract', async function () {
@@ -466,6 +536,35 @@ contract('AtomicSwap', function (accounts) {
           },
         ),
         'Pool not registred',
+      );
+    });
+    it('Can not use a pivot token different from the collateral of the pool', async function () {
+      const EthAmountIn = web3Utils.toWei('1');
+      const tokenPathSwap = [WETHaddress, USDTaddress];
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: destinatary,
+      };
+
+      //revert swapETHAndMint
+
+      await truffleAssert.reverts(
+        atomicSwapInstance.swapETHAndMint(
+          0,
+          tokenPathSwap,
+          synthereumPool,
+          mintParams,
+          {
+            from: tester,
+            value: EthAmountIn,
+          },
+        ),
+        'Wrong collateral instance',
       );
     });
   });
@@ -600,6 +699,40 @@ contract('AtomicSwap', function (accounts) {
           },
         ),
         'Pool not registred',
+      );
+    });
+    it('Can not use a pivot token different from the collateral of the pool', async function () {
+      const testerBalance = await JEURInstance.balanceOf.call(tester);
+      const tokenAmountIn = testerBalance;
+
+      const tokenPathSwap = [USDTaddress, WETHaddress];
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: tokenAmountIn.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: ZERO_ADDRESS,
+      };
+
+      //do approve before
+      await JEURInstance.approve(atomicSwapInstance.address, tokenAmountIn, {
+        from: tester,
+      });
+
+      //revert redeemAndSwapETH
+      await truffleAssert.reverts(
+        atomicSwapInstance.redeemAndSwapETH(
+          0,
+          tokenPathSwap,
+          synthereumPool,
+          redeemParams,
+          destinatary,
+          {
+            from: tester,
+          },
+        ),
+        'Wrong collateral instance',
       );
     });
   });
