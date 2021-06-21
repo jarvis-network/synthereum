@@ -42,6 +42,7 @@ contract AtomicSwap {
 
   // Functions
 
+  // Transaction overview:
   // 1. User approves transfer of token to AtomicSwap contract (triggered by the frontend)
   // 2. User calls AtomicSwap.swapAndMint() (triggered by the frontend)
   //    2.1 AtomicSwap transfers token from user to itself (internal tx)
@@ -49,7 +50,6 @@ contract AtomicSwap {
   //    2.3 AtomicSwap calls IUniswapV2Router02.swapExactTokensForTokens() to exchange token for collateral (internal tx)
   //    2.4 AtomicSwap approves SynthereumPool (internal tx)
   //    2.5 AtomicSwap calls SynthereumPool.mint() to mint synth with collateral (internal tx)
-  //    2.6 AtomicSwap transfers the minted synth to user (internal tx)
   function swapAndMint(
     uint256 tokenAmountIn,
     uint256 collateralAmountOutMin,
@@ -110,7 +110,6 @@ contract AtomicSwap {
   //   2.3 `AtomicSwap` calls `pool.redeem()` to redeem synth for collateral (internal tx)
   //   2.4 `AtomicSwap` approves transfer of collateral to `IUniswapV2Router02` (internal tx)
   //   2.5 `AtomicSwap` calls `IUniswapV2Router02.swapExactTokensForTokens` to swap collateral for token (internal tx)
-  //   2.6 `AtomicSwap` transfers token from itself to user (internal tx)
   function redeemAndSwap(
     uint256 amountTokenOutMin,
     address[] calldata tokenSwapPath,
@@ -159,6 +158,11 @@ contract AtomicSwap {
     );
   }
 
+  // Transaction overview:
+  // 1. User calls AtomicSwap.swapETHAndMint() sending Ether (triggered by the frontend)
+  //    1.1 AtomicSwap calls IUniswapV2Router02.swapExactETHForTokens() to exchange ETH for collateral (internal tx)
+  //    1.2 AtomicSwap approves SynthereumPool (internal tx)
+  //    1.3 AtomicSwap calls SynthereumPool.mint() to mint synth with collateral (internal tx)
   function swapETHAndMint(
     uint256 collateralAmountOutMin,
     address[] calldata tokenSwapPath,
@@ -200,6 +204,14 @@ contract AtomicSwap {
     );
   }
 
+  // Transaction overview:
+  // 1. User approves transfer of synth to `AtomicSwap` contract (triggered by the frontend)
+  // 2. User calls `AtomicSwap.redeemAndSwapETH()` (triggered by the frontend)
+  //   2.1 `AtomicSwaps` transfers synth from user to itself (internal tx)
+  //   2.2 `AtomicSwaps` approves transfer of synth from itself to pool (internal tx)
+  //   2.3 `AtomicSwap` calls `pool.redeem()` to redeem synth for collateral (internal tx)
+  //   2.4 `AtomicSwap` approves transfer of collateral to `IUniswapV2Router02` (internal tx)
+  //   2.5 `AtomicSwap` calls `IUniswapV2Router02.swapExactTokensForETH` to swap collateral for token (internal tx)
   function redeemAndSwapETH(
     uint256 amountTokenOutMin,
     address[] calldata tokenSwapPath,
