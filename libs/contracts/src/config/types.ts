@@ -67,6 +67,7 @@ export interface SynthereumContractDependencies<
   Net extends SupportedNetworkName
 > {
   poolRegistry: AddressOn<Net>;
+  selfMintingRegistry: AddressOn<Net>;
   primaryCollateralToken: {
     address: AddressOn<Net>;
     symbol: string;

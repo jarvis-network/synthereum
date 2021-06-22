@@ -142,7 +142,10 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
           address: A<42>('0xe22da380ee6B445bb8273C81944ADEB6E8450422'),
           symbol: primaryCollateralSymbol,
         },
-        poolRegistry: A<42>('0x963C30D1d707d2B0f3F175525Cc4a740ce3ce0C7'),
+        poolRegistry: A<42>('0x6De2dd54A1FBBaCAd9a42eC289c5B371be2C9EF1'),
+        selfMintingRegistry: A<42>(
+          '0x61fa26046F9D5e47d15495Ef00efD9339E14E568',
+        ),
       },
     },
     umaDerivativeConfig: {
@@ -199,7 +202,8 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
           address: A<1>('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
           symbol: primaryCollateralSymbol,
         },
-        poolRegistry: A<1>('0xefb040204CC94e49433FDD472e49D4f3538D5346'),
+        poolRegistry: A<1>('0xaB77024DdC68A3Fe942De8dDb0014738ED01A5e5'),
+        selfMintingRegistry: A<1>('0x83D7AEee512DF37c694d36C983E0D4BdF12Cb6Bf'),
       },
     },
     umaDerivativeConfig: {
