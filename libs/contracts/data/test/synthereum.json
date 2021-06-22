@@ -1,0 +1,10 @@
+{
+  "42": {
+    "pool": "0x9541A4A4D1082ce2f463585c1f519f955147c848",
+    "derivative": "0xA332832C1321eCfBb35Cc31bCb7d68FC0dB10395"
+  },
+  "1": {
+    "pool": "",
+    "derivative": ""
+  }
+}

@@ -14,6 +14,10 @@ const PoolMock = artifacts.require('PoolMock');
 
 const { deploy } = require('@jarvis-network/uma-common');
 
+const tokens = require('../../data/test/tokens.json');
+const uniswap = require('../../data/test/uniswap.json');
+const synthereum = require('../../data/test/synthereum.json');
+
 //pour start kovan local fork
 //yarn start:local-fork kovan
 //ou bien : ./local-fork.sh kovan
@@ -30,63 +34,75 @@ contract('AtomicSwap', function (accounts) {
 
   let amountETH = web3Utils.toWei('1');
 
-  let WBTCaddress = '0xd3A691C852CDB01E281545A27064741F0B7f6825';
-  let USDCaddress = '0xe22da380ee6b445bb8273c81944adeb6e8450422';
-  let JEURaddress = '0x85e2565D4Be13B952781317d8f62C8175E9Bdbc7';
-  let USDTaddress = '0xf3e0d7bF58c5d455D31ef1c2d5375904dF525105';
-  let uniFactory = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f';
-  let synthereumPool = '0x9541A4A4D1082ce2f463585c1f519f955147c848';
-  let derivative = '0xA332832C1321eCfBb35Cc31bCb7d68FC0dB10395';
-  let feePercentage = 2000000000000000;
-  let deadline = ((Date.now() / 1000) | 0) + 7200;
-
-  async function intializeUniswap() {
-    const iUniswapV2Router02 = await IUniswapV2Router02.at(
-      '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-    );
-
-    return iUniswapV2Router02;
-  }
-
-  async function initializeWBTC() {
-    let WBTCInstance = await TestnetERC20.at(WBTCaddress);
-    return WBTCInstance;
-  }
-
-  async function initializeUSDC() {
-    const USDCInstance = await TestnetERC20.at(USDCaddress);
-    return USDCInstance;
-  }
-
-  async function initializeJEUR() {
-    const JEURInstance = await TestnetERC20.at(JEURaddress);
-    return JEURInstance;
-  }
-
-  //usdc-collateral kovan = 0xe22da380ee6B445bb8273C81944ADEB6E8450422;
-
+  let WBTCaddress;
+  let USDCaddress;
+  let JEURaddress;
+  let USDTaddress;
+  let JEURInstance;
   let WETHaddress;
   let WBTCInstance;
   let USDCInstance;
-  let JEURInstance;
+  let synthereumPool;
+  let derivative;
   let uniswapInstance;
-  let uniswapV2Router02;
   let atomicSwapInstance;
+  let feePercentage = 2000000000000000;
+  let deadline = ((Date.now() / 1000) | 0) + 7200;
+
+  async function initializeTokens(networkId) {
+    WBTCaddress = tokens[networkId].WBTC;
+    USDCaddress = tokens[networkId].USDC;
+    JEURaddress = tokens[networkId].JEUR;
+    USDTaddress = tokens[networkId].USDT;
+    return { WBTCaddress, USDCaddress, JEURaddress, USDTaddress };
+  }
+
+  async function intializeUniswap(networkId) {
+    const iUniswapV2Router02 = await IUniswapV2Router02.at(
+      uniswap[networkId].router,
+    );
+    return iUniswapV2Router02;
+  }
+
+  async function initializeTokenInstance(tokenAddress) {
+    let tokenInstance = await TestnetERC20.at(tokenAddress);
+    return tokenInstance;
+  }
+
+  async function initializeSynthereum(networkId) {
+    pool = synthereum[networkId].pool;
+    derivative = synthereum[networkId].derivative;
+    return { pool, derivative };
+  }
 
   before(async () => {
-    iUniswapInstance = await intializeUniswap();
+    const networkId = await web3.eth.net.getId();
 
-    WETHaddress = await iUniswapInstance.WETH();
+    const tokens = await initializeTokens(networkId);
 
-    WBTCInstance = await initializeWBTC();
+    WBTCaddress = tokens.WBTCaddress;
+    USDCaddress = tokens.USDCaddress;
+    JEURaddress = tokens.JEURaddress;
+    USDTaddress = tokens.USDTaddress;
 
-    USDCInstance = await initializeUSDC();
+    uniswapInstance = await intializeUniswap(networkId);
 
-    JEURInstance = await initializeJEUR();
+    WETHaddress = await uniswapInstance.WETH();
 
-    await transferAllJEUR(tester, unusedAddress);
+    WBTCInstance = await initializeTokenInstance(WBTCaddress);
+
+    USDCInstance = await initializeTokenInstance(USDCaddress);
+
+    JEURInstance = await initializeTokenInstance(JEURaddress);
+
+    const synthereumAddresses = await initializeSynthereum(networkId);
+
+    synthereumPool = synthereumAddresses.pool;
+    derivative = synthereumAddresses.derivative;
 
     atomicSwapInstance = await AtomicSwap.deployed();
+
+    await transferAllJEUR(tester, unusedAddress);
 
     await buyWBTC();
 
@@ -94,7 +110,7 @@ contract('AtomicSwap', function (accounts) {
   });
 
   async function buyWBTC() {
-    await iUniswapInstance.swapExactETHForTokens(
+    await uniswapInstance.swapExactETHForTokens(
       0,
       [WETHaddress, WBTCaddress],
       tester,
@@ -108,7 +124,7 @@ contract('AtomicSwap', function (accounts) {
   }
 
   async function buyUSDC() {
-    await iUniswapInstance.swapExactETHForTokens(
+    await uniswapInstance.swapExactETHForTokens(
       0,
       [WETHaddress, USDCaddress],
       tester,
