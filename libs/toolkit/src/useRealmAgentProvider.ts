@@ -18,7 +18,7 @@ import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
 
 const poolVersion = (process.env.NEXT_PUBLIC_POOL_VERSION ||
-  'v1') as PoolVersion;
+  'v3') as PoolVersion;
 
 export function useRealmAgentProvider(
   store: {

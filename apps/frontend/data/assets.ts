@@ -54,7 +54,7 @@ const assetIconMap: PerAsset<FlagKeys | null> = {
 
 // FIXME: Instead of hardcoding the networkId and pool version make them dynamic
 const syntheticAssets: Asset[] = Object.values(
-  synthereumConfig[1].perVersionConfig.v2.syntheticTokens,
+  synthereumConfig[1].perVersionConfig.v3.syntheticTokens,
 ).map(info => ({
   name: info.syntheticName,
   symbol: info.syntheticSymbol,

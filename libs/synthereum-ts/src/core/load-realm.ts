@@ -67,7 +67,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
   config: SynthereumContractDependencies<Net>,
-  versionsToLoad: PoolVersionsToLoad<Net> = { v1: null, v2: null, v3: null },
+  versionsToLoad: PoolVersionsToLoad<Net> = { v3: null },
 ): Promise<SynthereumRealmWithWeb3<Net>> {
   const poolRegistry = getContract(
     web3,
@@ -122,11 +122,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 }
 
 function poolVersionId(version: PoolVersion) {
-  return version === 'v1'
-    ? 1
-    : version === 'v2'
-    ? 2
-    : version === 'v3'
+  return version === 'v3'
     ? 3
     : throwError(`'${version}' is not a supported pool version`);
 }

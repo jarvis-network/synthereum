@@ -2,8 +2,6 @@ import BN from 'bn.js';
 import {
   IDerivative_Abi,
   SynthereumPoolOnChainPriceFeed_Abi,
-  SynthereumPool_Abi,
-  SynthereumTIC_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import {
   IDerivative,
@@ -38,7 +36,6 @@ import {
 import { executeInSequence } from '@jarvis-network/core-utils/dist/base/async';
 
 import {
-  Fees,
   SupportedNetworkId,
   SupportedNetworkName,
   synthereumConfig,
@@ -122,32 +119,6 @@ export async function loadPool<
   version: Version,
   poolAddress: AddressOn<Net>,
 ): Promise<PoolAddressWithDerivatives<Version>> {
-  if (version === 'v1') {
-    const result = getContract(web3, SynthereumTIC_Abi, poolAddress).instance;
-    const derivativeAddress = (await result.methods
-      .derivative()
-      .call()) as AddressOn<Net>;
-    return {
-      result: result as PoolContract<Version>,
-      derivativeAddress: getContract(web3, IDerivative_Abi, derivativeAddress)
-        .instance,
-    };
-  }
-  if (version === 'v2') {
-    const result = getContract(web3, SynthereumPool_Abi, poolAddress).instance;
-    const derivativeAddresses = (await result.methods
-      .getAllDerivatives()
-      .call()) as AddressOn<Net>[];
-
-    return {
-      result: result as PoolContract<Version>,
-      derivativeAddress: getContract(
-        web3,
-        IDerivative_Abi,
-        last(derivativeAddresses),
-      ).instance,
-    };
-  }
   if (version === 'v3') {
     const result = getContract(
       web3,
@@ -175,7 +146,7 @@ export function getPoolBalances<
   Version extends PoolVersion
 >(
   realm: SynthereumRealm<Net>,
-  version: Version = 'v1' as Version,
+  version: Version = 'v3' as Version,
 ): Promise<[SyntheticSymbol, Amount][]> {
   return Promise.all(
     mapPools(realm, version, async p =>
@@ -207,81 +178,6 @@ export function depositInAllPools<Net extends SupportedNetworkName>(
 interface RoleChange<Net extends SupportedNetworkName> {
   previousAddress: AddressOn<Net>;
   newAddress: AddressOn<Net>;
-}
-
-type PoolParameters<Net extends SupportedNetworkName> = {
-  lp?: RoleChange<Net>;
-  validator?: RoleChange<Net>;
-  newFees?: Readonly<Fees<Net>>;
-  perPool?: {
-    [key in SyntheticSymbol]?: {
-      startingCollateralization?: BN;
-    };
-  };
-  allowContractsUpdate?: {
-    enabled: boolean;
-  };
-};
-
-export async function updateV2PoolParameters<Net extends SupportedNetworkName>(
-  realm: SynthereumRealmWithWeb3<Net>,
-  {
-    newFees,
-    lp,
-    validator,
-    perPool,
-    allowContractsUpdate,
-  }: PoolParameters<Net>,
-  _txOpt: TxOptions,
-): Promise<void> {
-  const maintainer = synthereumConfig[realm.netId as SupportedNetworkId].roles
-    .maintainer as AddressOn<Net>;
-
-  const txOptions: FullTxOptions<Net> = {
-    web3: realm.web3,
-    ..._txOpt,
-    from: maintainer,
-  };
-
-  await executeInSequence(
-    ...mapPools(realm, 'v2', pool => async () => {
-      if (lp) {
-        await changeRole(pool, 'LIQUIDITY_PROVIDER_ROLE', lp, txOptions);
-      }
-
-      if (validator) {
-        await changeRole(pool, 'VALIDATOR_ROLE', validator, txOptions);
-      }
-
-      if (allowContractsUpdate) {
-        const allowed = await pool.instance.methods.isContractAllowed().call();
-        if (allowed !== allowContractsUpdate.enabled) {
-          const tx0 = pool.instance.methods.setIsContractAllowed(
-            allowContractsUpdate.enabled,
-          );
-          await sendTxWithMsg(tx0, txOptions, 'setIsContractAllowed');
-        }
-      }
-
-      if (newFees) {
-        const tx1 = pool.instance.methods.setFee([
-          [newFees.feePercentage],
-          newFees.feeRecipients,
-          newFees.feeProportions,
-        ]);
-        await sendTxWithMsg(tx1, txOptions, 'setFee');
-      }
-
-      const { startingCollateralization } = perPool?.[pool.symbol] ?? {};
-
-      if (startingCollateralization) {
-        const tx6 = pool.instance.methods.setStartingCollateralization(
-          startingCollateralization.toString(10),
-        );
-        await sendTxWithMsg(tx6, txOptions, 'setStartingCollateralization');
-      }
-    }),
-  );
 }
 
 export type Roles<

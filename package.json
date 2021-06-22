@@ -108,6 +108,7 @@
         "core-utils",
         "sol2ts-code-gen",
         "contracts",
+        "synthereum-ts",
         "package.json",
         "docker",
         "k8s",

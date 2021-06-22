@@ -10,7 +10,7 @@ export const MAX_MINT_VALUE = new FPN(
   process.env.NEXT_PUBLIC_MAX_MINT_VALUE || 5000,
 );
 
-assertIsSupportedPoolVersion(process.env.NEXT_PUBLIC_POOL_VERSION || 'v1');
+assertIsSupportedPoolVersion(process.env.NEXT_PUBLIC_POOL_VERSION || 'v3');
 
 export const DEFAULT_NETWORK = parseSupportedNetworkId(
   process.env.NEXT_PUBLIC_DEFAULT_NETWORK ?? Network.mainnet,

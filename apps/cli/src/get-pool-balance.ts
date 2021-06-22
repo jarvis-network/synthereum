@@ -62,7 +62,7 @@ async function main() {
   await depositInAllPools(realm, poolVersion, numberToWei(depositAmount), {
     printInfo: { log },
   });
-  log('Deposit complete. Getting v2 balances');
+  log('Deposit complete. Getting v3 balances');
   await printPoolBalance(realm, poolVersion);
 }
 

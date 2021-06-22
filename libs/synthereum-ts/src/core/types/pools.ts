@@ -1,8 +1,6 @@
 import {
   IDerivative,
-  SynthereumPool as SynthereumPoolContract,
   SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract,
-  SynthereumTIC as SynthereumTICContract,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import { assertIncludes } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
@@ -17,7 +15,7 @@ import type {
 } from '@jarvis-network/synthereum-contracts/dist/config';
 import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/config';
 
-export const poolVersions = ['v1', 'v2', 'v3'] as const;
+export const poolVersions = ['v3'] as const;
 export type PoolVersions = typeof poolVersions;
 export type PoolVersion = PoolVersions[number];
 
@@ -29,11 +27,7 @@ export function assertIsSupportedPoolVersion(x: unknown): PoolVersion {
   );
 }
 
-export type PoolContract<Version extends PoolVersion> = Version extends 'v1'
-  ? SynthereumTICContract
-  : Version extends 'v2'
-  ? SynthereumPoolContract
-  : Version extends 'v3'
+export type PoolContract<Version extends PoolVersion> = Version extends 'v3'
   ? SynthereumPoolOnChainPriceFeedContract
   : never;
 
