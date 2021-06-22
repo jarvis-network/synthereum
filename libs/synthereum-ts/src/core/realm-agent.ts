@@ -3,6 +3,7 @@ import {
   Amount,
   formatAmount,
   maxUint256,
+  wei,
 } from '@jarvis-network/core-utils/dist/base/big-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
@@ -16,7 +17,10 @@ import {
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { t } from '@jarvis-network/core-utils/dist/base/meta';
 
-import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
+import {
+  assert,
+  assertNotNull,
+} from '@jarvis-network/core-utils/dist/base/asserts';
 
 import {
   FullTxOptions,
@@ -31,9 +35,12 @@ import {
   ExchangeToken,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 
+import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
+
 import { mapPools } from './pool-utils';
-import { PoolsForVersion, PoolVersion, SynthereumPool } from './types/pools';
+import { PoolsForVersion, PoolVersion } from './types/pools';
 import { SynthereumRealmWithWeb3 } from './types/realm';
+import { determineSide, isSupportedCollateral } from './realm-utils';
 
 interface BaseTxParams {
   collateral: Amount;
@@ -77,7 +84,7 @@ export class RealmAgent<
   ) {
     this.activePools = assertNotNull(
       realm.pools[poolVersion],
-      'realm.pools[poolVersion] is null',
+      `realm.pools[${poolVersion}] is null`,
     );
     this.defaultTxOptions = {
       from: this.agentAddress,
@@ -111,106 +118,35 @@ export class RealmAgent<
     ]);
   }
 
-  assertV1Pool(operation: string) {
-    if (this.poolVersion !== 'v1') {
-      throw new Error(
-        `'${this.poolVersion}' support for '${operation}' is not implemented yet.`,
-      );
-    }
-  }
-
   mint({
     collateral,
     outputAmount,
     outputSynth,
     txOptions,
   }: MintParams): SwapResult {
-    this.assertV1Pool('mint');
-
-    const tic = this.activePools[outputSynth] as SynthereumPool<'v1', Net>;
-
-    const allowancePromise = this.ensureSufficientAllowanceFor(
-      this.realm.collateralToken,
-      tic.address,
-      collateral,
+    return this.universalExchange({
+      inputToken: this.realm.collateralToken.symbol as ExchangeToken,
+      outputToken: outputSynth,
+      inputAmountWei: collateral,
+      outputAmountWei: outputAmount,
       txOptions,
-    );
-
-    const inputCollateral = weiToTokenAmount({
-      wei: collateral,
-      decimals: tic.collateralToken.decimals,
     });
-
-    const tx = tic.instance.methods.mintRequest(
-      inputCollateral as any,
-      outputAmount as any,
-    );
-
-    const getSendTx = allowancePromise.then(() =>
-      sendTx(tx, {
-        ...this.defaultTxOptions,
-        ...txOptions,
-      }),
-    );
-
-    const txPromise = getSendTx.then(result => result.promiEvent);
-
-    return {
-      allowancePromise,
-      txPromise,
-      sendTx: getSendTx,
-    };
   }
 
   exchange({
-    collateral,
     inputSynth,
     outputSynth,
     inputAmount,
     outputAmount,
     txOptions,
   }: ExchangeParams): SwapResult {
-    this.assertV1Pool('mint');
-    const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
-
-    const destinationTicAddress = assertNotNull(
-      this.activePools[outputSynth],
-      'this.activePools[outputSynth] is null',
-    ).address;
-
-    const allowancePromise = this.ensureSufficientAllowanceFor(
-      inputTic.syntheticToken,
-      inputTic.address,
-      inputAmount,
+    return this.universalExchange({
+      inputToken: inputSynth,
+      outputToken: outputSynth,
+      inputAmountWei: inputAmount,
+      outputAmountWei: outputAmount,
       txOptions,
-    );
-
-    const inputCollateral = weiToTokenAmount({
-      wei: collateral,
-      decimals: inputTic.collateralToken.decimals,
     });
-
-    const tx = inputTic.instance.methods.exchangeRequest(
-      destinationTicAddress,
-      inputAmount as any,
-      inputCollateral as any,
-      outputAmount as any,
-    );
-
-    const getSendTx = allowancePromise.then(() =>
-      sendTx(tx, {
-        ...this.defaultTxOptions,
-        ...txOptions,
-      }),
-    );
-
-    const txPromise = getSendTx.then(result => result.promiEvent);
-
-    return {
-      allowancePromise,
-      txPromise,
-      sendTx: getSendTx,
-    };
   }
 
   redeem({
@@ -219,25 +155,119 @@ export class RealmAgent<
     collateral,
     txOptions,
   }: RedeemParams): SwapResult {
-    this.assertV1Pool('mint');
-    const inputTic = this.activePools[inputSynth] as SynthereumPool<'v1', Net>;
+    return this.universalExchange({
+      inputToken: inputSynth,
+      outputToken: this.realm.collateralToken.symbol as ExchangeToken,
+      inputAmountWei: inputAmount,
+      outputAmountWei: collateral,
+      txOptions,
+    });
+  }
+
+  private determineSide(input: ExchangeToken, output: ExchangeToken) {
+    return determineSide(this.activePools, input, output);
+  }
+
+  private isCollateral(token: ExchangeToken) {
+    return isSupportedCollateral(this.activePools, token);
+  }
+
+  private static getExpiration(): number {
+    const timeout = 4 * 3600;
+    return ((Date.now() / 1000) | 0) + timeout;
+  }
+
+  // TODO: Make this public and remove mint/exchange/redeem functions
+  private universalExchange({
+    inputToken,
+    outputToken,
+    inputAmountWei,
+    outputAmountWei,
+    txOptions,
+  }: {
+    inputToken: ExchangeToken;
+    outputToken: ExchangeToken;
+    inputAmountWei: Amount;
+    outputAmountWei: Amount;
+    txOptions?: TxOptions;
+  }): SwapResult {
+    const side = this.determineSide(inputToken, outputToken);
+
+    assert(
+      side !== 'unsupported',
+      'Unsupported exchange: ' +
+        `input ${inputAmountWei} ${inputToken} -> output ${outputAmountWei} ${outputToken}`,
+    );
+
+    const targetPool = assertNotNull(
+      this.activePools[inputToken as SyntheticSymbol],
+    );
+
+    // TODO: optimize by caching the fee during realm load
+    // const [
+    //   [feePercentage],
+    // ] = await targetPool.instance.methods.getFeeInfo().call();
+
+    // FIXME: avoid calling the smart contract to keep the function sync:
+    const feePercentage = wei('0.002');
 
     const allowancePromise = this.ensureSufficientAllowanceFor(
-      inputTic.syntheticToken,
-      inputTic.address,
-      inputAmount,
+      targetPool.collateralToken,
+      targetPool.address,
+      inputAmountWei,
       txOptions,
     );
 
-    const outputCollateral = weiToTokenAmount({
-      wei: collateral,
-      decimals: inputTic.collateralToken.decimals,
-    });
+    const inputAmount = this.isCollateral(inputToken)
+      ? weiToTokenAmount({
+          wei: inputAmountWei,
+          decimals: targetPool.collateralToken.decimals,
+        })
+      : inputAmountWei;
 
-    const tx = inputTic.instance.methods.redeemRequest(
-      outputCollateral as any,
-      inputAmount as any,
-    );
+    const outputAmount = this.isCollateral(outputToken)
+      ? weiToTokenAmount({
+          wei: outputAmountWei,
+          decimals: targetPool.collateralToken.decimals,
+        })
+      : outputAmountWei;
+
+    // TODO: Refactor to make the code more extensible
+    let tx: NonPayableTransactionObject<unknown>;
+    if (side === 'mint') {
+      tx = targetPool.instance.methods[side]([
+        targetPool.derivative.address,
+        outputAmount,
+        inputAmount,
+        feePercentage,
+        RealmAgent.getExpiration(),
+        this.agentAddress,
+      ]);
+    } else if (side === 'exchange') {
+      const outputPool = assertNotNull(
+        this.activePools[outputToken as SyntheticSymbol],
+        `activePools[${outputToken}] is null`,
+      );
+      tx = targetPool.instance.methods[side]([
+        targetPool.derivative.address,
+        outputPool.address,
+        outputPool.derivative.address,
+        inputAmount,
+        outputAmount,
+        feePercentage,
+        RealmAgent.getExpiration(),
+        this.agentAddress,
+      ]);
+    } else if (side === 'redeem') {
+      tx = targetPool.instance.methods[side]([
+        targetPool.derivative.address,
+        inputAmount,
+        outputAmount,
+        feePercentage,
+        RealmAgent.getExpiration(),
+        this.agentAddress,
+      ]);
+    }
 
     const getSendTx = allowancePromise.then(() =>
       sendTx(tx, {

@@ -54,7 +54,10 @@ import { SynthereumRealm, SynthereumRealmWithWeb3 } from './types/realm';
 export function getAvailableSymbols<
   Net extends SupportedNetworkName = SupportedNetworkName,
   Version extends PoolVersion = PoolVersion
->(realm: SynthereumRealm<Net>, version: OneOf<Version, PoolVersions>) {
+>(
+  realm: SynthereumRealm<Net>,
+  version: OneOf<Version, PoolVersions>,
+): SyntheticSymbol[] {
   const pool = assertNotNull(
     realm.pools[version] as PoolsForVersion<Version, Net>,
   );
