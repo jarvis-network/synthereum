@@ -15,7 +15,7 @@ import type {
 } from '@jarvis-network/synthereum-contracts/dist/config';
 import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/config';
 
-export const poolVersions = ['v3'] as const;
+export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;
 export type PoolVersion = PoolVersions[number];
 
@@ -27,7 +27,7 @@ export function assertIsSupportedPoolVersion(x: unknown): PoolVersion {
   );
 }
 
-export type PoolContract<Version extends PoolVersion> = Version extends 'v3'
+export type PoolContract<Version extends PoolVersion> = Version extends 'v4'
   ? SynthereumPoolOnChainPriceFeedContract
   : never;
 

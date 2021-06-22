@@ -168,6 +168,10 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
         version: 3,
         syntheticTokens: syntheticTokensKovan,
       },
+      v4: {
+        version: 4,
+        syntheticTokens: syntheticTokensMainnet,
+      },
     },
   },
   '1': {
@@ -219,6 +223,10 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       },
       v3: {
         version: 3,
+        syntheticTokens: syntheticTokensMainnet,
+      },
+      v4: {
+        version: 4,
         syntheticTokens: syntheticTokensMainnet,
       },
     },

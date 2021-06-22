@@ -62,7 +62,7 @@ async function main() {
     },
   ] as Filter[];
 
-  const erc20 = assertNotNull(realm.pools.v3?.jEUR).collateralToken.instance;
+  const erc20 = assertNotNull(realm.pools.v4?.jEUR).collateralToken.instance;
 
   const events = (
     await Promise.all(

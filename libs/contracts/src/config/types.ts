@@ -9,7 +9,7 @@ import {
   SupportedNetworkName,
 } from './supported-networks';
 
-export const poolVersions = ['v3'] as const;
+export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;
 export type PoolVersion = PoolVersions[number];
 

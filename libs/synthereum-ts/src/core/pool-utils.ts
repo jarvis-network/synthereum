@@ -122,7 +122,7 @@ export async function loadPool<
   version: Version,
   poolAddress: AddressOn<Net>,
 ): Promise<PoolAddressWithDerivatives<Version>> {
-  if (version === 'v3') {
+  if (version === 'v4') {
     const result = getContract(
       web3,
       SynthereumPoolOnChainPriceFeed_Abi,
@@ -149,7 +149,7 @@ export function getPoolBalances<
   Version extends PoolVersion
 >(
   realm: SynthereumRealm<Net>,
-  version: Version = 'v3' as Version,
+  version: Version = 'v4' as Version,
 ): Promise<[SyntheticSymbol, Amount][]> {
   return Promise.all(
     mapPools(realm, version, async p =>
