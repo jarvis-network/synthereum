@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import {
   IDerivative_Abi,
-  SynthereumPoolOnChainPriceFeed_Abi,
+  ISynthereumPoolOnChainPriceFeed_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import {
   IDerivative,
@@ -125,7 +125,7 @@ export async function loadPool<
   if (version === 'v4') {
     const result = getContract(
       web3,
-      SynthereumPoolOnChainPriceFeed_Abi,
+      ISynthereumPoolOnChainPriceFeed_Abi,
       poolAddress,
     ).instance;
     const derivativeAddresses = (await result.methods

@@ -1,4 +1,4 @@
-import { SynthereumPoolRegistry as SynthereumPoolRegistryContract } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
+import { ISynthereumRegistry as ISynthereumRegistryContract } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   ContractInfo,
   TokenInfo,
@@ -19,7 +19,7 @@ export interface SynthereumRealm<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
   readonly collateralToken: TokenInfo<Net>;
-  readonly poolRegistry: ContractInfo<Net, SynthereumPoolRegistryContract>;
+  readonly poolRegistry: ContractInfo<Net, ISynthereumRegistryContract>;
   readonly pools: {
     [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
   };

@@ -1,8 +1,8 @@
 import {
   ERC20_Abi,
-  SynthereumPoolRegistry_Abi,
+  ISynthereumRegistry_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
-import { SynthereumPoolRegistry } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
+import { ISynthereumRegistry } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   parseInteger,
   throwError,
@@ -71,7 +71,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 ): Promise<SynthereumRealmWithWeb3<Net>> {
   const poolRegistry = getContract(
     web3,
-    SynthereumPoolRegistry_Abi,
+    ISynthereumRegistry_Abi,
     config.poolRegistry,
   );
 
@@ -123,7 +123,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 
 function poolVersionId(version: PoolVersion) {
   return version === 'v4'
-    ? 3
+    ? 4
     : throwError(`'${version}' is not a supported pool version`);
 }
 
@@ -134,14 +134,14 @@ export async function loadPoolInfo<
 >(
   web3: Web3On<Net>,
   netId: ToNetworkId<Net>,
-  poolRegistry: SynthereumPoolRegistry,
+  poolRegistry: ISynthereumRegistry,
   collateralAddress: AddressOn<Net>,
   version: Version,
   symbol: SynthSymbol,
 ): Promise<SynthereumPool<Version, Net, SynthSymbol> | null> {
   const versionId = poolVersionId(version);
   const poolAddresses = await poolRegistry.methods
-    .getPools(symbol, collateralAddress, versionId)
+    .getElements(symbol, collateralAddress, versionId)
     .call();
 
   // Assume the last address in the array is the one we should interact with
