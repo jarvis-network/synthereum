@@ -4,6 +4,7 @@ export {
   primaryCollateralSymbol,
 } from './types';
 export type {
+  CollateralSymbol,
   PoolVersion,
   PoolVersions,
   Fees,

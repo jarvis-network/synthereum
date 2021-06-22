@@ -23,11 +23,13 @@ export const allSyntheticSymbols = [
   'jXAG',
 ] as const;
 
-export const primaryCollateralSymbol = 'USDC';
+const collateralSymbols = ['USDC'] as const;
+export const primaryCollateralSymbol = collateralSymbols[0];
+export type CollateralSymbol = typeof collateralSymbols[number];
 
 export type SyntheticSymbol = typeof allSyntheticSymbols[number];
 
-export type ExchangeToken = SyntheticSymbol | typeof primaryCollateralSymbol;
+export type ExchangeToken = SyntheticSymbol | CollateralSymbol;
 
 export type PerNetwork<Config> = PerTupleElement<SupportedNetworkIds, Config>;
 
