@@ -115,6 +115,7 @@
         "toolkit",
         "claim",
         "cli",
+        "subgraph",
         "validator-lib"
       ]
     }

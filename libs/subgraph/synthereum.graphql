@@ -1,5 +1,5 @@
 type User @entity {
-  id: ID! #address
+  id: ID! # address
   lastTransactions: [Transaction!]!
 }
 
@@ -9,14 +9,16 @@ type Transaction @entity {
   type: TransactionType!
   timestamp: BigInt!
   block: BigInt!
-  ###
+
   inputTokenAmount: BigInt!
   inputTokenAddress: Bytes!
-  ###
+
   outputTokenAmount: BigInt!
   outputTokenAddress: Bytes!
-  ###
+
   poolVersion: BigInt!
+
+  recipient: Bytes!
 }
 
 enum TransactionType {
@@ -25,18 +27,11 @@ enum TransactionType {
   exchange
 }
 
-type DerivativeFactory @entity {
-  id: ID! #address of SynthereumDerivativeFactory contract
-  derivatives: [Derivative!]!
-}
-
 type Derivative @entity {
-  id: ID! #address of PerpetualPoolParty contract
-  #--------------------------
+  id: ID! # address
   tokenCurrency: ERC20!
   collateralCurrency: ERC20!
-  #--------------------------
-  #--------------------------
+
   pools: [Pool!]!
 }
 
@@ -47,7 +42,7 @@ type ERC20 @entity {
 }
 
 type Pool @entity {
-  id: ID! #address of SynthereumPool contract
+  id: ID! # address
   derivative: Derivative
   version: BigInt!
 }

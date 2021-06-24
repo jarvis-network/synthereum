@@ -7,39 +7,34 @@ import {
   BigInt,
 } from '@graphprotocol/graph-ts';
 
-import { IERC20Contract } from '../generated/SynthereumDerivativeFactoryContract/IERC20Contract';
-
 import {
-  SynthereumPoolContract as SynthereumPoolContractTemplate,
-  PerpetualPoolPartyContract as PerpetualPoolPartyContractTemplate,
+  OldSynthereumPool as SynthereumPoolContractTemplate,
+  OldPerpetualPoolParty as PerpetualPoolPartyContractTemplate,
 } from '../generated/templates';
 
-import { CreatePerpetualCall } from '../generated/SynthereumDerivativeFactoryContract/SynthereumDerivativeFactoryContract';
+import { CreatePerpetualCall } from '../generated/OldSynthereumDerivativeFactory/OldSynthereumDerivativeFactory';
 
 import {
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent,
-  PerpetualPoolPartyContractABI as PerpetualPoolPartyContract,
-} from '../generated/templates/PerpetualPoolPartyContract/PerpetualPoolPartyContractABI';
+  OldPerpetualPoolParty as PerpetualPoolPartyContract,
+} from '../generated/templates/OldPerpetualPoolParty/OldPerpetualPoolParty';
 
 import {
   Mint as MintEvent,
   Redeem as RedeemEvent,
   Exchange as ExchangeEvent,
-  SynthereumPoolContract,
-} from '../generated/templates/SynthereumPoolContract/SynthereumPoolContract';
+  OldSynthereumPool as SynthereumPoolContract,
+} from '../generated/templates/OldSynthereumPool/OldSynthereumPool';
+
+import { Pool, Derivative, Transaction } from '../generated/schema';
 
 import {
-  Pool,
-  Derivative,
-  ERC20,
-  DerivativeFactory,
-  Transaction,
-  User,
-} from '../generated/schema';
-
-let DERIVATIVE_FACTORY_ID = '1';
-let LAST_TRANSACTION_COUNT = 30;
+  getOrCreateUserEntity,
+  addLastTransaction,
+  getPoolAndDerivative,
+  getOrCreateERC20,
+} from './utils';
 
 //                            //
 // ======== UTILS ==========  //
@@ -75,73 +70,11 @@ export function createOrGetSynthereumPool(
   return pool as Pool;
 }
 
-function getOrCreateERC20(tokenCurrencyAddress: Address): ERC20 {
-  let alreadyExisting = ERC20.load(tokenCurrencyAddress.toHexString());
-  if (alreadyExisting != null) {
-    return alreadyExisting as ERC20;
-  }
-  let ERC20Entity = new ERC20(tokenCurrencyAddress.toHexString());
-  let ERC20Contract = IERC20Contract.bind(tokenCurrencyAddress);
-  ERC20Entity.symbol = ERC20Contract.symbol();
-  ERC20Entity.decimals = BigInt.fromI32(ERC20Contract.decimals());
-  ERC20Entity.save();
-  return ERC20Entity as ERC20;
-}
-
-function getOrCreateUserEntity(userAddress: Bytes): User {
-  let addr = userAddress.toHexString();
-  let preExistingUser = User.load(addr);
-  if (preExistingUser != null) return preExistingUser as User;
-
-  let user = new User(addr);
-  user.lastTransactions = new Array<string>(LAST_TRANSACTION_COUNT);
-  user.save();
-
-  return user;
-}
-
-function addLastTransaction(user: User, trx: Transaction): void {
-  let lastTransactions = user.lastTransactions;
-  lastTransactions.unshift(trx.id);
-  lastTransactions.splice(LAST_TRANSACTION_COUNT);
-  user.lastTransactions = lastTransactions;
-}
-
 function getPoolRole(): Bytes {
   let perpetualPoolPartyContract = PerpetualPoolPartyContract.bind(
     dataSource.address(),
   );
   return perpetualPoolPartyContract.POOL_ROLE();
-}
-
-function getOrCreateDerivativeFactoryEntity(): DerivativeFactory {
-  let derivativeFactoryEntity = DerivativeFactory.load(DERIVATIVE_FACTORY_ID);
-  if (derivativeFactoryEntity == null) {
-    derivativeFactoryEntity = new DerivativeFactory(DERIVATIVE_FACTORY_ID);
-    derivativeFactoryEntity.derivatives = new Array<string>(0);
-  }
-  return derivativeFactoryEntity as DerivativeFactory;
-}
-
-class PoolAndDerivative {
-  constructor(readonly pool: Pool, readonly derivative: Derivative) {}
-}
-
-export function getPoolAndDerivative(
-  poolAddress: string,
-): PoolAndDerivative | null {
-  log.debug('pool address = {}', [poolAddress]);
-  let pool = Pool.load(poolAddress);
-
-  if (pool != null) {
-    log.debug('pool derivative = {}', [pool.derivative]);
-    let derivative = Derivative.load(pool.derivative);
-    return new PoolAndDerivative(
-      pool as Pool,
-      derivative as Derivative,
-    ) as PoolAndDerivative;
-  }
-  return null;
 }
 
 //                                 //
@@ -178,16 +111,6 @@ export function handleCreatePerpetual(call: CreatePerpetualCall): void {
   let ctx = new DataSourceContext();
   ctx.setBigInt('startBlock', blockNumber);
   PerpetualPoolPartyContractTemplate.createWithContext(derivativeAddress, ctx);
-
-  let derivativeFactoryEntity = getOrCreateDerivativeFactoryEntity();
-
-  let derivatives = derivativeFactoryEntity.derivatives;
-  derivatives.push(derivative.id);
-  /* https://thegraph.com/docs/assemblyscript-api
-    [...] array properties have to be set again explicitly after changing the array. */
-  derivativeFactoryEntity.derivatives = derivatives;
-
-  derivativeFactoryEntity.save();
 }
 
 // ==== HANDLERS FOR SYNTHEREUM DERIVATIVE (Perpetual pool party) ====
@@ -291,6 +214,7 @@ export function handleMint(event: MintEvent): void {
     derivative.tokenCurrency,
   ) as Bytes;
   //
+  trx.recipient = event.params.account;
 
   trx.save();
   addLastTransaction(user, trx);
@@ -321,6 +245,8 @@ export function handleRedeem(event: RedeemEvent): void {
   trx.outputTokenAddress = Bytes.fromHexString(
     derivative.collateralCurrency,
   ) as Bytes;
+  //
+  trx.recipient = event.params.account;
 
   trx.save();
   addLastTransaction(user, trx);
@@ -359,6 +285,8 @@ export function handleExchange(event: ExchangeEvent): void {
   trx.outputTokenAddress = Bytes.fromHexString(
     derivative2.tokenCurrency,
   ) as Bytes;
+  //
+  trx.recipient = event.params.account;
 
   trx.save();
   addLastTransaction(user, trx);

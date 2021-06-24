@@ -3,3 +3,4 @@ build/
 generated/
 temporary-*.yaml
 abis/
+data/
