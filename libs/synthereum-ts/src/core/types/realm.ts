@@ -9,6 +9,10 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import { SupportedNetworkName } from '../../config';
 
 import { PoolsForVersion, PoolVersion } from './pools';
+import {
+  DerivativesForVersion,
+  SelfMintingVersion,
+} from './self-minting-derivatives';
 
 /**
  * Describes a specifc deployment of all Synthereum contracts on a given network.
@@ -22,6 +26,10 @@ export interface SynthereumRealm<
   readonly poolRegistry: ContractInfo<Net, ISynthereumRegistryContract>;
   readonly pools: {
     [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
+  };
+  readonly selfMintinglRegistry: ContractInfo<Net, ISynthereumRegistryContract>;
+  readonly selfMintingDerivatives: {
+    [Version in SelfMintingVersion]?: DerivativesForVersion<Version, Net>;
   };
 }
 
