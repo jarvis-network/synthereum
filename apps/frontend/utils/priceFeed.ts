@@ -137,10 +137,7 @@ export class PriceFeed {
     // Return last subscription result
     assets.map(asset => this.subscribe(asset, options))[assets.length - 1];
 
-  unsubscribe = (asset: SyntheticSymbol): WebSocket => {
-    // Get subscription pair
-    const pair: SubscriptionPair = priceFeedPairsMap[asset];
-
+  unsubscribe = (pair: SubscriptionPair): WebSocket => {
     // If pair does not exist in subscriptions list just return socket
     if (this.socket && !this.subscriptions.includes(pair)) {
       return this.socket;
@@ -152,10 +149,6 @@ export class PriceFeed {
     // Send unsubscribe message
     return this.unsubscribePair(pair);
   };
-
-  unsubscribeMany = (assets: SyntheticSymbol[]): WebSocket =>
-    // Return last unsubscription result
-    assets.map(asset => this.unsubscribe(asset))[assets.length - 1];
 
   closeConnection = () => {
     // Unsubscribe
