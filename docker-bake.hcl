@@ -14,7 +14,6 @@ variable "REGISTRY_NAME" {
 # `frontend` target:
 variable "NEXT_PUBLIC_ONBOARD_API_KEY" {}
 variable "NEXT_PUBLIC_NETWORK_ID" {}
-variable "NEXT_PUBLIC_MAX_MINT_VALUE" {}
 variable "NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET" {}
 variable "NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET" {}
 variable "NEXT_PUBLIC_INFURA_API_KEY" {}

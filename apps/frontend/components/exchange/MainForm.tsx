@@ -22,8 +22,6 @@ import { Asset as AssetType } from '@/data/assets';
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
-import { MAX_MINT_VALUE } from '@/utils/environment';
-
 import { TwoIconsButton } from '@/components/TwoIconsButton';
 
 import { Loader } from '../Loader';
@@ -197,9 +195,6 @@ export const MainForm: React.FC = () => {
     updatePay(receiveString);
   };
 
-  const mintingOverLimit =
-    paySymbol === 'USDC' && new FPN(payString).gt(MAX_MINT_VALUE);
-
   const isSwapDisabled = () => {
     if (isSwapLoaderVisible) {
       return true;
@@ -209,12 +204,7 @@ export const MainForm: React.FC = () => {
       return false;
     }
 
-    return (
-      !Number(payString) ||
-      !Number(receiveString) ||
-      insufficientBalance ||
-      mintingOverLimit
-    );
+    return !Number(payString) || !Number(receiveString) || insufficientBalance;
   };
 
   const handleSwapButtonClick = () => {
@@ -249,11 +239,7 @@ export const MainForm: React.FC = () => {
     return formatExchangeAmount(receiveString);
   };
 
-  const errorMessage = insufficientBalance
-    ? 'Insufficient funds'
-    : mintingOverLimit
-    ? 'Limit Reached'
-    : null;
+  const errorMessage = insufficientBalance ? 'Insufficient funds' : null;
 
   const amount = wallet && (
     <Balance>Balance: {wallet.amount.format(5)}</Balance>
