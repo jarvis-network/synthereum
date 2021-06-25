@@ -3,8 +3,8 @@ import {
   Amount,
   formatAmount,
   maxUint256,
-  wei,
 } from '@jarvis-network/core-utils/dist/base/big-number';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   getTokenAllowance,
@@ -43,13 +43,13 @@ import { SynthereumRealmWithWeb3 } from './types/realm';
 import { determineSide, isSupportedCollateral } from './realm-utils';
 
 interface BaseTxParams {
-  collateral: Amount;
   txOptions?: TxOptions;
 }
 
 interface MintParams extends BaseTxParams {
   outputSynth: SyntheticSymbol;
   outputAmount: Amount;
+  collateral: Amount;
 }
 
 interface ExchangeParams extends BaseTxParams {
@@ -62,6 +62,7 @@ interface ExchangeParams extends BaseTxParams {
 interface RedeemParams extends BaseTxParams {
   inputSynth: SyntheticSymbol;
   inputAmount: Amount;
+  collateral: Amount;
 }
 
 interface SwapResult {
@@ -199,9 +200,21 @@ export class RealmAgent<
         `input ${inputAmountWei} ${inputToken} -> output ${outputAmountWei} ${outputToken}`,
     );
 
-    const targetPool = assertNotNull(
-      this.activePools[inputToken as SyntheticSymbol],
-    );
+    const inputPool =
+      side === 'mint'
+        ? null
+        : assertNotNull(
+            this.activePools[inputToken as SyntheticSymbol],
+            'this.activePools[inputToken as SyntheticSymbol] is null',
+          );
+
+    const outputPool =
+      side === 'redeem'
+        ? null
+        : assertNotNull(
+            this.activePools[outputToken as SyntheticSymbol],
+            'this.activePools[outputToken as SyntheticSymbol] is null',
+          );
 
     // TODO: optimize by caching the fee during realm load
     // const [
@@ -209,11 +222,11 @@ export class RealmAgent<
     // ] = await targetPool.instance.methods.getFeeInfo().call();
 
     // FIXME: avoid calling the smart contract to keep the function sync:
-    const feePercentage = wei('0.002');
+    const feePercentage = new FPN(0.002);
 
     const allowancePromise = this.ensureSufficientAllowanceFor(
-      targetPool.collateralToken,
-      targetPool.address,
+      side === 'mint' ? outputPool!.collateralToken : inputPool!.syntheticToken,
+      side === 'mint' ? outputPool!.address : inputPool!.address,
       inputAmountWei,
       txOptions,
     );
@@ -221,49 +234,51 @@ export class RealmAgent<
     const inputAmount = this.isCollateral(inputToken)
       ? weiToTokenAmount({
           wei: inputAmountWei,
-          decimals: targetPool.collateralToken.decimals,
+          decimals:
+            side === 'mint'
+              ? outputPool!.collateralToken.decimals
+              : inputPool!.collateralToken.decimals,
         })
       : inputAmountWei;
 
     const outputAmount = this.isCollateral(outputToken)
       ? weiToTokenAmount({
           wei: outputAmountWei,
-          decimals: targetPool.collateralToken.decimals,
+          decimals:
+            side === 'mint'
+              ? outputPool!.collateralToken.decimals
+              : inputPool!.collateralToken.decimals,
         })
       : outputAmountWei;
 
     // TODO: Refactor to make the code more extensible
     let tx: NonPayableTransactionObject<unknown>;
     if (side === 'mint') {
-      tx = targetPool.instance.methods[side]([
-        targetPool.derivative.address,
-        outputAmount,
-        inputAmount,
-        feePercentage,
+      tx = outputPool!.instance.methods[side]([
+        outputPool!.derivative.address,
+        `0x${outputAmount.toString('hex')}`,
+        `0x${inputAmount.toString('hex')}`,
+        `0x${feePercentage.toString('hex')}`,
         RealmAgent.getExpiration(),
         this.agentAddress,
       ]);
     } else if (side === 'exchange') {
-      const outputPool = assertNotNull(
-        this.activePools[outputToken as SyntheticSymbol],
-        `activePools[${outputToken}] is null`,
-      );
-      tx = targetPool.instance.methods[side]([
-        targetPool.derivative.address,
-        outputPool.address,
-        outputPool.derivative.address,
-        inputAmount,
-        outputAmount,
-        feePercentage,
+      tx = inputPool!.instance.methods[side]([
+        inputPool!.derivative.address,
+        outputPool!.address,
+        outputPool!.derivative.address,
+        `0x${inputAmount.toString('hex')}`,
+        `0x${outputAmount.toString('hex')}`,
+        `0x${feePercentage.toString('hex')}`,
         RealmAgent.getExpiration(),
         this.agentAddress,
       ]);
     } else if (side === 'redeem') {
-      tx = targetPool.instance.methods[side]([
-        targetPool.derivative.address,
-        inputAmount,
-        outputAmount,
-        feePercentage,
+      tx = inputPool!.instance.methods[side]([
+        inputPool!.derivative.address,
+        `0x${inputAmount.toString('hex')}`,
+        `0x${outputAmount.toString('hex')}`,
+        `0x${feePercentage.toString('hex')}`,
         RealmAgent.getExpiration(),
         this.agentAddress,
       ]);

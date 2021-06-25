@@ -43,7 +43,7 @@ export function determineSide<
 ): TxType {
   const synthInput = isSupportedSynth(activePools, input);
   const synthOutput = isSupportedSynth(activePools, output);
-  const collateralInput = isSupportedCollateral(activePools, output);
+  const collateralInput = isSupportedCollateral(activePools, input);
   const collateralOutput = isSupportedCollateral(activePools, output);
   if (collateralInput && synthOutput) return 'mint';
   if (synthInput && collateralOutput) return 'redeem';

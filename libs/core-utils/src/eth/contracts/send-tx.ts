@@ -34,7 +34,15 @@ const nonces: Record<string, number> = {};
 
 export async function sendTx<Result, Net extends NetworkName>(
   tx: NonPayableTransactionObject<Result>,
-  { web3, gasLimit, nonce, from, printInfo, ...rest }: FullTxOptions<Net>,
+  {
+    web3,
+    gasLimit,
+    nonce,
+    from,
+    printInfo,
+    confirmations: _confirmations,
+    ...rest
+  }: FullTxOptions<Net>,
 ): Promise<{ promiEvent: PromiEvent<TransactionReceipt> }> {
   const log = printInfo?.log ?? noop;
 

@@ -134,6 +134,15 @@ class FixedPointNumber {
       this.number.div(new BN(10).pow(new BN(by))),
     );
   }
+
+  pow(power: number) {
+    if (power === 0) return new FixedPointNumber(1);
+    if (power === 1) return this;
+    return Array.from({ length: power - 1 }).reduce<FixedPointNumber>(
+      accumulator => accumulator.mul(this),
+      this,
+    );
+  }
 }
 
 export { FixedPointNumber as FPN };

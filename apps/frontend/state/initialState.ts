@@ -2,7 +2,10 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { ExchangeToken } from '@jarvis-network/synthereum-ts/dist/config';
+import {
+  ExchangeToken,
+  primaryCollateralSymbol,
+} from '@jarvis-network/synthereum-ts/dist/config';
 
 import { assets, Asset } from '@/data/assets';
 import { Transaction } from '@/data/transactions';
@@ -39,7 +42,7 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
-export const DEFAULT_PAY_ASSET: ExchangeToken = 'USDC';
+export const DEFAULT_PAY_ASSET: ExchangeToken = primaryCollateralSymbol;
 export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 
 export type Days = 1 | 7 | 30;

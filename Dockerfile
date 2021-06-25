@@ -48,6 +48,7 @@ ARG NEXT_PUBLIC_SUPPORTED_ASSETS
 
 FROM build-frontend-base as build-frontend
 RUN yarn build frontend
+RUN yarn test frontend
 RUN cp -r apps/frontend/out /out
 
 # ------------------------------ Build Borrowing ------------------------------ #

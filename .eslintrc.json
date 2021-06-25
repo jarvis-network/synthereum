@@ -8,7 +8,11 @@
   "env": {
     "browser": true
   },
-  "ignorePatterns": ["node_modules/", "storybook-static/"],
+  "ignorePatterns": [
+    "node_modules/",
+    "storybook-static/",
+    "libs/contracts/dist/"
+  ],
   "plugins": ["@typescript-eslint", "react", "prettier", "jest"],
   "parser": "@typescript-eslint/parser",
   "rules": {
