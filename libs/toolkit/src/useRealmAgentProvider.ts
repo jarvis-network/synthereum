@@ -9,18 +9,13 @@ import {
 import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
-
-import {
-  PoolsForVersion,
-  PoolVersion,
-} from '@jarvis-network/synthereum-ts/dist/core/types/pools';
+import { PoolsForVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
-
-const poolVersion = (process.env.NEXT_PUBLIC_POOL_VERSION ||
-  'v4') as PoolVersion;
+import { PoolVersion } from '@jarvis-network/synthereum-ts/dist/config';
 
 export function useRealmAgentProvider(
+  poolVersion: PoolVersion,
   store: {
     getState(): { auth: { address: string } | null };
     subscribe(callback: () => void): () => void;
@@ -38,7 +33,7 @@ export function useRealmAgentProvider(
   const poolsRef = useRef<
     {
       [key in SupportedNetworkId]?: PoolsForVersion<
-        typeof poolVersion,
+        PoolVersion,
         SupportedNetworkName
       >;
     }

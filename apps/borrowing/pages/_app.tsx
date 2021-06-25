@@ -49,7 +49,8 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
 
   const store = useStore(pageProps.initialReduxState);
 
-  useRealmAgentProvider(store, subjects);
+  // TODO: Fix for self-minting realm agent
+  useRealmAgentProvider('v4', store, subjects);
 
   const isMounted = useIsMounted();
   if (!isMounted) return null;

@@ -40,6 +40,7 @@ import { addressSwitch, logoutAction, networkSwitch } from '@/state/actions';
 import { useFetchWalletBalancesOnNewBlock } from '@/utils/useFetchWalletBalancesOnNewBlock';
 import { DEFAULT_NETWORK } from '@/utils/environment';
 import { TutorialContent } from '@/components/auth/flow/ModalComponents';
+import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -62,7 +63,11 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
 
   const store = useStore(pageProps.initialReduxState);
 
-  useRealmAgentProvider(store, subjects);
+  useRealmAgentProvider(
+    assertIsSupportedPoolVersion(process.env.NEXT_PUBLIC_POOL_VERSION),
+    store,
+    subjects,
+  );
   useFetchWalletBalancesOnNewBlock(store.dispatch, subjects);
 
   const isMounted = useIsMounted();
