@@ -6,6 +6,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer(
   withPWA({
+    env: { NEXT_PUBLIC_POOL_VERSION: 'v4' },
     pwa: {
       disable: process.env.NODE_ENV === 'development',
       register: true,

@@ -107,6 +107,7 @@ export interface SyntheticTokenConfig<
   syntheticSymbol: SynthSymbol; /// Example: "jEUR",
   umaPriceFeedIdentifier: string; /// Example: "EURUSD",
   jarvisPriceFeedIdentifier: string; /// Example: "EURUSD",
+  chainlinkPriceFeedIdentifier: string; /// Example: "EURUSD",
   startingCollateralization: string; /// Example: "1527000",
   collateralRequirement: string; /// Example: { "rawValue": "1100000000000000000" },
   minSponsorTokens: string; /// Example: { "rawValue": "1000000000000000000" }

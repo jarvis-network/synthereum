@@ -27,7 +27,11 @@ export function parseSupportedNetworkId(x: unknown): SupportedNetworkId {
 export function isSupportedNetwork(
   network: unknown,
 ): network is SupportedNetwork {
-  return supportedNetworkIds.includes(
-    parseNetworkId(network) as SupportedNetworkId,
-  );
+  try {
+    return supportedNetworkIds.includes(
+      parseNetworkId(network) as SupportedNetworkId,
+    );
+  } catch {
+    return false;
+  }
 }
