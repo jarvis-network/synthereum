@@ -1,6 +1,7 @@
 import {
   ERC20_Abi,
   ISynthereumRegistry_Abi,
+  SelfMintingPerpetualMultiParty_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import { ISynthereumRegistry } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
@@ -37,6 +38,10 @@ import type {
   SynthereumPool,
 } from './types/pools';
 import type { SynthereumRealmWithWeb3 } from './types/realm';
+import {
+  SelfMintingDerivative,
+  SelfMintingVersion,
+} from './types/self-minting-derivatives';
 
 type PoolVersionsToLoad<Net extends SupportedNetworkName> = {
   [Version in PoolVersion]?: PoolsForVersion<Version, Net> | null;
@@ -75,6 +80,12 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     config.poolRegistry,
   );
 
+  const selMintingRegistry = getContract(
+    web3,
+    ISynthereumRegistry_Abi,
+    config.selfMintingRegistry,
+  );
+
   const collateralAddress = config.primaryCollateralToken.address;
 
   const loadAllPools = async <Version extends PoolVersion>(
@@ -111,11 +122,42 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     pools[version] = await loadAllPools(version);
   }
 
+  const loadAllDerivatives = async <Version extends SelfMintingVersion>(
+    version: Version,
+  ) => {
+    const syntheticTokens = (await selMintingRegistry.instance.methods
+      .getSyntheticTokens()
+      .call()) as SyntheticSymbol[];
+    const collateralTokens = (await selMintingRegistry.instance.methods
+      .getCollaterals()
+      .call()) as AddressOn<Net>[];
+
+    const pairs = await Promise.all(
+      collateralTokens.flatMap(collateralTokenAddress =>
+        syntheticTokens.map(async symbol => {
+          const info = await loadDerivativesInfo(
+            web3,
+            netId,
+            selMintingRegistry.instance,
+            collateralTokenAddress,
+            version,
+            symbol,
+          );
+          return t(symbol, info);
+        }),
+      ),
+    );
+    return Object.fromEntries(pairs);
+  };
+  const derivatives: SynthereumRealmWithWeb3<Net>['selfMintingDerivatives'] = {};
+  derivatives.v1 = await loadAllDerivatives('v1');
   return {
     web3,
     netId,
     poolRegistry,
     pools,
+    selfMintingDerivatives: derivatives,
+    selfMintinglRegistry: selMintingRegistry,
     // Assume the same collateral token for all synthetics:
     collateralToken,
   };
@@ -188,6 +230,67 @@ export async function loadPoolInfo<
       address: derivativeAddress.options.address as AddressOn<Net>,
       instance: derivativeAddress,
     },
+  };
+}
+
+export async function loadDerivativesInfo<
+  Version extends SelfMintingVersion,
+  SynthSymbol extends SyntheticSymbol,
+  Net extends SupportedNetworkName
+>(
+  web3: Web3On<Net>,
+  netId: ToNetworkId<Net>,
+  derivativesRegistry: ISynthereumRegistry,
+  collateralAddress: AddressOn<Net>,
+  version: Version,
+  symbol: SynthSymbol,
+): Promise<SelfMintingDerivative<Version, Net, SynthSymbol> | null> {
+  const versionId = parseInteger(version.slice(1));
+  const derivativeAddresses = await derivativesRegistry.methods
+    .getElements(symbol, collateralAddress, versionId)
+    .call();
+  // Assume the last address in the array is the one we should interact with
+  const lastDerivativeAddress = last(derivativeAddresses);
+
+  if (!isAddress(lastDerivativeAddress)) {
+    return null;
+  }
+
+  const derivativeAddress = assertIsAddress(
+    lastDerivativeAddress,
+  ) as AddressOn<Net>;
+
+  const { instance } = await getContract(
+    web3,
+    SelfMintingPerpetualMultiParty_Abi,
+    derivativeAddress,
+  );
+
+  const collateralTokenAddress = assertIsAddress(
+    await instance.methods.collateralCurrency().call(),
+  ) as AddressOn<Net>;
+
+  if (
+    collateralTokenAddress.toLowerCase() !== collateralAddress.toLowerCase()
+  ) {
+    throwError(
+      `Collateral token mismatch - expected: '${collateralAddress}', ` +
+        `got: '${collateralTokenAddress}'`,
+    );
+  }
+
+  const syntheticTokenAddress = assertIsAddress(
+    await instance.methods.tokenCurrency().call(),
+  ) as AddressOn<Net>;
+  return {
+    versionId: version,
+    networkId: netId,
+    priceFeed: priceFeed[symbol],
+    symbol,
+    address: derivativeAddress,
+    instance,
+    syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
+    collateralToken: await getTokenInfo(web3, collateralTokenAddress),
   };
 }
 
