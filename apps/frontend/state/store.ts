@@ -17,11 +17,11 @@ function initStore(preloadedState: State = initialAppState) {
   const epicMiddleware: EpicMiddleware<
     any,
     any,
-    any,
+    never,
     Dependencies
   > = createEpicMiddleware({
     dependencies: {
-      priceFeed: new PriceFeed(getPriceFeedEndpoint()), // @TODO connect with price feed or mock proxy
+      priceFeed: new PriceFeed(getPriceFeedEndpoint()),
     },
   });
 
