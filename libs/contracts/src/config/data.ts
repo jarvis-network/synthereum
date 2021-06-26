@@ -32,7 +32,7 @@ const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
     syntheticSymbol: 'jEUR',
-    umaPriceFeedIdentifier: 'EUR/USD',
+    umaPriceFeedIdentifier: 'EURUSD',
     jarvisPriceFeedIdentifier: 'EURUSD',
     collateralRequirement: '1200000000000000000',
     startingCollateralization: '1824000',
@@ -42,7 +42,7 @@ const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   jCHF: {
     syntheticName: 'Jarvis Synthetic Swiss Franc',
     syntheticSymbol: 'jCHF',
-    umaPriceFeedIdentifier: 'CHF/USD',
+    umaPriceFeedIdentifier: 'CHFUSD',
     jarvisPriceFeedIdentifier: 'USDCHF',
     collateralRequirement: '1200000000000000000',
     startingCollateralization: '1690000',
@@ -52,7 +52,7 @@ const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   jGBP: {
     syntheticName: 'Jarvis Synthetic British Pound',
     syntheticSymbol: 'jGBP',
-    umaPriceFeedIdentifier: 'GBP/USD',
+    umaPriceFeedIdentifier: 'GBPUSD',
     jarvisPriceFeedIdentifier: 'GBPUSD',
     collateralRequirement: '1200000000000000000',
     startingCollateralization: '2061000',
@@ -62,7 +62,7 @@ const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   jXAU: {
     syntheticName: 'Jarvis Synthetic Gold',
     syntheticSymbol: 'jXAU',
-    umaPriceFeedIdentifier: 'XAU/USD',
+    umaPriceFeedIdentifier: 'XAUUSD',
     jarvisPriceFeedIdentifier: 'XAUUSD',
     collateralRequirement: '1200000000000000000',
     startingCollateralization: '2780080000',
