@@ -12,6 +12,11 @@
   "1": {
     "isEnabled": true,
     "Derivative": 2,
-    "Pool": 4
+    "Pool": 4,
+    "SynthToken": {
+      "jEUR": "0x0f17BC9a994b87b5225cFb6a2Cd4D667ADb4F20B",
+      "jCHF": "0x53dfEa0A8CC2A2A2e425E1C174Bc162999723ea0",
+      "jGBP": "0x7409856CAE628f5d578B285B45669b36E7005283"
+    }
   }
 }

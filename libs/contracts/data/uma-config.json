@@ -9,10 +9,10 @@
   },
   "1": {
     "disputeBondPct": "50000000000000000",
-    "sponsorDisputeRewardPct": "100000000000000000",
-    "disputerDisputeRewardPct": "300000000000000000",
-    "withdrawalLiveness": "14400",
-    "liquidationLiveness": "14000",
-    "excessTokenBeneficiary": "0x8eF00583bAa186094D9A34a0A4750C1D1BB86831"
+    "sponsorDisputeRewardPct": "50000000000000000",
+    "disputerDisputeRewardPct": "200000000000000000",
+    "withdrawalLiveness": "86400",
+    "liquidationLiveness": "86400",
+    "excessTokenBeneficiary": "0x8ef00583baa186094d9a34a0a4750c1d1bb86831"
   }
 }
