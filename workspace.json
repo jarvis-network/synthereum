@@ -159,7 +159,10 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn build contracts", "yarn --cwd libs/contracts test --no-compile"],
+            "commands": [
+              "yarn build contracts",
+              "yarn --cwd libs/contracts test --no-compile"
+            ],
             "color": true,
             "parallel": false
           }
@@ -343,7 +346,9 @@
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": { "lintFilePatterns": ["apps/claim/**/*.{ts,tsx}"] }
+          "options": {
+            "lintFilePatterns": ["apps/claim/**/*.{ts,tsx}"]
+          }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -499,6 +504,38 @@
           "outputs": ["coverage/apps/examples"],
           "options": {
             "jestConfig": "apps/examples/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "legacy-currency-contracts": {
+      "root": "libs/legacy-currency-contracts",
+      "sourceRoot": "libs/legacy-currency-contracts/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/legacy-currency-contracts",
+            "tsConfig": "libs/legacy-currency-contracts/tsconfig.lib.json",
+            "packageJson": "libs/legacy-currency-contracts/package.json",
+            "main": "libs/legacy-currency-contracts/src/index.ts",
+            "assets": ["libs/legacy-currency-contracts/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/legacy-currency-contracts/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/legacy-currency-contracts"],
+          "options": {
+            "jestConfig": "libs/legacy-currency-contracts/jest.config.js",
             "passWithNoTests": true
           }
         }

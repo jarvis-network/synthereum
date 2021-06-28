@@ -5,5 +5,6 @@ module.exports = {
     '<rootDir>/libs/crypto-utils',
     '<rootDir>/libs/synthereum-ts',
     '<rootDir>/apps/examples',
+    '<rootDir>/libs/legacy-currency-contracts',
   ],
 };
