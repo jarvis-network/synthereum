@@ -518,7 +518,8 @@
           "executor": "@nrwl/node:package",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/libs/legacy-currency-contracts",
+            "srcRootForCompilationRoot": "libs/legacy-currency-contracts/src",
+            "outputPath": "libs/legacy-currency-contracts/dist",
             "tsConfig": "libs/legacy-currency-contracts/tsconfig.lib.json",
             "packageJson": "libs/legacy-currency-contracts/package.json",
             "main": "libs/legacy-currency-contracts/src/index.ts",

@@ -1,4 +1,15 @@
 {
   "name": "@jarvis-network/legacy-currency-contracts",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "author": "Iliyan Iliev",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
+    "build": "tsc -p ./tsconfig.lib.json"
+  }
 }
