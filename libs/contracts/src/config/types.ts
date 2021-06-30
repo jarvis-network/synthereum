@@ -3,6 +3,8 @@ import { PerTupleElement } from '@jarvis-network/core-utils/dist/base/meta';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
+import { SyntheticSymbol } from './price-feed-symbols';
+
 import {
   SupportedNetworkId,
   SupportedNetworkIds,
@@ -13,32 +15,7 @@ export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;
 export type PoolVersion = PoolVersions[number];
 
-export const allSyntheticSymbols = [
-  'jEUR',
-  'jGBP',
-  'jCHF',
-  'jXAU',
-  'jSPX',
-  'jXTI',
-  'jXAG',
-] as const;
-
-const collateralSymbols = ['USDC'] as const;
-export const primaryCollateralSymbol = collateralSymbols[0];
-export type CollateralSymbol = typeof collateralSymbols[number];
-
-export type SyntheticSymbol = typeof allSyntheticSymbols[number];
-
-export type ExchangeToken = SyntheticSymbol | CollateralSymbol;
-
 export type PerNetwork<Config> = PerTupleElement<SupportedNetworkIds, Config>;
-
-export type PerAsset<Config> = PerTupleElement<
-  typeof allSyntheticSymbols,
-  Config
->;
-
-export type PriceFeed = PerAsset<string>;
 
 export type SynthereumConfig = {
   [Net in SupportedNetworkId]: {

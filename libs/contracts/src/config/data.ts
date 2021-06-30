@@ -2,31 +2,14 @@ import { toWeiString } from '@jarvis-network/core-utils/dist/base/big-number';
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/address';
 
-import {
-  FixedPointNumber,
-  PriceFeed,
-  primaryCollateralSymbol,
-  SynthereumConfig,
-  SyntheticTokens,
-} from './types';
+import { primaryCollateralSymbol } from './price-feed-symbols';
+import { FixedPointNumber, SynthereumConfig, SyntheticTokens } from './types';
 
 function toFixed(num: string): FixedPointNumber {
   return {
     rawValue: toWeiString(num),
   };
 }
-
-export const priceFeed = typeCheck<PriceFeed>()({
-  jEUR: 'EURUSD',
-  jGBP: 'GBPUSD',
-  jCHF: 'USDCHF',
-  jXAU: 'XAUUSD',
-  jSPX: 'SPXUSD',
-  jXTI: 'XTIUSD',
-  jXAG: 'XAGUSD',
-} as const);
-
-export const reversedPriceFeedPairs: string[] = [priceFeed.jCHF];
 
 const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   jEUR: {

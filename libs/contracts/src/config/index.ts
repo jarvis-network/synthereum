@@ -1,20 +1,26 @@
 export {
-  poolVersions,
+  priceFeed,
   allSyntheticSymbols,
   primaryCollateralSymbol,
-} from './types';
+  reversedPriceFeedPairs,
+} from './price-feed-symbols';
+
 export type {
   CollateralSymbol,
+  SyntheticSymbol,
+  ExchangeToken,
+  PerAsset,
+} from './price-feed-symbols';
+
+export { poolVersions } from './types';
+export type {
   PoolVersion,
   PoolVersions,
   Fees,
-  ExchangeToken,
-  PerAsset,
   SynthereumConfig,
   SynthereumContractDependencies,
-  SyntheticSymbol,
 } from './types';
-export { synthereumConfig, priceFeed, reversedPriceFeedPairs } from './data';
+export { synthereumConfig } from './data';
 export {
   parseSupportedNetworkId,
   isSupportedNetwork,
