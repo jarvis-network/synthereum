@@ -3,23 +3,23 @@ export {
   allSyntheticSymbols,
   primaryCollateralSymbol,
   reversedPriceFeedPairs,
-} from './price-feed-symbols';
+} from './types/price-feed-symbols';
 
 export type {
   CollateralSymbol,
   SyntheticSymbol,
   ExchangeToken,
   PerAsset,
-} from './price-feed-symbols';
+} from './types/price-feed-symbols';
 
-export { poolVersions } from './types';
+export { poolVersions } from './types/config';
 export type {
   PoolVersion,
   PoolVersions,
   Fees,
   SynthereumConfig,
   SynthereumContractDependencies,
-} from './types';
+} from './types/config';
 export { synthereumConfig } from './data';
 export {
   parseSupportedNetworkId,

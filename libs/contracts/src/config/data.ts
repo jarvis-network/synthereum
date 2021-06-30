@@ -2,8 +2,12 @@ import { toWeiString } from '@jarvis-network/core-utils/dist/base/big-number';
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/address';
 
-import { primaryCollateralSymbol } from './price-feed-symbols';
-import { FixedPointNumber, SynthereumConfig, SyntheticTokens } from './types';
+import { primaryCollateralSymbol } from './types/price-feed-symbols';
+import {
+  FixedPointNumber,
+  SynthereumConfig,
+  SyntheticTokens,
+} from './types/config';
 
 function toFixed(num: string): FixedPointNumber {
   return {

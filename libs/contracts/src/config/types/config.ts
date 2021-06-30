@@ -4,7 +4,10 @@ import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { SyntheticSymbol } from './price-feed-symbols';
 
-import { SupportedNetworkId, SupportedNetworkName } from './supported/networks';
+import {
+  SupportedNetworkId,
+  SupportedNetworkName,
+} from '../supported/networks';
 
 export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;
