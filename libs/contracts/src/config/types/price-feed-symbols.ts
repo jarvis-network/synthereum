@@ -17,6 +17,12 @@ export const assetSymbols = [
   'XAG',
 ] as const;
 
+export type PairLike<
+  AssetType extends string,
+  CollateralType extends string,
+  Separator extends string = '/'
+> = `${AssetType}${Separator}${CollateralType}`;
+
 export type CollateralSymbol = typeof collateralSymbols[number];
 export type UsdCollateralSymbol = typeof usdCollateral;
 export type AssetSymbol = typeof assetSymbols[number];
@@ -29,6 +35,10 @@ export type ForexUsdPair = SyntheticToForexPair<
   'USD',
   'j'
 >;
+
+export type ForexPairToSynth<
+  Pair extends string
+> = Pair extends `${infer Asset}USD` ? `j${Asset}` : never;
 
 export type SyntheticToForexPair<
   Pair extends string,

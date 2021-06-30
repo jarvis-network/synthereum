@@ -15,6 +15,10 @@ export type {
 export { poolVersions } from './supported/pool-versions';
 export type { PoolVersion, PoolVersions } from './supported/pool-versions';
 export type {
+  SupportedPair,
+  SupportedSyntheticSymbol,
+} from './supported/pairs';
+export type {
   Fees,
   SynthereumConfig,
   SynthereumContractDependencies,
