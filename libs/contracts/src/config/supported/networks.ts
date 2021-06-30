@@ -1,5 +1,8 @@
 import { throwError } from '@jarvis-network/core-utils/dist/base/asserts';
-import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
+import {
+  PerTupleElement,
+  typeCheck,
+} from '@jarvis-network/core-utils/dist/base/meta';
 import {
   NetworkId,
   ToNetworkName,
@@ -14,6 +17,8 @@ export type SupportedNetwork =
   | SupportedNetworkName
   | SupportedNetworkId
   | `${SupportedNetworkId}`;
+
+export type PerNetwork<Config> = PerTupleElement<SupportedNetworkIds, Config>;
 
 export function parseSupportedNetworkId(x: unknown): SupportedNetworkId {
   return isSupportedNetwork(x)

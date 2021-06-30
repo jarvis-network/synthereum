@@ -1,21 +1,14 @@
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
-import { PerTupleElement } from '@jarvis-network/core-utils/dist/base/meta';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { SyntheticSymbol } from './price-feed-symbols';
 
-import {
-  SupportedNetworkId,
-  SupportedNetworkIds,
-  SupportedNetworkName,
-} from './supported/networks';
+import { SupportedNetworkId, SupportedNetworkName } from './supported/networks';
 
 export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;
 export type PoolVersion = PoolVersions[number];
-
-export type PerNetwork<Config> = PerTupleElement<SupportedNetworkIds, Config>;
 
 export type SynthereumConfig = {
   [Net in SupportedNetworkId]: {
