@@ -12,10 +12,9 @@ export type {
   PerAsset,
 } from './types/price-feed-symbols';
 
-export { poolVersions } from './types/config';
+export { poolVersions } from './supported/pool-versions';
+export type { PoolVersion, PoolVersions } from './supported/pool-versions';
 export type {
-  PoolVersion,
-  PoolVersions,
   Fees,
   SynthereumConfig,
   SynthereumContractDependencies,

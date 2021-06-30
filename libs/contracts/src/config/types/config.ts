@@ -8,10 +8,7 @@ import {
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../supported/networks';
-
-export const poolVersions = ['v4'] as const;
-export type PoolVersions = typeof poolVersions;
-export type PoolVersion = PoolVersions[number];
+import { PoolVersion } from '../supported/pool-versions';
 
 export type SynthereumConfig = {
   [Net in SupportedNetworkId]: {
