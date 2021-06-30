@@ -2,13 +2,14 @@ import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { SyntheticSymbol } from './price-feed-symbols';
-
 import {
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../supported/networks';
 import { PoolVersion } from '../supported/pool-versions';
+import { PerPair } from '../supported/pairs';
+
+import { SyntheticSymbol } from './price-feed-symbols';
 
 export type SynthereumConfig = {
   [Net in SupportedNetworkId]: {
@@ -17,6 +18,7 @@ export type SynthereumConfig = {
     contractsDependencies: {
       synthereum: SynthereumContractDependencies<ToNetworkName<Net>>;
       uma: UmaContractDependencies<ToNetworkName<Net>>;
+      chainlink: ChainLinkPriceAggregators[Net];
     };
     umaDerivativeConfig: UmaDerivativeConfig<ToNetworkName<Net>>;
     perVersionConfig: {
@@ -43,6 +45,10 @@ export interface SynthereumContractDependencies<
     symbol: string;
   };
 }
+
+export type ChainLinkPriceAggregators = {
+  [Net in SupportedNetworkId]: PerPair<Net, AddressOn<Net>>;
+};
 
 export interface Fees<Net extends SupportedNetworkName> {
   feePercentage: StringAmount; // Example: weiString(0.002),

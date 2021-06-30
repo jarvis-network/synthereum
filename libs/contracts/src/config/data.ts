@@ -4,6 +4,7 @@ import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/addres
 
 import { primaryCollateralSymbol } from './types/price-feed-symbols';
 import {
+  ChainLinkPriceAggregators,
   FixedPointNumber,
   SynthereumConfig,
   SyntheticTokens,
@@ -14,6 +15,28 @@ function toFixed(num: string): FixedPointNumber {
     rawValue: toWeiString(num),
   };
 }
+
+// Reference: https://docs.chain.link/docs/ethereum-addresses/
+export const chainlinkAggregators = typeCheck<ChainLinkPriceAggregators>()({
+  1: {
+    EURUSD: A<1>('0xb49f677943BC038e9857d61E7d053CaA2C1734C1'),
+    GBPUSD: A<1>('0x5c0Ab2d9b5a7ed9f470386e82BB36A3613cDd4b5'),
+    CHFUSD: A<1>('0x449d117117838fFA61263B61dA6301AA2a88B13A'),
+    XAUUSD: A<1>('0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6'),
+  },
+  42: {
+    EURUSD: A<42>('0x0c15Ab9A0DB086e062194c273CC79f41597Bbf13'),
+    GBPUSD: A<42>('0x28b0061f44E6A9780224AA61BEc8C3Fcb0d37de9'),
+    CHFUSD: A<42>('0xed0616BeF04D374969f302a34AE4A63882490A8C'),
+    XAUUSD: A<42>('0xc8fb5684f2707C82f28595dEaC017Bfdf44EE9c5'),
+  },
+  4: {
+    EURUSD: A<4>('0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F'),
+    GBPUSD: A<4>('0x7B17A813eEC55515Fb8F49F2ef51502bC54DD40F'),
+    CHFUSD: A<4>('0x5e601CF5EF284Bcd12decBDa189479413284E1d2'),
+    XAUUSD: A<4>('0x81570059A0cb83888f1459Ec66Aad1Ac16730243'),
+  },
+} as const);
 
 const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   jEUR: {
@@ -134,6 +157,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
           '0x61fa26046F9D5e47d15495Ef00efD9339E14E568',
         ),
       },
+      chainlink: chainlinkAggregators[42],
     },
     umaDerivativeConfig: {
       disputeBondPct: toFixed('0.1'),
@@ -192,6 +216,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
         poolRegistry: A<1>('0xaB77024DdC68A3Fe942De8dDb0014738ED01A5e5'),
         selfMintingRegistry: A<1>('0x83D7AEee512DF37c694d36C983E0D4BdF12Cb6Bf'),
       },
+      chainlink: chainlinkAggregators[1],
     },
     umaDerivativeConfig: {
       disputeBondPct: toFixed('0.05'),
