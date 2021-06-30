@@ -24,8 +24,8 @@ export { synthereumConfig } from './data';
 export {
   parseSupportedNetworkId,
   isSupportedNetwork,
-} from './supported-networks';
+} from './supported/networks';
 export type {
   SupportedNetworkId,
   SupportedNetworkName,
-} from './supported-networks';
+} from './supported/networks';
