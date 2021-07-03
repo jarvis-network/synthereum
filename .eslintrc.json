@@ -84,6 +84,7 @@
       }
     ],
     "@typescript-eslint/type-annotation-spacing": 2,
+    "@typescript-eslint/triple-slash-reference": "off",
     "jsx-a11y/click-events-have-key-events": 0
   }
 }
