@@ -1,3 +1,5 @@
+/// <reference path="./types.d.ts" />
+
 import { parse as parsePath } from 'path';
 
 import yargs from 'yargs/yargs';
