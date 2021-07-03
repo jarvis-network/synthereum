@@ -2,15 +2,13 @@ import type { PromiEvent, TransactionReceipt } from 'web3-core';
 import {
   Amount,
   formatAmount,
-  maxUint256,
   wei,
 } from '@jarvis-network/core-utils/dist/base/big-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   getTokenAllowance,
   getTokenBalance,
-  scaleTokenAmountToWei,
-  setTokenAllowance,
+  setMaxTokenAllowance,
   weiToTokenAmount,
 } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 
@@ -303,11 +301,7 @@ export class RealmAgent<
           allowance,
         )}, which is less than required ${formatAmount(necessaryAllowance)}`,
       );
-      const max = scaleTokenAmountToWei({
-        amount: maxUint256,
-        decimals: tokenInfo.decimals,
-      });
-      const tx = setTokenAllowance(tokenInfo, spender, max);
+      const tx = setMaxTokenAllowance(tokenInfo, spender);
       return sendTxAndLog(tx, {
         ...this.defaultTxOptions,
         ...txOptions,
