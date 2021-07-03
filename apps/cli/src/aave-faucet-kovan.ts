@@ -98,7 +98,18 @@ const { argv } = buildCli(__filename)
   .option('token', {
     type: 'string',
     required: true,
-    coerce: assertSupportedToken,
+    coerce(token: unknown): keyof typeof aaveTokens {
+      const supportedTokens = Object.keys(aaveTokens);
+
+      assert(
+        supportedTokens.includes(token as string),
+        `Token not supported. Supported tokens are ${supportedTokens.join(
+          ', ',
+        )}`,
+      );
+
+      return token as keyof typeof aaveTokens;
+    },
   })
   .option('amount', {
     default: 100_000,
@@ -115,17 +126,6 @@ main()
     log(error);
     process.exit(1);
   });
-
-function assertSupportedToken(
-  token: unknown,
-): asserts token is keyof typeof aaveTokens {
-  const supportedTokens = Object.keys(aaveTokens);
-
-  assert(
-    supportedTokens.includes(token as string),
-    `token not supported. Supported tokens are ${supportedTokens.join(', ')}`,
-  );
-}
 
 /**
  * Sends a desired amount of tokens to your address (Kovan only)
