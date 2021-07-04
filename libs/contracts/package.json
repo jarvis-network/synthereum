@@ -19,7 +19,7 @@
     "add-only-derivative": "MIGRATION_TYPE=add_only_derivative hardhat test ./test/correct-migration.js",
     "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
     "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test test/core/* test/derivative/**/* test/oracle/* test/pool/**/* test/self-minting/**/* test/utils/*",
-    "test:atomic-swap": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat --network kovan_fork test ./test/extensions/atomic-swap.js",
+    "test:atomic-swap": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat --network mainnet_fork test ./test/extensions/atomic-swap.js",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
     "start:local-fork": "./local-fork.sh"
