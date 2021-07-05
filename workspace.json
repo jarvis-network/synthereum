@@ -471,7 +471,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/subgraph/**/*.ts"]
+            "lintFilePatterns": ["libs/subgraph/src/**/*.ts"]
           }
         }
       }
