@@ -65,8 +65,9 @@ contract AtomicSwap {
     )
   {
     IERC20 collateralInstance = checkPoolRegistration(synthereumPool);
+    uint256 numberOfSwapTokens = tokenSwapPath.length - 1;
     require(
-      address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
+      address(collateralInstance) == tokenSwapPath[numberOfSwapTokens],
       'Wrong collateral instance'
     );
 
@@ -87,7 +88,7 @@ contract AtomicSwap {
       tokenSwapPath,
       address(this),
       mintParams.expiration
-    )[1];
+    )[numberOfSwapTokens];
 
     collateralInstance.safeApprove(address(synthereumPool), collateralOut);
 
@@ -148,7 +149,7 @@ contract AtomicSwap {
       tokenSwapPath,
       recipient,
       redeemParams.expiration
-    )[1];
+    )[tokenSwapPath.length - 1];
 
     emit Swap(
       address(synthToken),
@@ -178,8 +179,9 @@ contract AtomicSwap {
     )
   {
     IERC20 collateralInstance = checkPoolRegistration(synthereumPool);
+    uint256 numberOfSwapTokens = tokenSwapPath.length - 1;
     require(
-      address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
+      address(collateralInstance) == tokenSwapPath[numberOfSwapTokens],
       'Wrong collateral instance'
     );
     synthToken = synthereumPool.syntheticToken();
@@ -189,7 +191,7 @@ contract AtomicSwap {
       tokenSwapPath,
       address(this),
       mintParams.expiration
-    )[1];
+    )[numberOfSwapTokens];
 
     collateralInstance.safeApprove(address(synthereumPool), collateralOut);
 
@@ -249,7 +251,7 @@ contract AtomicSwap {
       tokenSwapPath,
       recipient,
       redeemParams.expiration
-    )[1];
+    )[tokenSwapPath.length - 1];
 
     emit Swap(
       address(synthToken),
