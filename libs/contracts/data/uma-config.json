@@ -1,10 +1,10 @@
 {
   "42": {
     "disputeBondPct": "50000000000000000",
-    "sponsorDisputeRewardPct": "50000000000000000",
-    "disputerDisputeRewardPct": "200000000000000000",
-    "withdrawalLiveness": "86400",
-    "liquidationLiveness": "86400",
+    "sponsorDisputeRewardPct": "100000000000000000",
+    "disputerDisputeRewardPct": "300000000000000000",
+    "withdrawalLiveness": "14400",
+    "liquidationLiveness": "14400",
     "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
   },
   "1": {
