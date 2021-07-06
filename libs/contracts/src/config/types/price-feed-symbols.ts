@@ -46,7 +46,9 @@ export type SyntheticToForexPair<
   CollateralReplacement extends string = Collateral,
   SyntheticPrefix extends string = 'j'
 > = Pair extends `${SyntheticPrefix}${infer Asset}/${Collateral}`
-  ? `${Asset}${CollateralReplacement}`
+  ? Asset extends Collateral
+    ? never
+    : `${Asset}${CollateralReplacement}`
   : never;
 
 export type PerAsset<Config> = PerTupleElement<
