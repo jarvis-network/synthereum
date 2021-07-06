@@ -16,7 +16,7 @@ export async function getExistingInstance(
   } catch (e) {
     const { contractName } = artifact;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const networks = require(`../../../networks/${networkId}.json`);
+    const networks = require(`../../networks/${networkId}.json`);
     address = last(
       networks.filter(
         (contract: any) => contract.contractName === contractName,
