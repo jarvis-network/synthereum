@@ -101,12 +101,6 @@ installing the software listed above.
             yarn build claim
             ```
 
-        * Validator:
-
-            ```sh
-            yarn build validator
-            ```
-
         * CLI utils:
 
             ```sh
@@ -124,7 +118,7 @@ installing the software listed above.
         * Jarvis Borrowing (Self Minting) DApp:
 
             ```sh
-            yarn start frontend
+            yarn start borrowing
             ```
 
         * Jarvis Claim JRT DApp:
@@ -133,16 +127,10 @@ installing the software listed above.
             yarn start claim
             ```
 
-        * Validator:
-
-            ```sh
-            yarn start validator
-            ```
-
         * CLI utils:
 
             ```sh
-            yarn start cli
+            yarn start:cli
             ```
 
 </details>
