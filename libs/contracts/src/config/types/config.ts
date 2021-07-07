@@ -7,7 +7,7 @@ import {
   SupportedNetworkName,
 } from '../supported/networks';
 import { PoolVersion } from '../supported/pool-versions';
-import { PerPair } from '../supported/pairs';
+import { PerPair } from '../supported/synthereum-pairs';
 
 import { SyntheticSymbol } from './price-feed-symbols';
 
