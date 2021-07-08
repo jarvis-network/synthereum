@@ -14,8 +14,6 @@ export interface Schema extends DBSchema {
   };
 }
 
-export type DB = IDBPDatabase<Schema>;
-
 interface IDBTransactionOptions {
   durability?: 'default' | 'strict' | 'relaxed';
 }
@@ -55,7 +53,8 @@ const fakeDBHelperVariable = (process.env.NODE_ENV === 'test'
   : undefined)!;
 type FakeDB = PromiseResolveType<typeof fakeDBHelperVariable>;
 
-export const dbPromise: Promise<IDBPDatabase<Schema> | FakeDB> =
+export type DB = IDBPDatabase<Schema> | FakeDB;
+export const dbPromise: Promise<DB> =
   typeof window === 'undefined'
     ? fakeDBFactory<Schema>()
     : openDB<Schema>('jarvis', 2, {

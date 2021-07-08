@@ -5,6 +5,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import {
   checkIsSupportedNetwork,
   primaryCollateralSymbol,
+  SupportedNetworkId,
+  SupportedNetworkName,
 } from '@jarvis-network/synthereum-ts/dist/src/config';
 import {
   PoolVersion,
@@ -24,7 +26,7 @@ import {
   useBehaviorSubject,
 } from '@jarvis-network/app-toolkit';
 
-import { dbPromise } from './db';
+import { dbPromise, DB } from './db';
 
 const urls = {
   mainnet:
@@ -91,52 +93,40 @@ export function useTransactionsSubgraph() {
 
       if (storedTransactions.length) {
         dispatch(addTransactions(storedTransactions));
+
+        const largestBlock = storedTransactions.reduce(
+          (largestBlockNumber, transaction) =>
+            transaction.block > largestBlockNumber
+              ? transaction.block
+              : largestBlockNumber,
+          0,
+        );
+
+        const data = await fetchTransactions(url, address, largestBlock);
+
+        if (canceled || !data.data) return;
+
+        await addTransactionsToIndexedDB(
+          dispatch,
+          db,
+          networkId,
+          tokens,
+          data.data.transactions,
+        );
         return;
       }
 
-      const data = (await (
-        await fetch(url, {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: buildQuery(address) }),
-        })
-      ).json()) as TheGraphTransactionsSubgraphResponse;
+      const data = await fetchTransactions(url, address);
 
       if (canceled || !data.data) return;
-      const formattedTransactions = data.data.transactions.map(
-        ({
-          id,
-          inputTokenAddress,
-          inputTokenAmount,
-          outputTokenAddress,
-          outputTokenAmount,
-          type,
-          timestamp,
-          block,
-        }) => ({
-          hash: id,
-          type,
-          input: getTransactionIO(tokens, inputTokenAddress, inputTokenAmount),
-          output: getTransactionIO(
-            tokens,
-            outputTokenAddress,
-            outputTokenAmount,
-          ),
-          timestamp: parseInt(`${timestamp}000`, 10),
-          networkId,
-          block: parseInt(block, 10),
-        }),
-      );
-      dispatch(addTransactions(formattedTransactions));
 
-      const dbTx = db.transaction('transactions', 'readwrite');
-      const dbAddPromises: Promise<unknown>[] = formattedTransactions.map(
-        transaction => dbTx.store.add(transaction),
+      await addTransactionsToIndexedDB(
+        dispatch,
+        db,
+        networkId,
+        tokens,
+        data.data.transactions,
       );
-      dbAddPromises.push(dbTx.done);
-      await Promise.all(dbAddPromises);
     });
 
     return () => {
@@ -145,10 +135,18 @@ export function useTransactionsSubgraph() {
   }, [address, networkId, tokens]);
 }
 
-function buildQuery(address: string) {
-  return `
+function fetchTransactions(
+  url: string,
+  address: string,
+  blockNumberGreatherThan?: number,
+) {
+  const query = `
 {
-  transactions(where: {userAddress: "${address}", poolVersion: "${poolVersion[1]}"}) {
+  transactions(where: {userAddress: "${address}", poolVersion: "${
+    poolVersion[1]
+  }"${
+    blockNumberGreatherThan ? `, block_gt: "${blockNumberGreatherThan}"` : ''
+  }}) {
     id
     type
     timestamp
@@ -160,6 +158,51 @@ function buildQuery(address: string) {
   }
 }
 `;
+
+  return fetch(url, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  }).then(response => response.json() as TheGraphTransactionsSubgraphResponse);
+}
+
+function addTransactionsToIndexedDB(
+  dispatch: ReturnType<typeof useDispatch>,
+  db: DB,
+  networkId: SupportedNetworkId,
+  tokens: TokenInfo<SupportedNetworkName>[],
+  transactions: ResponseTransaction[],
+) {
+  const formattedTransactions = transactions.map(
+    ({
+      id,
+      inputTokenAddress,
+      inputTokenAmount,
+      outputTokenAddress,
+      outputTokenAmount,
+      type,
+      timestamp,
+      block,
+    }) => ({
+      hash: id,
+      type,
+      input: getTransactionIO(tokens, inputTokenAddress, inputTokenAmount),
+      output: getTransactionIO(tokens, outputTokenAddress, outputTokenAmount),
+      timestamp: parseInt(`${timestamp}000`, 10),
+      networkId,
+      block: parseInt(block, 10),
+    }),
+  );
+  dispatch(addTransactions(formattedTransactions));
+
+  const dbTx = db.transaction('transactions', 'readwrite');
+  const dbAddPromises: Promise<unknown>[] = formattedTransactions.map(
+    transaction => dbTx.store.add(transaction),
+  );
+  dbAddPromises.push(dbTx.done);
+  return Promise.all(dbAddPromises);
 }
 
 function getTransactionIO(
