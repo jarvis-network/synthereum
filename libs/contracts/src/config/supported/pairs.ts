@@ -4,7 +4,7 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import {
   PairLike,
   PairToSynth,
-  ForexUsdPair,
+  SynthereumPair,
 } from '../types/price-feed-symbols';
 
 import { PerNetwork, SupportedNetworkName } from './networks';
@@ -13,7 +13,7 @@ export type NetworkPairs<
   PairType extends PairLike<string, string, ''>
 > = PerNetwork<PairType[]>;
 
-export const supportedPairs = typeCheck<NetworkPairs<ForexUsdPair>>()({
+export const supportedPairs = typeCheck<NetworkPairs<SynthereumPair>>()({
   1: ['EURUSD', 'GBPUSD', 'CHFUSD'],
   42: ['EURUSD', 'GBPUSD', 'CHFUSD', 'XAUUSD'],
 } as const);

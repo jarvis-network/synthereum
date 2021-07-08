@@ -28,9 +28,10 @@ export type UsdCollateralSymbol = typeof usdCollateral;
 export type AssetSymbol = typeof assetSymbols[number];
 export type SyntheticSymbol = `j${AssetSymbol}`;
 export type ExchangeToken = SyntheticSymbol | CollateralSymbol;
-export type SynthereumPair = `${SyntheticSymbol}/${CollateralSymbol}`;
-export type ForexUsdPair = SyntheticToForexPair<
-  SynthereumPair,
+export type AnySynthereumPair = `${SyntheticSymbol}/${UsdCollateralSymbol}`;
+
+export type SynthereumPair = SyntheticToForexPair<
+  AnySynthereumPair,
   'USDC',
   'USD',
   'j'
