@@ -314,11 +314,11 @@ export const ExchangeCard: React.FC = () => {
 
       const { promiEvent } = await sendTx;
 
-      promiEvent.once('transactionHash', (hash: TransactionHash) => {
+      promiEvent.once('transactionHash', hash => {
         const tx: SynthereumTransaction = {
           block: 0,
           from: auth!.address,
-          hash,
+          hash: hash as TransactionHash,
           input: {
             amount: payValue,
             asset: paySymbol,

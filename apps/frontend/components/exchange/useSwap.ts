@@ -27,10 +27,13 @@ export const useSwap = () => {
   if (paySymbol === PRIMARY_STABLE_COIN.symbol) {
     // mint
     return () => {
+      const collateral = weiFromFPN(payValue!);
+      const outputAmount = weiFromFPN(receiveValue!);
+      const outputSynth = receiveSymbol as SyntheticSymbol;
       const { allowancePromise, txPromise, sendTx } = agent.mint({
-        collateral: weiFromFPN(payValue!.bn.toString(10)),
-        outputAmount: weiFromFPN(receiveValue!.bn.toString(10)),
-        outputSynth: receiveSymbol as SyntheticSymbol,
+        collateral,
+        outputAmount,
+        outputSynth,
       });
 
       txPromise.then(result => console.log('Mint!', result)).catch(noop);
@@ -39,10 +42,7 @@ export const useSwap = () => {
         allowancePromise,
         txPromise,
         sendTx,
-        payValue: (process.env.NEXT_PUBLIC_POOL_VERSION === 'v3'
-          ? collateral
-          : weiFromFPN(payValue!)
-        ).toString(),
+        payValue: collateral.toString(),
         paySymbol: paySymbol as SyntheticSymbol,
         receiveValue: outputAmount.toString(),
         receiveSymbol: outputSynth,
@@ -54,10 +54,13 @@ export const useSwap = () => {
   if (receiveSymbol === PRIMARY_STABLE_COIN.symbol) {
     // redeem
     return () => {
+      const collateral = weiFromFPN(receiveValue!);
+      const inputAmount = weiFromFPN(payValue!);
+      const inputSynth = paySymbol as SyntheticSymbol;
       const { allowancePromise, txPromise, sendTx } = agent.redeem({
-        collateral: weiFromFPN(receiveValue!.bn.toString(10)),
-        inputAmount: weiFromFPN(payValue!.bn.toString(10)),
-        inputSynth: paySymbol as SyntheticSymbol,
+        collateral,
+        inputAmount,
+        inputSynth,
       });
 
       txPromise.then(result => console.log('Redeem!', result)).catch(noop);
@@ -68,10 +71,7 @@ export const useSwap = () => {
         sendTx,
         payValue: inputAmount.toString(),
         paySymbol: inputSynth,
-        receiveValue: (process.env.NEXT_PUBLIC_POOL_VERSION === 'v3'
-          ? collateral
-          : weiFromFPN(receiveValue!)
-        ).toString(),
+        receiveValue: collateral.toString(),
         receiveSymbol: receiveSymbol as SyntheticSymbol,
         type: 'redeem' as SynthereumTransactionType,
         networkId: agent.realm.netId,
@@ -79,11 +79,15 @@ export const useSwap = () => {
     };
   }
   return () => {
+    const inputAmount = weiFromFPN(payValue!);
+    const inputSynth = paySymbol as SyntheticSymbol;
+    const outputAmount = weiFromFPN(receiveValue!);
+    const outputSynth = receiveSymbol as SyntheticSymbol;
     const { allowancePromise, txPromise, sendTx } = agent.exchange({
-      inputAmount: weiFromFPN(payValue!.bn.toString(10)),
-      inputSynth: paySymbol as SyntheticSymbol,
-      outputAmount: weiFromFPN(receiveValue!.bn.toString(10)),
-      outputSynth: receiveSymbol as SyntheticSymbol,
+      inputAmount,
+      inputSynth,
+      outputAmount,
+      outputSynth,
     });
 
     txPromise.then(result => console.log('Exchange!', result)).catch(noop);

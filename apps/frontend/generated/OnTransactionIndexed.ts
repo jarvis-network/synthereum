@@ -9,7 +9,7 @@ import { TransactionType } from "./globalTypes";
 // GraphQL subscription operation: OnTransactionIndexed
 // ====================================================
 
-export interface OnTransactionIndexed_users_lastTransactions {
+export interface OnTransactionIndexed_user_lastTransactions {
   __typename: "Transaction";
   id: string;
   type: TransactionType;
@@ -21,16 +21,15 @@ export interface OnTransactionIndexed_users_lastTransactions {
   outputTokenAddress: TheGraphBytes;
 }
 
-export interface OnTransactionIndexed_users {
+export interface OnTransactionIndexed_user {
   __typename: "User";
-  lastTransactions: OnTransactionIndexed_users_lastTransactions[];
+  lastTransactions: OnTransactionIndexed_user_lastTransactions[];
 }
 
 export interface OnTransactionIndexed {
-  users: OnTransactionIndexed_users[];
+  user: OnTransactionIndexed_user | null;
 }
 
 export interface OnTransactionIndexedVariables {
   address: string;
-  poolVersion: TheGraphBigInt;
 }

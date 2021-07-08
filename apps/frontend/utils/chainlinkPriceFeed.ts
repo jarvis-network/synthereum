@@ -113,7 +113,8 @@ export class ChainlinkPriceFeed {
     const { web3 } = this;
     if (!web3 || !web3.currentProvider) return;
 
-    const networkIsSupported = isSupportedNetwork(this.networkId);
+    const networkIsSupported =
+      this.networkId && isSupportedNetwork(this.networkId);
     if (!networkIsSupported) return;
     const networkId = this.networkId as SupportedNetworkId;
     const network = networkIdToName[networkId];

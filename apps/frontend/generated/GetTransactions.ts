@@ -27,5 +27,4 @@ export interface GetTransactions {
 
 export interface GetTransactionsVariables {
   address: TheGraphBytes;
-  poolVersion: TheGraphBigInt;
 }

@@ -11,9 +11,9 @@ import {
   addTransactionsToIndexedDB,
 } from '@/utils/useTransactionsSubgraph';
 import {
-  checkIsSupportedNetwork,
+  isSupportedNetwork,
   SupportedNetworkName,
-} from '@jarvis-network/synthereum-ts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import {
@@ -38,7 +38,7 @@ export const fetchAndStoreMoreTransactions = createAsyncThunk<
 >(
   'transactions/fetchMore',
   async ({ networkId, address, tokens, apolloClient }, { getState }) => {
-    if (!checkIsSupportedNetwork(networkId)) return [];
+    if (!isSupportedNetwork(networkId)) return [];
     const state = getState();
     const stateTransactionsArray = Object.values(state.transactions.hashMap);
     const smallestBlockNumber = findSmallestBlockNumber(stateTransactionsArray);

@@ -7,15 +7,15 @@ import {
 } from '@/state/slices/transactions';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import {
-  checkIsSupportedNetwork,
+  isSupportedNetwork,
   primaryCollateralSymbol,
   SupportedNetworkId,
   SupportedNetworkName,
-} from '@jarvis-network/synthereum-ts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
 import {
   PoolVersion,
   SynthereumPool,
-} from '@jarvis-network/synthereum-ts/dist/src/core/types/pools';
+} from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import {
@@ -67,19 +67,17 @@ import {
 import { dbPromise, DB } from './db';
 
 export const transactionsSubgraphUrls = {
-  mainnet:
-    's://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions',
-  kovan:
-    's://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions-kovan',
+  mainnet: 's://api.thegraph.com/subgraphs/name/jarvis-network/synthereum',
+  kovan: 's://api.thegraph.com/subgraphs/name/jarvis-network/synthereum-kovan',
 };
 
 const QUERY_BASIC = gql`
-  query GetTransactions($address: Bytes!, $poolVersion: BigInt!) {
+  query GetTransactions($address: Bytes!) {
     transactions(
       first: 30
       orderBy: block
       orderDirection: desc
-      where: { userAddress: $address, poolVersion: $poolVersion }
+      where: { userAddress: $address, poolVersion_in: ["3", "4"] }
     ) {
       id
       type
@@ -96,7 +94,6 @@ const QUERY_BASIC = gql`
 const QUERY_GET_NEW = gql`
   query GetNewTransactions(
     $address: Bytes!
-    $poolVersion: BigInt!
     $blockNumberGreaterThenOrEqualTo: BigInt!
     $idNotIn: [ID!]!
   ) {
@@ -106,7 +103,7 @@ const QUERY_GET_NEW = gql`
       orderDirection: asc
       where: {
         userAddress: $address
-        poolVersion: $poolVersion
+        poolVersion_in: ["3", "4"]
         block_gte: $blockNumberGreaterThenOrEqualTo
         id_not_in: $idNotIn
       }
@@ -126,7 +123,6 @@ const QUERY_GET_NEW = gql`
 const QUERY_GET_OLD = gql`
   query GetOldTransactions(
     $address: Bytes!
-    $poolVersion: BigInt!
     $blockNumberLessThanOrEqualTo: BigInt!
     $idNotIn: [ID!]!
   ) {
@@ -136,7 +132,7 @@ const QUERY_GET_OLD = gql`
       orderDirection: desc
       where: {
         userAddress: $address
-        poolVersion: $poolVersion
+        poolVersion_in: ["3", "4"]
         block_lte: $blockNumberLessThanOrEqualTo
         id_not_in: $idNotIn
       }
@@ -154,13 +150,13 @@ const QUERY_GET_OLD = gql`
 `;
 
 const SUBSCRIPTION = gql`
-  subscription OnTransactionIndexed($address: ID!, $poolVersion: BigInt!) {
-    users(where: { id: $address }) {
+  subscription OnTransactionIndexed($address: ID!) {
+    user(id: $address) {
       lastTransactions(
         first: 1
         orderBy: block
         orderDirection: desc
-        where: { poolVersion: $poolVersion }
+        where: { poolVersion_in: ["3", "4"] }
       ) {
         id
         type
@@ -207,7 +203,7 @@ function getLink(url: string) {
 
 const poolVersion = process.env.NEXT_PUBLIC_POOL_VERSION as PoolVersion;
 
-export function useTransactionsSubgraph() {
+export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
   const { networkId$, realmAgent$ } = useCoreObservables();
   const networkId = useBehaviorSubject(networkId$);
   const realmAgent = useBehaviorSubject(realmAgent$);
@@ -215,7 +211,7 @@ export function useTransactionsSubgraph() {
   const dispatch = useDispatch();
   const apolloClientAndNetworkId = useMemoOne(
     () =>
-      checkIsSupportedNetwork(networkId)
+      networkId && isSupportedNetwork(networkId)
         ? {
             networkId: networkId as SupportedNetworkId,
             apolloClient: new ApolloClient({
@@ -358,13 +354,12 @@ export function useTransactionsSubgraph() {
         query: SUBSCRIPTION,
         variables: {
           address,
-          poolVersion: poolVersion[1],
         },
       })
       .subscribe(({ errors, data }) => {
         if (errors) return errors.forEach(error => console.error(error));
 
-        if (data && data.users.length) {
+        if (data && data.user) {
           dbPromise.then(db => {
             addTransactionsToIndexedDBAndRedux(
               dispatch,
@@ -372,7 +367,7 @@ export function useTransactionsSubgraph() {
               tokens,
               networkId,
               address,
-              data.users[0].lastTransactions,
+              data.user!.lastTransactions,
             );
           });
         }
@@ -454,7 +449,6 @@ export function fetchTransactions(
       query: QUERY_GET_NEW,
       variables: {
         address,
-        poolVersion: poolVersion[1],
         blockNumberGreaterThenOrEqualTo: blockNumberGreaterThenOrEqualTo.toString(),
         idNotIn: idNotIn!,
       },
@@ -466,7 +460,6 @@ export function fetchTransactions(
       query: QUERY_GET_OLD,
       variables: {
         address,
-        poolVersion: poolVersion[1],
         blockNumberLessThanOrEqualTo: blockNumberLessThanOrEqualTo.toString(),
         idNotIn: idNotIn!,
       },
@@ -477,7 +470,6 @@ export function fetchTransactions(
     query: QUERY_BASIC,
     variables: {
       address,
-      poolVersion: poolVersion[1],
     },
   });
 }

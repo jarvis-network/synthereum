@@ -1,7 +1,7 @@
 import {
   ExchangeToken,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-ts/dist/src/config';
+} from '@jarvis-network/synthereum-contracts/dist/config';
 import { TransactionBase } from '@jarvis-network/core-utils/dist/eth/transaction';
 
 // #region TODO: Move to libs/synthereum-ts

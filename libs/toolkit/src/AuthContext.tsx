@@ -3,12 +3,16 @@ import { Dispatch, AnyAction } from 'redux';
 import { useDispatch } from 'react-redux';
 import type Onboard from 'bnc-onboard';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 
 import { useCoreObservables } from './CoreObservablesContext';
 import { useBehaviorSubject } from './useBehaviorSubject';
 
 export type LoginAction = (
-  account: Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] },
+  account: Omit<UserState, 'wallet'> & {
+    wallet: UserState['wallet']['name'];
+    address: Address;
+  },
 ) => AnyAction;
 
 export type LogoutAction = () => AnyAction;
@@ -35,8 +39,14 @@ export function authFactory(
       const walletName = onboardState.wallet.name;
       if (check && walletName) {
         localStorage.setItem('jarvis/autologin', walletName);
-        const { wallet: _, ...state } = onboardState;
-        dispatch(loginAction({ ...state, wallet: walletName }));
+        const { wallet: _, address, ...state } = onboardState;
+        dispatch(
+          loginAction({
+            ...state,
+            wallet: walletName,
+            address: address as Address,
+          }),
+        );
       }
       return Boolean(check && walletName);
     },

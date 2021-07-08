@@ -27,7 +27,6 @@ export interface GetNewTransactions {
 
 export interface GetNewTransactionsVariables {
   address: TheGraphBytes;
-  poolVersion: TheGraphBigInt;
   blockNumberGreaterThenOrEqualTo: TheGraphBigInt;
   idNotIn: string[];
 }
