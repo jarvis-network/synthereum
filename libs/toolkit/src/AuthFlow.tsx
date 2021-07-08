@@ -146,6 +146,7 @@ export function AuthFlow<
           ens$.next(ensInstance);
         },
         address(newAddress) {
+          if (!newAddress) return;
           dispatch(addressSwitchAction({ address: newAddress }));
         },
         network(newNetworkId) {

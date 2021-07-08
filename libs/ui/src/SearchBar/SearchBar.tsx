@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { Input } from '../Input';
 import { DataRows } from '../DataGrid';
-import { styled } from '../Theme';
 import { Icon } from '../Icon';
 
 import { PropFilterWithFilterPropFn, SearchBarProps } from './types';
@@ -33,8 +32,6 @@ const propFilter: PropFilterWithFilterPropFn = (
     return true;
   });
 };
-
-const Container = styled.div``;
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   tabs,
@@ -71,7 +68,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       });
 
   return (
-    <Container className={className || ''}>
+    <div className={className || ''}>
       <Input
         prefix={icon}
         {...inputProps}
@@ -83,6 +80,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           filteredData,
           query,
         })}
-    </Container>
+    </div>
   );
 };

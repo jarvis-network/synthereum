@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { flexColumn, flexRow } from '../common/mixins';
 import { styled } from '../Theme';
 import { Flag as __Flag } from '../Flag';
+import { Skeleton } from '../Skeleton';
 
 import { AssetProps } from './types';
 
@@ -11,17 +12,19 @@ const Container = styled.div`
   height: 100%;
 `;
 
+const imageSize = 40;
+const imageMarginRight = 20;
 const Img = styled.img`
-  width: 40px;
-  height: 40px;
+  width: ${imageSize}px;
+  height: ${imageSize}px;
   border-radius: 50%;
-  margin-right: 20px;
+  margin-right: ${imageMarginRight}px;
 `;
 
 const Flag = styled(__Flag)`
-  width: 40px;
-  height: 40px;
-  margin-right: 20px;
+  width: ${imageSize}px;
+  height: ${imageSize}px;
+  margin-right: ${imageMarginRight}px;
 `;
 
 const Details = styled.div`
@@ -72,3 +75,19 @@ export const Asset: React.FC<AssetProps> = ({ name, image, flag, value }) => (
     </Details>
   </Container>
 );
+
+export function AssetSkeleton(): JSX.Element {
+  return (
+    <Container>
+      <Skeleton variant="circular" width={imageSize} height={imageSize} />
+      <Details style={{ marginLeft: imageMarginRight }}>
+        <Name>
+          <Skeleton variant="text" width={40} />
+        </Name>
+        <Value value="">
+          <Skeleton variant="text" width={55} />
+        </Value>
+      </Details>
+    </Container>
+  );
+}

@@ -10,11 +10,11 @@ import {
   Card,
   NotificationType,
   NotificationsPlacement,
-  Skeleton,
   noColorGrid,
   styledScrollbars,
   OnDesktop,
   OnMobile,
+  Skeleton,
 } from '@jarvis-network/ui';
 import {
   useBehaviorSubject,
@@ -22,7 +22,7 @@ import {
 } from '@jarvis-network/app-toolkit';
 import Fuse from 'fuse.js';
 
-import { MainForm } from '@/components/exchange/MainForm';
+import { MainForm, SkeletonMainForm } from '@/components/exchange/MainForm';
 import { ChooseAsset } from '@/components/exchange/ChooseAsset';
 
 import {
@@ -440,23 +440,14 @@ export const ExchangeCard: React.FC = () => {
 
   const content = getContent();
 
-  const card = (
+  const card = () => (
     <SkeletonContainer>
-      <Skeleton>
-        {isExchangeVisible() ? (
-          <CustomCard {...getCardProps()}>{content}</CustomCard>
-        ) : null}
-      </Skeleton>
+      {isExchangeVisible() ? (
+        <CustomCard {...getCardProps()}>{content}</CustomCard>
+      ) : (
+        <SkeletonExchangeCardContents card />
+      )}
     </SkeletonContainer>
-  );
-
-  const isMobileCardVisible =
-    chooseAsset || searchOpen || isExchangeConfirmationVisible;
-
-  const mobileContent = isMobileCardVisible ? (
-    <MobileCardContainer>{card}</MobileCardContainer>
-  ) : (
-    content
   );
 
   const hasFee = !!fee?.toNumber();
@@ -467,8 +458,16 @@ export const ExchangeCard: React.FC = () => {
         <NotificationsPlacement name="exchange" className="notification" />
       </NotificationsContainer>
       <CardContainer>
-        <OnDesktop>{card}</OnDesktop>
-        <OnMobile>{mobileContent}</OnMobile>
+        <OnDesktop>{card()}</OnDesktop>
+        <OnMobile>
+          {chooseAsset || searchOpen || isExchangeConfirmationVisible ? (
+            <MobileCardContainer>{card()}</MobileCardContainer>
+          ) : isExchangeVisible() ? (
+            content
+          ) : (
+            <SkeletonExchangeCardContents />
+          )}
+        </OnMobile>
       </CardContainer>
       {hasFee && (
         <FeesContainer>
@@ -478,3 +477,38 @@ export const ExchangeCard: React.FC = () => {
     </Container>
   );
 };
+
+const SkeletonSearchBarContainer = styled.div`
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  border-bottom: 1px solid transparent;
+`;
+
+// eslint-disable-next-line react/require-default-props
+function SkeletonExchangeCardContents({ card }: { card?: boolean }) {
+  return (
+    <>
+      {card && (
+        <Skeleton
+          variant="rectangular"
+          height={60}
+          sx={{ borderRadius: '0' }}
+        />
+      )}
+
+      <SkeletonSearchBarContainer>
+        <Skeleton variant="rectangular" width={16} height={16} />
+        <Skeleton
+          variant="rectangular"
+          width={74}
+          height={16}
+          sx={{ marginLeft: '10px' }}
+        />
+      </SkeletonSearchBarContainer>
+
+      <SkeletonMainForm />
+    </>
+  );
+}

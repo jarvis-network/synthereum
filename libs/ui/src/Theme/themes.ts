@@ -2,7 +2,7 @@ import { FontFace } from '../FontFace/types';
 
 import { ThemeName, ThemeConfig } from './types';
 
-export const ligthTheme: ThemeConfig = {
+export const lightTheme: ThemeConfig = {
   name: 'light',
   sizes: {
     row: '60px',
@@ -36,6 +36,7 @@ export const ligthTheme: ThemeConfig = {
     medium: '#FAFAFA',
     inverted: '#000', // opposite to primary
     disabled: '#f5f5f5',
+    skeletonLoader: '#eeeeee',
   },
   border: {
     primary: '#f1f1f1',
@@ -89,8 +90,10 @@ export const ligthTheme: ThemeConfig = {
   },
 };
 
+const primaryDarkBackground = '#292929'; // rgb(41,41,41)
+const secondaryDarkBackground = '#252525'; // rgb(37,37,37)
 export const darkTheme: ThemeConfig = {
-  ...ligthTheme,
+  ...lightTheme,
   name: 'dark',
   text: {
     primary: '#fff',
@@ -100,11 +103,12 @@ export const darkTheme: ThemeConfig = {
     invalid: '#76646E',
   },
   background: {
-    primary: 'rgb(41,41,41)',
-    secondary: 'rgb(37,37,37)',
+    primary: primaryDarkBackground,
+    secondary: secondaryDarkBackground,
     medium: '#252525',
     inverted: '#dedede',
     disabled: '#262626',
+    skeletonLoader: secondaryDarkBackground,
   },
   border: {
     primary: '#767676',
@@ -124,8 +128,10 @@ export const darkTheme: ThemeConfig = {
   },
 };
 
+const primaryNightBackground = '#2e3541'; // rgb(46,53,65)
+const secondaryNightBackground = '#212a34'; // rgb(33,42,52)
 export const nightTheme: ThemeConfig = {
-  ...ligthTheme,
+  ...lightTheme,
   name: 'night',
   text: {
     primary: '#fff',
@@ -135,11 +141,12 @@ export const nightTheme: ThemeConfig = {
     invalid: '#765C93',
   },
   background: {
-    primary: 'rgb(46,53,65)',
-    secondary: 'rgb(33,42,52)',
+    primary: primaryNightBackground,
+    secondary: secondaryNightBackground,
     medium: '#212A34',
     inverted: '#e4dcd3',
     disabled: '#262d38',
+    skeletonLoader: secondaryNightBackground,
   },
   border: {
     primary: '#65728a',
@@ -160,7 +167,7 @@ export const nightTheme: ThemeConfig = {
 };
 
 export const themesMap = {
-  [ThemeName.light]: ligthTheme,
+  [ThemeName.light]: lightTheme,
   [ThemeName.dark]: darkTheme,
   [ThemeName.night]: nightTheme,
 } as const;

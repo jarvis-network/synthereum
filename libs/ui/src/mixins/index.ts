@@ -1,4 +1,4 @@
-import { ThemeConfig } from '..';
+import { ThemeConfig } from '../Theme';
 
 const scrollBackgroundColor = {
   night: '#2e3541',

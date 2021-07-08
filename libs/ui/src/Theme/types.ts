@@ -67,6 +67,7 @@ declare module '@emotion/react' {
       medium: string;
       inverted: string;
       disabled: string;
+      skeletonLoader: string;
     };
     border: {
       primary: string; // $border-color

@@ -1,38 +1,50 @@
 import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
+import { ThemeProvider as MaterialUIThemeProvider } from '@material-ui/core';
 import React, { FC } from 'react';
 
 import { deepMerge } from '../common/deep-merge';
 
 import { BodyFontFaceProvider } from '../FontFace';
+import { skeletonThemesMap } from '../Skeleton/themes';
 
 import { ThemeProviderProps, ThemeConfig } from './types';
 import { themesMap } from './themes';
 
+type ValueOf<T> = T[keyof T];
+
 const getThemeConfig = ({
   theme = 'light',
   custom,
-}: Pick<ThemeProviderProps, 'theme' | 'custom'>): ThemeConfig => {
+}: Pick<ThemeProviderProps, 'theme' | 'custom'>): {
+  theme: ThemeConfig;
+  skeletonTheme: ValueOf<typeof skeletonThemesMap>;
+} => {
   const $preBuildTheme = { ...themesMap[theme] };
 
   if (!custom) {
-    return $preBuildTheme;
+    return { theme: $preBuildTheme, skeletonTheme: skeletonThemesMap[theme] };
   }
 
-  return deepMerge($preBuildTheme, custom);
+  return {
+    theme: deepMerge($preBuildTheme, custom),
+    skeletonTheme: skeletonThemesMap[theme],
+  };
 };
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({
   children,
-  theme,
+  theme: themeName,
   custom,
 }) => {
-  const themeConfig = getThemeConfig({ theme, custom });
+  const { theme, skeletonTheme } = getThemeConfig({ theme: themeName, custom });
 
   return (
-    <EmotionThemeProvider theme={getThemeConfig({ theme, custom })}>
-      <BodyFontFaceProvider font={themeConfig.font.family}>
-        {children}
-      </BodyFontFaceProvider>
-    </EmotionThemeProvider>
+    <MaterialUIThemeProvider theme={skeletonTheme}>
+      <EmotionThemeProvider theme={theme}>
+        <BodyFontFaceProvider font={theme.font.family}>
+          {children}
+        </BodyFontFaceProvider>
+      </EmotionThemeProvider>
+    </MaterialUIThemeProvider>
   );
 };

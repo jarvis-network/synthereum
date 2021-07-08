@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Global, css } from '@emotion/core';
+import { Global, css } from '@emotion/react';
 
 import Bold from './Krub-Bold.ttf';
 import BoldItalic from './Krub-BoldItalic.ttf';
@@ -22,80 +22,80 @@ export const InjectKrubFontFace: FC = () => (
         font-weight: 200;
         src: url('${ExtraLight}');
       }
-    
+
       @font-face {
         font-family: 'Krub';
         font-style: italic;
         font-weight: 200;
         src: url('${ExtraLightItalic}');
       }
-    
+
       // Light
-    
+
       @font-face {
         font-family: 'Krub';
         font-weight: 300;
         src: url('${Light}');
       }
-    
+
       @font-face {
         font-family: 'Krub';
         font-style: italic;
         font-weight: 300;
         src: url('${LightItalic}');
       }
-    
+
       // Regular
-    
+
       @font-face {
         font-family: 'Krub';
         src: url('${Regular}');
       }
-    
+
       @font-face {
         font-family: 'Krub';
         font-style: italic;
         src: url('${Italic}');
       }
-    
+
       // Medium
-    
+
       @font-face {
         font-family: 'Krub';
         font-weight: 500;
         src: url('${Medium}');
       }
-    
+
       @font-face {
         font-family: 'Krub';
         font-style: italic;
         font-weight: 500;
         src: url('${MediumItalic}');
       }
-    
+
       // Semi bold
-    
+
       @font-face {
         font-family: 'Krub';
         font-weight: 600;
         src: url('${SemiBold});
       }
-    
+
       @font-face {
         font-family: 'Krub';
         font-style: italic;
         font-weight: 600;
         src: url('${SemiBoldItalic}');
       }
-    
+
       // Bold
-    
+
       @font-face {
         font-family: 'Krub';
         font-weight: 700;
         src: url('${Bold}');
       }
-    
+
       @font-face {
         font-family: 'Krub';
         font-style: italic;

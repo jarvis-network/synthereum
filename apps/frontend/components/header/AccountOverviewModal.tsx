@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   styled,
@@ -12,7 +12,11 @@ import {
   primaryCollateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
 
-import { AssetRow, AssetRowProps } from '@/components/AssetRow';
+import {
+  AssetRow,
+  AssetRowProps,
+  AssetRowSkeleton,
+} from '@/components/AssetRow';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setAccountOverviewModalVisible } from '@/state/slices/app';
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
@@ -22,7 +26,7 @@ import {
 } from '@jarvis-network/app-toolkit';
 
 interface BalanceProps {
-  total: FPN;
+  total: FPN | ReactNode;
 }
 
 interface AssetsProps {
@@ -62,9 +66,13 @@ const Content = styled.div`
 const Balance: FC<BalanceProps> = ({ total }) => (
   <Block>
     <Heading>Balance</Heading>
-    <Content>
-      {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {total.format(2)}
-    </Content>
+    {total instanceof FPN ? (
+      <Content>
+        {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {total.format(2)}
+      </Content>
+    ) : (
+      <Content>{total}</Content>
+    )}
   </Block>
 );
 
@@ -193,7 +201,19 @@ export const AccountOverviewModal: FC = () => {
   return (
     <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
       <Wrapper>
-        <Skeleton>{content}</Skeleton>
+        {content || (
+          <Container>
+            <Balance total={<Skeleton variant="text" width={50} />} />
+
+            <Block>
+              <Heading>Assets</Heading>
+              {Array.from({ length: 4 }).map((_, index) => (
+                /* eslint-disable-next-line react/no-array-index-key */
+                <AssetRowSkeleton key={index} />
+              ))}
+            </Block>
+          </Container>
+        )}
       </Wrapper>
     </ModalContent>
   );

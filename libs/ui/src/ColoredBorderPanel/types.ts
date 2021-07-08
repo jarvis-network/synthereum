@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { ligthTheme } from '../Theme/themes';
+import { lightTheme } from '../Theme/themes';
 
 export enum SizeConfig {
   large = 36,
@@ -10,7 +10,7 @@ export enum SizeConfig {
 
 export type Size = keyof typeof SizeConfig;
 
-export type Color = keyof typeof ligthTheme.common;
+export type Color = keyof typeof lightTheme.common;
 
 export interface ColoredBorderPanelProps {
   children: ReactNode;

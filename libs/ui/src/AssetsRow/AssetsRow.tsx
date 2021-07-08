@@ -3,7 +3,7 @@ import React from 'react';
 import { flexRow } from '../common/mixins';
 import { Icon } from '../Icon';
 import { styled } from '../Theme';
-import { Asset } from '../AssetsRow/Asset';
+import { Asset, AssetSkeleton } from '../AssetsRow/Asset';
 import { AssetsRowProps } from '../AssetsRow/types';
 
 const Container = styled.div`
@@ -44,3 +44,18 @@ export const AssetsRow: React.FC<AssetsRowProps> = ({ from, to, isOpen }) => (
     </EndIconContainer>
   </Container>
 );
+
+export function AssetsRowSkeleton(): JSX.Element {
+  return (
+    <Container>
+      <ItemContainer width="40%">
+        <AssetSkeleton />
+      </ItemContainer>
+      <IconContainer width="14%" />
+      <ItemContainer width="36%">
+        <AssetSkeleton />
+      </ItemContainer>
+      <EndIconContainer width="10%" />
+    </Container>
+  );
+}

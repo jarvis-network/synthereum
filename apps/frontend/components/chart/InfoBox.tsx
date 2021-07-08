@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import {
   Flag,
   styled,
-  Skeleton,
   Icon,
   Select,
   Option as OptionWrapper,
@@ -10,6 +9,9 @@ import {
   styledScrollbars,
   SingleValueProps,
   OptionProps,
+  Skeleton,
+  getFlagSize,
+  useTheme,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
@@ -29,7 +31,7 @@ import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { createPairs } from '@/utils/createPairs';
 import { isAppReadySelector } from '@/state/selectors';
 
-const Box = styled.div<{ hasContent: boolean }>`
+const Box = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -38,14 +40,6 @@ const Box = styled.div<{ hasContent: boolean }>`
   min-height: 86.5px;
   margin-bottom: 30px;
   box-sizing: border-box;
-
-  ${props =>
-    props.hasContent
-      ? ''
-      : `
-    border-radius: ${props.theme.borderRadius.m};
-    overflow: hidden;
-  `}
 `;
 
 const Symbols = styled.div`
@@ -55,16 +49,16 @@ const Symbols = styled.div`
   margin-bottom: 0.5rem;
 `;
 
+const flagSize = 'small' as const;
+const flagMeasurement = getFlagSize(flagSize);
 const Flags = styled.div`
   z-index: 1;
   margin-right: 5px;
   display: block;
-  height: 24px;
+  height: ${flagMeasurement}px;
 
   > img {
     position: relative;
-    height: 24px;
-    width: 24px;
 
     &:first-child {
       z-index: 2;
@@ -142,6 +136,7 @@ const InfoBoxTwoIcons = styled(TwoIconsButton)`
   transform: rotate(-90deg);
 `;
 
+const singleValueFontSize = '20px';
 const CustomSelect = styled(Select as Select<Option>)`
   min-width: 100px;
   width: auto;
@@ -158,7 +153,7 @@ const CustomSelect = styled(Select as Select<Option>)`
   }
 
   .react-select__single-value {
-    font-size: 20px;
+    font-size: ${singleValueFontSize};
   }
 
   .react-select__menu-list {
@@ -238,8 +233,8 @@ const InfoBox: React.FC<Props> = ({
           label,
           icon: (
             <Flags>
-              {p.input.icon && <Flag flag={p.input.icon} />}
-              {p.output.icon && <Flag flag={p.output.icon} />}
+              {p.input.icon && <Flag size="small" flag={p.input.icon} />}
+              {p.output.icon && <Flag size="small" flag={p.output.icon} />}
             </Flags>
           ),
         };
@@ -279,12 +274,14 @@ const InfoBox: React.FC<Props> = ({
     dispatch(setReceiveAsset(receive));
   };
 
-  const isInfoBoxVisible = () => isApplicationReady && value;
+  const isInfoBoxVisible = isApplicationReady && value;
 
   const selectedPair = `${paySymbol} / ${receiveSymbol}`;
 
-  const content = isInfoBoxVisible() ? (
-    <>
+  if (!isInfoBoxVisible) return <SkeletonInfoBox />;
+
+  return (
+    <Box>
       <Symbols>
         <CurrencySymbol>
           <CustomSelect
@@ -323,14 +320,48 @@ const InfoBox: React.FC<Props> = ({
         {formatNumberAsDiff(changeValuePerc ?? wholeRangeChangePerc, 2)}%)
         <span> Past {daysToLabelMap[days]}</span>
       </Change>
-    </>
-  ) : null;
-
-  return (
-    <Box hasContent={!!content}>
-      <Skeleton>{content}</Skeleton>
     </Box>
   );
 };
+
+function SkeletonInfoBox() {
+  const theme = useTheme();
+  return (
+    <Box>
+      <div>
+        <div style={{ display: 'flex', marginBottom: 8 }}>
+          <div style={{ width: 48, marginRight: 5, display: 'flex' }}>
+            <Skeleton
+              variant="circular"
+              width={flagMeasurement}
+              height={flagMeasurement}
+            />
+            <Skeleton
+              variant="circular"
+              width={flagMeasurement}
+              height={flagMeasurement}
+              sx={{ marginLeft: '-4px' }}
+            />
+          </div>
+          <Skeleton
+            variant="text"
+            width={130}
+            sx={{ fontSize: singleValueFontSize }}
+          />
+        </div>
+        <Skeleton
+          variant="text"
+          width={150}
+          sx={{ fontSize: theme.font.sizes.xl }} // Sync fontSize with <Rate />
+        />
+        <Skeleton
+          variant="text"
+          width={230}
+          sx={{ fontSize: theme.font.sizes.s }} // Sync fontSize with <Change />
+        />
+      </div>
+    </Box>
+  );
+}
 
 export { InfoBox };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Flag, Icon, styled, themeValue } from '@jarvis-network/ui';
+import { Flag, Icon, Skeleton, styled, themeValue } from '@jarvis-network/ui';
 
 import { Asset as AssetItemType } from '@/data/assets';
 import { AssetType } from '@/state/initialState';
@@ -21,6 +21,12 @@ const Container = styled.div`
     vertical-align: middle;
   }
 
+  .MuiSkeleton-circular {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+  }
+
   i svg {
     width: 11px;
     height: 11px;
@@ -38,10 +44,10 @@ const Container = styled.div`
   }
 `;
 
-const AssetChangeButton = styled.button`
+const AssetChangeButton = styled.button<{ display?: 'flex' | 'inline-block' }>`
   border: none;
   padding: 0;
-  display: inline-block;
+  display: ${({ display = 'inline-block' }) => display};
   background: none;
   cursor: pointer;
   outline: none !important;
@@ -122,3 +128,16 @@ export const Asset: React.FC<Props> = ({ type }) => {
     </Container>
   );
 };
+
+export function SkeletonAssetChangeButton(): JSX.Element {
+  return (
+    <Container>
+      <AssetChangeButton display="flex">
+        <Skeleton variant="circular" />
+        <div className="assetName">
+          <Skeleton variant="text" width={65} />
+        </div>
+      </AssetChangeButton>
+    </Container>
+  );
+}

@@ -1,3 +1,4 @@
+import Color from 'color';
 import React, { useState } from 'react';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { last } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
@@ -96,7 +97,6 @@ const Container = styled.div`
 `;
 
 const ChartContainer = styled.div`
-  border-radius: ${props => props.theme.borderRadius.m};
   overflow: hidden;
   width: 100%;
   height: 100%;
@@ -106,6 +106,11 @@ const ChartContainer = styled.div`
     height: calc(100% - 165px);
   }
 `;
+
+const placeholderData = Array.from({ length: 10 }).map((_, index) => ({
+  close: -Math.random() * 5 - 1,
+  time: index,
+}));
 
 export const ChartCard: React.FC = () => {
   const [change, setChange] = useState<ChangeType | null>(null);
@@ -192,9 +197,9 @@ export const ChartCard: React.FC = () => {
     diffPerc: wholeRangeChangePerc,
   } = getValuesDiff(beginningPayload, currentPayload);
 
-  const isChartVisible = () => isApplicationReady && chartData.length;
+  const isChartVisible = isApplicationReady && chartData.length;
 
-  const chart = isChartVisible() ? (
+  const chart = isChartVisible && (
     <ResponsiveContainer>
       <AreaChart data={chartData} {...events}>
         <defs>
@@ -240,7 +245,7 @@ export const ChartCard: React.FC = () => {
         />
       </AreaChart>
     </ResponsiveContainer>
-  ) : null;
+  );
 
   return (
     <Container>
@@ -254,8 +259,63 @@ export const ChartCard: React.FC = () => {
         days={days}
       />
       <ChartContainer>
-        <Skeleton>{chart}</Skeleton>
+        {chart || <SkeletonChart theme={theme} />}
       </ChartContainer>
     </Container>
   );
 };
+
+function SkeletonChart({ theme }: { theme: ReturnType<typeof useTheme> }) {
+  return (
+    <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+      <Skeleton
+        variant="rectangular"
+        width="100%"
+        height="100%"
+        sx={{ borderRadius: '0' }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          height: '100%',
+          width: '100%',
+          top: 0,
+          backgroundImage: `linear-gradient(180deg, ${Color(
+            theme.background.primary,
+          )
+            .alpha(0)
+            .toString()} 0%, ${theme.background.primary} 95%)`,
+        }}
+      >
+        <ResponsiveContainer>
+          <AreaChart margin={{}} data={placeholderData}>
+            <XAxis
+              type="number"
+              dataKey="time"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              axisLine={false}
+              interval="preserveStartEnd"
+              tickLine={false}
+              tick={{
+                color: 'black',
+                fontSize: 12,
+              }}
+              hide
+            />
+            <YAxis hide type="number" domain={['dataMin - 2', 'dataMax + 1']} />
+            <Area
+              dot={false}
+              type="monotone"
+              dataKey="close"
+              strokeWidth="0"
+              fill={theme.background.primary}
+              fillOpacity="1"
+              isAnimationActive={false}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}

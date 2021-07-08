@@ -1,7 +1,7 @@
 import React from 'react';
 import { boolean, select } from '@storybook/addon-knobs';
 
-import { ligthTheme } from '../../Theme/themes';
+import { lightTheme } from '../../Theme/themes';
 import { styled } from '../../Theme';
 
 import { ColoredBorderPanel } from '..';
@@ -67,7 +67,7 @@ export const Color = () => {
       footer={<em>I am the footer</em>}
     >
       <code>color</code> prop accepts theme <code>common</code> section colors:{' '}
-      <code>{Object.keys(ligthTheme.common).toString()}</code>.
+      <code>{Object.keys(lightTheme.common).toString()}</code>.
     </ColoredBorderPanel>
   );
 };

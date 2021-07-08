@@ -53,6 +53,11 @@ function groupTransactionsByDay(items: Transaction[]) {
     .sort((a, b) => getTimestamp(b[0]) - getTimestamp(a[0]));
 }
 
+// const CustomInfiniteScroll = styled(InfiniteScroll)`
+//   margin-left: -24px;
+//   margin-right: -24px;
+// `;
+
 const Block = styled.div`
   margin-top: 20px;
 `;
@@ -141,15 +146,37 @@ export const RecentActivityModal: FC = () => {
   );
 
   return (
-    <ModalContent isOpened={isVisible} onClose={handleClose} title="Activity">
+    <ModalContent
+      isOpened={isVisible}
+      onClose={handleClose}
+      title="Activity"
+      // id={id}
+    >
+      {/* <CustomInfiniteScroll
+        dataLength={transactions.length}
+        next={fetchMoreTransactions}
+        hasMore={state.hasOlderTransactions}
+        loader={
+          <Block>
+            <Heading>
+              <Skeleton variant="text" width={44} />
+            </Heading>
+            <AssetsRowSkeleton />
+          </Block>
+        }
+        scrollableTarget={id}
+      > */}
+      {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
       {groupedTransactions.map(transactions => (
         <Block key={getFullDaysInTimestamp(transactions[0])}>
-          <Heading>{formatDayLabel(transactions[0].timestamp)}</Heading>
+          <Heading>{formatDayLabel(getTimestamp(transactions[0]))}</Heading>
           {transactions.map(transaction => (
-            <ActivityRow key={transaction.txHash} {...transaction} />
+            // <ActivityRow key={transaction.hash} {...transaction} />
+            <ActivityRow {...transaction} />
           ))}
         </Block>
       ))}
+      {/* </CustomInfiniteScroll> */}
     </ModalContent>
   );
 };

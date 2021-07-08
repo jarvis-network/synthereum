@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { styled, Flag, themeValue } from '@jarvis-network/ui';
+import { styled, Flag, themeValue, Skeleton } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
@@ -29,9 +29,10 @@ const Information = styled.div`
   justify-content: flex-start;
 `;
 
+const titleMarginLeft = '24px';
 const Title = styled.div`
   color: ${props => props.theme.text.primary};
-  margin-left: 24px;
+  margin-left: ${titleMarginLeft};
 `;
 
 const MetamaskButton = styled.button`
@@ -129,3 +130,26 @@ export const AssetRow: FC<AssetRowProps> = ({
     </Container>
   );
 };
+
+export function AssetRowSkeleton(): JSX.Element {
+  return (
+    <Container>
+      <Information>
+        <Skeleton variant="circular" width={32} height={32} />
+        <Skeleton
+          variant="text"
+          width={35}
+          sx={{ marginLeft: titleMarginLeft }}
+        />
+      </Information>
+      <Details>
+        <Amount>
+          <Skeleton variant="text" width={31.55} />
+        </Amount>
+        <Value>
+          <Skeleton variant="text" width={48.59} />
+        </Value>
+      </Details>
+    </Container>
+  );
+}

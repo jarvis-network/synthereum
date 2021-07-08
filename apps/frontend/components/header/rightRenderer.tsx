@@ -29,8 +29,9 @@ import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/co
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 
-const Container = styled.div<{ hasContent: boolean }>`
-  height: 38px;
+const containerHeight = 38;
+const Container = styled.div<{ hasContent?: boolean }>`
+  height: ${containerHeight}px;
   width: 310px;
 
   ${props =>
@@ -145,10 +146,15 @@ const render = (): JSX.Element => {
     />
   ) : null;
 
-  return (
-    <Container hasContent={!!content}>
-      <Skeleton>{content}</Skeleton>
-    </Container>
+  return content ? (
+    <Container hasContent>{content}</Container>
+  ) : (
+    <Skeleton
+      variant="rectangular"
+      sx={{ borderRadius: `${containerHeight / 2}px` }}
+    >
+      <Container />
+    </Skeleton>
   );
 };
 

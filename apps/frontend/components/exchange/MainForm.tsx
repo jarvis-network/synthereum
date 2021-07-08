@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
+import { Button, Icon, Skeleton, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
 
@@ -19,22 +19,28 @@ import {
 } from '@/state/slices/app';
 import { Asset as AssetType } from '@/data/assets';
 
-import { ExchangeRate } from '@/components/exchange/ExchangeRate';
+import {
+  ExchangeRate,
+  SkeletonExchangeRate,
+} from '@/components/exchange/ExchangeRate';
 import { useExchangeValues } from '@/utils/useExchangeValues';
 
 import { TwoIconsButton } from '@/components/TwoIconsButton';
 
 import { Loader } from '../Loader';
 
-import { Asset } from './Asset';
+import { Asset, SkeletonAssetChangeButton } from './Asset';
 import { Max } from './Max';
 
-const Container = styled.div`
-  height: 100%;
+const SkeletonContainer = styled.div`
   padding-top: 30px;
 `;
 
-const ExchangeBox = styled.div<{ error: boolean }>`
+const Container = styled(SkeletonContainer)`
+  height: 100%;
+`;
+
+const ExchangeBox = styled.div`
   margin: 5px 15px;
   display: grid;
   grid-template-columns: auto;
@@ -45,7 +51,7 @@ const ExchangeBox = styled.div<{ error: boolean }>`
   position: relative;
 `;
 
-const AssetSelect = styled.div<{ error: boolean }>`
+const AssetSelect = styled.div<{ error?: boolean; invisibleBorder?: boolean }>`
   grid-area: asset-select;
   display: flex;
   justify-content: space-between;
@@ -56,7 +62,11 @@ const AssetSelect = styled.div<{ error: boolean }>`
   margin-top: 3px;
   border: 1px solid
     ${props =>
-      !props.error ? props.theme.border.secondary : props.theme.border.invalid};
+      props.invisibleBorder
+        ? 'transparent'
+        : props.error
+        ? props.theme.border.invalid
+        : props.theme.border.secondary};
   border-radius: ${props => props.theme.borderRadius.s};
 `;
 
@@ -68,22 +78,32 @@ const Title = styled.div`
   align-items: flex-end;
 `;
 
-const Balance = styled.span`
-  color: ${props => props.theme.text.secondary};
+const SkeletonBalanceContainer = styled.span`
   font-size: ${props => props.theme.font.sizes.s};
 `;
+const Balance = styled(SkeletonBalanceContainer)`
+  color: ${props => props.theme.text.secondary};
+`;
 
-const Amount = styled.input`
+const SkeletonAmount = styled.input`
   grid-area: amount;
+  font-size: ${props => props.theme.font.sizes.l};
+  height: 100%;
+  margin-top: 5px;
+  position: relative;
+
+  > .MuiSkeleton-text {
+    position: absolute;
+    top: 10px;
+  }
+`;
+const Amount = styled(SkeletonAmount)`
   border: none;
   padding: none;
   background: none;
   color: ${props => props.theme.text.secondary};
-  font-size: ${props => props.theme.font.sizes.l};
   width: 45%;
   outline: none !important;
-  margin-top: 5px;
-  height: 100%;
   font-family: Krub;
 
   &::placeholder {
@@ -92,7 +112,7 @@ const Amount = styled.input`
 `;
 
 const Footer = styled.div`
-  margin: 5px 15px 15px;
+  margin: 10px 15px 15px;
 `;
 
 const SwapButton = styled(Button)`
@@ -247,7 +267,7 @@ export const MainForm: React.FC = () => {
 
   return (
     <Container>
-      <ExchangeBox error={Boolean(errorMessage)}>
+      <ExchangeBox>
         <Title>You swap {amount}</Title>
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
@@ -276,7 +296,7 @@ export const MainForm: React.FC = () => {
         <Icon icon="IoIosArrowRoundUp" />
         <Icon icon="IoIosArrowRoundDown" />
       </TwoIconsButton>
-      <ExchangeBox error={false}>
+      <ExchangeBox>
         <Title>For</Title>
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
@@ -314,3 +334,54 @@ export const MainForm: React.FC = () => {
     </Container>
   );
 };
+
+const FlipAssetsPlaceholder = styled.div`
+  height: 27px;
+`;
+
+export function SkeletonMainForm(): JSX.Element {
+  return (
+    <SkeletonContainer>
+      <SkeletonAmountWithTitle showBalance width={71} />
+      <FlipAssetsPlaceholder />
+      <SkeletonAmountWithTitle width={24} />
+      <Footer>
+        <SkeletonExchangeRate />
+
+        <Skeleton
+          variant="rectangular"
+          height={60}
+          sx={{ marginTop: '25px', borderRadius: '10px' }}
+        />
+      </Footer>
+    </SkeletonContainer>
+  );
+}
+
+function SkeletonAmountWithTitle({
+  width,
+  showBalance,
+}: {
+  width: number;
+  // eslint-disable-next-line react/require-default-props
+  showBalance?: boolean;
+}) {
+  return (
+    <ExchangeBox>
+      <Title>
+        <Skeleton variant="text" width={width} />
+        {showBalance && (
+          <SkeletonBalanceContainer>
+            <Skeleton variant="text" width={110} />
+          </SkeletonBalanceContainer>
+        )}
+      </Title>
+      <AssetSelect invisibleBorder>
+        <SkeletonAmount as="div">
+          <Skeleton variant="text" width={74} />
+        </SkeletonAmount>
+        <SkeletonAssetChangeButton />
+      </AssetSelect>
+    </ExchangeBox>
+  );
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { styled } from '@jarvis-network/ui';
+import { Skeleton, styled } from '@jarvis-network/ui';
 
 import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
 import { useRate } from '@/utils/useRate';
@@ -57,3 +57,11 @@ export const ExchangeRate: React.FC = () => {
     </Container>
   );
 };
+
+export function SkeletonExchangeRate(): JSX.Element {
+  return (
+    <Container>
+      <Skeleton variant="text" width={193} />
+    </Container>
+  );
+}
