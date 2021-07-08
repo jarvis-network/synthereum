@@ -539,6 +539,9 @@ export const ExchangeCard: React.FC = () => {
           <Fees />
         </FeesContainer>
       )}
+      <OnMobile>
+        <div style={{ minHeight: 60 }} />
+      </OnMobile>
     </Container>
   );
 };
