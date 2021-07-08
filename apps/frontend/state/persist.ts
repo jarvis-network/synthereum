@@ -1,36 +1,49 @@
 import { Middleware } from '@reduxjs/toolkit';
-import { RootState } from '@/state/reducer';
 import { cache } from '@jarvis-network/app-toolkit';
 
-let lastState: RootState | null = null;
-
-const get = <T>(
-  source: Record<string, unknown> | null,
-  path: string[],
+const get = <
+  T extends Record<string, unknown>,
+  L extends keyof T,
+  R extends string[]
+>(
+  source: T | null,
+  path: [L, ...R],
 ): T | null => {
   if (!path.length) {
-    return source as T;
+    return source;
   }
   if (source == null) {
     return source;
   }
 
-  const parts = [...path];
-  const current = parts.shift();
-  return get(source[current!] as Record<string, unknown>, parts) as T;
+  const parts = [...path] as [L, ...R];
+  const current = parts.shift() as L;
+  return get(source[current] as any, parts as any) as T;
 };
 
-export const createPersistMiddleware = (pathsToStore: string[]) => {
-  const persistMiddleware: Middleware = store => next => action => {
+export const createPersistMiddleware = <T extends Record<string, unknown>>(
+  pathsToStore: string[],
+) => {
+  let lastState: T | null = null;
+  const persistMiddleware: Middleware<
+    Record<string, unknown>,
+    T
+  > = store => next => action => {
     const result = next(action);
 
     if (typeof window !== 'undefined') {
-      const appState: RootState = store.getState();
+      const appState: T = store.getState();
 
       if (lastState) {
         pathsToStore.forEach(path => {
-          const current = get(appState, path.split('.'));
-          const previous = get(lastState, path.split('.'));
+          const current = get(
+            appState,
+            path.split('.') as [keyof T, ...string[]],
+          );
+          const previous = get(
+            lastState,
+            path.split('.') as [keyof T, ...string[]],
+          );
           if (current !== previous) {
             cache.set(`jarvis/state/${path}`, current);
           }

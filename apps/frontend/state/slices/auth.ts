@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 
 import { initialAppState, State } from '@/state/initialState';
 import { logoutAction, addressSwitch } from '@/state/actions';
@@ -25,7 +26,7 @@ const authSlice = createSlice({
     },
     [addressSwitch.type](
       state,
-      { payload: { address } }: Action<{ address: string }>,
+      { payload: { address } }: Action<{ address: Address }>,
     ) {
       if (!state) return state;
       state.address = address;

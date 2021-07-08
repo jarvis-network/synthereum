@@ -68,7 +68,7 @@ function getPricesMapFromHistoricalPrices({
 export const priceFeedSubscribeEpic: Epic<
   ReturnType<typeof subscribeAllPrices>,
   any,
-  never,
+  any,
   Dependencies
 > = (action$, _state$, dependencies$) =>
   action$.pipe(
@@ -108,7 +108,7 @@ export const priceFeedSubscribeEpic: Epic<
 export const priceFeedUnsubscribeEpic: Epic<
   ReturnType<typeof closeConnection>,
   any,
-  never,
+  any,
   Dependencies
 > = (action$, _state$, dependencies$) =>
   action$.pipe(

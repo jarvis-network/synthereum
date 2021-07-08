@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState } from '@/state/initialState';
-import { Transaction } from '@/data/transactions';
+import { SynthereumTransaction } from '@/data/transactions';
 
 interface Action<T> {
   payload: T;
@@ -18,10 +18,13 @@ const transactionsSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
-    addTransaction: (state, { payload: tx }: Action<Transaction>) => {
+    addTransaction: (state, { payload: tx }: Action<SynthereumTransaction>) => {
       state[tx.hash] = tx;
     },
-    addTransactions: (state, { payload: txs }: Action<Transaction[]>) => {
+    addTransactions: (
+      state,
+      { payload: txs }: Action<SynthereumTransaction[]>,
+    ) => {
       for (const tx of txs) {
         state[tx.hash] = tx;
       }

@@ -14,6 +14,7 @@ import {
 } from '@jarvis-network/synthereum-ts/dist/src/core/types/pools';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
+import { TransactionHash } from '@jarvis-network/core-utils/dist/eth/transaction';
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import {
   networkIdToName,
@@ -36,7 +37,7 @@ const urls = {
 };
 
 type ResponseTransaction = {
-  id: string;
+  id: TransactionHash;
   inputTokenAddress: Address;
   inputTokenAmount: string;
   outputTokenAddress: Address;
@@ -61,23 +62,29 @@ export function useTransactionsSubgraph() {
   const realmAgent = useBehaviorSubject(realmAgent$);
   const address = useReduxSelector(state => state.auth?.address);
   const dispatch = useDispatch();
-  const tokens = useMemo(
+  const tokensAndAddress = useMemo(
     () =>
-      realmAgent
-        ? [
-            ...(Object.values(
-              realmAgent.realm.pools[poolVersion]!,
-            ) as SynthereumPool<PoolVersion>[]).map(
-              pool => pool.syntheticToken,
-            ),
-            realmAgent.realm.collateralToken,
-          ]
+      realmAgent && realmAgent.realm.netId === networkId && address
+        ? {
+            tokens: [
+              ...(Object.values(
+                realmAgent.realm.pools[poolVersion]!,
+              ) as SynthereumPool<PoolVersion>[]).map(
+                pool => pool.syntheticToken,
+              ),
+              realmAgent.realm.collateralToken,
+            ],
+            address,
+          }
         : null,
-    [realmAgent],
+    [realmAgent, networkId, address],
   );
 
   useEffect(() => {
-    if (!address || !tokens || !checkIsSupportedNetwork(networkId)) return;
+    if (!tokensAndAddress || !checkIsSupportedNetwork(networkId)) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { address, tokens } = tokensAndAddress;
 
     let canceled = false;
 
@@ -85,11 +92,12 @@ export function useTransactionsSubgraph() {
 
     run(async () => {
       const db = await dbPromise;
-      const readDbTx = db.transaction('transactions', 'readonly');
-      const [storedTransactions] = await Promise.all([
-        readDbTx.store.getAll(),
-        readDbTx.done,
-      ]);
+
+      const storedTransactions = await db.getAllFromIndex(
+        'transactions',
+        'networkId, from',
+        [networkId, address],
+      );
 
       if (storedTransactions.length) {
         dispatch(addTransactions(storedTransactions));
@@ -109,8 +117,9 @@ export function useTransactionsSubgraph() {
         await addTransactionsToIndexedDB(
           dispatch,
           db,
-          networkId,
           tokens,
+          networkId,
+          address,
           data.data.transactions,
         );
         return;
@@ -123,8 +132,9 @@ export function useTransactionsSubgraph() {
       await addTransactionsToIndexedDB(
         dispatch,
         db,
-        networkId,
         tokens,
+        networkId,
+        address,
         data.data.transactions,
       );
     });
@@ -132,7 +142,7 @@ export function useTransactionsSubgraph() {
     return () => {
       canceled = true;
     };
-  }, [address, networkId, tokens]);
+  }, [tokensAndAddress, networkId]);
 }
 
 function fetchTransactions(
@@ -171,8 +181,9 @@ function fetchTransactions(
 function addTransactionsToIndexedDB(
   dispatch: ReturnType<typeof useDispatch>,
   db: DB,
-  networkId: SupportedNetworkId,
   tokens: TokenInfo<SupportedNetworkName>[],
+  networkId: SupportedNetworkId,
+  from: Address,
   transactions: ResponseTransaction[],
 ) {
   const formattedTransactions = transactions.map(
@@ -193,6 +204,7 @@ function addTransactionsToIndexedDB(
       timestamp: parseInt(`${timestamp}000`, 10),
       networkId,
       block: parseInt(block, 10),
+      from,
     }),
   );
   dispatch(addTransactions(formattedTransactions));

@@ -10,7 +10,7 @@ import {
 
 import { setRecentActivityModalVisible } from '@/state/slices/app';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { Transaction, TransactionIO } from '@/data/transactions';
+import { SynthereumTransaction, TransactionIO } from '@/data/transactions';
 import { formatTransactionStatus, formatTransactionType } from '@/utils/format';
 import { getEtherscanTransactionURL } from '@/utils/url';
 import { formatDayLabel, formatTimestamp } from '@jarvis-network/app-toolkit';
@@ -20,9 +20,9 @@ import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
-const getTimestamp = (item: Transaction) => item.timestamp; // helper for case if we will change timestamp value type
+const getTimestamp = (item: SynthereumTransaction) => item.timestamp; // helper for case if we will change timestamp value type
 
-const getFullDaysInTimestamp = (transaction: Transaction) =>
+const getFullDaysInTimestamp = (transaction: SynthereumTransaction) =>
   Math.floor(getTimestamp(transaction) / DAY_IN_MS);
 
 const mapTransactionToAssetRow = (
@@ -38,8 +38,8 @@ const mapTransactionToAssetRow = (
   };
 };
 
-function groupTransactionsByDay(items: Transaction[]) {
-  type Result = { [key: number]: Transaction[] };
+function groupTransactionsByDay(items: SynthereumTransaction[]) {
+  type Result = { [key: number]: SynthereumTransaction[] };
   const result = items.reduce<Result>((accumulator, transaction) => {
     const fullDaysInTimestamp = getFullDaysInTimestamp(transaction);
 
@@ -88,7 +88,7 @@ const Wrapper = styled.div`
   border-bottom: 1px solid ${props => props.theme.background.medium};
 `;
 
-const EtherscanLink: FC<Pick<Transaction, 'hash' | 'networkId'>> = ({
+const EtherscanLink: FC<Pick<SynthereumTransaction, 'hash' | 'networkId'>> = ({
   hash,
   networkId,
 }) => (
@@ -101,7 +101,7 @@ const EtherscanLink: FC<Pick<Transaction, 'hash' | 'networkId'>> = ({
   </Link>
 );
 
-const ActivityRow: FC<Transaction> = ({
+const ActivityRow: FC<SynthereumTransaction> = ({
   input,
   output,
   type,
@@ -150,7 +150,8 @@ export const RecentActivityModal: FC = () => {
   };
 
   const groupedTransactions = useMemo(
-    () => groupTransactionsByDay(Object.values(state)),
+    () =>
+      groupTransactionsByDay(Object.values(state) as SynthereumTransaction[]),
     [state],
   );
 

@@ -1,16 +1,24 @@
-import { Transaction } from '@/data/transactions';
+import { SynthereumTransaction } from '@/data/transactions';
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
+import { NetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import {
   openDB,
   DBSchema,
   IDBPDatabase,
   StoreNames,
   IDBPTransaction,
+  IndexNames,
+  IndexKey,
+  StoreValue,
 } from 'idb';
 
 export interface Schema extends DBSchema {
   transactions: {
-    value: Transaction;
+    value: SynthereumTransaction;
     key: string;
+    indexes: {
+      'networkId, from': [NetworkId, Address];
+    };
   };
 }
 
@@ -42,8 +50,32 @@ function fakeDBFactory<Schema extends DBSchema>() {
       } as unknown) as IDBPTransaction<Schema, [Name], Mode>['store'],
     } as IDBPTransaction<Schema, [Name], Mode>;
   }
+
+  /**
+   * Retrieves all values in an index that match the query.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param indexName Name of the index within the store.
+   * @param query
+   * @param count Maximum number of values to return.
+   */
+  function getAllFromIndex<
+    Name extends StoreNames<Schema>,
+    IndexName extends IndexNames<Schema, Name>
+  >(
+    _storeName: Name,
+    _indexName: IndexName,
+    _query?: IndexKey<Schema, Name, IndexName> | IDBKeyRange | null,
+    _count?: number,
+  ): Promise<StoreValue<Schema, Name>[]> {
+    return Promise.resolve([]);
+  }
   return Promise.resolve({
     transaction,
+    getAllFromIndex,
   });
 }
 
@@ -59,8 +91,9 @@ export const dbPromise: Promise<DB> =
     ? fakeDBFactory<Schema>()
     : openDB<Schema>('jarvis', 2, {
         upgrade(db) {
-          db.createObjectStore('transactions', {
+          const transactions = db.createObjectStore('transactions', {
             keyPath: 'hash',
           });
+          transactions.createIndex('networkId, from', ['networkId', 'from']);
         },
       });

@@ -1,6 +1,7 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
+import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import {
   ExchangeToken,
@@ -8,7 +9,7 @@ import {
 } from '@jarvis-network/synthereum-ts/dist/config';
 
 import { assets, Asset } from '@/data/assets';
-import { Transaction } from '@/data/transactions';
+import { SynthereumTransaction } from '@/data/transactions';
 import { SubscriptionPair } from '@/utils/priceFeed';
 import { cache } from '@jarvis-network/app-toolkit';
 
@@ -48,7 +49,10 @@ export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 export type Days = 1 | 7 | 30;
 
 export type AuthState =
-  | (Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] })
+  | (Omit<UserState, 'wallet'> & {
+      wallet: UserState['wallet']['name'];
+      address: Address;
+    })
   | null;
 
 export interface State {
@@ -86,7 +90,7 @@ export interface State {
   wallet: {
     [key in ExchangeToken]?: WalletInfo;
   };
-  transactions: { [txHash: string]: Transaction };
+  transactions: { [txHash: string]: SynthereumTransaction };
   prices: {
     persistedPairs: SubscriptionPair[];
     feed: PricePointsMap;
