@@ -46,10 +46,10 @@ export const Max: React.FC = () => {
     return null;
   }
 
-  const formattedMax = max.format(4);
+  const formattedMax = max.format(18).replace(/0*$/, '').replace(/\.$/, '');
 
   const handleClick = () => {
-    dispatch(setPay(formattedMax));
+    dispatch(setPay(formattedMax === '0.' ? '0' : formattedMax));
     dispatch(setBase('pay'));
   };
   return <Container onClick={handleClick}>Max</Container>;
