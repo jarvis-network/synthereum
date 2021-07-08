@@ -15,3 +15,6 @@ declare module 'ethereum-blockies' {
 
   export function create(opts: Options);
 }
+
+type TheGraphBytes = string;
+type TheGraphBigInt = string;

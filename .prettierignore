@@ -8,3 +8,4 @@ libs/contracts/src/contracts/abi/*
 libs/contracts/src/contracts/typechain/*
 packages/keeper-bot/lib/**/*
 *.md
+apps/frontend/generated/*

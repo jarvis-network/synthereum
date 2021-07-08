@@ -299,6 +299,7 @@ export const ExchangeCard: React.FC = () => {
         txPromise,
         sendTx,
         payValue,
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         paySymbol,
         receiveValue,
         receiveSymbol,

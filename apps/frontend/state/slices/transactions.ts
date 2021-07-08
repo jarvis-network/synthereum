@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
 import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
@@ -6,7 +7,6 @@ import { SynthereumTransaction } from '@/data/transactions';
 import {
   fetchTransactions,
   mapTheGraphResponseToStateCompatibleShape,
-  transactionsSubgraphUrls,
   findSmallestBlockNumber,
   addTransactionsToIndexedDB,
 } from '@/utils/useTransactionsSubgraph';
@@ -14,7 +14,6 @@ import {
   checkIsSupportedNetwork,
   SupportedNetworkName,
 } from '@jarvis-network/synthereum-ts/dist/src/config';
-import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import {
@@ -30,6 +29,7 @@ interface Action<T> {
 export const fetchAndStoreMoreTransactions = createAsyncThunk<
   SynthereumTransaction[] | null,
   {
+    apolloClient: ApolloClient<NormalizedCacheObject>;
     networkId: number;
     address: Address;
     tokens: TokenInfo<SupportedNetworkName>[];
@@ -37,15 +37,14 @@ export const fetchAndStoreMoreTransactions = createAsyncThunk<
   { state: State }
 >(
   'transactions/fetchMore',
-  async ({ networkId, address, tokens }, { getState }) => {
+  async ({ networkId, address, tokens, apolloClient }, { getState }) => {
     if (!checkIsSupportedNetwork(networkId)) return [];
-    const url = transactionsSubgraphUrls[networkIdToName[networkId]];
     const state = getState();
     const stateTransactionsArray = Object.values(state.transactions.hashMap);
     const smallestBlockNumber = findSmallestBlockNumber(stateTransactionsArray);
-    const response = await fetchTransactions(url, address, {
-      blockNumber_lte: smallestBlockNumber,
-      id_not_in: stateTransactionsArray
+    const response = await fetchTransactions(apolloClient, address, {
+      blockNumberLessThanOrEqualTo: smallestBlockNumber,
+      idNotIn: stateTransactionsArray
         .filter(tx => tx.block === smallestBlockNumber)
         .map(tx => tx.hash),
     });

@@ -103,6 +103,7 @@ const EtherscanLink: FC<Pick<SynthereumTransaction, 'hash' | 'networkId'>> = ({
   </Link>
 );
 
+/* eslint-disable react/destructuring-assignment */
 const ActivityRow: FC<SynthereumTransaction> = tx => {
   const txTimestamp = tx.timestamp;
   const [renderTimestamp, setRenderTimestamp] = useState(getTimestamp(tx));
@@ -147,6 +148,7 @@ const ActivityRow: FC<SynthereumTransaction> = tx => {
 
   return <Wrapper>{row}</Wrapper>;
 };
+/* eslint-enable react/destructuring-assignment */
 
 export const RecentActivityModal: FC = () => {
   const dispatch = useDispatch();

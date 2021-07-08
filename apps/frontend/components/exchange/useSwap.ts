@@ -8,6 +8,8 @@ import {
 } from '@jarvis-network/app-toolkit';
 import { SynthereumTransactionType } from '@/data/transactions';
 
+const noop = () => undefined;
+
 export const useSwap = () => {
   const agent = useBehaviorSubject(useCoreObservables().realmAgent$);
   const {
@@ -31,9 +33,7 @@ export const useSwap = () => {
         outputSynth: receiveSymbol as SyntheticSymbol,
       });
 
-      txPromise
-        .then(result => console.log('Mint!', result))
-        .catch(console.error);
+      txPromise.then(result => console.log('Mint!', result)).catch(noop);
 
       return {
         allowancePromise,
@@ -60,9 +60,7 @@ export const useSwap = () => {
         inputSynth: paySymbol as SyntheticSymbol,
       });
 
-      txPromise
-        .then(result => console.log('Redeem!', result))
-        .catch(console.error);
+      txPromise.then(result => console.log('Redeem!', result)).catch(noop);
 
       return {
         allowancePromise,
@@ -88,9 +86,7 @@ export const useSwap = () => {
       outputSynth: receiveSymbol as SyntheticSymbol,
     });
 
-    txPromise
-      .then(result => console.log('Exchange!', result))
-      .catch(console.error);
+    txPromise.then(result => console.log('Exchange!', result)).catch(noop);
 
     return {
       allowancePromise,

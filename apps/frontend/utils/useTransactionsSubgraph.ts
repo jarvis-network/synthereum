@@ -34,32 +34,176 @@ import {
   useBehaviorSubject,
 } from '@jarvis-network/app-toolkit';
 
+import {
+  ApolloClient,
+  InMemoryCache,
+  NormalizedCacheObject,
+  HttpLink,
+  split,
+} from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import gql from 'graphql-tag';
+import {
+  GetTransactions,
+  GetTransactionsVariables,
+  GetTransactions_transactions as GetTransactionsTransactions,
+} from 'generated/GetTransactions';
+import { useMemoOne } from 'use-memo-one';
+import {
+  OnTransactionIndexed,
+  OnTransactionIndexedVariables,
+} from 'generated/OnTransactionIndexed';
+import {
+  GetNewTransactions,
+  GetNewTransactionsVariables,
+  GetNewTransactions_transactions as GetNewTransactionsTransactions,
+} from 'generated/GetNewTransactions';
+import {
+  GetOldTransactions,
+  GetOldTransactionsVariables,
+} from 'generated/GetOldTransactions';
+
 import { dbPromise, DB } from './db';
 
 export const transactionsSubgraphUrls = {
   mainnet:
-    'https://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions',
+    's://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions',
   kovan:
-    'https://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions-kovan',
+    's://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions-kovan',
 };
 
-type ResponseTransaction = {
-  id: TransactionHash;
-  inputTokenAddress: Address;
-  inputTokenAmount: string;
-  outputTokenAddress: Address;
-  outputTokenAmount: string;
-  timestamp: string; // Seconds
-  block: string; // The block number
-  type: 'mint' | 'redeem' | 'exchange';
-};
+const QUERY_BASIC = gql`
+  query GetTransactions($address: Bytes!, $poolVersion: BigInt!) {
+    transactions(
+      first: 30
+      orderBy: block
+      orderDirection: desc
+      where: { userAddress: $address, poolVersion: $poolVersion }
+    ) {
+      id
+      type
+      timestamp
+      block
+      inputTokenAmount
+      inputTokenAddress
+      outputTokenAmount
+      outputTokenAddress
+    }
+  }
+`;
 
-type TheGraphTransactionsSubgraphResponse = {
-  data?: {
-    transactions: ResponseTransaction[];
-  };
-  error?: string;
-};
+const QUERY_GET_NEW = gql`
+  query GetNewTransactions(
+    $address: Bytes!
+    $poolVersion: BigInt!
+    $blockNumberGreaterThenOrEqualTo: BigInt!
+    $idNotIn: [ID!]!
+  ) {
+    transactions(
+      first: 1000
+      orderBy: block
+      orderDirection: asc
+      where: {
+        userAddress: $address
+        poolVersion: $poolVersion
+        block_gte: $blockNumberGreaterThenOrEqualTo
+        id_not_in: $idNotIn
+      }
+    ) {
+      id
+      type
+      timestamp
+      block
+      inputTokenAmount
+      inputTokenAddress
+      outputTokenAmount
+      outputTokenAddress
+    }
+  }
+`;
+
+const QUERY_GET_OLD = gql`
+  query GetOldTransactions(
+    $address: Bytes!
+    $poolVersion: BigInt!
+    $blockNumberLessThanOrEqualTo: BigInt!
+    $idNotIn: [ID!]!
+  ) {
+    transactions(
+      first: 30
+      orderBy: block
+      orderDirection: desc
+      where: {
+        userAddress: $address
+        poolVersion: $poolVersion
+        block_lte: $blockNumberLessThanOrEqualTo
+        id_not_in: $idNotIn
+      }
+    ) {
+      id
+      type
+      timestamp
+      block
+      inputTokenAmount
+      inputTokenAddress
+      outputTokenAmount
+      outputTokenAddress
+    }
+  }
+`;
+
+const SUBSCRIPTION = gql`
+  subscription OnTransactionIndexed($address: ID!, $poolVersion: BigInt!) {
+    users(where: { id: $address }) {
+      lastTransactions(
+        first: 1
+        orderBy: block
+        orderDirection: desc
+        where: { poolVersion: $poolVersion }
+      ) {
+        id
+        type
+        timestamp
+        block
+        inputTokenAmount
+        inputTokenAddress
+        outputTokenAmount
+        outputTokenAddress
+      }
+    }
+  }
+`;
+
+function getLink(url: string) {
+  const httpLink = new HttpLink({
+    uri: `http${url}`,
+  });
+
+  const wsLink = new WebSocketLink({
+    uri: `ws${url}`,
+    options: {
+      reconnect: true,
+    },
+  });
+
+  // The split function takes three parameters:
+  //
+  // * A function that's called for each operation to execute
+  // * The Link to use for an operation if the function returns a "truthy" value
+  // * The Link to use for an operation if the function returns a "falsy" value
+  return split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    wsLink,
+    httpLink,
+  );
+}
 
 const poolVersion = process.env.NEXT_PUBLIC_POOL_VERSION as PoolVersion;
 
@@ -69,10 +213,37 @@ export function useTransactionsSubgraph() {
   const realmAgent = useBehaviorSubject(realmAgent$);
   const address = useReduxSelector(state => state.auth?.address);
   const dispatch = useDispatch();
-  const tokensAddressAndRealmAgent = useMemo(
+  const apolloClientAndNetworkId = useMemoOne(
     () =>
-      realmAgent && realmAgent.realm.netId === networkId && address
+      checkIsSupportedNetwork(networkId)
         ? {
+            networkId: networkId as SupportedNetworkId,
+            apolloClient: new ApolloClient({
+              link: getLink(
+                transactionsSubgraphUrls[networkIdToName[networkId]],
+              ),
+              cache: new InMemoryCache(),
+              defaultOptions: {
+                query: {
+                  fetchPolicy: 'no-cache',
+                },
+                watchQuery: {
+                  fetchPolicy: 'no-cache',
+                },
+              },
+            }),
+          }
+        : null,
+    [networkId],
+  );
+  const deps = useMemoOne(
+    () =>
+      apolloClientAndNetworkId &&
+      realmAgent &&
+      realmAgent.realm.netId === apolloClientAndNetworkId.networkId &&
+      address
+        ? {
+            ...apolloClientAndNetworkId,
             tokens: [
               ...(Object.values(
                 realmAgent.realm.pools[poolVersion]!,
@@ -85,19 +256,16 @@ export function useTransactionsSubgraph() {
             realmAgent,
           }
         : null,
-    [realmAgent, networkId, address],
+    [realmAgent, apolloClientAndNetworkId, address],
   );
 
   useEffect(() => {
-    if (!tokensAddressAndRealmAgent || !checkIsSupportedNetwork(networkId))
-      return;
+    if (!deps) return;
 
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { address, tokens, realmAgent } = tokensAddressAndRealmAgent;
+    const { address, tokens, realmAgent, networkId, apolloClient } = deps;
 
     let canceled = false;
-
-    const url = transactionsSubgraphUrls[networkIdToName[networkId]];
 
     run(async () => {
       const db = await dbPromise;
@@ -113,51 +281,13 @@ export function useTransactionsSubgraph() {
       if (storedTransactions.length) {
         dispatch(addTransactions(storedTransactions));
 
-        const data = await fetchTransactions(url, address, {
-          blockNumber_gt: findLargestBlockNumber(storedTransactions),
-        });
-
-        function checkPendingTransactions(transactions: ResponseTransaction[]) {
-          // Not yet indexed or failed tranasactions
-          storedTransactions
-            .filter(tx => tx.block === 0)
-            .forEach(tx => {
-              const hash = tx.hash;
-              const found = transactions.find(({ id }) => id === hash);
-              if (found) return;
-
-              const { web3 } = realmAgent.realm;
-
-              web3.eth
-                .getTransactionReceipt(hash)
-                .then(data => {
-                  if (!data) return null;
-                  return Promise.all([
-                    web3.eth.getBlock(data.blockNumber),
-                    data.status,
-                  ]);
-                })
-                .then(value => {
-                  if (!value) return;
-
-                  const transaction: SynthereumTransaction = {
-                    ...tx,
-                    block: value[0].number,
-                    timestamp: (value[0].timestamp as number) * 1000,
-                    status: (value[1]
-                      ? 'success'
-                      : 'failure') as TransactionStatus,
-                  };
-                  dispatch(updateTranasactionStatus(transaction));
-                  db.put('transactions', transaction);
-                });
-            });
-        }
+        const transactions = await fetchNewTransactions(
+          apolloClient,
+          address,
+          storedTransactions,
+        );
 
         if (canceled) return;
-        if (!data.data) return checkPendingTransactions([]);
-
-        const { transactions } = data.data;
 
         if (transactions.length) {
           await addTransactionsToIndexedDBAndRedux(
@@ -170,14 +300,48 @@ export function useTransactionsSubgraph() {
           );
         }
 
-        checkPendingTransactions(transactions);
+        // Not yet indexed or failed tranasactions
+        storedTransactions
+          .filter(tx => tx.block === 0)
+          .forEach(tx => {
+            const { hash } = tx;
+            const found = transactions.find(({ id }) => id === hash);
+            if (found) return;
+
+            const { web3 } = realmAgent.realm;
+
+            web3.eth
+              .getTransactionReceipt(hash)
+              .then(data => {
+                if (!data) return null;
+                return Promise.all([
+                  web3.eth.getBlock(data.blockNumber),
+                  data.status,
+                ]);
+              })
+              .then(value => {
+                if (!value) return;
+
+                const transaction: SynthereumTransaction = {
+                  ...tx,
+                  block: value[0].number,
+                  timestamp: (value[0].timestamp as number) * 1000,
+                  status: (value[1]
+                    ? 'success'
+                    : 'failure') as TransactionStatus,
+                };
+                dispatch(updateTranasactionStatus(transaction));
+                db.put('transactions', transaction);
+              });
+          });
 
         return;
       }
 
-      const data = await fetchTransactions(url, address);
+      const { data, error } = await fetchTransactions(apolloClient, address);
 
-      if (canceled || !data.data) return;
+      if (error) throw error;
+      if (canceled) return;
 
       await addTransactionsToIndexedDBAndRedux(
         dispatch,
@@ -185,94 +349,188 @@ export function useTransactionsSubgraph() {
         tokens,
         networkId,
         address,
-        data.data.transactions,
+        data.transactions,
       );
     });
 
+    const subscription = apolloClient
+      .subscribe<OnTransactionIndexed, OnTransactionIndexedVariables>({
+        query: SUBSCRIPTION,
+        variables: {
+          address,
+          poolVersion: poolVersion[1],
+        },
+      })
+      .subscribe(({ errors, data }) => {
+        if (errors) return errors.forEach(error => console.error(error));
+
+        if (data && data.users.length) {
+          dbPromise.then(db => {
+            addTransactionsToIndexedDBAndRedux(
+              dispatch,
+              db,
+              tokens,
+              networkId,
+              address,
+              data.users[0].lastTransactions,
+            );
+          });
+        }
+      });
+
     return () => {
       canceled = true;
+      subscription.unsubscribe();
     };
-  }, [tokensAddressAndRealmAgent, networkId]);
+  }, [deps, dispatch]);
 
   return useMemo(
     () => ({
       fetchMoreTransactions() {
-        if (!tokensAddressAndRealmAgent) return;
+        if (!deps)
+          throw new Error('Calling fetch more before dependencies have loaded');
 
-        const { address, tokens } = tokensAddressAndRealmAgent;
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const { address, tokens, apolloClient, networkId } = deps;
 
-        dispatch(fetchAndStoreMoreTransactions({ networkId, address, tokens }));
+        dispatch(
+          fetchAndStoreMoreTransactions({
+            apolloClient,
+            networkId,
+            address,
+            tokens,
+          }),
+        );
       },
     }),
-    [dispatch, networkId, tokensAddressAndRealmAgent],
+    [dispatch, deps],
   );
 }
 
 type FecthOptionsNewerTransactions = {
-  blockNumber_gt: number;
+  blockNumberGreaterThenOrEqualTo: number;
+  idNotIn: TransactionHash[];
 };
 type FetchOptionsOlderTransactions = {
-  blockNumber_lte: number;
-  id_not_in: TransactionHash[];
+  blockNumberLessThanOrEqualTo: number;
+  idNotIn: TransactionHash[];
 };
 export function fetchTransactions(
-  url: string,
+  client: ApolloClient<NormalizedCacheObject>,
   address: Address,
   options?: FecthOptionsNewerTransactions | FetchOptionsOlderTransactions,
 ) {
-  const { blockNumber_lte, id_not_in, blockNumber_gt } = (options ||
-    {}) as Partial<
+  const {
+    blockNumberLessThanOrEqualTo,
+    blockNumberGreaterThenOrEqualTo,
+    idNotIn,
+  } = (options || {}) as Partial<
     FetchOptionsOlderTransactions & FecthOptionsNewerTransactions
   >;
 
-  if (blockNumber_gt && blockNumber_lte)
+  if (blockNumberGreaterThenOrEqualTo && blockNumberLessThanOrEqualTo)
     throw new Error(
-      'Can not have both blockNumber_gt and blockNumber_lte defined',
+      'Can not have both blockNumberGreaterThenOrEqualTo and blockNumberLessThanOrEqualTo defined',
     );
 
-  if (blockNumber_lte && (!Array.isArray(id_not_in) || !id_not_in.length))
+  if (
+    blockNumberLessThanOrEqualTo &&
+    (!Array.isArray(idNotIn) || !idNotIn.length)
+  )
     throw new Error(
-      'When blockNumber_lte you need to have at least one transaction has in id_not_in',
+      'When blockNumberLessThanOrEqualTo you need to have at least one transaction hash in idNotIn',
     );
 
-  const query = `
-{
-  transactions(first: 30, orderBy: block, orderDirection: desc, where: {userAddress: "${address}", poolVersion: "${
-    poolVersion[1]
-  }"${blockNumber_gt ? `, block_gt: "${blockNumber_gt}"` : ''}${
-    blockNumber_lte
-      ? `, block_lte: "${blockNumber_lte}", id_not_in: [${id_not_in!
-          .map(hash => `"${hash}"`)
-          .join(',')}]`
-      : ''
-  }}) {
-    id
-    type
-    timestamp
-    block
-    inputTokenAmount
-    inputTokenAddress
-    outputTokenAmount
-    outputTokenAddress
+  if (
+    blockNumberGreaterThenOrEqualTo &&
+    (!Array.isArray(idNotIn) || !idNotIn.length)
+  )
+    throw new Error(
+      'When blockNumberGreaterThenOrEqualTo you need to have at least one transaction hash in idNotIn',
+    );
+
+  if (blockNumberGreaterThenOrEqualTo) {
+    return client.query<GetNewTransactions, GetNewTransactionsVariables>({
+      query: QUERY_GET_NEW,
+      variables: {
+        address,
+        poolVersion: poolVersion[1],
+        blockNumberGreaterThenOrEqualTo: blockNumberGreaterThenOrEqualTo.toString(),
+        idNotIn: idNotIn!,
+      },
+    });
   }
-}
-`;
 
-  return fetch(url, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
+  if (blockNumberLessThanOrEqualTo) {
+    return client.query<GetOldTransactions, GetOldTransactionsVariables>({
+      query: QUERY_GET_OLD,
+      variables: {
+        address,
+        poolVersion: poolVersion[1],
+        blockNumberLessThanOrEqualTo: blockNumberLessThanOrEqualTo.toString(),
+        idNotIn: idNotIn!,
+      },
+    });
+  }
+
+  return client.query<GetTransactions, GetTransactionsVariables>({
+    query: QUERY_BASIC,
+    variables: {
+      address,
+      poolVersion: poolVersion[1],
     },
-    body: JSON.stringify({ query }),
-  }).then(response => response.json() as TheGraphTransactionsSubgraphResponse);
+  });
 }
 
+async function fetchNewTransactions(
+  apolloClient: ApolloClient<NormalizedCacheObject>,
+  address: Address,
+  storedTransactions: SynthereumTransaction[],
+  newTransactions?: GetNewTransactionsTransactions[],
+): Promise<GetNewTransactionsTransactions[]> {
+  const combinedTransactions: {
+    hash: TransactionHash;
+    block: number;
+  }[] = newTransactions
+    ? (storedTransactions as { hash: TransactionHash; block: number }[]).concat(
+        newTransactions.map(tx => ({
+          hash: tx.id as TransactionHash,
+          block: parseInt(tx.block, 10),
+        })),
+      )
+    : storedTransactions;
+
+  const largestBlockNumber = findLargestBlockNumber(combinedTransactions);
+  const { data, error } = await fetchTransactions(apolloClient, address, {
+    blockNumberGreaterThenOrEqualTo: largestBlockNumber,
+    idNotIn: combinedTransactions
+      .filter(tx => tx.block === largestBlockNumber)
+      .map(tx => tx.hash),
+  });
+
+  if (error) throw error;
+
+  const allNewTransactions = newTransactions
+    ? data.transactions.concat(newTransactions)
+    : data.transactions;
+
+  if (data.transactions.length === 1000) {
+    return fetchNewTransactions(
+      apolloClient,
+      address,
+      storedTransactions,
+      allNewTransactions,
+    );
+  }
+
+  return allNewTransactions;
+}
 export function mapTheGraphResponseToStateCompatibleShape(
   tokens: TokenInfo<SupportedNetworkName>[],
   networkId: SupportedNetworkId,
   from: Address,
-  transactions: ResponseTransaction[],
-) {
+  transactions: GetTransactionsTransactions[],
+): SynthereumTransaction[] {
   return transactions.map(
     ({
       id,
@@ -284,10 +542,18 @@ export function mapTheGraphResponseToStateCompatibleShape(
       timestamp,
       block,
     }) => ({
-      hash: id,
+      hash: id as TransactionHash,
       type,
-      input: getTransactionIO(tokens, inputTokenAddress, inputTokenAmount),
-      output: getTransactionIO(tokens, outputTokenAddress, outputTokenAmount),
+      input: getTransactionIO(
+        tokens,
+        inputTokenAddress as Address,
+        inputTokenAmount,
+      ),
+      output: getTransactionIO(
+        tokens,
+        outputTokenAddress as Address,
+        outputTokenAmount,
+      ),
       timestamp: parseInt(`${timestamp}000`, 10),
       networkId,
       block: parseInt(block, 10),
@@ -303,7 +569,7 @@ function addTransactionsToIndexedDBAndRedux(
   tokens: TokenInfo<SupportedNetworkName>[],
   networkId: SupportedNetworkId,
   from: Address,
-  transactions: ResponseTransaction[],
+  transactions: GetTransactionsTransactions[],
 ) {
   const formattedTransactions = mapTheGraphResponseToStateCompatibleShape(
     tokens,
@@ -354,7 +620,7 @@ function getTransactionIO(
   };
 }
 
-export function findLargestBlockNumber(transactions: SynthereumTransaction[]) {
+export function findLargestBlockNumber(transactions: { block: number }[]) {
   return transactions.reduce(
     (largestBlock, transaction) =>
       transaction.block > largestBlock ? transaction.block : largestBlock,
@@ -363,12 +629,15 @@ export function findLargestBlockNumber(transactions: SynthereumTransaction[]) {
 }
 
 export function findSmallestBlockNumber(transactions: SynthereumTransaction[]) {
-  return transactions.reduce((smallestBlock, transaction) => {
-    if (transaction.block === 0) return smallestBlock;
-    return transaction.block < smallestBlock
-      ? transaction.block
-      : smallestBlock;
-  }, Infinity);
+  return transactions.reduce(
+    (smallestBlock, transaction) =>
+      transaction.block === 0
+        ? smallestBlock
+        : transaction.block < smallestBlock
+        ? transaction.block
+        : smallestBlock,
+    Infinity,
+  );
 }
 
 function run<T>(callback: () => T) {
