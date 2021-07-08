@@ -90,7 +90,10 @@ export interface State {
   wallet: {
     [key in ExchangeToken]?: WalletInfo;
   };
-  transactions: { [txHash: string]: SynthereumTransaction };
+  transactions: {
+    hashMap: { [txHash: string]: SynthereumTransaction };
+    hasOlderTransactions: boolean;
+  };
   prices: {
     persistedPairs: SubscriptionPair[];
     feed: PricePointsMap;
@@ -138,7 +141,10 @@ export const initialAppState: State = {
     chartDays: cache.get<Days | null>('jarvis/state/exchange.chartDays') || 7,
   },
   wallet: {},
-  transactions: {},
+  transactions: {
+    hashMap: {},
+    hasOlderTransactions: true,
+  },
   prices: {
     persistedPairs: [],
     feed: {},

@@ -29059,6 +29059,13 @@ react-icons@^3.11.0:
   dependencies:
     camelcase "^5.0.0"
 
+react-infinite-scroll-component@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/react-infinite-scroll-component/-/react-infinite-scroll-component-6.0.0.tgz#b5834b81dad51c764e5d217e1007b14bed0ed5e7"
+  integrity sha512-GK/amOgk4J/MLw8Kpp8K6MdDdX5QLJheVSSnhI6c2b6gvMwziCE2m1GDVrMyAyP7gDjgA0YH7pxdIoQya842LQ==
+  dependencies:
+    throttle-debounce "^2.1.0"
+
 react-input-autosize@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-3.0.0.tgz#6b5898c790d4478d69420b55441fcc31d5c50a85"

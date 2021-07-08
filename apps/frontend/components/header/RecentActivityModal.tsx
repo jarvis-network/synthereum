@@ -1,9 +1,12 @@
 import React, { FC, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import {
   ModalContent,
   Icon,
   AssetsRowExpand,
+  AssetsRowSkeleton,
+  Skeleton,
   AssetProps,
   styled,
 } from '@jarvis-network/ui';
@@ -57,10 +60,10 @@ function groupTransactionsByDay(items: SynthereumTransaction[]) {
     .sort((a, b) => getTimestamp(b[0]) - getTimestamp(a[0]));
 }
 
-// const CustomInfiniteScroll = styled(InfiniteScroll)`
-//   margin-left: -24px;
-//   margin-right: -24px;
-// `;
+const CustomInfiniteScroll = styled(InfiniteScroll)`
+  margin-left: -24px;
+  margin-right: -24px;
+`;
 
 const Block = styled.div`
   margin-top: 20px;
@@ -68,7 +71,7 @@ const Block = styled.div`
 
 const Heading = styled.h4`
   padding: 0;
-  margin: 0;
+  margin: 0 24px;
   font-size: ${props => props.theme.font.sizes.l};
   margin-bottom: 10px;
 `;
@@ -83,8 +86,6 @@ const Link = styled.a`
 `;
 
 const Wrapper = styled.div`
-  margin-left: -24px;
-  margin-right: -24px;
   border-bottom: 1px solid ${props => props.theme.background.medium};
 `;
 
@@ -144,27 +145,31 @@ export const RecentActivityModal: FC = () => {
     state => state.app.isRecentActivityModalVisible,
   );
   const state = useReduxSelector(({ transactions }) => transactions);
+  const transactions = useMemo(
+    () => Object.values(state.hashMap) as SynthereumTransaction[],
+    [state],
+  );
 
   const handleClose = () => {
     dispatch(setRecentActivityModalVisible(false));
   };
 
   const groupedTransactions = useMemo(
-    () =>
-      groupTransactionsByDay(Object.values(state) as SynthereumTransaction[]),
-    [state],
+    () => groupTransactionsByDay(transactions),
+    [transactions],
   );
 
   const { fetchMoreTransactions } = useTransactionsSubgraph();
 
+  const id = 'recent-activity-modal-content';
   return (
     <ModalContent
       isOpened={isVisible}
       onClose={handleClose}
       title="Activity"
-      // id={id}
+      id={id}
     >
-      {/* <CustomInfiniteScroll
+      <CustomInfiniteScroll
         dataLength={transactions.length}
         next={fetchMoreTransactions}
         hasMore={state.hasOlderTransactions}
@@ -177,18 +182,17 @@ export const RecentActivityModal: FC = () => {
           </Block>
         }
         scrollableTarget={id}
-      > */}
-      {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
-      {groupedTransactions.map(transactions => (
-        <Block key={getFullDaysInTimestamp(transactions[0])}>
-          <Heading>{formatDayLabel(getTimestamp(transactions[0]))}</Heading>
-          {transactions.map(transaction => (
-            <ActivityRow key={transaction.hash} {...transaction} />
-          ))}
-        </Block>
-      ))}
-      <button onClick={fetchMoreTransactions}>Fetch More</button>
-      {/* </CustomInfiniteScroll> */}
+      >
+        {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
+        {groupedTransactions.map(transactions => (
+          <Block key={getFullDaysInTimestamp(transactions[0])}>
+            <Heading>{formatDayLabel(getTimestamp(transactions[0]))}</Heading>
+            {transactions.map(transaction => (
+              <ActivityRow key={transaction.hash} {...transaction} />
+            ))}
+          </Block>
+        ))}
+      </CustomInfiniteScroll>
     </ModalContent>
   );
 };

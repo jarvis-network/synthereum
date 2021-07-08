@@ -24,7 +24,7 @@ interface Action<T> {
 }
 
 export const fetchAndStoreMoreTransactions = createAsyncThunk<
-  SynthereumTransaction[],
+  SynthereumTransaction[] | null,
   {
     networkId: number;
     address: Address;
@@ -37,7 +37,7 @@ export const fetchAndStoreMoreTransactions = createAsyncThunk<
     if (!checkIsSupportedNetwork(networkId)) return [];
     const url = transactionsSubgraphUrls[networkIdToName[networkId]];
     const state = getState();
-    const stateTransactionsArray = Object.values(state.transactions);
+    const stateTransactionsArray = Object.values(state.transactions.hashMap);
     const smallestBlockNumber = findSmallestBlockNumber(stateTransactionsArray);
     const response = await fetchTransactions(url, address, {
       blockNumber_lte: smallestBlockNumber,
@@ -46,6 +46,8 @@ export const fetchAndStoreMoreTransactions = createAsyncThunk<
         .map(tx => tx.hash),
     });
     if (!response.data) return [];
+
+    if (!response.data.transactions.length) return null;
 
     const formattedTransactions = mapTheGraphResponseToStateCompatibleShape(
       tokens,
@@ -71,10 +73,15 @@ function resetState() {
 function sliceFactory() {
   function addTransactions(
     state: typeof initialState,
-    { payload: transactions }: Action<SynthereumTransaction[]>,
+    { payload: transactions }: Action<SynthereumTransaction[] | null>,
   ) {
+    if (transactions === null) {
+      state.hasOlderTransactions = false;
+      return;
+    }
+
     for (const transcation of transactions) {
-      state[transcation.hash] = transcation;
+      state.hashMap[transcation.hash] = transcation;
     }
   }
 
@@ -86,7 +93,7 @@ function sliceFactory() {
         state,
         { payload: tx }: Action<SynthereumTransaction>,
       ) => {
-        state[tx.hash] = tx;
+        state.hashMap[tx.hash] = tx;
       },
       addTransactions,
     },

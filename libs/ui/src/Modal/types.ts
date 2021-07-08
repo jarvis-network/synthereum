@@ -22,4 +22,5 @@ export interface ModalContentProps {
   title: string;
   children: ReactNode;
   className?: string;
+  id?: string;
 }
