@@ -6,8 +6,6 @@ import { rightRenderer } from '@/components/header/rightRenderer';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 
-import { leftRenderer } from '@/components/header/leftRenderer';
-
 import { AccountOverviewModal } from './AccountOverviewModal';
 import { RecentActivityModal } from './RecentActivityModal';
 
@@ -69,6 +67,7 @@ const Content = styled.div`
   flex: 1;
 `;
 
+const nothingOnTheLeftSide = { render: () => <></> };
 export const StickyHeader: React.FC = ({ children }) => {
   const { isAuthModalVisible } = useReduxSelector(state => state.app);
 
@@ -76,7 +75,7 @@ export const StickyHeader: React.FC = ({ children }) => {
     <Container>
       <HeaderContainer isAuthModalVisible={isAuthModalVisible}>
         <CustomHeader
-          leftSide={leftRenderer}
+          leftSide={nothingOnTheLeftSide}
           rightSide={rightRenderer}
           link={NextLinkAdapter}
           logoUrl="/images/logo.svg"

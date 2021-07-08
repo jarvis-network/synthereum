@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Tooltip } from '@jarvis-network/ui';
+import { styled, Tooltip, useWindowSize } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
@@ -65,11 +65,12 @@ export const FEES_BLOCK_HEIGHT_PX = 100;
 
 export const Fees: React.FC = () => {
   const { fee } = useExchangeValues();
+  const { innerWidth } = useWindowSize();
 
   const feeItem = fee?.div(new FPN(2)) || null;
 
   return (
-    <Container>
+    <Container style={{ marginTop: innerWidth <= 1080 ? 0 : 60 }}>
       <Line>
         <Key>
           Liquidity Provider fee
