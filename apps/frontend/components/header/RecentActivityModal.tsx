@@ -13,8 +13,8 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { Transaction, TransactionIO } from '@/data/transactions';
 import { formatTransactionStatus, formatTransactionType } from '@/utils/format';
 import { getEtherscanTransactionURL } from '@/utils/url';
-import BN from 'bn.js';
 import { formatDayLabel, formatTimestamp } from '@jarvis-network/app-toolkit';
+import { useTransactionsSubgraph } from '@/utils/useTransactionsSubgraph';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -29,9 +29,7 @@ const mapTransactionToAssetRow = (
 ): AssetProps => ({
   flag: io.asset.icon ?? undefined,
   name: io.asset.symbol,
-  value: isFrom
-    ? io.amount.mul(new BN('-1')).toString(10)
-    : io.amount.toString(10),
+  value: isFrom ? io.amount.mul(new BN('-1')).format(5) : io.amount.format(5),
 });
 
 function groupTransactionsByDay(items: Transaction[]) {
@@ -84,9 +82,12 @@ const Wrapper = styled.div`
   border-bottom: 1px solid ${props => props.theme.background.medium};
 `;
 
-const EtherscanLink: FC<Pick<Transaction, 'txHash'>> = ({ txHash }) => (
+const EtherscanLink: FC<Pick<Transaction, 'hash' | 'networkId'>> = ({
+  hash,
+  networkId,
+}) => (
   <Link
-    href={getEtherscanTransactionURL(txHash)}
+    href={getEtherscanTransactionURL(hash, networkId)}
     target="_blank"
     rel="noopener noreferrer"
   >
@@ -99,8 +100,9 @@ const ActivityRow: FC<Transaction> = ({
   output,
   type,
   timestamp,
-  txHash,
-  status,
+  hash,
+  networkId,
+  // status,
 }) => (
   <Wrapper>
     <AssetsRowExpand
@@ -117,11 +119,12 @@ const ActivityRow: FC<Transaction> = ({
         },
         {
           label: 'See on Etherscan',
-          value: <EtherscanLink txHash={txHash} />,
+          value: <EtherscanLink hash={hash} networkId={networkId} />,
         },
         {
           label: 'Status',
-          value: formatTransactionStatus(status),
+          // value: formatTransactionStatus(status),
+          value: 'TODO',
         },
       ]}
     />
@@ -134,16 +137,18 @@ export const RecentActivityModal: FC = () => {
   const isVisible = useReduxSelector(
     state => state.app.isRecentActivityModalVisible,
   );
-  const rowTransactions = useReduxSelector(state => state.transactions.list);
+  const state = useReduxSelector(({ transactions }) => transactions);
 
   const handleClose = () => {
     dispatch(setRecentActivityModalVisible(false));
   };
 
   const groupedTransactions = useMemo(
-    () => groupTransactionsByDay(rowTransactions),
-    [rowTransactions],
+    () => groupTransactionsByDay(Object.values(state)),
+    [state],
   );
+
+  useTransactionsSubgraph();
 
   return (
     <ModalContent
@@ -171,8 +176,7 @@ export const RecentActivityModal: FC = () => {
         <Block key={getFullDaysInTimestamp(transactions[0])}>
           <Heading>{formatDayLabel(getTimestamp(transactions[0]))}</Heading>
           {transactions.map(transaction => (
-            // <ActivityRow key={transaction.hash} {...transaction} />
-            <ActivityRow {...transaction} />
+            <ActivityRow key={transaction.hash} {...transaction} />
           ))}
         </Block>
       ))}

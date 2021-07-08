@@ -38,6 +38,10 @@ export const fetchWalletBalances = createAsyncThunk<
 
 const initialState = initialAppState.wallet;
 
+function resetState() {
+  return initialState;
+}
+
 const walletSlice = createSlice({
   name: 'wallet',
   initialState,
@@ -51,15 +55,9 @@ const walletSlice = createSlice({
         state[asset] = value;
       });
     },
-    [logoutAction.type]() {
-      return initialState;
-    },
-    [addressSwitch.type]() {
-      return initialState;
-    },
-    [networkSwitch.type]() {
-      return initialState;
-    },
+    [logoutAction.type]: resetState,
+    [addressSwitch.type]: resetState,
+    [networkSwitch.type]: resetState,
   },
 });
 

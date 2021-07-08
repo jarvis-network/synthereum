@@ -20,6 +20,7 @@ import { setTheme } from '@/state/slices/theme';
 import {
   setAccountOverviewModalVisible,
   setAuthModalVisible,
+  setRecentActivityModalVisible,
 } from '@/state/slices/app';
 import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
@@ -86,6 +87,10 @@ const render = (): JSX.Element => {
     dispatch(setAccountOverviewModalVisible(true));
   };
 
+  const handleRecentActivityOpen = () => {
+    dispatch(setRecentActivityModalVisible(true));
+  };
+
   useEffect(() => {
     if (isSigningOut) {
       setTimeout(() => {
@@ -104,6 +109,11 @@ const render = (): JSX.Element => {
       name: 'Account',
       key: 'Account',
       onClick: handleAccountOverviewOpen,
+    },
+    {
+      name: 'Activity',
+      key: 'Activity',
+      onClick: handleRecentActivityOpen,
     },
   ];
 

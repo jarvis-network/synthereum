@@ -52,13 +52,15 @@ const getPrices = async (
   const timestampGte = Math.round((Date.now() - 86400000 * days) / 1000);
   const query = getQuery(pair, timestampGte);
 
-  const rawData = (await fetch(url, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query }),
-  }).then(r => r.json())) as GraphResponse;
+  const rawData = (await (
+    await fetch(url, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
+    })
+  ).json()) as GraphResponse;
 
   const pricesList = rawData.data.prices.map(p => {
     let val = FPN.fromWei(`${p.price}0000000000`);

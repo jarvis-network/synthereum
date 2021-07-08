@@ -66,3 +66,7 @@ const syntheticAssets: Asset[] = Object.values(
 }));
 
 export const assets: Asset[] = [PRIMARY_STABLE_COIN, ...syntheticAssets];
+export const assetsObject: { [symbol: string]: Asset } = {};
+for (const asset of assets) {
+  assetsObject[asset.symbol] = asset;
+}

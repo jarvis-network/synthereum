@@ -86,9 +86,7 @@ export interface State {
   wallet: {
     [key in ExchangeToken]?: WalletInfo;
   };
-  transactions: {
-    list: Transaction[];
-  };
+  transactions: { [txHash: string]: Transaction };
   prices: {
     persistedPairs: SubscriptionPair[];
     feed: PricePointsMap;
@@ -136,9 +134,7 @@ export const initialAppState: State = {
     chartDays: cache.get<Days | null>('jarvis/state/exchange.chartDays') || 7,
   },
   wallet: {},
-  transactions: {
-    list: [],
-  },
+  transactions: {},
   prices: {
     persistedPairs: [],
     feed: {},
