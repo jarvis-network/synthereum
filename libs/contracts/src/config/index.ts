@@ -22,6 +22,13 @@ export type {
 } from './supported/synthereum-pairs';
 
 export type {
+  ExchangeSelfMintingToken,
+  PerSelfMintingPair,
+  SupportedSelfMintingPair,
+  SupportedSelfMintingSymbol,
+} from './supported/self-minting-pairs';
+
+export type {
   Fees,
   SynthereumConfig,
   SynthereumContractDependencies,

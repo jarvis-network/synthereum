@@ -13,6 +13,7 @@ export type {
   PoolVersions,
   Fees,
   ExchangeSynthereumToken,
+  ExchangeSelfMintingToken,
   PerAsset,
   PerSynthereumPair,
   SynthereumConfig,

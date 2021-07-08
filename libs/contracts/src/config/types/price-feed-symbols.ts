@@ -5,14 +5,25 @@ import {
 
 // primary definitions:
 
-export const allCollateralSymbols = ['USDC'] as const;
-export const synthereumCollateralSymbols = typeCheck<'USDC'>()(
+export const allCollateralSymbols = ['USDC', 'UMA'] as const;
+export const synthereumCollateralSymbols = typeCheck<CollateralSymbol[]>()([
   allCollateralSymbols[0],
-);
+]);
+export const selfMintingCollateralSymbols = typeCheck<CollateralSymbol[]>()([
+  'UMA',
+  'USDC',
+]);
+
 export const assetSymbols = [
   'EUR',
   'GBP',
   'CHF',
+  'ZAR',
+  'CAD',
+  'KRW',
+  'PHP',
+  'JPY',
+  'NGN',
   'XAU',
   'SPX',
   'XTI',
@@ -26,10 +37,12 @@ export type PairLike<
 > = `${AssetType}${Separator}${CollateralType}`;
 
 export type CollateralSymbol = typeof allCollateralSymbols[number];
-export type SynthereumCollateralSymbol = typeof synthereumCollateralSymbols;
+export type SynthereumCollateralSymbol = typeof synthereumCollateralSymbols[number];
+export type SelfMintingCollateralSymbol = typeof selfMintingCollateralSymbols[number];
 export type AssetSymbol = typeof assetSymbols[number];
 export type SyntheticSymbol = `j${AssetSymbol}`;
 export type AnySynthereumPair = `${SyntheticSymbol}/${SynthereumCollateralSymbol}`;
+export type AnySelfMintingPair = `${SyntheticSymbol}/${SelfMintingCollateralSymbol}`;
 
 export type SynthereumPair = SyntheticToForexPair<
   AnySynthereumPair,
@@ -38,9 +51,15 @@ export type SynthereumPair = SyntheticToForexPair<
   'j'
 >;
 
-export type PairToSynth<
-  Pair extends string
-> = Pair extends `${infer Asset}${'USD'}` ? `j${Asset}` : never;
+export type SelfMintingPair =
+  | SyntheticToForexPair<AnySelfMintingPair, 'UMA', 'UMA', 'j'>
+  | SyntheticToForexPair<AnySelfMintingPair, 'USDC', 'USD', 'j'>;
+
+export type PairToSynth<Pair extends string> = Pair extends `${infer Asset}${
+  | 'USD'
+  | SelfMintingCollateralSymbol}`
+  ? `j${Asset}`
+  : never;
 
 export type SyntheticToForexPair<
   Pair extends string,
@@ -62,7 +81,7 @@ export type PriceFeed = PerAsset<string>;
 
 // derived definitions:
 
-export const primaryCollateralSymbol = synthereumCollateralSymbols;
+export const primaryCollateralSymbol = synthereumCollateralSymbols[0];
 
 export const allSyntheticSymbols = typeCheck<SyntheticSymbol[]>()([
   'jEUR',
@@ -72,6 +91,12 @@ export const allSyntheticSymbols = typeCheck<SyntheticSymbol[]>()([
   'jSPX',
   'jXTI',
   'jXAG',
+  'jZAR',
+  'jCAD',
+  'jKRW',
+  'jPHP',
+  'jJPY',
+  'jNGN',
 ] as const);
 
 export const priceFeed = typeCheck<PriceFeed>()({
@@ -82,6 +107,12 @@ export const priceFeed = typeCheck<PriceFeed>()({
   jSPX: 'SPXUSD',
   jXTI: 'XTIUSD',
   jXAG: 'XAGUSD',
+  jZAR: 'ZARUSD',
+  jCAD: 'CADUSD',
+  jKRW: 'KRWUSD',
+  jPHP: 'PHPUSD',
+  jJPY: 'JPYUSD',
+  jNGN: 'NGNUSD',
 } as const);
 
 export const reversedPriceFeedPairs: string[] = [priceFeed.jCHF];
