@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { CellInfo, RowInfo } from 'react-table';
 import {
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
+import {
   styled,
   ColumnType,
   DataGrid,
@@ -17,9 +21,9 @@ import {
   Skeleton,
 } from '@jarvis-network/ui';
 import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+  TransactionHash,
+  TransactionStatus,
+} from '@jarvis-network/core-utils/dist/eth/transaction';
 import Fuse from 'fuse.js';
 
 import { MainForm, SkeletonMainForm } from '@/components/exchange/MainForm';
@@ -34,12 +38,18 @@ import {
   setSwapLoaderVisible,
   setExchangeConfirmationVisible,
 } from '@/state/slices/app';
+import {
+  addTransaction,
+  updateTranasactionStatus,
+} from '@/state/slices/transactions';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { AssetPair } from '@/data/assets';
+import { SynthereumTransaction } from '@/data/transactions';
 
 import { createPairs } from '@/utils/createPairs';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 import { useExchangeValues } from '@/utils/useExchangeValues';
+import { dbPromise } from '@/utils/db';
 
 import { useSwap } from '@/components/exchange/useSwap';
 
@@ -284,7 +294,17 @@ export const ExchangeCard: React.FC = () => {
     const time = 8000;
 
     try {
-      const { allowancePromise, txPromise, sendTx } = swap();
+      const {
+        allowancePromise,
+        txPromise,
+        sendTx,
+        payValue,
+        paySymbol,
+        receiveValue,
+        receiveSymbol,
+        type,
+        networkId,
+      } = swap();
 
       const result = await allowancePromise;
       if (!result) {
@@ -293,14 +313,58 @@ export const ExchangeCard: React.FC = () => {
 
       const { promiEvent } = await sendTx;
 
-      promiEvent.once('transactionHash', () => {
+      promiEvent.once('transactionHash', (hash: TransactionHash) => {
+        const tx: SynthereumTransaction = {
+          block: 0,
+          from: auth!.address,
+          hash,
+          input: {
+            amount: payValue,
+            asset: paySymbol,
+          },
+          output: {
+            amount: receiveValue,
+            asset: receiveSymbol,
+          },
+          type,
+          networkId,
+          timestamp: 0,
+          status: 'pending' as TransactionStatus,
+        };
+        dispatch(addTransaction(tx));
+        dbPromise.then(db => db.put('transactions', tx));
         // transaction confirmed in the wallet app
         reset();
         notify('Your transaction has started', NotificationType.pending, time);
+
+        txPromise.catch((data: { blockNumber: number }) => {
+          const failedTx = {
+            ...tx,
+            status: 'failure' as TransactionStatus,
+            block: data.blockNumber,
+          };
+          dispatch(updateTranasactionStatus(failedTx));
+
+          Promise.all([web3!.eth.getBlock(data.blockNumber), dbPromise]).then(
+            ([block, db]) => {
+              failedTx.timestamp = (block.timestamp as number) * 1000;
+              dispatch(updateTranasactionStatus(failedTx));
+              return db.put('transactions', failedTx);
+            },
+          );
+        });
       });
 
-      await txPromise;
+      const data = await txPromise;
       notify('Your transaction is complete', NotificationType.success, time);
+
+      dispatch(
+        updateTranasactionStatus({
+          hash: data.transactionHash as TransactionHash,
+          block: data.blockNumber,
+          status: 'success',
+        }),
+      ); // Timestamp and cache will be updated from The Graph subscription
     } catch (e) {
       if (
         e?.message ===

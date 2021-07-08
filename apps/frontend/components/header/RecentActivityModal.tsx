@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
@@ -23,7 +23,8 @@ import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
-const getTimestamp = (item: SynthereumTransaction) => item.timestamp; // helper for case if we will change timestamp value type
+const getTimestamp = ({ timestamp }: SynthereumTransaction) =>
+  timestamp || Date.now();
 
 const getFullDaysInTimestamp = (transaction: SynthereumTransaction) =>
   Math.floor(getTimestamp(transaction) / DAY_IN_MS);
@@ -102,41 +103,50 @@ const EtherscanLink: FC<Pick<SynthereumTransaction, 'hash' | 'networkId'>> = ({
   </Link>
 );
 
-const ActivityRow: FC<SynthereumTransaction> = ({
-  input,
-  output,
-  type,
-  timestamp,
-  hash,
-  networkId,
-  // status,
-}) => (
-  <Wrapper>
+const ActivityRow: FC<SynthereumTransaction> = tx => {
+  const txTimestamp = tx.timestamp;
+  const [renderTimestamp, setRenderTimestamp] = useState(getTimestamp(tx));
+  useEffect(() => {
+    if (txTimestamp) return;
+
+    const now = new Date();
+    const seconds = now.getSeconds();
+    const secondsUntilMinutePasses = 60 - seconds;
+
+    const timeoutId = setTimeout(() => {
+      setRenderTimestamp(Date.now());
+    }, secondsUntilMinutePasses * 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [txTimestamp, setRenderTimestamp]);
+
+  const row = (
     <AssetsRowExpand
-      from={mapTransactionToAssetRow(input, true)}
-      to={mapTransactionToAssetRow(output)}
+      from={mapTransactionToAssetRow(tx.input, true)}
+      to={mapTransactionToAssetRow(tx.output)}
       descriptions={[
         {
           label: 'Type',
-          value: formatTransactionType(type),
+          value: formatTransactionType(tx.type),
         },
         {
           label: 'Timestamp',
-          value: formatTimestamp(timestamp),
+          value: formatTimestamp(renderTimestamp),
         },
         {
           label: 'See on Etherscan',
-          value: <EtherscanLink hash={hash} networkId={networkId} />,
+          value: <EtherscanLink hash={tx.hash} networkId={tx.networkId} />,
         },
         {
           label: 'Status',
-          // value: formatTransactionStatus(status),
-          value: 'TODO',
+          value: formatTransactionStatus(tx.status),
         },
       ]}
     />
-  </Wrapper>
-);
+  );
+
+  return <Wrapper>{row}</Wrapper>;
+};
 
 export const RecentActivityModal: FC = () => {
   const dispatch = useDispatch();

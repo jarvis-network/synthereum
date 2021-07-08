@@ -8,6 +8,7 @@ import { noop } from '../../base/noop';
 
 import type { AddressOn } from '../address';
 import type { NetworkName, ToNetworkId } from '../networks';
+import type { TransactionHash } from '../transaction';
 import { Web3On } from '../web3-instance';
 
 import { logTransactionOutput, TxLogParams } from './print-tx';
@@ -32,6 +33,13 @@ export interface FullTxOptions<Net extends NetworkName> extends TxOptions {
 
 const nonces: Record<string, number> = {};
 
+type TaggedPromiEvent<T> = PromiEvent<T> & {
+  once(
+    type: 'transactionHash',
+    handler: (transactionHash: TransactionHash) => void,
+  ): PromiEvent<T>;
+};
+
 export async function sendTx<Result, Net extends NetworkName>(
   tx: NonPayableTransactionObject<Result>,
   {
@@ -43,7 +51,7 @@ export async function sendTx<Result, Net extends NetworkName>(
     confirmations: _confirmations,
     ...rest
   }: FullTxOptions<Net>,
-): Promise<{ promiEvent: PromiEvent<TransactionReceipt> }> {
+): Promise<{ promiEvent: TaggedPromiEvent<TransactionReceipt> }> {
   const log = printInfo?.log ?? noop;
 
   log('Getting tx nonce', { userSpecifiedNonce: nonce });
@@ -76,7 +84,9 @@ export async function sendTx<Result, Net extends NetworkName>(
   log('Setting gasLimit: ', txParams.gas);
 
   log(`Sending '${printInfo?.txSummaryText}' tx:`, tx.arguments, txParams);
-  return { promiEvent: tx.send(txParams) };
+  return {
+    promiEvent: tx.send(txParams) as TaggedPromiEvent<TransactionReceipt>,
+  };
 }
 
 export async function sendTxAndLog<Result, Net extends NetworkName>(
@@ -110,9 +120,9 @@ export function once<T>(
 ): Promise<void>;
 export function once<T>(promiEvent: PromiEvent<T>, type: 'sent'): Promise<void>;
 export function once<T>(
-  promiEvent: PromiEvent<T>,
+  promiEvent: TaggedPromiEvent<T>,
   type: 'transactionHash',
-): Promise<string>;
+): Promise<TransactionHash>;
 export function once<T>(
   promiEvent: PromiEvent<T>,
   type: 'receipt',
@@ -172,7 +182,7 @@ export async function logTransactionStatus<T, Net extends NetworkName>({
   confirmations = web3.eth.transactionConfirmationBlocks,
 }: {
   web3: Web3On<Net>;
-  promiEvent: PromiEvent<T>;
+  promiEvent: TaggedPromiEvent<T>;
   log?: (message?: any, ...optionalParams: any[]) => void;
   confirmations?: number;
 }) {

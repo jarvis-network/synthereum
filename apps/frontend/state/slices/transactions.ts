@@ -17,6 +17,10 @@ import {
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import {
+  TransactionHash,
+  TransactionStatus,
+} from '@jarvis-network/core-utils/dist/eth/transaction';
 import { dbPromise } from '@/utils/db';
 
 interface Action<T> {
@@ -96,6 +100,25 @@ function sliceFactory() {
         state.hashMap[tx.hash] = tx;
       },
       addTransactions,
+      updateTranasactionStatus(
+        state,
+        {
+          payload: { hash, block, status, timestamp },
+        }: Action<{
+          hash: TransactionHash;
+          block: number;
+          status: TransactionStatus;
+          timestamp?: number;
+        }>,
+      ) {
+        const tx = state.hashMap[hash];
+        tx.status = status;
+        tx.block = block;
+        if (timestamp) {
+          tx.timestamp = timestamp;
+        }
+        state.hashMap[hash] = tx;
+      },
     },
     extraReducers: {
       [addressSwitch.type]: resetState,
@@ -108,4 +131,8 @@ function sliceFactory() {
 const transactionsSlice = sliceFactory();
 
 export const { reducer } = transactionsSlice;
-export const { addTransactions } = transactionsSlice.actions;
+export const {
+  addTransactions,
+  addTransaction,
+  updateTranasactionStatus,
+} = transactionsSlice.actions;

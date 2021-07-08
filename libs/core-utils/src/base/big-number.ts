@@ -4,6 +4,7 @@ import { fromWei, toWei, Unit } from 'web3-utils';
 import { mapReduce } from './array-fp-utils';
 import { assertIsInteger, assertIsNumericString, isObject } from './asserts';
 import { Tagged } from './tagged-type';
+import { FPN } from './fixed-point-number';
 
 const ether = new BN(10).pow(new BN(18));
 export const zero = new BN(0);
@@ -31,6 +32,14 @@ export function toWeiString(str: string): StringAmount {
 
 export function wei(str: string | number): Amount {
   return new BN(str, 10) as Amount;
+}
+
+export function weiFromBN(bn: BN): Amount {
+  return bn as Amount;
+}
+
+export function weiFromFPN(fpn: FPN): Amount {
+  return fpn.bn as Amount;
 }
 
 export function numberToWei(n: number): Amount {

@@ -3,6 +3,7 @@ import { SynthereumTransaction, TransactionIO } from '@/data/transactions';
 import {
   addTransactions,
   fetchAndStoreMoreTransactions,
+  updateTranasactionStatus,
 } from '@/state/slices/transactions';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import {
@@ -17,7 +18,10 @@ import {
 } from '@jarvis-network/synthereum-ts/dist/src/core/types/pools';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
-import { TransactionHash } from '@jarvis-network/core-utils/dist/eth/transaction';
+import {
+  TransactionHash,
+  TransactionStatus,
+} from '@jarvis-network/core-utils/dist/eth/transaction';
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import {
   networkIdToName,
@@ -65,7 +69,7 @@ export function useTransactionsSubgraph() {
   const realmAgent = useBehaviorSubject(realmAgent$);
   const address = useReduxSelector(state => state.auth?.address);
   const dispatch = useDispatch();
-  const tokensAndAddress = useMemo(
+  const tokensAddressAndRealmAgent = useMemo(
     () =>
       realmAgent && realmAgent.realm.netId === networkId && address
         ? {
@@ -78,16 +82,18 @@ export function useTransactionsSubgraph() {
               realmAgent.realm.collateralToken,
             ],
             address,
+            realmAgent,
           }
         : null,
     [realmAgent, networkId, address],
   );
 
   useEffect(() => {
-    if (!tokensAndAddress || !checkIsSupportedNetwork(networkId)) return;
+    if (!tokensAddressAndRealmAgent || !checkIsSupportedNetwork(networkId))
+      return;
 
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { address, tokens } = tokensAndAddress;
+    const { address, tokens, realmAgent } = tokensAddressAndRealmAgent;
 
     let canceled = false;
 
@@ -111,16 +117,61 @@ export function useTransactionsSubgraph() {
           blockNumber_gt: findLargestBlockNumber(storedTransactions),
         });
 
-        if (canceled || !data.data) return;
+        function checkPendingTransactions(transactions: ResponseTransaction[]) {
+          // Not yet indexed or failed tranasactions
+          storedTransactions
+            .filter(tx => tx.block === 0)
+            .forEach(tx => {
+              const hash = tx.hash;
+              const found = transactions.find(({ id }) => id === hash);
+              if (found) return;
 
-        await addTransactionsToIndexedDBAndRedux(
-          dispatch,
-          db,
-          tokens,
-          networkId,
-          address,
-          data.data.transactions,
-        );
+              const { web3 } = realmAgent.realm;
+
+              web3.eth
+                .getTransactionReceipt(hash)
+                .then(data => {
+                  if (!data) return null;
+                  return Promise.all([
+                    web3.eth.getBlock(data.blockNumber),
+                    data.status,
+                  ]);
+                })
+                .then(value => {
+                  if (!value) return;
+
+                  const transaction: SynthereumTransaction = {
+                    ...tx,
+                    block: value[0].number,
+                    timestamp: (value[0].timestamp as number) * 1000,
+                    status: (value[1]
+                      ? 'success'
+                      : 'failure') as TransactionStatus,
+                  };
+                  dispatch(updateTranasactionStatus(transaction));
+                  db.put('transactions', transaction);
+                });
+            });
+        }
+
+        if (canceled) return;
+        if (!data.data) return checkPendingTransactions([]);
+
+        const { transactions } = data.data;
+
+        if (transactions.length) {
+          await addTransactionsToIndexedDBAndRedux(
+            dispatch,
+            db,
+            tokens,
+            networkId,
+            address,
+            transactions,
+          );
+        }
+
+        checkPendingTransactions(transactions);
+
         return;
       }
 
@@ -141,19 +192,19 @@ export function useTransactionsSubgraph() {
     return () => {
       canceled = true;
     };
-  }, [tokensAndAddress, networkId]);
+  }, [tokensAddressAndRealmAgent, networkId]);
 
   return useMemo(
     () => ({
       fetchMoreTransactions() {
-        if (!tokensAndAddress) return;
+        if (!tokensAddressAndRealmAgent) return;
 
-        const { address, tokens } = tokensAndAddress;
+        const { address, tokens } = tokensAddressAndRealmAgent;
 
         dispatch(fetchAndStoreMoreTransactions({ networkId, address, tokens }));
       },
     }),
-    [dispatch, networkId, tokensAndAddress],
+    [dispatch, networkId, tokensAddressAndRealmAgent],
   );
 }
 
@@ -241,6 +292,7 @@ export function mapTheGraphResponseToStateCompatibleShape(
       networkId,
       block: parseInt(block, 10),
       from,
+      status: 'success' as TransactionStatus,
     }),
   );
 }
@@ -274,7 +326,7 @@ export function addTransactionsToIndexedDB(
 ) {
   const dbTx = db.transaction('transactions', 'readwrite');
   const dbAddPromises: Promise<unknown>[] = transactions.map(transaction =>
-    dbTx.store.add(transaction),
+    dbTx.store.put(transaction),
   );
   dbAddPromises.push(dbTx.done);
   return Promise.all(dbAddPromises);
@@ -311,11 +363,12 @@ export function findLargestBlockNumber(transactions: SynthereumTransaction[]) {
 }
 
 export function findSmallestBlockNumber(transactions: SynthereumTransaction[]) {
-  return transactions.reduce(
-    (largestBlock, transaction) =>
-      transaction.block < largestBlock ? transaction.block : largestBlock,
-    Infinity,
-  );
+  return transactions.reduce((smallestBlock, transaction) => {
+    if (transaction.block === 0) return smallestBlock;
+    return transaction.block < smallestBlock
+      ? transaction.block
+      : smallestBlock;
+  }, Infinity);
 }
 
 function run<T>(callback: () => T) {

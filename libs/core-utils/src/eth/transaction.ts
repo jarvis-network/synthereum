@@ -20,7 +20,7 @@ export interface TransactionBase {
   networkId: NetworkId;
   from: Address;
   block: number;
-  // status: TransactionStatus; // TODO: Bring back
+  status: TransactionStatus;
 }
 
 // Represents a plain ETH or ERC20 token transfer transaction

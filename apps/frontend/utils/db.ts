@@ -10,6 +10,7 @@ import {
   IndexNames,
   IndexKey,
   StoreValue,
+  StoreKey,
 } from 'idb';
 
 export interface Schema extends DBSchema {
@@ -73,9 +74,30 @@ function fakeDBFactory<Schema extends DBSchema>() {
   ): Promise<StoreValue<Schema, Name>[]> {
     return Promise.resolve([]);
   }
+
+  /**
+   * Put an item in the database.
+   *
+   * Replaces any item with the same key.
+   *
+   * This is a shortcut that creates a transaction for this single action. If you need to do more
+   * than one action, create a transaction instead.
+   *
+   * @param storeName Name of the store.
+   * @param value
+   * @param key
+   */
+  function put<Name extends StoreNames<Schema>>(
+    _storeName: Name,
+    _value: StoreValue<Schema, Name>,
+    _key?: StoreKey<Schema, Name> | IDBKeyRange,
+  ): Promise<StoreKey<Schema, Name>> {
+    return Promise.reject();
+  }
   return Promise.resolve({
     transaction,
     getAllFromIndex,
+    put,
   });
 }
 
