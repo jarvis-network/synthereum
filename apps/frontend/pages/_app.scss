@@ -115,17 +115,17 @@ body.theme-dark {
     > section.bn-onboard-custom {
       background: rgb(41, 41, 41);
       color: white;
-      scrollbar-color: rgba(0,0,0,0.3) #292929;
+      scrollbar-color: rgba(0, 0, 0, 0.3) #292929;
       border-color: rgb(118, 100, 110);
 
       &::-webkit-scrollbar-thumb:vertical,
       &::-webkit-scrollbar-thumb:vertical:active {
-        background: rgba(0,0,0,0.3);
+        background: rgba(0, 0, 0, 0.3);
         border-color: #292929;
       }
 
       .bn-onboard-modal-select-wallets > li button {
-        border-color: rgb(59,59,59);
+        border-color: rgb(59, 59, 59);
       }
     }
   }
@@ -134,19 +134,19 @@ body.theme-dark {
 body.theme-night {
   aside.bn-onboard-custom {
     > section.bn-onboard-custom {
-      background: rgb(46,53,65);
+      background: rgb(46, 53, 65);
       color: white;
-      scrollbar-color: rgba(0,0,0,0.3) #2e3541;
+      scrollbar-color: rgba(0, 0, 0, 0.3) #2e3541;
       border-color: rgb(118, 92, 147);
 
       &::-webkit-scrollbar-thumb:vertical,
       &::-webkit-scrollbar-thumb:vertical:active {
-        background: rgba(0,0,0,0.3);
+        background: rgba(0, 0, 0, 0.3);
         border-color: #2e3541;
       }
 
       .bn-onboard-modal-select-wallets > li button {
-        border-color: rgb(52,59,71);
+        border-color: rgb(52, 59, 71);
       }
     }
   }
@@ -166,15 +166,15 @@ body.theme-night {
       ul.bn-onboard-modal-select-wallets {
         max-height: none;
 
-        > li {
-          display: none;
+        // > li {
+        //   display: none;
 
-          &:nth-child(2),
-          &:nth-child(4),
-          &:nth-child(7) {
-            display: list-item;
-          }
-        }
+        //   &:nth-child(2),
+        //   &:nth-child(4),
+        //   &:nth-child(7) {
+        //     display: list-item;
+        //   }
+        // }
       }
     }
   }
