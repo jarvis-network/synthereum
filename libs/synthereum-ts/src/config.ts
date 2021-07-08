@@ -17,8 +17,8 @@ export type {
   SynthereumConfig,
   SynthereumContractDependencies,
   SyntheticSymbol,
-  SupportedPair,
-  SupportedSyntheticSymbol,
+  SupportedSynthereumPair,
+  SupportedSynthereumSymbol,
   SupportedNetworkId,
   SupportedNetworkName,
 } from '@jarvis-network/synthereum-contracts/dist/config';

@@ -13,29 +13,31 @@ export type NetworkPairs<
   PairType extends PairLike<string, string, ''>
 > = PerNetwork<PairType[]>;
 
-export const supportedPairs = typeCheck<NetworkPairs<SynthereumPair>>()({
+export const supportedSynthereumPairs = typeCheck<
+  NetworkPairs<SynthereumPair>
+>()({
   1: ['EURUSD', 'GBPUSD', 'CHFUSD'],
   42: ['EURUSD', 'GBPUSD', 'CHFUSD', 'XAUUSD'],
 } as const);
 
-export type SupportedPairs = typeof supportedPairs;
+export type SupportedSynthereumPairs = typeof supportedSynthereumPairs;
 
-export type SupportedPair<
+export type SupportedSynthereumPair<
   Net extends SupportedNetworkName = SupportedNetworkName
-> = SupportedPairs[ToNetworkId<Net>][number];
+> = SupportedSynthereumPairs[ToNetworkId<Net>][number];
 
-export type SupportedSyntheticSymbol<
+export type SupportedSynthereumSymbol<
   Net extends SupportedNetworkName = SupportedNetworkName
-> = PairToSynth<SupportedPair<Net>>;
+> = PairToSynth<SupportedSynthereumPair<Net>>;
 
-export type SupportedSyntheticSymbolExact<
+export type SupportedSynthereumSymbolExact<
   Net extends SupportedNetworkName = SupportedNetworkName
 > = keyof {
   [N in Net]: {
-    [X in SupportedSyntheticSymbol<N>]: unknown;
+    [X in SupportedSynthereumSymbol<N>]: unknown;
   };
 }[Net];
 
 export type PerPair<Net extends SupportedNetworkName, Config> = {
-  [Pair in SupportedPairs[ToNetworkId<Net>][number]]: Config;
+  [Pair in SupportedSynthereumPairs[ToNetworkId<Net>][number]]: Config;
 };
