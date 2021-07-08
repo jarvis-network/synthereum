@@ -24,11 +24,13 @@ import {
   useBehaviorSubject,
 } from '@jarvis-network/app-toolkit';
 
+import { dbPromise } from './db';
+
 const urls = {
   mainnet:
-    'https://api.thegraph.com/subgraphs/name/aurelienzintzmeyer/synthereum-transactions',
+    'https://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions',
   kovan:
-    'https://api.thegraph.com/subgraphs/name/aurelienzintzmeyer/synthereum-transactions-kovan',
+    'https://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions-kovan',
 };
 
 type ResponseTransaction = {
@@ -38,10 +40,11 @@ type ResponseTransaction = {
   outputTokenAddress: Address;
   outputTokenAmount: string;
   timestamp: string; // Seconds
-  type: 'Mint' | 'Redeem' | 'Exchange';
+  block: string; // The block number
+  type: 'mint' | 'redeem' | 'exchange';
 };
 
-type Response = {
+type TheGraphTransactionsSubgraphResponse = {
   data?: {
     transactions: ResponseTransaction[];
   };
@@ -72,53 +75,69 @@ export function useTransactionsSubgraph() {
   );
 
   useEffect(() => {
-    if (!address || !checkIsSupportedNetwork(networkId) || !tokens) return;
+    if (!address || !tokens || !checkIsSupportedNetwork(networkId)) return;
 
     let canceled = false;
 
     const url = urls[networkIdToName[networkId]];
 
-    fetch(url, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query: buildQuery(address) }),
-    })
-      .then(response => response.json())
-      .then((data: Response) => {
-        if (canceled || !data.data) return;
-        dispatch(
-          addTransactions(
-            data.data.transactions.map(
-              ({
-                id,
-                inputTokenAddress,
-                inputTokenAmount,
-                outputTokenAddress,
-                outputTokenAmount,
-                type,
-                timestamp,
-              }) => ({
-                hash: id,
-                type: type.toLowerCase() as 'mint' | 'exchange' | 'redeem',
-                input: getTransactionIO(
-                  tokens,
-                  inputTokenAddress,
-                  inputTokenAmount,
-                ),
-                output: getTransactionIO(
-                  tokens,
-                  outputTokenAddress,
-                  outputTokenAmount,
-                ),
-                timestamp: parseInt(`${timestamp}000`, 10),
-                networkId,
-              }),
-            ),
+    run(async () => {
+      const db = await dbPromise;
+      const readDbTx = db.transaction('transactions', 'readonly');
+      const [storedTransactions] = await Promise.all([
+        readDbTx.store.getAll(),
+        readDbTx.done,
+      ]);
+
+      if (storedTransactions.length) {
+        dispatch(addTransactions(storedTransactions));
+        return;
+      }
+
+      const data = (await (
+        await fetch(url, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: buildQuery(address) }),
+        })
+      ).json()) as TheGraphTransactionsSubgraphResponse;
+
+      if (canceled || !data.data) return;
+      const formattedTransactions = data.data.transactions.map(
+        ({
+          id,
+          inputTokenAddress,
+          inputTokenAmount,
+          outputTokenAddress,
+          outputTokenAmount,
+          type,
+          timestamp,
+          block,
+        }) => ({
+          hash: id,
+          type,
+          input: getTransactionIO(tokens, inputTokenAddress, inputTokenAmount),
+          output: getTransactionIO(
+            tokens,
+            outputTokenAddress,
+            outputTokenAmount,
           ),
-        );
-      });
+          timestamp: parseInt(`${timestamp}000`, 10),
+          networkId,
+          block: parseInt(block, 10),
+        }),
+      );
+      dispatch(addTransactions(formattedTransactions));
+
+      const dbTx = db.transaction('transactions', 'readwrite');
+      const dbAddPromises: Promise<unknown>[] = formattedTransactions.map(
+        transaction => dbTx.store.add(transaction),
+      );
+      dbAddPromises.push(dbTx.done);
+      await Promise.all(dbAddPromises);
+    });
 
     return () => {
       canceled = true;
@@ -133,6 +152,7 @@ function buildQuery(address: string) {
     id
     type
     timestamp
+    block
     inputTokenAmount
     inputTokenAddress
     outputTokenAmount
@@ -159,7 +179,11 @@ function getTransactionIO(
       token.symbol === primaryCollateralSymbol
         ? `${amount}000000000000` // TODO: Use token.decimals + padEnd
         : amount,
-    ),
-    asset: assetsObject[token.symbol],
+    ).toString(),
+    asset: assetsObject[token.symbol].symbol,
   };
+}
+
+function run<T>(callback: () => T) {
+  return callback();
 }

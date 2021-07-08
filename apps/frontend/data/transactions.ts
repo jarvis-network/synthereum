@@ -1,12 +1,10 @@
-import { SupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/src/config';
-import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-
-import { Asset } from './assets';
+import {
+  ExchangeToken,
+  SupportedNetworkId,
+} from '@jarvis-network/synthereum-ts/dist/src/config';
 
 // @todo After TS library will be implemented:
 // move all this types to the library and prepare transformers for frontend
-
-type RawAmount = FPN;
 
 export type TransactionType =
   | 'mint'
@@ -19,8 +17,8 @@ export type TransactionType =
 export type TransactionStatus = 'pending' | 'success' | 'failure';
 
 export interface TransactionIO {
-  asset: Asset;
-  amount: RawAmount;
+  asset: ExchangeToken;
+  amount: string;
 }
 
 // Base interface for any kind of transaction
@@ -29,6 +27,7 @@ interface TransactionBase {
   hash: string;
   type: TransactionType;
   networkId: SupportedNetworkId;
+  block: number;
   // status: TransactionStatus; // TODO: Bring back
 }
 
@@ -45,7 +44,6 @@ export interface SynthereumTransaction extends TransactionBase {
   type: 'mint' | 'exchange' | 'redeem';
   input: TransactionIO;
   output: TransactionIO;
-  collateral?: TransactionIO; // set if type is 'exchange'
 }
 
 export type Transaction = SynthereumTransaction;
