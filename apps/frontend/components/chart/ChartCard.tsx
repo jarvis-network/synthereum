@@ -170,7 +170,9 @@ export const ChartCard: React.FC = () => {
   };
 
   const valueSource = currentValue != null ? new FPN(currentValue) : rate?.rate;
-  const value = valueSource?.format(5) || '';
+  const value =
+    valueSource?.format(5) ||
+    (chartData.length ? new FPN(last(chartData).close).format(5) : '');
 
   // can't use transparent, because with recharts it goes dark grey as default
   const bgColor = theme.background.primary;

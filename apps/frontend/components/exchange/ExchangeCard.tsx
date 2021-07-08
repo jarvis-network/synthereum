@@ -16,6 +16,10 @@ import {
   OnDesktop,
   OnMobile,
 } from '@jarvis-network/ui';
+import {
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
 import Fuse from 'fuse.js';
 
 import { MainForm } from '@/components/exchange/MainForm';
@@ -229,6 +233,7 @@ const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 
 export const ExchangeCard: React.FC = () => {
   const notify = useExchangeNotifications();
+  const web3 = useBehaviorSubject(useCoreObservables().web3$);
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
   const wallet = useReduxSelector(state => state.wallet);
@@ -376,6 +381,8 @@ export const ExchangeCard: React.FC = () => {
     if (!isApplicationReady) {
       return false;
     }
+
+    if (!web3) return true;
 
     const isAssetPriceLoaded = assetPay?.price && assetReceive?.price;
 

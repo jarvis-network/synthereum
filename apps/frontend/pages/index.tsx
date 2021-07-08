@@ -76,12 +76,18 @@ export default function Home() {
   const url = backgroundMap[theme];
 
   useEffect(() => {
+    if (typeof window !== 'object') return;
+
     function handleLoad() {
       setTimeout(() => dispatch(setWindowLoaded(true)), 250);
       window.removeEventListener('load', handleLoad);
     }
 
-    window.addEventListener('load', handleLoad);
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+    }
   }, []);
 
   useEffect(() => {
