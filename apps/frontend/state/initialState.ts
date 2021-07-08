@@ -124,7 +124,7 @@ export const initialAppState: State = {
   },
   auth: null,
   assets: {
-    list: assets,
+    list: assets.filter(a => a.symbol !== 'jXAU'),
   },
   exchange: {
     pay: '0',
