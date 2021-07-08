@@ -155,7 +155,7 @@ export const RecentActivityModal: FC = () => {
     [state],
   );
 
-  useTransactionsSubgraph();
+  const { fetchMoreTransactions } = useTransactionsSubgraph();
 
   return (
     <ModalContent
@@ -187,6 +187,7 @@ export const RecentActivityModal: FC = () => {
           ))}
         </Block>
       ))}
+      <button onClick={fetchMoreTransactions}>Fetch More</button>
       {/* </CustomInfiniteScroll> */}
     </ModalContent>
   );

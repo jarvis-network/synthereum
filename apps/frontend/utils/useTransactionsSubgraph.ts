@@ -1,6 +1,9 @@
 import { assetsObject } from '@/data/assets';
-import { TransactionIO } from '@/data/transactions';
-import { addTransactions } from '@/state/slices/transactions';
+import { SynthereumTransaction, TransactionIO } from '@/data/transactions';
+import {
+  addTransactions,
+  fetchAndStoreMoreTransactions,
+} from '@/state/slices/transactions';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import {
   checkIsSupportedNetwork,
@@ -29,7 +32,7 @@ import {
 
 import { dbPromise, DB } from './db';
 
-const urls = {
+export const transactionsSubgraphUrls = {
   mainnet:
     'https://api.thegraph.com/subgraphs/name/dimitarnestorov/synthereum-transactions',
   kovan:
@@ -88,33 +91,29 @@ export function useTransactionsSubgraph() {
 
     let canceled = false;
 
-    const url = urls[networkIdToName[networkId]];
+    const url = transactionsSubgraphUrls[networkIdToName[networkId]];
 
     run(async () => {
       const db = await dbPromise;
+      if (canceled) return;
 
       const storedTransactions = await db.getAllFromIndex(
         'transactions',
         'networkId, from',
         [networkId, address],
       );
+      if (canceled) return;
 
       if (storedTransactions.length) {
         dispatch(addTransactions(storedTransactions));
 
-        const largestBlock = storedTransactions.reduce(
-          (largestBlockNumber, transaction) =>
-            transaction.block > largestBlockNumber
-              ? transaction.block
-              : largestBlockNumber,
-          0,
-        );
-
-        const data = await fetchTransactions(url, address, largestBlock);
+        const data = await fetchTransactions(url, address, {
+          blockNumber_gt: findLargestBlockNumber(storedTransactions),
+        });
 
         if (canceled || !data.data) return;
 
-        await addTransactionsToIndexedDB(
+        await addTransactionsToIndexedDBAndRedux(
           dispatch,
           db,
           tokens,
@@ -129,7 +128,7 @@ export function useTransactionsSubgraph() {
 
       if (canceled || !data.data) return;
 
-      await addTransactionsToIndexedDB(
+      await addTransactionsToIndexedDBAndRedux(
         dispatch,
         db,
         tokens,
@@ -143,19 +142,58 @@ export function useTransactionsSubgraph() {
       canceled = true;
     };
   }, [tokensAndAddress, networkId]);
+
+  return useMemo(
+    () => ({
+      fetchMoreTransactions() {
+        if (!tokensAndAddress) return;
+
+        const { address, tokens } = tokensAndAddress;
+
+        dispatch(fetchAndStoreMoreTransactions({ networkId, address, tokens }));
+      },
+    }),
+    [dispatch, networkId, tokensAndAddress],
+  );
 }
 
-function fetchTransactions(
+type FecthOptionsNewerTransactions = {
+  blockNumber_gt: number;
+};
+type FetchOptionsOlderTransactions = {
+  blockNumber_lte: number;
+  id_not_in: TransactionHash[];
+};
+export function fetchTransactions(
   url: string,
-  address: string,
-  blockNumberGreatherThan?: number,
+  address: Address,
+  options?: FecthOptionsNewerTransactions | FetchOptionsOlderTransactions,
 ) {
+  const { blockNumber_lte, id_not_in, blockNumber_gt } = (options ||
+    {}) as Partial<
+    FetchOptionsOlderTransactions & FecthOptionsNewerTransactions
+  >;
+
+  if (blockNumber_gt && blockNumber_lte)
+    throw new Error(
+      'Can not have both blockNumber_gt and blockNumber_lte defined',
+    );
+
+  if (blockNumber_lte && (!Array.isArray(id_not_in) || !id_not_in.length))
+    throw new Error(
+      'When blockNumber_lte you need to have at least one transaction has in id_not_in',
+    );
+
   const query = `
 {
-  transactions(where: {userAddress: "${address}", poolVersion: "${
+  transactions(first: 30, orderBy: block, orderDirection: desc, where: {userAddress: "${address}", poolVersion: "${
     poolVersion[1]
-  }"${
-    blockNumberGreatherThan ? `, block_gt: "${blockNumberGreatherThan}"` : ''
+  }"${blockNumber_gt ? `, block_gt: "${blockNumber_gt}"` : ''}${
+    blockNumber_lte
+      ? `, block_lte: "${blockNumber_lte}", id_not_in: [${id_not_in!
+          .map(hash => `"${hash}"`)
+          .join(',')}]`
+      : ''
   }}) {
     id
     type
@@ -178,15 +216,13 @@ function fetchTransactions(
   }).then(response => response.json() as TheGraphTransactionsSubgraphResponse);
 }
 
-function addTransactionsToIndexedDB(
-  dispatch: ReturnType<typeof useDispatch>,
-  db: DB,
+export function mapTheGraphResponseToStateCompatibleShape(
   tokens: TokenInfo<SupportedNetworkName>[],
   networkId: SupportedNetworkId,
   from: Address,
   transactions: ResponseTransaction[],
 ) {
-  const formattedTransactions = transactions.map(
+  return transactions.map(
     ({
       id,
       inputTokenAddress,
@@ -207,11 +243,38 @@ function addTransactionsToIndexedDB(
       from,
     }),
   );
-  dispatch(addTransactions(formattedTransactions));
+}
 
+function addTransactionsToIndexedDBAndRedux(
+  dispatch: ReturnType<typeof useDispatch>,
+  db: DB,
+  tokens: TokenInfo<SupportedNetworkName>[],
+  networkId: SupportedNetworkId,
+  from: Address,
+  transactions: ResponseTransaction[],
+) {
+  const formattedTransactions = mapTheGraphResponseToStateCompatibleShape(
+    tokens,
+    networkId,
+    from,
+    transactions,
+  );
+  dispatch(
+    addTransactions(
+      formattedTransactions.length ? formattedTransactions : null,
+    ),
+  );
+
+  return addTransactionsToIndexedDB(db, formattedTransactions);
+}
+
+export function addTransactionsToIndexedDB(
+  db: DB,
+  transactions: SynthereumTransaction[],
+) {
   const dbTx = db.transaction('transactions', 'readwrite');
-  const dbAddPromises: Promise<unknown>[] = formattedTransactions.map(
-    transaction => dbTx.store.add(transaction),
+  const dbAddPromises: Promise<unknown>[] = transactions.map(transaction =>
+    dbTx.store.add(transaction),
   );
   dbAddPromises.push(dbTx.done);
   return Promise.all(dbAddPromises);
@@ -237,6 +300,22 @@ function getTransactionIO(
     ).toString(),
     asset: assetsObject[token.symbol].symbol,
   };
+}
+
+export function findLargestBlockNumber(transactions: SynthereumTransaction[]) {
+  return transactions.reduce(
+    (largestBlock, transaction) =>
+      transaction.block > largestBlock ? transaction.block : largestBlock,
+    0,
+  );
+}
+
+export function findSmallestBlockNumber(transactions: SynthereumTransaction[]) {
+  return transactions.reduce(
+    (largestBlock, transaction) =>
+      transaction.block < largestBlock ? transaction.block : largestBlock,
+    Infinity,
+  );
 }
 
 function run<T>(callback: () => T) {
