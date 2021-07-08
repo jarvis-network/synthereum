@@ -1,5 +1,5 @@
 import {
-  ExchangeToken,
+  ExchangeSynthereumToken,
   priceFeed as priceFeedPairsMap,
   primaryCollateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
@@ -16,8 +16,8 @@ const reversePricePoint = (data: PricePoint) => ({
 });
 
 export const useFeedData = (
-  payAsset: ExchangeToken,
-  receiveAsset: ExchangeToken,
+  payAsset: ExchangeSynthereumToken,
+  receiveAsset: ExchangeSynthereumToken,
 ): DataItem[] => {
   if (
     payAsset === primaryCollateralSymbol ||

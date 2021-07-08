@@ -2,7 +2,7 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
 
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { ExchangeToken } from '@jarvis-network/synthereum-ts/dist/config';
+import { ExchangeSynthereumToken } from '@jarvis-network/synthereum-ts/dist/config';
 
 import { assets, Asset } from '@/data/assets';
 import { Transaction } from '@/data/transactions';
@@ -39,8 +39,8 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
-export const DEFAULT_PAY_ASSET: ExchangeToken = 'USDC';
-export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
+export const DEFAULT_PAY_ASSET: ExchangeSynthereumToken = 'USDC';
+export const DEFAULT_RECEIVE_ASSET: ExchangeSynthereumToken = 'jEUR';
 
 export type Days = 1 | 7 | 30;
 
@@ -74,14 +74,14 @@ export interface State {
     pay: string;
     receive: string;
     base: Values;
-    payAsset: ExchangeToken | null;
-    receiveAsset: ExchangeToken | null;
+    payAsset: ExchangeSynthereumToken | null;
+    receiveAsset: ExchangeSynthereumToken | null;
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
     chartDays: Days;
   };
   wallet: {
-    [key in ExchangeToken]?: WalletInfo;
+    [key in ExchangeSynthereumToken]?: WalletInfo;
   };
   transactions: {
     list: Transaction[];
@@ -123,11 +123,13 @@ export const initialAppState: State = {
     receive: '0',
     base: 'pay',
     payAsset:
-      cache.get<ExchangeToken | null>('jarvis/state/exchange.payAsset') ||
-      DEFAULT_PAY_ASSET,
+      cache.get<ExchangeSynthereumToken | null>(
+        'jarvis/state/exchange.payAsset',
+      ) || DEFAULT_PAY_ASSET,
     receiveAsset:
-      cache.get<ExchangeToken | null>('jarvis/state/exchange.receiveAsset') ||
-      DEFAULT_RECEIVE_ASSET,
+      cache.get<ExchangeSynthereumToken | null>(
+        'jarvis/state/exchange.receiveAsset',
+      ) || DEFAULT_RECEIVE_ASSET,
     invertRateInfo: false,
     chooseAssetActive: null,
     chartDays: cache.get<Days | null>('jarvis/state/exchange.chartDays') || 7,

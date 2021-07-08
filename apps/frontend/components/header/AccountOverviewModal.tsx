@@ -8,7 +8,7 @@ import {
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import {
-  ExchangeToken,
+  ExchangeSynthereumToken,
   primaryCollateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
 
@@ -156,7 +156,7 @@ export const AccountOverviewModal: FC = () => {
   };
 
   const items: AssetRowProps[] = useMemo(() => {
-    const keys = Object.keys(wallet) as ExchangeToken[];
+    const keys = Object.keys(wallet) as ExchangeSynthereumToken[];
 
     return keys
       .map(token => {

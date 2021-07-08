@@ -1,15 +1,10 @@
 import { weeks } from 'milliseconds';
 
-import {
-  priceFeed as priceFeedPairsMap,
-  SyntheticSymbol,
-} from '@jarvis-network/synthereum-ts/dist/config';
+import { SupportedSynthereumPair } from '@jarvis-network/synthereum-ts/dist/config';
 
 import { formatDate } from '@jarvis-network/app-toolkit';
 
-export const SubscriptionPairsCollection = Object.values(priceFeedPairsMap);
-
-export type SubscriptionPair = typeof SubscriptionPairsCollection[0];
+export type SubscriptionPair = SupportedSynthereumPair;
 
 export type OHLC = [open: number, high: number, low: number, close: number];
 
@@ -114,9 +109,9 @@ export class PriceFeed {
   private resubscribePair = (pair: SubscriptionPair): WebSocket =>
     this.subscribePair(pair, {});
 
-  subscribe = (asset: SyntheticSymbol, options: Options): WebSocket => {
+  subscribe = (asset: SupportedSynthereumPair, options: Options): WebSocket => {
     // Get subscription pair
-    const pair: SubscriptionPair = priceFeedPairsMap[asset];
+    const pair: SubscriptionPair = asset;
 
     // If pair does exist subscriptions list just return socket
     if (this.socket && this.subscriptions.includes(pair)) {
@@ -131,7 +126,7 @@ export class PriceFeed {
   };
 
   subscribeMany = (
-    assets: readonly SyntheticSymbol[],
+    assets: readonly SupportedSynthereumPair[],
     options: Options,
   ): WebSocket =>
     // Return last subscription result

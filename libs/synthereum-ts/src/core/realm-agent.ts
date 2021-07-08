@@ -35,6 +35,8 @@ import {
 
 import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 
+import { ExchangeSynthereumToken } from '../config';
+
 import { mapPools } from './pool-utils';
 import { PoolsForVersion, PoolVersion } from './types/pools';
 import { SynthereumRealmWithWeb3 } from './types/realm';
@@ -103,15 +105,18 @@ export class RealmAgent<
     return getTokenBalance(asset, this.agentAddress);
   }
 
-  getAllBalances(): Promise<[ExchangeToken, Amount][]> {
+  getAllBalances(): Promise<[ExchangeSynthereumToken, Amount][]> {
     return Promise.all([
-      (async (): Promise<[ExchangeToken, Amount]> =>
+      (async (): Promise<[ExchangeSynthereumToken, Amount]> =>
         t(
           'USDC' as const,
           await getTokenBalance(this.realm.collateralToken, this.agentAddress),
         ))(),
       ...mapPools(this.realm, this.poolVersion, async p =>
-        t(p.symbol, await getTokenBalance(p.syntheticToken, this.agentAddress)),
+        t(
+          p.symbol as ExchangeSynthereumToken,
+          await getTokenBalance(p.syntheticToken, this.agentAddress),
+        ),
       ),
     ]);
   }

@@ -25,7 +25,7 @@ import {
 } from '@/state/slices/exchange';
 import { useDispatch } from 'react-redux';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
+import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { createPairs } from '@/utils/createPairs';
 import { isAppReadySelector } from '@/state/selectors';
 
@@ -273,7 +273,7 @@ const InfoBox: React.FC<Props> = ({
   };
 
   const handlePairChange = (symbols: string) => {
-    const [pay, receive] = symbols.split(' / ') as SyntheticSymbol[];
+    const [pay, receive] = symbols.split(' / ') as SupportedSynthereumSymbol[];
 
     dispatch(setPayAsset(pay));
     dispatch(setReceiveAsset(receive));

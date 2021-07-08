@@ -1,17 +1,17 @@
 import { FlagKeys } from '@jarvis-network/ui';
 import {
   primaryCollateralSymbol,
-  PerAsset,
-  ExchangeToken,
+  ExchangeSynthereumToken,
   synthereumConfig,
 } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
+import { PerSynthereumPair } from '@jarvis-network/synthereum-contracts/dist/config';
 
 export interface Asset {
   name: string;
-  symbol: ExchangeToken;
+  symbol: ExchangeSynthereumToken;
   pair: SubscriptionPair | null;
   icon: FlagKeys | null;
   price: FPN | null;
@@ -42,14 +42,11 @@ export interface AssetWithWalletInfo extends Asset {
   ownedAmount: FPN;
 }
 
-const assetIconMap: PerAsset<FlagKeys | null> = {
+const assetIconMap: PerSynthereumPair<FlagKeys | null> = {
   jEUR: 'eur',
   jGBP: 'gbp',
   jCHF: 'chf',
   jXAU: 'xau',
-  jXAG: null,
-  jXTI: null,
-  jSPX: null,
 } as const;
 
 // FIXME: Instead of hardcoding the networkId and pool version make them dynamic
@@ -58,7 +55,7 @@ const syntheticAssets: Asset[] = Object.values(
 ).map(info => ({
   name: info.syntheticName,
   symbol: info.syntheticSymbol,
-  pair: info.jarvisPriceFeedIdentifier,
+  pair: info.umaPriceFeedIdentifier,
   icon: assetIconMap[info.syntheticSymbol],
   price: null,
   decimals: 18,

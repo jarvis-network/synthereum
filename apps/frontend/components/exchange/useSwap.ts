@@ -1,11 +1,11 @@
 import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
 import { useExchangeValues } from '@/utils/useExchangeValues';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 import {
   useBehaviorSubject,
   useCoreObservables,
 } from '@jarvis-network/app-toolkit';
+import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
 
 export const useSwap = () => {
   const agent = useBehaviorSubject(useCoreObservables().realmAgent$);
@@ -27,7 +27,7 @@ export const useSwap = () => {
     return () => {
       const collateral = wei(transactionCollateral!.bn.toString(10));
       const outputAmount = wei(receiveValue!.bn.toString(10));
-      const outputSynth = receiveSymbol as SyntheticSymbol;
+      const outputSynth = receiveSymbol as SupportedSynthereumSymbol;
 
       console.log({
         collateral: collateral.toString(10),
@@ -51,7 +51,7 @@ export const useSwap = () => {
     return () => {
       const collateral = wei(transactionCollateral!.bn.toString(10));
       const inputAmount = wei(payValue!.bn.toString(10));
-      const inputSynth = paySymbol as SyntheticSymbol;
+      const inputSynth = paySymbol as SupportedSynthereumSymbol;
 
       console.log({
         collateral: collateral.toString(10),
@@ -75,9 +75,9 @@ export const useSwap = () => {
   return () => {
     const collateral = wei(transactionCollateral!.bn.toString(10));
     const inputAmount = wei(payValue!.bn.toString(10));
-    const inputSynth = paySymbol as SyntheticSymbol;
+    const inputSynth = paySymbol as SupportedSynthereumSymbol;
     const outputAmount = wei(receiveValue!.bn.toString(10));
-    const outputSynth = receiveSymbol as SyntheticSymbol;
+    const outputSynth = receiveSymbol as SupportedSynthereumSymbol;
 
     console.log({
       collateral: collateral.toString(10),

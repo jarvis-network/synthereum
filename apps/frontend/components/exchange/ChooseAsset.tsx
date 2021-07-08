@@ -15,7 +15,7 @@ import {
   themeValue,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
+import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 
 import {
   setChooseAsset,
@@ -232,7 +232,7 @@ export const ChooseAsset: React.FC = () => {
 
   const onBack = () => dispatch(setChooseAsset(null));
 
-  const handleSelected = (symbol: SyntheticSymbol) => {
+  const handleSelected = (symbol: SupportedSynthereumSymbol) => {
     dispatch(asset === 'pay' ? setPayAsset(symbol) : setReceiveAsset(symbol));
     onBack();
   };
@@ -244,7 +244,8 @@ export const ChooseAsset: React.FC = () => {
   };
 
   const getTrProps = (_: any, rowInfo?: RowInfo) => ({
-    onClick: () => handleSelected(rowInfo!.original.symbol as SyntheticSymbol),
+    onClick: () =>
+      handleSelected(rowInfo!.original.symbol as SupportedSynthereumSymbol),
     style: {
       cursor: 'pointer',
     },
