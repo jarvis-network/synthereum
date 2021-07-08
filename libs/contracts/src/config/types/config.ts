@@ -2,14 +2,17 @@ import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
+import { SupportedSelfMintingPair } from '../supported/self-minting-pairs';
 import {
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../supported/networks';
 import { PoolVersion } from '../supported/pool-versions';
-import { PerPair } from '../supported/synthereum-pairs';
 
-import { SyntheticSymbol } from './price-feed-symbols';
+import {
+  SelfMintingCollateralSymbol,
+  SyntheticSymbol,
+} from './price-feed-symbols';
 
 export type SynthereumConfig = {
   [Net in SupportedNetworkId]: {
@@ -46,8 +49,24 @@ export interface SynthereumContractDependencies<
   };
 }
 
+type ReplaceCollateral<
+  Pair extends string,
+  Replacement extends string = 'USD'
+> = Pair extends `${infer Asset}${SelfMintingCollateralSymbol}`
+  ? `${Asset}${Replacement}`
+  : never;
+
+export type ChainlinkPair =
+  | ReplaceCollateral<SupportedSelfMintingPair>
+  | 'ETHUSD'
+  | 'UMAETH';
+
+export type PerPair<Config> = {
+  [Pair in ChainlinkPair]?: Config;
+};
+
 export type ChainLinkPriceAggregators = {
-  [Net in SupportedNetworkId]: PerPair<ToNetworkName<Net>, AddressOn<Net>>;
+  [Net in SupportedNetworkId]: PerPair<AddressOn<Net>>;
 };
 
 export interface Fees<Net extends SupportedNetworkName> {
