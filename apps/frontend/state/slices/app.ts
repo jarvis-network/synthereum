@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { initialAppState } from '@/state/initialState';
 
-import { networkSwitch, resetSwapAction } from '../actions';
+import { networkSwitch, addressSwitch, resetSwapAction } from '../actions';
 
 import { fetchWalletBalances } from './wallet';
 import { login } from './auth';
@@ -89,6 +89,12 @@ const appSlice = createSlice({
       };
     },
     [networkSwitch.type](state) {
+      return {
+        ...state,
+        isExchangeLoaded: false,
+      };
+    },
+    [addressSwitch.type](state) {
       return {
         ...state,
         isExchangeLoaded: false,
