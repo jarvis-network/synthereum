@@ -11,7 +11,7 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import type {
   SupportedNetworkName,
-  SyntheticSymbol,
+  SupportedSynthereumSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/config';
 
@@ -34,7 +34,7 @@ export type PoolContract<Version extends PoolVersion> = Version extends 'v4'
 export interface SynthereumPool<
   Version extends PoolVersion,
   Net extends SupportedNetworkName = SupportedNetworkName,
-  SynthSymbol extends SyntheticSymbol = SyntheticSymbol
+  SynthSymbol extends SupportedSynthereumSymbol<Net> = SupportedSynthereumSymbol<Net>
 > extends ContractInfo<Net, PoolContract<Version>> {
   networkId: ToNetworkId<Net>;
   versionId: Version;
@@ -49,5 +49,9 @@ export type PoolsForVersion<
   Version extends PoolVersion,
   Net extends SupportedNetworkName
 > = {
-  [SynthSymbol in SyntheticSymbol]?: SynthereumPool<Version, Net, SynthSymbol>;
+  [SynthSymbol in SupportedSynthereumSymbol<Net>]?: SynthereumPool<
+    Version,
+    Net,
+    SynthSymbol
+  >;
 };

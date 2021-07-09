@@ -12,7 +12,6 @@ export type {
   PoolVersion,
   PoolVersions,
   Fees,
-  ExchangeToken,
   ExchangeSynthereumToken,
   PerAsset,
   PerSynthereumPair,

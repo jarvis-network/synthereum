@@ -23,13 +23,19 @@ import type {
   Web3On,
 } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
+import {
+  supportedSynthereumPairs,
+  SupportedSynthereumSymbol,
+} from '@jarvis-network/synthereum-contracts/dist/config/supported/synthereum-pairs';
+
+import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
+
 import type {
   SynthereumContractDependencies,
-  SyntheticSymbol,
   SupportedNetworkId,
   SupportedNetworkName,
 } from '../config';
-import { allSyntheticSymbols, priceFeed, synthereumConfig } from '../config';
+import { priceFeed, synthereumConfig } from '../config';
 
 import { loadPool } from './pool-utils';
 import type {
@@ -92,7 +98,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     version: Version,
   ) => {
     const pairs = await Promise.all(
-      allSyntheticSymbols.map(async symbol => {
+      supportedSynthereumPairs[netId].map(async (symbol: any) => {
         const info = await loadPoolInfo(
           web3,
           netId,
@@ -171,7 +177,7 @@ function poolVersionId(version: PoolVersion) {
 
 export async function loadPoolInfo<
   Version extends PoolVersion,
-  SynthSymbol extends SyntheticSymbol,
+  SynthSymbol extends SupportedSynthereumSymbol<Net>,
   Net extends SupportedNetworkName
 >(
   web3: Web3On<Net>,

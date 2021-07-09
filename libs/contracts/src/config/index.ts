@@ -7,7 +7,6 @@ export {
 export type {
   SynthereumCollateralSymbol,
   SyntheticSymbol,
-  ExchangeToken,
   PerAsset,
 } from './types/price-feed-symbols';
 

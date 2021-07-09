@@ -1,10 +1,11 @@
 import {
-  ExchangeToken,
+  ExchangeSynthereumToken,
   PoolVersion,
   SupportedNetworkName,
-  SyntheticSymbol,
   SynthereumCollateralSymbol,
+  SupportedSynthereumSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/config';
+import { valuesOf } from '@jarvis-network/core-utils/dist/base/meta';
 
 import { PoolsForVersion } from './types/pools';
 
@@ -13,8 +14,8 @@ export function isSupportedSynth<
   Net extends SupportedNetworkName
 >(
   activePools: PoolsForVersion<Version, Net>,
-  token: ExchangeToken,
-): token is SyntheticSymbol {
+  token: ExchangeSynthereumToken,
+): token is SupportedSynthereumSymbol {
   return token in activePools;
 }
 
@@ -23,10 +24,10 @@ export function isSupportedCollateral<
   Net extends SupportedNetworkName
 >(
   activePools: PoolsForVersion<Version, Net>,
-  token: ExchangeToken,
+  token: ExchangeSynthereumToken,
 ): token is SynthereumCollateralSymbol {
   // TODO: optimize by caching a table of all known collateral symbols
-  return Object.values(activePools).some(
+  return valuesOf(activePools).some(
     pool => pool?.collateralToken.symbol === token,
   );
 }
@@ -38,8 +39,8 @@ export function determineSide<
   Net extends SupportedNetworkName
 >(
   activePools: PoolsForVersion<Version, Net>,
-  input: ExchangeToken,
-  output: ExchangeToken,
+  input: ExchangeSynthereumToken,
+  output: ExchangeSynthereumToken,
 ): TxType {
   const synthInput = isSupportedSynth(activePools, input);
   const synthOutput = isSupportedSynth(activePools, output);

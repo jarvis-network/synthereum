@@ -29,13 +29,11 @@ import {
 
 import {
   SupportedNetworkName,
-  SyntheticSymbol,
-  ExchangeToken,
+  SupportedSynthereumSymbol,
+  ExchangeSynthereumToken,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 
 import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
-
-import { ExchangeSynthereumToken } from '../config';
 
 import { mapPools } from './pool-utils';
 import { PoolsForVersion, PoolVersion } from './types/pools';
@@ -47,20 +45,22 @@ interface BaseTxParams {
   txOptions?: TxOptions;
 }
 
-interface MintParams extends BaseTxParams {
-  outputSynth: SyntheticSymbol;
+export interface MintParams<Net extends SupportedNetworkName>
+  extends BaseTxParams {
+  outputSynth: SupportedSynthereumSymbol<Net>;
   outputAmount: Amount;
 }
 
-interface ExchangeParams extends BaseTxParams {
-  inputSynth: SyntheticSymbol;
+interface ExchangeParams<Net extends SupportedNetworkName>
+  extends BaseTxParams {
+  inputSynth: SupportedSynthereumSymbol<Net>;
   inputAmount: Amount;
-  outputSynth: SyntheticSymbol;
+  outputSynth: SupportedSynthereumSymbol<Net>;
   outputAmount: Amount;
 }
 
-interface RedeemParams extends BaseTxParams {
-  inputSynth: SyntheticSymbol;
+interface RedeemParams<Net extends SupportedNetworkName> extends BaseTxParams {
+  inputSynth: SupportedSynthereumSymbol<Net>;
   inputAmount: Amount;
 }
 
@@ -97,11 +97,10 @@ export class RealmAgent<
     return getTokenBalance(this.realm.collateralToken, this.agentAddress);
   }
 
-  syntheticTokenBalanceOf(synthetic: SyntheticSymbol): Promise<Amount> {
-    const asset = assertNotNull(
-      this.activePools[synthetic],
-      'this.activePools[synthetic] is null',
-    ).syntheticToken;
+  syntheticTokenBalanceOf(
+    synthetic: SupportedSynthereumSymbol<Net>,
+  ): Promise<Amount> {
+    const asset = this.activePools[synthetic]!.syntheticToken;
     return getTokenBalance(asset, this.agentAddress);
   }
 
@@ -126,9 +125,9 @@ export class RealmAgent<
     outputAmount,
     outputSynth,
     txOptions,
-  }: MintParams): SwapResult {
+  }: MintParams<Net>): SwapResult {
     return this.universalExchange({
-      inputToken: this.realm.collateralToken.symbol as ExchangeToken,
+      inputToken: this.realm.collateralToken.symbol as ExchangeSynthereumToken,
       outputToken: outputSynth,
       inputAmountWei: collateral,
       outputAmountWei: outputAmount,
@@ -142,7 +141,7 @@ export class RealmAgent<
     inputAmount,
     outputAmount,
     txOptions,
-  }: ExchangeParams): SwapResult {
+  }: ExchangeParams<Net>): SwapResult {
     return this.universalExchange({
       inputToken: inputSynth,
       outputToken: outputSynth,
@@ -157,21 +156,24 @@ export class RealmAgent<
     inputSynth,
     collateral,
     txOptions,
-  }: RedeemParams): SwapResult {
+  }: RedeemParams<Net>): SwapResult {
     return this.universalExchange({
       inputToken: inputSynth,
-      outputToken: this.realm.collateralToken.symbol as ExchangeToken,
+      outputToken: this.realm.collateralToken.symbol as ExchangeSynthereumToken,
       inputAmountWei: inputAmount,
       outputAmountWei: collateral,
       txOptions,
     });
   }
 
-  private determineSide(input: ExchangeToken, output: ExchangeToken) {
+  private determineSide(
+    input: ExchangeSynthereumToken,
+    output: ExchangeSynthereumToken,
+  ) {
     return determineSide(this.activePools, input, output);
   }
 
-  private isCollateral(token: ExchangeToken) {
+  private isCollateral(token: ExchangeSynthereumToken) {
     return isSupportedCollateral(this.activePools, token);
   }
 
@@ -188,8 +190,8 @@ export class RealmAgent<
     outputAmountWei,
     txOptions,
   }: {
-    inputToken: ExchangeToken;
-    outputToken: ExchangeToken;
+    inputToken: ExchangeSynthereumToken;
+    outputToken: ExchangeSynthereumToken;
     inputAmountWei: Amount;
     outputAmountWei: Amount;
     txOptions?: TxOptions;
@@ -202,9 +204,9 @@ export class RealmAgent<
         `input ${inputAmountWei} ${inputToken} -> output ${outputAmountWei} ${outputToken}`,
     );
 
-    const targetPool = assertNotNull(
-      this.activePools[inputToken as SyntheticSymbol],
-    );
+    const targetPool = this.activePools[
+      inputToken as SupportedSynthereumSymbol<Net>
+    ]!;
 
     // TODO: optimize by caching the fee during realm load
     // const [
@@ -247,10 +249,9 @@ export class RealmAgent<
         this.agentAddress,
       ]);
     } else if (side === 'exchange') {
-      const outputPool = assertNotNull(
-        this.activePools[outputToken as SyntheticSymbol],
-        `activePools[${outputToken}] is null`,
-      );
+      const outputPool = this.activePools[
+        outputToken as SupportedSynthereumSymbol<Net>
+      ]!;
       tx = targetPool.instance.methods[side]([
         targetPool.derivative.address,
         outputPool.address,

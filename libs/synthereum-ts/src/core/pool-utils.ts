@@ -38,6 +38,7 @@ import { executeInSequence } from '@jarvis-network/core-utils/dist/base/async';
 import {
   SupportedNetworkId,
   SupportedNetworkName,
+  SupportedSynthereumSymbol,
   synthereumConfig,
   SyntheticSymbol,
 } from '../config';
@@ -71,7 +72,11 @@ export function foreachPool<
   realm: SynthereumRealm<Net>,
   version: Version,
   callback: (
-    pool: SynthereumPool<OneOf<Version, PoolVersions>, Net, SyntheticSymbol>,
+    pool: SynthereumPool<
+      OneOf<Version, PoolVersions>,
+      Net,
+      SupportedSynthereumSymbol<Net>
+    >,
     idx: number,
   ) => void,
 ): void {
@@ -85,7 +90,7 @@ export function foreachPool<
       pool as SynthereumPool<
         OneOf<Version, PoolVersions>,
         Net,
-        SyntheticSymbol
+        SupportedSynthereumSymbol<Net>
       >,
       idx++,
     );
@@ -100,7 +105,11 @@ export function mapPools<
   realm: SynthereumRealm<Net>,
   version: Version,
   callback: (
-    p: SynthereumPool<OneOf<Version, PoolVersions>, Net, SyntheticSymbol>,
+    p: SynthereumPool<
+      OneOf<Version, PoolVersions>,
+      Net,
+      SupportedSynthereumSymbol<Net>
+    >,
     idx: number,
   ) => Result,
 ): Result[] {

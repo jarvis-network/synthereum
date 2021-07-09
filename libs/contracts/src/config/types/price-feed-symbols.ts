@@ -29,7 +29,6 @@ export type CollateralSymbol = typeof allCollateralSymbols[number];
 export type SynthereumCollateralSymbol = typeof synthereumCollateralSymbols;
 export type AssetSymbol = typeof assetSymbols[number];
 export type SyntheticSymbol = `j${AssetSymbol}`;
-export type ExchangeToken = SyntheticSymbol | CollateralSymbol;
 export type AnySynthereumPair = `${SyntheticSymbol}/${SynthereumCollateralSymbol}`;
 
 export type SynthereumPair = SyntheticToForexPair<
