@@ -36,9 +36,9 @@ export type ForexUsdPair = SyntheticToForexPair<
   'j'
 >;
 
-export type ForexPairToSynth<
+export type PairToSynth<
   Pair extends string
-> = Pair extends `${infer Asset}USD` ? `j${Asset}` : never;
+> = Pair extends `${infer Asset}${'USD'}` ? `j${Asset}` : never;
 
 export type SyntheticToForexPair<
   Pair extends string,

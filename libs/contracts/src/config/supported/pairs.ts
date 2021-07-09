@@ -3,8 +3,8 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import {
   PairLike,
+  PairToSynth,
   ForexUsdPair,
-  ForexPairToSynth,
 } from '../types/price-feed-symbols';
 
 import { PerNetwork, SupportedNetworkName } from './networks';
@@ -26,7 +26,7 @@ export type SupportedPair<
 
 export type SupportedSyntheticSymbol<
   Net extends SupportedNetworkName = SupportedNetworkName
-> = ForexPairToSynth<SupportedPair<Net>>;
+> = PairToSynth<SupportedPair<Net>>;
 
 export type SupportedSyntheticSymbolExact<
   Net extends SupportedNetworkName = SupportedNetworkName
