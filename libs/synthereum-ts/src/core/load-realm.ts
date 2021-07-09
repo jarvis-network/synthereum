@@ -28,7 +28,7 @@ import {
   SupportedSynthereumSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/config/supported/synthereum-pairs';
 
-import { SyntheticSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
+import { SupportedSelfMintingSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
 
 import type {
   SynthereumContractDependencies,
@@ -133,7 +133,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   ) => {
     const syntheticTokens = (await selMintingRegistry.instance.methods
       .getSyntheticTokens()
-      .call()) as SyntheticSymbol[];
+      .call()) as SupportedSelfMintingSymbol<Net>[];
     const collateralTokens = (await selMintingRegistry.instance.methods
       .getCollaterals()
       .call()) as AddressOn<Net>[];
@@ -241,7 +241,7 @@ export async function loadPoolInfo<
 
 export async function loadDerivativesInfo<
   Version extends SelfMintingVersion,
-  SynthSymbol extends SyntheticSymbol,
+  SynthSymbol extends SupportedSelfMintingSymbol<Net>,
   Net extends SupportedNetworkName
 >(
   web3: Web3On<Net>,
