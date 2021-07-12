@@ -15,10 +15,10 @@ mkShell {
     libusb1.dev
     ldc
     fish
+  ] ++ lib.optional (! stdenv.isDarwin) [
     (docker.override { buildxSupport = true; })
     docker-compose
-  ] ++ lib.optional (! stdenv.isDarwin) [
-    eudev 
+    eudev
     libsecret
     glib
   ];
