@@ -13,9 +13,9 @@ mkShell {
     gnumake
     python3
     libusb1.dev
+  ] ++ lib.optional (! stdenv.isDarwin) [
     ldc
     fish
-  ] ++ lib.optional (! stdenv.isDarwin) [
     (docker.override { buildxSupport = true; })
     docker-compose
     eudev
