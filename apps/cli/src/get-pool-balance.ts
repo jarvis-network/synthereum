@@ -1,10 +1,8 @@
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/config';
-import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core//realms/synthereum/load';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/synthereum/load';
 import {
   getPoolBalances,
   depositInAllPools,
 } from '@jarvis-network/synthereum-ts/dist/core/pool-utils';
-import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import {
   formatAmount,
   numberToWei,
@@ -27,16 +25,15 @@ import { log } from '@jarvis-network/core-utils/dist/logging';
 import { assertIsAddress } from '@jarvis-network/core-utils/dist/eth/address';
 import { t } from '@jarvis-network/core-utils/dist/base/meta';
 
+import { createCliApp } from './common/create-cli-app';
+import { buildCli } from './common/cli-config';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
 const { table } = console;
 
-async function main() {
-  log('Starting');
-  const netId = parseSupportedNetworkId(process.env.NETWORK_ID);
-  const web3 = getInfuraWeb3(netId);
-  log('Web3 instance loaded');
+createCliApp(buildCli(__filename), async ({ web3, netId }) => {
   setPrivateKey_DevelopmentOnly(web3, assertNotNull(process.env.PRIVATE_KEY));
   log('Private key set - using', { address: web3.defaultAccount });
   const realm = await loadRealm(web3, netId);
@@ -69,7 +66,7 @@ async function main() {
   });
   log('Deposit complete. Getting v4 balances');
   await printPoolBalance(realm, poolVersion);
-}
+});
 
 async function printPoolBalance(
   realm: SynthereumRealmWithWeb3,
@@ -89,10 +86,3 @@ async function printPoolBalance(
     }));
   table(result);
 }
-
-main()
-  .then(_ => process.exit(0))
-  .catch(err => {
-    log(err);
-    process.exit(1);
-  });
