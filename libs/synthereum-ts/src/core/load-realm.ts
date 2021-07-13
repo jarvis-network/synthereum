@@ -45,6 +45,7 @@ import type {
 } from './types/pools';
 import type { SynthereumRealmWithWeb3 } from './types/realm';
 import {
+  DerivativesForVersion,
   SelfMintingDerivative,
   SelfMintingVersion,
 } from './types/self-minting-derivatives';
@@ -137,7 +138,6 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     const collateralTokens = (await selMintingRegistry.instance.methods
       .getCollaterals()
       .call()) as AddressOn<Net>[];
-
     const pairs = await Promise.all(
       collateralTokens.flatMap(collateralTokenAddress =>
         syntheticTokens.map(async symbol => {
@@ -153,7 +153,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
         }),
       ),
     );
-    return Object.fromEntries(pairs);
+    return Object.fromEntries(pairs) as DerivativesForVersion<Version, Net>;
   };
   const derivatives: SynthereumRealmWithWeb3<Net>['selfMintingDerivatives'] = {};
   derivatives.v1 = await loadAllDerivatives('v1');

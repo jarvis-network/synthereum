@@ -1,6 +1,6 @@
 import type {
   SupportedNetworkName,
-  SyntheticSymbol,
+  SupportedSelfMintingSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 import {
   ContractInfo,
@@ -19,7 +19,7 @@ export type SelfMintingDerivativeContract = SelfMintingPerpetualMultiParty;
 export interface SelfMintingDerivative<
   Version extends SelfMintingVersion,
   Net extends SupportedNetworkName = SupportedNetworkName,
-  SynthSymbol extends SyntheticSymbol = SyntheticSymbol
+  SynthSymbol extends SupportedSelfMintingSymbol<Net> = SupportedSelfMintingSymbol<Net>
 > extends ContractInfo<Net, SelfMintingDerivativeContract> {
   networkId: ToNetworkId<Net>;
   versionId: Version;
@@ -33,7 +33,7 @@ export type DerivativesForVersion<
   Version extends SelfMintingVersion,
   Net extends SupportedNetworkName
 > = {
-  [SynthSymbol in SyntheticSymbol]?: SelfMintingDerivative<
+  [SynthSymbol in SupportedSelfMintingSymbol<Net>]?: SelfMintingDerivative<
     Version,
     Net,
     SynthSymbol
