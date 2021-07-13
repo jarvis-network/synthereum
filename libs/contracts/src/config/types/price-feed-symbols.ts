@@ -5,8 +5,10 @@ import {
 
 // primary definitions:
 
-export const collateralSymbols = ['USDC'] as const;
-export const usdCollateral = typeCheck<'USDC'>()(collateralSymbols[0]);
+export const allCollateralSymbols = ['USDC'] as const;
+export const synthereumCollateralSymbols = typeCheck<'USDC'>()(
+  allCollateralSymbols[0],
+);
 export const assetSymbols = [
   'EUR',
   'GBP',
@@ -23,12 +25,12 @@ export type PairLike<
   Separator extends string = '/'
 > = `${AssetType}${Separator}${CollateralType}`;
 
-export type CollateralSymbol = typeof collateralSymbols[number];
-export type UsdCollateralSymbol = typeof usdCollateral;
+export type CollateralSymbol = typeof allCollateralSymbols[number];
+export type SynthereumCollateralSymbol = typeof synthereumCollateralSymbols;
 export type AssetSymbol = typeof assetSymbols[number];
 export type SyntheticSymbol = `j${AssetSymbol}`;
 export type ExchangeToken = SyntheticSymbol | CollateralSymbol;
-export type AnySynthereumPair = `${SyntheticSymbol}/${UsdCollateralSymbol}`;
+export type AnySynthereumPair = `${SyntheticSymbol}/${SynthereumCollateralSymbol}`;
 
 export type SynthereumPair = SyntheticToForexPair<
   AnySynthereumPair,
@@ -61,7 +63,7 @@ export type PriceFeed = PerAsset<string>;
 
 // derived definitions:
 
-export const primaryCollateralSymbol = usdCollateral;
+export const primaryCollateralSymbol = synthereumCollateralSymbols;
 
 export const allSyntheticSymbols = typeCheck<SyntheticSymbol[]>()([
   'jEUR',
