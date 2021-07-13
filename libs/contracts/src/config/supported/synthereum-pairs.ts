@@ -46,3 +46,12 @@ export type PerPair<Net extends SupportedNetworkName, Config> = {
 export type ExchangeSynthereumToken =
   | SupportedSynthereumSymbol
   | SynthereumCollateralSymbol;
+
+export type PerSynthereumPair<
+  Config,
+  Net extends SupportedNetworkName = SupportedNetworkName
+> = {
+  [Pair in PairToSynth<
+    SupportedSynthereumPairs[ToNetworkId<Net>][number]
+  >]: Config;
+};

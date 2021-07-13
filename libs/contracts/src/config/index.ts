@@ -18,6 +18,7 @@ export type {
   SupportedSynthereumPair,
   SupportedSynthereumSymbol,
   ExchangeSynthereumToken,
+  PerSynthereumPair,
 } from './supported/synthereum-pairs';
 export type {
   Fees,

@@ -15,6 +15,7 @@ export type {
   ExchangeToken,
   ExchangeSynthereumToken,
   PerAsset,
+  PerSynthereumPair,
   SynthereumConfig,
   SynthereumContractDependencies,
   SyntheticSymbol,
