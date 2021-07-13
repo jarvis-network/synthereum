@@ -5,11 +5,10 @@ import {
 import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/address';
 import { log } from '@jarvis-network/core-utils/dist/logging';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { networkNameToId } from '@jarvis-network/core-utils/dist/eth/networks';
-import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import { setPrivateKey_DevelopmentOnly } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
 import { buildCli } from './common/cli-config';
+import { createCliApp } from './common/create-cli-app';
 
 const FAUCET_CONTRACT_ADDRESS = A('0x600103d518cc5e8f3319d532eb4e5c268d32e604');
 
@@ -94,80 +93,69 @@ const aaveTokens = {
   },
 } as const;
 
-const { argv } = buildCli(__filename)
-  .option('token', {
-    type: 'string',
-    required: true,
-    coerce(token: unknown): keyof typeof aaveTokens {
-      const supportedTokens = Object.keys(aaveTokens);
-
-      assert(
-        supportedTokens.includes(token as string),
-        `Token not supported. Supported tokens are ${supportedTokens.join(
-          ', ',
-        )}`,
-      );
-
-      return token as keyof typeof aaveTokens;
-    },
-  })
-  .option('amount', {
-    default: 100_000,
-    type: 'number',
-    coerce(x: number) {
-      assert(x > 0, 'amount is not bigger than 0');
-      return x;
-    },
-  });
-
-main()
-  .then(_ => process.exit(0))
-  .catch(error => {
-    log(error);
-    process.exit(1);
-  });
-
 /**
  * Sends a desired amount of tokens to your address (Kovan only)
  */
-async function main() {
-  const { token } = argv;
-  let { amount } = argv;
+createCliApp(
+  buildCli(__filename)
+    .option('token', {
+      type: 'string',
+      required: true,
+      coerce: token => {
+        const supportedTokens = Object.keys(aaveTokens);
+        assert(
+          supportedTokens.includes(token as string),
+          `Token not supported. Supported tokens are ${supportedTokens.join(
+            ', ',
+          )}`,
+        );
 
-  if (['AAVE', 'YFI'].includes(token) && amount !== 1) {
-    amount = 1;
+        return token as keyof typeof aaveTokens;
+      },
+    })
+    .option('amount', {
+      type: 'number',
+      default: 100_000,
+      coerce: amount => {
+        assert(amount > 0, 'amount is not bigger than 0');
+        return amount;
+      },
+    }),
+  async ({ web3, argv: { token = '', amount } }) => {
+    if (['AAVE', 'YFI'].includes(token) && amount !== 1) {
+      amount = 1;
+      log(
+        `${token} supports minting only 1 at a time (amount argument disregarded)`,
+      );
+    }
+
+    setPrivateKey_DevelopmentOnly(web3, assertNotNull(process.env.PRIVATE_KEY));
+    const address = A(web3.defaultAccount);
+    log('Private key set - using', { address });
+
+    const tokenInfo = aaveTokens[token as keyof typeof aaveTokens];
+    const amountHex = new FPN(amount, true)
+      .increasePrecision(tokenInfo.decimals)
+      .toString('hex');
+    const data = `0x${MINT_METHOD_ID.toString(
+      16,
+    )}${tokenInfo.address
+      .toLowerCase()
+      .slice(2)
+      .padStart(64, '0')}${amountHex.padStart(64, '0')}`;
+
+    const config = {
+      data,
+      to: FAUCET_CONTRACT_ADDRESS,
+      from: address,
+    };
+
+    const gas = await web3.eth.estimateGas(config);
+
+    const tx = await web3.eth.sendTransaction({ ...config, gas });
+
     log(
-      `${token} supports minting only 1 at a time (amount argument disregarded)`,
+      `\nSuccessfully received ${amount} ${token} at address ${web3.eth.defaultAccount}\nTransaction hash: ${tx.transactionHash}\nEtherscan link: https://kovan.etherscan.io/tx/${tx.transactionHash}`,
     );
-  }
-
-  const web3 = getInfuraWeb3(networkNameToId.kovan);
-  setPrivateKey_DevelopmentOnly(web3, assertNotNull(process.env.PRIVATE_KEY));
-  const address = A(web3.defaultAccount);
-  log('Private key set - using', { address });
-
-  const tokenInfo = aaveTokens[token as keyof typeof aaveTokens];
-  const amountHex = new FPN(amount, true)
-    .increasePrecision(tokenInfo.decimals)
-    .toString('hex');
-  const data = `0x${MINT_METHOD_ID.toString(
-    16,
-  )}${tokenInfo.address
-    .toLowerCase()
-    .slice(2)
-    .padStart(64, '0')}${amountHex.padStart(64, '0')}`;
-
-  const config = {
-    data,
-    to: FAUCET_CONTRACT_ADDRESS,
-    from: address,
-  };
-
-  const gas = await web3.eth.estimateGas(config);
-
-  const tx = await web3.eth.sendTransaction({ ...config, gas });
-
-  log(
-    `\nSuccessfully received ${amount} ${token} at address ${web3.eth.defaultAccount}\nTransaction hash: ${tx.transactionHash}\nEtherscan link: https://kovan.etherscan.io/tx/${tx.transactionHash}`,
-  );
-}
+  },
+);
