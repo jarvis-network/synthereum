@@ -232,7 +232,7 @@ function encodeSelfMintingDerivative(
         },
         capMintAmount: { rawValue: capMintAmount },
         capDepositRatio: {
-          rawValue: web3Utils.toWei(capDepositRatio.toString()),
+          rawValue: capDepositRatio,
         },
       },
     ],

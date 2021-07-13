@@ -207,7 +207,7 @@ contract('Synthereum Pool Register', function (accounts) {
         .address;
       selfMintingPriceFeedIdentifier = 'EUR/JRT';
       capMintAmount = web3Utils.toWei('1000000');
-      capDepositRatio = 700;
+      capDepositRatio = 700000000;
       const feePercentage = 0.02;
       const feeRecipient = DAO;
       daoFee = {

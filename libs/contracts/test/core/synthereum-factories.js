@@ -84,7 +84,7 @@ contract('Factories', function (accounts) {
     feeRecipient,
   };
   let capMintAmount = web3Utils.toWei('1000000');
-  let capDepositRatio = 700;
+  let capDepositRatio = 700000000;
   //Other params
   let sender = accounts[6];
   let derivativePayload;

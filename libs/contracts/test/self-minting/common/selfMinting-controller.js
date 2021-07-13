@@ -72,7 +72,7 @@ contract('Self-minting controller', function (accounts) {
   };
   let secondFeeRecipient = accounts[8];
   let capMintAmount = web3Utils.toWei('1000000');
-  let capDepositRatio = 700;
+  let capDepositRatio = 700000000;
   //Other params
   let firstWrongAddress = accounts[6];
   let sender = accounts[7];
@@ -253,10 +253,10 @@ contract('Self-minting controller', function (accounts) {
       );
       assert.equal(
         capDeposit.toString(),
-        toBN(toWei(capDepositRatio.toString())).toString(),
+        capDepositRatio.toString(),
         'Wrong initial cap deposit ratio',
       );
-      const newCapDepositRatio = toWei('10');
+      const newCapDepositRatio = 10000000;
       const updateTx = await controllerInstance.setCapDepositRatio(
         [selfMintingDerivativeAddr],
         [newCapDepositRatio],
@@ -267,7 +267,7 @@ contract('Self-minting controller', function (accounts) {
       );
       assert.equal(
         capDeposit.toString(),
-        newCapDepositRatio,
+        newCapDepositRatio.toString(),
         'Wrong cap deposit ratio after update',
       );
       truffleAssert.eventEmitted(updateTx, 'SetCapDepositRatio', ev => {
@@ -278,7 +278,7 @@ contract('Self-minting controller', function (accounts) {
       });
       await controllerInstance.setCapDepositRatio(
         [selfMintingDerivativeAddr],
-        [toWei(capDepositRatio.toString())],
+        [capDepositRatio.toString()],
         { from: maintainer },
       );
     });
@@ -291,11 +291,11 @@ contract('Self-minting controller', function (accounts) {
       );
     });
     it('Revert if different number of self-minting derivatives and deposit ratios', async () => {
-      const newCapDepositRatio = toWei('10');
+      const newCapDepositRatio = 10000000;
       await truffleAssert.reverts(
         controllerInstance.setCapDepositRatio(
           [selfMintingDerivativeAddr, firstWrongAddress],
-          [newCapDepositRatio],
+          [newCapDepositRatio.toString()],
           {
             from: maintainer,
           },
@@ -307,7 +307,7 @@ contract('Self-minting controller', function (accounts) {
       await truffleAssert.reverts(
         controllerInstance.setCapDepositRatio(
           [selfMintingDerivativeAddr],
-          [toWei(capDepositRatio.toString())],
+          [capDepositRatio.toString()],
           {
             from: maintainer,
           },
