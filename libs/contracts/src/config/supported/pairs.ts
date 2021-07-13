@@ -1,4 +1,5 @@
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
+import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import {
   PairLike,
@@ -6,7 +7,7 @@ import {
   ForexPairToSynth,
 } from '../types/price-feed-symbols';
 
-import { PerNetwork, SupportedNetworkId } from './networks';
+import { PerNetwork, SupportedNetworkName } from './networks';
 
 export type NetworkPairs<
   PairType extends PairLike<string, string, ''>
@@ -20,21 +21,21 @@ export const supportedPairs = typeCheck<NetworkPairs<ForexUsdPair>>()({
 export type SupportedPairs = typeof supportedPairs;
 
 export type SupportedPair<
-  Net extends SupportedNetworkId = SupportedNetworkId
-> = SupportedPairs[Net][number];
+  Net extends SupportedNetworkName = SupportedNetworkName
+> = SupportedPairs[ToNetworkId<Net>][number];
 
 export type SupportedSyntheticSymbol<
-  Net extends SupportedNetworkId = SupportedNetworkId
+  Net extends SupportedNetworkName = SupportedNetworkName
 > = ForexPairToSynth<SupportedPair<Net>>;
 
 export type SupportedSyntheticSymbolExact<
-  Net extends SupportedNetworkId = SupportedNetworkId
+  Net extends SupportedNetworkName = SupportedNetworkName
 > = keyof {
   [N in Net]: {
     [X in SupportedSyntheticSymbol<N>]: unknown;
   };
 }[Net];
 
-export type PerPair<Net extends SupportedNetworkId, Config> = {
-  [Pair in SupportedPairs[Net][number]]: Config;
+export type PerPair<Net extends SupportedNetworkName, Config> = {
+  [Pair in SupportedPairs[ToNetworkId<Net>][number]]: Config;
 };

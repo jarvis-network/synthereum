@@ -47,7 +47,7 @@ export interface SynthereumContractDependencies<
 }
 
 export type ChainLinkPriceAggregators = {
-  [Net in SupportedNetworkId]: PerPair<Net, AddressOn<Net>>;
+  [Net in SupportedNetworkId]: PerPair<ToNetworkName<Net>, AddressOn<Net>>;
 };
 
 export interface Fees<Net extends SupportedNetworkName> {
