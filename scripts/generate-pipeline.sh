@@ -29,6 +29,10 @@ before_script:
   script:
     - yarn test contracts
 
+🧱 cli:build:
+  script:
+    - yarn build cli
+
 🚀 deploy:
   variables:
     NETLIFY_AUTH_TOKEN: '\$NETLIFY_AUTH_TOKEN'
