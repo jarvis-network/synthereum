@@ -1,9 +1,9 @@
 import {
-  CollateralSymbol,
   ExchangeToken,
   PoolVersion,
   SupportedNetworkName,
   SyntheticSymbol,
+  SynthereumCollateralSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 
 import { PoolsForVersion } from './types/pools';
@@ -24,7 +24,7 @@ export function isSupportedCollateral<
 >(
   activePools: PoolsForVersion<Version, Net>,
   token: ExchangeToken,
-): token is CollateralSymbol {
+): token is SynthereumCollateralSymbol {
   // TODO: optimize by caching a table of all known collateral symbols
   return Object.values(activePools).some(
     pool => pool?.collateralToken.symbol === token,
