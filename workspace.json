@@ -548,14 +548,12 @@
       "projectType": "library",
       "targets": {
         "build": {
-          "executor": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
+          "executor": "@nrwl/workspace:run-commands",
+          "outputs": ["libs/polygon/dist"],
           "options": {
-            "outputPath": "dist/libs/polygon",
-            "tsConfig": "libs/polygon/tsconfig.lib.json",
-            "packageJson": "libs/polygon/package.json",
-            "main": "libs/polygon/src/index.ts",
-            "assets": ["libs/polygon/*.md"]
+            "command": "yarn run build",
+            "cwd": "./libs/polygon",
+            "color": true
           }
         },
         "lint": {
