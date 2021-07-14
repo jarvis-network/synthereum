@@ -581,7 +581,8 @@
           "executor": "@nrwl/node:package",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/libs/hardhat-utils",
+            "srcRootForCompilationRoot": "libs/hardhat-utils/src",
+            "outputPath": "libs/hardhat-utils/dist",
             "tsConfig": "libs/hardhat-utils/tsconfig.lib.json",
             "packageJson": "libs/hardhat-utils/package.json",
             "main": "libs/hardhat-utils/src/index.ts",
@@ -591,7 +592,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/hardhat-utils/**/*.ts"]
+            "lintFilePatterns": ["libs/hardhat-utils/src/**/*.ts"]
           }
         },
         "test": {

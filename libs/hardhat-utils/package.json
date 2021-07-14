@@ -1,4 +1,17 @@
 {
   "name": "@jarvis-network/hardhat-utils",
-  "version": "0.0.1"
+  "author": "Alessandro Bergamaschi",
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
+    "lint": "eslint src/**/*",
+    "build": "tsc -p ./tsconfig.lib.json"
+  }
 }
