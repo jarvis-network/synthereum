@@ -5,9 +5,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
-  const {
-    getExistingInstance,
-  } = require('../dist/migration-utils/deployment');
+  const { getExistingInstance } = require('../dist/migration-utils/deployment');
   const {
     SynthereumFactoryVersioning,
     SynthereumFinder,

@@ -20,9 +20,7 @@ async function migrate(deployer, network, accounts) {
     parseBoolean,
   } = require('@jarvis-network/core-utils/dist/base/asserts');
   const rolesConfig = require('../data/roles.json');
-  const {
-    getExistingInstance,
-  } = require('../dist/migration-utils/deployment');
+  const { getExistingInstance } = require('../dist/migration-utils/deployment');
   const umaContracts = require('../data/uma-contract-dependencies.json');
   const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
   const {
