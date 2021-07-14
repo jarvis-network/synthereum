@@ -5,6 +5,7 @@ import {
   PairLike,
   PairToSynth,
   SynthereumPair,
+  SynthereumCollateralSymbol,
 } from '../types/price-feed-symbols';
 
 import { PerNetwork, SupportedNetworkName } from './networks';
@@ -41,3 +42,7 @@ export type SupportedSynthereumSymbolExact<
 export type PerPair<Net extends SupportedNetworkName, Config> = {
   [Pair in SupportedSynthereumPairs[ToNetworkId<Net>][number]]: Config;
 };
+
+export type ExchangeSynthereumToken =
+  | SupportedSynthereumSymbol
+  | SynthereumCollateralSymbol;
