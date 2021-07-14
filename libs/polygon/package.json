@@ -10,7 +10,8 @@
     "clean": "git clean -fdx -e .env -e node_modules -- .",
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
-    "build": "echo 'Building...'"
+    "build:solidity": "hardhat compile",
+    "build": "yarn build:solidity"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
