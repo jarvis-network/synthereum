@@ -571,6 +571,38 @@
           }
         }
       }
+    },
+    "hardhat-utils": {
+      "root": "libs/hardhat-utils",
+      "sourceRoot": "libs/hardhat-utils/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/hardhat-utils",
+            "tsConfig": "libs/hardhat-utils/tsconfig.lib.json",
+            "packageJson": "libs/hardhat-utils/package.json",
+            "main": "libs/hardhat-utils/src/index.ts",
+            "assets": ["libs/hardhat-utils/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/hardhat-utils/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/hardhat-utils"],
+          "options": {
+            "jestConfig": "libs/hardhat-utils/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }
