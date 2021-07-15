@@ -20,8 +20,8 @@ contract FixedRateWrapper is ERC20 {
   // The rate at which the conversion happens
   uint256 public immutable rate;
 
-  // A mapping that tracks the users deposit
-  mapping(address => uint256) public userFunds;
+  // A variable to track total deposited amount of synthetic tokens
+  uint256 public total_deposited;
 
   /** @notice Constructs the ERC20 contract and sets the immutable variables
    * @param _token - The synthetic token to which the legacy currency is pegged
@@ -45,7 +45,7 @@ contract FixedRateWrapper is ERC20 {
   function wrap(uint256 _amount) public {
     uint256 amountTokens = _amount.mul(rate).div(PRECISION);
     synth.safeTransferFrom(msg.sender, address(this), _amount);
-    userFunds[msg.sender] = userFunds[msg.sender].add(_amount);
+    total_deposited = total_deposited.add(_amount);
     _mint(msg.sender, amountTokens);
   }
 
@@ -54,10 +54,9 @@ contract FixedRateWrapper is ERC20 {
    */
   function unwrap(uint256 _amount) public {
     require(balanceOf(msg.sender) >= _amount, 'Not enought tokens to unwrap');
-    uint256 ratio = _amount.mul(PRECISION).div(balanceOf(msg.sender));
-    uint256 amountTokens = userFunds[msg.sender].mul(ratio).div(PRECISION);
+    uint256 amountTokens = total_deposited.mul(_amount).div(totalSupply());
     _burn(msg.sender, _amount);
-    userFunds[msg.sender] = userFunds[msg.sender].sub(amountTokens);
+    total_deposited = total_deposited.sub(amountTokens);
     synth.safeTransfer(msg.sender, amountTokens);
   }
 }
