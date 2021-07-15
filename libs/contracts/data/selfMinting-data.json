@@ -9,7 +9,7 @@
   },
   "1": {
     "version": 1,
-    "collateralAddress": "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828",
+    "collateralAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     "daoFee": {
       "feePercentage": 0.00165,
       "feeRecipient": "0x8eF00583bAa186094D9A34a0A4750C1D1BB86831"
