@@ -1,4 +1,29 @@
+import { resolve } from 'path';
+
 import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
+import {
+  modifiyGetMinimumBuild,
+  modifiyVerifyMinimumBuild,
+  modifyCompile,
+  modifyTest,
+  modifyAccounts,
+  modifyDeploy,
+  compile,
+} from '@jarvis-network/hardhat-utils/dist/tasks';
+
+modifiyGetMinimumBuild();
+modifiyVerifyMinimumBuild();
+modifyCompile(
+  require.resolve('./contracts/test/ImportAll.sol'),
+  resolve('./deploy'),
+);
+modifyTest(
+  require.resolve('./contracts/test/ImportAll.sol'),
+  resolve('./deploy'),
+);
+modifyAccounts();
+modifyDeploy(resolve('.'));
+compile();
 
 export const config = {
   solidity: {
@@ -11,12 +36,18 @@ export const config = {
     },
   },
   paths: {
-    sources: './contracts',
-    tests: './test',
-    cache: './cache',
+    root: '.',
+    sources: './deploy',
     artifacts: './artifacts',
+    cache: './cache',
+    tests: './test',
   },
   networks: {
+    hardhat: {
+      gas: 11500000,
+      blockGasLimit: 11500000,
+      allowUnlimitedContractSize: false,
+    },
     localhost: {
       url: 'http://127.0.0.1:8545',
     },
