@@ -11,7 +11,8 @@
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
     "build:solidity": "hardhat compile",
-    "build": "yarn build:solidity"
+    "build": "yarn build:solidity",
+    "start:local-fork": "./local-fork.sh"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
