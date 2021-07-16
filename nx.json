@@ -23,46 +23,6 @@
     }
   },
   "projects": {
-    "core-utils": {
-      "tags": []
-    },
-    "crypto-utils": {
-      "tags": []
-    },
-    "sol2ts-code-gen": {
-      "tags": []
-    },
-    "subgraph": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
-    "ui": {
-      "tags": []
-    },
-    "contracts": {
-      "tags": [],
-      "implicitDependencies": []
-    },
-    "synthereum-ts": {
-      "tags": [],
-      "implicitDependencies": ["contracts"]
-    },
-    "validator": {
-      "tags": [],
-      "implicitDependencies": []
-    },
-    "validator-lib": {
-      "tags": [],
-      "implicitDependencies": ["synthereum-ts"]
-    },
-    "toolkit": {
-      "tags": [],
-      "implicitDependencies": ["synthereum-ts"]
-    },
-    "frontend": {
-      "tags": [],
-      "implicitDependencies": ["toolkit"]
-    },
     "borrowing": {
       "tags": [],
       "implicitDependencies": ["toolkit"]
@@ -75,11 +35,58 @@
       "tags": [],
       "implicitDependencies": ["synthereum-ts"]
     },
+    "contracts": {
+      "tags": [],
+      "implicitDependencies": []
+    },
+    "core-utils": {
+      "tags": []
+    },
+    "crypto-utils": {
+      "tags": []
+    },
     "examples": {
       "tags": []
     },
+    "frontend": {
+      "tags": [],
+      "implicitDependencies": ["toolkit"]
+    },
     "legacy-currency-contracts": {
       "tags": []
+    },
+    "sample-app": {
+      "tags": []
+    },
+    "sample-app-e2e": {
+      "tags": [],
+      "implicitDependencies": ["sample-app"]
+    },
+    "sol2ts-code-gen": {
+      "tags": []
+    },
+    "subgraph": {
+      "tags": [],
+      "implicitDependencies": ["contracts"]
+    },
+    "synthereum-ts": {
+      "tags": [],
+      "implicitDependencies": ["contracts"]
+    },
+    "toolkit": {
+      "tags": [],
+      "implicitDependencies": ["synthereum-ts"]
+    },
+    "ui": {
+      "tags": []
+    },
+    "validator": {
+      "tags": [],
+      "implicitDependencies": []
+    },
+    "validator-lib": {
+      "tags": [],
+      "implicitDependencies": ["synthereum-ts"]
     }
   },
   "workspaceLayout": {

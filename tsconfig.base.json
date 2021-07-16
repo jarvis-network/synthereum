@@ -1,7 +1,5 @@
 {
-  // For reference, see: https://www.typescriptlang.org/tsconfig
   "compilerOptions": {
-    // Core config:
     "target": "es2018",
     "lib": ["ES2019"],
     "module": "commonjs",
@@ -11,36 +9,28 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-
-    // Output config:
     "incremental": false,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     "removeComments": false,
-
-    // Strict and linter checks:
     "strict": true,
     "allowJs": false,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-    //"noUncheckedIndexedAccess": true, TS 4.1.0
-    // The following checks are disabled as they're just annoying:
     "noUnusedParameters": false,
     "noUnusedLocals": false,
-
-    // Limit recursive search for type declarations:
     "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@jarvis-network/core-utils": ["libs/core-utils/src/index.ts"],
-      "@jarvis-network/sol2ts-code-gen": ["libs/sol2ts-code-gen/src/index.ts"],
       "@jarvis-network/crypto-utils": ["libs/crypto-utils/src/index.ts"],
-      "@jarvis-network/synthereum-ts": ["libs/synthereum-ts/src/index.ts"],
       "@jarvis-network/legacy-currency-contracts": [
         "libs/legacy-currency-contracts/src/index.ts"
-      ]
+      ],
+      "@jarvis-network/sol2ts-code-gen": ["libs/sol2ts-code-gen/src/index.ts"],
+      "@jarvis-network/synthereum-ts": ["libs/synthereum-ts/src/index.ts"]
     }
   }
 }

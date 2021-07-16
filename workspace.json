@@ -5,270 +5,6 @@
   },
   "defaultProject": "frontend",
   "projects": {
-    "core-utils": {
-      "root": "libs/core-utils",
-      "sourceRoot": "libs/core-utils/src",
-      "projectType": "library",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "srcRootForCompilationRoot": "libs/core-utils/src",
-            "outputPath": "libs/core-utils/dist",
-            "tsConfig": "libs/core-utils/tsconfig.lib.json",
-            "packageJson": "libs/core-utils/package.json",
-            "main": "libs/core-utils/src/index.ts",
-            "assets": ["libs/core-utils/*.md"]
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/core-utils/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/core-utils"],
-          "options": {
-            "jestConfig": "libs/core-utils/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "sol2ts-code-gen": {
-      "root": "libs/sol2ts-code-gen",
-      "sourceRoot": "libs/sol2ts-code-gen/src",
-      "projectType": "library",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "cli": true,
-            "outputPath": "libs/sol2ts-code-gen/dist",
-            "tsConfig": "libs/sol2ts-code-gen/tsconfig.lib.json",
-            "packageJson": "libs/sol2ts-code-gen/package.json",
-            "main": "libs/sol2ts-code-gen/src/generate_typechain_header.ts",
-            "assets": ["libs/sol2ts-code-gen/*.md"]
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/sol2ts-code-gen/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/sol2ts-code-gen"],
-          "options": {
-            "jestConfig": "libs/sol2ts-code-gen/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "ui": {
-      "root": "libs/ui",
-      "sourceRoot": "libs/ui/src/",
-      "projectType": "library",
-      "generators": {},
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/ui/src/**/*.{ts,tsx}"]
-          }
-        },
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build:package"],
-            "cwd": "./libs/ui",
-            "color": true
-          }
-        }
-      }
-    },
-    "toolkit": {
-      "root": "libs/toolkit",
-      "sourceRoot": "libs/toolkit/src/",
-      "projectType": "library",
-      "generators": {},
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/toolkit/src/**/*.{ts,tsx}"]
-          }
-        },
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "./libs/toolkit",
-            "color": true
-          }
-        }
-      }
-    },
-    "validator-lib": {
-      "root": "libs/validator-lib",
-      "sourceRoot": "libs/validator-lib/src/",
-      "projectType": "library",
-      "generators": {},
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/validator-lib/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/validator-lib/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "./libs/validator-lib",
-            "color": true
-          }
-        }
-      }
-    },
-    "contracts": {
-      "root": "libs/contracts",
-      "sourceRoot": "libs/contracts/src",
-      "projectType": "library",
-      "generators": {},
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/contracts/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": [
-              "yarn build contracts",
-              "yarn --cwd libs/contracts test --no-compile"
-            ],
-            "color": true,
-            "parallel": false
-          }
-        },
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "outputs": ["libs/contracts/dist"],
-          "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/contracts",
-            "color": true
-          }
-        }
-      }
-    },
-    "validator": {
-      "root": "apps/validator",
-      "sourceRoot": "apps/validator/src",
-      "projectType": "application",
-      "prefix": "validator",
-      "generators": {},
-      "targets": {
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "./apps/validator",
-            "color": true
-          }
-        },
-        "start": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run start"],
-            "cwd": "./apps/validator",
-            "color": true
-          }
-        },
-        "start-dev": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run start:dev"],
-            "cwd": "./apps/validator",
-            "color": true
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/validator/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/validator/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "frontend": {
-      "root": "apps/frontend",
-      "sourceRoot": "apps/frontend",
-      "projectType": "application",
-      "generators": {},
-      "targets": {
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "apps/frontend",
-            "color": true
-          }
-        },
-        "start": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn start"],
-            "cwd": "apps/frontend",
-            "color": true
-          }
-        },
-        "start:server": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn start-dev"],
-            "cwd": "apps/frontend",
-            "color": true
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/frontend/**/*.{ts,tsx}"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/frontend/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
     "borrowing": {
       "root": "apps/borrowing",
       "sourceRoot": "apps/borrowing",
@@ -388,6 +124,73 @@
         }
       }
     },
+    "contracts": {
+      "root": "libs/contracts",
+      "sourceRoot": "libs/contracts/src",
+      "projectType": "library",
+      "generators": {},
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/contracts/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              "yarn build contracts",
+              "yarn --cwd libs/contracts test --no-compile"
+            ],
+            "color": true,
+            "parallel": false
+          }
+        },
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "outputs": ["libs/contracts/dist"],
+          "options": {
+            "command": "yarn run build",
+            "cwd": "./libs/contracts",
+            "color": true
+          }
+        }
+      }
+    },
+    "core-utils": {
+      "root": "libs/core-utils",
+      "sourceRoot": "libs/core-utils/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "srcRootForCompilationRoot": "libs/core-utils/src",
+            "outputPath": "libs/core-utils/dist",
+            "tsConfig": "libs/core-utils/tsconfig.lib.json",
+            "packageJson": "libs/core-utils/package.json",
+            "main": "libs/core-utils/src/index.ts",
+            "assets": ["libs/core-utils/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/core-utils/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/core-utils"],
+          "options": {
+            "jestConfig": "libs/core-utils/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "crypto-utils": {
       "root": "libs/crypto-utils",
       "sourceRoot": "libs/crypto-utils/src",
@@ -417,61 +220,6 @@
           "options": {
             "jestConfig": "libs/crypto-utils/jest.config.js",
             "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "synthereum-ts": {
-      "root": "libs/synthereum-ts",
-      "sourceRoot": "libs/synthereum-ts/src",
-      "projectType": "library",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "libs/synthereum-ts/dist",
-            "srcRootForCompilationRoot": "libs/synthereum-ts/src",
-            "tsConfig": "libs/synthereum-ts/tsconfig.lib.json",
-            "packageJson": "libs/synthereum-ts/package.json",
-            "main": "libs/synthereum-ts/src/index.ts",
-            "assets": ["libs/synthereum-ts/*.md"]
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/synthereum-ts/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/synthereum-ts"],
-          "options": {
-            "jestConfig": "libs/synthereum-ts/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "subgraph": {
-      "root": "libs/subgraph",
-      "sourceRoot": "libs/subgraph/src",
-      "projectType": "library",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "outputs": ["libs/subgraph/generated", "libs/subgraph/build"],
-          "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/subgraph",
-            "color": true
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/subgraph/src/**/*.ts"]
           }
         }
       }
@@ -509,6 +257,51 @@
         }
       }
     },
+    "frontend": {
+      "root": "apps/frontend",
+      "sourceRoot": "apps/frontend",
+      "projectType": "application",
+      "generators": {},
+      "targets": {
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "cwd": "apps/frontend",
+            "color": true
+          }
+        },
+        "start": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn start"],
+            "cwd": "apps/frontend",
+            "color": true
+          }
+        },
+        "start:server": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn start-dev"],
+            "cwd": "apps/frontend",
+            "color": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/frontend/**/*.{ts,tsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/frontend/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "legacy-currency-contracts": {
       "root": "libs/legacy-currency-contracts",
       "sourceRoot": "libs/legacy-currency-contracts/src",
@@ -540,6 +333,303 @@
             "passWithNoTests": true
           }
         }
+      }
+    },
+    "sample-app": {
+      "root": "apps/sample-app",
+      "sourceRoot": "apps/sample-app",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/sample-app",
+            "outputPath": "dist/apps/sample-app"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "start": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "sample-app:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "sample-app:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "sample-app:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/sample-app"],
+          "options": {
+            "jestConfig": "apps/sample-app/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/sample-app/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "sample-app-e2e": {
+      "root": "apps/sample-app-e2e",
+      "sourceRoot": "apps/sample-app-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/sample-app-e2e/cypress.json",
+            "tsConfig": "apps/sample-app-e2e/tsconfig.e2e.json",
+            "devServerTarget": "sample-app:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "sample-app:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/sample-app-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "sol2ts-code-gen": {
+      "root": "libs/sol2ts-code-gen",
+      "sourceRoot": "libs/sol2ts-code-gen/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "cli": true,
+            "outputPath": "libs/sol2ts-code-gen/dist",
+            "tsConfig": "libs/sol2ts-code-gen/tsconfig.lib.json",
+            "packageJson": "libs/sol2ts-code-gen/package.json",
+            "main": "libs/sol2ts-code-gen/src/generate_typechain_header.ts",
+            "assets": ["libs/sol2ts-code-gen/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/sol2ts-code-gen/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/sol2ts-code-gen"],
+          "options": {
+            "jestConfig": "libs/sol2ts-code-gen/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "subgraph": {
+      "root": "libs/subgraph",
+      "sourceRoot": "libs/subgraph/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "outputs": ["libs/subgraph/generated", "libs/subgraph/build"],
+          "options": {
+            "command": "yarn run build",
+            "cwd": "./libs/subgraph",
+            "color": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/subgraph/src/**/*.ts"]
+          }
+        }
+      }
+    },
+    "synthereum-ts": {
+      "root": "libs/synthereum-ts",
+      "sourceRoot": "libs/synthereum-ts/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "libs/synthereum-ts/dist",
+            "srcRootForCompilationRoot": "libs/synthereum-ts/src",
+            "tsConfig": "libs/synthereum-ts/tsconfig.lib.json",
+            "packageJson": "libs/synthereum-ts/package.json",
+            "main": "libs/synthereum-ts/src/index.ts",
+            "assets": ["libs/synthereum-ts/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/synthereum-ts/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/synthereum-ts"],
+          "options": {
+            "jestConfig": "libs/synthereum-ts/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "toolkit": {
+      "root": "libs/toolkit",
+      "sourceRoot": "libs/toolkit/src/",
+      "projectType": "library",
+      "generators": {},
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/toolkit/src/**/*.{ts,tsx}"]
+          }
+        },
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "cwd": "./libs/toolkit",
+            "color": true
+          }
+        }
+      }
+    },
+    "ui": {
+      "root": "libs/ui",
+      "sourceRoot": "libs/ui/src/",
+      "projectType": "library",
+      "generators": {},
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/ui/src/**/*.{ts,tsx}"]
+          }
+        },
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build:package"],
+            "cwd": "./libs/ui",
+            "color": true
+          }
+        }
+      }
+    },
+    "validator": {
+      "root": "apps/validator",
+      "sourceRoot": "apps/validator/src",
+      "projectType": "application",
+      "prefix": "validator",
+      "generators": {},
+      "targets": {
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "cwd": "./apps/validator",
+            "color": true
+          }
+        },
+        "start": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run start"],
+            "cwd": "./apps/validator",
+            "color": true
+          }
+        },
+        "start-dev": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run start:dev"],
+            "cwd": "./apps/validator",
+            "color": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/validator/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/validator/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "validator-lib": {
+      "root": "libs/validator-lib",
+      "sourceRoot": "libs/validator-lib/src/",
+      "projectType": "library",
+      "generators": {},
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/validator-lib/src/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/validator-lib/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build"],
+            "cwd": "./libs/validator-lib",
+            "color": true
+          }
+        }
+      }
+    }
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "babel": true
+      }
+    },
+    "@nrwl/next": {
+      "application": {
+        "style": "css",
+        "linter": "eslint"
       }
     }
   }
