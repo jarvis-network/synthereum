@@ -1,7 +1,15 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ReactComponent as NxLogo } from '../public/nx-logo-white.svg';
+
+import { Auth } from '../components/Auth';
+import { Web3Provider } from '@ethersproject/providers';
+import { Web3ReactProvider } from '@web3-react/core';
 import './styles.css';
+
+function getLibrary(provider) {
+  return new Web3Provider(provider);
+}
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
@@ -15,7 +23,10 @@ function CustomApp({ Component, pageProps }: AppProps) {
           <h1>Welcome to sample-app!</h1>
         </header>
         <main>
-          <Component {...pageProps} />
+          <Web3ReactProvider getLibrary={getLibrary}>
+            <Auth />
+            <Component {...pageProps} />
+          </Web3ReactProvider>
         </main>
       </div>
     </>
