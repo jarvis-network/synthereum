@@ -8,7 +8,7 @@ export function useEagerConnect() {
 
   const [tried, setTried] = useState(false);
 
-  // on mount check if an authorized connection is alredy present and activate it in cse
+  // on mount check if an authorized connection is alredy present and activate it in case is authorised
   useEffect(() => {
     injected.isAuthorized().then((isAuthorized: boolean) => {
       if (isAuthorized) {
@@ -28,4 +28,4 @@ export function useEagerConnect() {
   return tried;
 }
 
-export function useInactiveListener(suppress: boolean = false) {}
+//export function useInactiveListener(suppress: boolean = false) {}
