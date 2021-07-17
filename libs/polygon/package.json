@@ -10,8 +10,11 @@
     "clean": "git clean -fdx -e .env -e node_modules -- .",
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
+    "build": "yarn build:solidity && yarn build:tsc && yarn build:nx-necessary",
     "build:solidity": "hardhat compile",
-    "build": "yarn build:solidity",
+    "build:tsc": "tsc -p ./tsconfig.lib.json",
+    "build:nx-necessary": "cp ./package.json ./dist/",
+    "deploy": "hardhat deploy",
     "start:local-fork": "./local-fork.sh"
   },
   "author": "Alessandro Bergamaschi",

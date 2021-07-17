@@ -474,7 +474,12 @@ async function clean(
 
 function shouldDeployUma(networkId: number) {
   return (
-    networkId !== 1 && networkId !== 3 && networkId !== 4 && networkId !== 42
+    networkId !== 1 &&
+    networkId !== 3 &&
+    networkId !== 4 &&
+    networkId !== 42 &&
+    networkId !== 137 &&
+    networkId !== 80001
   );
 }
 
