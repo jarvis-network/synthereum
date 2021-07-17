@@ -6,7 +6,7 @@ const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
-} = require('../../utils/encoding.js');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');

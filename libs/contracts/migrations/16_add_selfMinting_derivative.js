@@ -17,7 +17,9 @@ const {
   logTransactionOutput,
 } = require('@jarvis-network/core-utils/dist/eth/contracts/print-tx');
 const { log } = require('@jarvis-network/core-utils/dist/logging');
-const { encodeSelfMintingDerivative } = require('../utils/encoding.js');
+const {
+  encodeSelfMintingDerivative,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {

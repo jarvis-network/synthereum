@@ -1,24 +1,44 @@
-const web3Utils = require('web3-utils');
-const Web3EthAbi = require('web3-eth-abi');
+import web3Utils from 'web3-utils';
+import Web3EthAbi from 'web3-eth-abi';
+import type { AbiCoder } from 'web3-eth-abi';
+
+interface Roles {
+  admin: string;
+  maintainer: string;
+  liquidityProvider: string;
+}
+
+interface PoolFee {
+  feePercentage: {
+    rawValue: string;
+  };
+  feeRecipients: string[];
+  feeProportions: number[];
+}
+
+interface SelfMintingFee {
+  feePercentage: { rawValue: string };
+  feeRecipient: string;
+}
 
 function encodeDerivative(
-  collAddress,
-  priceFeedIdentifier,
-  syntheticName,
-  syntheticSymbol,
-  syntheticTokenAddress,
-  collateralRequirement,
-  disputeBondPct,
-  sponsorDisputeRewardPct,
-  disputerDisputeRewardPct,
-  minSponsorTokens,
-  withdrawalLiveness,
-  liquidationLiveness,
-  excessBeneficiary,
-  derivativeAdmins,
-  derivativePools,
+  collAddress: string,
+  priceFeedIdentifier: string,
+  syntheticName: string,
+  syntheticSymbol: string,
+  syntheticTokenAddress: string,
+  collateralRequirement: string,
+  disputeBondPct: string,
+  sponsorDisputeRewardPct: string,
+  disputerDisputeRewardPct: string,
+  minSponsorTokens: string,
+  withdrawalLiveness: string,
+  liquidationLiveness: string,
+  excessBeneficiary: string,
+  derivativeAdmins: string[],
+  derivativePools: string[],
 ) {
-  derivativePayload = Web3EthAbi.encodeParameters(
+  const derivativePayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
     [
       {
         params: {
@@ -57,8 +77,8 @@ function encodeDerivative(
           web3Utils.toHex(priceFeedIdentifier),
           64,
         ),
-        syntheticName: syntheticName,
-        syntheticSymbol: syntheticSymbol,
+        syntheticName,
+        syntheticSymbol,
         syntheticToken: syntheticTokenAddress,
         collateralRequirement: {
           rawValue: collateralRequirement,
@@ -75,8 +95,8 @@ function encodeDerivative(
         minSponsorTokens: {
           rawValue: minSponsorTokens,
         },
-        withdrawalLiveness: withdrawalLiveness,
-        liquidationLiveness: liquidationLiveness,
+        withdrawalLiveness,
+        liquidationLiveness,
         excessTokenBeneficiary: excessBeneficiary,
         admins: derivativeAdmins,
         pools: derivativePools,
@@ -87,14 +107,14 @@ function encodeDerivative(
 }
 
 function encodePoolOnChainPriceFeed(
-  derivativeAddress,
-  synthereumFinderAddress,
-  poolVersion,
-  roles,
-  startingCollateralization,
-  fee,
+  derivativeAddress: string,
+  synthereumFinderAddress: string,
+  poolVersion: number,
+  roles: Roles,
+  startingCollateralization: string,
+  fee: PoolFee,
 ) {
-  poolPayload = Web3EthAbi.encodeParameters(
+  const poolPayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
     [
       'address',
       'address',
@@ -136,29 +156,29 @@ function encodePoolOnChainPriceFeed(
       },
     ],
   );
-  return '0x' + poolPayload.substring(66);
+  return `0x${poolPayload.substring(66)}`;
 }
 
 function encodeSelfMintingDerivative(
-  collateralAddress,
-  priceFeedIdentifier,
-  syntheticName,
-  syntheticSymbol,
-  syntheticToken,
-  collateralRequirement,
-  disputeBondPct,
-  sponsorDisputeRewardPct,
-  disputerDisputeRewardPct,
-  minSponsorTokens,
-  withdrawalLiveness,
-  liquidationLiveness,
-  excessTokenBeneficiary,
-  version,
-  fee,
-  capMintAmount,
-  capDepositRatio,
+  collateralAddress: string,
+  priceFeedIdentifier: string,
+  syntheticName: string,
+  syntheticSymbol: string,
+  syntheticToken: string,
+  collateralRequirement: string,
+  disputeBondPct: string,
+  sponsorDisputeRewardPct: string,
+  disputerDisputeRewardPct: string,
+  minSponsorTokens: string,
+  withdrawalLiveness: string,
+  liquidationLiveness: string,
+  excessTokenBeneficiary: string,
+  version: number,
+  fee: SelfMintingFee,
+  capMintAmount: string,
+  capDepositRatio: string,
 ) {
-  selfMintingDerivativePayload = Web3EthAbi.encodeParameters(
+  const selfMintingDerivativePayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
     [
       {
         params: {
@@ -197,14 +217,14 @@ function encodeSelfMintingDerivative(
     ],
     [
       {
-        collateralAddress: collateralAddress,
+        collateralAddress,
         priceFeedIdentifier: web3Utils.padRight(
           web3Utils.toHex(priceFeedIdentifier),
           64,
         ),
-        syntheticName: syntheticName,
-        syntheticSymbol: syntheticSymbol,
-        syntheticToken: syntheticToken,
+        syntheticName,
+        syntheticSymbol,
+        syntheticToken,
         collateralRequirement: {
           rawValue: collateralRequirement,
         },
@@ -220,10 +240,10 @@ function encodeSelfMintingDerivative(
         minSponsorTokens: {
           rawValue: minSponsorTokens,
         },
-        withdrawalLiveness: withdrawalLiveness,
-        liquidationLiveness: liquidationLiveness,
-        excessTokenBeneficiary: excessTokenBeneficiary,
-        version: version,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessTokenBeneficiary,
+        version,
         daoFee: {
           feePercentage: {
             rawValue: web3Utils.toWei(fee.feePercentage.toString()),

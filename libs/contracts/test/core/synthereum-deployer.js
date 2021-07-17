@@ -9,7 +9,7 @@ const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
-} = require('../../utils/encoding.js');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const Finder = artifacts.require('Finder');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const Registry = artifacts.require('Registry');

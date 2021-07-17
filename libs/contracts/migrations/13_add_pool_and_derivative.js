@@ -22,7 +22,7 @@ const { log } = require('@jarvis-network/core-utils/dist/logging');
 const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
-} = require('../utils/encoding.js');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
