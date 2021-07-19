@@ -5,11 +5,10 @@ import { useWeb3React } from '@web3-react/core';
 
 export function Info() {
   const context = useWeb3React();
-  const { connector, library, chainId, account } = context;
+  const { library, chainId, account, active } = context;
 
   const [ethBalance, setEthBalance] = useState();
   useEffect(() => {
-    console.log(connector);
     if (library && account) {
       let active = true;
 
@@ -32,23 +31,33 @@ export function Info() {
       };
     }
   }, [library, account, chainId]);
-  return (
-    <div>
-      <span>Chain Id: {chainId ? chainId : 'not connected'}</span>
-      <br />
-      <span>
-        Account:
-        {account !== undefined && account !== null ? ` ${account}` : ''}
-      </span>
-      <br />
-      <span>
-        Eth Balance:
-        {ethBalance !== undefined && ethBalance !== null
-          ? ` ${parseFloat(formatEther(ethBalance)).toPrecision(8)}`
-          : ''}
-      </span>
 
-      <br></br>
-    </div>
-  );
+  if (active) {
+    return (
+      <div>
+        <h1>Context information from current web3 provider </h1>
+        <span>Chain Id: {chainId ? chainId : 'not connected'}</span>
+        <br />
+        <span>
+          Account:
+          {account !== undefined && account !== null ? ` ${account}` : ''}
+        </span>
+        <br />
+        <span>
+          Eth Balance:
+          {ethBalance !== undefined && ethBalance !== null
+            ? ` ${parseFloat(formatEther(ethBalance)).toPrecision(8)}`
+            : ''}
+        </span>
+
+        <br></br>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <span>Not connected to any provider</span>
+      </div>
+    );
+  }
 }
