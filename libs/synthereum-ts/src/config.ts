@@ -18,7 +18,6 @@ export type {
   PerSynthereumPair,
   SynthereumConfig,
   SynthereumContractDependencies,
-  SyntheticSymbol,
   SupportedSynthereumPair,
   SupportedSynthereumSymbol,
   SupportedNetworkId,

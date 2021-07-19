@@ -40,7 +40,6 @@ import {
   SupportedNetworkName,
   SupportedSynthereumSymbol,
   synthereumConfig,
-  SyntheticSymbol,
 } from '../config';
 
 import {
@@ -58,7 +57,7 @@ export function getAvailableSymbols<
 >(
   realm: SynthereumRealm<Net>,
   version: OneOf<Version, PoolVersions>,
-): SyntheticSymbol[] {
+): SupportedSynthereumSymbol<Net>[] {
   const pool = assertNotNull(
     realm.pools![version] as PoolsForVersion<Version, Net>,
   );
@@ -159,7 +158,7 @@ export function getPoolBalances<
 >(
   realm: SynthereumRealm<Net>,
   version: Version = 'v4' as Version,
-): Promise<[SupportedSynthereumSymbol, Amount][]> {
+): Promise<[SupportedSynthereumSymbol<Net>, Amount][]> {
   return Promise.all(
     mapPools(realm, version, async p =>
       t(p.symbol, await getTokenBalance(p.collateralToken, p.address)),

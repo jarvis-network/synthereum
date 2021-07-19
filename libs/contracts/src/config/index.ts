@@ -6,7 +6,6 @@ export {
 } from './types/price-feed-symbols';
 export type {
   SynthereumCollateralSymbol,
-  SyntheticSymbol,
   PerAsset,
 } from './types/price-feed-symbols';
 
