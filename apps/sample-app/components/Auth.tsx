@@ -63,9 +63,8 @@ export function Auth() {
   };
 
   const generateSignoutButtons = () => {
-    console.log(connector);
     switch (connector) {
-      case portis || torus || fortmatic || walletconnect:
+      case portis:
         return (
           <>
             <button

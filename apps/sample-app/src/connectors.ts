@@ -22,7 +22,7 @@ export const walletconnect = new WalletConnectConnector({
 
 export const fortmatic = new FortmaticConnector({
   apiKey: 'pk_test_2EFA70A16CF3D24E',
-  chainId: 1,
+  chainId: 42,
 });
 
 export const portis = new PortisConnector({
@@ -31,5 +31,5 @@ export const portis = new PortisConnector({
 });
 
 export const torus = new TorusConnector({
-  chainId: 1,
+  chainId: 42,
 });
