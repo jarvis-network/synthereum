@@ -39,7 +39,10 @@ import globby from 'globby';
 import rmrf from 'rmrf';
 import { exec } from 'child-process-promise';
 import removeComments from 'strip-comments';
-import { parseBoolean } from '@jarvis-network/core-utils/dist/base/asserts';
+import {
+  assertNotNull,
+  parseBoolean,
+} from '@jarvis-network/core-utils/dist/base/asserts';
 import fse from 'fs-extra';
 
 const TASK_DEPLOY = 'deploy';
@@ -531,6 +534,21 @@ function getModuleName(path: string) {
     : partsOfPath[0];
 }
 
+/**
+ * Doesn't resolve symlinks like require.resolve does
+ */
+async function customResolve(path: string) {
+  for (const modulesPath of assertNotNull(require.main).paths) {
+    const pathToResolve = `${modulesPath}/${path}`;
+    // eslint-disable-next-line no-await-in-loop
+    if (await exists(pathToResolve)) {
+      return pathToResolve;
+    }
+  }
+
+  throw new Error(`Module '${path}' not found`);
+}
+
 async function gatherFiles(
   contractPath: string,
   dir: string,
@@ -570,7 +588,8 @@ async function gatherFiles(
         importedContractPath.indexOf('../') !== 0
       ) {
         externalModule = getModuleName(importedContractPath);
-        abosolutePath = require.resolve(importedContractPath);
+        // eslint-disable-next-line no-await-in-loop
+        abosolutePath = await customResolve(importedContractPath);
         externalImports[importedContractPath] = `${relative(
           dirname(contractCopyPath),
           dir,
