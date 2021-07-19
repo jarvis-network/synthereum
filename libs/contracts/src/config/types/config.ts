@@ -2,6 +2,7 @@ import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
+import { SupportedSynthereumSymbol } from '../supported/synthereum-pairs';
 import { SupportedSelfMintingPair } from '../supported/self-minting-pairs';
 import {
   SupportedNetworkId,
@@ -9,10 +10,7 @@ import {
 } from '../supported/networks';
 import { PoolVersion } from '../supported/pool-versions';
 
-import {
-  SelfMintingCollateralSymbol,
-  SyntheticSymbol,
-} from './price-feed-symbols';
+import { SelfMintingCollateralSymbol } from './price-feed-symbols';
 
 export type SynthereumConfig = {
   [Net in SupportedNetworkId]: {
@@ -27,7 +25,7 @@ export type SynthereumConfig = {
     perVersionConfig: {
       [version in PoolVersion]: {
         version: number;
-        syntheticTokens: SyntheticTokens;
+        syntheticTokens: SyntheticTokens<ToNetworkName<Net>>;
       };
     };
   };
@@ -91,12 +89,12 @@ export interface UmaDerivativeConfig<Net extends SupportedNetworkName> {
   excessTokenBeneficiary: AddressOn<Net>;
 }
 
-export type SyntheticTokens = {
-  [SynthSymbol in SyntheticSymbol]?: SyntheticTokenConfig<SynthSymbol>;
+export type SyntheticTokens<Net extends SupportedNetworkName> = {
+  [SynthSymbol in SupportedSynthereumSymbol<Net>]?: SyntheticTokenConfig<SynthSymbol>;
 };
 
 export interface SyntheticTokenConfig<
-  SynthSymbol extends SyntheticSymbol = SyntheticSymbol
+  SynthSymbol extends SupportedSynthereumSymbol = SupportedSynthereumSymbol
 > {
   syntheticName: string; /// Example: "Jarvis Synthetic Euro",
   syntheticSymbol: SynthSymbol; /// Example: "jEUR",

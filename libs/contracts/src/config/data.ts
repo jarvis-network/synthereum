@@ -57,7 +57,7 @@ export const chainlinkAggregators = typeCheck<ChainLinkPriceAggregators>()({
   },
 } as const);
 
-const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
+const syntheticTokensKovan = typeCheck<SyntheticTokens<'kovan'>>()({
   jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
     syntheticSymbol: 'jEUR',
@@ -100,7 +100,7 @@ const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
   },
 } as const);
 
-const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
+const syntheticTokensMainnet = typeCheck<SyntheticTokens<'mainnet'>>()({
   jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
     syntheticSymbol: 'jEUR',
