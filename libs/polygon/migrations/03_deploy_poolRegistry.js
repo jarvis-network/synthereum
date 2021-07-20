@@ -1,14 +1,15 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
-  'SynthereumFinder',
-  'SynthereumPoolRegistry',
+  '@jarvis-network/synthereum-contracts/contracts/core/Finder',
+  '@jarvis-network/synthereum-contracts/contracts/core/registries/PoolRegistry',
 ]);
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
   const { getExistingInstance } = require('../dist/migration-utils/deployment');
-  const { SynthereumFinder, SynthereumPoolRegistry } = migrate.getContracts(
-    artifacts,
-  );
+  const {
+    Finder: SynthereumFinder,
+    PoolRegistry: SynthereumPoolRegistry,
+  } = migrate.getContracts(artifacts);
   const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
   const {
     toNetworkId,

@@ -275,7 +275,7 @@ export function modifyDeploy(module: string): void {
         const contractPaths = await Promise.all(
           contractNames.map(async name => {
             if (name.includes('/')) {
-              const resolvedPath = require.resolve(`${name}.sol`);
+              const resolvedPath = await customResolve(`${name}.sol`);
               return gatherFiles(resolvedPath, sources, getModuleName(name));
             }
 

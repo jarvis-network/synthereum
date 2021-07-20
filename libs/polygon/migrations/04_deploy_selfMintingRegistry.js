@@ -1,14 +1,15 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
-  'SynthereumFinder',
-  'SelfMintingRegistry',
+  '@jarvis-network/synthereum-contracts/contracts/core/Finder',
+  '@jarvis-network/synthereum-contracts/contracts/core/registries/SelfMintingRegistry',
 ]);
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
   const { getExistingInstance } = require('../dist/migration-utils/deployment');
-  const { SynthereumFinder, SelfMintingRegistry } = migrate.getContracts(
-    artifacts,
-  );
+  const {
+    Finder: SynthereumFinder,
+    SelfMintingRegistry,
+  } = migrate.getContracts(artifacts);
   const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
   const {
     toNetworkId,
