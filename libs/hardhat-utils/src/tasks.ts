@@ -1,3 +1,4 @@
+/* eslint-disable no-sequences */
 /* eslint-disable no-console */
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./string.prototype.replaceall.d.ts" />
@@ -275,7 +276,9 @@ export function modifyDeploy(module: string): void {
         const contractPaths = await Promise.all(
           contractNames.map(async name => {
             if (name.includes('/')) {
-              const resolvedPath = await customResolve(`${name}.sol`);
+              const resolvedPath = await customResolve(
+                `${name.includes(':') ? name.split(':')[0] : name}.sol`,
+              );
               return gatherFiles(resolvedPath, sources, getModuleName(name));
             }
 
@@ -349,11 +352,19 @@ export function modifyDeploy(module: string): void {
           fromDeployScript?: boolean;
         }).fromDeployScript;
 
-        const findContractPathInProject = (contractName: string) =>
+        const findContractPathInProject = (contractName: string) => (
+          console.log({ module, contractPaths, contractNames, contractName }),
           `${relative(
-            __dirname,
-            contractPaths[contractNames.indexOf(contractName)],
-          )}:${contractName}`;
+            module,
+            contractPaths[
+              contractNames.findIndex(
+                item =>
+                  (item.includes(':') ? item.split(':')[1] : item) ===
+                  contractName,
+              )
+            ],
+          )}:${contractName}`
+        );
 
         if (!noVerify && !localNetwork) {
           const contracts = await getDeployedContractsForNetwork(
