@@ -55,6 +55,9 @@ export const config = {
   mocha: {
     timeout: 1800000,
   },
+  etherscan: {
+    apiKey: process.env.POLYGONSCAN_API_KEY,
+  },
 };
 
 addPublicNetwork(config, 137);
