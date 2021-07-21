@@ -3,8 +3,8 @@ const {
   LiquidationStatesEnum,
   didContractThrow,
   MAX_UINT_VAL,
-} = require('@jarvis-network/uma-common');
-const { interfaceName } = require('@jarvis-network/uma-common');
+  interfaceName,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const { toWei, fromWei, hexToUtf8, toBN } = web3.utils;
 

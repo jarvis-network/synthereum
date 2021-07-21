@@ -13,7 +13,10 @@ async function migrate(deployer, network, accounts) {
     SynthereumChainlinkPriceFeed,
     MockV3Aggregator,
   } = migrate.getContracts(artifacts);
-  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    getKeysForNetwork,
+    deploy,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -25,6 +28,7 @@ async function migrate(deployer, network, accounts) {
   const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
   await deploy(
+    web3,
     deployer,
     network,
     SynthereumChainlinkPriceFeed,
@@ -49,7 +53,7 @@ async function migrate(deployer, network, accounts) {
   const oracleDeployment =
     networkId != 1 && networkId != 3 && networkId != 4 && networkId != 42;
   if (oracleDeployment) {
-    await deploy(deployer, network, MockV3Aggregator, 8, 120000000, {
+    await deploy(web3, deployer, network, MockV3Aggregator, 8, 120000000, {
       from: keys.deployer,
     });
     const mockV3Aggregator = await getExistingInstance(web3, MockV3Aggregator);

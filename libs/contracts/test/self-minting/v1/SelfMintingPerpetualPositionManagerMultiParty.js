@@ -1,5 +1,7 @@
 // Libraries and helpers
-const { interfaceName } = require('@jarvis-network/uma-common');
+const {
+  interfaceName,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;

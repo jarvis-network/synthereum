@@ -22,7 +22,9 @@ async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
   const { getExistingInstance } = require('../dist/migration-utils/deployment');
   const umaContracts = require('../data/uma-contract-dependencies.json');
-  const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+  const {
+    ZERO_ADDRESS,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     SynthereumFinder,
     FeePayerPartyLib,
@@ -45,7 +47,7 @@ async function migrate(deployer, network, accounts) {
     getKeysForNetwork,
     interfaceName,
     deploy,
-  } = require('@jarvis-network/uma-common');
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -62,7 +64,7 @@ async function migrate(deployer, network, accounts) {
     const keys = getKeysForNetwork(network, accounts);
     if (umaDeployment == true) {
       // Deploy CollateralWhitelist.
-      await deploy(deployer, network, AddressWhitelist, {
+      await deploy(web3, deployer, network, AddressWhitelist, {
         from: keys.deployer,
       });
       const collateralWhitelist = await getExistingInstance(
@@ -82,9 +84,18 @@ async function migrate(deployer, network, accounts) {
         });
 
       // Add the testnet ERC20 as the default collateral currency (USDC for our use case)
-      await deploy(deployer, network, TestnetERC20, 'USD Coin', 'USDC', 6, {
-        from: keys.deployer,
-      });
+      await deploy(
+        web3,
+        deployer,
+        network,
+        TestnetERC20,
+        'USD Coin',
+        'USDC',
+        6,
+        {
+          from: keys.deployer,
+        },
+      );
       const collateralToken = await getExistingInstance(web3, TestnetERC20);
       await collateralWhitelist.methods
         .addToWhitelist(collateralToken.options.address)
@@ -105,6 +116,7 @@ async function migrate(deployer, network, accounts) {
     //hardat
     if (FeePayerPartyLib.setAsDeployed) {
       const { contract: feePayerPartyLib } = await deploy(
+        web3,
         deployer,
         network,
         FeePayerPartyLib,
@@ -122,7 +134,7 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       // Truffle
-      await deploy(deployer, network, FeePayerPartyLib, {
+      await deploy(web3, deployer, network, FeePayerPartyLib, {
         from: keys.deployer,
       });
       await deployer.link(FeePayerPartyLib, [
@@ -136,6 +148,7 @@ async function migrate(deployer, network, accounts) {
       const {
         contract: perpetualPositionManagerPoolPartyLib,
       } = await deploy(
+        web3,
         deployer,
         network,
         PerpetualPositionManagerPoolPartyLib,
@@ -154,9 +167,15 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       //
-      await deploy(deployer, network, PerpetualPositionManagerPoolPartyLib, {
-        from: keys.deployer,
-      });
+      await deploy(
+        web3,
+        deployer,
+        network,
+        PerpetualPositionManagerPoolPartyLib,
+        {
+          from: keys.deployer,
+        },
+      );
       await deployer.link(PerpetualPositionManagerPoolPartyLib, [
         PerpetualLiquidatablePoolPartyLib,
         PerpetualPoolPartyLib,
@@ -165,6 +184,7 @@ async function migrate(deployer, network, accounts) {
     //hardhat
     if (PerpetualLiquidatablePoolPartyLib.setAsDeployed) {
       const { contract: perpetualLiquidatablePoolPartyLib } = await deploy(
+        web3,
         deployer,
         network,
         PerpetualLiquidatablePoolPartyLib,
@@ -182,7 +202,7 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       // Truffle
-      await deploy(deployer, network, PerpetualLiquidatablePoolPartyLib, {
+      await deploy(web3, deployer, network, PerpetualLiquidatablePoolPartyLib, {
         from: keys.deployer,
       });
       await deployer.link(
@@ -193,6 +213,7 @@ async function migrate(deployer, network, accounts) {
     //hardhat
     if (PerpetualPoolPartyLib.setAsDeployed) {
       const { contract: perpetualPoolPartyLib } = await deploy(
+        web3,
         deployer,
         network,
         PerpetualPoolPartyLib,
@@ -208,7 +229,7 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       // Truffle
-      await deploy(deployer, network, PerpetualPoolPartyLib, {
+      await deploy(web3, deployer, network, PerpetualPoolPartyLib, {
         from: keys.deployer,
       });
       await deployer.link(PerpetualPoolPartyLib, SynthereumDerivativeFactory);
@@ -216,6 +237,7 @@ async function migrate(deployer, network, accounts) {
 
     // Deploy derivative factory
     await deploy(
+      web3,
       deployer,
       network,
       SynthereumDerivativeFactory,

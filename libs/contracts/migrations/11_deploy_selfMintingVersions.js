@@ -22,7 +22,9 @@ async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
   const { getExistingInstance } = require('../dist/migration-utils/deployment');
   const umaContracts = require('../data/uma-contract-dependencies.json');
-  const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+  const {
+    ZERO_ADDRESS,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     SynthereumFinder,
     FeePayerPartyLib,
@@ -44,7 +46,7 @@ async function migrate(deployer, network, accounts) {
     RegistryRolesEnum,
     getKeysForNetwork,
     deploy,
-  } = require('@jarvis-network/uma-common');
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -69,6 +71,7 @@ async function migrate(deployer, network, accounts) {
       );
       // Add the testnet ERC20 as the default collateral currency (USDC for our use case)
       await deploy(
+        web3,
         deployer,
         network,
         TestnetSelfMintingERC20,
@@ -119,7 +122,7 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       // Truffle
-      await deploy(deployer, network, FeePayerPartyLib, {
+      await deploy(web3, deployer, network, FeePayerPartyLib, {
         from: keys.deployer,
         overwrite: false,
       });
@@ -134,6 +137,7 @@ async function migrate(deployer, network, accounts) {
       const {
         contract: selfMintingPerpetualPositionManagerMultiPartyLib,
       } = await deploy(
+        web3,
         deployer,
         network,
         SelfMintingPerpetualPositionManagerMultiPartyLib,
@@ -155,6 +159,7 @@ async function migrate(deployer, network, accounts) {
     } else {
       //
       await deploy(
+        web3,
         deployer,
         network,
         SelfMintingPerpetualPositionManagerMultiPartyLib,
@@ -172,6 +177,7 @@ async function migrate(deployer, network, accounts) {
       const {
         contract: selfMintingPerpetualLiquidatableMultiPartyLib,
       } = await deploy(
+        web3,
         deployer,
         network,
         SelfMintingPerpetualLiquidatableMultiPartyLib,
@@ -192,6 +198,7 @@ async function migrate(deployer, network, accounts) {
     } else {
       // Truffle
       await deploy(
+        web3,
         deployer,
         network,
         SelfMintingPerpetualLiquidatableMultiPartyLib,
@@ -207,6 +214,7 @@ async function migrate(deployer, network, accounts) {
     //hardhat
     if (SelfMintingPerpetualMultiPartyLib.setAsDeployed) {
       const { contract: selfMintingPerpetualMultiPartyLib } = await deploy(
+        web3,
         deployer,
         network,
         SelfMintingPerpetualMultiPartyLib,
@@ -226,7 +234,7 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       // Truffle
-      await deploy(deployer, network, SelfMintingPerpetualMultiPartyLib, {
+      await deploy(web3, deployer, network, SelfMintingPerpetualMultiPartyLib, {
         from: keys.deployer,
       });
       await deployer.link(
@@ -237,6 +245,7 @@ async function migrate(deployer, network, accounts) {
 
     // Deploy derivative factory
     await deploy(
+      web3,
       deployer,
       network,
       SelfMintingDerivativeFactory,

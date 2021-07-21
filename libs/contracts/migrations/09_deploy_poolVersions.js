@@ -20,7 +20,10 @@ async function migrate(deployer, network, accounts) {
   } = migrate.getContracts(artifacts);
 
   const poolVersions = require('../data/pool-versions.json');
-  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    getKeysForNetwork,
+    deploy,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -36,6 +39,7 @@ async function migrate(deployer, network, accounts) {
   if (poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.isEnabled ?? true) {
     if (SynthereumPoolOnChainPriceFeedLib.setAsDeployed) {
       const { contract: synthereumPoolOnChainPriceFeedLib } = await deploy(
+        web3,
         deployer,
         network,
         SynthereumPoolOnChainPriceFeedLib,
@@ -55,7 +59,7 @@ async function migrate(deployer, network, accounts) {
       }
     } else {
       // Truffle
-      await deploy(deployer, network, SynthereumPoolOnChainPriceFeedLib, {
+      await deploy(web3, deployer, network, SynthereumPoolOnChainPriceFeedLib, {
         from: keys.deployer,
       });
       await deployer.link(
@@ -64,6 +68,7 @@ async function migrate(deployer, network, accounts) {
       );
     }
     await deploy(
+      web3,
       deployer,
       network,
       SynthereumPoolOnChainPriceFeedFactory,

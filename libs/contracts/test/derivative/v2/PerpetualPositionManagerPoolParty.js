@@ -3,7 +3,7 @@ const {
   didContractThrow,
   interfaceName,
   ZERO_ADDRESS,
-} = require('@jarvis-network/uma-common');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const { assert } = require('chai');
 

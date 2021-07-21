@@ -1,14 +1,12 @@
 // Helper scripts
 const {
+  interfaceName,
   ZERO_ADDRESS,
   RegistryRolesEnum,
-} = require('@jarvis-network/uma-common');
-const web3Utils = require('web3-utils');
-const {
   LiquidationStatesEnum,
   MAX_UINT_VAL,
-} = require('@jarvis-network/uma-common');
-const { interfaceName } = require('@jarvis-network/uma-common');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
+const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
 const {
   toWei,

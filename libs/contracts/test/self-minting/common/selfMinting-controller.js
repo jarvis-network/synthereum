@@ -1,7 +1,7 @@
 const {
   ZERO_ADDRESS,
   RegistryRolesEnum,
-} = require('@jarvis-network/uma-common');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {

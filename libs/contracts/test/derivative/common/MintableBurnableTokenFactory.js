@@ -1,4 +1,6 @@
-const { didContractThrow } = require('@jarvis-network/uma-common');
+const {
+  didContractThrow,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 // Tested Contract
 const TokenFactory = artifacts.require('MintableBurnableTokenFactory');

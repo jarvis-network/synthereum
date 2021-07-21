@@ -10,7 +10,10 @@ async function migrate(deployer, network, accounts) {
     SynthereumFactoryVersioning,
     SynthereumFinder,
   } = migrate.getContracts(artifacts);
-  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    getKeysForNetwork,
+    deploy,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -21,7 +24,7 @@ async function migrate(deployer, network, accounts) {
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
   const keys = getKeysForNetwork(network, accounts);
-  await deploy(deployer, network, SynthereumFactoryVersioning, roles, {
+  await deploy(web3, deployer, network, SynthereumFactoryVersioning, roles, {
     from: keys.deployer,
   });
   const factoryVersioningInterface = await web3.utils.stringToHex(

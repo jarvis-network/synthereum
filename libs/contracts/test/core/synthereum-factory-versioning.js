@@ -12,7 +12,9 @@ const SynthereumPoolOnChainPriceFeedFactory = artifacts.require(
 );
 const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
-const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+const {
+  ZERO_ADDRESS,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 contract('Factory versioning', function (accounts) {
   let factoryVersioningInstance;

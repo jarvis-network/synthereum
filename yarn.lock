@@ -3269,7 +3269,7 @@
     rxjs "^6.6.3"
     wrap-ansi "^7.0.0"
 
-"@jarvis-network/uma-common@0.3.11", "@jarvis-network/uma-common@^0.3.11":
+"@jarvis-network/uma-common@^0.3.11":
   version "0.3.11"
   resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-common/-/@jarvis-network/uma-common-0.3.11.tgz#ec0f2eba50074acedf4874dbe7a9c2e6f3196eaf"
   integrity sha1-7A8uulAHSs7fSHTb56nC5vMZbq8=

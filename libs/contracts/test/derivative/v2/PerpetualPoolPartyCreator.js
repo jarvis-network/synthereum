@@ -3,7 +3,7 @@ const {
   didContractThrow,
   MAX_UINT_VAL,
   ZERO_ADDRESS,
-} = require('@jarvis-network/uma-common');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 
 // Tested Contract
@@ -33,7 +33,9 @@ const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const AddressWhitelist = artifacts.require('AddressWhitelist');
 const Store = artifacts.require('Store');
-const { RegistryRolesEnum } = require('@jarvis-network/uma-common');
+const {
+  RegistryRolesEnum,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 contract('PerpetualCreator', function (accounts) {
   let contractCreator = accounts[0];

@@ -10,7 +10,10 @@ async function migrate(deployer, network, accounts) {
     SynthereumFinder,
     SynthereumSyntheticTokenFactory,
   } = migrate.getContracts(artifacts);
-  const { getKeysForNetwork, deploy } = require('@jarvis-network/uma-common');
+  const {
+    getKeysForNetwork,
+    deploy,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
   } = require('@jarvis-network/core-utils/dist/eth/networks');
@@ -20,6 +23,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const keys = getKeysForNetwork(network, accounts);
   await deploy(
+    web3,
     deployer,
     network,
     SynthereumSyntheticTokenFactory,

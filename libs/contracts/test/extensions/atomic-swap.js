@@ -7,12 +7,16 @@ const IUniswapV2Router01 = artifacts.require('IUniswapV2Router01');
 const IUniswapV2Factory = artifacts.require('IUniswapV2Factory');
 const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
-const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+const {
+  ZERO_ADDRESS,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
 const PoolMock = artifacts.require('PoolMock');
 
-const { deploy } = require('@jarvis-network/uma-common');
+const {
+  deploy,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 const tokens = require('../../data/test/tokens.json');
 const uniswap = require('../../data/test/uniswap.json');
