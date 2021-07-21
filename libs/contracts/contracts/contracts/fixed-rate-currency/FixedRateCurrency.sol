@@ -22,7 +22,12 @@ contract FixedRateCurrency is FixedRateWrapper {
   //----------------------------------------
   // Events
   //----------------------------------------
-  event Mint(address indexed account, address indexed token, uint256 numTokens);
+  event Mint(
+    address indexed account,
+    address indexed tokenCollateral,
+    address indexed tokenAddress,
+    uint256 numTokens
+  );
 
   event Redeem(
     address indexed account,
@@ -70,7 +75,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     // deposit peg tokens and mint this token according to rate
     uint256 numTokensMinted = super.wrap(_pegTokenAmount);
 
-    emit Mint(msg.sender, address(synthereumPool), numTokensMinted);
+    emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
   }
 
   /** @notice - Burns fixed rate synths and unlocks the deposited peg synth (jEUR)
@@ -106,7 +111,12 @@ contract FixedRateCurrency is FixedRateWrapper {
     // wrap the jEUR to obtain this fixed rate currency
     uint256 numTokensMinted = super.wrap(pegTokensMinted);
 
-    emit Mint(msg.sender, address(synthereumPool), numTokensMinted);
+    emit Mint(
+      msg.sender,
+      address(_mintParams.collateralAmount),
+      address(this),
+      numTokensMinted
+    );
   }
 
   /** @notice - Redeem USDC by burning peg synth (from synthereum pool)
@@ -145,7 +155,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     // deposit peg tokens and mint this token according to rate
     uint256 numTokensMinted = super.wrap(pegTokenAmount);
 
-    emit Mint(msg.sender, address(synth), numTokensMinted);
+    emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
   }
 
   /**
@@ -161,8 +171,6 @@ contract FixedRateCurrency is FixedRateWrapper {
     // exchange function in broker to get final asset
     _exchangeParams.numTokens = pegTokensUnlocked;
     (uint256 numTokensMinted, ) = synthereumPool.exchange(_exchangeParams);
-
-    emit Mint(msg.sender, address(_exchangeParams.destPool), numTokensMinted);
   }
 
   // only synthereum manager can pause new mintings

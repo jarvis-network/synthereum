@@ -3,7 +3,7 @@ const { artifacts, contract } = require('hardhat');
 const Web3Utils = require('web3-utils');
 const Web3EthAbi = require('web3-eth-abi');
 
-const { truffleAssert } = require('truffle-assertions');
+const truffleAssert = require('truffle-assertions');
 const { assert } = require('chai');
 const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
 
@@ -85,6 +85,7 @@ contract('Fixed Rate Currency', accounts => {
   let pegRate = 2;
   let name = 'Jarvis Bulgarian Lev';
   let symbol = 'jBGN';
+  let PRECISION = 1e18;
 
   //mint jEur params
   let numTokens = Web3Utils.toWei('99.8');
@@ -219,11 +220,21 @@ contract('Fixed Rate Currency', accounts => {
       await pegTokenInstance.approve(fixedRateAddr, pegBalance, { from: user });
     });
     it('Correctly mints fixed rate token against its peg synth', async () => {
-      await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, {
+      const tx = await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, {
         from: user,
       });
 
       userBalance = await fixedRateCurrencyInstance.balanceOf.call(user);
+
+      truffleAssert.eventEmitted(tx, 'Mint', ev => {
+        return (
+          ev.account == user &&
+          ev.tokenCollateral == pegTokenAddr &&
+          ev.numTokens == parseInt(userBalance) &&
+          ev.tokenAddress == fixedRateAddr
+        );
+      });
+
       assert.equal(
         userBalance.eq(pegBalance.mul(Web3Utils.toBN(pegRate))),
         true,
