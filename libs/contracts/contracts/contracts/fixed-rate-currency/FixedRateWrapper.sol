@@ -43,7 +43,7 @@ contract FixedRateWrapper is ERC20 {
    * @param _amount - The amount of synthetic tokens the user wants to deposit
    */
   function wrap(uint256 _amount) public returns (uint256 amountTokens) {
-    amountTokens = _amount.mul(rate).div(PRECISION);
+    amountTokens = _amount.mul(rate);
     synth.safeTransferFrom(msg.sender, address(this), _amount);
     total_deposited = total_deposited.add(_amount);
     _mint(msg.sender, amountTokens);

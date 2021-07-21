@@ -7,14 +7,13 @@ import './FixedRateWrapper.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
+
 import {
   ISynthereumPoolOnChainPriceFeed
 } from '../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
 contract FixedRateCurrency is FixedRateWrapper {
-  // Prevents minting when true
-  // TODO pause() function
-  bool public paused;
+  bool public paused; // Prevents minting when true
 
   ISynthereumFinder public synthereumFinder;
   ISynthereumPoolOnChainPriceFeed public synthereumPool; // pegSynth-USDC pool
@@ -23,7 +22,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   //----------------------------------------
   // Events
   //----------------------------------------
-  event Mint(address indexed account, address indexed pool, uint256 numTokens);
+  event Mint(address indexed account, address indexed token, uint256 numTokens);
 
   event Redeem(
     address indexed account,
@@ -32,6 +31,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 numTokensRedeemed
   );
 
+  event ContractPaused();
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -53,7 +53,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     synthereumFinder = _synthereumFinder;
     synthereumPool = _synthereumPoolAddress;
 
-    address synthInstance;
+    // address synthInstance;
 
     // // check the appropriate pool is passed
     // (, synthInstance) = checkPoolRegistration();
@@ -111,7 +111,7 @@ contract FixedRateCurrency is FixedRateWrapper {
 
   /** @notice - Redeem USDC by burning peg synth (from synthereum pool)
         Unlocked by burning fixed rate synths (unwrap).
-     */
+    */
   function redeemUSDC(
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory _redeemParams
   ) public {
@@ -133,16 +133,48 @@ contract FixedRateCurrency is FixedRateWrapper {
     );
   }
 
-  function mintFromSynth(uint256 _synthAmount, address _synthAddress) public {
+  /**
+    @notice Mints fixed rate currency from a synthereum synthetic asset 
+   */
+  function mintFromSynth(
+    ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
+  ) public {
     // exchange function in broker to get jEur from synth
-    // wrap jEur to get fixed rate synth
+    (uint256 pegTokenAmount, ) = synthereumPool.exchange(_exchangeParams);
+
+    // deposit peg tokens and mint this token according to rate
+    uint256 numTokensMinted = super.wrap(pegTokenAmount);
+
+    emit Mint(msg.sender, address(synth), numTokensMinted);
   }
 
-  function swapForSynth(uint256 _fixedSynthAmount, address _synthAddress)
-    public
-  {
-    // unwrap fixedSynthAmount to get jEur
-    // exchange in broker for _synthAddress
+  /**
+    @notice Burns fixed rate currency and swap the peg synth with any other synthereum asset 
+   */
+  function swapForSynth(
+    uint256 _fixedSynthAmount,
+    ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
+  ) public {
+    // burn _synthAmount to get peg tokens jEur
+    uint256 pegTokensUnlocked = super.unwrap(_fixedSynthAmount);
+
+    // exchange function in broker to get final asset
+    _exchangeParams.numTokens = pegTokensUnlocked;
+    (uint256 numTokensMinted, ) = synthereumPool.exchange(_exchangeParams);
+
+    emit Mint(msg.sender, address(_exchangeParams.destPool), numTokensMinted);
+  }
+
+  // only synthereum manager can pause new mintings
+  function pauseContract() public {
+    address manager =
+      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager);
+    require(
+      msg.sender == manager,
+      'Only synthereum manager can call this function'
+    );
+    paused = true;
+    emit ContractPaused();
   }
 
   // function checkPoolRegistration()
