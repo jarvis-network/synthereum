@@ -1,5 +1,5 @@
 /* eslint-disable */
-const { artifacts, contract } = require('hardhat');
+const { artifacts, contract, Web3 } = require('hardhat');
 const Web3Utils = require('web3-utils');
 const Web3EthAbi = require('web3-eth-abi');
 
@@ -87,6 +87,7 @@ contract('Fixed Rate Currency', accounts => {
   let name = 'Jarvis Bulgarian Lev';
   let symbol = 'jBGN';
   let PRECISION = 1e18;
+  let bnPRECISION = Web3Utils.toBN(PRECISION);
 
   //mint jEur params
   let numTokens = Web3Utils.toWei('99.8');
@@ -160,6 +161,7 @@ contract('Fixed Rate Currency', accounts => {
 
     fixedRateCurrencyInstance = await FixedRateCurrency.new(
       pegTokenAddr,
+      collateralAddress,
       poolAddress,
       synthereumFinderAddress,
       pegRate,
@@ -242,7 +244,10 @@ contract('Fixed Rate Currency', accounts => {
 
       assert.equal(totalDeposit.eq(pegBalance), true);
       assert.equal(pegTokenBalanceAfter.eq(Web3Utils.toBN(0)), true);
-      assert.equal(userBalance.eq(pegBalance.mul(bnPegRate)), true);
+      assert.equal(
+        userBalance.eq(pegBalance.mul(bnPegRate).div(bnPRECISION)),
+        true,
+      );
     });
 
     it('Rejects if peg token balance is insufficient', async () => {
@@ -304,6 +309,9 @@ contract('Fixed Rate Currency', accounts => {
 
     it('Correctly burns and redeem underlying synth', async () => {
       const redeemRatio = Web3Utils.toBN(2);
+      const bnFixedCurrencyTotSupply = Web3Utils.toBN(
+        await fixedRateCurrencyInstance.totalSupply.call(),
+      );
       const totalDepositBefore = await fixedRateCurrencyInstance.total_deposited.call();
       const userBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
         user,
@@ -323,23 +331,24 @@ contract('Fixed Rate Currency', accounts => {
       );
       const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
       const totalDepositAfter = await fixedRateCurrencyInstance.total_deposited.call();
+      const pegTokensRedeemed = redeemAmount
+        .mul(totalDepositBefore)
+        .div(bnFixedCurrencyTotSupply);
 
       truffleAssert.eventEmitted(tx, 'Redeem', ev => {
         return (
           ev.account == user &&
           ev.tokenBurned == fixedRateAddr &&
           ev.tokenRedeemed == pegTokenAddr &&
-          ev.numTokensRedeemed == parseInt(redeemAmount.div(bnPegRate))
+          ev.numTokensRedeemed == parseInt(pegTokenBalanceAfter)
         );
       });
 
       assert.equal(
-        totalDepositAfter.eq(
-          totalDepositBefore.sub(redeemAmount.div(bnPegRate)),
-        ),
+        totalDepositAfter.eq(totalDepositBefore.sub(pegTokensRedeemed)),
         true,
       );
-      assert.equal(pegTokenBalanceAfter.eq(redeemAmount.div(bnPegRate)), true);
+      assert.equal(pegTokenBalanceAfter.eq(pegTokensRedeemed), true);
       assert.equal(
         userBalanceAfter.eq(userBalanceBefore.sub(redeemAmount)),
         true,
@@ -372,7 +381,93 @@ contract('Fixed Rate Currency', accounts => {
       assert.equal(totalDepositBefore.eq(totalDepositAfter), true);
     });
   });
-  describe('Mint/Redeem with Synthereum Collateral (USDC)', () => {});
+
+  describe('Mint with Synthereum Collateral (USDC)', () => {
+    beforeEach(async () => {
+      // deposit some collateral in the pool
+      await collateralInstance.allocateTo(poolAddress, poolStartingDeposit);
+
+      // allocate collateral to user and approve pool to spend collateral
+      await collateralInstance.allocateTo(user, collateralAmount);
+      await collateralInstance.approve(fixedRateAddr, collateralAmount, {
+        from: user,
+      });
+
+      // approve fixed rate contract to spend peg token (jEur)
+      await pegTokenInstance.approve(fixedRateAddr, numTokens, { from: user });
+    });
+
+    it('Correctly mints fixed rate token with synthereum collateral (USDC)', async () => {
+      let MintParams = {
+        derivative: derivativeAddress,
+        minNumTokens: numTokens,
+        collateralAmount: collateralAmount,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      const pegTokenBalanceBefore = await pegTokenInstance.balanceOf.call(user);
+      const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+
+      const tx = await fixedRateCurrencyInstance.mintFromUSDC(MintParams, {
+        from: user,
+      });
+
+      const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
+      const collateralBalanceAfter = await collateralInstance.balanceOf.call(
+        user,
+      );
+      const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+
+      truffleAssert.eventEmitted(tx, 'Mint', ev => {
+        return (
+          ev.account == user &&
+          ev.tokenCollateral == pegTokenAddr &&
+          ev.numTokens == parseInt(fixedRateBalanceAfter) &&
+          ev.tokenAddress == fixedRateAddr
+        );
+      });
+
+      // user shouldnt have any jEur
+      assert.equal(pegTokenBalanceBefore.eq(Web3Utils.toBN(0)), true);
+      assert.equal(pegTokenBalanceAfter.eq(Web3Utils.toBN(0)), true);
+
+      assert.equal(
+        fixedRateBalanceAfter.eq(
+          fixedRateBalanceBefore.add(
+            Web3Utils.toBN(numTokens).mul(bnPegRate).div(bnPRECISION),
+          ),
+        ),
+        true,
+      );
+
+      // user shouldn't have any USDC
+      assert.equal(collateralBalanceAfter.eq(Web3Utils.toBN(0)), true);
+    });
+
+    it('Rejects if USDC balance is insufficient', async () => {
+      let MintParams = {
+        derivative: derivativeAddress,
+        minNumTokens: numTokens,
+        collateralAmount: collateralAmount + 3,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.mintFromUSDC(MintParams, { from: user }),
+        'ERC20: transfer amount exceeds balance',
+      );
+    });
+  });
+
+  describe('Redeem to Synthereum Collateral (USDC)', () => {});
 
   describe('Mint/Redeem with any other Synth (jGBP) ', () => {});
 });
