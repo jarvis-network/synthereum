@@ -31,7 +31,7 @@ contract FixedRateCurrency is FixedRateWrapper {
 
   event Redeem(
     address indexed account,
-    address indexed pool,
+    address indexed tokenBurned,
     address indexed tokenRedeemed,
     uint256 numTokensRedeemed
   );
@@ -70,7 +70,7 @@ contract FixedRateCurrency is FixedRateWrapper {
    */
   function mintFromPegSynth(uint256 _pegTokenAmount) public isActive() {
     // approves this contract to pull peg tokens from user wallet
-    synth.safeApprove(address(this), _pegTokenAmount);
+    synth.safeIncreaseAllowance(address(this), _pegTokenAmount);
 
     // deposit peg tokens and mint this token according to rate
     uint256 numTokensMinted = super.wrap(_pegTokenAmount);
@@ -82,12 +82,7 @@ contract FixedRateCurrency is FixedRateWrapper {
    */
   function redeemToPegSynth(uint256 _fixedSynthAmount) public {
     uint256 tokenRedeemed = super.unwrap(_fixedSynthAmount);
-    emit Redeem(
-      msg.sender,
-      address(synthereumPool),
-      address(synth),
-      tokenRedeemed
-    );
+    emit Redeem(msg.sender, address(this), address(synth), tokenRedeemed);
   }
 
   /** @notice - Mints fixed rate synths from USDC.
@@ -97,7 +92,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     ISynthereumPoolOnChainPriceFeed.MintParams memory _mintParams
   ) public isActive() {
     // approves the pool to transfer collateral from user wallet
-    collateralInstance.safeApprove(
+    collateralInstance.safeIncreaseAllowance(
       address(synthereumPool),
       _mintParams.collateralAmount
     );
@@ -106,7 +101,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     (uint256 pegTokensMinted, ) = synthereumPool.mint(_mintParams);
 
     // approves this contract to pull peg tokens from user wallet
-    synth.safeApprove(address(this), pegTokensMinted);
+    synth.safeIncreaseAllowance(address(this), pegTokensMinted);
 
     // wrap the jEUR to obtain this fixed rate currency
     uint256 numTokensMinted = super.wrap(pegTokensMinted);
@@ -129,7 +124,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 pegTokensUnlocked = super.unwrap(_redeemParams.numTokens);
 
     // approves the synthereum pool to pull peg tokens tokens from user wallet
-    synth.safeApprove(address(synthereumPool), pegTokensUnlocked);
+    synth.safeIncreaseAllowance(address(synthereumPool), pegTokensUnlocked);
 
     // redeem USDC by burning jEur in broker contract
     _redeemParams.recipient = msg.sender;

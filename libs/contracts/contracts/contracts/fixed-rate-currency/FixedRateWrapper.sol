@@ -54,7 +54,7 @@ contract FixedRateWrapper is ERC20 {
    */
   function unwrap(uint256 _amount) public returns (uint256 amountTokens) {
     require(balanceOf(msg.sender) >= _amount, 'Not enought tokens to unwrap');
-    amountTokens = total_deposited.mul(_amount).div(totalSupply());
+    amountTokens = _amount.div(rate);
     _burn(msg.sender, _amount);
     total_deposited = total_deposited.sub(amountTokens);
     synth.safeTransfer(msg.sender, amountTokens);
