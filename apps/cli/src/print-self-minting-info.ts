@@ -1,5 +1,5 @@
 import { log, logTable } from '@jarvis-network/core-utils/dist/logging';
-import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/load';
 import { SelfMintingVersion } from '@jarvis-network/synthereum-ts/dist/core/types/self-minting-derivatives';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-ts/dist/core/types/realm';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';

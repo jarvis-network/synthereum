@@ -12,7 +12,7 @@ import {
   SupportedNetworkId,
   parseSupportedNetworkId,
 } from '@jarvis-network/synthereum-ts/dist/config';
-import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/load';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
 /**

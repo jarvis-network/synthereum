@@ -6,7 +6,7 @@ import {
   SupportedNetworkName,
   isSupportedNetwork,
 } from '@jarvis-network/synthereum-contracts/dist/config';
-import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/synthereum-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 import { PoolsForVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';

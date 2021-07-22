@@ -1,5 +1,5 @@
 import { parseSupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/config';
-import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core//realms/synthereum/load';
 import {
   getPoolBalances,
   depositInAllPools,
