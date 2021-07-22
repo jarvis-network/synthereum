@@ -1,21 +1,23 @@
 import { useEffect, useRef } from 'react';
 import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
-import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   SupportedNetworkId,
   SupportedNetworkName,
   isSupportedNetwork,
 } from '@jarvis-network/synthereum-contracts/dist/config';
-import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/synthereum-realm';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/load';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
-import { PoolsForVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import type { BehaviorSubject } from 'rxjs';
 import type Web3 from 'web3';
-import { PoolVersion } from '@jarvis-network/synthereum-ts/dist/config';
 
-export function useRealmAgentProvider(
-  poolVersion: PoolVersion,
+import {
+  DerivativesForVersion,
+  SelfMintingVersion,
+} from '@jarvis-network/synthereum-ts/dist/core/types/self-minting-derivatives';
+
+export function useSelfMintingRealmAgentProvider(
+  poolVersion: SelfMintingVersion,
   store: {
     getState(): { auth: { address: string } | null };
     subscribe(callback: () => void): () => void;
@@ -30,10 +32,10 @@ export function useRealmAgentProvider(
     realmAgent$: BehaviorSubject<RealmAgent | null>;
   },
 ): void {
-  const poolsRef = useRef<
+  const selfMintingRef = useRef<
     {
-      [key in SupportedNetworkId]?: PoolsForVersion<
-        PoolVersion,
+      [key in SupportedNetworkId]?: DerivativesForVersion<
+        SelfMintingVersion,
         SupportedNetworkName
       >;
     }
@@ -52,20 +54,13 @@ export function useRealmAgentProvider(
     }
 
     loadRealm(web3 as Web3On<SupportedNetworkName>, networkId, {
-      [poolVersion]: poolsRef.current[networkId] || null,
+      [poolVersion]: selfMintingRef.current[networkId] || null,
     })
       .then(realm => {
         if (canceledRef.canceled) return;
-        poolsRef.current[networkId] = assertNotNull(
-          realm.pools![poolVersion],
-          'realm.pools[poolVersion] is null',
-        );
-        realmAgent$.next(
-          new RealmAgent(
-            realm,
-            address as AddressOn<SupportedNetworkName>,
-            poolVersion,
-          ),
+        selfMintingRef.current[networkId] = assertNotNull(
+          realm.selfMintingDerivatives![poolVersion as SelfMintingVersion],
+          'realm.selfMintingDerivatives[selfMintingVersion] is null',
         );
       })
       .catch(reason => {

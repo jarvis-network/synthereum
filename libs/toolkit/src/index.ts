@@ -11,6 +11,7 @@ export * from './useLocalStorage';
 export * from './usePrettyName';
 export * from './useAddThemeClassNameInBody';
 export * from './AuthFlow';
-export * from './useRealmAgentProvider';
+export * from './useSynthereumRealmAgentProvider';
+export * from './useSelfMintingRealmAgentProvider';
 export * from './UnsupportedNetwork';
 export * from './usePrevious';

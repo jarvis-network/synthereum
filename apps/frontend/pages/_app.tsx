@@ -12,7 +12,7 @@ import {
 import {
   CoreObservablesContextProvider,
   AuthFlow,
-  useRealmAgentProvider,
+  useSynthereumRealmAgentProvider,
   useSubjects,
   AuthProvider,
   UnsupportedNetworkModal,
@@ -63,7 +63,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
 
   const store = useStore(pageProps.initialReduxState);
 
-  useRealmAgentProvider(
+  useSynthereumRealmAgentProvider(
     assertIsSupportedPoolVersion(process.env.NEXT_PUBLIC_POOL_VERSION),
     store,
     subjects,
