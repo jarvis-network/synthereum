@@ -114,12 +114,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     // wrap the jEUR to obtain this fixed rate currency
     uint256 numTokensMinted = super.wrap(pegTokensMinted);
 
-    emit Mint(
-      msg.sender,
-      address(_mintParams.collateralAmount),
-      address(this),
-      numTokensMinted
-    );
+    emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
   }
 
   /** @notice - Redeem USDC by burning peg synth (from synthereum pool)
