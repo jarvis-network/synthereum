@@ -48,6 +48,7 @@ contract FixedRateCurrency is FixedRateWrapper {
 
   constructor(
     IERC20 _pegToken,
+    IERC20 _collateralToken,
     ISynthereumPoolOnChainPriceFeed _synthereumPoolAddress,
     ISynthereumFinder _synthereumFinder,
     uint256 _rate,
@@ -57,21 +58,24 @@ contract FixedRateCurrency is FixedRateWrapper {
     paused = false;
     synthereumFinder = _synthereumFinder;
     synthereumPool = _synthereumPoolAddress;
+    collateralInstance = _collateralToken;
 
-    // address synthInstance;
-
+    // address synthAddress;
+    // address collateralAddress;
     // // check the appropriate pool is passed
-    // (, synthInstance) = checkPoolRegistration();
+    // (collateralAddress, synthAddress) = checkPoolRegistration();
 
-    // require(address(_pegToken) == synthInstance, "The synth pool passed doesn't hold the peg token");
+    // collateralInstance = IERC20(collateralAddress);
+
+    // require(
+    //   address(_pegToken) == synthAddress,
+    //   "The synth pool passed doesn't hold the peg token"
+    // );
   }
 
   /** @notice - Mints fixed rate synths against the deposited peg synth (jEUR)
    */
   function mintFromPegSynth(uint256 _pegTokenAmount) public isActive() {
-    // approves this contract to pull peg tokens from user wallet
-    synth.safeIncreaseAllowance(address(this), _pegTokenAmount);
-
     // deposit peg tokens and mint this token according to rate
     uint256 numTokensMinted = super.wrap(_pegTokenAmount);
 
@@ -91,17 +95,21 @@ contract FixedRateCurrency is FixedRateWrapper {
   function mintFromUSDC(
     ISynthereumPoolOnChainPriceFeed.MintParams memory _mintParams
   ) public isActive() {
-    // approves the pool to transfer collateral from user wallet
+    // pull USDC from user's wallet
+    collateralInstance.safeTransferFrom(
+      msg.sender,
+      address(this),
+      _mintParams.collateralAmount
+    );
+
+    // approves the pool to transfer collateral from this contract wallet
     collateralInstance.safeIncreaseAllowance(
       address(synthereumPool),
       _mintParams.collateralAmount
     );
 
-    // mint jEUR (peg token) with USDC - to user's wallet
+    // mint jEUR (peg token) with USDC - to user's wallet (recipient in mintParams)
     (uint256 pegTokensMinted, ) = synthereumPool.mint(_mintParams);
-
-    // approves this contract to pull peg tokens from user wallet
-    synth.safeIncreaseAllowance(address(this), pegTokensMinted);
 
     // wrap the jEUR to obtain this fixed rate currency
     uint256 numTokensMinted = super.wrap(pegTokensMinted);
@@ -123,11 +131,13 @@ contract FixedRateCurrency is FixedRateWrapper {
     // burn _synthAmount to get peg tokens jEur
     uint256 pegTokensUnlocked = super.unwrap(_redeemParams.numTokens);
 
-    // approves the synthereum pool to pull peg tokens tokens from user wallet
+    // pull peg synth from user wallet into this contract wallet
+    synth.safeTransferFrom(msg.sender, address(this), pegTokensUnlocked);
+
+    // approves the synthereum pool to pull peg tokens tokens from this contract
     synth.safeIncreaseAllowance(address(synthereumPool), pegTokensUnlocked);
 
-    // redeem USDC by burning jEur in broker contract
-    _redeemParams.recipient = msg.sender;
+    // redeem USDC by burning jEur in broker contract and send them to user (recipient in redeemParamss)
     (uint256 collateralRedeemed, ) = synthereumPool.redeem(_redeemParams);
 
     emit Redeem(
@@ -142,9 +152,20 @@ contract FixedRateCurrency is FixedRateWrapper {
     @notice Mints fixed rate currency from a synthereum synthetic asset 
    */
   function mintFromSynth(
+    IERC20 inputSynthAddress,
     ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
   ) public {
-    // exchange function in broker to get jEur from synth
+    //TODO can we know the synth token address from exchange params?
+    //TODO if not we should check the input address is correct (although if not the tx should fail)
+
+    // pull synth to be exchanged from user wallet into this contract wallet
+    inputSynthAddress.safeTransferFrom(
+      msg.sender,
+      address(this),
+      _exchangeParams.numTokens
+    );
+
+    // exchange function in broker to get jEur from synth into user's wallet (recipient in exchaangeParams)
     (uint256 pegTokenAmount, ) = synthereumPool.exchange(_exchangeParams);
 
     // deposit peg tokens and mint this token according to rate
@@ -169,6 +190,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   // only synthereum manager can pause new mintings
+  // code an admin
   function pauseContract() public {
     address manager =
       synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager);
@@ -183,7 +205,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   // function checkPoolRegistration()
   //     internal
   //     view
-  //     returns (address collateralAddress, address synthInstance)
+  //     returns (address collateralAddress, address synthAddress)
   // {
   //     ISynthereumRegistry poolRegistry =
   //         ISynthereumRegistry(
@@ -193,7 +215,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   //         );
 
   //     string memory synthTokenSymbol = synthereumPool.syntheticTokenSymbol();
-  //     collateralInstance = synthereumPool.collateralToken();
+  //     collateralInstance = IERC20(synthereumPool.collateralToken());
   //     uint8 version = synthereumPool.version();
   //     require(
   //     poolRegistry.isDeployed(
@@ -205,7 +227,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   //     'Pool not registred'
   //     );
 
-  //     synthInstance = address(synthereumPool.syntheticToken());
   //     collateralAddress = address(collateralInstance);
+  //     synthAddress = address(synthereumPool.syntheticToken());
   // }
 }
