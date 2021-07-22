@@ -159,7 +159,7 @@ export function getPoolBalances<
 >(
   realm: SynthereumRealm<Net>,
   version: Version = 'v4' as Version,
-): Promise<[SyntheticSymbol, Amount][]> {
+): Promise<[SupportedSynthereumSymbol, Amount][]> {
   return Promise.all(
     mapPools(realm, version, async p =>
       t(p.symbol, await getTokenBalance(realm.collateralToken, p.address)),
