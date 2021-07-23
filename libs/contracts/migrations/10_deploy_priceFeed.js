@@ -16,6 +16,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getKeysForNetwork,
     deploy,
+    isPublicNetwork,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
@@ -50,8 +51,7 @@ async function migrate(deployer, network, accounts) {
     )
     .send({ from: maintainer });
   console.log('SynthereumChainlinkPriceFeed added to SynthereumFinder');
-  const oracleDeployment =
-    networkId != 1 && networkId != 3 && networkId != 4 && networkId != 42;
+  const oracleDeployment = !isPublicNetwork(network);
   if (oracleDeployment) {
     await deploy(web3, deployer, network, MockAggregator, 8, 120000000, {
       from: keys.deployer,

@@ -16,5 +16,11 @@
       "version": 1,
       "isEnabled": true
     }
+  },
+  "80001": {
+    "SelfMintingDerivativeFactory": {
+      "version": 1,
+      "isEnabled": true
+    }
   }
 }

@@ -16,5 +16,11 @@
       "version": 2,
       "isEnabled": true
     }
+  },
+  "80001": {
+    "DerivativeFactory": {
+      "version": 2,
+      "isEnabled": true
+    }
   }
 }
