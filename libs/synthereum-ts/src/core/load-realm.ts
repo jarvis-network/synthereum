@@ -1,5 +1,4 @@
 import {
-  ERC20_Abi,
   ISynthereumRegistry_Abi,
   SelfMintingPerpetualMultiParty_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
@@ -16,12 +15,8 @@ import {
   isAddress,
 } from '@jarvis-network/core-utils/dist/eth/address';
 import { getContract } from '@jarvis-network/core-utils/dist/eth/contracts/get-contract';
-import type { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import type { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
-import type {
-  NetworkName,
-  Web3On,
-} from '@jarvis-network/core-utils/dist/eth/web3-instance';
+import type { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
 import {
   supportedSynthereumPairs,
@@ -49,6 +44,7 @@ import {
   SelfMintingDerivative,
   SelfMintingVersion,
 } from './types/self-minting-derivatives';
+import { getTokenInfo } from './realms/comman-realm';
 
 type PoolVersionsToLoad<Net extends SupportedNetworkName> = {
   [Version in PoolVersion]?: PoolsForVersion<Version, Net> | null;
@@ -297,20 +293,5 @@ export async function loadDerivativesInfo<
     instance,
     syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
     collateralToken: await getTokenInfo(web3, collateralTokenAddress),
-  };
-}
-
-async function getTokenInfo<Net extends NetworkName>(
-  web3: Web3On<Net>,
-  address: AddressOn<Net>,
-): Promise<TokenInfo<Net>> {
-  const { instance } = getContract(web3, ERC20_Abi, address);
-  const symbol = await instance.methods.symbol().call();
-  const decimals = parseInteger(await instance.methods.decimals().call());
-  return {
-    address,
-    instance,
-    symbol,
-    decimals,
   };
 }
