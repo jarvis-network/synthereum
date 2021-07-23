@@ -57,7 +57,7 @@ export function useRealmAgentProvider(
       .then(realm => {
         if (canceledRef.canceled) return;
         poolsRef.current[networkId] = assertNotNull(
-          realm.pools[poolVersion],
+          realm.pools![poolVersion],
           'realm.pools[poolVersion] is null',
         );
         realmAgent$.next(

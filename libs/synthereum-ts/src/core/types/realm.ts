@@ -23,14 +23,22 @@ export interface SynthereumRealm<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
   readonly collateralToken: TokenInfo<Net>;
-  readonly poolRegistry: ContractInfo<Net, ISynthereumRegistryContract>;
-  readonly pools: {
-    [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
-  };
-  readonly selfMintinglRegistry: ContractInfo<Net, ISynthereumRegistryContract>;
-  readonly selfMintingDerivatives: {
-    [Version in SelfMintingVersion]?: DerivativesForVersion<Version, Net>;
-  };
+  readonly poolRegistry:
+    | ContractInfo<Net, ISynthereumRegistryContract>
+    | undefined;
+  readonly pools:
+    | {
+        [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
+      }
+    | undefined;
+  readonly selfMintinglRegistry:
+    | ContractInfo<Net, ISynthereumRegistryContract>
+    | undefined;
+  readonly selfMintingDerivatives:
+    | {
+        [Version in SelfMintingVersion]?: DerivativesForVersion<Version, Net>;
+      }
+    | undefined;
 }
 
 /**

@@ -39,7 +39,7 @@ async function main() {
   setPrivateKey_DevelopmentOnly(web3, assertNotNull(process.env.PRIVATE_KEY));
   log('Private key set - using', { address: web3.defaultAccount });
   const realm = await loadRealm(web3, netId);
-  log('Realm loaded', { poolRegistry: realm.poolRegistry.address });
+  log('Realm loaded', { poolRegistry: realm.poolRegistry!.address });
 
   for (const v of poolVersions) {
     log(`Getting ${v} balances`);
@@ -71,9 +71,9 @@ async function printPoolBalance(
   version: PoolVersion,
 ) {
   const balances = await getPoolBalances(realm, version);
-  const pools = assertNotNull(realm.pools[version]);
+  const pools = assertNotNull(realm.pools![version]);
   const result = assertNotNull(balances)
-    .map(([sym, bal]) => t(sym, bal, assertNotNull(pools[sym])))
+    .map(([sym, bal]) => t(sym, bal, assertNotNull(pools![sym])))
     .map(([sym, bal, pool]) => ({
       Symbol: sym,
       [`'${version}' Pool Balance`]: `${formatAmount(bal)} USDC`,

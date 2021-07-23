@@ -10,7 +10,7 @@ import { buildCli } from './common/cli-config';
 createCliApp(buildCli(__filename), async ({ web3, netId }) => {
   const realm = await loadRealm(web3, netId);
   log('Realm loaded', {
-    selfMintinglRegistry: realm.selfMintinglRegistry.address,
+    selfMintinglRegistry: realm.selfMintinglRegistry?.address,
   });
   printPoolBalance(realm, 'v1');
 });
@@ -18,7 +18,7 @@ function printPoolBalance(
   realm: SynthereumRealmWithWeb3,
   version: SelfMintingVersion,
 ) {
-  const derivatives = assertNotNull(realm.selfMintingDerivatives[version]);
+  const derivatives = assertNotNull(realm.selfMintingDerivatives![version]);
   const result = Object.entries(derivatives).map(([symbol, derivative]) => ({
     Symbol: symbol,
     [`'${version}' Derivative Address`]: derivative?.address,

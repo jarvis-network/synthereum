@@ -60,7 +60,7 @@ export function getAvailableSymbols<
   version: OneOf<Version, PoolVersions>,
 ): SyntheticSymbol[] {
   const pool = assertNotNull(
-    realm.pools[version] as PoolsForVersion<Version, Net>,
+    realm.pools![version] as PoolsForVersion<Version, Net>,
   );
   return keysOf(pool);
 }
@@ -80,7 +80,7 @@ export function foreachPool<
     idx: number,
   ) => void,
 ): void {
-  const pools = assertNotNull(realm.pools[version as PoolVersion]);
+  const pools = assertNotNull(realm.pools![version as PoolVersion]);
   let idx = 0;
   for (const key in pools) {
     if (!Object.prototype.hasOwnProperty.call(pools, key)) continue;
@@ -173,7 +173,7 @@ export function depositInAllPools<Net extends SupportedNetworkName>(
   amount: Amount,
   txOptions: TxOptions,
 ): Promise<TransactionReceipt[]> {
-  const poolsCount = Object.keys(realm.pools[version] ?? {}).length;
+  const poolsCount = Object.keys(realm.pools![version] ?? {}).length;
   const from = assertIsAddress<Net>(realm.web3.defaultAccount);
   const perPool = amount.div(new BN(poolsCount)) as Amount;
   return executeInSequence(

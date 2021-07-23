@@ -40,7 +40,7 @@ async function main() {
   );
   log('Got starting block:', { blockFrom250daysAgo });
   const realm = await loadRealm(web3, netId);
-  log('Realm loaded:', { poolRegistry: realm.poolRegistry.address });
+  log('Realm loaded:', { poolRegistry: realm.poolRegistry!.address });
   const myAddress = assertIsAddress<42>(
     argv.address ?? '0x6e30001f52C69948066Afd91B417a988c543d3F1',
   );
@@ -62,7 +62,7 @@ async function main() {
     },
   ] as Filter[];
 
-  const erc20 = assertNotNull(realm.pools.v4?.jEUR).collateralToken.instance;
+  const erc20 = assertNotNull(realm.pools!.v4?.jEUR).collateralToken.instance;
 
   const events = (
     await Promise.all(

@@ -83,7 +83,7 @@ export class RealmAgent<
     public readonly poolVersion: PoolVersion,
   ) {
     this.activePools = assertNotNull(
-      realm.pools[poolVersion],
+      realm.pools![poolVersion],
       `realm.pools[${poolVersion}] is null`,
     );
     this.defaultTxOptions = {
