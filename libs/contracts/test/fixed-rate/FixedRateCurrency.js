@@ -161,12 +161,13 @@ contract('Fixed Rate Currency', accounts => {
     derivativeInstance = await Derivative.at(derivativeAddress);
     pegTokenAddr = await derivativeInstance.tokenCurrency.call();
     pegTokenInstance = await MintableBurnableERC20.at(pegTokenAddr);
-
+    atomicSwapAddrMock = accounts[10];
     fixedRateCurrencyInstance = await FixedRateCurrency.new(
       pegTokenAddr,
       collateralAddress,
       poolAddress,
       synthereumFinderAddress,
+      atomicSwapAddrMock,
       admin,
       pegRate,
       name,
