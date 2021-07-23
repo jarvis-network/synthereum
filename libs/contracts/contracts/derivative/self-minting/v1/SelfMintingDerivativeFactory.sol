@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
@@ -38,7 +37,6 @@ contract SelfMintingDerivativeFactory is
     address _synthereumFinder,
     address _timerAddress
   )
-    public
     SelfMintingPerpetutalMultiPartyCreator(
       _umaFinder,
       _synthereumFinder,

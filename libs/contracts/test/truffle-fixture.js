@@ -20,7 +20,7 @@ module.exports = async ({
     try {
       console.log(`Deploying ${scriptName}`);
       const migrate = require(isUma
-        ? `@jarvis-network/uma-core/migrations/${scriptName}`
+        ? `@uma/core/migrations/${scriptName}`
         : `../migrations/${scriptName}`);
       await migrate(null, networkName, accounts);
     } catch (e) {
@@ -38,8 +38,8 @@ module.exports = async ({
     .readdirSync(baseDir)
     .filter(x => fs.lstatSync(`${baseDir}/${x}`).isFile())
     .sort((a, b) => index(a) - index(b));
-  const umaModule = require.resolve('@jarvis-network/uma-core');
-  const umaBaseDir = path.resolve(umaModule, '..', 'migrations');
+  const umaModule = path.dirname(require.resolve('@uma/core/package.json'));
+  const umaBaseDir = path.resolve(umaModule, 'migrations');
   const umaBaseMigrationScripts = fs
     .readdirSync(umaBaseDir)
     .filter(

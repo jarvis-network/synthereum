@@ -1,10 +1,6 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumFactoryVersioning',
-  // 'SynthereumTICHelper',
-  // 'SynthereumTICFactory',
-  // 'SynthereumPoolLib',
-  // 'SynthereumPoolFactory',
   'SynthereumPoolOnChainPriceFeedLib',
   'SynthereumPoolOnChainPriceFeedFactory',
 ]);

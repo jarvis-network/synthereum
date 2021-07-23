@@ -1,7 +1,7 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumChainlinkPriceFeed',
-  '@chainlink/contracts/src/v0.6/tests/MockV3Aggregator',
+  '@chainlink/contracts/src/v0.8/mocks/MockAggregator',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -11,7 +11,7 @@ async function migrate(deployer, network, accounts) {
   const {
     SynthereumFinder,
     SynthereumChainlinkPriceFeed,
-    MockV3Aggregator,
+    MockAggregator,
   } = migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
@@ -53,14 +53,14 @@ async function migrate(deployer, network, accounts) {
   const oracleDeployment =
     networkId != 1 && networkId != 3 && networkId != 4 && networkId != 42;
   if (oracleDeployment) {
-    await deploy(web3, deployer, network, MockV3Aggregator, 8, 120000000, {
+    await deploy(web3, deployer, network, MockAggregator, 8, 120000000, {
       from: keys.deployer,
     });
-    const mockV3Aggregator = await getExistingInstance(web3, MockV3Aggregator);
+    const mockAggregator = await getExistingInstance(web3, MockAggregator);
     const pair = 'EUR/USD';
     const identifierBytes = web3.utils.utf8ToHex(pair);
     await synthereumChainlinkPriceFeed.methods
-      .setAggregator(identifierBytes, mockV3Aggregator.options.address)
+      .setAggregator(identifierBytes, mockAggregator.options.address)
       .send({ from: maintainer });
     console.log(`   Add '${pair}' aggregator`);
   } else {

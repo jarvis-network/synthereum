@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumPoolOnChainPriceFeed} from './IPoolOnChainPriceFeed.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ISynthereumPoolOnChainPriceFeedStorage {
   struct Storage {

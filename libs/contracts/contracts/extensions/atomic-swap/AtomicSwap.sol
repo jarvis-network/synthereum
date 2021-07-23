@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IUniswapV2Router02} from './interfaces/IUniswapV2Router02.sol';
@@ -12,8 +11,10 @@ import {
   ISynthereumPoolOnChainPriceFeed
 } from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract AtomicSwap {
   using SafeMath for uint256;
@@ -35,7 +36,7 @@ contract AtomicSwap {
   constructor(
     ISynthereumFinder _synthereumFinder,
     IUniswapV2Router02 _uniswapRouter
-  ) public {
+  ) {
     synthereumFinder = _synthereumFinder;
     uniswapRouter = _uniswapRouter;
   }

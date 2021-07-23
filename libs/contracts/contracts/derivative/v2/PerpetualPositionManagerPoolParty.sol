@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
@@ -13,31 +12,36 @@ import {
 import {IDerivativeMain} from '../common/interfaces/IDerivativeMain.sol';
 import {
   OracleInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/OracleInterface.sol';
 import {
   IdentifierWhitelistInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
 import {
   AdministrateeInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {IDerivative} from '../common/interfaces/IDerivative.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   OracleInterfaces
-} from '@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
-import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+} from '@uma/core/contracts/oracle/implementation/Constants.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {
   PerpetualPositionManagerPoolPartyLib
 } from './PerpetualPositionManagerPoolPartyLib.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+import {FeePayerPartyLib} from '../common/FeePayerPartyLib.sol';
 import {
-  AddressWhitelist
-} from '@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist.sol';
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  AddressWhitelistInterface
+} from '@uma/core/contracts/common/interfaces/AddressWhitelistInterface.sol';
 import {FeePayerParty} from '../common/FeePayerParty.sol';
 
 /**
@@ -47,7 +51,7 @@ import {FeePayerParty} from '../common/FeePayerParty.sol';
  */
 contract PerpetualPositionManagerPoolParty is
   IDerivative,
-  AccessControl,
+  AccessControlEnumerable,
   FeePayerParty
 {
   using FixedPoint for FixedPoint.Unsigned;
@@ -55,6 +59,7 @@ contract PerpetualPositionManagerPoolParty is
   using SafeERC20 for MintableBurnableIERC20;
   using PerpetualPositionManagerPoolPartyLib for PositionData;
   using PerpetualPositionManagerPoolPartyLib for PositionManagerData;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
 
   bytes32 public constant POOL_ROLE = keccak256('Pool');
 
@@ -233,7 +238,6 @@ contract PerpetualPositionManagerPoolParty is
     PositionManagerParams memory _positionManagerData,
     Roles memory _roles
   )
-    public
     FeePayerParty(
       _positionManagerData.collateralAddress,
       _positionManagerData.finderAddress,
@@ -765,9 +769,13 @@ contract PerpetualPositionManagerPoolParty is
       );
   }
 
-  function _getCollateralWhitelist() internal view returns (AddressWhitelist) {
+  function _getCollateralWhitelist()
+    internal
+    view
+    returns (AddressWhitelistInterface)
+  {
     return
-      AddressWhitelist(
+      AddressWhitelistInterface(
         feePayerData.finder.getImplementationAddress(
           OracleInterfaces.CollateralWhitelist
         )

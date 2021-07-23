@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.4;
 
 import {
   MintableBurnableSyntheticToken
 } from './MintableBurnableSyntheticToken.sol';
 import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
-import {
-  Lockable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
  * @title Factory for creating new mintable and burnable tokens.

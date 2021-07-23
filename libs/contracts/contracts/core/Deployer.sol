@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumDeployer} from './interfaces/IDeployer.sol';
@@ -23,13 +22,19 @@ import {
 import {IRole} from '../base/interfaces/IRole.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from './Constants.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
 import {
-  Lockable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
+contract SynthereumDeployer is
+  ISynthereumDeployer,
+  AccessControlEnumerable,
+  Lockable
+{
   using Address for address;
   using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -95,7 +100,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
    * @param _synthereumFinder Synthereum finder contract
    * @param _roles Admin and Maintainer roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) public {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -335,7 +340,7 @@ contract SynthereumDeployer is ISynthereumDeployer, AccessControl, Lockable {
       poolFactory.functionCall(
         abi.encodePacked(
           getDeploymentSignature(poolFactory),
-          bytes32(uint256(address(derivative))),
+          bytes32(uint256(uint160(address(derivative)))),
           poolParamsData
         ),
         'Wrong pool deployment'

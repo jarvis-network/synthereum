@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   StoreInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/StoreInterface.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+} from '@uma/core/contracts/oracle/interfaces/StoreInterface.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {FeePayerParty} from './FeePayerParty.sol';
 
 /** @notice - A library to support FeePayerParty contract

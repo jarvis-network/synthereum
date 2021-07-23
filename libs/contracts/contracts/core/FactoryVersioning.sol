@@ -1,19 +1,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {
   ISynthereumFactoryVersioning
 } from './interfaces/IFactoryVersioning.sol';
-import {EnumerableMap} from '@openzeppelin/contracts/utils/EnumerableMap.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+import {
+  EnumerableMap
+} from '@openzeppelin/contracts/utils/structs/EnumerableMap.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title Provides addresses of different versions of pools factory and derivative factory
  */
 contract SynthereumFactoryVersioning is
   ISynthereumFactoryVersioning,
-  AccessControl
+  AccessControlEnumerable
 {
   using EnumerableMap for EnumerableMap.UintToAddressMap;
 
@@ -56,7 +59,7 @@ contract SynthereumFactoryVersioning is
   //----------------------------------------
   // Constructor
   //----------------------------------------
-  constructor(Roles memory _roles) public {
+  constructor(Roles memory _roles) {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
@@ -111,7 +114,7 @@ contract SynthereumFactoryVersioning is
       factories[factoryType];
     address factoryToRemove = selectedFactories.get(version);
     selectedFactories.remove(version);
-    RemoveFactory(factoryType, version, factoryToRemove);
+    emit RemoveFactory(factoryType, version, factoryToRemove);
   }
 
   //----------------------------------------

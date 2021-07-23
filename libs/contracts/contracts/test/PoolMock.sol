@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
@@ -14,7 +14,7 @@ contract PoolMock {
     IERC20 _collateralToken,
     string memory _syntheticTokenSymbol,
     IERC20 _syntheticToken
-  ) public {
+  ) {
     poolVersion = _version;
     collateralCurrency = _collateralToken;
     tokenSymbol = _syntheticTokenSymbol;

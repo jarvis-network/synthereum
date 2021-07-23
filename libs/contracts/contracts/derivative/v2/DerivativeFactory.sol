@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
+
 import {
   IDeploymentSignature
 } from '../../core/interfaces/IDeploymentSignature.sol';
@@ -34,10 +34,7 @@ contract SynthereumDerivativeFactory is
     address _umaFinder,
     address _synthereumFinder,
     address _timerAddress
-  )
-    public
-    PerpetualPoolPartyCreator(_umaFinder, _synthereumFinder, _timerAddress)
-  {
+  ) PerpetualPoolPartyCreator(_umaFinder, _synthereumFinder, _timerAddress) {
     deploymentSignature = this.createPerpetual.selector;
   }
 

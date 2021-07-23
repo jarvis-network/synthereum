@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {
   ISynthereumPoolOnChainPriceFeed
@@ -11,7 +10,7 @@ import {
 } from './interfaces/IPoolOnChainPriceFeedStorage.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
@@ -24,9 +23,13 @@ import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
 /**
  * @notice Pool implementation is stored here to reduce deployment costs
@@ -531,8 +534,13 @@ library SynthereumPoolOnChainPriceFeedLib {
 
     IERC20 collateralToken = self.collateralToken;
 
-    FixedPoint.Unsigned memory numTokens =
+    FixedPoint.Unsigned memory userNumTokens =
       FixedPoint.Unsigned(tokenCurrency.balanceOf(msg.sender));
+
+    FixedPoint.Unsigned memory totNumTokens =
+      userNumTokens.add(
+        FixedPoint.Unsigned(tokenCurrency.balanceOf(address(this)))
+      );
 
     //Check if sender is a LP
     bool isLiquidityProvider =
@@ -540,21 +548,21 @@ library SynthereumPoolOnChainPriceFeedLib {
 
     // Make sure there is something for the user to settle
     require(
-      numTokens.isGreaterThan(0) || isLiquidityProvider,
+      userNumTokens.isGreaterThan(0) || isLiquidityProvider,
       'Account has nothing to settle'
     );
 
-    if (numTokens.isGreaterThan(0)) {
+    if (userNumTokens.isGreaterThan(0)) {
       // Move synthetic tokens from the user to the pool
       // - This is because derivative expects the tokens to come from the sponsor address
       tokenCurrency.safeTransferFrom(
         msg.sender,
         address(this),
-        numTokens.rawValue
+        userNumTokens.rawValue
       );
 
       // Allow the derivative to transfer tokens from the pool
-      tokenCurrency.safeApprove(address(derivative), numTokens.rawValue);
+      tokenCurrency.safeApprove(address(derivative), totNumTokens.rawValue);
     }
 
     // Redeem the synthetic tokens for collateral
@@ -574,7 +582,7 @@ library SynthereumPoolOnChainPriceFeedLib {
       // Otherwise, separate excess collateral from redeemed token value
       // Must be called after `emergencyShutdown` to make sure expiryPrice is set
       FixedPoint.Unsigned memory dueCollateral =
-        numTokens.mul(derivative.emergencyShutdownPrice());
+        totNumTokens.mul(derivative.emergencyShutdownPrice());
 
       totalToRedeem = FixedPoint.min(
         dueCollateral,
@@ -588,7 +596,7 @@ library SynthereumPoolOnChainPriceFeedLib {
     emit Settlement(
       msg.sender,
       address(this),
-      numTokens.rawValue,
+      totNumTokens.rawValue,
       amountSettled
     );
   }
@@ -968,7 +976,7 @@ library SynthereumPoolOnChainPriceFeedLib {
     uint256 feePercentage,
     uint256 expiration
   ) internal view checkDerivative(self, derivative) {
-    require(now <= expiration, 'Transaction expired');
+    require(block.timestamp <= expiration, 'Transaction expired');
     require(
       self.fee.feePercentage.rawValue <= feePercentage,
       'User fee percentage less than actual one'

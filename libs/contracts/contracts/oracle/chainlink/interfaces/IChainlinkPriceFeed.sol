@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
+
 import {
   AggregatorV3Interface
-} from '@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol';
+} from '@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol';
 import {ISynthereumPriceFeed} from '../../common/interfaces/IPriceFeed.sol';
 
 interface ISynthereumChainlinkPriceFeed is ISynthereumPriceFeed {

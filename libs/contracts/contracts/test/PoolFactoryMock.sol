@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
+
 import {IDerivative} from '../derivative/common/interfaces/IDerivative.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {
@@ -27,7 +27,7 @@ contract PoolFactoryMock is
 
   IDerivative mockDerivative;
 
-  constructor(address _synthereumFinder, IDerivative _mockDerivative) public {
+  constructor(address _synthereumFinder, IDerivative _mockDerivative) {
     synthereumFinder = _synthereumFinder;
     deploymentSignature = this.createPool.selector;
     mockDerivative = _mockDerivative;

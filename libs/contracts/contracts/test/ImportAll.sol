@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.4;
 
 import './UmaInfra.sol';
 import '../base/interfaces/IStandardERC20.sol';
@@ -8,7 +8,7 @@ import '../base/interfaces/IRole.sol';
 import '../base/utils/EnumerableBytesSet.sol';
 import '../base/utils/StringUtils.sol';
 import '../test/SelfMintingDerivativeFactoryMock.sol';
-import '../test/ChainlinkMock.sol';
+import '../test/MockAggregator.sol';
 import '../test/TestnetSelfMintingERC20.sol';
 import '../test/SelfMintingControllerMock.sol';
 import '../test/PriceFeedGetter.sol';

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {
   MintableBurnableIERC20
@@ -12,16 +11,16 @@ import {
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FinderInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/FinderInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/FinderInterface.sol';
 import {
   IdentifierWhitelistInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
 import {
   OracleInterfaces
-} from '@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
+} from '@uma/core/contracts/oracle/implementation/Constants.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {
   SelfMintingPerpetualMultiPartyLib
 } from './SelfMintingPerpetualMultiPartyLib.sol';
@@ -30,13 +29,9 @@ import {
 } from './SelfMintingPerpetualMultiParty.sol';
 import {
   ContractCreator
-} from '@jarvis-network/uma-core/contracts/oracle/implementation/ContractCreator.sol';
-import {
-  Testable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
-import {
-  Lockable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+} from '@uma/core/contracts/oracle/implementation/ContractCreator.sol';
+import {Testable} from '@uma/core/contracts/common/implementation/Testable.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
  * @title Self-Minting Perpetual Contract creator.
@@ -100,12 +95,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     address _umaFinderAddress,
     address _synthereumFinder,
     address _timerAddress
-  )
-    public
-    ContractCreator(_umaFinderAddress)
-    Testable(_timerAddress)
-    nonReentrant()
-  {
+  ) ContractCreator(_umaFinderAddress) Testable(_timerAddress) nonReentrant() {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 

@@ -28,7 +28,7 @@ const Derivative = artifacts.require('PerpetualPoolParty');
 const Timer = artifacts.require('Timer');
 const MockOracle = artifacts.require('MockOracle');
 const UmaFinder = artifacts.require('Finder');
-const MockV3Aggregator = artifacts.require('MockV3Aggregator');
+const MockAggregator = artifacts.require('MockAggregator');
 const PriceFeedGetter = artifacts.require('PriceFeedGetter');
 
 contract('Synthereum chainlink price feed', function (accounts) {
@@ -104,7 +104,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
   let priceFeedId;
   beforeEach(async () => {
     priceFeedInstance = await ChainlinkPriceFeed.deployed();
-    aggregator = await MockV3Aggregator.deployed();
+    aggregator = await MockAggregator.deployed();
     checkingPrice = web3Utils.toWei('1.2');
     priceFeedId = web3Utils.toHex('EUR/USD');
   });

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
+
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumFactoryVersioning
@@ -63,7 +63,7 @@ contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
    * @notice Constructs SynthereumSyntheticTokenFactory contract
    * @param _synthereumFinder Synthereum finder contract
    */
-  constructor(address _synthereumFinder) public {
+  constructor(address _synthereumFinder) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 

@@ -192,12 +192,11 @@ export function modifyDeploy(module: string): void {
         ) {
           await fse.copy(
             resolve(
-              dirname(require.resolve('@jarvis-network/uma-core')),
+              dirname(require.resolve('@uma/core/package.json')),
               'contracts',
             ),
             './deploy',
           );
-
           (hre as {
             migrationScript?: string;
           }).migrationScript = 'uma'; // Used in test/truffle-fixture.js
@@ -352,8 +351,7 @@ export function modifyDeploy(module: string): void {
           fromDeployScript?: boolean;
         }).fromDeployScript;
 
-        const findContractPathInProject = (contractName: string) => (
-          console.log({ module, contractPaths, contractNames, contractName }),
+        const findContractPathInProject = (contractName: string) =>
           `${relative(
             module,
             contractPaths[
@@ -363,8 +361,7 @@ export function modifyDeploy(module: string): void {
                   contractName,
               )
             ],
-          )}:${contractName}`
-        );
+          )}:${contractName}`;
 
         if (!noVerify && !localNetwork) {
           const contracts = await getDeployedContractsForNetwork(
@@ -444,23 +441,27 @@ export function modifyDeploy(module: string): void {
 export function compile(): void {
   task(TASK_COMPILE, async (args, hre, runSuper) => {
     await runSuper();
+    if (
+      (hre as {
+        migrationScript?: string;
+      }).migrationScript !== 'uma'
+    ) {
+      const distBaseDir = './dist/contracts';
 
-    const distBaseDir = './dist/contracts';
-
-    const config: Config = {
-      outputPaths: {
-        rootDir: hre.config.paths.root,
-        abiDir: `${distBaseDir}/abi`,
-        typechainDir: `${distBaseDir}/typechain`,
-      },
-      getAllFullyQualifiedNames: () =>
-        hre.artifacts.getAllFullyQualifiedNames(),
-      readArtifact: filename => hre.artifacts.readArtifact(filename),
-      clear: true,
-      flat: true,
-    };
-
-    await generateArtifacts(config);
+      const config: Config = {
+        outputPaths: {
+          rootDir: hre.config.paths.root,
+          abiDir: `${distBaseDir}/abi`,
+          typechainDir: `${distBaseDir}/typechain`,
+        },
+        getAllFullyQualifiedNames: () =>
+          hre.artifacts.getAllFullyQualifiedNames(),
+        readArtifact: filename => hre.artifacts.readArtifact(filename),
+        clear: true,
+        flat: true,
+      };
+      await generateArtifacts(config);
+    }
   });
 }
 

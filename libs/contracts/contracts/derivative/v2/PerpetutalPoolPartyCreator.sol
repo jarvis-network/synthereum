@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
@@ -11,18 +10,14 @@ import {
 } from '../common/interfaces/IMintableBurnableTokenFactory.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {PerpetualPoolPartyLib} from './PerpetualPoolPartyLib.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   ContractCreator
-} from '@jarvis-network/uma-core/contracts/oracle/implementation/ContractCreator.sol';
-import {
-  Testable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Testable.sol';
-import {
-  Lockable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+} from '@uma/core/contracts/oracle/implementation/ContractCreator.sol';
+import {Testable} from '@uma/core/contracts/common/implementation/Testable.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 import {
   MintableBurnableTokenFactory
 } from '../common/MintableBurnableTokenFactory.sol';
@@ -89,12 +84,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
     address _umaFinderAddress,
     address _synthereumFinder,
     address _timerAddress
-  )
-    public
-    ContractCreator(_umaFinderAddress)
-    Testable(_timerAddress)
-    nonReentrant()
-  {
+  ) ContractCreator(_umaFinderAddress) Testable(_timerAddress) nonReentrant() {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 

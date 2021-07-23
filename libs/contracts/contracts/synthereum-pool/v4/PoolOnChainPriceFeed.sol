@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
@@ -15,28 +14,31 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ISynthereumDeployer} from '../../core/interfaces/IDeployer.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
-import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {SynthereumPoolOnChainPriceFeedLib} from './PoolOnChainPriceFeedLib.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 import {
-  Lockable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title Token Issuer Contract
  * @notice Collects collateral and issues synthetic assets
  */
 contract SynthereumPoolOnChainPriceFeed is
-  AccessControl,
+  AccessControlEnumerable,
   ISynthereumPoolOnChainPriceFeedStorage,
   ISynthereumPoolOnChainPriceFeed,
   Lockable
 {
   using FixedPoint for FixedPoint.Unsigned;
   using SynthereumPoolOnChainPriceFeedLib for Storage;
+  using EnumerableSet for EnumerableSet.AddressSet;
 
   //----------------------------------------
   // Constants
@@ -142,7 +144,7 @@ contract SynthereumPoolOnChainPriceFeed is
     Roles memory _roles,
     uint256 _startingCollateralization,
     Fee memory _fee
-  ) public nonReentrant {
+  ) nonReentrant {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(LIQUIDITY_PROVIDER_ROLE, DEFAULT_ADMIN_ROLE);

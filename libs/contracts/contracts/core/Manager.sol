@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IDerivative} from '../derivative/common/interfaces/IDerivative.sol';
 import {IRole} from '../base/interfaces/IRole.sol';
 import {SynthereumInterfaces} from './Constants.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract SynthereumManager is ISynthereumManager, AccessControl {
+contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //Describe role structure
@@ -57,7 +58,7 @@ contract SynthereumManager is ISynthereumManager, AccessControl {
    * @param _synthereumFinder Synthereum finder contract
    * @param _roles Admin and Mainteiner roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) public {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);

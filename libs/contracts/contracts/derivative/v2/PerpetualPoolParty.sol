@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {
   PerpetualLiquidatablePoolParty
@@ -17,7 +16,6 @@ contract PerpetualPoolParty is PerpetualLiquidatablePoolParty {
    * are fed directly into the PositionManager's constructor within the inheritance tree.
    */
   constructor(ConstructorParams memory params)
-    public
     PerpetualLiquidatablePoolParty(params)
   {}
 }

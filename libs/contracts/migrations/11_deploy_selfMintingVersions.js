@@ -6,12 +6,12 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
   'SelfMintingPerpetualMultiPartyLib',
   'SynthereumFactoryVersioning',
   'SelfMintingDerivativeFactory',
-  '@jarvis-network/uma-core/contracts/oracle/implementation/Finder',
-  '@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist',
-  '@jarvis-network/uma-core/contracts/oracle/implementation/IdentifierWhitelist',
+  '@uma/core/contracts/oracle/implementation/Finder',
+  '@uma/core/contracts/common/implementation/AddressWhitelist',
+  '@uma/core/contracts/oracle/implementation/IdentifierWhitelist',
   'TestnetSelfMintingERC20',
-  '@jarvis-network/uma-core/contracts/common/implementation/Timer',
-  '@jarvis-network/uma-core/contracts/oracle/implementation/Registry',
+  '@uma/core/contracts/common/implementation/Timer',
+  '@uma/core/contracts/oracle/implementation/Registry',
 ]);
 
 async function migrate(deployer, network, accounts) {

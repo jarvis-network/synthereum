@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {FeePayerPartyLib} from '../common/FeePayerPartyLib.sol';
 import {
   PerpetualPositionManagerPoolPartyLib
@@ -189,7 +190,6 @@ contract PerpetualLiquidatablePoolParty is PerpetualPositionManagerPoolParty {
    * are fed directly into the PositionManager's constructor within the inheritance tree.
    */
   constructor(ConstructorParams memory params)
-    public
     PerpetualPositionManagerPoolParty(
       params.positionManagerParams,
       params.roles

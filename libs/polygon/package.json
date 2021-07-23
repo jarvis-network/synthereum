@@ -20,7 +20,7 @@
   "author": "Alessandro Bergamaschi",
   "license": "ISC",
   "devDependencies": {
-    "@chainlink/contracts": "^0.1.7",
+    "@chainlink/contracts": "0.2.1",
     "@jarvis-network/core-utils": "*",
     "@jarvis-network/crypto-utils": "*",
     "@jarvis-network/hardhat-utils": "*",
@@ -30,7 +30,7 @@
     "@nomiclabs/hardhat-etherscan": "^2.1.4",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
-    "@openzeppelin/contracts": "3.3.0",
+    "@openzeppelin/contracts": "4.1.0",
     "@solidity-parser/parser": "^0.13.2",
     "@types/child-process-promise": "^2.2.1",
     "@types/fs-extra": "^9.0.11",

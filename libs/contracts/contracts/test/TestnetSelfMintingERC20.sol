@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.4;
 
 import {
   TestnetERC20
-} from '@jarvis-network/uma-core/contracts/common/implementation/TestnetERC20.sol';
+} from '@uma/core/contracts/common/implementation/TestnetERC20.sol';
 
 contract TestnetSelfMintingERC20 is TestnetERC20 {
   constructor(
     string memory _name,
     string memory _symbol,
     uint8 _decimals
-  ) public TestnetERC20(_name, _symbol, _decimals) {}
+  ) TestnetERC20(_name, _symbol, _decimals) {}
 }

@@ -462,7 +462,6 @@ contract('SelfMintingPerpetualPositionManagerMultiParty', function (accounts) {
       positionManager.requestWithdrawal(initialSponsorCollateral, {
         from: sponsor,
       }),
-      'SafeMath: addition overflow',
     );
   });
 
@@ -577,7 +576,6 @@ contract('SelfMintingPerpetualPositionManagerMultiParty', function (accounts) {
     // Cannot withdraw more than balance. (The position currently has 150 + 50 collateral).
     await truffleAssert.reverts(
       positionManager.withdraw(toWei('201'), { from: sponsor }),
-      'SafeMath: subtraction overflow',
     );
     await positionManager.withdraw(withdrawCollateral, { from: sponsor });
     let sponsorFinalBalance = await collateral.balanceOf.call(sponsor);

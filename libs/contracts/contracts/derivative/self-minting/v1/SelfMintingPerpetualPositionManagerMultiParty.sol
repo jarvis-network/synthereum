@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
@@ -9,31 +8,34 @@ import {
 } from '../../common/interfaces/MintableBurnableIERC20.sol';
 import {
   IdentifierWhitelistInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
 import {
-  AddressWhitelist
-} from '@jarvis-network/uma-core/contracts/common/implementation/AddressWhitelist.sol';
+  AddressWhitelistInterface
+} from '@uma/core/contracts/common/interfaces/AddressWhitelistInterface.sol';
 import {
   AdministrateeInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/AdministrateeInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from '../common/interfaces/ISelfMintingDerivativeDeployment.sol';
 import {
   OracleInterface
-} from '@jarvis-network/uma-core/contracts/oracle/interfaces/OracleInterface.sol';
+} from '@uma/core/contracts/oracle/interfaces/OracleInterface.sol';
 import {
   OracleInterfaces
-} from '@jarvis-network/uma-core/contracts/oracle/implementation/Constants.sol';
+} from '@uma/core/contracts/oracle/implementation/Constants.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
   SelfMintingPerpetualPositionManagerMultiPartyLib
 } from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
+import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {FeePayerParty} from '../../common/FeePayerParty.sol';
 
 /**
@@ -50,6 +52,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   using SafeERC20 for MintableBurnableIERC20;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for PositionData;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for PositionManagerData;
+  using FeePayerPartyLib for FixedPoint.Unsigned;
 
   /**
    * @notice Construct the PerpetualPositionManager.
@@ -218,7 +221,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
    * @param _positionManagerData Input parameters of PositionManager (see PositionManagerData struct)
    */
   constructor(PositionManagerParams memory _positionManagerData)
-    public
     FeePayerParty(
       _positionManagerData.collateralAddress,
       _positionManagerData.finderAddress,
@@ -773,11 +775,15 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   }
 
   /** @notice Get a whitelisted collateralCurrency address from the Finder contract for a self-minting derivative
-   * @return AddressWhitelist Address of the whitelisted collateralCurrency
+   * @return AddressWhitelistInterface Address of the whitelisted collateralCurrency
    */
-  function _getCollateralWhitelist() internal view returns (AddressWhitelist) {
+  function _getCollateralWhitelist()
+    internal
+    view
+    returns (AddressWhitelistInterface)
+  {
     return
-      AddressWhitelist(
+      AddressWhitelistInterface(
         feePayerData.finder.getImplementationAddress(
           OracleInterfaces.CollateralWhitelist
         )

@@ -27,7 +27,7 @@ const Derivative = artifacts.require('PerpetualPoolParty');
 const Timer = artifacts.require('Timer');
 const MockOracle = artifacts.require('MockOracle');
 const UmaFinder = artifacts.require('Finder');
-const MockV3Aggregator = artifacts.require('MockV3Aggregator');
+const MockAggregator = artifacts.require('MockAggregator');
 
 contract('Synthereum pool with on chain price feed', function (accounts) {
   let derivativeVersion = 2;
@@ -177,7 +177,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
     adminRole = '0x00';
     minterRole = web3Utils.soliditySha3('Minter');
     burnerRole = web3Utils.soliditySha3('Burner');
-    aggregatorInstance = await MockV3Aggregator.deployed();
+    aggregatorInstance = await MockAggregator.deployed();
     await aggregatorInstance.updateAnswer(web3Utils.toWei('120', 'mwei'));
   });
 
@@ -832,7 +832,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         from: sender,
       });
       await aggregatorInstance.updateAnswer(web3Utils.toWei('130', 'mwei'));
-      secondAggregator = await MockV3Aggregator.new(
+      secondAggregator = await MockAggregator.new(
         '8',
         web3Utils.toWei('162.175', 'mwei'),
       );

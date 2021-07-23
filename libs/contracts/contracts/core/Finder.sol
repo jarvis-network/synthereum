@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title Provides addresses of contracts implementing certain interfaces.
  */
-contract SynthereumFinder is ISynthereumFinder, AccessControl {
+contract SynthereumFinder is ISynthereumFinder, AccessControlEnumerable {
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //Describe role structure
@@ -48,7 +49,7 @@ contract SynthereumFinder is ISynthereumFinder, AccessControl {
   // Constructors
   //----------------------------------------
 
-  constructor(Roles memory _roles) public {
+  constructor(Roles memory _roles) {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);

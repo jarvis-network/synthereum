@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
@@ -8,7 +7,7 @@ import {
   ISynthereumPoolOnChainPriceFeed
 } from './interfaces/IPoolOnChainPriceFeed.sol';
 import {SynthereumPoolOnChainPriceFeed} from './PoolOnChainPriceFeed.sol';
-import '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 contract SynthereumPoolOnChainPriceFeedCreator is Lockable {
   //----------------------------------------

@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 contract DerivativeMock {
   IERC20 private collateral;
@@ -17,7 +16,7 @@ contract DerivativeMock {
     IERC20 _collateral,
     IERC20 _token,
     bytes32 _priceFeedIdentifier
-  ) public {
+  ) {
     collateral = _collateral;
     token = _token;
     priceFeedIdentifier = _priceFeedIdentifier;

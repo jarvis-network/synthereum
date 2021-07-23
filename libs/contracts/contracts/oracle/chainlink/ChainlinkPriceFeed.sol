@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
@@ -15,13 +14,15 @@ import {
 } from './interfaces/IChainlinkPriceFeed.sol';
 import {
   AggregatorV3Interface
-} from '@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol';
-import {SafeMath} from '@openzeppelin/contracts/math/SafeMath.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+} from '@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 contract SynthereumChainlinkPriceFeed is
   ISynthereumChainlinkPriceFeed,
-  AccessControl
+  AccessControlEnumerable
 {
   using SafeMath for uint256;
 
@@ -56,7 +57,7 @@ contract SynthereumChainlinkPriceFeed is
    * @param _synthereumFinder Synthereum finder contract
    * @param _roles Admin and Mainteiner roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) public {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);

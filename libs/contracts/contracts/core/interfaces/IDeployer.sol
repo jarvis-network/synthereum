@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
@@ -11,7 +11,9 @@ import {
 import {
   ISelfMintingDerivativeDeployment
 } from '../../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
-import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
 /**
  * @title Provides interface with functions of Synthereum deployer

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ISelfMintingController} from './interfaces/ISelfMintingController.sol';
@@ -19,14 +18,19 @@ import {
 } from '../../../core/Constants.sol';
 import {
   FixedPoint
-} from '@jarvis-network/uma-core/contracts/common/implementation/FixedPoint.sol';
-import {AccessControl} from '@openzeppelin/contracts/access/AccessControl.sol';
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title SelfMintingController
  * Set capMintAmount, capDepositRatio and daofee of each self-minting derivative
  */
-contract SelfMintingController is ISelfMintingController, AccessControl {
+contract SelfMintingController is
+  ISelfMintingController,
+  AccessControlEnumerable
+{
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //Describe role structure
@@ -129,7 +133,7 @@ contract SelfMintingController is ISelfMintingController, AccessControl {
    * @param _synthereumFinder Synthereum finder contract
    * @param _roles Admin and maintainer roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) public {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);

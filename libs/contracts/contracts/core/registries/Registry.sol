@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.4;
 
 import {ISynthereumRegistry} from './interfaces/IRegistry.sol';
 import {ISynthereumFinder} from '../interfaces/IFinder.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {SynthereumInterfaces} from '../Constants.sol';
-import {EnumerableSet} from '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {EnumerableBytesSet} from '../../base/utils/EnumerableBytesSet.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
-import {
-  Lockable
-} from '@jarvis-network/uma-core/contracts/common/implementation/Lockable.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
  * @title Register and track all the pools deployed
@@ -50,7 +49,6 @@ contract SynthereumRegistry is ISynthereumRegistry, Lockable {
    * @param _synthereumFinder Synthereum finder contract
    */
   constructor(string memory _registryType, ISynthereumFinder _synthereumFinder)
-    public
   {
     synthereumFinder = _synthereumFinder;
     registryType = _registryType;
