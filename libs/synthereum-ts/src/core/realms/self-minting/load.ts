@@ -64,7 +64,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   config: SynthereumContractDependencies<Net>,
   _versionsToLoad: SelfMintingVersionsToLoad<Net> = { v1: null },
 ): Promise<SynthereumRealmWithWeb3<Net>> {
-  const selMintingRegistry = getContract(
+  const selfMintingRegistry = getContract(
     web3,
     ISynthereumRegistry_Abi,
     config.selfMintingRegistry,
@@ -77,10 +77,10 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   const loadAllDerivatives = async <Version extends SelfMintingVersion>(
     version: Version,
   ) => {
-    const syntheticTokens = (await selMintingRegistry.instance.methods
+    const syntheticTokens = (await selfMintingRegistry.instance.methods
       .getSyntheticTokens()
       .call()) as SupportedSelfMintingSymbol<Net>[];
-    const collateralTokens = (await selMintingRegistry.instance.methods
+    const collateralTokens = (await selfMintingRegistry.instance.methods
       .getCollaterals()
       .call()) as AddressOn<Net>[];
     const pairs = await Promise.all(
@@ -89,7 +89,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
           const info = await loadDerivativesInfo(
             web3,
             netId,
-            selMintingRegistry.instance,
+            selfMintingRegistry.instance,
             collateralTokenAddress,
             version,
             symbol,
@@ -108,7 +108,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     poolRegistry: undefined,
     pools: undefined,
     selfMintingDerivatives: derivatives,
-    selfMintinglRegistry: selMintingRegistry,
+    selfMintingRegistry,
     // Assume the same collateral token for all synthetics:
     collateralToken,
   };

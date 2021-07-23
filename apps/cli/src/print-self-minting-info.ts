@@ -10,7 +10,7 @@ import { buildCli } from './common/cli-config';
 createCliApp(buildCli(__filename), async ({ web3, netId }) => {
   const realm = await loadRealm(web3, netId);
   log('Realm loaded', {
-    selfMintinglRegistry: realm.selfMintinglRegistry?.address,
+    selfMintingRegistry: realm.selfMintingRegistry?.address,
   });
   printPoolBalance(realm, 'v1');
 });

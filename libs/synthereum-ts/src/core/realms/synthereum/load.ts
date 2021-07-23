@@ -113,7 +113,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     poolRegistry,
     pools,
     selfMintingDerivatives: undefined,
-    selfMintinglRegistry: undefined,
+    selfMintingRegistry: undefined,
     // Assume the same collateral token for all synthetics:
     collateralToken,
   };

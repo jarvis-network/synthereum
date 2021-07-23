@@ -31,7 +31,7 @@ export interface SynthereumRealm<
         [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
       }
     | undefined;
-  readonly selfMintinglRegistry:
+  readonly selfMintingRegistry:
     | ContractInfo<Net, ISynthereumRegistryContract>
     | undefined;
   readonly selfMintingDerivatives:
