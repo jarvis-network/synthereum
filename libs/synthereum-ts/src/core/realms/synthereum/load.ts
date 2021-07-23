@@ -92,7 +92,6 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
 
     return Object.fromEntries(pairs.filter(x => !!x[1]));
   };
-  const collateralToken = await getTokenInfo(web3, collateralAddress);
 
   const pools: SynthereumRealmWithWeb3<Net>['pools'] = {};
   for (const i in versionsToLoad) {
@@ -114,8 +113,6 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     pools,
     selfMintingDerivatives: undefined,
     selfMintingRegistry: undefined,
-    // Assume the same collateral token for all synthetics:
-    collateralToken,
   };
 }
 

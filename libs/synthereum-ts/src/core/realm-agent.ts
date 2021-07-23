@@ -75,6 +75,8 @@ export class RealmAgent<
 > {
   public readonly activePools: PoolsForVersion<PoolVersion, Net>;
 
+  private readonly collateralToken: TokenInfo<SupportedNetworkName>;
+
   private readonly defaultTxOptions: FullTxOptions<Net>;
 
   constructor(
@@ -86,6 +88,12 @@ export class RealmAgent<
       realm.pools![poolVersion],
       `realm.pools[${poolVersion}] is null`,
     );
+    // Assume all pools use the same collateral
+    const pools = this.activePools as PoolsForVersion<
+      PoolVersion,
+      SupportedNetworkName
+    >;
+    this.collateralToken = assertNotNull(pools.jEUR?.collateralToken);
     this.defaultTxOptions = {
       from: this.agentAddress,
       web3: this.realm.web3,
@@ -94,7 +102,7 @@ export class RealmAgent<
   }
 
   collateralBalance(): Promise<Amount> {
-    return getTokenBalance(this.realm.collateralToken, this.agentAddress);
+    return getTokenBalance(this.collateralToken, this.agentAddress);
   }
 
   syntheticTokenBalanceOf(
@@ -109,7 +117,7 @@ export class RealmAgent<
       (async (): Promise<[ExchangeSynthereumToken, Amount]> =>
         t(
           'USDC' as const,
-          await getTokenBalance(this.realm.collateralToken, this.agentAddress),
+          await getTokenBalance(this.collateralToken, this.agentAddress),
         ))(),
       ...mapPools(this.realm, this.poolVersion, async p =>
         t(
@@ -127,7 +135,7 @@ export class RealmAgent<
     txOptions,
   }: MintParams<Net>): SwapResult {
     return this.universalExchange({
-      inputToken: this.realm.collateralToken.symbol as ExchangeSynthereumToken,
+      inputToken: this.collateralToken.symbol as ExchangeSynthereumToken,
       outputToken: outputSynth,
       inputAmountWei: collateral,
       outputAmountWei: outputAmount,
@@ -159,7 +167,7 @@ export class RealmAgent<
   }: RedeemParams<Net>): SwapResult {
     return this.universalExchange({
       inputToken: inputSynth,
-      outputToken: this.realm.collateralToken.symbol as ExchangeSynthereumToken,
+      outputToken: this.collateralToken.symbol as ExchangeSynthereumToken,
       inputAmountWei: inputAmount,
       outputAmountWei: collateral,
       txOptions,

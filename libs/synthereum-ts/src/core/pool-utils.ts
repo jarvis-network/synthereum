@@ -162,7 +162,7 @@ export function getPoolBalances<
 ): Promise<[SupportedSynthereumSymbol, Amount][]> {
   return Promise.all(
     mapPools(realm, version, async p =>
-      t(p.symbol, await getTokenBalance(realm.collateralToken, p.address)),
+      t(p.symbol, await getTokenBalance(p.collateralToken, p.address)),
     ),
   );
 }
@@ -178,7 +178,7 @@ export function depositInAllPools<Net extends SupportedNetworkName>(
   const perPool = amount.div(new BN(poolsCount)) as Amount;
   return executeInSequence(
     ...mapPools(realm, version, pool => () =>
-      erc20Transfer(realm.collateralToken, pool.address, perPool, {
+      erc20Transfer(pool.collateralToken, pool.address, perPool, {
         ...txOptions,
         web3: realm.web3,
         from,

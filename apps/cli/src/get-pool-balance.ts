@@ -17,6 +17,7 @@ import {
 } from '@jarvis-network/core-utils/dist/base/asserts';
 import { getTokenBalance } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-ts/dist/core/types/realm';
+import { SupportedNetworkId } from '@jarvis-network/synthereum-ts/dist/config';
 import {
   assertIsSupportedPoolVersion,
   PoolVersion,
@@ -51,13 +52,17 @@ async function main() {
   const poolVersion = assertIsSupportedPoolVersion(
     process.env.POOL_VERSION_TO_DEPOSIT_INTO,
   );
-  const sender = assertIsAddress<42>(web3.defaultAccount);
+
+  const sender = assertIsAddress<SupportedNetworkId>(web3.defaultAccount);
+
+  const collateralToken = assertNotNull(
+    realm.pools?.[poolVersion]?.jEUR?.collateralToken,
+  );
+
   log(`Depositing ${depositAmount} USDC in ${poolVersion}`, {
     sender,
     ethBalance: formatAmount(wei(await web3.eth.getBalance(sender))),
-    usdcBalance: formatAmount(
-      await getTokenBalance(realm.collateralToken, sender),
-    ),
+    usdcBalance: formatAmount(await getTokenBalance(collateralToken, sender)),
   });
   await depositInAllPools(realm, poolVersion, numberToWei(depositAmount), {
     printInfo: { log },

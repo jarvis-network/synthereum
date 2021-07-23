@@ -70,10 +70,6 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     config.selfMintingRegistry,
   );
 
-  const collateralAddress = config.primaryCollateralToken.address;
-
-  const collateralToken = await getTokenInfo(web3, collateralAddress);
-
   const loadAllDerivatives = async <Version extends SelfMintingVersion>(
     version: Version,
   ) => {
@@ -100,17 +96,16 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     );
     return Object.fromEntries(pairs) as DerivativesForVersion<Version, Net>;
   };
-  const derivatives: SynthereumRealmWithWeb3<Net>['selfMintingDerivatives'] = {};
-  derivatives.v1 = await loadAllDerivatives('v1');
+
   return {
     web3,
     netId,
+    selfMintingRegistry,
+    selfMintingDerivatives: {
+      v1: await loadAllDerivatives('v1'),
+    },
     poolRegistry: undefined,
     pools: undefined,
-    selfMintingDerivatives: derivatives,
-    selfMintingRegistry,
-    // Assume the same collateral token for all synthetics:
-    collateralToken,
   };
 }
 

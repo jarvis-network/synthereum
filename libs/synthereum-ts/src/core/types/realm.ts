@@ -1,8 +1,5 @@
 import { ISynthereumRegistry as ISynthereumRegistryContract } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
-import {
-  ContractInfo,
-  TokenInfo,
-} from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import { ContractInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
@@ -22,7 +19,6 @@ import {
 export interface SynthereumRealm<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
-  readonly collateralToken: TokenInfo<Net>;
   readonly poolRegistry:
     | ContractInfo<Net, ISynthereumRegistryContract>
     | undefined;
