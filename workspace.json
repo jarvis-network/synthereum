@@ -542,36 +542,6 @@
         }
       }
     },
-    "polygon": {
-      "root": "libs/polygon",
-      "sourceRoot": "libs/polygon/src",
-      "projectType": "library",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "outputs": ["libs/polygon/dist"],
-          "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/polygon",
-            "color": true
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/polygon/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/polygon"],
-          "options": {
-            "jestConfig": "libs/polygon/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
     "hardhat-utils": {
       "root": "libs/hardhat-utils",
       "sourceRoot": "libs/hardhat-utils/src",

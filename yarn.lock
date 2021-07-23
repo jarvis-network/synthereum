@@ -3724,39 +3724,6 @@
     rxjs "^6.6.3"
     wrap-ansi "^7.0.0"
 
-"@jarvis-network/uma-common@^0.3.11":
-  version "0.3.11"
-  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-common/-/@jarvis-network/uma-common-0.3.11.tgz#ec0f2eba50074acedf4874dbe7a9c2e6f3196eaf"
-  integrity sha1-7A8uulAHSs7fSHTb56nC5vMZbq8=
-  dependencies:
-    "@ethersproject/bignumber" "^5.0.5"
-    "@nomiclabs/hardhat-etherscan" "^2.1.0"
-    "@nomiclabs/hardhat-truffle5" "^2.0.0"
-    "@nomiclabs/hardhat-web3" "^2.0.0"
-    "@truffle/hdwallet-provider" "^1.2.1"
-    abi-decoder "github:UMAprotocol/abi-decoder"
-    bignumber.js "^8.0.1"
-    dotenv "^6.2.0"
-    eth-crypto "^1.6.0"
-    hardhat "^2.0.4"
-    hardhat-gas-reporter "^1.0.3"
-    minimist "^1.2.0"
-    moment "^2.24.0"
-    require-context "^1.1.0"
-    solidity-coverage "^0.7.13"
-    truffle-deploy-registry "^0.5.1"
-    web3 "1.2.11"
-  optionalDependencies:
-    "@umaprotocol/truffle-ledger-provider" "npm:@jarvis-network/ledger-web3-provider@^2.0.1"
-
-"@jarvis-network/uma-core@0.3.11":
-  version "0.3.11"
-  resolved "https://gitlab.com/api/v4/projects/21727121/packages/npm/@jarvis-network/uma-core/-/@jarvis-network/uma-core-0.3.11.tgz#627da6f5d517cad3a643182fbcbc1be3e2dc8a9a"
-  integrity sha1-Yn2m9dUXytOmQxgvvLwb4+Lcipo=
-  dependencies:
-    "@jarvis-network/uma-common" "^0.3.11"
-    "@truffle/contract" "^4.2.20"
-
 "@jest/console@^26.6.2":
   version "26.6.2"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-26.6.2.tgz#4e04bc464014358b03ab4937805ee36a0aeb98f2"
@@ -3969,13 +3936,6 @@
     google-protobuf "^3.7.0-rc.2"
     pbjs "^0.0.5"
 
-"@ledgerhq/cryptoassets@^5.44.1":
-  version "5.44.1"
-  resolved "https://registry.npmjs.org/@ledgerhq/cryptoassets/-/cryptoassets-5.44.1.tgz#15c4aeae21049e899fe1af711150deb2540f5e55"
-  integrity sha512-UhAL5kH81VgU2DGXjrz+tX3fXwYtJWSrDkna01lBl56Js8S57n/s47fajpU93K2msYqjJ5hhKaNgSvjNSmeMoA==
-  dependencies:
-    invariant "2"
-
 "@ledgerhq/cryptoassets@^5.53.0":
   version "5.53.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/cryptoassets/-/cryptoassets-5.53.0.tgz#11dcc93211960c6fd6620392e4dd91896aaabe58"
@@ -3992,7 +3952,7 @@
     "@ledgerhq/logs" "^4.72.0"
     rxjs "^6.5.3"
 
-"@ledgerhq/devices@^5.36.0", "@ledgerhq/devices@^5.43.0":
+"@ledgerhq/devices@^5.43.0":
   version "5.43.0"
   resolved "https://registry.npmjs.org/@ledgerhq/devices/-/devices-5.43.0.tgz#9b8ca838a7f8ece74098dc84aa6468eb7651972d"
   integrity sha512-/M5ZLUBdBK7Vl2T4yNJbES3Z4w55LbPdxD9rcOBAKH/5V3V0obQv6MUasP9b7DSkwGSSLCOGZLohoT2NxK2D2A==
@@ -4017,7 +3977,7 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.78.0.tgz#23daf3af54d03b1bda3e616002b555da1bdb705a"
   integrity sha512-FX6zHZeiNtegBvXabK6M5dJ+8OV8kQGGaGtuXDeK/Ss5EmG4Ltxc6Lnhe8hiHpm9pCHtktOsnUVL7IFBdHhYUg==
 
-"@ledgerhq/errors@^5.34.0", "@ledgerhq/errors@^5.36.0", "@ledgerhq/errors@^5.43.0":
+"@ledgerhq/errors@^5.34.0", "@ledgerhq/errors@^5.43.0":
   version "5.43.0"
   resolved "https://registry.npmjs.org/@ledgerhq/errors/-/errors-5.43.0.tgz#6bec77ebc31c4333a7f8d13b1f3f4d739b859b75"
   integrity sha512-ZjKlUQbIn/DHXAefW3Y1VyDrlVhVqqGnXzrqbOXuDbZ2OAIfSe/A1mrlCbWt98jP/8EJQBuCzBOtnmpXIL/nYg==
@@ -4034,17 +3994,6 @@
   dependencies:
     "@ledgerhq/errors" "^4.78.0"
     "@ledgerhq/hw-transport" "^4.78.0"
-
-"@ledgerhq/hw-app-eth@^5.37.0":
-  version "5.44.1"
-  resolved "https://registry.npmjs.org/@ledgerhq/hw-app-eth/-/hw-app-eth-5.44.1.tgz#eb029518a6f92f56800ec8ce3b818a9f0d1d13c8"
-  integrity sha512-GdrkfDVlDzLfqln79t7J8rZ9IhHcE9DtfS9QBiasu7vKY4hrGHKIQEB3b2ogG1tkZGxzbsS5m8LmxuRhlmiGqQ==
-  dependencies:
-    "@ledgerhq/cryptoassets" "^5.44.1"
-    "@ledgerhq/errors" "^5.43.0"
-    "@ledgerhq/hw-transport" "^5.43.0"
-    bignumber.js "^9.0.1"
-    rlp "^2.2.6"
 
 "@ledgerhq/hw-app-eth@^5.49.0":
   version "5.53.0"
@@ -4069,17 +4018,6 @@
     "@ledgerhq/logs" "^4.72.0"
     node-hid "^0.7.9"
 
-"@ledgerhq/hw-transport-node-hid-noevents@^5.36.0":
-  version "5.36.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid-noevents/-/hw-transport-node-hid-noevents-5.36.0.tgz#a25bdf0d10f9eac73148040e5887f40ca46f6a93"
-  integrity sha512-8zwokin0KFJaTzhy7oLVcy4QCNUjMuc49wPLnr3zxLqhO1innMp2crUxjIFNLRGJm/TfDLnlpxTPud6WZoo5zg==
-  dependencies:
-    "@ledgerhq/devices" "^5.36.0"
-    "@ledgerhq/errors" "^5.36.0"
-    "@ledgerhq/hw-transport" "^5.36.0"
-    "@ledgerhq/logs" "^5.36.0"
-    node-hid "2.1.1"
-
 "@ledgerhq/hw-transport-node-hid@^4.32.0":
   version "4.78.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-4.78.0.tgz#abd99e0f918b810a61c035e5ab8c2bd8807aff55"
@@ -4093,20 +4031,6 @@
     lodash "^4.17.15"
     node-hid "^0.7.9"
     usb "^1.6.0"
-
-"@ledgerhq/hw-transport-node-hid@^5.36.0":
-  version "5.36.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-5.36.0.tgz#c0296b2cd476b6fb3de71135f49b7bb73f692289"
-  integrity sha512-tLY61e/EBsWSpms1Xwso+N6uAIz6E27owCgsWm1YHrc4FTn+AYteRVzPFi9D2M1tx9gyYX6frqFyaMawVZzjAg==
-  dependencies:
-    "@ledgerhq/devices" "^5.36.0"
-    "@ledgerhq/errors" "^5.36.0"
-    "@ledgerhq/hw-transport" "^5.36.0"
-    "@ledgerhq/hw-transport-node-hid-noevents" "^5.36.0"
-    "@ledgerhq/logs" "^5.36.0"
-    lodash "^4.17.20"
-    node-hid "2.1.1"
-    usb "^1.6.3"
 
 "@ledgerhq/hw-transport-u2f@^4.74.2":
   version "4.78.0"
@@ -4147,7 +4071,7 @@
     "@ledgerhq/errors" "^4.78.0"
     events "^3.0.0"
 
-"@ledgerhq/hw-transport@^5.34.0", "@ledgerhq/hw-transport@^5.36.0", "@ledgerhq/hw-transport@^5.43.0":
+"@ledgerhq/hw-transport@^5.34.0":
   version "5.43.0"
   resolved "https://registry.npmjs.org/@ledgerhq/hw-transport/-/hw-transport-5.43.0.tgz#dc9863706d31bae96aed66f193b8922a876cbf82"
   integrity sha512-0S+TGmiEJOqgM2MWnolZQPVKU3oRtoDj4yUFUZts9Owbgby+hmo4dIKTvv0vs8mwknQbOZByUgh3MQOQiK70MQ==
@@ -4170,7 +4094,7 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-4.72.0.tgz#43df23af013ad1135407e5cf33ca6e4c4c7708d5"
   integrity sha512-o+TYF8vBcyySRsb2kqBDv/KMeme8a2nwWoG+lAWzbDmWfb2/MrVWYCVYDYvjXdSoI/Cujqy1i0gIDrkdxa9chA==
 
-"@ledgerhq/logs@^5.30.0", "@ledgerhq/logs@^5.36.0", "@ledgerhq/logs@^5.43.0":
+"@ledgerhq/logs@^5.30.0", "@ledgerhq/logs@^5.43.0":
   version "5.43.0"
   resolved "https://registry.npmjs.org/@ledgerhq/logs/-/logs-5.43.0.tgz#031bad4b8a3525c5e14210afde0bc09c79564026"
   integrity sha512-QWfQjea3ekh9ZU+JeL2tJC9cTKLZ/JrcS0JGatLejpRYxQajvnHvHfh0dbHOKXEaXfCskEPTZ3f1kzuts742GA==
@@ -4570,7 +4494,7 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@nomiclabs/hardhat-etherscan@^2.1.0", "@nomiclabs/hardhat-etherscan@^2.1.4":
+"@nomiclabs/hardhat-etherscan@^2.1.4":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@nomiclabs/hardhat-etherscan/-/hardhat-etherscan-2.1.4.tgz#510b6a669cc2dad095466b2ba9ae0b411c779081"
   integrity sha512-KgFNTQv9gpioiTpQ9UlTysCAFfkcBonmEn9rVPTT22A7DRENFM1VTsVeGWF3AzRhd0mrASBF+o0gvbH30pSe0Q==
@@ -7956,17 +7880,6 @@
     "@umaprotocol/web3-provider-engine" "^15.0.4"
     "@umaprotocol/web3-subprovider" "^4.74.3"
     ethereumjs-wallet "^0.6.0"
-
-"@umaprotocol/truffle-ledger-provider@npm:@jarvis-network/ledger-web3-provider@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@jarvis-network/ledger-web3-provider/-/ledger-web3-provider-2.0.1.tgz#5bfc3a86912189cd9fcbbd9d685df6f6e324745b"
-  integrity sha512-QZJeX8iEodOVhKgqARV9DGy9o5hy4XId7mKE4f/o4JZhmTqjCXm8WJxYu9Z/6RfSTIGjgsUFP8U/PRaQtR4EVg==
-  dependencies:
-    "@ledgerhq/hw-app-eth" "^5.37.0"
-    "@ledgerhq/hw-transport" "^5.36.0"
-    "@ledgerhq/hw-transport-node-hid" "^5.36.0"
-    ethereumjs-tx "^2.1.2"
-    web3-provider-engine "^16.0.1"
 
 "@umaprotocol/web3-provider-engine@^15.0.4", "@umaprotocol/web3-provider-engine@^15.0.5":
   version "15.0.5"
@@ -18710,7 +18623,7 @@ hardhat-deploy@^0.8.11:
     murmur-128 "^0.2.1"
     qs "^6.9.4"
 
-hardhat-gas-reporter@^1.0.3, hardhat-gas-reporter@^1.0.4:
+hardhat-gas-reporter@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/hardhat-gas-reporter/-/hardhat-gas-reporter-1.0.4.tgz#59e3137e38e0dfeac2e4f90d5c74160b50ad4829"
   integrity sha512-G376zKh81G3K9WtDA+SoTLWsoygikH++tD1E7llx+X7J+GbIqfwhDKKgvJjcnEesMrtR9UqQHK02lJuXY1RTxw==
@@ -18725,7 +18638,7 @@ hardhat-watcher@^2.1.1:
   dependencies:
     chokidar "^3.4.3"
 
-hardhat@*, hardhat@^2.0.4, hardhat@^2.3.3, hardhat@^2.4.3, hardhat@^2.6.0:
+hardhat@*, hardhat@^2.4.3, hardhat@^2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.6.1.tgz#4553ca555c1ba8ed7c3c5a5a93e6082a2869b3ae"
   integrity sha512-0LozdYbPsiTc6ZXsfDQUTV3L0p4CMO5TRbd5qmeWiCYGmhd+7Mvdg4N+nA8w0g3gZ2OKFUmHIYlAbExI488ceQ==
@@ -24221,7 +24134,7 @@ node-addon-api@^2.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-2.0.2.tgz#432cfa82962ce494b132e9d72a15b29f71ff5d32"
   integrity sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==
 
-node-addon-api@^3.0.0, node-addon-api@^3.0.2:
+node-addon-api@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.2.0.tgz#7028b56a7eb572b73873aed731a7f9c9365f5ee4"
   integrity sha512-kcwSAWhPi4+QzAtsL2+2s/awvDo2GKLsvMCwNRxb5BUshteXU8U97NCyvQDsGKs/m0He9WcG4YWew/BnuLx++w==
@@ -24306,15 +24219,6 @@ node-gyp@^7.1.0:
     semver "^7.3.2"
     tar "^6.0.2"
     which "^2.0.2"
-
-node-hid@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/node-hid/-/node-hid-2.1.1.tgz#f83c8aa0bb4e6758b5f7383542477da93f67359d"
-  integrity sha512-Skzhqow7hyLZU93eIPthM9yjot9lszg9xrKxESleEs05V2NcbUptZc5HFqzjOkSmL0sFlZFr3kmvaYebx06wrw==
-  dependencies:
-    bindings "^1.5.0"
-    node-addon-api "^3.0.2"
-    prebuild-install "^6.0.0"
 
 node-hid@^0.7.9:
   version "0.7.9"
@@ -28860,7 +28764,7 @@ rlp-browser@^1.0.1:
   dependencies:
     buffer "^5.4.2"
 
-rlp@^2.0.0, rlp@^2.2.3, rlp@^2.2.4, rlp@^2.2.6:
+rlp@^2.0.0, rlp@^2.2.3, rlp@^2.2.4:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/rlp/-/rlp-2.2.6.tgz#c80ba6266ac7a483ef1e69e8e2f056656de2fb2c"
   integrity sha512-HAfAmL6SDYNWPUOJNrM500x4Thn4PZsEy5pijPh40U9WfNk0z15hUYzO9xVIMAdIHdFtD8CBDHd75Td1g36Mjg==
@@ -32540,15 +32444,6 @@ usb@^1.6.0:
     node-addon-api "3.0.2"
     prebuild-install "^5.3.3"
 
-usb@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/usb/-/usb-1.6.3.tgz#c0bc14994e8f9cb16f9602ec0dbadaa57cb919f5"
-  integrity sha512-23KYMjaWydACd8wgGKMQ4MNwFspAT6Xeim4/9Onqe5Rz/nMb4TM/WHL+qPT0KNFxzNKzAs63n1xQWGEtgaQ2uw==
-  dependencies:
-    bindings "^1.4.0"
-    nan "2.13.2"
-    prebuild-install "^5.3.3"
-
 use-callback-ref@^1.2.1:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/use-callback-ref/-/use-callback-ref-1.2.5.tgz#6115ed242cfbaed5915499c0a9842ca2912f38a5"
@@ -33136,7 +33031,7 @@ web3-provider-engine@15.0.4:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-provider-engine@16.0.1, web3-provider-engine@^16.0.1:
+web3-provider-engine@16.0.1:
   version "16.0.1"
   resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-16.0.1.tgz#2600a39ede364cdc0a1fc773bf40a94f2177e605"
   integrity sha512-/Eglt2aocXMBiDj7Se/lyZnNDaHBaoJlaUfbP5HkLJQC/HlGbR+3/W+dINirlJDhh7b54DzgykqY7ksaU5QgTg==

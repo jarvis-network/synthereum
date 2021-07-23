@@ -47,7 +47,6 @@
     "ganache-time-traveler": "^1.0.15",
     "globby": "^11.0.3",
     "hardhat-gas-reporter": "^1.0.4",
-    "hardhat": "^2.3.3",
     "rmrf": "^2.0.3",
     "secp256k1": "^4.0.2",
     "solidity-coverage": "^0.7.16",

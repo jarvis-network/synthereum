@@ -6,7 +6,6 @@ module.exports = {
     '<rootDir>/libs/synthereum-ts',
     '<rootDir>/apps/examples',
     '<rootDir>/libs/legacy-currency-contracts',
-    '<rootDir>/libs/polygon',
     '<rootDir>/libs/hardhat-utils',
   ],
 };

@@ -1,3 +1,5 @@
+/* eslint-disable no-constant-condition */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { resolve } from 'path';
 
 import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
@@ -10,6 +12,19 @@ import {
   modifyDeploy,
   compile,
 } from '@jarvis-network/hardhat-utils/dist/tasks';
+
+import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
+import { task as createOrModifyHardhatTask } from 'hardhat/config';
+
+createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
+  (taskArgs, hre, runSuper) => {
+    const network = hre.network.name;
+    if (network === 'polygon' || network === 'mumbai') {
+      (hre.config as any).etherscan.apiKey = process.env.POLYGONSCAN_API_KEY;
+    }
+    return runSuper();
+  },
+);
 
 modifiyGetMinimumBuild();
 modifiyVerifyMinimumBuild();
@@ -60,8 +75,10 @@ export const config = {
   },
 };
 
-addPublicNetwork(config, 1);
-addPublicNetwork(config, 42);
-addPublicNetwork(config, 4);
+addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
+addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);
+addPublicNetwork(config, 4, process.env.ETHEREUM_PROJECT_ID!);
+addPublicNetwork(config, 137, process.env.POLYGON_PROJECT_ID!);
+addPublicNetwork(config, 80001, process.env.POLYGON_PROJECT_ID!);
 
 export default config;

@@ -10,12 +10,13 @@ import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 export function addPublicNetwork(
   config: HardhatUserConfig,
   chainId: NetworkId,
+  projectId: string,
 ): void {
   const networkName = toNetworkName(chainId);
   config.networks ??= {};
   config.networks[networkName] = {
     chainId,
-    url: process.env.RPC_URL ?? getInfuraEndpoint(chainId, 'https'),
+    url: process.env.RPC_URL ?? getInfuraEndpoint(chainId, 'https', projectId),
     accounts: {
       mnemonic:
         process.env.MNEMONIC ??
