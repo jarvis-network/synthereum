@@ -13,6 +13,9 @@ const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
 } = require('../../utils/encoding.js');
+const {
+  collapseTextChangeRangesAcrossMultipleVersions,
+} = require('typescript');
 
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
@@ -164,6 +167,7 @@ contract('Fixed Rate Currency', accounts => {
       collateralAddress,
       poolAddress,
       synthereumFinderAddress,
+      admin,
       pegRate,
       name,
       symbol,
@@ -273,6 +277,15 @@ contract('Fixed Rate Currency', accounts => {
       assert.equal(pegTokenBalanceAfter.eq(pegTokenBalanceBefore), true);
       assert.equal(totalDepositBefore.eq(totalDepositAfter), true);
     });
+
+    it('Rejects if contract has been paused by admin', async () => {
+      await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, { from: user }),
+        'Contract has been paused',
+      );
+    });
   });
 
   describe('Redeem to Peg Synth', () => {
@@ -355,7 +368,7 @@ contract('Fixed Rate Currency', accounts => {
       );
     });
 
-    it('reverts if fixed rate token balance is insufficient', async () => {
+    it('Reverts if fixed rate token balance is insufficient', async () => {
       const totalDepositBefore = await fixedRateCurrencyInstance.total_deposited.call();
       const userBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
         user,
@@ -379,6 +392,35 @@ contract('Fixed Rate Currency', accounts => {
       assert.equal(userBalanceAfter.eq(userBalanceBefore), true);
       assert.equal(userPegBalanceAfter.eq(userPegBalanceBefore), true);
       assert.equal(totalDepositBefore.eq(totalDepositAfter), true);
+    });
+
+    it('Allows to redeem with contract paused', async () => {
+      const userBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+      const redeemRatio = Web3Utils.toBN(2);
+      const redeemAmount = userBalanceBefore.div(redeemRatio);
+
+      await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+      // redeem tx
+      const tx = await fixedRateCurrencyInstance.redeemToPegSynth(
+        redeemAmount,
+        {
+          from: user,
+        },
+      );
+
+      const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
+
+      truffleAssert.eventEmitted(tx, 'Redeem', ev => {
+        return (
+          ev.account == user &&
+          ev.tokenBurned == fixedRateAddr &&
+          ev.tokenRedeemed == pegTokenAddr &&
+          ev.numTokensRedeemed == parseInt(pegTokenBalanceAfter)
+        );
+      });
     });
   });
 
@@ -465,9 +507,204 @@ contract('Fixed Rate Currency', accounts => {
         'ERC20: transfer amount exceeds balance',
       );
     });
+
+    it('Rejects if contract has been paused by admin', async () => {
+      let MintParams = {
+        derivative: derivativeAddress,
+        minNumTokens: numTokens,
+        collateralAmount: collateralAmount,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.mintFromUSDC(MintParams, { from: user }),
+        'Contract has been paused',
+      );
+    });
   });
 
-  describe('Redeem to Synthereum Collateral (USDC)', () => {});
+  describe('Redeem to Synthereum Collateral (USDC)', () => {
+    beforeEach(async () => {
+      let MintParams = {
+        derivative: derivativeAddress,
+        minNumTokens: numTokens,
+        collateralAmount: collateralAmount,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      // deposit some collateral in the pool
+      await collateralInstance.allocateTo(poolAddress, poolStartingDeposit);
+
+      // allocate collateral to user and approve pool
+      await collateralInstance.allocateTo(user, collateralAmount);
+      await collateralInstance.approve(poolAddress, collateralAmount, {
+        from: user,
+      });
+
+      // mint pegSynth and approve fixedRateCurrency
+      await poolInstance.mint(MintParams, { from: user });
+      pegBalance = await pegTokenInstance.balanceOf.call(user);
+
+      await pegTokenInstance.approve(fixedRateAddr, pegBalance, { from: user });
+
+      // mint fixed rate synth using all the pegSynth balance
+      await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, {
+        from: user,
+      });
+    });
+
+    it('Correctly burns fixed rate and peg synths and redeem synthereum collateral', async () => {
+      const redeemRatio = Web3Utils.toBN(2);
+      const bnFixedCurrencyTotSupply = Web3Utils.toBN(
+        await fixedRateCurrencyInstance.totalSupply.call(),
+      );
+      const totalDepositBefore = await fixedRateCurrencyInstance.total_deposited.call();
+      const userBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+      const userCollateralBalanceBefore = await collateralInstance.balanceOf.call(
+        user,
+      );
+      const pegTokenBalanceBefore = await pegTokenInstance.balanceOf.call(user);
+
+      const redeemAmount = userBalanceBefore.div(redeemRatio);
+      let RedeemParams = {
+        derivative: derivativeAddress,
+        numTokens: redeemAmount.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      // approve
+      await pegTokenInstance.approve(fixedRateAddr, pegBalance, { from: user });
+
+      // redeem tx
+      const tx = await fixedRateCurrencyInstance.redeemUSDC(RedeemParams, {
+        from: user,
+      });
+
+      const userBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+      const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
+      const userCollateralBalanceAfter = await collateralInstance.balanceOf.call(
+        user,
+      );
+      const totalDepositAfter = await fixedRateCurrencyInstance.total_deposited.call();
+
+      const pegTokensRedeemed = redeemAmount
+        .mul(totalDepositBefore)
+        .div(bnFixedCurrencyTotSupply);
+
+      let collateralReceived;
+      truffleAssert.eventEmitted(tx, 'Redeem', ev => {
+        collateralReceived = ev.numTokensRedeemed;
+        return (
+          ev.account == user &&
+          ev.tokenBurned == pegTokenAddr &&
+          ev.tokenRedeemed == collateralAddress
+        );
+      });
+
+      assert.equal(
+        totalDepositAfter.eq(totalDepositBefore.sub(pegTokensRedeemed)),
+        true,
+      );
+      assert.equal(pegTokenBalanceAfter.eq(pegTokenBalanceBefore), true);
+      assert.equal(
+        userBalanceAfter.eq(userBalanceBefore.sub(redeemAmount)),
+        true,
+      );
+
+      assert.equal(
+        userCollateralBalanceAfter.eq(
+          userCollateralBalanceBefore.add(Web3Utils.toBN(collateralReceived)),
+        ),
+        true,
+      );
+    });
+
+    it('Allows to redeem with contract paused', async () => {
+      const redeemRatio = Web3Utils.toBN(2);
+      const bnFixedCurrencyTotSupply = Web3Utils.toBN(
+        await fixedRateCurrencyInstance.totalSupply.call(),
+      );
+      const totalDepositBefore = await fixedRateCurrencyInstance.total_deposited.call();
+      const userBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+      const userCollateralBalanceBefore = await collateralInstance.balanceOf.call(
+        user,
+      );
+      const pegTokenBalanceBefore = await pegTokenInstance.balanceOf.call(user);
+      const redeemAmount = userBalanceBefore.div(redeemRatio);
+      let RedeemParams = {
+        derivative: derivativeAddress,
+        numTokens: redeemAmount.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+      // approve
+      await pegTokenInstance.approve(fixedRateAddr, pegBalance, { from: user });
+      // redeem tx
+      const tx = await fixedRateCurrencyInstance.redeemUSDC(RedeemParams, {
+        from: user,
+      });
+
+      const userBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+      const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
+      const userCollateralBalanceAfter = await collateralInstance.balanceOf.call(
+        user,
+      );
+      const totalDepositAfter = await fixedRateCurrencyInstance.total_deposited.call();
+
+      const pegTokensRedeemed = redeemAmount
+        .mul(totalDepositBefore)
+        .div(bnFixedCurrencyTotSupply);
+
+      let collateralReceived;
+      truffleAssert.eventEmitted(tx, 'Redeem', ev => {
+        collateralReceived = ev.numTokensRedeemed;
+        return (
+          ev.account == user &&
+          ev.tokenBurned == pegTokenAddr &&
+          ev.tokenRedeemed == collateralAddress
+        );
+      });
+
+      assert.equal(
+        totalDepositAfter.eq(totalDepositBefore.sub(pegTokensRedeemed)),
+        true,
+      );
+      assert.equal(pegTokenBalanceAfter.eq(pegTokenBalanceBefore), true);
+      assert.equal(
+        userBalanceAfter.eq(userBalanceBefore.sub(redeemAmount)),
+        true,
+      );
+
+      assert.equal(
+        userCollateralBalanceAfter.eq(
+          userCollateralBalanceBefore.add(Web3Utils.toBN(collateralReceived)),
+        ),
+        true,
+      );
+    });
+  });
 
   describe('Mint/Redeem with any other Synth (jGBP) ', () => {});
 });
