@@ -19,6 +19,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   ISynthereumPoolOnChainPriceFeed public synthereumPool; // pegSynth-USDC pool
   IERC20 public collateralInstance; // synthereum pool collateral (USDC)
 
+  address public admin;
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -51,6 +52,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     IERC20 _collateralToken,
     ISynthereumPoolOnChainPriceFeed _synthereumPoolAddress,
     ISynthereumFinder _synthereumFinder,
+    address _admin,
     uint256 _rate,
     string memory _name,
     string memory _symbol
@@ -59,7 +61,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     synthereumFinder = _synthereumFinder;
     synthereumPool = _synthereumPoolAddress;
     collateralInstance = _collateralToken;
-
+    admin = _admin;
     // address synthAddress;
     // address collateralAddress;
     // // check the appropriate pool is passed
@@ -133,11 +135,12 @@ contract FixedRateCurrency is FixedRateWrapper {
     synth.safeIncreaseAllowance(address(synthereumPool), pegTokensUnlocked);
 
     // redeem USDC by burning jEur in broker contract and send them to user (recipient in redeemParamss)
+    _redeemParams.numTokens = pegTokensUnlocked;
     (uint256 collateralRedeemed, ) = synthereumPool.redeem(_redeemParams);
 
     emit Redeem(
       msg.sender,
-      address(synthereumPool),
+      address(synth),
       address(collateralInstance),
       collateralRedeemed
     );
@@ -187,12 +190,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   // only synthereum manager can pause new mintings
   // code an admin
   function pauseContract() public {
-    address manager =
-      synthereumFinder.getImplementationAddress(SynthereumInterfaces.Manager);
-    require(
-      msg.sender == manager,
-      'Only synthereum manager can call this function'
-    );
+    require(msg.sender == admin, 'Only contract admin can call this function');
     paused = true;
     emit ContractPaused();
   }
