@@ -4,6 +4,7 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import './FixedRateWrapper.sol';
+import './IAtomicSwap.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';
@@ -18,6 +19,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   ISynthereumFinder public synthereumFinder;
   ISynthereumPoolOnChainPriceFeed public synthereumPool; // pegSynth-USDC pool
   IERC20 public collateralInstance; // synthereum pool collateral (USDC)
+  IAtomicSwap public atomicSwap;
 
   address public admin;
   //----------------------------------------
@@ -37,6 +39,23 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 numTokensRedeemed
   );
 
+  event SwapWithERC20(
+    address indexed account,
+    address indexed ERC20Address,
+    address indexed synthToken,
+    string side,
+    uint256 numTokensIn,
+    uint256 numTokensOut
+  );
+
+  event SwapWithETH(
+    address indexed account,
+    address indexed synthToken,
+    string side,
+    uint256 numTokensIn,
+    uint256 numTokensOut
+  );
+
   event ContractPaused();
   //----------------------------------------
   // Modifiers
@@ -52,6 +71,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     IERC20 _collateralToken,
     ISynthereumPoolOnChainPriceFeed _synthereumPoolAddress,
     ISynthereumFinder _synthereumFinder,
+    IAtomicSwap _atomicSwapAddr,
     address _admin,
     uint256 _rate,
     string memory _name,
@@ -62,6 +82,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     synthereumPool = _synthereumPoolAddress;
     collateralInstance = _collateralToken;
     admin = _admin;
+    atomicSwap = _atomicSwapAddr;
     // address synthAddress;
     // address collateralAddress;
     // // check the appropriate pool is passed
@@ -77,18 +98,25 @@ contract FixedRateCurrency is FixedRateWrapper {
 
   /** @notice - Mints fixed rate synths against the deposited peg synth (jEUR)
    */
-  function mintFromPegSynth(uint256 _pegTokenAmount) public isActive() {
+  function mintFromPegSynth(uint256 _pegTokenAmount)
+    public
+    isActive()
+    returns (uint256 numTokensMinted)
+  {
     // deposit peg tokens and mint this token according to rate
-    uint256 numTokensMinted = super.wrap(_pegTokenAmount);
+    numTokensMinted = super.wrap(_pegTokenAmount);
 
     emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
   }
 
   /** @notice - Burns fixed rate synths and unlocks the deposited peg synth (jEUR)
    */
-  function redeemToPegSynth(uint256 _fixedSynthAmount) public {
-    uint256 tokenRedeemed = super.unwrap(_fixedSynthAmount);
-    emit Redeem(msg.sender, address(this), address(synth), tokenRedeemed);
+  function redeemToPegSynth(uint256 _fixedSynthAmount)
+    public
+    returns (uint256 tokensRedeemed)
+  {
+    tokensRedeemed = super.unwrap(_fixedSynthAmount);
+    emit Redeem(msg.sender, address(this), address(synth), tokensRedeemed);
   }
 
   /** @notice - Mints fixed rate synths from USDC.
@@ -185,6 +213,163 @@ contract FixedRateCurrency is FixedRateWrapper {
     // exchange function in broker to get final asset
     _exchangeParams.numTokens = pegTokensUnlocked;
     (uint256 numTokensMinted, ) = synthereumPool.exchange(_exchangeParams);
+  }
+
+  /**
+    @notice Leverages the OCLR to do ERC20 -> USDC -> jEUR -> fixedSynth 
+   */
+  function mintFromERC20(
+    uint256 amountTokensIn,
+    uint256 collateralAmountOutMin,
+    IERC20 inputTokenAddr,
+    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
+  ) public {
+    // token route for Uniswap
+    address[] memory tokenSwapPath;
+    tokenSwapPath[0] = address(inputTokenAddr);
+    tokenSwapPath[1] = address(collateralInstance);
+
+    // deposit erc20 into this contract
+    inputTokenAddr.safeTransferFrom(msg.sender, address(this), amountTokensIn);
+
+    // erc20 -> USDC -> jEur
+    (, , uint256 synthMinted) =
+      atomicSwap.swapAndMint(
+        amountTokensIn,
+        collateralAmountOutMin,
+        tokenSwapPath,
+        synthereumPool,
+        mintParams
+      );
+
+    // jEur -> jBGN
+    uint256 numTokensMinted = mintFromPegSynth(synthMinted);
+
+    emit SwapWithERC20(
+      msg.sender,
+      address(inputTokenAddr),
+      address(this),
+      'buy',
+      amountTokensIn,
+      numTokensMinted
+    );
+  }
+
+  /**
+    @notice Leverages the OCLR to do ETH -> USDC -> jEUR -> fixedSynth 
+   */
+  function mintFromETH(
+    uint256 collateralAmountOutMin,
+    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
+  ) public payable {
+    // token route for Uniswap
+    address[] memory tokenSwapPath;
+    tokenSwapPath[0] = address(collateralInstance);
+
+    // ETH - USDC - jEUR
+    (, , uint256 pegSynthMinted) =
+      atomicSwap.swapETHAndMint{value: msg.value}(
+        collateralAmountOutMin,
+        tokenSwapPath,
+        synthereumPool,
+        mintParams
+      );
+
+    // jEUR -> jBGN
+    uint256 numTokensMinted = mintFromPegSynth(pegSynthMinted);
+
+    emit SwapWithETH(
+      msg.sender,
+      address(this),
+      'buy',
+      msg.value,
+      numTokensMinted
+    );
+  }
+
+  /**
+    @notice Leverages the OCLR to do fixedSynth -> jEur (peg) -> USDC -> ERC20 
+   */
+  function swapToERC20(
+    uint256 fixedSynthAmountIn,
+    uint256 amountTokenOutMin,
+    IERC20 outputTokenAddr,
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
+  ) public {
+    // token route for Uniswap
+    address[] memory tokenSwapPath;
+    tokenSwapPath[0] = address(collateralInstance);
+    tokenSwapPath[1] = address(outputTokenAddr);
+
+    // jBGN -> jEUR
+    uint256 pegSynthRedeemed = redeemToPegSynth(fixedSynthAmountIn);
+
+    // pull jEUr from user wallet
+    synth.safeTransferFrom(msg.sender, address(this), pegSynthRedeemed);
+
+    // allow AtomicSwap to pull jEUR
+    synth.safeIncreaseAllowance(address(atomicSwap), pegSynthRedeemed);
+
+    // jEUr -> USDC -> ERC20 through AtomicSwap contract
+    redeemParams.numTokens = pegSynthRedeemed;
+    (, , uint256 outputAmount) =
+      atomicSwap.redeemAndSwap(
+        amountTokenOutMin,
+        tokenSwapPath,
+        synthereumPool,
+        redeemParams,
+        msg.sender
+      );
+
+    emit SwapWithERC20(
+      msg.sender,
+      address(outputTokenAddr),
+      address(this),
+      'sell',
+      fixedSynthAmountIn,
+      outputAmount
+    );
+  }
+
+  /**
+    @notice Leverages the OCLR to do fixedSynth -> jEur (peg) -> USDC -> ETH 
+   */
+  function swapToETH(
+    uint256 fixedSynthAmountIn,
+    uint256 amountTokenOutMin,
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
+  ) public {
+    // token route for Uniswap
+    address[] memory tokenSwapPath;
+    tokenSwapPath[0] = address(collateralInstance);
+
+    // jBGN -> jEUR
+    uint256 pegSynthRedeemed = redeemToPegSynth(fixedSynthAmountIn);
+
+    // pull jEUr from user wallet
+    synth.safeTransferFrom(msg.sender, address(this), pegSynthRedeemed);
+
+    // allow AtomicSwap to pull jEUR
+    synth.safeIncreaseAllowance(address(atomicSwap), pegSynthRedeemed);
+
+    // jEUr -> USDC -> ERC20 through AtomicSwap contract
+    redeemParams.numTokens = pegSynthRedeemed;
+    (, , uint256 outputAmount) =
+      atomicSwap.redeemAndSwapETH(
+        amountTokenOutMin,
+        tokenSwapPath,
+        synthereumPool,
+        redeemParams,
+        msg.sender
+      );
+
+    emit SwapWithETH(
+      msg.sender,
+      address(this),
+      'sell',
+      fixedSynthAmountIn,
+      outputAmount
+    );
   }
 
   // only synthereum manager can pause new mintings
