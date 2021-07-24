@@ -1,17 +1,20 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumChainlinkPriceFeed',
-  '@chainlink/contracts/src/v0.8/mocks/MockAggregator',
+  'MockAggregator',
+  'MockRandomAggregator',
 ]);
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
   const aggregators = require('../data/aggregators.json');
+  const randomOracleConfig = require('../data/test/randomAggregator.json');
   const { getExistingInstance } = require('../dist/migration-utils/deployment');
   const {
     SynthereumFinder,
     SynthereumChainlinkPriceFeed,
     MockAggregator,
+    MockRandomAggregator,
   } = migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
@@ -51,8 +54,8 @@ async function migrate(deployer, network, accounts) {
     )
     .send({ from: maintainer });
   console.log('SynthereumChainlinkPriceFeed added to SynthereumFinder');
-  const oracleDeployment = !isPublicNetwork(network);
-  if (oracleDeployment) {
+  var aggregatorsData = [];
+  if (!isPublicNetwork(network)) {
     await deploy(web3, deployer, network, MockAggregator, 8, 120000000, {
       from: keys.deployer,
     });
@@ -63,20 +66,46 @@ async function migrate(deployer, network, accounts) {
       .setAggregator(identifierBytes, mockAggregator.options.address)
       .send({ from: maintainer });
     console.log(`   Add '${pair}' aggregator`);
+  } else if (networkId === 80001) {
+    const assets = Object.keys(aggregators[networkId]);
+    for (let j = 0; j < assets.length; j++) {
+      await deploy(
+        web3,
+        deployer,
+        network,
+        MockRandomAggregator,
+        web3.utils.toWei(randomOracleConfig[80001][assets[j]].initialPrice),
+        web3.utils.toWei(randomOracleConfig[80001][assets[j]].maxSpread),
+        {
+          from: maintainer,
+        },
+      );
+
+      const mockRandomAggregator = await getExistingInstance(
+        web3,
+        MockRandomAggregator,
+      );
+
+      aggregatorsData.push({
+        asset: assets[j],
+        pair: web3.utils.utf8ToHex(assets[j]),
+        aggregator: mockRandomAggregator.options.address,
+      });
+    }
   } else {
-    let aggregatorsData = [];
-    Object.keys(aggregators[networkId]).map(async asset => {
+    const assets = Object.keys(aggregators[networkId]);
+    assets.map(async asset => {
       aggregatorsData.push({
         asset: asset,
         pair: web3.utils.utf8ToHex(asset),
         aggregator: aggregators[networkId][asset],
       });
     });
-    for (let j = 0; j < aggregatorsData.length; j++) {
-      await synthereumChainlinkPriceFeed.methods
-        .setAggregator(aggregatorsData[j].pair, aggregatorsData[j].aggregator)
-        .send({ from: maintainer });
-      console.log(`   Add '${aggregatorsData[j].asset}' aggregator`);
-    }
+  }
+  for (let j = 0; j < aggregatorsData.length; j++) {
+    await synthereumChainlinkPriceFeed.methods
+      .setAggregator(aggregatorsData[j].pair, aggregatorsData[j].aggregator)
+      .send({ from: maintainer });
+    console.log(`   Add '${aggregatorsData[j].asset}' aggregator`);
   }
 }

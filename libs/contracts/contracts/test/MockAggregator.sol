@@ -18,7 +18,7 @@ contract MockAggregator {
     updateAnswer(_initialAnswer);
   }
 
-  function updateAnswer(int256 _answer) public {
+  function updateAnswer(int256 _answer) public virtual {
     latestAnswer = _answer;
     latestTimestamp = block.timestamp;
     latestRound++;
@@ -32,7 +32,7 @@ contract MockAggregator {
     int256 _answer,
     uint256 _timestamp,
     uint256 _startedAt
-  ) public {
+  ) public virtual {
     latestRound = _roundId;
     latestAnswer = _answer;
     latestTimestamp = _timestamp;
@@ -42,7 +42,7 @@ contract MockAggregator {
   }
 
   function getRoundData(uint80 _roundId)
-    external
+    public
     view
     returns (
       uint80 roundId,
@@ -62,8 +62,9 @@ contract MockAggregator {
   }
 
   function latestRoundData()
-    external
+    public
     view
+    virtual
     returns (
       uint80 roundId,
       int256 answer,

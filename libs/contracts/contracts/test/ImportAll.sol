@@ -9,6 +9,7 @@ import '../base/utils/EnumerableBytesSet.sol';
 import '../base/utils/StringUtils.sol';
 import '../test/SelfMintingDerivativeFactoryMock.sol';
 import '../test/MockAggregator.sol';
+import '../test/MockRandomAggregator.sol';
 import '../test/TestnetSelfMintingERC20.sol';
 import '../test/SelfMintingControllerMock.sol';
 import '../test/PriceFeedGetter.sol';
