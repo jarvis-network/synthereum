@@ -26,6 +26,9 @@ const SynthereumPoolOnChainPriceFeed = artifacts.require(
   'SynthereumPoolOnChainPriceFeed',
 );
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
+const MockV3Aggregator = artifacts.require('MockV3Aggregator');
+const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
+const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 
 contract('Fixed Rate Currency', accounts => {
   let derivativeVersion = 2;
@@ -52,7 +55,7 @@ contract('Fixed Rate Currency', accounts => {
   let derivativePools;
 
   // pool params
-  let poolInstance;
+  let poolInstance, secondPoolInstance, aggregatorInstance, priceFeedInstance;
   let derivativeAddress = ZERO_ADDRESS;
   let synthereumFinderAddress;
   let poolVersion;
@@ -83,8 +86,8 @@ contract('Fixed Rate Currency', accounts => {
   // Fixed rate params
   let fixedRateCurrencyInstance;
   let fixedRateAddr;
-  let derivativeInstance;
-  let pegTokenAddr;
+  let derivativeInstance, secondDerivativeInstance;
+  let pegTokenAddr, pegTokenInstance;
   let pegRate = 2;
   let bnPegRate = Web3Utils.toBN(pegRate);
   let name = 'Jarvis Bulgarian Lev';
@@ -174,6 +177,9 @@ contract('Fixed Rate Currency', accounts => {
       symbol,
     );
     fixedRateAddr = fixedRateCurrencyInstance.address;
+
+    aggregatorInstance = await MockV3Aggregator.deployed();
+    priceFeedInstance = await ChainlinkPriceFeed.deployed();
   });
 
   describe('Deployment', () => {
@@ -757,5 +763,229 @@ contract('Fixed Rate Currency', accounts => {
     });
   });
 
-  describe('Mint/Redeem with any other Synth (jGBP) ', () => {});
+  // jGBP -> jEUR -> peggedSynth and vice versa
+  describe('Swap with any other Synth (jGBP) ', () => {
+    let numTokensExchange, totCollAmountExchange, destNumTokensExchange;
+    let feeAmountExchange, collAmountExchange;
+    let jGBPAddr, jGBPInstance;
+
+    beforeEach(async () => {
+      // deploy jGBP derivative
+      const identifierWhitelistInstance = await IdentifierWhitelist.deployed();
+      const identifierBytes = web3.utils.utf8ToHex(secondPriceFeedIdentifier);
+      await identifierWhitelistInstance.addSupportedIdentifier(identifierBytes);
+
+      secondDerivativePayload = encodeDerivative(
+        collateralAddress,
+        secondPriceFeedIdentifier,
+        secondSyntheticName,
+        secondSyntheticSymbol,
+        ZERO_ADDRESS,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        derivativeAdmins,
+        derivativePools,
+      );
+
+      secondPoolPayload = encodePoolOnChainPriceFeed(
+        ZERO_ADDRESS,
+        synthereumFinderAddress,
+        poolVersion,
+        roles,
+        secondStartingCollateralization,
+        fee,
+      );
+
+      const addresses = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        secondDerivativePayload,
+        secondPoolPayload,
+        { from: maintainer },
+      );
+
+      secondPoolAddress = addresses.pool;
+      secondDerivativeAddress = addresses.derivative;
+
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        secondDerivativePayload,
+        secondPoolPayload,
+        { from: maintainer },
+      );
+
+      secondPoolInstance = await SynthereumPoolOnChainPriceFeed.at(
+        secondPoolAddress,
+      );
+      secondDerivativeInstance = await Derivative.at(secondDerivativeAddress);
+      jGBPAddr = await secondDerivativeInstance.tokenCurrency.call();
+      jGBPInstance = await MintableBurnableERC20.at(jGBPAddr);
+
+      // chainlink config
+      aggregator = await MockV3Aggregator.new(
+        '8',
+        Web3Utils.toWei('162.175', 'mwei'),
+      );
+
+      priceFeedInstance = await ChainlinkPriceFeed.deployed();
+      await priceFeedInstance.setAggregator(
+        Web3Utils.toHex('GBP/USD'),
+        aggregator.address,
+        { from: maintainer },
+      );
+
+      numTokensExchange = Web3Utils.toWei('50');
+      totCollAmountExchange = Web3Utils.toWei('65', 'mwei');
+      feeAmountExchange = Web3Utils.toWei(
+        (65 * feePercentage).toString(),
+        'mwei',
+      );
+      collAmountExchange = (
+        parseInt(totCollAmountExchange) - parseInt(feeAmountExchange)
+      ).toString();
+
+      destNumTokensExchange = Web3Utils.toBN(
+        Web3Utils.toWei(collAmountExchange),
+      )
+        .div(Web3Utils.toBN(Web3Utils.toWei('162.175', 'mwei')))
+        .toString();
+
+      // deposit some collateral in the jGBP and jEUR pool
+      await collateralInstance.allocateTo(
+        secondPoolAddress,
+        poolStartingDeposit,
+      );
+      await collateralInstance.allocateTo(poolAddress, poolStartingDeposit);
+
+      // allocate collateral to user and approve pools
+      await collateralInstance.allocateTo(user, collateralAmount);
+      await collateralInstance.approve(secondPoolAddress, collateralAmount, {
+        from: user,
+      });
+      await collateralInstance.approve(poolAddress, collateralAmount, {
+        from: user,
+      });
+    });
+
+    it('Correctly mints fixed rate currency from a different synth', async () => {
+      let MintParams = {
+        derivative: secondDerivativeAddress,
+        minNumTokens: 0,
+        collateralAmount: collateralAmount,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+      // mint jGBP and approve fixedRateCurrency to pull em
+      await secondPoolInstance.mint(MintParams, { from: user });
+      await jGBPInstance.approve(fixedRateAddr, numTokensExchange, {
+        from: user,
+      });
+
+      let ExchangeParams = {
+        derivative: secondDerivativeAddress,
+        destPool: poolAddress,
+        destDerivative: derivativeAddress,
+        numTokens: numTokensExchange,
+        minDestNumTokens: destNumTokensExchange,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      await pegTokenInstance.approve(fixedRateAddr, Web3Utils.toWei('70'), {
+        from: user,
+      });
+
+      const exchangeTx = await fixedRateCurrencyInstance.mintFromSynth(
+        jGBPAddr,
+        secondPoolAddress,
+        ExchangeParams,
+        { from: user },
+      );
+
+      const fixedTokensBalance = await fixedRateCurrencyInstance.balanceOf.call(
+        user,
+      );
+
+      truffleAssert.eventEmitted(exchangeTx, 'SwapWithSynth', ev => {
+        return (
+          ev.account == user &&
+          ev.synth == jGBPAddr &&
+          ev.tokenAddress == fixedRateAddr &&
+          ev.numTokens == fixedTokensBalance.toString() &&
+          ev.side == 'buy'
+        );
+      });
+    });
+
+    it('Correctly swap for a synthereum synth', async () => {
+      let MintParams = {
+        derivative: derivativeAddress,
+        minNumTokens: numTokens,
+        collateralAmount: collateralAmount,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      let ExchangeParams = {
+        derivative: derivativeAddress,
+        destPool: secondPoolAddress,
+        destDerivative: secondDerivativeAddress,
+        numTokens: 0,
+        minDestNumTokens: destNumTokensExchange,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      // mint jEur and approve
+      await poolInstance.mint(MintParams, { from: user });
+      await pegTokenInstance.approve(fixedRateAddr, numTokens, { from: user });
+
+      // mint fixed synth tokens with jEur
+      tokensMinted = await fixedRateCurrencyInstance.mintFromPegSynth.call(
+        numTokens,
+        { from: user },
+      );
+      await fixedRateCurrencyInstance.mintFromPegSynth(numTokens, {
+        from: user,
+      });
+
+      // swap them for jGBP
+      await pegTokenInstance.approve(
+        fixedRateAddr,
+        Web3Utils.toWei(collateralAmount),
+        { from: user },
+      );
+
+      const exchangeTx = await fixedRateCurrencyInstance.swapForSynth(
+        tokensMinted,
+        ExchangeParams,
+        { from: user },
+      );
+
+      // assert
+      const jGBPBalance = await jGBPInstance.balanceOf.call(user);
+      truffleAssert.eventEmitted(exchangeTx, 'SwapWithSynth', ev => {
+        return (
+          ev.account == user &&
+          ev.synth == jGBPAddr &&
+          ev.tokenAddress == fixedRateAddr &&
+          ev.numTokens == jGBPBalance.toString() &&
+          ev.side == 'sell'
+        );
+      });
+    });
+  });
+
+  describe('OCLR Integration', async () => {});
 });
