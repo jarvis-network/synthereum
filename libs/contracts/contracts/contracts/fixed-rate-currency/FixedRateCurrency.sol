@@ -39,6 +39,14 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 numTokensRedeemed
   );
 
+  event SwapWithSynth(
+    address indexed account,
+    address indexed synth,
+    address indexed tokenAddress,
+    uint256 numTokens,
+    string side
+  );
+
   event SwapWithERC20(
     address indexed account,
     address indexed ERC20Address,
@@ -187,6 +195,7 @@ contract FixedRateCurrency is FixedRateWrapper {
    */
   function mintFromSynth(
     IERC20 inputSynthAddress,
+    ISynthereumPoolOnChainPriceFeed inputSynthPool,
     ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
   ) public {
     //TODO can we know the synth token address from exchange params?
@@ -199,13 +208,25 @@ contract FixedRateCurrency is FixedRateWrapper {
       _exchangeParams.numTokens
     );
 
+    // allow the synthereum pool to transfer input synth
+    inputSynthAddress.safeIncreaseAllowance(
+      address(inputSynthPool),
+      _exchangeParams.numTokens
+    );
+
     // exchange function in broker to get jEur from synth into user's wallet (recipient in exchaangeParams)
-    (uint256 pegTokenAmount, ) = synthereumPool.exchange(_exchangeParams);
+    (uint256 pegTokenAmount, ) = inputSynthPool.exchange(_exchangeParams);
 
     // deposit peg tokens and mint this token according to rate
     uint256 numTokensMinted = super.wrap(pegTokenAmount);
 
-    emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
+    emit SwapWithSynth(
+      msg.sender,
+      address(inputSynthAddress),
+      address(this),
+      numTokensMinted,
+      'buy'
+    );
   }
 
   /**
@@ -218,9 +239,22 @@ contract FixedRateCurrency is FixedRateWrapper {
     // burn _synthAmount to get peg tokens jEur
     uint256 pegTokensUnlocked = super.unwrap(_fixedSynthAmount);
 
+    // pull jEUR
+    synth.safeTransferFrom(msg.sender, address(this), pegTokensUnlocked);
+
+    // allow the synthereum pool to transfer jEur
+    synth.safeIncreaseAllowance(address(synthereumPool), pegTokensUnlocked);
+
     // exchange function in broker to get final asset
     _exchangeParams.numTokens = pegTokensUnlocked;
     (uint256 numTokensMinted, ) = synthereumPool.exchange(_exchangeParams);
+    emit SwapWithSynth(
+      msg.sender,
+      address(_exchangeParams.destPool.syntheticToken()),
+      address(this),
+      numTokensMinted,
+      'sell'
+    );
   }
 
   /**
