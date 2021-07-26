@@ -201,6 +201,56 @@ contract('Fixed Rate Currency', accounts => {
     });
   });
 
+  describe('Administration', () => {
+    it('Only admin can pause contract', async () => {
+      const tx = await fixedRateCurrencyInstance.pauseContract({ from: admin });
+      assert.equal(true, await fixedRateCurrencyInstance.paused.call());
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.pauseContract({ from: user }),
+        'Only contract admin can call this function',
+      );
+
+      truffleAssert.eventEmitted(tx, 'ContractPaused', ev => {
+        return true;
+      });
+    });
+
+    it('Only admin can resume contract', async () => {
+      await fixedRateCurrencyInstance.pauseContract({ from: admin });
+      const tx = await fixedRateCurrencyInstance.resumeContract({
+        from: admin,
+      });
+      assert.equal(false, await fixedRateCurrencyInstance.paused.call());
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.resumeContract({ from: user }),
+        'Only contract admin can call this function',
+      );
+
+      truffleAssert.eventEmitted(tx, 'ContractResumed', ev => {
+        return true;
+      });
+    });
+
+    it('Only admin can change contract rate', async () => {
+      const newRate = Web3Utils.toBN(3);
+      const oldRate = await fixedRateCurrencyInstance.getRate.call();
+
+      const tx = await fixedRateCurrencyInstance.changeRate(newRate, {
+        from: admin,
+      });
+      truffleAssert.eventEmitted(tx, 'RateChange', ev => {
+        return ev.oldRate.eq(oldRate) && ev.newRate.eq(newRate);
+      });
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.changeRate(newRate, { from: user }),
+        'Only contract admin can call this function',
+      );
+    });
+  });
+
   describe('Mint with Peg Synth', () => {
     let pegBalance;
 

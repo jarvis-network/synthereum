@@ -57,12 +57,20 @@ contract FixedRateCurrency is FixedRateWrapper {
   );
 
   event ContractPaused();
+  event ContractResumed();
+
+  event RateChange(uint256 oldRate, uint256 newRate);
   //----------------------------------------
   // Modifiers
   //----------------------------------------
 
   modifier isActive() {
     require(!paused, 'Contract has been paused');
+    _;
+  }
+
+  modifier onlyAdmin() {
+    require(msg.sender == admin, 'Only contract admin can call this function');
     _;
   }
 
@@ -266,7 +274,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     address[] memory tokenSwapPath;
     tokenSwapPath[0] = address(collateralInstance);
 
-    // ETH - USDC - jEUR
+    // ETH -> USDC -> jEUR
     (, , uint256 pegSynthMinted) =
       atomicSwap.swapETHAndMint{value: msg.value}(
         collateralAmountOutMin,
@@ -374,10 +382,23 @@ contract FixedRateCurrency is FixedRateWrapper {
 
   // only synthereum manager can pause new mintings
   // code an admin
-  function pauseContract() public {
-    require(msg.sender == admin, 'Only contract admin can call this function');
+  function pauseContract() public onlyAdmin {
     paused = true;
     emit ContractPaused();
+  }
+
+  function resumeContract() public onlyAdmin {
+    paused = false;
+    emit ContractResumed();
+  }
+
+  function changeRate(uint256 newRate) public onlyAdmin {
+    emit RateChange(rate, newRate);
+    rate = newRate;
+  }
+
+  function getRate() public view returns (uint256) {
+    return rate;
   }
 
   // function checkPoolRegistration()

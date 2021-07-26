@@ -18,7 +18,7 @@ contract FixedRateWrapper is ERC20 {
   IERC20 public immutable synth;
 
   // The rate at which the conversion happens
-  uint256 public immutable rate;
+  uint256 public rate;
 
   // A variable to track total deposited amount of synthetic tokens
   uint256 public total_deposited;
