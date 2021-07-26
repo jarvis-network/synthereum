@@ -12,7 +12,7 @@ module.exports = withBundleAnalyzer(
       dest: 'public',
       scope: '/',
     },
-    webpack: (config, { webpack }) => {
+    webpack: (config, { webpack, isServer }) => {
       config.module.rules.push({
         test: /\.md$/,
         use: 'raw-loader',
@@ -21,6 +21,9 @@ module.exports = withBundleAnalyzer(
       // https://github.com/webpack/webpack/pull/11316
       config.plugins.push(new webpack.IgnorePlugin(/dotenv/));
 
+      if (!isServer) {
+        config.resolve.fallback.fs = false;
+      }
       return config;
     },
   }),

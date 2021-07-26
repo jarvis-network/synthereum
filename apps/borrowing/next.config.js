@@ -12,7 +12,7 @@ module.exports = withBundleAnalyzer(
       dest: 'public',
       scope: '/',
     },
-    webpack: (config, { webpack }) => {
+    webpack: (config, { webpack, isServer }) => {
       config.module.rules.push({
         test: /\.md$/,
         use: 'raw-loader',
@@ -20,6 +20,10 @@ module.exports = withBundleAnalyzer(
       // TODO: Upgrade to Next.js 10 / Webpack 5 to use this PR:
       // https://github.com/webpack/webpack/pull/11316
       config.plugins.push(new webpack.IgnorePlugin(/dotenv/));
+
+      if (!isServer) {
+        config.resolve.fallback.fs = false;
+      }
 
       return config;
     },

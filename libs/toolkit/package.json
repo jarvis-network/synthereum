@@ -1,28 +1,28 @@
 {
   "name": "@jarvis-network/app-toolkit",
+  "version": "0.1.0",
   "description": "Jarvis Network's App Toolkit",
-  "homepage": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo",
-  "bugs": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo/-/issues",
-  "repository": {
-    "url": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo",
-    "type": "git"
-  },
   "keywords": [
     "react",
     "ethereum",
     "toolkit",
     "web3"
   ],
+  "homepage": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo",
+  "bugs": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo/-/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/jarvis-network/apps/exchange/mono-repo"
+  },
   "license": "MIT",
-  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint '*/**/*.{ts,tsx}'",
-    "lint:fix": "eslint '*/**/*.{ts,tsx}' --fix",
     "format": "prettier --check \"**/*.+(json|yml|yaml|md)\"",
     "format:fix": "prettier --write \"**/*.+(json|yml|yaml|md)\"",
+    "lint": "eslint '*/**/*.{ts,tsx}'",
+    "lint:fix": "eslint '*/**/*.{ts,tsx}' --fix",
     "test": "jest"
   },
   "browserslist": {
@@ -38,11 +38,11 @@
     ]
   },
   "dependencies": {
-    "bnc-onboard": "^1.19.2",
+    "bnc-onboard": "^1.30.0",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
     "web3": "^1.3.5"
   },
-  "peerDependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "peerDependencies": {}
 }
