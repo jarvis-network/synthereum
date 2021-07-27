@@ -151,7 +151,7 @@ contract MintableBurnableERC20 is
   /**
    * @notice Returns the number of decimals used
    */
-  function decimals() public view override returns (uint8) {
+  function decimals() public view virtual override returns (uint8) {
     return _decimals;
   }
 

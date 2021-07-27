@@ -55,6 +55,7 @@ import '../derivative/self-minting/v1/SelfMintingPerpetualLiquidatableMultiParty
 import '../derivative/self-minting/v1/SelfMintingPerpetualMultiPartyLib.sol';
 import '../derivative/self-minting/v1/SelfMintingPerpetutalMultiPartyCreator.sol';
 import '../tokens/MintableBurnableSyntheticToken.sol';
+import '../tokens/MintableBurnableSyntheticTokenPermit.sol';
 import '../derivative/common/interfaces/IDerivativeDeployment.sol';
 import '../tokens/interfaces/MintableBurnableIERC20.sol';
 import '../derivative/common/interfaces/IDerivative.sol';
