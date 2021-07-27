@@ -2,6 +2,7 @@ import React from 'react';
 import { Header, styled } from '@jarvis-network/ui';
 
 import { NextLinkAdapter } from '@/components/NextLink';
+import { leftRenderer } from '@/components/header/leftRenderer';
 import { rightRenderer } from '@/components/header/rightRenderer';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
@@ -67,7 +68,6 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const nothingOnTheLeftSide = { render: () => <></> };
 export const StickyHeader: React.FC = ({ children }) => {
   const { isAuthModalVisible } = useReduxSelector(state => state.app);
 
@@ -75,7 +75,7 @@ export const StickyHeader: React.FC = ({ children }) => {
     <Container>
       <HeaderContainer isAuthModalVisible={isAuthModalVisible}>
         <CustomHeader
-          leftSide={nothingOnTheLeftSide}
+          leftSide={leftRenderer}
           rightSide={rightRenderer}
           link={NextLinkAdapter}
           logoUrl="/images/logo.svg"

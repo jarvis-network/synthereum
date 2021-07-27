@@ -24,7 +24,6 @@ import {
 } from '@/state/slices/app';
 import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { State } from '@/state/initialState';
 import { isAppReadySelector } from '@/state/selectors';
 import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/config';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
@@ -61,15 +60,6 @@ const render = (): JSX.Element => {
   const { innerWidth } = useWindowSize();
   const notify = useExchangeNotifications();
 
-  const handleLogIn = () => {
-    dispatch(setAuthModalVisible(true));
-  };
-
-  const handleLogOut = () => {
-    logout();
-    setSigningOut(true);
-  };
-
   const networkId = useBehaviorSubject(useCoreObservables().networkId$);
   const mode = auth
     ? networkId === Network.mainnet
@@ -78,18 +68,6 @@ const render = (): JSX.Element => {
       ? 'demo'
       : undefined
     : undefined;
-
-  const handleSetTheme = (theme: State['theme']) => {
-    dispatch(setTheme({ theme }));
-  };
-
-  const handleAccountOverviewOpen = () => {
-    dispatch(setAccountOverviewModalVisible(true));
-  };
-
-  const handleRecentActivityOpen = () => {
-    dispatch(setRecentActivityModalVisible(true));
-  };
 
   useEffect(() => {
     if (isSigningOut) {
@@ -108,25 +86,21 @@ const render = (): JSX.Element => {
     {
       name: 'Account',
       key: 'Account',
-      onClick: handleAccountOverviewOpen,
+      onClick() {
+        dispatch(setAccountOverviewModalVisible(true));
+      },
     },
     {
       name: 'Activity',
       key: 'Activity',
-      onClick: handleRecentActivityOpen,
+      onClick() {
+        dispatch(setRecentActivityModalVisible(true));
+      },
     },
   ];
 
   const onHelp = () =>
     window.open('https://help.jarvis.exchange/en/', '_blank', 'noopener');
-
-  const getName = () => {
-    if (isSigningOut) {
-      return '';
-    }
-
-    return name || '';
-  };
 
   const getAddress = () => {
     if (isSigningOut) {
@@ -143,15 +117,30 @@ const render = (): JSX.Element => {
 
   const content = isApplicationReady ? (
     <AccountSummary
-      name={getName()}
+      name={isSigningOut ? '' : name || ''}
       wallet={getAddress()}
       image={image}
       menu={links}
       mode={mode}
       contentOnTop={innerWidth <= 1080}
-      onLogout={isSigningOut ? noop : handleLogOut}
-      onLogin={isSigningOut ? noop : handleLogIn}
-      onThemeChange={handleSetTheme}
+      onLogout={
+        isSigningOut
+          ? noop
+          : () => {
+              logout();
+              setSigningOut(true);
+            }
+      }
+      onLogin={
+        isSigningOut
+          ? noop
+          : () => {
+              dispatch(setAuthModalVisible(true));
+            }
+      }
+      onThemeChange={theme => {
+        dispatch(setTheme({ theme }));
+      }}
       onHelp={onHelp}
     />
   ) : null;

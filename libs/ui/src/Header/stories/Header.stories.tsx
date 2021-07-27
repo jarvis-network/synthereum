@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { action } from '@storybook/addon-actions';
 
 import { Label } from '../../Label';
 import { styled } from '../../Theme';
@@ -16,21 +15,6 @@ export default {
 
 const defaultMenu = [{ label: 'Account', link: '#' }];
 
-const defaultActionButtons = [
-  {
-    title: 'Login to Trade',
-    onClick: () => {
-      action('login button clicked.');
-    },
-  },
-  {
-    title: 'Help',
-    onClick: () => {
-      action('help button clicked.');
-    },
-  },
-];
-
 const StyledLink = styled(Link)`
   color: ${props => props.theme.text.primary};
 `;
@@ -40,7 +24,7 @@ export const Default = () => (
     logoUrl={images['./logo.png']}
     link={StyledLink}
     leftSide={{ menu: defaultMenu }}
-    rightSide={{ actionButtons: defaultActionButtons }}
+    rightSide={{ render: () => <></> }}
   />
 );
 

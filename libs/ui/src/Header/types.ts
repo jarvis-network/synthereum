@@ -15,13 +15,6 @@ export interface MenuItemProps {
   [key: string]: any;
 }
 
-export interface ActionButtonProps {
-  title?: string;
-  onClick?: () => void;
-  customButtonRender?: RenderFunction;
-  [key: string]: any;
-}
-
 export type HeaderProps =
   | Renderer
   | {
@@ -33,9 +26,5 @@ export type HeaderProps =
         | {
             menu: MenuItemProps[];
           };
-      rightSide:
-        | Renderer
-        | {
-            actionButtons: ActionButtonProps[];
-          };
+      rightSide: Renderer;
     };

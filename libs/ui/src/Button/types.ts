@@ -20,13 +20,14 @@ export interface ButtonDesignProps {
 }
 
 export interface ButtonProps {
-  to?: string;
+  href?: string;
+  target?: string;
+  rel?: string;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
   children?: ReactNode;
   size?: ButtonSize;
-  [key: string]: any;
 }
 
 export interface AllButtonProps extends ButtonProps, ButtonDesignProps {}

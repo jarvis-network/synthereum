@@ -4,7 +4,6 @@ import React from 'react';
 import { styled } from '../Theme';
 
 import { HeaderProps, isRenderer } from './types';
-import { ActionButton } from './component/ActionButton';
 import { MenuItem } from './component/MenuItem';
 
 const Container = styled.div`
@@ -110,13 +109,7 @@ export const Header: React.FC<HeaderProps> = props => (
               ))}
         </LeftSectionContainer>
         <RightSectionContainer>
-          {isRenderer(props.rightSide)
-            ? props.rightSide.render(props)
-            : props.rightSide.actionButtons.map((button, index) => (
-                // (*) same as above
-                // eslint-disable-next-line react/no-array-index-key
-                <ActionButton key={index} {...button} />
-              ))}
+          {props.rightSide.render(props)}
         </RightSectionContainer>
       </>
     )}
