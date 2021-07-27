@@ -64,6 +64,7 @@ import '../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
 import '../tokens/MintableBurnableERC20.sol';
 import '../tokens/factories/MintableBurnableTokenFactory.sol';
 import '../tokens/factories/SyntheticTokenFactory.sol';
+import '../tokens/factories/SyntheticTokenPermitFactory.sol';
 import '../derivative/common/FeePayerPartyLib.sol';
 import '../derivative/common/FeePayerParty.sol';
 import '../derivative/v2/PerpetualPoolPartyLib.sol';
