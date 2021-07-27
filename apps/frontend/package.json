@@ -31,7 +31,7 @@
     "damlev": "^1.0.0",
     "fuse.js": "^6.4.6",
     "graphql-tag": "^2.11.0",
-    "idb": "^6.0.0",
+    "idb": "^6.1.2",
     "milliseconds": "^1.0.3",
     "next": "9.5.3",
     "next-pwa": "^5.0.6",

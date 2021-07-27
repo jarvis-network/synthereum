@@ -1,4 +1,4 @@
-ARG NODE_VERSION=14.15.1
+ARG NODE_VERSION=14.17.3
 
 FROM node:${NODE_VERSION}-alpine as base
 RUN apk add coreutils jq g++ git make python3 linux-headers eudev-dev libusb-dev
