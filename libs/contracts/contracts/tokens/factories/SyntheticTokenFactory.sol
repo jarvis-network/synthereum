@@ -1,60 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumFactoryVersioning
-} from '../../core/interfaces/IFactoryVersioning.sol';
 import {MintableBurnableIERC20} from '../interfaces/MintableBurnableIERC20.sol';
-import {
-  SynthereumInterfaces,
-  FactoryInterfaces
-} from '../../core/Constants.sol';
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
+import {
+  MintableBurnableSyntheticToken
+} from '../MintableBurnableSyntheticToken.sol';
 
 contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
-  //----------------------------------------
-  // Storage
-  //----------------------------------------
-
-  ISynthereumFinder public synthereumFinder;
-
-  //----------------------------------------
-  // Modifiers
-  //----------------------------------------
-
-  modifier onlyDerivativeFactory() {
-    ISynthereumFactoryVersioning factoryVersioning =
-      ISynthereumFactoryVersioning(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.FactoryVersioning
-        )
-      );
-    uint256 numberOfFactories =
-      factoryVersioning.numberOfVerisonsOfFactory(
-        FactoryInterfaces.DerivativeFactory
-      );
-    uint256 counter = 0;
-    for (uint8 i = 0; counter < numberOfFactories; i++) {
-      try
-        factoryVersioning.getFactoryVersion(
-          FactoryInterfaces.DerivativeFactory,
-          i
-        )
-      returns (address factory) {
-        if (msg.sender == factory) {
-          _;
-          break;
-        } else {
-          counter++;
-        }
-      } catch {}
-    }
-    if (numberOfFactories == counter) {
-      revert('Sender must be a derivative factory');
-    }
-  }
-
   //----------------------------------------
   // Constructor
   //----------------------------------------
@@ -63,9 +16,9 @@ contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
    * @notice Constructs SynthereumSyntheticTokenFactory contract
    * @param _synthereumFinder Synthereum finder contract
    */
-  constructor(address _synthereumFinder) {
-    synthereumFinder = ISynthereumFinder(_synthereumFinder);
-  }
+  constructor(address _synthereumFinder)
+    MintableBurnableTokenFactory(_synthereumFinder)
+  {}
 
   /**
    * @notice Create a new synthetic token and return it to the caller.
@@ -83,8 +36,12 @@ contract SynthereumSyntheticTokenFactory is MintableBurnableTokenFactory {
     public
     override
     onlyDerivativeFactory
+    nonReentrant()
     returns (MintableBurnableIERC20 newToken)
   {
-    newToken = super.createToken(tokenName, tokenSymbol, tokenDecimals);
+    MintableBurnableSyntheticToken mintableToken =
+      new MintableBurnableSyntheticToken(tokenName, tokenSymbol, tokenDecimals);
+    newToken = MintableBurnableIERC20(address(mintableToken));
+    _setAdminRole(newToken);
   }
 }
