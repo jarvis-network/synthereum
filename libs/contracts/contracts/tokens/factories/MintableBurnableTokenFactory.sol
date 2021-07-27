@@ -3,8 +3,8 @@ pragma solidity ^0.8.4;
 
 import {
   MintableBurnableSyntheticToken
-} from './MintableBurnableSyntheticToken.sol';
-import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
+} from '../MintableBurnableSyntheticToken.sol';
+import {MintableBurnableIERC20} from '../interfaces/MintableBurnableIERC20.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**

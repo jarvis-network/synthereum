@@ -5,7 +5,7 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumFactoryVersioning
 } from '../../core/interfaces/IFactoryVersioning.sol';
-import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
+import {MintableBurnableIERC20} from '../interfaces/MintableBurnableIERC20.sol';
 import {
   SynthereumInterfaces,
   FactoryInterfaces

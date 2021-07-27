@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   MintableBurnableIERC20
-} from '../../common/interfaces/MintableBurnableIERC20.sol';
+} from '../../../tokens/interfaces/MintableBurnableIERC20.sol';
 import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   FixedPoint

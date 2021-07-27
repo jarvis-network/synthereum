@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
-import {MintableBurnableIERC20} from './MintableBurnableIERC20.sol';
+import {
+  MintableBurnableIERC20
+} from '../../interfaces/MintableBurnableIERC20.sol';
 
 /**
  * @title Interface for interacting with the MintableBurnableTokenFactory contract

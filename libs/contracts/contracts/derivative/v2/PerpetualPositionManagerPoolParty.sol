@@ -5,7 +5,7 @@ import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   MintableBurnableIERC20
-} from '../common/interfaces/MintableBurnableIERC20.sol';
+} from '../../tokens/interfaces/MintableBurnableIERC20.sol';
 import {
   IDerivativeDeployment
 } from '../common/interfaces/IDerivativeDeployment.sol';

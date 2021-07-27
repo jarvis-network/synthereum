@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import {
   MintableBurnableIERC20
-} from '../../common/interfaces/MintableBurnableIERC20.sol';
+} from '../../../tokens/interfaces/MintableBurnableIERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISelfMintingController

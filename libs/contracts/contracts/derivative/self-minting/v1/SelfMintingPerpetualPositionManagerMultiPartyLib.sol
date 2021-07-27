@@ -7,7 +7,7 @@ import {
 } from '@uma/core/contracts/common/interfaces/IERC20Standard.sol';
 import {
   MintableBurnableIERC20
-} from '../../common/interfaces/MintableBurnableIERC20.sol';
+} from '../../../tokens/interfaces/MintableBurnableIERC20.sol';
 import {
   ISelfMintingController
 } from '../common/interfaces/ISelfMintingController.sol';

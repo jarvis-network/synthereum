@@ -4,10 +4,10 @@ pragma solidity ^0.8.4;
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   MintableBurnableIERC20
-} from '../common/interfaces/MintableBurnableIERC20.sol';
+} from '../../tokens/interfaces/MintableBurnableIERC20.sol';
 import {
   IMintableBurnableTokenFactory
-} from '../common/interfaces/IMintableBurnableTokenFactory.sol';
+} from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
@@ -18,9 +18,6 @@ import {
 } from '@uma/core/contracts/oracle/implementation/ContractCreator.sol';
 import {Testable} from '@uma/core/contracts/common/implementation/Testable.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
-import {
-  MintableBurnableTokenFactory
-} from '../common/MintableBurnableTokenFactory.sol';
 import {PerpetualPoolParty} from './PerpetualPoolParty.sol';
 
 /**
