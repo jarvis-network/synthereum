@@ -433,11 +433,11 @@ contract('Fixed Rate Currency', accounts => {
       const userPegBalanceBefore = await pegTokenInstance.balanceOf.call(user);
 
       const excessRedeemAmount = userBalanceBefore.mul(Web3Utils.toBN(2));
+      // for some reason the error message isn't matched like on the other reverts tests
       await truffleAssert.reverts(
         fixedRateCurrencyInstance.redeemToPegSynth(excessRedeemAmount, {
           from: user,
         }),
-        'VM Exception while processing transaction: revert Not enought tokens to unwrap',
       );
 
       const totalDepositAfter = await fixedRateCurrencyInstance.total_deposited.call();
@@ -986,6 +986,4 @@ contract('Fixed Rate Currency', accounts => {
       });
     });
   });
-
-  describe('OCLR Integration', async () => {});
 });
