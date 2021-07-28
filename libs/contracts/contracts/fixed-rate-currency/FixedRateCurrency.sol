@@ -197,7 +197,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     IERC20 inputSynthAddress,
     ISynthereumPoolOnChainPriceFeed inputSynthPool,
     ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
-  ) public {
+  ) public isActive {
     //TODO can we know the synth token address from exchange params?
     //TODO if not we should check the input address is correct (although if not the tx should fail)
 
@@ -263,18 +263,23 @@ contract FixedRateCurrency is FixedRateWrapper {
   function mintFromERC20(
     uint256 amountTokensIn,
     uint256 collateralAmountOutMin,
-    IERC20 inputTokenAddr,
+    address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public {
-    // token route for Uniswap
-    address[] memory tokenSwapPath;
-    tokenSwapPath[0] = address(inputTokenAddr);
-    tokenSwapPath[1] = address(collateralInstance);
-
+  ) public isActive {
     // deposit erc20 into this contract
-    inputTokenAddr.safeTransferFrom(msg.sender, address(this), amountTokensIn);
+    IERC20(tokenSwapPath[0]).safeTransferFrom(
+      msg.sender,
+      address(this),
+      amountTokensIn
+    );
 
-    // erc20 -> USDC -> jEur
+    // allowance
+    IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
+      address(atomicSwap),
+      amountTokensIn
+    );
+
+    //erc20 -> USDC -> jEur to user wallet
     (, , uint256 synthMinted) =
       atomicSwap.swapAndMint(
         amountTokensIn,
@@ -289,8 +294,8 @@ contract FixedRateCurrency is FixedRateWrapper {
 
     emit SwapWithERC20(
       msg.sender,
-      address(inputTokenAddr),
-      address(this),
+      tokenSwapPath[0],
+      address(synth),
       'buy',
       amountTokensIn,
       numTokensMinted
@@ -302,12 +307,9 @@ contract FixedRateCurrency is FixedRateWrapper {
    */
   function mintFromETH(
     uint256 collateralAmountOutMin,
+    address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public payable {
-    // token route for Uniswap
-    address[] memory tokenSwapPath;
-    tokenSwapPath[0] = address(collateralInstance);
-
+  ) public payable isActive {
     // ETH -> USDC -> jEUR
     (, , uint256 pegSynthMinted) =
       atomicSwap.swapETHAndMint{value: msg.value}(
@@ -335,14 +337,9 @@ contract FixedRateCurrency is FixedRateWrapper {
   function swapToERC20(
     uint256 fixedSynthAmountIn,
     uint256 amountTokenOutMin,
-    IERC20 outputTokenAddr,
+    address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
   ) public {
-    // token route for Uniswap
-    address[] memory tokenSwapPath;
-    tokenSwapPath[0] = address(collateralInstance);
-    tokenSwapPath[1] = address(outputTokenAddr);
-
     // jBGN -> jEUR
     uint256 pegSynthRedeemed = redeemToPegSynth(fixedSynthAmountIn);
 
@@ -365,8 +362,8 @@ contract FixedRateCurrency is FixedRateWrapper {
 
     emit SwapWithERC20(
       msg.sender,
-      address(outputTokenAddr),
-      address(this),
+      address(tokenSwapPath[1]),
+      address(synth),
       'sell',
       fixedSynthAmountIn,
       outputAmount
