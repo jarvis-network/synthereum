@@ -18,7 +18,7 @@ const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
 const SelfMintingRegistry = artifacts.require('SelfMintingRegistry');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 
-contract('Synthereum Pool Register', function (accounts) {
+contract('Synthereum Registries', function (accounts) {
   let derivativeVersion = 2;
 
   // Derivative params
