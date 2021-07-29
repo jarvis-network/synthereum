@@ -94,7 +94,7 @@ contract('Fixed Rate Currency', accounts => {
       }
     };
 
-    before(async () => {
+    beforeEach(async () => {
       admin = accounts[0];
       user = accounts[1];
       EthAmountInput = Web3Utils.toWei('1');
@@ -205,6 +205,25 @@ contract('Fixed Rate Currency', accounts => {
           true,
         );
         assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore), true);
+      });
+
+      it('rejects if contract has been paused', async () => {
+        let MintParams = {
+          derivative: derivative,
+          minNumTokens: 0,
+          collateralAmount: 0,
+          feePercentage: feePercentageWei,
+          expiration: expiration,
+          recipient: user,
+        };
+        await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+        await truffleAssert.reverts(
+          fixedRateCurrencyInstance.mintFromERC20(10, 0, [], MintParams, {
+            from: user,
+          }),
+          'Contract has been paused',
+        );
       });
 
       it('swapToERC20', async () => {
@@ -373,6 +392,26 @@ contract('Fixed Rate Currency', accounts => {
           true,
         );
         assert.equal(jEURBalanceBefore.eq(jEURBalanceAfter), true);
+      });
+
+      it('rejects new minting if contract has been paused by admin', async () => {
+        let MintParams = {
+          derivative: derivative,
+          minNumTokens: 0,
+          collateralAmount: 0,
+          feePercentage: feePercentageWei,
+          expiration: expiration,
+          recipient: user,
+        };
+        await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+        await truffleAssert.reverts(
+          fixedRateCurrencyInstance.mintFromETH(0, [], MintParams, {
+            from: user,
+            value: 1,
+          }),
+          'Contract has been paused',
+        );
       });
 
       it('swapToETH', async () => {

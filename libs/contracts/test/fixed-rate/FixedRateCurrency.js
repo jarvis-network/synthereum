@@ -926,6 +926,31 @@ contract('Fixed Rate Currency', accounts => {
       });
     });
 
+    it('Reject if contract has been paused by admin', async () => {
+      await fixedRateCurrencyInstance.pauseContract({ from: admin });
+
+      let ExchangeParams = {
+        derivative: secondDerivativeAddress,
+        destPool: poolAddress,
+        destDerivative: derivativeAddress,
+        numTokens: numTokensExchange,
+        minDestNumTokens: destNumTokensExchange,
+        feePercentage: feePercentageWei,
+        expiration: expiration,
+        recipient: user,
+      };
+
+      await truffleAssert.reverts(
+        fixedRateCurrencyInstance.mintFromSynth(
+          jGBPAddr,
+          secondPoolAddress,
+          ExchangeParams,
+          { from: user },
+        ),
+        'Contract has been paused',
+      );
+    });
+
     it('Correctly swap for a synthereum synth', async () => {
       let MintParams = {
         derivative: derivativeAddress,
