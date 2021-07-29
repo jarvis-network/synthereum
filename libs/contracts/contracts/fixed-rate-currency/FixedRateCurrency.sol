@@ -58,7 +58,6 @@ contract FixedRateCurrency is FixedRateWrapper {
 
   event SwapWithETH(
     address indexed account,
-    address indexed synthToken,
     string side,
     uint256 numTokensIn,
     uint256 numTokensOut
@@ -322,13 +321,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     // jEUR -> jBGN
     uint256 numTokensMinted = mintFromPegSynth(pegSynthMinted);
 
-    emit SwapWithETH(
-      msg.sender,
-      address(this),
-      'buy',
-      msg.value,
-      numTokensMinted
-    );
+    emit SwapWithETH(msg.sender, 'buy', msg.value, numTokensMinted);
   }
 
   /**
@@ -376,12 +369,9 @@ contract FixedRateCurrency is FixedRateWrapper {
   function swapToETH(
     uint256 fixedSynthAmountIn,
     uint256 amountTokenOutMin,
+    address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
   ) public {
-    // token route for Uniswap
-    address[] memory tokenSwapPath;
-    tokenSwapPath[0] = address(collateralInstance);
-
     // jBGN -> jEUR
     uint256 pegSynthRedeemed = redeemToPegSynth(fixedSynthAmountIn);
 
@@ -402,13 +392,7 @@ contract FixedRateCurrency is FixedRateWrapper {
         msg.sender
       );
 
-    emit SwapWithETH(
-      msg.sender,
-      address(this),
-      'sell',
-      fixedSynthAmountIn,
-      outputAmount
-    );
+    emit SwapWithETH(msg.sender, 'sell', fixedSynthAmountIn, outputAmount);
   }
 
   // only synthereum manager can pause new mintings
