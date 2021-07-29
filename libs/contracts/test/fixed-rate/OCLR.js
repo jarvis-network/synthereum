@@ -15,6 +15,8 @@ const uniswap = require('../../data/test/uniswap.json');
 const synthereum = require('../../data/test/synthereum.json');
 
 // kovan testing
+// yarn start:local-fork kovan
+// yarn run test:fixed-rate-oclr
 contract('Fixed Rate Currency', accounts => {
   describe('OCLR Integration', async () => {
     let WBTCInstance, USDCInstance, jEURInstance, uniswapInstance;
@@ -79,12 +81,25 @@ contract('Fixed Rate Currency', accounts => {
       // console.log("USDC balance after: " + await USDCInstance.balanceOf.call(user))
     };
 
+    const getTxFee = async txReceipt => {
+      try {
+        var txHash = txReceipt.tx;
+        var tx = await web3.eth.getTransaction(txHash);
+        return web3.utils
+          .toBN(txReceipt.receipt.gasUsed)
+          .mul(Web3Utils.toBN(tx.gasPrice));
+      } catch (error) {
+        console.log(error);
+        return Web3Utils.toBN('0');
+      }
+    };
+
     before(async () => {
       admin = accounts[0];
       user = accounts[1];
       EthAmountInput = Web3Utils.toWei('1');
 
-      const networkId = await web3.eth.net.getId();
+      const networkId = 42;
       expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
 
       // will fail if there's no code at the address
@@ -288,7 +303,174 @@ contract('Fixed Rate Currency', accounts => {
       });
     });
 
-    // ETH -> USDC -> jEUR -> jBGN
-    describe('From/to ETH', () => {});
+    // ETH -> USDC -> jEUR -> jBGN and viceversa
+    describe('From/to ETH', () => {
+      it('mintFromETH', async () => {
+        let MintParams = {
+          derivative: derivative,
+          minNumTokens: 0,
+          collateralAmount: 0,
+          feePercentage: feePercentageWei,
+          expiration: expiration,
+          recipient: user,
+        };
+
+        // allocaate funds to pool
+        await getUSDC(EthAmountInput);
+        usdcTransferAmount = await USDCInstance.balanceOf.call(user);
+        await USDCInstance.transfer(pool, usdcTransferAmount, { from: user });
+
+        // approve jEUR
+        await jEURInstance.approve(
+          fixedRateCurrencyInstance.address,
+          Web3Utils.toWei('99999999999'),
+          { from: user },
+        );
+
+        const EthBalanceBefore = await web3.eth.getBalance(user);
+        const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
+          user,
+        );
+        const jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+
+        const tokenSwapPath = [WETHAddress, USDCAddress];
+        const tx = await fixedRateCurrencyInstance.mintFromETH(
+          0,
+          tokenSwapPath,
+          MintParams,
+          { from: user, value: EthAmountInput },
+        );
+
+        // assert
+        const EthBalanceAfter = await web3.eth.getBalance(user);
+        const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
+          user,
+        );
+        const jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+        let fixedTokenOut;
+        truffleAssert.eventEmitted(tx, 'SwapWithETH', ev => {
+          fixedTokenOut = ev.numTokensOut;
+          return (
+            ev.account == user &&
+            ev.side == 'buy' &&
+            ev.numTokensIn == EthAmountInput.toString() &&
+            ev.numTokensOut > 0
+          );
+        });
+
+        const txFee = await getTxFee(tx);
+
+        const expectedEthBalance = Web3Utils.toBN(EthBalanceBefore)
+          .sub(txFee)
+          .sub(Web3Utils.toBN(EthAmountInput));
+        assert.equal(
+          expectedEthBalance.eq(Web3Utils.toBN(EthBalanceAfter)),
+          true,
+        );
+        assert.equal(
+          fixedRateBalanceAfter.eq(fixedRateBalanceBefore.add(fixedTokenOut)),
+          true,
+        );
+        assert.equal(jEURBalanceBefore.eq(jEURBalanceAfter), true);
+      });
+
+      it('swapToETH', async () => {
+        // mint JEUR with atomic swap
+        let MintParams = {
+          derivative: derivative,
+          minNumTokens: 0,
+          collateralAmount: 0,
+          feePercentage: feePercentageWei,
+          expiration: expiration,
+          recipient: user,
+        };
+
+        await getWBTC(EthAmountInput);
+
+        let WBTCBalanceBefore = await WBTCInstance.balanceOf.call(user);
+        const WBTCIn = WBTCBalanceBefore.div(Web3Utils.toBN(1000));
+        let tokenSwapPath = [WBTCAddress, USDCAddress];
+
+        await WBTCInstance.approve(AtomicSwapInstance.address, WBTCIn, {
+          from: user,
+        });
+        await AtomicSwapInstance.swapAndMint(
+          WBTCIn,
+          0,
+          tokenSwapPath,
+          pool,
+          MintParams,
+          { from: user },
+        );
+
+        // mint fixed rate using all minted jEUR
+        let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+        await jEURInstance.approve(
+          fixedRateCurrencyInstance.address,
+          Web3Utils.toWei('99999999999'),
+          { from: user },
+        );
+
+        await fixedRateCurrencyInstance.mintFromPegSynth(jEURBalanceBefore, {
+          from: user,
+        });
+
+        const EthBalanceBefore = await web3.eth.getBalance(user);
+        const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
+          user,
+        );
+
+        jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+        //swapToETH
+        let RedeemParams = {
+          derivative: derivative,
+          numTokens: 0,
+          minCollateral: 0,
+          feePercentage: feePercentageWei,
+          expiration: expiration,
+          recipient: user,
+        };
+
+        tokenSwapPath = [USDCAddress, WETHAddress];
+        // swap all JBGN balance to ETH
+        const tx = await fixedRateCurrencyInstance.swapToETH(
+          fixedRateBalanceBefore,
+          0,
+          tokenSwapPath,
+          RedeemParams,
+          { from: user },
+        );
+
+        //assert
+        let ethTokenOut;
+        truffleAssert.eventEmitted(tx, 'SwapWithETH', ev => {
+          ethTokenOut = ev.numTokensOut;
+          return (
+            ev.account == user &&
+            ev.side == 'sell' &&
+            ev.numTokensIn == fixedRateBalanceBefore.toString() &&
+            ev.numTokensOut > 0
+          );
+        });
+
+        const txFee = await getTxFee(tx);
+        const EthBalanceAfter = await web3.eth.getBalance(user);
+        const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
+          user,
+        );
+        const jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+        const expectedEthBalance = Web3Utils.toBN(EthBalanceBefore)
+          .sub(txFee)
+          .add(Web3Utils.toBN(ethTokenOut));
+        assert.equal(
+          expectedEthBalance.eq(Web3Utils.toBN(EthBalanceAfter)),
+          true,
+        );
+        assert.equal(fixedRateBalanceAfter.eq(Web3Utils.toBN('0')), true);
+        assert.equal(jEURBalanceBefore.eq(jEURBalanceAfter), true);
+      });
+    });
   });
 });
