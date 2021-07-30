@@ -1,4 +1,28 @@
 {
   "name": "@jarvis-network/yield-farming",
-  "version": "0.0.1"
+  "version": "1.0.0",
+  "scripts": {
+    "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
+    "format:sol": "prettier --write './contracts/**/*.sol'",
+    "build": "yarn build:solidity && yarn build:tsc && yarn build:nx-necessary",
+    "build:solidity": "hardhat compile",
+    "build:tsc": "tsc -p ./tsconfig.lib.json",
+    "build:nx-necessary": "cp ./package.json ./dist/",
+    "compile": "hardhat compile",
+    "migrate-elysianfields": "MIGRATION_TYPE=elysianfields hardhat test ./test/correct-migration.js",
+    "migrate-storage": "MIGRATION_TYPE=storage hardhat test ./test/correct-migration.js",
+    "migrate": "MIGRATION_TYPE=all hardhat test ./test/correct-migration.js",
+    "test": "echo No test defined",
+    "start:local-fork": "./local-fork.sh",
+    "verify": "hardhat verify"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^2.1.4",
+    "@nomiclabs/hardhat-truffle5": "^2.0.0",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/contracts": "4.1.0",
+    "hardhat-gas-reporter": "^1.0.4",
+    "solidity-coverage": "^0.7.16"
+  }
 }

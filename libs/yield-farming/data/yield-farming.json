@@ -1,0 +1,18 @@
+{
+  "42": {
+    "owner": "0x81ccE2d050dEfB2d8F79946e4D0714c170cDe410",
+    "name": "Aureus",
+    "symbol": "AUR-0819",
+    "cap": "100000000000000000000",
+    "amountForPool": "1000000000000000000",
+    "rewardReceiver": "0x81ccE2d050dEfB2d8F79946e4D0714c170cDe410"
+  },
+  "1": {
+    "owner": "0x685723b9dc89bdf28ba5f98f9a8c0ac899bd6e77",
+    "name": "Aureus",
+    "symbol": "AUR-0819",
+    "cap": "100000000000000000000",
+    "amountForPool": "1000000000000000000",
+    "rewardReceiver": "0x685723b9dc89bdf28ba5f98f9a8c0ac899bd6e77"
+  }
+}
