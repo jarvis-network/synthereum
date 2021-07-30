@@ -83,6 +83,9 @@
     },
     "hardhat-utils": {
       "tags": []
+    },
+    "yield-farming": {
+      "tags": []
     }
   },
   "workspaceLayout": {

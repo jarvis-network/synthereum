@@ -574,6 +574,38 @@
           }
         }
       }
+    },
+    "yield-farming": {
+      "root": "libs/yield-farming",
+      "sourceRoot": "libs/yield-farming/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/yield-farming",
+            "tsConfig": "libs/yield-farming/tsconfig.lib.json",
+            "packageJson": "libs/yield-farming/package.json",
+            "main": "libs/yield-farming/src/index.ts",
+            "assets": ["libs/yield-farming/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/yield-farming/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/yield-farming"],
+          "options": {
+            "jestConfig": "libs/yield-farming/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }

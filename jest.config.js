@@ -7,5 +7,6 @@ module.exports = {
     '<rootDir>/apps/examples',
     '<rootDir>/libs/legacy-currency-contracts',
     '<rootDir>/libs/hardhat-utils',
+    '<rootDir>/libs/yield-farming',
   ],
 };
