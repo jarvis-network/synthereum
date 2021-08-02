@@ -98,17 +98,17 @@ contract FixedRateCurrency is FixedRateWrapper {
     collateralInstance = _collateralToken;
     admin = _admin;
     atomicSwap = _atomicSwapAddr;
-    // address synthAddress;
-    // address collateralAddress;
-    // // check the appropriate pool is passed
-    // (collateralAddress, synthAddress) = checkPoolRegistration();
 
-    // collateralInstance = IERC20(collateralAddress);
+    address synthAddress;
+    address collateralAddress;
+    // check the appropriate pool is passed
+    (collateralAddress, synthAddress) = checkPoolRegistration();
+    collateralInstance = IERC20(collateralAddress);
 
-    // require(
-    //   address(_pegToken) == synthAddress,
-    //   "The synth pool passed doesn't hold the peg token"
-    // );
+    require(
+      address(_pegToken) == synthAddress,
+      "The synth pool passed doesn't hold the peg token"
+    );
   }
 
   /** @notice - Mints fixed rate synths against the deposited peg synth (jEUR)
@@ -407,32 +407,31 @@ contract FixedRateCurrency is FixedRateWrapper {
     return rate;
   }
 
-  // function checkPoolRegistration()
-  //     internal
-  //     view
-  //     returns (address collateralAddress, address synthAddress)
-  // {
-  //     ISynthereumRegistry poolRegistry =
-  //         ISynthereumRegistry(
-  //             synthereumFinder.getImplementationAddress(
-  //                 SynthereumInterfaces.PoolRegistry
-  //             )
-  //         );
+  function checkPoolRegistration()
+    internal
+    view
+    returns (address collateralAddress, address synthAddress)
+  {
+    ISynthereumRegistry poolRegistry =
+      ISynthereumRegistry(
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.PoolRegistry
+        )
+      );
 
-  //     string memory synthTokenSymbol = synthereumPool.syntheticTokenSymbol();
-  //     collateralInstance = IERC20(synthereumPool.collateralToken());
-  //     uint8 version = synthereumPool.version();
-  //     require(
-  //     poolRegistry.isDeployed(
-  //         synthTokenSymbol,
-  //         collateralInstance,
-  //         version,
-  //         address(synthereumPool)
-  //     ),
-  //     'Pool not registred'
-  //     );
+    string memory synthTokenSymbol = synthereumPool.syntheticTokenSymbol();
+    collateralAddress = address(synthereumPool.collateralToken());
+    uint8 version = synthereumPool.version();
+    require(
+      poolRegistry.isDeployed(
+        synthTokenSymbol,
+        IERC20(collateralAddress),
+        version,
+        address(synthereumPool)
+      ),
+      'Pool not registred'
+    );
 
-  //     collateralAddress = address(collateralInstance);
-  //     synthAddress = address(synthereumPool.syntheticToken());
-  // }
+    synthAddress = address(synthereumPool.syntheticToken());
+  }
 }

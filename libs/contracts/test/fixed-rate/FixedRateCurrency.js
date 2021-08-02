@@ -25,6 +25,7 @@ const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumPoolOnChainPriceFeed = artifacts.require(
   'SynthereumPoolOnChainPriceFeed',
 );
+const PoolMock = artifacts.require('PoolMock');
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
 const MockV3Aggregator = artifacts.require('MockV3Aggregator');
 const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
@@ -203,6 +204,73 @@ contract('Fixed Rate Currency', accounts => {
       assert.strictEqual(
         await fixedRateCurrencyInstance.synth.call(),
         pegTokenAddr,
+      );
+    });
+    it('rejects if mismatch between pool address and token addresses in constructor', async () => {
+      // deploy jGBP derivative
+      const identifierWhitelistInstance = await IdentifierWhitelist.deployed();
+      const identifierBytes = web3.utils.utf8ToHex(secondPriceFeedIdentifier);
+      await identifierWhitelistInstance.addSupportedIdentifier(identifierBytes);
+
+      secondDerivativePayload = encodeDerivative(
+        collateralAddress,
+        secondPriceFeedIdentifier,
+        secondSyntheticName,
+        secondSyntheticSymbol,
+        ZERO_ADDRESS,
+        collateralRequirement,
+        disputeBondPct,
+        sponsorDisputeRewardPct,
+        disputerDisputeRewardPct,
+        minSponsorTokens,
+        withdrawalLiveness,
+        liquidationLiveness,
+        excessBeneficiary,
+        derivativeAdmins,
+        derivativePools,
+      );
+
+      secondPoolPayload = encodePoolOnChainPriceFeed(
+        ZERO_ADDRESS,
+        synthereumFinderAddress,
+        poolVersion,
+        roles,
+        secondStartingCollateralization,
+        fee,
+      );
+
+      const addresses = await deployerInstance.deployPoolAndDerivative.call(
+        derivativeVersion,
+        poolVersion,
+        secondDerivativePayload,
+        secondPoolPayload,
+        { from: maintainer },
+      );
+
+      secondPoolAddress = addresses.pool;
+      secondDerivativeAddress = addresses.derivative;
+
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolVersion,
+        secondDerivativePayload,
+        secondPoolPayload,
+        { from: maintainer },
+      );
+
+      await truffleAssert.reverts(
+        FixedRateCurrency.new(
+          pegTokenAddr,
+          collateralAddress,
+          secondPoolAddress,
+          synthereumFinderAddress,
+          atomicSwapAddrMock,
+          admin,
+          pegRate,
+          name,
+          symbol,
+        ),
+        "The synth pool passed doesn't hold the peg token",
       );
     });
   });

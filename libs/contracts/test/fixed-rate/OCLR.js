@@ -345,7 +345,7 @@ contract('Fixed Rate Currency', accounts => {
         // approve jEUR
         await jEURInstance.approve(
           fixedRateCurrencyInstance.address,
-          Web3Utils.toWei('99999999999'),
+          Web3Utils.toWei('9999999999999'),
           { from: user },
         );
 
