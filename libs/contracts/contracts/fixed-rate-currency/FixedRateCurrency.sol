@@ -4,7 +4,7 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import './FixedRateWrapper.sol';
-import './IAtomicSwap.sol';
+import '../extensions/atomic-swap/interfaces/IAtomicSwap.sol';
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
 import {SynthereumInterfaces} from '../core/Constants.sol';

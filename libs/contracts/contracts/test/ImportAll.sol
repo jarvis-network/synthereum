@@ -80,4 +80,3 @@ import '../derivative/v2/PerpetualLiquidatablePoolParty.sol';
 // TODO: Check if it's correct:
 import '../fixed-rate-currency/FixedRateCurrency.sol';
 import '../fixed-rate-currency/FixedRateWrapper.sol';
-import '../fixed-rate-currency/IAtomicSwap.sol';
