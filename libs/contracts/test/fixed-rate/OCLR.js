@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { artifacts, contract, Web3, web3, assert } = require('hardhat');
 const Web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
@@ -132,8 +133,6 @@ contract('Fixed Rate Currency', accounts => {
         name,
         symbol,
       );
-
-      console.log('Deployed at', fixedRateCurrencyInstance.address);
     });
 
     // ERC20 -> USDC -> jEUR -> jBGN
@@ -246,7 +245,7 @@ contract('Fixed Rate Currency', accounts => {
         await WBTCInstance.approve(AtomicSwapInstance.address, WBTCIn, {
           from: user,
         });
-        await AtomicSwapInstance.swapAndMint(
+        await AtomicSwapInstance.swapExactTokensAndMint(
           WBTCIn,
           0,
           tokenSwapPath,
@@ -262,9 +261,13 @@ contract('Fixed Rate Currency', accounts => {
           jEURBalanceBefore,
           { from: user },
         );
-        await fixedRateCurrencyInstance.mintFromPegSynth(jEURBalanceBefore, {
-          from: user,
-        });
+        await fixedRateCurrencyInstance.mintFromPegSynth(
+          jEURBalanceBefore,
+          user,
+          {
+            from: user,
+          },
+        );
 
         WBTCBalanceBefore = await WBTCInstance.balanceOf.call(user);
         const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
@@ -434,7 +437,7 @@ contract('Fixed Rate Currency', accounts => {
         await WBTCInstance.approve(AtomicSwapInstance.address, WBTCIn, {
           from: user,
         });
-        await AtomicSwapInstance.swapAndMint(
+        await AtomicSwapInstance.swapExactTokensAndMint(
           WBTCIn,
           0,
           tokenSwapPath,
@@ -451,9 +454,13 @@ contract('Fixed Rate Currency', accounts => {
           { from: user },
         );
 
-        await fixedRateCurrencyInstance.mintFromPegSynth(jEURBalanceBefore, {
-          from: user,
-        });
+        await fixedRateCurrencyInstance.mintFromPegSynth(
+          jEURBalanceBefore,
+          user,
+          {
+            from: user,
+          },
+        );
 
         const EthBalanceBefore = await web3.eth.getBalance(user);
         const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
