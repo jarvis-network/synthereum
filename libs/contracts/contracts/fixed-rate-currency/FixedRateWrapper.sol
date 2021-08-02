@@ -42,21 +42,27 @@ contract FixedRateWrapper is ERC20 {
   /** @notice - A public function which takes synthetic tokens as deposit and mints legacy synthetic tokens for the user
    * @param _amount - The amount of synthetic tokens the user wants to deposit
    */
-  function wrap(uint256 _amount) public returns (uint256 amountTokens) {
+  function wrap(uint256 _amount, address recipient)
+    public
+    returns (uint256 amountTokens)
+  {
     amountTokens = _amount.mul(rate).div(PRECISION);
     synth.safeTransferFrom(msg.sender, address(this), _amount);
     total_deposited = total_deposited.add(_amount);
-    _mint(msg.sender, amountTokens);
+    _mint(recipient, amountTokens);
   }
 
   /** @notice - A public function which takes legacy synthetic tokens as deposit and burns them, releasing synthetic tokens to the user
    * @param _amount - The amount of legacy synthetic tokens the user wants to deposit and burn
    */
-  function unwrap(uint256 _amount) public returns (uint256 amountTokens) {
+  function unwrap(uint256 _amount, address recipient)
+    public
+    returns (uint256 amountTokens)
+  {
     require(balanceOf(msg.sender) >= _amount, 'Not enought tokens to unwrap');
     amountTokens = total_deposited.mul(_amount).div(totalSupply());
     _burn(msg.sender, _amount);
     total_deposited = total_deposited.sub(amountTokens);
-    synth.safeTransfer(msg.sender, amountTokens);
+    synth.safeTransfer(recipient, amountTokens);
   }
 }

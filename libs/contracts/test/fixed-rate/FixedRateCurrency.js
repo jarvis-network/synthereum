@@ -286,9 +286,13 @@ contract('Fixed Rate Currency', accounts => {
     });
 
     it('Correctly mints fixed rate token against its peg synth', async () => {
-      const tx = await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, {
-        from: user,
-      });
+      const tx = await fixedRateCurrencyInstance.mintFromPegSynth(
+        pegBalance,
+        user,
+        {
+          from: user,
+        },
+      );
 
       const userBalance = await fixedRateCurrencyInstance.balanceOf.call(user);
       const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
@@ -320,7 +324,9 @@ contract('Fixed Rate Currency', accounts => {
       const pegTokenBalanceBefore = await pegTokenInstance.balanceOf.call(user);
       const totalDepositBefore = await fixedRateCurrencyInstance.total_deposited.call();
       await truffleAssert.reverts(
-        fixedRateCurrencyInstance.mintFromPegSynth(bigAmount, { from: user }),
+        fixedRateCurrencyInstance.mintFromPegSynth(bigAmount, user, {
+          from: user,
+        }),
         'ERC20: transfer amount exceeds balance',
       );
 
@@ -339,7 +345,9 @@ contract('Fixed Rate Currency', accounts => {
       await fixedRateCurrencyInstance.pauseContract({ from: admin });
 
       await truffleAssert.reverts(
-        fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, { from: user }),
+        fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, user, {
+          from: user,
+        }),
         'Contract has been paused',
       );
     });
@@ -372,7 +380,7 @@ contract('Fixed Rate Currency', accounts => {
       await pegTokenInstance.approve(fixedRateAddr, pegBalance, { from: user });
 
       // mint fixed rate synth using all the pegSynth balance
-      await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, {
+      await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, user, {
         from: user,
       });
     });
@@ -391,6 +399,7 @@ contract('Fixed Rate Currency', accounts => {
       // redeem tx
       const tx = await fixedRateCurrencyInstance.redeemToPegSynth(
         redeemAmount,
+        user,
         {
           from: user,
         },
@@ -435,7 +444,7 @@ contract('Fixed Rate Currency', accounts => {
       const excessRedeemAmount = userBalanceBefore.mul(Web3Utils.toBN(2));
       // for some reason the error message isn't matched like on the other reverts tests
       await truffleAssert.reverts(
-        fixedRateCurrencyInstance.redeemToPegSynth(excessRedeemAmount, {
+        fixedRateCurrencyInstance.redeemToPegSynth(excessRedeemAmount, user, {
           from: user,
         }),
       );
@@ -463,6 +472,7 @@ contract('Fixed Rate Currency', accounts => {
       // redeem tx
       const tx = await fixedRateCurrencyInstance.redeemToPegSynth(
         redeemAmount,
+        user,
         {
           from: user,
         },
@@ -611,7 +621,7 @@ contract('Fixed Rate Currency', accounts => {
       await pegTokenInstance.approve(fixedRateAddr, pegBalance, { from: user });
 
       // mint fixed rate synth using all the pegSynth balance
-      await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, {
+      await fixedRateCurrencyInstance.mintFromPegSynth(pegBalance, user, {
         from: user,
       });
     });
@@ -979,9 +989,10 @@ contract('Fixed Rate Currency', accounts => {
       // mint fixed synth tokens with jEur
       tokensMinted = await fixedRateCurrencyInstance.mintFromPegSynth.call(
         numTokens,
+        user,
         { from: user },
       );
-      await fixedRateCurrencyInstance.mintFromPegSynth(numTokens, {
+      await fixedRateCurrencyInstance.mintFromPegSynth(numTokens, user, {
         from: user,
       });
 
