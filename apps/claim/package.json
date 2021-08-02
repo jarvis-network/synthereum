@@ -22,7 +22,6 @@
     "@jarvis-network/ui": "*",
     "@jarvis-network/core-utils": "*",
     "@next/bundle-analyzer": "^10.0.4",
-    "bnc-onboard": "^1.19.2",
     "next": "9.5.3",
     "next-pwa": "^5.0.6",
     "react": "^16.13.1",
