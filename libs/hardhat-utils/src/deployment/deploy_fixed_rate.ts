@@ -1,6 +1,4 @@
-import type { Contract } from 'web3-eth-contract';
 import type Web3 from 'web3';
-
 // const { artifacts } = require('hardhat');
 
 export async function deployFixedRate(

@@ -18,6 +18,8 @@ import { task as createOrModifyHardhatTask } from 'hardhat/config';
 
 import { deployFixedRate } from './src/migration-utils/deploy_fixed_rate';
 
+const { KOVAN_PRIVATE_KEY, ALCHEMY_API_KEY } = process.env;
+
 createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
   (taskArgs, hre, runSuper) => {
     const network = hre.network.name;
@@ -91,9 +93,12 @@ export const config = {
       blockGasLimit: 11500000,
       allowUnlimitedContractSize: false,
       forking: {
-        url:
-          'https://eth-kovan.alchemyapi.io/v2/<api-key>',
+        url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
       },
+    },
+    kovan: {
+      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      accounts: [`0x${KOVAN_PRIVATE_KEY}`],
     },
     localhost: {
       url: 'http://127.0.0.1:8545',
