@@ -103,11 +103,11 @@ contract FixedRateCurrency is FixedRateWrapper {
     address collateralAddress;
     // check the appropriate pool is passed
     (collateralAddress, synthAddress) = checkPoolRegistration();
-    collateralInstance = IERC20(collateralAddress);
 
     require(
-      address(_pegToken) == synthAddress,
-      "The synth pool passed doesn't hold the peg token"
+      address(_pegToken) == synthAddress &&
+        address(_collateralToken) == collateralAddress,
+      'Pool mismatch with collateral and synth'
     );
   }
 

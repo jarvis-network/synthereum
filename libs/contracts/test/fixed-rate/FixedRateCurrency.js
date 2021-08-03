@@ -270,7 +270,7 @@ contract('Fixed Rate Currency', accounts => {
           name,
           symbol,
         ),
-        "The synth pool passed doesn't hold the peg token",
+        'Pool mismatch with collateral and synth',
       );
     });
   });
