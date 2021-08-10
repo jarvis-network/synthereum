@@ -98,5 +98,10 @@
     "contractName": "SelfMintingController",
     "address": "0x697240b2124bEd2B19FB003Ec4e4cFb5b125B0D1",
     "transactionHash": "0x5beb1f39d394691e53703609b9504c2fcfd4058f69178507c819334675a4a955"
+  },
+  {
+    "contractName": "AtomicSwap",
+    "address": "0x9A27329Fc40E32C796E08D98De73C23eD7C0910e",
+    "transactionHash": "0xd190b0c4cd4306ca366ee5198c42b5f08cd3912c9acbe4e23d411a27caf5b2e0"
   }
 ]
