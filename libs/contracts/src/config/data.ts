@@ -243,4 +243,128 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       },
     },
   },
+  '137': {
+    fees: {
+      feePercentage: toWeiString('0.02'),
+      feeRecipients: [
+        A<137>('0x8eF00583bAa186094D9A34a0A4750C1D1BB86831'),
+        A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
+      ],
+      feeProportions: [50, 50],
+    },
+    roles: {
+      admin: A<137>('0x8a73fdA882601C4B84B0C52D7d85E4BA46357ca1'),
+      maintainer: A<137>('0x05Bd62e8Be770A03C0Da0eC3033cB637331F0941'),
+      liquidityProvider: A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
+      validator: A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
+    },
+    contractsDependencies: {
+      uma: {
+        identifierWhitelist: A<137>(
+          '0x2271a5E74eA8A29764ab10523575b41AA52455f0',
+        ),
+        finder: A<137>('0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64'),
+      },
+      synthereum: {
+        primaryCollateralToken: {
+          address: A<137>('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'),
+          symbol: primaryCollateralSymbol,
+        },
+        poolRegistry: A<137>('0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2'),
+        selfMintingRegistry: A<137>(
+          '0x0000000000000000000000000000000000000000',
+        ),
+      },
+    },
+    umaDerivativeConfig: {
+      disputeBondPct: toFixed('0.05'),
+      sponsorDisputeRewardPct: toFixed('0.05'),
+      disputerDisputeRewardPct: toFixed('0.2'),
+      withdrawalLiveness: 86400,
+      liquidationLiveness: 86400,
+      excessTokenBeneficiary: A<137>(
+        '0x8ef00583baa186094d9a34a0a4750c1d1bb86831',
+      ),
+    },
+    perVersionConfig: {
+      v1: {
+        version: 1,
+        syntheticTokens: syntheticTokensKovan,
+      },
+      v2: {
+        version: 2,
+        syntheticTokens: syntheticTokensKovan,
+      },
+      v3: {
+        version: 3,
+        syntheticTokens: syntheticTokensKovan,
+      },
+      v4: {
+        version: 4,
+        syntheticTokens: syntheticTokensMainnet,
+      },
+    },
+  },
+  '80001': {
+    fees: {
+      feePercentage: toWeiString('0.02'),
+      feeRecipients: [
+        A<80001>('0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa'),
+        A<80001>('0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb'),
+      ],
+      feeProportions: [50, 50],
+    },
+    roles: {
+      admin: A<80001>('0x539E625172026F8d2AC50648a55871FA728618e8'),
+      maintainer: A<80001>('0x8Eadb31D981509c1a2e55111C5b9c56788c89486'),
+      liquidityProvider: A<80001>('0x22744fcAd77B78595f6Abb003cc5C5FB97e16365'),
+      validator: A<80001>('0x22744fcAd77B78595f6Abb003cc5C5FB97e16365'),
+    },
+    contractsDependencies: {
+      uma: {
+        identifierWhitelist: A<80001>(
+          '0xA011B82880D0235f845c9d1EA5610b965e0CD759',
+        ),
+        finder: A<80001>('0xb22033fF04AD01fbE8d78ef4622a20626834271B'),
+      },
+      synthereum: {
+        primaryCollateralToken: {
+          address: A<80001>('0xdEe897d5E6eaA6365F293c37cB3fA8335B9B8f3F'),
+          symbol: primaryCollateralSymbol,
+        },
+        poolRegistry: A<80001>('0xfaa6229B087Da78cAEBb29799D9a8A74Ec1ea237'),
+        selfMintingRegistry: A<80001>(
+          '0x0000000000000000000000000000000000000000',
+        ),
+      },
+    },
+    umaDerivativeConfig: {
+      disputeBondPct: toFixed('0.05'),
+      sponsorDisputeRewardPct: toFixed('0.05'),
+      disputerDisputeRewardPct: toFixed('0.2'),
+      withdrawalLiveness: 86400,
+      liquidationLiveness: 86400,
+      excessTokenBeneficiary: A<80001>(
+        '0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7',
+      ),
+    },
+    perVersionConfig: {
+      v1: {
+        version: 1,
+        syntheticTokens: syntheticTokensKovan,
+      },
+      v2: {
+        version: 2,
+        syntheticTokens: syntheticTokensKovan,
+      },
+      v3: {
+        version: 3,
+        syntheticTokens: syntheticTokensKovan,
+      },
+      v4: {
+        version: 4,
+        syntheticTokens: syntheticTokensMainnet,
+      },
+    },
+  },
 } as const);

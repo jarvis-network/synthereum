@@ -122,6 +122,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     pools[version] = await loadAllPools(version);
   }
 
+  /*
   const loadAllDerivatives = async <Version extends SelfMintingVersion>(
     version: Version,
   ) => {
@@ -149,8 +150,9 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     );
     return Object.fromEntries(pairs);
   };
+  */
   const derivatives: SynthereumRealmWithWeb3<Net>['selfMintingDerivatives'] = {};
-  derivatives.v1 = await loadAllDerivatives('v1');
+  // derivatives.v1 = await loadAllDerivatives('v1');
   return {
     web3,
     netId,

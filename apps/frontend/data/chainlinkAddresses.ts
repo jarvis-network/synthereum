@@ -22,6 +22,18 @@ export const chainlinkAddresses = Object.freeze({
     CHFUSD: '0x5e601CF5EF284Bcd12decBDa189479413284E1d2' as AddressOn<'rinkeby'>,
     XAUUSD: '0x81570059A0cb83888f1459Ec66Aad1Ac16730243' as AddressOn<'rinkeby'>,
   }),
+  polygon: Object.freeze({
+    EURUSD: '0x73366Fe0AA0Ded304479862808e02506FE556a98' as AddressOn<'polygon'>,
+    GBPUSD: '0x099a2540848573e94fb1Ca0Fa420b00acbBc845a' as AddressOn<'polygon'>,
+    CHFUSD: '0xc76f762CedF0F78a439727861628E0fdfE1e70c2' as AddressOn<'polygon'>,
+    XAUUSD: '0x0C466540B2ee1a31b441671eac0ca886e051E410' as AddressOn<'polygon'>,
+  }),
+  mumbai: Object.freeze({
+    EURUSD: '0x876e7aa32a6f71405bd3ba5151cc6a43d15bffe6' as AddressOn<'mumbai'>,
+    GBPUSD: '0x6f94eed129e6e29b19951e5b6f40c025d2348cf2' as AddressOn<'mumbai'>,
+    CHFUSD: '0x1d5cbe59b8166d35eaa309045c5dd34b453eb4f3' as AddressOn<'mumbai'>,
+    XAUUSD: '0xddb827c1b6b29c02532739a53d226a57381e719c' as AddressOn<'mumbai'>,
+  }),
 });
 
 if (process.env.NODE_ENV === 'development') {

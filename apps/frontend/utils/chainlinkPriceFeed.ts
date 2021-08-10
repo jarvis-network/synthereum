@@ -17,7 +17,10 @@ import {
 } from '@jarvis-network/synthereum-contracts/dist/config';
 import { PricesMap, PriceUpdate, SubscriptionPair } from '@/utils/priceFeed';
 import { Dispatch } from 'redux';
-import { chainlinkProxyAggregatorV3InterfaceABI } from '@/data/chainlinkProxyAggregatorV3InterfaceABI';
+import {
+  chainlinkProxyAggregatorV3InterfaceABI,
+  chainlinkProxyAggregatorV3InterfaceABIMumbai,
+} from '@/data/chainlinkProxyAggregatorV3InterfaceABI';
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 
 type Token = keyof typeof synthereumConfig[SupportedNetworkId]['perVersionConfig']['v4']['syntheticTokens'];
@@ -154,6 +157,7 @@ export class ChainlinkPriceFeed {
 
     for (const token of enabledTokens) {
       // Subscribe for new transactions
+      if (!contracts[token]!.methods.aggregator) continue; // mumbai
       contracts[token]!.methods.aggregator()
         .call()
         .then((address: string) => {
@@ -326,7 +330,9 @@ function getContractForSymbol(
   token: Token,
 ) {
   return new web3.eth.Contract(
-    chainlinkProxyAggregatorV3InterfaceABI,
+    network === 'mumbai'
+      ? chainlinkProxyAggregatorV3InterfaceABIMumbai
+      : chainlinkProxyAggregatorV3InterfaceABI,
     chainlinkAddresses[network][getPairForToken(poolVersion, token)],
   );
 }

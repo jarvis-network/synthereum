@@ -69,6 +69,10 @@ import { dbPromise, DB } from './db';
 export const transactionsSubgraphUrls = {
   mainnet: 's://api.thegraph.com/subgraphs/name/jarvis-network/synthereum',
   kovan: 's://api.thegraph.com/subgraphs/name/jarvis-network/synthereum-kovan',
+  polygon:
+    's://api.thegraph.com/subgraphs/name/jarvis-network/synthereum-polygon',
+  mumbai:
+    's://api.thegraph.com/subgraphs/name/jarvis-network/synthereum-mumbai',
 };
 
 const QUERY_BASIC = gql`
