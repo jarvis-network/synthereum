@@ -24,9 +24,8 @@ import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { isAppReadySelector } from '@/state/selectors';
-import { isSupportedNetwork } from '@jarvis-network/synthereum-config';
-import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
+import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 
 const Container = styled.div<{ hasContent: boolean }>`
   height: 38px;
@@ -66,14 +65,6 @@ const render = (): JSX.Element => {
     logout();
     setSigningOut(true);
   };
-
-  const mode = networkId
-    ? networkId === Network.mainnet
-      ? 'real'
-      : isSupportedNetwork(networkId)
-      ? 'demo'
-      : undefined
-    : undefined;
 
   const handleSetTheme = (theme: State['theme']) => {
     dispatch(setTheme({ theme }));
@@ -128,13 +119,15 @@ const render = (): JSX.Element => {
     [address, isSigningOut],
   );
 
+  const networkProp = networkId ? networkIdToName[networkId as 1] : undefined;
+
   const content = isApplicationReady ? (
     <AccountSummary
       name={getName()}
       wallet={getAddress()}
       image={image}
       menu={links}
-      mode={mode}
+      network={networkProp === 'mainnet' ? 'ethereum' : networkProp}
       contentOnTop={innerWidth <= 1080}
       onLogout={isSigningOut ? noop : handleLogOut}
       onLogin={isSigningOut ? noop : handleLogIn}

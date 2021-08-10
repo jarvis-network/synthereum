@@ -34,18 +34,23 @@ export const WithAuth = () => (
 );
 
 export const WithMode = () => (
-  <AccountSummary name="johny" wallet="0x235c..fe47" mode="real" />
+  <AccountSummary name="johny" wallet="0x235c..fe47" network="polygon" />
 );
 
 export const WithMenu = () => (
-  <AccountSummary name="johny" wallet="0x235c..fe47" mode="demo" menu={menu} />
+  <AccountSummary
+    name="johny"
+    wallet="0x235c..fe47"
+    network="kovan"
+    menu={menu}
+  />
 );
 
 export const WithThemeSwitcher = () => (
   <AccountSummary
     name="johny"
     wallet="0x235c..fe47"
-    mode="demo"
+    network="kovan"
     menu={menu}
     onThemeChange={noop}
   />
@@ -57,7 +62,7 @@ export const WithThemeSwitcherContentOnTop = () => (
     <AccountSummary
       name="johny"
       wallet="0x235c..fe47"
-      mode="demo"
+      network="kovan"
       menu={menu}
       contentOnTop
       onThemeChange={noop}
@@ -68,7 +73,7 @@ export const WithThemeSwitcherContentOnTop = () => (
 export const Interactive = () => {
   const name = text('Name', 'johnny');
   const wallet = text('Wallet', '0x235c..fe47');
-  const mode = select('Mode', ['real', 'demo'], 'real');
+  const network = select('Mode', ['polygon', 'mumbai'], 'real');
 
   const [isLoggedIn, setStateLoggedIn] = useState(true);
   const [theme, setTheme] = useState<ThemeNameType>('light');
@@ -86,7 +91,7 @@ export const Interactive = () => {
         <AccountSummary
           name={isLoggedIn ? name : undefined}
           wallet={isLoggedIn ? wallet : undefined}
-          mode={isLoggedIn ? mode : undefined}
+          network={isLoggedIn ? network : undefined}
           menu={menu}
           onThemeChange={setTheme}
           onLogin={() => setLoggedIn(true)}
