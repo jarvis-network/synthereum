@@ -8,7 +8,7 @@ import { MenuDropdown } from '../MenuDropdown';
 import { styled, ThemeNameType, useTheme } from '../Theme';
 import { IconButton } from '../IconButton';
 
-import { AccountSummaryProps, AccountModeType } from './types';
+import { AccountSummaryProps } from './types';
 
 function capitalize(str: string): string {
   return str[0].toUpperCase() + str.slice(1).toLowerCase();
@@ -31,7 +31,7 @@ const Item = styled.div<{ width: string }>`
   }
 `;
 
-const Mode = styled.div<{ mode: AccountModeType }>`
+const Network = styled.div<{ testnet?: boolean; network: string }>`
   padding: 0 14px;
   border-radius: ${props => props.theme.borderRadius.s};
   font-size: ${props => props.theme.font.sizes.l};
@@ -40,24 +40,24 @@ const Mode = styled.div<{ mode: AccountModeType }>`
   box-sizing: border-box;
 
   ${props =>
-    props.mode === 'real'
+    props.testnet
       ? `
-    color: ${props.theme.tooltip.text};
-    background: ${props.theme.tooltip.secondaryBackground};
-  `
-      : `
     color: ${props.theme.text.secondary};
     background: ${props.theme.background.secondary};
+    `
+      : `
+    color: ${props.theme.tooltip.text};
+    background: ${props.theme.tooltip.secondaryBackground};
   `}
 
   :before {
-    content: '${props => capitalize(props.mode)}';
+    content: '${props => capitalize(props.network)}';
   }
 
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     :before {
-      content: '${props => capitalize(props.mode[0])}';
+      content: '${props => capitalize(props.network[0])}';
     }
   }
 `;
@@ -101,7 +101,7 @@ const CustomIconButton = styled(IconButton)`
 `;
 
 export const AccountSummary: FC<AccountSummaryProps> = ({
-  mode,
+  network,
   name,
   wallet,
   image,
@@ -187,7 +187,12 @@ export const AccountSummary: FC<AccountSummaryProps> = ({
 
   return (
     <Container>
-      {mode && <Mode mode={mode} />}
+      {network && (
+        <Network
+          network={network}
+          testnet={network !== 'polygon' && network !== 'ethereum'}
+        />
+      )}
 
       <Item width="100%">
         <FullWidthMenuDropdown

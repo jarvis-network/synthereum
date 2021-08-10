@@ -1,13 +1,6 @@
 import { MenuDropdownLink } from '../MenuDropdown';
 import { ThemeNameType } from '../Theme';
 
-export enum AccountMode {
-  demo,
-  real,
-}
-
-export type AccountModeType = keyof typeof AccountMode;
-
 export interface AccountSummaryProps {
   // auth
   wallet?: string;
@@ -16,7 +9,7 @@ export interface AccountSummaryProps {
 
   // actions
   menu?: MenuDropdownLink[];
-  mode?: AccountModeType;
+  network?: string;
 
   // handlers
   onLogin?: () => void;

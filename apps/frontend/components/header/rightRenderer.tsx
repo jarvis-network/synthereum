@@ -25,9 +25,8 @@ import {
 import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { isAppReadySelector } from '@/state/selectors';
-import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/config';
-import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
+import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 
 const containerHeight = 38;
 const Container = styled.div<{ hasContent?: boolean }>`
@@ -61,13 +60,6 @@ const render = (): JSX.Element => {
   const notify = useExchangeNotifications();
 
   const networkId = useBehaviorSubject(useCoreObservables().networkId$);
-  const mode = auth
-    ? networkId === Network.mainnet
-      ? 'real'
-      : isSupportedNetwork(networkId)
-      ? 'demo'
-      : undefined
-    : undefined;
 
   useEffect(() => {
     if (isSigningOut) {
@@ -115,13 +107,15 @@ const render = (): JSX.Element => {
     [auth, isSigningOut],
   );
 
+  const networkProp = networkId ? networkIdToName[networkId as 1] : undefined;
+
   const content = isApplicationReady ? (
     <AccountSummary
       name={isSigningOut ? '' : name || ''}
       wallet={getAddress()}
       image={image}
       menu={links}
-      mode={mode}
+      network={networkProp === 'mainnet' ? 'ethereum' : networkProp}
       contentOnTop={innerWidth <= 1080}
       onLogout={
         isSigningOut
