@@ -119,7 +119,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     returns (uint256 numTokensMinted)
   {
     // deposit peg tokens and mint this token according to rate
-    synth.safeTransferFrom(msg.sender, address(this), _pegTokenAmount);
+    synthAddress.safeTransferFrom(msg.sender, address(this), _pegTokenAmount);
     numTokensMinted = super.wrap(_pegTokenAmount, recipient);
 
     emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
