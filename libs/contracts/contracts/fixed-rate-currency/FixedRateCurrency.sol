@@ -119,6 +119,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     returns (uint256 numTokensMinted)
   {
     // deposit peg tokens and mint this token according to rate
+    synth.safeTransferFrom(msg.sender, address(this), _pegTokenAmount);
     numTokensMinted = super.wrap(_pegTokenAmount, recipient);
 
     emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
@@ -284,7 +285,7 @@ contract FixedRateCurrency is FixedRateWrapper {
       );
 
     // jEur -> jBGN
-    uint256 numTokensMinted = mintFromPegSynth(synthMinted, msg.sender);
+    uint256 numTokensMinted = super.wrap(synthMinted, msg.sender);
 
     emit SwapWithERC20(
       msg.sender,
@@ -314,7 +315,7 @@ contract FixedRateCurrency is FixedRateWrapper {
       );
 
     // jEUR -> jBGN
-    uint256 numTokensMinted = mintFromPegSynth(pegSynthMinted, msg.sender);
+    uint256 numTokensMinted = super.wrap(pegSynthMinted, msg.sender);
 
     emit SwapWithETH(msg.sender, 'buy', msg.value, numTokensMinted);
   }
@@ -329,8 +330,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
   ) public {
     // jBGN -> jEUR into this waallet
-    uint256 pegSynthRedeemed =
-      redeemToPegSynth(fixedSynthAmountIn, address(this));
+    uint256 pegSynthRedeemed = super.unwrap(fixedSynthAmountIn, address(this));
 
     // allow AtomicSwap to pull jEUR
     synth.safeIncreaseAllowance(address(atomicSwap), pegSynthRedeemed);
@@ -366,8 +366,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
   ) public {
     // jBGN -> jEUR into this wallet
-    uint256 pegSynthRedeemed =
-      redeemToPegSynth(fixedSynthAmountIn, address(this));
+    uint256 pegSynthRedeemed = super.unwrap(fixedSynthAmountIn, address(this));
 
     // allow AtomicSwap to pull jEUR
     synth.safeIncreaseAllowance(address(atomicSwap), pegSynthRedeemed);

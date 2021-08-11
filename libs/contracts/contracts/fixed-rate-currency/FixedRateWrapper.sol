@@ -47,7 +47,6 @@ contract FixedRateWrapper is ERC20 {
     returns (uint256 amountTokens)
   {
     amountTokens = _amount.mul(rate).div(PRECISION);
-    synth.safeTransferFrom(msg.sender, address(this), _amount);
     total_deposited = total_deposited.add(_amount);
     _mint(recipient, amountTokens);
   }
