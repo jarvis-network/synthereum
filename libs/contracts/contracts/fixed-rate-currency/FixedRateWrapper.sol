@@ -39,11 +39,11 @@ contract FixedRateWrapper is ERC20 {
     rate = _rate;
   }
 
-  /** @notice - A public function which takes synthetic tokens as deposit and mints legacy synthetic tokens for the user
-   * @param _amount - The amount of synthetic tokens the user wants to deposit
+  /** @notice - An internal function which mints new fixedRate tokens according to the rate with it's peg synth
+   * @param _amount - The amount of synthetic tokens the user wants to exchange
    */
   function wrap(uint256 _amount, address recipient)
-    public
+    internal
     returns (uint256 amountTokens)
   {
     amountTokens = _amount.mul(rate).div(PRECISION);
@@ -51,11 +51,11 @@ contract FixedRateWrapper is ERC20 {
     _mint(recipient, amountTokens);
   }
 
-  /** @notice - A public function which takes legacy synthetic tokens as deposit and burns them, releasing synthetic tokens to the user
+  /** @notice - A internal function which burns fixedRate tokens releasing peg synthetic tokens to a recipient
    * @param _amount - The amount of legacy synthetic tokens the user wants to deposit and burn
    */
   function unwrap(uint256 _amount, address recipient)
-    public
+    internal
     returns (uint256 amountTokens)
   {
     require(balanceOf(msg.sender) >= _amount, 'Not enought tokens to unwrap');

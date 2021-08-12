@@ -118,8 +118,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     isActive()
     returns (uint256 numTokensMinted)
   {
-    // deposit peg tokens and mint this token according to rate
-    synthAddress.safeTransferFrom(msg.sender, address(this), _pegTokenAmount);
+    synth.safeTransferFrom(msg.sender, address(this), _pegTokenAmount);
     numTokensMinted = super.wrap(_pegTokenAmount, recipient);
 
     emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
@@ -148,16 +147,17 @@ contract FixedRateCurrency is FixedRateWrapper {
       _mintParams.collateralAmount
     );
 
-    // approves the pool to transfer collateral from this contract wallet
+    // approves the pool to transfer collateral from this contract
     collateralInstance.safeIncreaseAllowance(
       address(synthereumPool),
       _mintParams.collateralAmount
     );
 
-    // mint jEUR (peg token) with USDC - to user's wallet (recipient in mintParams)
+    // mint jEUR (peg token) with USDC and deposit directly into this contract
+    _mintParams.recipient = address(this);
     (uint256 pegTokensMinted, ) = synthereumPool.mint(_mintParams);
 
-    // wrap the jEUR to obtain this fixed rate currency
+    // mint fixedRate to user wallet
     uint256 numTokensMinted = super.wrap(pegTokensMinted, msg.sender);
 
     emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
@@ -176,7 +176,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     // approves the synthereum pool to pull peg tokens tokens from this contract
     synth.safeIncreaseAllowance(address(synthereumPool), pegTokensUnlocked);
 
-    // redeem USDC by burning jEur in broker contract and send them to user (recipient in redeemParamss)
+    // redeem USDC by burning jEur in broker contract and send them recipient in redeemParams
     _redeemParams.numTokens = pegTokensUnlocked;
     (uint256 collateralRedeemed, ) = synthereumPool.redeem(_redeemParams);
 
@@ -196,9 +196,6 @@ contract FixedRateCurrency is FixedRateWrapper {
     ISynthereumPoolOnChainPriceFeed inputSynthPool,
     ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
   ) public isActive {
-    //TODO can we know the synth token address from exchange params?
-    //TODO if not we should check the input address is correct (although if not the tx should fail)
-
     // pull synth to be exchanged from user wallet into this contract wallet
     inputSynthAddress.safeTransferFrom(
       msg.sender,
@@ -212,10 +209,11 @@ contract FixedRateCurrency is FixedRateWrapper {
       _exchangeParams.numTokens
     );
 
-    // exchange function in broker to get jEur from synth into user's wallet (recipient in exchaangeParams)
+    // synth -> peg Token into this wallet
+    _exchangeParams.recipient = address(this);
     (uint256 pegTokenAmount, ) = inputSynthPool.exchange(_exchangeParams);
 
-    // deposit peg tokens and mint this token according to rate
+    // mint fixedRate token according to rate into user wallet
     uint256 numTokensMinted = super.wrap(pegTokenAmount, msg.sender);
 
     emit SwapWithSynth(
@@ -240,7 +238,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     // allow the synthereum pool to transfer jEur
     synth.safeIncreaseAllowance(address(synthereumPool), pegTokensUnlocked);
 
-    // exchange function in broker to get final asset
+    // exchange function in broker to get final asset into user wallet
     _exchangeParams.numTokens = pegTokensUnlocked;
     (uint256 numTokensMinted, ) = synthereumPool.exchange(_exchangeParams);
     emit SwapWithSynth(
@@ -274,7 +272,8 @@ contract FixedRateCurrency is FixedRateWrapper {
       amountTokensIn
     );
 
-    //erc20 -> USDC -> jEur to user wallet
+    //erc20 -> USDC -> jEur to this wallet
+    mintParams.recipient = address(this);
     (, , uint256 synthMinted) =
       atomicSwap.swapExactTokensAndMint(
         amountTokensIn,
@@ -284,7 +283,7 @@ contract FixedRateCurrency is FixedRateWrapper {
         mintParams
       );
 
-    // jEur -> jBGN
+    // mint FixedRate to user wallet
     uint256 numTokensMinted = super.wrap(synthMinted, msg.sender);
 
     emit SwapWithERC20(
@@ -305,7 +304,8 @@ contract FixedRateCurrency is FixedRateWrapper {
     address[] calldata tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) public payable isActive {
-    // ETH -> USDC -> jEUR
+    // ETH -> USDC -> jEUR into this wallet
+    mintParams.recipient = address(this);
     (, , uint256 pegSynthMinted) =
       atomicSwap.swapExactETHAndMint{value: msg.value}(
         collateralAmountOutMin,
@@ -314,7 +314,7 @@ contract FixedRateCurrency is FixedRateWrapper {
         mintParams
       );
 
-    // jEUR -> jBGN
+    // mint fixedRate into this wallet
     uint256 numTokensMinted = super.wrap(pegSynthMinted, msg.sender);
 
     emit SwapWithETH(msg.sender, 'buy', msg.value, numTokensMinted);
@@ -386,7 +386,6 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   // only synthereum manager can pause new mintings
-  // code an admin
   function pauseContract() public onlyAdmin {
     paused = true;
     emit ContractPaused();
