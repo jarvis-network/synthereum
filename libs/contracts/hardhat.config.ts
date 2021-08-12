@@ -18,7 +18,7 @@ import { task as createOrModifyHardhatTask } from 'hardhat/config';
 
 import { deployFixedRate } from './src/migration-utils/deploy_fixed_rate';
 
-const { KOVAN_PRIVATE_KEY, ALCHEMY_API_KEY } = process.env;
+const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
 
 createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
   (taskArgs, hre, runSuper) => {
@@ -54,6 +54,8 @@ task(TASK_DEPLOY_FIXED_RATE)
   .addParam('rate', 'The exchange rate')
   .addParam('name', 'The fixed rate currency name')
   .addParam('symbol', 'Its symbol')
+  .addParam('atomicswap', 'The address of the atomic swap contract')
+
   // eslint-disable-next-line require-await
   .setAction(async (params, hre) => {
     await hre.run(TASK_COMPILE);
@@ -93,11 +95,11 @@ export const config = {
       blockGasLimit: 11500000,
       allowUnlimitedContractSize: false,
       forking: {
-        url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+        url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
       },
     },
     kovan: {
-      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
       accounts: [`0x${KOVAN_PRIVATE_KEY}`],
     },
     localhost: {

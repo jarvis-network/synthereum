@@ -7,13 +7,13 @@ export async function deployFixedRate(
   network: any,
   artifacts: any,
 ): Promise<string> {
-  const { FixedRateCurrency, SynthereumFinder, AtomicSwap } = artifacts;
+  const { FixedRateCurrency, SynthereumFinder } = artifacts;
   const {
     getExistingInstance,
   } = require('../../dist/migration-utils/deployment');
 
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
-  const atomicSwap = await getExistingInstance(web3, AtomicSwap);
+  // const atomicSwap = await getExistingInstance(web3, AtomicSwap); // TODO this errors
 
   const accounts = await web3.eth.getAccounts();
   const { getKeysForNetwork } = require('@jarvis-network/uma-common');
@@ -24,7 +24,7 @@ export async function deployFixedRate(
     args.collateral,
     args.pool,
     synthereumFinder.options.address,
-    atomicSwap.options.address,
+    args.atomicswap,
     args.admin,
     args.rate,
     args.name,
