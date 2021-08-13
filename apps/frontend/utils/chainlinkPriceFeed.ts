@@ -1,11 +1,11 @@
-import { BehaviorSubject, Subscription as RxSubscription } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import Web3 from 'web3';
 import { Subscription } from 'web3-core-subscriptions';
 import { Log } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { chainlinkAddresses } from '@/data/chainlinkAddresses';
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setAssetsPrice } from '@/state/slices/assets';
 import {
   reversedPriceFeedPairs,
@@ -22,6 +22,7 @@ import {
   chainlinkProxyAggregatorV3InterfaceABIMumbai,
 } from '@/data/chainlinkProxyAggregatorV3InterfaceABI';
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 
 type Token = keyof typeof synthereumConfig[SupportedNetworkId]['perVersionConfig']['v4']['syntheticTokens'];
 
@@ -77,53 +78,20 @@ export class ChainlinkPriceFeed {
       .catch(console.error);
   }
 
-  private web3!: Web3 | null;
-
-  private networkId!: number;
-
-  private web3$Subscription: RxSubscription;
-
-  private networkId$Subscription: RxSubscription;
-
   constructor(
-    web3$: BehaviorSubject<Web3 | null>,
-    networkId$: BehaviorSubject<number>,
+    web3: Web3,
+    networkId: SupportedNetworkId,
+    reset: () => void,
     public readonly poolVersion: Omit<PoolVersion, 'v1' | 'v2'> = 'v4',
   ) {
-    this.networkId$Subscription = networkId$.subscribe({
-      next: networkId => {
-        this.networkId = networkId;
-        this.reset();
-      },
-    });
-    this.web3$Subscription = web3$.subscribe({
-      next: web3 => {
-        this.web3 = web3;
-        this.reset();
-      },
-      error: console.error,
-    });
-  }
-
-  private reset() {
-    for (const subscription of this.subscriptions) {
-      subscription.unsubscribe();
-    }
-
     const subscriptions: ChainlinkPriceFeed['subscriptions'] = [];
     this.subscriptions = subscriptions;
 
-    const { web3 } = this;
-    if (!web3 || !web3.currentProvider) return;
-
-    const networkIsSupported =
-      this.networkId && isSupportedNetwork(this.networkId);
-    if (!networkIsSupported) return;
-    const networkId = this.networkId as SupportedNetworkId;
-    const network = networkIdToName[networkId];
+    const network = networkIdToName[networkId as SupportedNetworkId];
     const enabledTokens = Object.keys(
-      synthereumConfig[networkId].perVersionConfig[this.poolVersion as 'v4']
-        .syntheticTokens,
+      synthereumConfig[networkId as SupportedNetworkId].perVersionConfig[
+        poolVersion as 'v4'
+      ].syntheticTokens,
     ) as Token[];
 
     // #region contracts object
@@ -189,7 +157,7 @@ export class ChainlinkPriceFeed {
               .call()
               .then((newAddress: string) => {
                 if (newAddress !== address) {
-                  this.reset();
+                  reset();
                 }
               });
           });
@@ -207,15 +175,16 @@ export class ChainlinkPriceFeed {
       subscriptions.push(subscription);
 
       subscription.on('data', () => {
-        this.reset();
+        reset();
       });
     }
     // #endregion
   }
 
   destroy() {
-    this.web3$Subscription.unsubscribe();
-    this.networkId$Subscription.unsubscribe();
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
   }
 }
 
@@ -243,18 +212,17 @@ function getPricesMapFromPriceUpdate({
   }, {} as PricesMap);
 }
 
-function useChainlinkPriceFeedHook(
-  dispatch: Dispatch,
-  {
-    web3$,
-    networkId$,
-  }: {
-    web3$: BehaviorSubject<Web3 | null>;
-    networkId$: BehaviorSubject<number>;
-  },
-) {
+function useChainlinkPriceFeedHook(dispatch: Dispatch) {
+  const { library: web3, chainId: networkId } = useWeb3();
+
+  const [resetter, setResetter] = useState(false);
+
   useEffect(() => {
-    const chainlinkPriceFeed = new ChainlinkPriceFeed(web3$, networkId$);
+    if (!web3 || !isSupportedNetwork(networkId)) return;
+
+    const reset = () => setResetter(state => !state);
+
+    const chainlinkPriceFeed = new ChainlinkPriceFeed(web3, networkId, reset);
 
     const { tokens$: tokens } = chainlinkPriceFeed;
     for (const i in tokens) {
@@ -275,7 +243,11 @@ function useChainlinkPriceFeedHook(
         );
       });
     }
-  }, []);
+
+    return () => {
+      chainlinkPriceFeed.destroy();
+    };
+  }, [web3, networkId, resetter]);
 }
 
 export const useChainlinkPriceFeed =

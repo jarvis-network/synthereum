@@ -7,14 +7,7 @@ import {
   ImgContainer,
   ChevronRight,
 } from '@/components/auth/flow/ModalComponents';
-import {
-  Button,
-  NotificationType,
-  styled,
-  themeValue,
-  useNotifications,
-} from '@jarvis-network/ui';
-import { useAuth } from '@jarvis-network/app-toolkit';
+import { Button, styled, themeValue } from '@jarvis-network/ui';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -70,27 +63,7 @@ const DiagonalIcons = styled.div`
 
 const Content = styled.div``;
 
-export const ServiceSelect: React.FC<PageProps> = () => {
-  const notify = useNotifications();
-  const { login } = useAuth();
-
-  const logIn = () => {
-    login().then(loginSuccessful => {
-      if (loginSuccessful) {
-        notify('You have successfully signed in', {
-          type: NotificationType.success,
-          icon: '👍🏻',
-        });
-      }
-    });
-    requestAnimationFrame(() => {
-      const showMoreButton = document.querySelector<HTMLElement>(
-        '.bn-onboard-modal-select-wallets > div > button',
-      );
-      showMoreButton?.click();
-    });
-  };
-
+export const ServiceSelect: React.FC<PageProps> = ({ onNext }) => {
   return (
     <TutorialContent>
       <ImgContainer>
@@ -103,7 +76,7 @@ export const ServiceSelect: React.FC<PageProps> = () => {
         </BigP>
 
         <TermsContainer>
-          <Btn inverted type="dark" onClick={logIn}>
+          <Btn inverted type="dark" onClick={onNext}>
             <DiagonalIcons>
               <img src="/images/ledger.svg" alt="" />
               <img src="/images/metamask.svg" alt="" />

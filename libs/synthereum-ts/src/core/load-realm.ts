@@ -115,6 +115,7 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     const version = i as PoolVersion;
     const poolsForVersion = versionsToLoad[version];
     if (typeof poolsForVersion === 'object' && poolsForVersion !== null) {
+      pools[version] = poolsForVersion;
       continue;
     }
 

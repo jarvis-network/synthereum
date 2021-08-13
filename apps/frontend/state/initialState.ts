@@ -1,17 +1,14 @@
 import { ThemeNameType } from '@jarvis-network/ui';
-import { UserState } from 'bnc-onboard/dist/src/interfaces';
-
-import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import {
   ExchangeToken,
   primaryCollateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
+import { cache } from '@jarvis-network/app-toolkit';
 
 import { assets, Asset } from '@/data/assets';
 import { SynthereumTransaction } from '@/data/transactions';
 import { SubscriptionPair } from '@/utils/priceFeed';
-import { cache } from '@jarvis-network/app-toolkit';
 
 type Values = 'pay' | 'receive';
 
@@ -48,13 +45,6 @@ export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
 
 export type Days = 1 | 7 | 30;
 
-export type AuthState =
-  | (Omit<UserState, 'wallet'> & {
-      wallet: UserState['wallet']['name'];
-      address: Address;
-    })
-  | null;
-
 export interface State {
   theme: ThemeNameType;
   app: {
@@ -65,11 +55,8 @@ export interface State {
     isAuthModalVisible: boolean;
     isExchangeConfirmationVisible: boolean;
     isWindowLoaded: boolean;
-    isExchangeLoaded: boolean;
-    isUnsupportedNetworkModalVisible: boolean;
     mobileTab: number;
   };
-  auth: AuthState;
   assets: {
     list: Asset[];
   };
@@ -118,11 +105,8 @@ export const initialAppState: State = {
     isAuthModalVisible: false,
     isExchangeConfirmationVisible: false,
     isWindowLoaded: false,
-    isExchangeLoaded: true, // will become false on user sign in
-    isUnsupportedNetworkModalVisible: false,
     mobileTab: 1,
   },
-  auth: null,
   assets: {
     list: assets.filter(a => a.symbol !== 'jXAU'),
   },

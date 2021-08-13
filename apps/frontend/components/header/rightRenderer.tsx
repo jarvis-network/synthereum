@@ -12,8 +12,7 @@ import {
   formatWalletAddress,
   usePrettyName,
   useAuth,
-  useBehaviorSubject,
-  useCoreObservables,
+  useWeb3,
 } from '@jarvis-network/app-toolkit';
 
 import { setTheme } from '@/state/slices/theme';
@@ -27,6 +26,7 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { isAppReadySelector } from '@/state/selectors';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
+import { State } from '@/state/initialState';
 
 const containerHeight = 38;
 const Container = styled.div<{ hasContent?: boolean }>`
@@ -51,15 +51,34 @@ const noop = () => undefined;
 
 const render = (): JSX.Element => {
   const dispatch = useDispatch();
-  const auth = useReduxSelector(state => state.auth);
+  const { account: address, chainId: networkId } = useWeb3();
   const isApplicationReady = useReduxSelector(isAppReadySelector);
   const { logout } = useAuth();
-  const name = usePrettyName((auth?.address ?? null) as Address | null);
+  const name = usePrettyName((address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
   const notify = useExchangeNotifications();
 
-  const networkId = useBehaviorSubject(useCoreObservables().networkId$);
+  const handleLogIn = () => {
+    dispatch(setAuthModalVisible(true));
+  };
+
+  const handleLogOut = () => {
+    logout();
+    setSigningOut(true);
+  };
+
+  const handleSetTheme = (theme: State['theme']) => {
+    dispatch(setTheme({ theme }));
+  };
+
+  const handleAccountOverviewOpen = () => {
+    dispatch(setAccountOverviewModalVisible(true));
+  };
+
+  const handleRecentActivityOpen = () => {
+    dispatch(setRecentActivityModalVisible(true));
+  };
 
   useEffect(() => {
     if (isSigningOut) {
@@ -72,22 +91,18 @@ const render = (): JSX.Element => {
         });
       }, 1000);
     }
-  }, [isSigningOut]);
+  }, [isSigningOut, notify]);
 
   const links = [
     {
       name: 'Account',
       key: 'Account',
-      onClick() {
-        dispatch(setAccountOverviewModalVisible(true));
-      },
+      onClick: handleAccountOverviewOpen,
     },
     {
       name: 'Activity',
       key: 'Activity',
-      onClick() {
-        dispatch(setRecentActivityModalVisible(true));
-      },
+      onClick: handleRecentActivityOpen,
     },
   ];
 
@@ -99,12 +114,12 @@ const render = (): JSX.Element => {
       return 'Signing out...';
     }
 
-    return auth ? formatWalletAddress(auth.address) : undefined;
+    return address ? formatWalletAddress(address) : undefined;
   };
 
   const image = useMemo(
-    () => (auth && !isSigningOut ? avatar(auth.address) : undefined),
-    [auth, isSigningOut],
+    () => (address && !isSigningOut ? avatar(address) : undefined),
+    [address, isSigningOut],
   );
 
   const networkProp = networkId ? networkIdToName[networkId as 1] : undefined;
@@ -117,24 +132,9 @@ const render = (): JSX.Element => {
       menu={links}
       network={networkProp === 'mainnet' ? 'ethereum' : networkProp}
       contentOnTop={innerWidth <= 1080}
-      onLogout={
-        isSigningOut
-          ? noop
-          : () => {
-              logout();
-              setSigningOut(true);
-            }
-      }
-      onLogin={
-        isSigningOut
-          ? noop
-          : () => {
-              dispatch(setAuthModalVisible(true));
-            }
-      }
-      onThemeChange={theme => {
-        dispatch(setTheme({ theme }));
-      }}
+      onLogout={isSigningOut ? noop : handleLogOut}
+      onLogin={isSigningOut ? noop : handleLogIn}
+      onThemeChange={handleSetTheme}
       onHelp={onHelp}
     />
   ) : null;

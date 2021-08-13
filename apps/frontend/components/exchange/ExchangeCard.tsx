@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { CellInfo, RowInfo } from 'react-table';
-import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 import {
   styled,
   ColumnType,
@@ -243,11 +240,10 @@ const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 
 export const ExchangeCard: React.FC = () => {
   const notify = useExchangeNotifications();
-  const web3 = useBehaviorSubject(useCoreObservables().web3$);
   const dispatch = useDispatch();
+  const { account: address, library: web3 } = useWeb3();
   const list = useReduxSelector(state => state.assets.list);
   const wallet = useReduxSelector(state => state.wallet);
-  const auth = useReduxSelector(state => state.auth);
   const isApplicationReady = useReduxSelector(isAppReadySelector);
   const isExchangeConfirmationVisible = useReduxSelector(
     state => state.app.isExchangeConfirmationVisible,
@@ -317,7 +313,7 @@ export const ExchangeCard: React.FC = () => {
       promiEvent.once('transactionHash', hash => {
         const tx: SynthereumTransaction = {
           block: 0,
-          from: auth!.address,
+          from: address as any,
           hash: hash as TransactionHash,
           input: {
             amount: payValue,
@@ -451,11 +447,7 @@ export const ExchangeCard: React.FC = () => {
 
     const isAssetPriceLoaded = assetPay?.price && assetReceive?.price;
 
-    if (!auth) {
-      return isAssetPriceLoaded;
-    }
-
-    return isAssetPriceLoaded && paySymbol && wallet[paySymbol];
+    return isAssetPriceLoaded && paySymbol && wallet[paySymbol as 'jEUR'];
   };
 
   const getContent = () => {

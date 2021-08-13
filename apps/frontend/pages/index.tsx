@@ -70,7 +70,7 @@ const Rotate = styled.div`
   }
 `;
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const dispatch = useDispatch();
   const theme = useReduxSelector(state => state.theme);
   const url = backgroundMap[theme];
@@ -88,7 +88,7 @@ export default function Home() {
     } else {
       window.addEventListener('load', handleLoad);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(subscribeAllPrices());
@@ -96,7 +96,7 @@ export default function Home() {
     return () => {
       dispatch(closeConnection());
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <StickyHeader>

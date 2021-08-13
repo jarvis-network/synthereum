@@ -5,10 +5,7 @@ import {
   primaryCollateralSymbol,
   synthereumConfig,
 } from '@jarvis-network/synthereum-contracts/dist/config';
-import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { useMemo } from 'react';
 
@@ -31,7 +28,7 @@ export const useExchangeValues = () => {
     )!,
   }));
 
-  const networkId = useBehaviorSubject(useCoreObservables().networkId$);
+  const { chainId: networkId } = useWeb3();
 
   const feePercentage = useMemo(
     () =>

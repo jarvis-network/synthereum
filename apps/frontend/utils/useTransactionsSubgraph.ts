@@ -5,7 +5,6 @@ import {
   fetchAndStoreMoreTransactions,
   updateTranasactionStatus,
 } from '@/state/slices/transactions';
-import { useReduxSelector } from '@/state/useReduxSelector';
 import {
   isSupportedNetwork,
   primaryCollateralSymbol,
@@ -32,6 +31,7 @@ import { useDispatch } from 'react-redux';
 import {
   useCoreObservables,
   useBehaviorSubject,
+  useWeb3,
 } from '@jarvis-network/app-toolkit';
 
 import {
@@ -208,10 +208,8 @@ function getLink(url: string) {
 const poolVersion = process.env.NEXT_PUBLIC_POOL_VERSION as PoolVersion;
 
 export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
-  const { networkId$, realmAgent$ } = useCoreObservables();
-  const networkId = useBehaviorSubject(networkId$);
-  const realmAgent = useBehaviorSubject(realmAgent$);
-  const address = useReduxSelector(state => state.auth?.address);
+  const realmAgent = useBehaviorSubject(useCoreObservables().realmAgent$);
+  const { account: address, chainId: networkId } = useWeb3();
   const dispatch = useDispatch();
   const apolloClientAndNetworkId = useMemoOne(
     () =>
@@ -274,7 +272,7 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
       const storedTransactions = await db.getAllFromIndex(
         'transactions',
         'networkId, from',
-        [networkId, address],
+        [networkId, address as any],
       );
       if (canceled) return;
 
@@ -283,7 +281,7 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
 
         const transactions = await fetchNewTransactions(
           apolloClient,
-          address,
+          address as any,
           storedTransactions,
         );
 
@@ -295,7 +293,7 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
             db,
             tokens,
             networkId,
-            address,
+            address as any,
             transactions,
           );
         }
@@ -338,7 +336,10 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
         return;
       }
 
-      const { data, error } = await fetchTransactions(apolloClient, address);
+      const { data, error } = await fetchTransactions(
+        apolloClient,
+        address as any,
+      );
 
       if (error) throw error;
       if (canceled) return;
@@ -348,7 +349,7 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
         db,
         tokens,
         networkId,
-        address,
+        address as any,
         data.transactions,
       );
     });
@@ -370,7 +371,7 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
               db,
               tokens,
               networkId,
-              address,
+              address as any,
               data.user!.lastTransactions,
             );
           });
@@ -396,7 +397,7 @@ export function useTransactionsSubgraph(): { fetchMoreTransactions(): void } {
           fetchAndStoreMoreTransactions({
             apolloClient,
             networkId,
-            address,
+            address: address as any,
             tokens,
           }),
         );

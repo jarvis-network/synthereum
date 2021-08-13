@@ -11,6 +11,7 @@ import {
   ExchangeToken,
   primaryCollateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
+import { AbstractProvider } from 'web3-core';
 
 import {
   AssetRow,
@@ -23,7 +24,9 @@ import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
 import {
   useBehaviorSubject,
   useCoreObservables,
+  useWeb3,
 } from '@jarvis-network/app-toolkit';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 interface BalanceProps {
   total: FPN | ReactNode;
@@ -101,47 +104,40 @@ export const AccountOverviewModal: FC = () => {
   );
   const wallet = useReduxSelector(state => state.wallet);
   const assets = useReduxSelector(state => state.assets.list);
-  const isLoggedInViaMetaMask = useReduxSelector(
-    state => state.auth?.wallet === 'MetaMask',
+  const { library: web3 } = useWeb3();
+  const isLoggedInViaMetaMask = useMemo(
+    () =>
+      !web3 || !web3.currentProvider || typeof web3.currentProvider === 'string'
+        ? false
+        : !!(web3.currentProvider as { isMetaMask?: boolean }).isMetaMask,
+    [web3],
   );
-  const { web3$, realmAgent$ } = useCoreObservables();
-  const web3 = useBehaviorSubject(web3$);
-  const realmAgent = useBehaviorSubject(realmAgent$);
+  const realmAgent = useBehaviorSubject(useCoreObservables().realmAgent$);
 
   const handleClose = () => {
     dispatch(setAccountOverviewModalVisible(false));
   };
 
-  const handleAddToMetamaskClick = (asset: Asset) => {
-    if (!realmAgent || !web3 || !web3.currentProvider) {
-      return;
-    }
-
-    if (typeof web3.currentProvider === 'string') {
-      return;
-    }
-
-    if (!('request' in web3.currentProvider) || !web3.currentProvider.request) {
-      return;
-    }
-
-    const { symbol, icon, decimals } = asset;
-
+  const handleAddToMetamaskClick = ({ symbol, icon, decimals }: Asset) => {
     if (symbol === primaryCollateralSymbol) {
       return;
     }
 
-    const address = realmAgent.activePools[symbol]?.syntheticToken.address;
+    const { address } = assertNotNull(realmAgent).activePools[
+      symbol as 'jEUR'
+    ]!.syntheticToken;
 
     if (!address) {
       return;
     }
 
-    const image = icon
-      ? `${window.location.href}${FlagImagesMap[icon]}`
-      : `${window.location.href}icons/alpha_192.png`;
-
-    web3.currentProvider.request({
+    const image =
+      icon &&
+      `${window.location.href}${
+        FlagImagesMap[icon as keyof typeof FlagImagesMap]
+      }`;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    (web3!.currentProvider! as AbstractProvider).request!({
       method: 'wallet_watchAsset',
       params: {
         type: 'ERC20',

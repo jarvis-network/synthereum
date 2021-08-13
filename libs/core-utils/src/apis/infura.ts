@@ -12,7 +12,13 @@ export function getInfuraEndpoint<Net extends Network>(
   projectId = env.infuraProjectId,
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
-  return `${protocol}://${networkName}.infura.io${
+  const subdomain =
+    networkName === 'polygon'
+      ? 'polygon-mainnet'
+      : networkName === 'mumbai'
+      ? 'polygon-mumbai'
+      : networkName;
+  return `${protocol}://${subdomain}.infura.io${
     protocol === 'wss' ? '/ws' : ''
   }/v3/${projectId}` as ValueOnNetwork<string, Net>;
 }

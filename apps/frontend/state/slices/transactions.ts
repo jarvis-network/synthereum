@@ -1,7 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import {
+  networkSwitchAction,
+  addressSwitchAction,
+  logoutAction,
+} from '@jarvis-network/app-toolkit';
 
-import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 import { SynthereumTransaction } from '@/data/transactions';
 import {
@@ -120,9 +124,9 @@ function sliceFactory() {
       },
     },
     extraReducers: {
-      [addressSwitch.type]: resetState,
+      [addressSwitchAction.type]: resetState,
       [logoutAction.type]: resetState,
-      [networkSwitch.type]: resetState,
+      [networkSwitchAction.type]: resetState,
       [fetchAndStoreMoreTransactions.fulfilled.type]: addTransactions,
     },
   });

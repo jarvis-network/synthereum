@@ -104,65 +104,44 @@ const Content = styled.div`
   padding: 0 25px;
 `;
 
-export const ServiceSelect: React.FC<PageProps> = () => {
-  const { login } = useAuth();
-  const notify = useExchangeNotifications();
+export const ServiceSelect: React.FC<PageProps> = ({ onNext }) => (
+  <ServiceTutorialContent>
+    <ImgContainer>
+      <Img src="/images/welcome-statue.svg" alt="" />
+    </ImgContainer>
 
-  const logIn = () => {
-    login().then(loginSuccessful => {
-      if (!loginSuccessful) return;
-      notify('You have successfully signed in', {
-        type: NotificationType.success,
-        icon: '👍🏻',
-      });
-    });
-    requestAnimationFrame(() => {
-      const showMoreButton = document.querySelector<HTMLElement>(
-        '.bn-onboard-modal-select-wallets > div > button',
-      );
-      showMoreButton?.click();
-    });
-  };
+    <Content>
+      <BigP>
+        <b>No account</b> needed!
+      </BigP>
 
-  return (
-    <ServiceTutorialContent>
-      <ImgContainer>
-        <Img src="/images/welcome-statue.svg" alt="" />
-      </ImgContainer>
-
-      <Content>
-        <BigP>
-          <b>No account</b> needed!
-        </BigP>
-
-        <TermsContainer>
-          <Btn inverted type="dark" onClick={logIn}>
-            <DiagonalIcons>
-              <img src="/images/ledger.svg" alt="" />
-              <img src="/images/metamask.svg" alt="" />
-            </DiagonalIcons>
-            <span>
-              Sign Up/In
-              <br />
-              <b>with your wallet</b>
-            </span>
-            <ChevronRight />
-          </Btn>
-        </TermsContainer>
-      </Content>
-      <Footer>
-        <div>
-          <Flag flag="us" />
-        </div>
-        <div>
-          You will need <b>USDC</b> to interact with our <b>application</b>.
-          <br />
-          USDC is a tokenized version of the dollar.{' '}
-          <Link href="https://www.circle.com/en/usdc" passHref>
-            <CustomLink target="_blank">Read more.</CustomLink>
-          </Link>
-        </div>
-      </Footer>
-    </ServiceTutorialContent>
-  );
-};
+      <TermsContainer>
+        <Btn inverted type="dark" onClick={onNext}>
+          <DiagonalIcons>
+            <img src="/images/ledger.svg" alt="" />
+            <img src="/images/metamask.svg" alt="" />
+          </DiagonalIcons>
+          <span>
+            Sign Up/In
+            <br />
+            <b>with your wallet</b>
+          </span>
+          <ChevronRight />
+        </Btn>
+      </TermsContainer>
+    </Content>
+    <Footer>
+      <div>
+        <Flag flag="us" />
+      </div>
+      <div>
+        You will need <b>USDC</b> to interact with our <b>application</b>.
+        <br />
+        USDC is a tokenized version of the dollar.{' '}
+        <Link href="https://www.circle.com/en/usdc" passHref>
+          <CustomLink target="_blank">Read more.</CustomLink>
+        </Link>
+      </div>
+    </Footer>
+  </ServiceTutorialContent>
+);

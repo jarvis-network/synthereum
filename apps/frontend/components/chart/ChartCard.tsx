@@ -121,6 +121,7 @@ export const ChartCard: React.FC = () => {
   const isApplicationReady = useReduxSelector(isAppReadySelector);
   const dispatch = useDispatch();
 
+
   const theme = useTheme();
 
   const { paySymbol, receiveSymbol } = useExchangeValues();

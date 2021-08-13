@@ -295,11 +295,6 @@ function exchangeReceive(
   const valueWithFee = value.add(startingFee);
   const startingPayValue = valueWithFee.div(payPrice);
 
-  console.log({
-    startingFee: startingFee.format(18),
-    startingPayValue: startingPayValue.format(18),
-  });
-
   return calcReceive(
     receiveValue,
     startingPayValue,
