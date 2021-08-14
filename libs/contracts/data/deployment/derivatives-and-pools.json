@@ -24,5 +24,11 @@
     "Derivative": 2,
     "Pool": 4,
     "SynthToken": {}
+  },
+  "137": {
+    "isEnabled": true,
+    "Derivative": 2,
+    "Pool": 4,
+    "SynthToken": {}
   }
 }
