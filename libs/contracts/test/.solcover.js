@@ -1,8 +1,8 @@
 module.exports = {
   skipFiles: [
     '@chainlink',
-    '@jarvis-network',
     '@openzeppelin',
+    '@uma',
     'contracts/test',
     'contracts/extensions',
   ],
