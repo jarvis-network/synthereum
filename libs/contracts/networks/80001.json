@@ -30,9 +30,9 @@
     "transactionHash": "0xf159f92db47bab70308a5b89f8805fa413d70277f908aaef89c557892090020b"
   },
   {
-    "contractName": "SynthereumSyntheticTokenFactory",
-    "address": "0x6E197a20E4CCf0aA4E08B0582870B797D344B40B",
-    "transactionHash": "0x35521dfa1cedd56beaa23212c94fa23ac5e696e6838d2613ceebe0e60f11da44"
+    "contractName": "SynthereumSyntheticTokenPermitFactory",
+    "address": "0x981d4bc7418Fd82429d4c3214F40d092D16180a0",
+    "transactionHash": "0x3d3394edac69bccad3fbdc8fbc4bfecc14be363f14ae40ee6353a7c8b565bf0a"
   },
   {
     "contractName": "FeePayerPartyLib",

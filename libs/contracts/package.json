@@ -22,7 +22,8 @@
     "test:atomic-swap": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat --network mainnet_fork test ./test/extensions/atomic-swap.js",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
-    "start:local-fork": "./local-fork.sh"
+    "start:local-fork": "./local-fork.sh",
+    "verify": "hardhat verify"
   },
   "author": "Alessandro Bergamaschi",
   "license": "ISC",

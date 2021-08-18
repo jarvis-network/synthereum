@@ -22,5 +22,13 @@
       "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
     ],
     "feeProportions": [50, 50]
+  },
+  "80001": {
+    "feePercentage": 0.002,
+    "feeRecipients": [
+      "0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa",
+      "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
+    ],
+    "feeProportions": [50, 50]
   }
 }
