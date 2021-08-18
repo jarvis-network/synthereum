@@ -13,6 +13,9 @@ const { isUnparsedPrepend } = require('typescript');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const TestnetERC20 = artifacts.require('TestnetERC20');
+const SynthereumSyntheticTokenPermitFactory = artifacts.require(
+  'SynthereumSyntheticTokenPermitFactory',
+);
 const SynthereumSyntheticTokenFactory = artifacts.require(
   'SynthereumSyntheticTokenFactory',
 );
@@ -136,7 +139,35 @@ contract('Factories', function (accounts) {
         poolOnChainPayload,
         { from: maintainer },
       );
+
+      //Chech deploy also for token factory without permit
+      const tokenFactory = await SynthereumSyntheticTokenFactory.new(
+        synthereumFinderAddress,
+      );
+      const tokenFactoryInterface = await web3.utils.stringToHex(
+        'TokenFactory',
+      );
+      const finder = await SynthereumFinder.deployed();
+      await finder.changeImplementationAddress(
+        tokenFactoryInterface,
+        tokenFactory.address,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPoolAndDerivative(
+        derivativeVersion,
+        poolOnChainVersion,
+        derivativePayload,
+        poolOnChainPayload,
+        { from: maintainer },
+      );
+      const permitTokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
+      await finder.changeImplementationAddress(
+        tokenFactoryInterface,
+        permitTokenFactory.address,
+        { from: maintainer },
+      );
     });
+
     it('Can deploy self-minting derivative', async () => {
       const {
         derivative,
@@ -202,7 +233,7 @@ contract('Factories', function (accounts) {
       );
     });
     it('Revert in synthetic token factory', async () => {
-      const synthereumSyntheticTokenFactoryInstance = await SynthereumSyntheticTokenFactory.deployed();
+      const synthereumSyntheticTokenFactoryInstance = await SynthereumSyntheticTokenPermitFactory.deployed();
       await truffleAssert.reverts(
         synthereumSyntheticTokenFactoryInstance.createToken(
           'jTest',

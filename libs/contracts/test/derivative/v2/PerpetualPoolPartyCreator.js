@@ -18,8 +18,8 @@ const Token = artifacts.require('MintableBurnableERC20');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
-const MintableBurnableTokenFactory = artifacts.require(
-  'MintableBurnableTokenFactory',
+const SyntheticTokenPermitFactory = artifacts.require(
+  'SynthereumSyntheticTokenPermitFactory',
 );
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SynthereumFactoryVersioning = artifacts.require(
@@ -63,7 +63,9 @@ contract('PerpetualCreator', function (accounts) {
 
     finderAddress = (await Finder.deployed()).address;
     synthereumFinder = await SynthereumFinder.deployed();
-    mintableBurnableTokenFactory = await MintableBurnableTokenFactory.new();
+    mintableBurnableTokenFactory = await SyntheticTokenPermitFactory.new(
+      synthereumFinder.address,
+    );
     const timerAddress = (await Timer.deployed()).address;
     const perpetualPoolPartyLib = await PerpetualPoolPartyLib.deployed();
     if (PerpetualPoolPartyLib.setAsDeployed) {
