@@ -17,8 +17,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
-  ISwapRouter router;
-  ISynthereumFinder synthereumFinder;
+  ISwapRouter public router;
+  ISynthereumFinder public synthereumFinder;
 
   constructor(ISynthereumFinder _synthereum, ISwapRouter _uniV3Router) {
     router = _uniV3Router;
@@ -38,15 +38,15 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     // TODO in interface
     uint24 fee = 3000;
 
-    // TODO exact input case
-    if (isExactInput) {
-      IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
-      require(
-        address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
-        'Wrong collateral instance'
-      );
-      IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
+    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    require(
+      address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
+      'Wrong collateral instance'
+    );
+    IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
 
+    // TODO assumes only one hop (ERC20 - USDC)
+    if (isExactInput) {
       // get input funds from caller
       inputTokenInstance.safeTransferFrom(
         msg.sender,
@@ -55,7 +55,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       //approve router to swap tokens
       inputTokenInstance.safeIncreaseAllowance(
-        address(ISwapRouter),
+        address(router),
         amountSpecified
       );
 
@@ -73,12 +73,134 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         );
 
       // TODO refundEth
-      uint256 collateralOut = ISwapRouter.exactInputSingle(params);
+      uint256 collateralOut = router.exactInputSingle(params);
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
       mintParams.collateralAmount = collateralOut;
       (amountOut, ) = synthereumPool.mint(mintParams);
+    } else {
+      // pull the max input tokens allowed to spend
+      inputTokenInstance.safeTransferFrom(
+        msg.sender,
+        address(this),
+        minOutOrMaxIn
+      );
+
+      // approve router to swap tokens
+      inputTokenInstance.safeApprove(address(router), minOutOrMaxIn);
+
+      // swap to collateral token into this wallet
+      ISwapRouter.ExactOutputSingleParams memory params =
+        ISwapRouter.ExactOutputSingleParams(
+          tokenSwapPath[0],
+          tokenSwapPath[1],
+          fee,
+          address(this),
+          mintParams.expiration,
+          amountSpecified,
+          minOutOrMaxIn,
+          0
+        );
+
+      uint256 inputTokenUsed = router.exactOutputSingle(params);
+
+      // refund leftover tokens
+      if (minOutOrMaxIn > inputTokenUsed) {
+        inputTokenInstance.safeTransfer(
+          msg.sender,
+          minOutOrMaxIn.sub(inputTokenUsed)
+        );
+      }
+
+      // mint jSynth to mintParams.recipient (supposedly msg.sender)
+      // returns the output amount
+      mintParams.collateralAmount = amountSpecified;
+      (amountOut, ) = synthereumPool.mint(mintParams);
+    }
+  }
+
+  // TODO assumes only one hop (USDC - ERC20)
+  function redeemCollateralAndSwap(
+    bool isExactInput,
+    uint256 amountSpecified,
+    address[] memory tokenSwapPath,
+    ISynthereumPoolOnChainPriceFeed synthereumPool,
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    address recipient
+  ) external returns (uint256) {
+    // TODO in interface
+    uint24 fee = 3000;
+
+    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    require(
+      address(collateralInstance) == tokenSwapPath[0],
+      'Wrong collateral instance'
+    );
+    IERC20 outputTokenInstance =
+      IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
+    IERC20 synthTokenInstance = synthereumPool.syntheticToken();
+
+    // redeem USDC with jSynth into this contract
+    synthTokenInstance.safeTransferFrom(
+      msg.sender,
+      address(this),
+      redeemParams.numTokens
+    );
+    synthTokenInstance.safeIncreaseAllowance(
+      address(synthereumPool),
+      numTokens
+    );
+    redeemParams.recipient = address(this);
+    (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
+
+    if (isExactInput) {
+      // approve router to swap tokens
+      collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
+
+      // swap to erc20 token into recipient wallet
+      ISwapRouter.ExactInputSingleParams memory params =
+        ISwapRouter.ExactInputSingleParams(
+          tokenSwapPath[0],
+          tokenSwapPath[1],
+          fee,
+          recipient,
+          redeemParams.expiration,
+          collateralOut,
+          minOutOrMaxIn,
+          0
+        );
+
+      // TODO refundEth
+      return router.exactInputSingle(params);
+    } else {
+      // approve router to swap tokens
+      collateralInstance.safeApprove(address(router), collateralOut);
+
+      // swap to collateral token into recipient wallet
+      ISwapRouter.ExactOutputSingleParams memory params =
+        ISwapRouter.ExactOutputSingleParams(
+          tokenSwapPath[0],
+          tokenSwapPath[1],
+          fee,
+          recipient,
+          redeemParams.expiration,
+          amountSpecified,
+          collateralOut,
+          0
+        );
+
+      uint256 inputTokensUsed = router.exactOutputSingle(params);
+
+      // refund leftover input (collateral) tokens
+      if (collateralOut > inputTokensUsed) {
+        inputTokenInstance.safeTransfer(
+          msg.sender,
+          collateralOut.sub(inputTokensUsed)
+        );
+      }
+
+      return inputTokensUsed;
     }
   }
 

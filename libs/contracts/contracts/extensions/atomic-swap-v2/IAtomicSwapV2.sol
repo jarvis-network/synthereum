@@ -42,7 +42,6 @@ interface IAtomicSwapV2 {
 
   /// @param isExactInput: determine if amountSpecified is to be treated as exactInput (true) or exactOutput (false)
   /// @param amountSpecified: exact input | exact output based on boolean
-  /// @param minOutOrMaxIn: anti-slippage - minimum amount out | max amount in based on boolean
   /// @param tokenSwapPath: token addresses to route through - input (synthereum collateral) to output
   /// @param synthereumPool: synthereum pool address used to redeem collateral with jSynths
   /// @param redeemParams: struct to redeem collateral from synthereum pool with input jSynth
@@ -50,13 +49,12 @@ interface IAtomicSwapV2 {
   /// @return amountOut amount of received ERC20
   function redeemCollateralAndSwap(
     bool isExactInput,
-    int256 amountSpecified,
-    int256 minOutOrMaxIn,
+    uint256 amountSpecified,
     address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256 amountOut);
+  ) external returns (uint256);
 
   /// @param isExactInput: determine if msg.value is to be treated as exactInput (true) or exactOutput (false)
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out | max amount in based on boolean
