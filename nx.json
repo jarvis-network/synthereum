@@ -88,7 +88,8 @@
       "tags": []
     },
     "atomic-swap": {
-      "tags": []
+      "tags": [],
+      "implicitDependencies": ["contracts"]
     }
   },
   "workspaceLayout": {
