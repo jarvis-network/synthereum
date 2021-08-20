@@ -608,6 +608,38 @@
           }
         }
       }
+    },
+    "atomic-swap": {
+      "root": "libs/atomic-swap",
+      "sourceRoot": "libs/atomic-swap/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/atomic-swap",
+            "tsConfig": "libs/atomic-swap/tsconfig.lib.json",
+            "packageJson": "libs/atomic-swap/package.json",
+            "main": "libs/atomic-swap/src/index.ts",
+            "assets": ["libs/atomic-swap/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/atomic-swap/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/atomic-swap"],
+          "options": {
+            "jestConfig": "libs/atomic-swap/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }

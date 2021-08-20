@@ -42,7 +42,8 @@
         "libs/legacy-currency-contracts/src/index.ts"
       ],
       "@jarvis-network/hardhat-utils": ["libs/hardhat-utils/src/index.ts"],
-      "@jarvis-network/yield-farming": ["libs/yield-farming/src/index.ts"]
+      "@jarvis-network/yield-farming": ["libs/yield-farming/src/index.ts"],
+      "@jarvis-network/atomic-swap": ["libs/atomic-swap/src/index.ts"]
     }
   }
 }

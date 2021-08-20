@@ -86,6 +86,9 @@
     },
     "yield-farming": {
       "tags": []
+    },
+    "atomic-swap": {
+      "tags": []
     }
   },
   "workspaceLayout": {
