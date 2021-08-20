@@ -13,4 +13,9 @@ contract BaseAtomicSwap {
   mapping(bytes32 => address) idToAddress;
 
   address admin;
+  address public immutable WETH_ADDRESS;
+
+  constructor(address _wethAddress) public {
+    WETH_ADDRESS = _wethAddress;
+  }
 }

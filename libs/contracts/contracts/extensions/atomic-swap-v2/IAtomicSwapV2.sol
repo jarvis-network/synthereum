@@ -24,7 +24,7 @@ interface IAtomicSwapV2 {
     address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external returns (uint256 amountOut);
+  ) external payable returns (uint256 amountOut);
 
   /// @param isExactInput: determine if msg.value is to be treated as exactInput (true) or exactOutput (false)
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out | max amount in based on boolean

@@ -13,14 +13,22 @@ import {
 
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 
+interface IUniswapV3Router is ISwapRouter {
+  function refundETH() external payable;
+}
+
 contract UniV3AtomicSwap is BaseAtomicSwap {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
-  ISwapRouter public router;
+  IUniswapV3Router public router;
   ISynthereumFinder public synthereumFinder;
 
-  constructor(ISynthereumFinder _synthereum, ISwapRouter _uniV3Router) {
+  constructor(
+    ISynthereumFinder _synthereum,
+    IUniswapV3Router _uniV3Router,
+    address _wethAddress
+  ) BaseAtomicSwap(_wethAddress) {
     router = _uniV3Router;
     synthereumFinder = _synthereum;
   }
@@ -34,10 +42,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external returns (uint256 amountOut) {
+  ) external payable returns (uint256 amountOut) {
     // TODO in interface
     uint24 fee = 3000;
-
     IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
@@ -45,19 +52,27 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
     IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
 
-    // TODO assumes only one hop (ERC20 - USDC)
+    // TODO assumes only one hop (ETH/ERC20 - USDC)
     if (isExactInput) {
-      // get input funds from caller
-      inputTokenInstance.safeTransferFrom(
-        msg.sender,
-        (address(this), amountSpecified)
-      );
+      if (msg.value > 0) {
+        // eth as input
+        tokenSwapPath[0] = WETH_ADDRESS;
+        amountSpecified = msg.value;
+      } else {
+        // erc20 as input
 
-      //approve router to swap tokens
-      inputTokenInstance.safeIncreaseAllowance(
-        address(router),
-        amountSpecified
-      );
+        // get input funds from caller
+        inputTokenInstance.safeTransferFrom(
+          msg.sender,
+          (address(this), amountSpecified)
+        );
+
+        //approve router to swap tokens
+        inputTokenInstance.safeIncreaseAllowance(
+          address(router),
+          amountSpecified
+        );
+      }
 
       // swap to collateral token into this wallet
       ISwapRouter.ExactInputSingleParams memory params =
@@ -72,23 +87,30 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           0
         );
 
-      // TODO refundEth
-      uint256 collateralOut = router.exactInputSingle(params);
+      uint256 collateralOut = router.exactInputSingle{value: msg.value}(params);
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
       mintParams.collateralAmount = collateralOut;
       (amountOut, ) = synthereumPool.mint(mintParams);
     } else {
-      // pull the max input tokens allowed to spend
-      inputTokenInstance.safeTransferFrom(
-        msg.sender,
-        address(this),
-        minOutOrMaxIn
-      );
+      // exact output (collateral)
+      if (msg.value > 0) {
+        // max eth as input
+        tokenSwapPath[0] = WETH_ADDRESS;
+        minOutOrMaxIn = msg.value;
+      } else {
+        // max erc20 as input
+        // pull the max input tokens allowed to spend
+        inputTokenInstance.safeTransferFrom(
+          msg.sender,
+          address(this),
+          minOutOrMaxIn
+        );
 
-      // approve router to swap tokens
-      inputTokenInstance.safeApprove(address(router), minOutOrMaxIn);
+        // approve router to swap tokens
+        inputTokenInstance.safeApprove(address(router), minOutOrMaxIn);
+      }
 
       // swap to collateral token into this wallet
       ISwapRouter.ExactOutputSingleParams memory params =
@@ -103,14 +125,24 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           0
         );
 
-      uint256 inputTokenUsed = router.exactOutputSingle(params);
+      uint256 inputTokenUsed =
+        router.exactOutputSingle{value: msg.value}(params);
 
       // refund leftover tokens
       if (minOutOrMaxIn > inputTokenUsed) {
-        inputTokenInstance.safeTransfer(
-          msg.sender,
-          minOutOrMaxIn.sub(inputTokenUsed)
-        );
+        if (msg.value > 0) {
+          // take leftover eth from the router
+          router.refundETH();
+          //send it to user
+          (bool success, ) = msg.sender.call{value: address(this).balance}('');
+          require(success, 'Refund eth failed');
+        } else {
+          // refund erc20
+          inputTokenInstance.safeTransfer(
+            msg.sender,
+            minOutOrMaxIn.sub(inputTokenUsed)
+          );
+        }
       }
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
@@ -120,7 +152,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     }
   }
 
-  // TODO assumes only one hop (USDC - ERC20)
+  // TODO assumes only one hop (USDC - ERC20/ETH)
   function redeemCollateralAndSwap(
     bool isExactInput,
     uint256 amountSpecified,
@@ -171,7 +203,6 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           0
         );
 
-      // TODO refundEth
       return router.exactInputSingle(params);
     } else {
       // approve router to swap tokens
