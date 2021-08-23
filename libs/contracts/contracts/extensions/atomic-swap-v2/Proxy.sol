@@ -8,7 +8,7 @@ import {
   ISynthereumPoolOnChainPriceFeed
 } from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
-contract Proxy {
+contract AtomicSwapProxy {
   IAtomicSwapV2 public atomicSwapIface;
 
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
@@ -24,6 +24,13 @@ contract Proxy {
 
   modifier onlyAdmin() {
     require(msg.sender == admin, 'Only admin');
+    _;
+  }
+
+  modifier isRegisteredImplementation(string implementationId) {
+    address implementation =
+      idToAddress[keccak256(abi.encode(implementationId))];
+    require(implementation != address(0), 'Implementation id not registered');
     _;
   }
 
@@ -56,19 +63,37 @@ contract Proxy {
     address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public {
-    IAtomicSwapV2 implementation =
-      IAtomicSwapV2(idToAddress[keccak256(abi.encode(implementationId))]);
-    require(
-      address(implementation) != address(0),
-      'The implementation is not registered'
-    );
-
-    // delegate call
+  ) public isRegisteredImplementation(implementationId) {
     string memory functionSig =
       'swapToCollateralAndMint(bool,uint256,uint256,address[],address,(address,uint256,uint256,uint256,uint256,address))';
+
+    uint256 outputAmount = delegateCall(implementation, functionSig);
+
+    emit Swap(abi.decode(result, (uint256)));
+  }
+
+  function redeemCollateralAndSwap(
+    string calldata implementationId,
+    bool isExactInput,
+    uint256 amountSpecified,
+    uint256 minOutOrMaxIn,
+    address[] memory tokenSwapPath,
+    ISynthereumPoolOnChainPriceFeed synthereumPool,
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    address payable recipient
+  ) public isRegisteredImplementation(implementationId) {
+    string memory functionSig =
+      'redeemCollateralAndSwap(bool,uint256,uint256,address[],address,(address,uint256,uint256,uint256,uint256,address))';
+    uint256 outputAmount = delegateCall(implementation, functionSig);
+
+    emit Swap(outputAmount);
+  }
+
+  function delegateCall(address implementation, string memory functionSig)
+    returns (uint256)
+  {
     (bool success, bytes memory result) =
-      address(implementation).delegatecall(
+      implementation.delegatecall(
         abi.encodeWithSignature(
           functionSig,
           isExactInput,
@@ -76,18 +101,14 @@ contract Proxy {
           minOutOrMaxIn,
           tokenSwapPath,
           synthereumPool,
-          mintParams
+          redeemParams,
+          recipient
         )
       );
 
     // checks
     require(success, 'Delegate call failed');
 
-    emit Swap(abi.decode(result, (uint256)));
+    return abi.decode(result, (uint256));
   }
-
-  // function swapETHAndMint(){};
-
-  // function redeemAndSwapETH(){};
-  // function redeemAndSwap(){};
 }

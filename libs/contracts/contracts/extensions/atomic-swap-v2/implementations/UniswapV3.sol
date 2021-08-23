@@ -4,13 +4,6 @@ pragma solidity >=0.7.5;
 pragma abicoder v2;
 
 import '../Base.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumRegistry
-} from '../../../core/registries/interfaces/IRegistry.sol';
-
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 
 interface IUniswapV3Router is ISwapRouter {
@@ -18,19 +11,14 @@ interface IUniswapV3Router is ISwapRouter {
 }
 
 contract UniV3AtomicSwap is BaseAtomicSwap {
-  using SafeMath for uint256;
-  using SafeERC20 for IERC20;
-
   IUniswapV3Router public router;
-  ISynthereumFinder public synthereumFinder;
 
   constructor(
     ISynthereumFinder _synthereum,
     IUniswapV3Router _uniV3Router,
     address _wethAddress
-  ) BaseAtomicSwap(_wethAddress) {
+  ) BaseAtomicSwap(_wethAddress, _synthereum) {
     router = _uniV3Router;
-    synthereumFinder = _synthereum;
   }
 
   receive() external payable {}
@@ -89,6 +77,12 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       uint256 collateralOut = router.exactInputSingle{value: msg.value}(params);
 
+      // approve synthereum to pull collateral
+      collateralInstance.safeIncreaseAllowance(
+        address(synthereumPool),
+        collateralOut
+      );
+
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
       mintParams.collateralAmount = collateralOut;
@@ -145,6 +139,12 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         }
       }
 
+      // approve synthereum to pull collateral
+      collateralInstance.safeIncreaseAllowance(
+        address(synthereumPool),
+        amountSpecified
+      );
+
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
       mintParams.collateralAmount = amountSpecified;
@@ -156,12 +156,13 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
   function redeemCollateralAndSwap(
     bool isExactInput,
     uint256 amountSpecified,
+    uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
-    address recipient
+    address payable recipient
   ) external returns (uint256) {
-    // TODO in interface
+    // TODO iinn interface
     uint24 fee = 3000;
 
     IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
@@ -181,7 +182,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
     synthTokenInstance.safeIncreaseAllowance(
       address(synthereumPool),
-      numTokens
+      redeemParams.numTokens
     );
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
@@ -233,30 +234,5 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       return inputTokensUsed;
     }
-  }
-
-  function checkSynthereumPool(ISynthereumPoolOnChainPriceFeed synthereumPool)
-    internal
-    view
-    returns (IERC20 collateralInstance)
-  {
-    ISynthereumRegistry poolRegistry =
-      ISynthereumRegistry(
-        synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.PoolRegistry
-        )
-      );
-    string memory synthTokenSymbol = synthereumPool.syntheticTokenSymbol();
-    collateralInstance = synthereumPool.collateralToken();
-    uint8 version = synthereumPool.version();
-    require(
-      poolRegistry.isDeployed(
-        synthTokenSymbol,
-        collateralInstance,
-        version,
-        address(synthereumPool)
-      ),
-      'Pool not registred'
-    );
   }
 }
