@@ -3,14 +3,18 @@ pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IUniswapV2Router02} from './interfaces/IUniswapV2Router02.sol';
-import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {
+  ISynthereumFinder
+} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 import {
   ISynthereumRegistry
-} from '../../core/registries/interfaces/IRegistry.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/core/registries/interfaces/IRegistry.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
-} from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
-import {SynthereumInterfaces} from '../../core/Constants.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
+import {
+  SynthereumInterfaces
+} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
 import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20

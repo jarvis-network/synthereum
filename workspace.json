@@ -621,6 +621,18 @@
             "lintFilePatterns": ["libs/atomic-swap/src/**/*.ts"]
           }
         },
+        "test": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              "yarn start:local-fork mainnet",
+              "yarn test && ../../scripts/cleanup_contracts_test.bash"
+            ],
+            "cwd": "./libs/atomic-swap",
+            "color": true,
+            "parallel": true
+          }
+        },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "outputs": ["libs/atomic-swap/dist"],

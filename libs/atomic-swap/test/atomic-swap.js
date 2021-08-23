@@ -18,9 +18,9 @@ const {
   deploy,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
-const tokens = require('../../data/test/tokens.json');
-const uniswap = require('../../data/test/uniswap.json');
-const synthereum = require('../../data/test/synthereum.json');
+const tokens = require('../data/test/tokens.json');
+const uniswap = require('../data/test/uniswap.json');
+const synthereum = require('../data/test/synthereum.json');
 
 //pour start kovan local fork
 //yarn start:local-fork kovan
@@ -184,9 +184,9 @@ contract('AtomicSwap', function (accounts) {
       const testerBalance = await WBTCInstance.balanceOf.call(tester);
       const destintaryBalance = await JEURInstance.balanceOf.call(destinatary);
 
-      //call swapAndMint
+      //call swapExactTokensAndMint
 
-      const txOutput = await atomicSwapInstance.swapAndMint(
+      const txOutput = await atomicSwapInstance.swapExactTokensAndMint(
         tokenAmountIn,
         0,
         tokenPathSwap,
@@ -244,10 +244,10 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      //revert swapAndMint
+      //revert swapExactTokensAndMint
 
       await truffleAssert.reverts(
-        atomicSwapInstance.swapAndMint(
+        atomicSwapInstance.swapExactTokensAndMint(
           tokenAmountIn,
           0,
           tokenPathSwap,
@@ -278,10 +278,10 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      //revert swapAndMint
+      //revert swapExactTokensAndMint
 
       await truffleAssert.reverts(
-        atomicSwapInstance.swapAndMint(
+        atomicSwapInstance.swapExactTokensAndMint(
           tokenAmountIn,
           0,
           tokenPathSwap,
@@ -315,7 +315,7 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      await atomicSwapInstance.swapAndMint(
+      await atomicSwapInstance.swapExactTokensAndMint(
         tokenAmountIn,
         0,
         tokenPathSwap,
@@ -349,9 +349,9 @@ contract('AtomicSwap', function (accounts) {
 
       const destinataryBalance = await WBTCInstance.balanceOf.call(destinatary);
 
-      //call redeemAndSwap
+      //call redeemAndSwapExactTokens
 
-      const txOutput = await atomicSwapInstance.redeemAndSwap(
+      const txOutput = await atomicSwapInstance.redeemAndSwapExactTokens(
         0,
         tokenPathSwap,
         synthereumPool,
@@ -410,10 +410,10 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      //revert redeemAndSwap
+      //revert redeemAndSwapExactTokens
 
       await truffleAssert.reverts(
-        atomicSwapInstance.redeemAndSwap(
+        atomicSwapInstance.redeemAndSwapExactTokens(
           0,
           tokenPathSwap,
           poolMockInstance.address,
@@ -445,10 +445,10 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      //revert redeemAndSwap
+      //revert redeemAndSwapExactTokens
 
       await truffleAssert.reverts(
-        atomicSwapInstance.redeemAndSwap(
+        atomicSwapInstance.redeemAndSwapExactTokens(
           0,
           tokenPathSwap,
           synthereumPool,
@@ -483,9 +483,9 @@ contract('AtomicSwap', function (accounts) {
       const testerBalance = await web3.eth.getBalance(tester);
       const destintaryBalance = await JEURInstance.balanceOf.call(destinatary);
 
-      //call swapETHAndMint
+      //call swapExactETHAndMint
 
-      const txOutput = await atomicSwapInstance.swapETHAndMint(
+      const txOutput = await atomicSwapInstance.swapExactETHAndMint(
         0,
         tokenPathSwap,
         synthereumPool,
@@ -542,10 +542,10 @@ contract('AtomicSwap', function (accounts) {
         recipient: destinatary,
       };
 
-      //revert swapETHAndMint
+      //revert swapExactETHAndMint
 
       await truffleAssert.reverts(
-        atomicSwapInstance.swapETHAndMint(
+        atomicSwapInstance.swapExactETHAndMint(
           0,
           tokenPathSwap,
           poolMockInstance.address,
@@ -571,10 +571,10 @@ contract('AtomicSwap', function (accounts) {
         recipient: destinatary,
       };
 
-      //revert swapETHAndMint
+      //revert swapExactETHAndMint
 
       await truffleAssert.reverts(
-        atomicSwapInstance.swapETHAndMint(
+        atomicSwapInstance.swapExactETHAndMint(
           0,
           tokenPathSwap,
           synthereumPool,
@@ -608,7 +608,7 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      await atomicSwapInstance.swapAndMint(
+      await atomicSwapInstance.swapExactTokensAndMint(
         tokenAmountIn,
         0,
         tokenPathSwap,
@@ -642,9 +642,9 @@ contract('AtomicSwap', function (accounts) {
 
       const destinataryBalance = await web3.eth.getBalance(destinatary);
 
-      //call redeemAndSwapETH
+      //call redeemAndSwapExactTokensForETH
 
-      const txOutput = await atomicSwapInstance.redeemAndSwapETH(
+      const txOutput = await atomicSwapInstance.redeemAndSwapExactTokensForETH(
         0,
         tokenPathSwap,
         synthereumPool,
@@ -706,9 +706,9 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      //revert redeemAndSwapETH
+      //revert redeemAndSwapExactTokensForETH
       await truffleAssert.reverts(
-        atomicSwapInstance.redeemAndSwapETH(
+        atomicSwapInstance.redeemAndSwapExactTokensForETH(
           0,
           tokenPathSwap,
           poolMockInstance.address,
@@ -740,9 +740,9 @@ contract('AtomicSwap', function (accounts) {
         from: tester,
       });
 
-      //revert redeemAndSwapETH
+      //revert redeemAndSwapExactTokensForETH
       await truffleAssert.reverts(
-        atomicSwapInstance.redeemAndSwapETH(
+        atomicSwapInstance.redeemAndSwapExactTokensForETH(
           0,
           tokenPathSwap,
           synthereumPool,
