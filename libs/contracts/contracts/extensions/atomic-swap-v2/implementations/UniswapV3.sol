@@ -28,6 +28,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     uint256 amountSpecified,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
+    address[] memory poolsPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
@@ -40,15 +41,15 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
     IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
 
-    // TODO assumes only one hop (ETH/ERC20 - USDC)
+    // encode the paths
+    bytes memory path = encodeAddresses(tokenSwapPath, fee);
+
     if (isExactInput) {
-      if (msg.value > 0) {
+      if (tokenSwapPath[0] == WETH_ADDRESS) {
         // eth as input
-        tokenSwapPath[0] = WETH_ADDRESS;
         amountSpecified = msg.value;
       } else {
         // erc20 as input
-
         // get input funds from caller
         inputTokenInstance.safeTransferFrom(
           msg.sender,
@@ -63,19 +64,16 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       }
 
       // swap to collateral token into this wallet
-      ISwapRouter.ExactInputSingleParams memory params =
-        ISwapRouter.ExactInputSingleParams(
-          tokenSwapPath[0],
-          tokenSwapPath[1],
-          fee,
-          address(this),
-          mintParams.expiration,
-          amountSpecified,
-          minOutOrMaxIn,
-          0
-        );
+      ISwapRouter.ExactInputParams memory params =
+        ISwapRouter.ExactInputParams({
+          path: path,
+          recipient: address(this),
+          deadline: mintParams.expiration,
+          amountIn: amountSpecified,
+          amountOutMinimum: minOutOrMaxIn
+        });
 
-      uint256 collateralOut = router.exactInputSingle{value: msg.value}(params);
+      uint256 collateralOut = router.exactInput{value: msg.value}(params);
 
       // approve synthereum to pull collateral
       collateralInstance.safeIncreaseAllowance(
@@ -89,9 +87,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       (amountOut, ) = synthereumPool.mint(mintParams);
     } else {
       // exact output (collateral)
-      if (msg.value > 0) {
+      if (tokenSwapPath[0] == WETH_ADDRESS) {
         // max eth as input
-        tokenSwapPath[0] = WETH_ADDRESS;
         minOutOrMaxIn = msg.value;
       } else {
         // max erc20 as input
@@ -107,20 +104,16 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       }
 
       // swap to collateral token into this wallet
-      ISwapRouter.ExactOutputSingleParams memory params =
-        ISwapRouter.ExactOutputSingleParams(
-          tokenSwapPath[0],
-          tokenSwapPath[1],
-          fee,
-          address(this),
-          mintParams.expiration,
-          amountSpecified,
-          minOutOrMaxIn,
-          0
-        );
+      ISwapRouter.ExactOutputParams memory params =
+        ISwapRouter.ExactOutputParams({
+          path: path,
+          recipient: address(this),
+          deadline: mintParams.expiration,
+          amountOut: amountSpecified,
+          amountInMaximum: minOutOrMaxIn
+        });
 
-      uint256 inputTokenUsed =
-        router.exactOutputSingle{value: msg.value}(params);
+      uint256 inputTokenUsed = router.exactOutput{value: msg.value}(params);
 
       // refund leftover tokens
       if (minOutOrMaxIn > inputTokenUsed) {
@@ -152,12 +145,12 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     }
   }
 
-  // TODO assumes only one hop (USDC - ERC20/ETH)
   function redeemCollateralAndSwap(
     bool isExactInput,
     uint256 amountSpecified,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
+    address[] memory poolsPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
@@ -187,46 +180,42 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
-    if (isExactInput) {
-      // approve router to swap tokens
-      collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
+    // encode the paths
+    bytes memory path = encodeAddresses(tokenSwapPath, fee);
 
+    // approve router to swap tokens
+    collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
+
+    if (isExactInput) {
+      // collateral as exact input
       // swap to erc20 token into recipient wallet
-      ISwapRouter.ExactInputSingleParams memory params =
-        ISwapRouter.ExactInputSingleParams(
-          tokenSwapPath[0],
-          tokenSwapPath[1],
-          fee,
+      ISwapRouter.ExactInputParams memory params =
+        ISwapRouter.ExactInputParams(
+          path,
           recipient,
           redeemParams.expiration,
           collateralOut,
-          minOutOrMaxIn,
-          0
+          minOutOrMaxIn
         );
 
-      return router.exactInputSingle(params);
+      return router.exactInput(params);
     } else {
-      // approve router to swap tokens
-      collateralInstance.safeApprove(address(router), collateralOut);
-
-      // swap to collateral token into recipient wallet
-      ISwapRouter.ExactOutputSingleParams memory params =
-        ISwapRouter.ExactOutputSingleParams(
-          tokenSwapPath[0],
-          tokenSwapPath[1],
-          fee,
+      // collateralOut as maxInput
+      // swap to erc20 token into recipient wallet
+      ISwapRouter.ExactOutputParams memory params =
+        ISwapRouter.ExactOutputParams(
+          path,
           recipient,
           redeemParams.expiration,
           amountSpecified,
-          collateralOut,
-          0
+          collateralOut
         );
 
-      uint256 inputTokensUsed = router.exactOutputSingle(params);
+      uint256 inputTokensUsed = router.exactOutput(params);
 
       // refund leftover input (collateral) tokens
       if (collateralOut > inputTokensUsed) {
-        inputTokenInstance.safeTransfer(
+        collateralInstance.safeTransfer(
           msg.sender,
           collateralOut.sub(inputTokensUsed)
         );
@@ -234,5 +223,20 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       return inputTokensUsed;
     }
+  }
+
+  // generates the encoded bytes for multihop swap
+  // TODO uses only one fee tiers
+  function encodeAddresses(address[] memory addresses, uint256 fee)
+    internal
+    pure
+    returns (bytes memory data)
+  {
+    for (uint256 i = 0; i < address.length - 1; i++) {
+      data = abi.encodePacked(data, addresses[i], fee);
+    }
+
+    // last token
+    data = abi.encodePacked(data, addresses[i]);
   }
 }
