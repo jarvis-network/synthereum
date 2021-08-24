@@ -9,6 +9,7 @@
     "build:tsc": "tsc -p ./tsconfig.lib.json",
     "build:nx-necessary": "cp ./package.json ./dist/",
     "compile": "hardhat compile",
+    "migrate-jrt-investors": "MIGRATION_TYPE=jrtInvestors hardhat test ./test/correct-migration.js",
     "test": "echo No test defined",
     "start:local-fork": "./local-fork.sh",
     "verify": "hardhat verify"
