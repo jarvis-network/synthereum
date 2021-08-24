@@ -644,6 +644,38 @@
           }
         }
       }
+    },
+    "jrt-investors": {
+      "root": "libs/jrt-investors",
+      "sourceRoot": "libs/jrt-investors/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/jrt-investors",
+            "tsConfig": "libs/jrt-investors/tsconfig.lib.json",
+            "packageJson": "libs/jrt-investors/package.json",
+            "main": "libs/jrt-investors/src/index.ts",
+            "assets": ["libs/jrt-investors/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/jrt-investors/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/jrt-investors"],
+          "options": {
+            "jestConfig": "libs/jrt-investors/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }

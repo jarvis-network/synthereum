@@ -9,5 +9,6 @@ module.exports = {
     '<rootDir>/libs/hardhat-utils',
     '<rootDir>/libs/yield-farming',
     '<rootDir>/libs/atomic-swap',
+    '<rootDir>/libs/jrt-investors',
   ],
 };

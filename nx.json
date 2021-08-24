@@ -90,6 +90,9 @@
     "atomic-swap": {
       "tags": [],
       "implicitDependencies": ["contracts"]
+    },
+    "jrt-investors": {
+      "tags": []
     }
   },
   "workspaceLayout": {
