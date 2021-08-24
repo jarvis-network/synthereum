@@ -61,13 +61,30 @@ contract AtomicSwapProxy {
     uint256 amountSpecified,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
+    address[] memory poolsPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) public isRegisteredImplementation(implementationId) {
     string memory functionSig =
-      'swapToCollateralAndMint(bool,uint256,uint256,address[],address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint(bool,uint256,uint256,address[],address[],address,(address,uint256,uint256,uint256,uint256,address))';
 
-    uint256 outputAmount = delegateCall(implementation, functionSig);
+    (bool success, bytes memory result) =
+      implementation.delegatecall(
+        abi.encodeWithSignature(
+          functionSig,
+          isExactInput,
+          amountSpecified,
+          minOutOrMaxIn,
+          tokenSwapPath,
+          poolsPath,
+          synthereumPool,
+          mintParams,
+          recipient
+        )
+      );
+
+    // checks
+    require(success, 'Delegate call failed');
 
     emit Swap(abi.decode(result, (uint256)));
   }
@@ -78,20 +95,14 @@ contract AtomicSwapProxy {
     uint256 amountSpecified,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
+    address[] memory poolsPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) public isRegisteredImplementation(implementationId) {
     string memory functionSig =
-      'redeemCollateralAndSwap(bool,uint256,uint256,address[],address,(address,uint256,uint256,uint256,uint256,address))';
-    uint256 outputAmount = delegateCall(implementation, functionSig);
+      'redeemCollateralAndSwap(bool,uint256,uint256,address[],address[],address,(address,uint256,uint256,uint256,uint256,address),address)';
 
-    emit Swap(outputAmount);
-  }
-
-  function delegateCall(address implementation, string memory functionSig)
-    returns (uint256)
-  {
     (bool success, bytes memory result) =
       implementation.delegatecall(
         abi.encodeWithSignature(
@@ -100,6 +111,7 @@ contract AtomicSwapProxy {
           amountSpecified,
           minOutOrMaxIn,
           tokenSwapPath,
+          poolsPath,
           synthereumPool,
           redeemParams,
           recipient
@@ -109,6 +121,6 @@ contract AtomicSwapProxy {
     // checks
     require(success, 'Delegate call failed');
 
-    return abi.decode(result, (uint256));
+    emit Swap(abi.decode(result, (uint256)));
   }
 }
