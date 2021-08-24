@@ -1,0 +1,6 @@
+src/contracts/abi/*
+!src/contracts/abi/index.ts
+artifacts
+build
+cache
+.env.migration

@@ -649,30 +649,32 @@
       "root": "libs/jrt-investors",
       "sourceRoot": "libs/jrt-investors/src",
       "projectType": "library",
+      "generators": {},
       "targets": {
-        "build": {
-          "executor": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/libs/jrt-investors",
-            "tsConfig": "libs/jrt-investors/tsconfig.lib.json",
-            "packageJson": "libs/jrt-investors/package.json",
-            "main": "libs/jrt-investors/src/index.ts",
-            "assets": ["libs/jrt-investors/*.md"]
-          }
-        },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/jrt-investors/**/*.ts"]
+            "lintFilePatterns": ["libs/jrt-investors/src/**/*.ts"]
           }
         },
         "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/jrt-investors"],
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "jestConfig": "libs/jrt-investors/jest.config.js",
-            "passWithNoTests": true
+            "commands": [
+              "yarn build jrt-investors",
+              "yarn --cwd libs/jrt-investors test --no-compile"
+            ],
+            "color": true,
+            "parallel": false
+          }
+        },
+        "build": {
+          "executor": "@nrwl/workspace:run-commands",
+          "outputs": ["libs/jrt-investors/dist"],
+          "options": {
+            "command": "yarn run build",
+            "cwd": "./libs/jrt-investors",
+            "color": true
           }
         }
       }
