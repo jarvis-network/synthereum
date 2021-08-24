@@ -78,8 +78,7 @@ contract AtomicSwapProxy {
           tokenSwapPath,
           poolsPath,
           synthereumPool,
-          mintParams,
-          recipient
+          mintParams
         )
       );
 
