@@ -25,7 +25,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   function swapToCollateralAndMint(
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
@@ -47,20 +47,17 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     if (isExactInput) {
       if (tokenSwapPath[0] == WETH_ADDRESS) {
         // eth as input
-        amountSpecified = msg.value;
+        exactAmount = msg.value;
       } else {
         // erc20 as input
         // get input funds from caller
         inputTokenInstance.safeTransferFrom(
           msg.sender,
-          (address(this), amountSpecified)
+          (address(this), exactAmount)
         );
 
         //approve router to swap tokens
-        inputTokenInstance.safeIncreaseAllowance(
-          address(router),
-          amountSpecified
-        );
+        inputTokenInstance.safeIncreaseAllowance(address(router), exactAmount);
       }
 
       // swap to collateral token into this wallet
@@ -69,7 +66,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           path: path,
           recipient: address(this),
           deadline: mintParams.expiration,
-          amountIn: amountSpecified,
+          amountIn: exactAmount,
           amountOutMinimum: minOutOrMaxIn
         });
 
@@ -100,7 +97,10 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         );
 
         // approve router to swap tokens
-        inputTokenInstance.safeApprove(address(router), minOutOrMaxIn);
+        inputTokenInstance.safeIncreaseAllowance(
+          address(router),
+          minOutOrMaxIn
+        );
       }
 
       // swap to collateral token into this wallet
@@ -109,7 +109,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           path: path,
           recipient: address(this),
           deadline: mintParams.expiration,
-          amountOut: amountSpecified,
+          amountOut: exactAmount,
           amountInMaximum: minOutOrMaxIn
         });
 
@@ -135,19 +135,19 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // approve synthereum to pull collateral
       collateralInstance.safeIncreaseAllowance(
         address(synthereumPool),
-        amountSpecified
+        exactAmount
       );
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
-      mintParams.collateralAmount = amountSpecified;
+      mintParams.collateralAmount = exactAmount;
       (amountOut, ) = synthereumPool.mint(mintParams);
     }
   }
 
   function redeemCollateralAndSwap(
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
@@ -207,7 +207,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           path,
           recipient,
           redeemParams.expiration,
-          amountSpecified,
+          exactAmount,
           collateralOut
         );
 

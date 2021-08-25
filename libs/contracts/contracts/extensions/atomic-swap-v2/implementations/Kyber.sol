@@ -24,7 +24,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
   function swapToCollateralAndMint(
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
@@ -63,18 +63,18 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         inputTokenInstance.safeTransferFrom(
           msg.sender,
           address(this),
-          amountSpecified
+          exactAmount
         );
         //approve kyber router to swap
         inputTokenInstance.safeIncreaseAllowance(
           address(kyberRouter),
-          amountSpecified
+          exactAmount
         );
 
         // swap to collateral token into this wallet
         uint256[] memory amountsOut =
           kyberRouter.swapExactTokensForTokens(
-            amountSpecified,
+            exactAmount,
             minOutOrMaxIn,
             poolsPath,
             tokenSwapPath,
@@ -94,7 +94,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         // swap to exact collateral and refund leftover
         uint256[] memory amountsOut =
           kyberRouter.swapETHForExactTokens{value: msg.value}(
-            amountSpecified,
+            exactAmount,
             poolsPath,
             tokenSwapPath,
             address(this),
@@ -118,12 +118,15 @@ contract KyberAtomicSwap is BaseAtomicSwap {
           minOutOrMaxIn
         );
         //approve kyber router to swap s
-        inputTokenInstance.safeApprove(address(kyberRouter), minOutOrMaxIn);
+        inputTokenInstance.safeIncreaseAllowance(
+          address(kyberRouter),
+          minOutOrMaxIn
+        );
 
         // swap to collateral token into this wallet
         uint256[] memory amountsOut =
           kyberRouter.swapTokensForExactTokens(
-            amountSpecified,
+            exactAmount,
             minOutOrMaxIn,
             poolsPath,
             tokenSwapPath,
@@ -158,7 +161,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   // redeem jSynth into collateral and use that to swap into erc20/eth
   function redeemCollateralAndSwap(
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
@@ -223,7 +226,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       // collateralOut as maxInput
       outputTokenInstance == WETH_ADDRESS
         ? amountsOut = kyberRouter.swapTokensForExactETH(
-          amountSpecified,
+          exactAmount,
           collateralOut,
           poolsPath,
           tokenSwapPath,
@@ -231,7 +234,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
           redeemParams.expiration
         )
         : amountsOut = kyberRouter.swapTokensForExactTokens(
-        amountSpecified,
+        exactAmount,
         collateralOut,
         poolsPath,
         path,

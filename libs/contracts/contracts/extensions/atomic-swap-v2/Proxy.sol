@@ -58,13 +58,13 @@ contract AtomicSwapProxy {
   function swapAndMint(
     string calldata implementationId,
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public isRegisteredImplementation(implementationId) {
+  ) public payable isRegisteredImplementation(implementationId) {
     string memory functionSig =
       'swapToCollateralAndMint(bool,uint256,uint256,address[],address[],address,(address,uint256,uint256,uint256,uint256,address))';
 
@@ -73,7 +73,7 @@ contract AtomicSwapProxy {
         abi.encodeWithSignature(
           functionSig,
           isExactInput,
-          amountSpecified,
+          exactAmount,
           minOutOrMaxIn,
           tokenSwapPath,
           poolsPath,
@@ -91,7 +91,7 @@ contract AtomicSwapProxy {
   function redeemCollateralAndSwap(
     string calldata implementationId,
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
@@ -107,7 +107,7 @@ contract AtomicSwapProxy {
         abi.encodeWithSignature(
           functionSig,
           isExactInput,
-          amountSpecified,
+          exactAmount,
           minOutOrMaxIn,
           tokenSwapPath,
           poolsPath,

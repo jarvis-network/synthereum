@@ -10,9 +10,9 @@ import {
 /// @notice general interface that atomic swap implementations must adhere to
 /// @notice in order to be callable through the proxy pattern
 interface IAtomicSwapV2 {
-  /// @param isExactInput: determine if amountSpecified is to be treated as exactInput (true) or exactOutput (false)
-  /// @param amountSpecified: exact input | exact output based on boolean
-  /// @param minOutOrMaxIn: anti-slippage - minimum amount out | max amount in based on boolean
+  /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
+  /// @param exactAmount: exact input or exact output based on boolean
+  /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
   /// @param tokenSwapPath: token addresses to route through - input to output, which is synthereum collateral
   /// @param poolsPath: pools addresses to route through where many pools can exist for same pair
   /// @param synthereumPool: synthereum pool address used to mint with collateral
@@ -20,7 +20,7 @@ interface IAtomicSwapV2 {
   /// @return amountOut amount of received jSynths
   function swapToCollateralAndMint(
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
@@ -28,9 +28,9 @@ interface IAtomicSwapV2 {
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut);
 
-  /// @param isExactInput: determine if amountSpecified is to be treated as exactInput (true) or exactOutput (false)
-  /// @param amountSpecified: exact input | exact output based on boolean
-  /// @param minOutOrMaxIn: anti-slippage - minimum amount out | max amount in based on boolean
+  /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
+  /// @param exactAmount: exact input or exact output based on boolean
+  /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
   /// @param tokenSwapPath: token addresses to route through - input (synthereum collateral) to output
   /// @param poolsPath: pools addresses to route through where many pools can exist for same pair
   /// @param synthereumPool: synthereum pool address used to redeem collateral with jSynths
@@ -39,7 +39,7 @@ interface IAtomicSwapV2 {
   /// @return amountOut amount of received ERC20
   function redeemCollateralAndSwap(
     bool isExactInput,
-    uint256 amountSpecified,
+    uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
     address[] memory poolsPath,
