@@ -1,101 +1,149 @@
 import { Contract } from 'web3-eth-contract';
-import { SupportedSelfMintingPair } from '@jarvis-network/synthereum-config';
+import {
+  SupportedNetworkId,
+  SupportedNetworkName,
+  SupportedSelfMintingPairExact,
+} from '@jarvis-network/synthereum-config';
 import { chainlinkAggregators } from '@jarvis-network/synthereum-config/dist/data';
 import { ChainlinkPair } from '@jarvis-network/synthereum-config/dist/types/config';
 import { AggregatorV3Interface_Abi } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import Web3 from 'web3';
-import math from 'mathjs';
+import { create, all } from 'mathjs';
 
+import { SelfMintingCollateralSymbol } from '@jarvis-network/synthereum-config';
+import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
+
+import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
+
+import { PriceFeedSymbols } from '../../epics/price-feed';
 import { syntheticPriceExpression } from '../expressions';
 
+const math = create(all, { number: 'BigNumber', precision: 100 });
+const ether = math.bignumber!(10).pow(18);
 export interface IPriceFeedInstance {
   decimals: number;
   instance: Contract;
 }
 
-const CURRENT_NETWORK = 1;
-
 const convertToDecimal = (price: string, inputDecimals: number) => {
-  const decimals = math.bignumber(inputDecimals);
-  const decimalsMultiplier = math.bignumber(10).pow(decimals);
-  return math.bignumber(price.toString()).div(decimalsMultiplier);
+  const decimals = math.bignumber!(inputDecimals);
+  const decimalsMultiplier = math.bignumber!(10).pow(decimals);
+  return math.bignumber!(price.toString()).div(decimalsMultiplier);
 };
-export class ChainLinkPriceFeed {
-  public currentPrice: BigInt | undefined;
 
-  private priceFeeds: IPriceFeedInstance[];
-
-  private chainLinkPriceFeedSymbol: ChainlinkPair[];
-
-  private expressionCode: math.EvalFunction;
+export interface IFeedDetails {
+  pairs: ChainlinkPair[];
+  expressionCode: math.EvalFunction;
+  priceFeedInstances: IPriceFeedInstance[];
+  currentPrice: StringAmount | undefined;
+  // poolingInterval: ReturnType<typeof setInterval>;
+}
+export class ChainLinkPriceFeed<
+  Net extends SupportedNetworkName = SupportedNetworkName
+> {
+  private feed: {
+    [key in
+      | SupportedSelfMintingPairExact
+      | SelfMintingCollateralSymbol]?: IFeedDetails;
+  } = {};
 
   private web3: Web3;
 
+  private netId!: SupportedNetworkId;
+
   constructor({
     web3,
-    symbol,
+    symbols,
+    netId,
   }: {
     web3: Web3;
-    symbol: SupportedSelfMintingPair;
-    mainNet?: boolean;
+    netId: ToNetworkId<Net>;
+    symbols: PriceFeedSymbols[];
   }) {
-    this.expressionCode = math
-      .parse(syntheticPriceExpression[symbol].simple)
-      .compile();
-
-    this.chainLinkPriceFeedSymbol = math
-      .parse(syntheticPriceExpression[symbol].simple)
-      .filter(node => node.isSymbolNode)
-      .map(node => node.name) as ChainlinkPair[];
-
-    this.priceFeeds = new Array<IPriceFeedInstance>(
-      this.chainLinkPriceFeedSymbol.length,
-    );
+    this.netId = netId;
     this.web3 = web3;
+    for (const symbol of symbols) {
+      this.feed[symbol] ??= {} as IFeedDetails;
 
-    this.init();
+      this.feed[symbol]!.expressionCode = math.parse!(
+        syntheticPriceExpression[this.netId][symbol].simple,
+      ).compile();
+
+      this.feed[symbol]!.pairs = math.parse!(
+        syntheticPriceExpression[this.netId][symbol].simple,
+      )
+        .filter(node => node.isSymbolNode)
+        .map(node => node.name) as ChainlinkPair[]; // '[CADUSD ,ETHUSD, UMAETH'
+
+      this.feed[symbol]!.priceFeedInstances = new Array<IPriceFeedInstance>(
+        this.feed[symbol]!.pairs.length,
+      );
+    }
   }
 
-  async init(): Promise<void> {
-    const web3Instances = this.chainLinkPriceFeedSymbol.map(
-      async (symbol: ChainlinkPair, index: number) => {
-        if (!this.priceFeeds[index]) {
-          this.priceFeeds[index] = {} as IPriceFeedInstance;
-        }
-        this.priceFeeds[index].instance = new this.web3.eth.Contract(
-          AggregatorV3Interface_Abi,
-          chainlinkAggregators[CURRENT_NETWORK][symbol],
+  async init() {
+    const loadedFeedSymbols = Object.entries(this.feed);
+    await Promise.all(
+      loadedFeedSymbols.flatMap(([symbol_, { pairs, priceFeedInstances }]) => {
+        const symbol = symbol_ as
+          | SupportedSelfMintingPairExact
+          | SelfMintingCollateralSymbol;
+        return Promise.all(
+          pairs.map(async (pair: ChainlinkPair, index: number) => {
+            if (!this.feed[symbol]!.priceFeedInstances[index]) {
+              this.feed[symbol]!.priceFeedInstances[
+                index
+              ] = {} as IPriceFeedInstance;
+            }
+            try {
+              this.feed[symbol]!.priceFeedInstances[
+                index
+              ].instance = new this.web3.eth.Contract(
+                AggregatorV3Interface_Abi,
+                chainlinkAggregators[this.netId][pair],
+              );
+              this.feed[symbol]!.priceFeedInstances[
+                index
+              ].decimals = await priceFeedInstances[index].instance.methods
+                .decimals()
+                .call();
+            } catch (error) {
+              console.log(error, `Unable to create contract instance ${pair}`);
+            }
+          }),
         );
-        this.priceFeeds[index].decimals = await this.priceFeeds[
-          index
-        ].instance.methods
-          .decimals()
-          .call();
-      },
+      }),
     );
-    await Promise.all(web3Instances);
   }
 
-  public getCurrentPrice(): BigInt | undefined {
-    return this.currentPrice;
-  }
-
-  public async getPrice(): Promise<BigInt | undefined> {
-    const prices = {} as any;
-    const getPrices = this.chainLinkPriceFeedSymbol.map(
-      async (symbol: ChainlinkPair, index: number) => {
-        prices[symbol] = convertToDecimal(
+  public async getPrice(
+    symbol: PriceFeedSymbols,
+  ): Promise<StringAmount | null> {
+    if (this.netId !== (await this.web3.eth.net.getId())) {
+      return null;
+    }
+    const prices: {
+      [key in ChainlinkPair]?: any;
+    } = {} as any;
+    for (const [index, pair] of this.feed[symbol]!.pairs.entries()) {
+      try {
+        prices[pair] = convertToDecimal(
           (
-            await this.priceFeeds[index].instance.methods
+            await this.feed[symbol]?.priceFeedInstances[index].instance.methods // eslint-disable-line
               .latestRoundData()
               .call()
           )[1],
-          this.priceFeeds[index].decimals,
+          this.feed[symbol]!.priceFeedInstances[index].decimals!,
         );
-      },
-    );
-    await Promise.all(getPrices);
-    this.currentPrice = this.expressionCode.evaluate(prices);
-    return this.currentPrice;
+      } catch (err) {
+        console.error(`Error getting the price of ${symbol}:`, err);
+      }
+    }
+    if (this.feed[symbol]) {
+      return this.feed[symbol]!.expressionCode.evaluate(prices)
+        .mul(ether)
+        .toFixed(0) as StringAmount;
+    }
+    return null;
   }
 }

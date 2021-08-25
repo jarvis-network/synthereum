@@ -1,70 +1,98 @@
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 
 import { PerSelfMintingPair } from '@jarvis-network/synthereum-config';
+import { PerSelfMintingCollateralPair } from '@jarvis-network/synthereum-config';
 
 interface Expression {
   simple: string;
   inverted?: string;
 }
-export type SyntheticPriceExpression = PerSelfMintingPair<Expression>;
+export type SyntheticPriceExpression =
+  | PerSelfMintingPair<Expression>
+  | PerSelfMintingCollateralPair<Expression>;
 
-export const syntheticPriceExpression = typeCheck<SyntheticPriceExpression>()({
-  // UMA-based
-  CADUMA: {
+const common = {
+  'jCAD/UMA': {
     simple: 'CADUSD * (1/ETHUSD) * (1/UMAETH)',
-    inverted: 'UMAETH * ETHUSD * (1/CADUSD)',
   },
-  GBPUMA: {
+  'jGBP/UMA': {
     simple: 'GBPUSD * (1/ETHUSD) * (1/UMAETH)',
   },
-  CHFUMA: {
+  'jCHF/UMA': {
     simple: 'CHFUSD * (1/ETHUSD) * (1/UMAETH)',
   },
-  EURUMA: {
-    simple: 'EURUSD * (1/ETHUSD) * (1/UMAETH)',
+  'jEUR/UMA': {
+    simple: '(EURUSD / (ETHUSD * UMAETH))',
   },
-  ZARUMA: {
+  'jZAR/UMA': {
     simple: 'ZARUSD * (1/ETHUSD) * (1/UMAETH)',
   },
-  PHPUMA: {
+  'jPHP/UMA': {
     simple: 'PHPUSD * (1/ETHUSD) * (1/UMAETH)',
   },
-  NGNUMA: {
+  'jNGN/UMA': {
     simple: 'NGNUSD * (1/ETHUSD) * (1/UMAETH)',
   },
-  KRWUMA: {
+  'jKRW/UMA': {
     simple: 'KRWUSD * (1/ETHUSD) * (1/UMAETH)',
   },
-  JPYUMA: {
+  'jJPY/UMA': {
     simple: 'JPYUSD * (1/ETHUSD) * (1/UMAETH)',
+  },
+  UMA: {
+    simple: 'ETHUSD * UMAETH',
   },
 
   // USDC-based
-  CADUSD: {
-    simple: 'CADUSD * (1/ETHUSD)',
+  'jCAD/USDC': {
+    simple: 'CADUSD',
   },
-  GBPUSD: {
-    simple: 'GBPUSD * (1/ETHUSD)',
+  'jGBP/USDC': {
+    simple: 'GBPUSD',
   },
-  CHFUSD: {
-    simple: 'CHFUSD * (1/ETHUSD)',
+  'jCHF/USDC': {
+    simple: 'CHFUSD',
   },
-  EURUSD: {
-    simple: 'EURUSD * (1/ETHUSD)',
+  'jEUR/USDC': {
+    simple: 'EURUSD',
   },
-  ZARUSD: {
-    simple: 'ZARUSD * (1/ETHUSD)',
+  'jZAR/USDC': {
+    simple: 'ZARUSD',
   },
-  PHPUSD: {
-    simple: 'PHPUSD * (1/ETHUSD)',
+  'jPHP/USDC': {
+    simple: 'PHPUSD',
   },
-  NGNUSD: {
-    simple: 'NGNUSD * (1/ETHUSD)',
+  'jNGN/USDC': {
+    simple: 'NGNUSD',
   },
-  KRWUSD: {
-    simple: 'KRWUSD * (1/ETHUSD)',
+  'jKRW/USDC': {
+    simple: 'KRWUSD',
   },
-  JPYUSD: {
-    simple: 'JPYUSD * (1/ETHUSD)',
+  'jJPY/USDC': {
+    simple: 'JPYUSD',
   },
-});
+  USDC: {
+    simple: '1',
+  },
+};
+export const syntheticPriceExpression = typeCheck<SyntheticPriceExpression>()({
+  1: {
+    // UMA-based
+    ...common,
+  },
+  42: {
+    ...common,
+    'jGBP/UMA': {
+      simple: 'GBPUSD * (1/ETHUSD) * 10',
+    },
+    'jCHF/UMA': {
+      simple: 'CHFUSD * (1/ETHUSD) * 10',
+    },
+    'jEUR/UMA': {
+      simple: 'EURUSD * (1/ETHUSD) * 10',
+    },
+    UMA: {
+      simple: '9.2',
+    },
+  },
+} as const);

@@ -8,6 +8,9 @@ import { map } from 'rxjs';
 
 import { SelfMintingRealmAgent } from '../core/realms/self-minting/agent';
 import { loadRealm } from '../core/realms/self-minting/load';
+import { ChainLinkPriceFeed } from '../price-feed/chainlink';
+
+import { PriceFeedSymbols } from './price-feed';
 
 import { Context, Epic, ReduxAction } from './types';
 
@@ -16,10 +19,14 @@ export const createContext = async (
 ): Promise<Context> => {
   const netId = (await web3.eth.net.getId()) as SupportedNetworkId;
 
+  let chainLinkPriceFeed!: ChainLinkPriceFeed;
   let realmAgent!: SelfMintingRealmAgent;
+  let syntheticSymbols!: PriceFeedSymbols[];
   try {
     const realm = await loadRealm(web3, netId);
-
+    syntheticSymbols = Object.keys(
+      realm.selfMintingDerivatives.v1!,
+    ) as PriceFeedSymbols[];
     realmAgent = new SelfMintingRealmAgent(
       realm,
       (await web3.eth.getAccounts())[0] as AddressOn<SupportedNetworkName>,
@@ -28,11 +35,22 @@ export const createContext = async (
   } catch (error) {
     console.log('Unable to load realmAgent', error);
   }
+  try {
+    chainLinkPriceFeed = new ChainLinkPriceFeed({
+      netId,
+      web3,
+      symbols: [...syntheticSymbols, 'UMA', 'USDC'] as PriceFeedSymbols[],
+    });
+    await chainLinkPriceFeed.init();
+  } catch (error) {
+    console.log('Unable to load priceFeed', error);
+  }
 
   return {
     web3,
     selfMintingRealmAgent: realmAgent,
     networkId: netId,
+    chainLinkPriceFeed,
   };
 };
 

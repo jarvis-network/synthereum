@@ -96,11 +96,10 @@ export type ExchangeSelfMintingToken =
   | SupportedSelfMintingSymbol
   | SelfMintingCollateralSymbol;
 
-export type PerSelfMintingPair<Config,
-Net extends SupportedNetworkName = SupportedNetworkName
-> = {
-  [Pair in SupportedSelfMintingPairs[ToNetworkId<Net>][number]]: Config;
-
+export type PerSelfMintingPair<Config> = {
+  [N in SupportedNetworkId]: {
+    [Pair in SupportedSelfMintingPairExact[N][number]]: Config;
+  };
 };
 
 export type PerSelfMintingCollateralPair<Config> = {
