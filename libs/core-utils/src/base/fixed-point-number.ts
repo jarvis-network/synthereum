@@ -59,6 +59,10 @@ class FixedPointNumber {
     return new FixedPointNumber(value, true);
   }
 
+  static toWei(value: string) {
+    return new FixedPointNumber(toWei(value), true);
+  }
+
   static sum(values: FixedPointNumber[]) {
     return values.reduce(
       (total, current) => total.add(current),
@@ -113,6 +117,14 @@ class FixedPointNumber {
     return FixedPointNumber.fromWei(
       this.number.mul(num.bn),
     ).decreasePrecision();
+  }
+
+  isZero() {
+    return this.eq(FixedPointNumber.zero);
+  }
+
+  eq(num: FixedPointNumber) {
+    return this.number.eq(num.bn);
   }
 
   gt(num: FixedPointNumber) {
