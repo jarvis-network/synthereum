@@ -7,9 +7,6 @@ import '../Base.sol';
 import '../interfaces/IKyberRouter.sol';
 
 contract KyberAtomicSwap is BaseAtomicSwap {
-  using SafeMath for uint256;
-  using SafeERC20 for IERC20;
-
   IDMMExchangeRouter kyberRouter;
 
   constructor(
@@ -27,10 +24,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
+    // unpack the extraParams
+    address[] memory poolsPath = decodeExtraParams(extraParams);
+
     // checks
     require(
       poolsPath.length == tokenSwapPath.length - 1,
@@ -164,11 +164,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
+    // unpack the extraParams
+    address[] memory poolsPath = decodeExtraParams(extraParams);
     // checks
     require(
       poolsPath.length == tokenSwapPath.length - 1,
@@ -253,5 +255,16 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     // return output token amount
     return amountsOut[tokenSwapPath.length - 1];
+  }
+
+  // generic function that each AtomicSwap implementation can implement
+  // in order to receive extra params
+  // extra params are in here the poolsPaths
+  function decodeExtraParams(bytes memory params)
+    public
+    pure
+    returns (address[] memory)
+  {
+    return abi.decode(params, (address[]));
   }
 }

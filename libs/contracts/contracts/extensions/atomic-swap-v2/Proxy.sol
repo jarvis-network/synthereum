@@ -61,12 +61,12 @@ contract AtomicSwapProxy {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) public payable isRegisteredImplementation(implementationId) {
     string memory functionSig =
-      'swapToCollateralAndMint(bool,uint256,uint256,address[],address[],address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint(bool,uint256,uint256,address[],bytes,address,(address,uint256,uint256,uint256,uint256,address))';
 
     (bool success, bytes memory result) =
       implementation.delegatecall(
@@ -76,7 +76,7 @@ contract AtomicSwapProxy {
           exactAmount,
           minOutOrMaxIn,
           tokenSwapPath,
-          poolsPath,
+          extraParams,
           synthereumPool,
           mintParams
         )
@@ -94,13 +94,13 @@ contract AtomicSwapProxy {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) public isRegisteredImplementation(implementationId) {
     string memory functionSig =
-      'redeemCollateralAndSwap(bool,uint256,uint256,address[],address[],address,(address,uint256,uint256,uint256,uint256,address),address)';
+      'redeemCollateralAndSwap(bool,uint256,uint256,address[],bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
 
     (bool success, bytes memory result) =
       implementation.delegatecall(
@@ -110,7 +110,7 @@ contract AtomicSwapProxy {
           exactAmount,
           minOutOrMaxIn,
           tokenSwapPath,
-          poolsPath,
+          extraParams,
           synthereumPool,
           redeemParams,
           recipient

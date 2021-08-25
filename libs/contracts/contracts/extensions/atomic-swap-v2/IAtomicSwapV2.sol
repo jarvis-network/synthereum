@@ -14,7 +14,7 @@ interface IAtomicSwapV2 {
   /// @param exactAmount: exact input or exact output based on boolean
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
   /// @param tokenSwapPath: token addresses to route through - input to output, which is synthereum collateral
-  /// @param poolsPath: pools addresses to route through where many pools can exist for same pair
+  /// @param extraParams: dynamic-size bytes to encode extra parameters
   /// @param synthereumPool: synthereum pool address used to mint with collateral
   /// @param mintParams: struct to mint from synthereum pool with collateral taken from swap
   /// @return amountOut amount of received jSynths
@@ -23,7 +23,7 @@ interface IAtomicSwapV2 {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut);
@@ -32,7 +32,7 @@ interface IAtomicSwapV2 {
   /// @param exactAmount: exact input or exact output based on boolean
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
   /// @param tokenSwapPath: token addresses to route through - input (synthereum collateral) to output
-  /// @param poolsPath: pools addresses to route through where many pools can exist for same pair
+  /// @param extraParams: dynamic-size bytes to encode extra parameters
   /// @param synthereumPool: synthereum pool address used to redeem collateral with jSynths
   /// @param redeemParams: struct to redeem collateral from synthereum pool with input jSynth
   /// @param recipient: recipient of the output tokens
@@ -42,7 +42,7 @@ interface IAtomicSwapV2 {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient

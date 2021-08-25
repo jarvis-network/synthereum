@@ -28,12 +28,13 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
-    // TODO in interface
-    uint24 fee = 3000;
+    // unpack the extraParams
+    uint24[] memory fees = decodeExtraParams(extraParams);
+
     IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
@@ -41,8 +42,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
     IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
 
-    // encode the paths
-    bytes memory path = encodeAddresses(tokenSwapPath, fee);
+    // unpack the extraParams (fees) and encode the paths
+    uint24[] memory fees = decodeExtraParams(extraParams);
+    bytes memory path = encodeAddresses(tokenSwapPath, fees);
 
     if (isExactInput) {
       if (tokenSwapPath[0] == WETH_ADDRESS) {
@@ -150,14 +152,11 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
     address[] memory tokenSwapPath,
-    address[] memory poolsPath,
+    bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
-    // TODO iinn interface
-    uint24 fee = 3000;
-
     IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[0],
@@ -180,8 +179,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
-    // encode the paths
-    bytes memory path = encodeAddresses(tokenSwapPath, fee);
+    // unpack the extraParams (fees) and encode the paths
+    uint24[] memory fees = decodeExtraParams(extraParams);
+    bytes memory path = encodeAddresses(tokenSwapPath, fees);
 
     // approve router to swap tokens
     collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
@@ -225,15 +225,28 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     }
   }
 
+  function decodeExtraParams(bytes memory params)
+    public
+    pure
+    returns (uint24[] memory)
+  {
+    return abi.decode(params, (uint24[]));
+  }
+
   // generates the encoded bytes for multihop swap
-  // TODO uses only one fee tiers
-  function encodeAddresses(address[] memory addresses, uint256 fee)
+  function encodeAddresses(address[] memory addresses, uint24[] fees)
     internal
     pure
     returns (bytes memory data)
   {
+    /// ie 3 tokens 2 pools
+    require(
+      address.length == fees.length + 1,
+      'Mismatch between tokens and fees'
+    );
+
     for (uint256 i = 0; i < address.length - 1; i++) {
-      data = abi.encodePacked(data, addresses[i], fee);
+      data = abi.encodePacked(data, addresses[i], fees[i]);
     }
 
     // last token
