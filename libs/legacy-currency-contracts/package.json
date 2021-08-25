@@ -11,7 +11,7 @@
     "compile": "hardhat compile",
     "migrate-maastricht": "MIGRATION_TYPE=maastricht hardhat test ./test/correct-migration.js",
     "test": "echo No test defined",
-    "start:local-fork": "./local-fork.sh",
+    "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"
   },
   "license": "ISC",

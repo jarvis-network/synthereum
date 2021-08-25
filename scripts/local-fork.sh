@@ -40,5 +40,5 @@ echo "Network $networkName"
 
 yarn ganache-cli -a 10 -p 8545 -i $networkId --chainId $networkId \
     -m "$MNEMONIC" \
-    -f "https://$networkName.infura.io/v3/$projectId" \
+    -f "https://$networkName.infura.io/v3/$INFURA_PROJECT_ID" \
     --keepAliveTimeout 120000 -l 12000000
