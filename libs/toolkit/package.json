@@ -41,6 +41,7 @@
     "bnc-onboard": "^1.30.0",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
+    "rxjs": "^7.3.0",
     "web3": "^1.3.5"
   },
   "devDependencies": {},

@@ -13,8 +13,9 @@
     "build": "tsc -p ./tsconfig.lib.json"
   },
   "dependencies": {
-    "mathjs": "^9.4.3",
     "@jarvis-network/core-utils": "*",
-    "@jarvis-network/synthereum-contracts": "*"
+    "@jarvis-network/synthereum-contracts": "*",
+    "mathjs": "^9.4.3",
+    "rxjs": "^7.3.0"
   }
 }
