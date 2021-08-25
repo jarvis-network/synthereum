@@ -3,7 +3,7 @@
 pragma solidity >=0.7.5;
 pragma abicoder v2;
 
-import '../Base.sol';
+import '../BaseAtomicSwap.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 
 interface IUniswapV3Router is ISwapRouter {
@@ -226,7 +226,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
   }
 
   function decodeExtraParams(bytes memory params)
-    public
+    internal
     pure
     returns (uint24[] memory)
   {

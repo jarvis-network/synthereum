@@ -3,7 +3,7 @@
 pragma solidity >=0.7.5;
 pragma abicoder v2;
 
-import '../Base.sol';
+import '../BaseAtomicSwap.sol';
 import '../interfaces/IKyberRouter.sol';
 
 contract KyberAtomicSwap is BaseAtomicSwap {
@@ -261,7 +261,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   // in order to receive extra params
   // extra params are in here the poolsPaths
   function decodeExtraParams(bytes memory params)
-    public
+    internal
     pure
     returns (address[] memory)
   {
