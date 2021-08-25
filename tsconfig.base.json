@@ -40,7 +40,8 @@
       "@jarvis-network/synthereum-ts": ["libs/synthereum-ts/src/index.ts"],
       "@jarvis-network/legacy-currency-contracts": [
         "libs/legacy-currency-contracts/src/index.ts"
-      ]
+      ],
+      "@jarvis-network/polygon": ["libs/polygon/src/index.ts"]
     }
   }
 }

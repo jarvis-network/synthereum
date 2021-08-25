@@ -541,6 +541,38 @@
           }
         }
       }
+    },
+    "polygon": {
+      "root": "libs/polygon",
+      "sourceRoot": "libs/polygon/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/polygon",
+            "tsConfig": "libs/polygon/tsconfig.lib.json",
+            "packageJson": "libs/polygon/package.json",
+            "main": "libs/polygon/src/index.ts",
+            "assets": ["libs/polygon/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/polygon/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/polygon"],
+          "options": {
+            "jestConfig": "libs/polygon/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }

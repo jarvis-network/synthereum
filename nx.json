@@ -80,6 +80,9 @@
     },
     "legacy-currency-contracts": {
       "tags": []
+    },
+    "polygon": {
+      "tags": []
     }
   },
   "workspaceLayout": {
