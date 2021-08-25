@@ -161,7 +161,7 @@
           "options": {
             "commands": [
               "yarn build contracts",
-              "yarn --cwd libs/contracts test --no-compile"
+              "yarn --cwd libs/contracts test"
             ],
             "color": true,
             "parallel": false
