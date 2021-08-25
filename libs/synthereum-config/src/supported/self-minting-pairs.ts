@@ -3,11 +3,17 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import {
   PairLike,
+  PairToExactPair,
   PairToSynth,
+  SelfMintingCollateralSymbol,
   SelfMintingPair,
 } from '../types/price-feed-symbols';
 
-import { PerNetwork, SupportedNetworkName } from './networks';
+import {
+  PerNetwork,
+  SupportedNetworkId,
+  SupportedNetworkName,
+} from './networks';
 
 export type NetworkPairs<
   PairType extends PairLike<string, string, ''>
@@ -70,6 +76,10 @@ export type SupportedSelfMintingPair<
   Net extends SupportedNetworkName = SupportedNetworkName
 > = SupportedSelfMintingPairs[ToNetworkId<Net>][number];
 
+export type SupportedSelfMintingPairExact<
+  Net extends SupportedNetworkName = SupportedNetworkName
+> = PairToExactPair<SupportedSelfMintingPair<Net>>;
+
 export type SupportedSelfMintingSymbol<
   Net extends SupportedNetworkName = SupportedNetworkName
 > = PairToSynth<SupportedSelfMintingPair<Net>>;
@@ -81,12 +91,20 @@ export type SupportedSelfMintingSymbolExact<
     [X in SupportedSelfMintingSymbol<N>]: unknown;
   };
 }[Net];
+export type x = SupportedSelfMintingPairExact;
+export type ExchangeSelfMintingToken =
+  | SupportedSelfMintingSymbol
+  | SelfMintingCollateralSymbol;
 
-export type ExchangeSelfMintingToken = SupportedSelfMintingSymbol;
-
-export type PerSelfMintingPair<
-  Config,
-  Net extends SupportedNetworkName = SupportedNetworkName
+export type PerSelfMintingPair<Config,
+Net extends SupportedNetworkName = SupportedNetworkName
 > = {
   [Pair in SupportedSelfMintingPairs[ToNetworkId<Net>][number]]: Config;
+
+};
+
+export type PerSelfMintingCollateralPair<Config> = {
+  [N in SupportedNetworkId]: {
+    [Pair in SelfMintingCollateralSymbol]: Config;
+  };
 };

@@ -79,6 +79,39 @@ export type PerAsset<Config> = PerTupleElement<
 
 export type PriceFeed = PerAsset<string>;
 
+type AdjustUsdc<Sym extends string> = Sym extends 'USD' ? 'USDC' : Sym;
+
+// "EURUMA" | "EURUSD", "GBPUSD" | "GBPUMA" -> "jEUR/USDC" | "jEUR/UMA" | "jGBP/USDC" | "jGBP/UMA"
+export type PairToExactPair<
+  Pair extends string
+> = Pair extends `${infer Asset}${SelfMintingCollateralSymbol | 'USD'}`
+  ? Pair extends `${Asset}${infer Collateral}`
+    ? `j${Asset}/${AdjustUsdc<Collateral>}`
+    : never
+  : never;
+
+export type AssetOf<
+  ExactPair extends string
+> = ExactPair extends `j${infer Asset}/${SelfMintingCollateralSymbol}`
+  ? Asset
+  : never;
+
+export type AssetFromSyntheticSymbol<
+  ExactPair extends string
+> = ExactPair extends `j${infer Asset}` ? Asset : never;
+
+export type SyntheticSymbolOf<
+  ExactPair extends string
+> = ExactPair extends `j${infer Asset}/${SelfMintingCollateralSymbol}`
+  ? `j${Asset}`
+  : never;
+
+export type CollateralOf<
+  ExactPair extends string
+> = ExactPair extends `j${AssetSymbol}/${infer Collateral}`
+  ? Collateral
+  : never;
+
 // derived definitions:
 
 export const primaryCollateralSymbol = synthereumCollateralSymbols[0];

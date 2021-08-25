@@ -7,6 +7,11 @@ export {
 export type {
   SynthereumCollateralSymbol,
   PerAsset,
+  PairToExactPair,
+  AssetOf,
+  SyntheticSymbolOf,
+  AssetFromSyntheticSymbol,
+  CollateralOf,
 } from './types/price-feed-symbols';
 
 export { poolVersions } from './supported/pool-versions';
@@ -25,6 +30,7 @@ export type {
   PerSelfMintingPair,
   SupportedSelfMintingPair,
   SupportedSelfMintingSymbol,
+  SupportedSelfMintingPairExact,
 } from './supported/self-minting-pairs';
 
 export type {
