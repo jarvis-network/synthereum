@@ -19,7 +19,6 @@ import 'react-table/react-table.css';
 import {
   CoreObservablesContextProvider,
   AuthFlow,
-  useSelfMintingRealmAgentProvider,
   useSubjects,
   AuthProvider,
   UnsupportedNetworkModal,
@@ -48,9 +47,6 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
   const subjects = useSubjects();
 
   const store = useStore(pageProps.initialReduxState);
-
-  // TODO: Fix for self-minting realm agent
-  useSelfMintingRealmAgentProvider('v1', store, subjects);
 
   const isMounted = useIsMounted();
   if (!isMounted) return null;

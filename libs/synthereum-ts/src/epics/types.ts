@@ -1,5 +1,20 @@
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
+import type Web3 from 'web3';
+
+import { SelfMintingRealmAgent } from '../core/realms/self-minting/agent';
+
+export interface Context {
+  web3: Web3 | null;
+  selfMintingRealmAgent: SelfMintingRealmAgent | null;
+  networkId: number | null;
+}
+
+export const context$ = new BehaviorSubject<Context>({
+  networkId: null,
+  selfMintingRealmAgent: null,
+  web3: null,
+});
 export type ReduxAction<Type extends string = string, Payload = any> = {
   type: Type;
   payload?: Payload;
@@ -21,5 +36,6 @@ export declare interface Epic<
   ): Observable<Output>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Dependencies {}
+export interface Dependencies {
+  context$: BehaviorSubject<Context> | null;
+}

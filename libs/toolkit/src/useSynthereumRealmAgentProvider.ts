@@ -23,11 +23,11 @@ export function useSynthereumRealmAgentProvider(
   {
     web3$,
     networkId$,
-    realmAgent$,
+    synthereumRealmAgent$,
   }: {
     web3$: BehaviorSubject<Web3 | null>;
     networkId$: BehaviorSubject<number>;
-    realmAgent$: BehaviorSubject<RealmAgent | null>;
+    synthereumRealmAgent$: BehaviorSubject<RealmAgent | null>;
   },
 ): void {
   const poolsRef = useRef<
@@ -48,7 +48,7 @@ export function useSynthereumRealmAgentProvider(
     const address = addressRef.current;
 
     if (!web3 || !address || !isSupportedNetwork(networkId)) {
-      realmAgent$.next(null);
+      synthereumRealmAgent$.next(null);
       return;
     }
 
@@ -61,7 +61,7 @@ export function useSynthereumRealmAgentProvider(
           realm.pools![poolVersion],
           'realm.pools[poolVersion] is null',
         );
-        realmAgent$.next(
+        synthereumRealmAgent$.next(
           new RealmAgent(
             realm,
             address as AddressOn<SupportedNetworkName>,
