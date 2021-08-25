@@ -18,6 +18,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@babel/plugin-syntax-bigint": "^7.8.3",
     "@jarvis-network/app-toolkit": "*",
     "@jarvis-network/core-utils": "*",
     "@jarvis-network/synthereum-ts": "*",
