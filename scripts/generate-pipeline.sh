@@ -26,8 +26,17 @@ before_script:
     - yarn lint:all
 
 🧪 contracts:test:
+  parallel:
+    matrix:
+      - TARGET: contracts
+      - TARGET: atomic-swap
+      - TARGET: yield-farming
+      - TARGET: legacy-currency-contracts
+      - TARGET: jrt-investors
+
   script:
-    - yarn test contracts
+    - yarn build \$TARGET
+    - yarn test \$TARGET
 
 🧱 cli:build:
   script:
