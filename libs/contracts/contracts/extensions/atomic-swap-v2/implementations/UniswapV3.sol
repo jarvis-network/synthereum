@@ -23,6 +23,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   receive() external payable {}
 
+  /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function swapToCollateralAndMint(
     bool isExactInput,
     uint256 exactAmount,
@@ -147,6 +148,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     }
   }
 
+  /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function redeemCollateralAndSwap(
     bool isExactInput,
     uint256 exactAmount,
@@ -162,8 +164,6 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       address(collateralInstance) == tokenSwapPath[0],
       'Wrong collateral instance'
     );
-    IERC20 outputTokenInstance =
-      IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
     IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
     // redeem USDC with jSynth into this contract

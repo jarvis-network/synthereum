@@ -126,4 +126,89 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     mintParams.collateralAmount = collateralOut;
     (amountOut, ) = synthereumPool.mint(mintParams);
   }
+
+  // redeem jSynth into collateral and use that to swap into erc20/eth
+  function redeemCollateralAndSwap(
+    bool isExactInput,
+    uint256 exactAmount,
+    uint256 minOutOrMaxIn,
+    address[] memory tokenSwapPath,
+    bytes memory extraParams,
+    ISynthereumPoolOnChainPriceFeed synthereumPool,
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    address payable recipient
+  ) external returns (uint256) {
+    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    require(
+      address(collateralInstance) == tokenSwapPath[0],
+      'Wrong collateral instance'
+    );
+    address outputTokenAddress = tokenSwapPath[tokenSwapPath.length - 1];
+    IERC20 synthTokenInstance = synthereumPool.syntheticToken();
+
+    // redeem USDC with jSynth into this contract
+    synthTokenInstance.safeTransferFrom(
+      msg.sender,
+      address(this),
+      redeemParams.numTokens
+    );
+    synthTokenInstance.safeIncreaseAllowance(
+      address(synthereumPool),
+      redeemParams.numTokens
+    );
+    redeemParams.recipient = address(this);
+    (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
+
+    collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
+    uint256[] memory amountsOut;
+
+    if (isExactInput) {
+      // collateralOut as exactInput
+      outputTokenAddress == WETH_ADDRESS
+        ? amountsOut = router.swapExactTokensForETH(
+          collateralOut,
+          minOutOrMaxIn,
+          tokenSwapPath,
+          recipient,
+          redeemParams.expiration
+        )
+        : amountsOut = router.swapExactTokensForTokens(
+        collateralOut,
+        minOutOrMaxIn,
+        tokenSwapPath,
+        recipient,
+        redeemParams.expiration
+      );
+    } else {
+      // collateralOut as maxInput
+      outputTokenAddress == WETH_ADDRESS
+        ? amountsOut = kyberRouter.swapTokensForExactETH(
+          exactAmount,
+          collateralOut,
+          poolsPath,
+          tokenSwapPath,
+          recipient,
+          redeemParams.expiration
+        )
+        : amountsOut = kyberRouter.swapTokensForExactTokens(
+        exactAmount,
+        collateralOut,
+        poolsPath,
+        tokenSwapPath,
+        recipient,
+        redeemParams.expiration
+      );
+
+      // eventual collateral refund
+      if (collateralOut > amountsOut[0]) {
+        collateralInstance.safeTransfer(
+          msg.sender,
+          collateral.sub(amountsOut[0])
+        );
+      }
+    }
+
+    // return output token amount
+    return amountsOut[tokenSwapPath.length - 1];
+  }
 }

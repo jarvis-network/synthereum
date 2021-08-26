@@ -19,6 +19,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
   receive() external payable {}
 
+  /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
   function swapToCollateralAndMint(
     bool isExactInput,
     uint256 exactAmount,
@@ -159,6 +160,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
+  /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
   function redeemCollateralAndSwap(
     bool isExactInput,
     uint256 exactAmount,
@@ -181,8 +183,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       address(collateralInstance) == tokenSwapPath[0],
       'Wrong collateral instance'
     );
-    IERC20 outputTokenInstance =
-      IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
+    address outputTokenInstance = tokenSwapPath[tokenSwapPath.length - 1];
     IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
     // redeem USDC with jSynth into this contract
@@ -239,7 +240,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         exactAmount,
         collateralOut,
         poolsPath,
-        path,
+        tokenSwapPath,
         recipient,
         redeemParams.expiration
       );
