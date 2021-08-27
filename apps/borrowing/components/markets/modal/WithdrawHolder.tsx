@@ -3,7 +3,7 @@ import { styled } from '@jarvis-network/ui';
 
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { selfMintingMarketAssets } from '@/data/markets';
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-contracts/dist/config';
+import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 import { DateTime } from 'luxon';
 import { Market } from '@jarvis-network/synthereum-ts/dist/epics/markets';

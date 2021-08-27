@@ -7,7 +7,7 @@ import { Img, ImgContainer } from '@/components/auth/flow/ModalComponents';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import _ from 'lodash';
-import { SupportedNetworkId } from '@jarvis-network/synthereum-contracts/dist/config';
+import { SupportedNetworkId } from '@jarvis-network/synthereum-config';
 
 import { toNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 

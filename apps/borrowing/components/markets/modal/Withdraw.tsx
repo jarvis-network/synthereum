@@ -26,6 +26,7 @@ import { useDispatch } from 'react-redux';
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import TransactionHolder from './TransactionHolder';
+import { ManageWithdraw } from './ManageWithdraw';
 
 const title = 'Lorem ipsum withdraw';
 const subtitle = (
@@ -141,7 +142,7 @@ export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
           }}
         />
       ) : (
-        <div>
+        <ManageWithdraw assetInfo={assetDetails!}>
           <Form>
             <ExchangeBox error={Boolean(errorMessage)}>
               <Balance>Balance: {balance.format(4)}</Balance>
@@ -176,7 +177,7 @@ export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
               Withdraw
             </SubmitButton>
           </SubmitContainer>
-        </div>
+        </ManageWithdraw>
       )}
     </WithPlaceholder>
   );
