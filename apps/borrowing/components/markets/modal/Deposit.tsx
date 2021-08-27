@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Amount,
   Asset,
@@ -15,6 +15,13 @@ import {
   Value,
 } from '@/components/markets/modal/common';
 import { WithPlaceholder } from '@/components/markets/modal/WithPlaceholder';
+import { selfMintingMarketAssets } from '@/data/markets';
+import { useReduxSelector } from '@/state/useReduxSelector';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
+import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
+import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
+import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 
 const title = 'Lorem ipsum deposit';
 const subtitle = (
@@ -23,35 +30,92 @@ const subtitle = (
     <Link href="/">here</Link>
   </>
 );
+interface DepositProps {
+  assetKey: SupportedSelfMintingPairExact;
+}
+export const Deposit: React.FC<DepositProps> = ({ assetKey }) => {
+  const [collateralValue, setCollateralValue] = useState('');
+  const [collateralError, setCollateralError] = useState('');
+  let assetInValue = '0.00';
+  const assetDetails = useReduxSelector(state => state.markets.list[assetKey])!;
 
-export const Deposit: React.FC = () => {
-  const [value, setValue] = useState('');
-  const errorMessage = 'Insufficient funds';
-  const balance = 0.666;
+  const selectedAsset = selfMintingMarketAssets[assetKey];
+  const balance = FPN.fromWei(
+    assetDetails!.positionTokens!,
+    // '1000000000000000000000'
+  );
+  const assetInPrice = useReduxSelector(
+    state => state.prices[selectedAsset.assetIn.name],
+  );
+  const onMaxSelect = (input: string) => setCollateralValue(input);
 
-  const onMaxSelect = () => setValue(String(balance));
+  const insufficientFunds = balance.lt(
+    new FPN(collateralValue === '' ? '0' : collateralValue),
+  )!;
+  if (assetInPrice && collateralValue !== '') {
+    assetInValue = formatUSDValue(assetInPrice, collateralValue);
+  }
+
+  let max!: FPN;
+
+  if (assetDetails!.positionCollateral!.toString() !== '0') {
+    const ucr = FPN.fromWei(assetDetails!.positionCollateral!).div(
+      FPN.fromWei(assetDetails!.positionTokens!),
+    );
+    const capDepositRatio = scaleTokenAmountToWei({
+      amount: wei(assetDetails!.capDepositRatio!),
+      decimals: 6,
+    });
+    max = FPN.fromWei(capDepositRatio)
+      .sub(ucr)
+      .mul(FPN.fromWei(assetDetails!.positionTokens!));
+  }
+
+  useEffect(() => {
+    if (collateralValue !== '') {
+      if (FPN.toWei(collateralValue).gt(max)) {
+        setCollateralError(
+          `Cannot Repay more than ${max.format(2)} ${
+            selectedAsset.assetOut.name
+          }`,
+        );
+      } else {
+        setCollateralError('');
+      }
+    }
+  }, [collateralValue]);
+  const errorMessage =
+    insufficientFunds && balance.lt(max) ? 'Insufficient funds' : null;
 
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="deposit">
       <Form>
-        <ExchangeBox error={Boolean(errorMessage)}>
-          <Balance>Balance: {balance}</Balance>
-          <AssetSelect error={Boolean(errorMessage)}>
+        <ExchangeBox error>
+          <Balance>Balance: {balance.format(4)}</Balance>
+          <AssetSelect error={insufficientFunds || Boolean(collateralError)}>
             <Amount
-              value={value}
+              value={collateralValue}
               inputMode="numeric"
               onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
               onChange={e => {
-                setValue(e.target.value);
+                setCollateralValue(e.target.value);
               }}
               placeholder="0.0"
+              required
+              onFocus={e => {
+                e.target.select();
+              }}
             />
-            <Max onClick={onMaxSelect} />
-            <Asset />
+            <Max onClick={() => onMaxSelect(max.format(2))} />
+            <Asset
+              flag={selectedAsset.assetIn.icon}
+              name={selectedAsset.assetIn.name}
+            />
           </AssetSelect>
           <ErrorMessage>{errorMessage}</ErrorMessage>
+          <ErrorMessage>{collateralError}</ErrorMessage>
         </ExchangeBox>
-        <Value>Value: 0$</Value>
+        <Value>Value: ${assetInValue}</Value>
       </Form>
       <SubmitContainer>
         <SubmitButton>Deposit</SubmitButton>

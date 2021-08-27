@@ -104,7 +104,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Borrow',
           content: (
             <Content>
-              <Borrow />
+              <Borrow assetKey={manageKey} />
             </Content>
           ),
         },
@@ -112,7 +112,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Repay',
           content: (
             <Content>
-              <Repay />
+              <Repay assetKey={manageKey} />
             </Content>
           ),
         },
@@ -120,7 +120,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Redeem',
           content: (
             <Content>
-              <Redeem />
+              <Redeem assetKey={manageKey} />
             </Content>
           ),
         },
@@ -128,7 +128,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Deposit',
           content: (
             <Content>
-              <Deposit />
+              <Deposit assetKey={manageKey} />
             </Content>
           ),
         },
@@ -136,7 +136,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Withdraw',
           content: (
             <Content>
-              <Withdraw />
+              <Withdraw assetKey={manageKey} />
             </Content>
           ),
         },

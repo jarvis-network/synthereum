@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flag, styled } from '@jarvis-network/ui';
+import { Flag, FlagKeys, styled } from '@jarvis-network/ui';
 
 const Container = styled.div`
   grid-area: asset;
@@ -40,14 +40,19 @@ const AssetChangeButton = styled.button`
   color: ${props => props.theme.text.primary};
 `;
 
-export const Asset: React.FC = () => {
-  const flag = <Flag flag="eur" />;
+export interface AssetProps {
+  flag: FlagKeys | null;
+  name: string;
+}
+
+export const Asset: React.FC<AssetProps> = ({ flag: flag_, name }) => {
+  const flag = <Flag flag={flag_!} />;
 
   return (
     <Container>
       <AssetChangeButton>
         {flag}
-        <div className="assetName">jEUR</div>
+        <div className="assetName">{name}</div>
       </AssetChangeButton>
     </Container>
   );

@@ -18,7 +18,8 @@ export const ExchangeBox = styled.div<{ error: boolean }>`
     'asset-select'
     'value';
   position: relative;
-  width: 300px;
+  margin-top: 15px;
+  width: 80%;
 `;
 
 export const AssetSelect = styled.div<{ error: boolean }>`
