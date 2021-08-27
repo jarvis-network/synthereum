@@ -1,22 +1,40 @@
-import { Console } from 'console';
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { relative } from 'path';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const c = require('colors/safe');
+let currentConsole: typeof globalThis['console'];
 
-const console =
-  typeof process !== 'undefined'
-    ? // Force stdout/stderr on Node.js
-      new Console({
-        colorMode: true,
-        stdout: process.stdout,
-        stderr: process.stderr,
-      })
-    : globalThis.console;
+let color: {
+  gray: (s: string) => string;
+  yellow: (s: string) => string;
+  bold: (s: string) => string;
+  bgGray: (s: string) => string;
+};
 
-const { log: defaultLog, table, error } = console;
+declare const window: typeof globalThis;
+if (typeof window === 'undefined') {
+  // Initialize console colors library:
+  color = require('colors/safe');
 
-console.log = log;
+  // Create a new Console instance, so we can force output to stdout/stderr
+  const { Console } = require('console');
+  currentConsole = new Console({
+    colorMode: true,
+    stdout: process.stdout,
+    stderr: process.stderr,
+  });
+} else {
+  color = {
+    gray: s => s,
+    yellow: s => s,
+    bold: s => s,
+    bgGray: s => s,
+  };
+  currentConsole = globalThis.console;
+}
+
+const { log: defaultLog, table, error } = currentConsole;
+
+currentConsole.log = log;
 
 export { log, error as logError, table as logTable };
 
@@ -37,9 +55,9 @@ function log<Args extends unknown[]>(msg: string, ...args: Args): void {
   prevTime = now.getTime();
   const whitespace = info?.inConsoleClass === true ? '\n' : ' ';
   const prefix =
-    `[ ${c.gray(now.toISOString())} | Δt₀: ${c.yellow(diff)} ms | ` +
-    `Δtᵢ: ${c.yellow(diff2)} ms | ${c.bgGray(loc)} ]:` +
-    `${whitespace}${c.bold(msg)}`;
+    `[ ${color.gray(now.toISOString())} | Δt₀: ${color.yellow(diff)} ms | ` +
+    `Δtᵢ: ${color.yellow(diff2)} ms | ${color.bgGray(loc)} ]:` +
+    `${whitespace}${color.bold(msg)}`;
   defaultLog(prefix, ...args);
 }
 

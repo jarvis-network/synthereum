@@ -23,6 +23,7 @@ module.exports = withBundleAnalyzer(
 
       if (!isServer) {
         config.resolve.fallback.fs = false;
+        config.resolve.fallback.console = false;
       }
 
       return config;
