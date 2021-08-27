@@ -29,6 +29,7 @@ import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contr
 import { useDispatch } from 'react-redux';
 
 import TransactionHolder from './TransactionHolder';
+import { WithdrawHolder } from './WithdrawHolder';
 
 const title = 'Lorem ipsum deposit';
 const subtitle = (
@@ -39,8 +40,9 @@ const subtitle = (
 );
 interface DepositProps {
   assetKey: SupportedSelfMintingPairExact;
+  tabHandler: (input: number) => void;
 }
-export const Deposit: React.FC<DepositProps> = ({ assetKey }) => {
+export const Deposit: React.FC<DepositProps> = ({ assetKey, tabHandler }) => {
   const dispatch = useDispatch();
   const [showPreview, setShowPreview] = useState(false);
   const [collateralValue, setCollateralValue] = useState('');
@@ -141,7 +143,7 @@ export const Deposit: React.FC<DepositProps> = ({ assetKey }) => {
           }}
         />
       ) : (
-        <div>
+        <WithdrawHolder tabHandler={tabHandler} assetInfo={assetDetails}>
           <Form>
             <ExchangeBox error>
               <Balance>Balance: {balance.format(4)}</Balance>
@@ -177,7 +179,7 @@ export const Deposit: React.FC<DepositProps> = ({ assetKey }) => {
               Deposit
             </SubmitButton>
           </SubmitContainer>
-        </div>
+        </WithdrawHolder>
       )}
     </WithPlaceholder>
   );

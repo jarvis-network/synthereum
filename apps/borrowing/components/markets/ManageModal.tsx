@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, styled, Tabs, IconButton } from '@jarvis-network/ui';
 
@@ -10,6 +10,7 @@ import { Redeem } from '@/components/markets/modal/Redeem';
 import { Withdraw } from '@/components/markets/modal/Withdraw';
 import { Deposit } from '@/components/markets/modal/Deposit';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
+import { ButtonHandler } from '@jarvis-network/ui/dist/Tabs/Tabs';
 
 const CustomModal = styled(Modal)``;
 
@@ -71,6 +72,7 @@ const Content = styled.div`
 export const MarketsManageModal: FC = () => {
   const currentTab = 0;
   const dispatch = useDispatch();
+  const tabRef = useRef<ButtonHandler>(null);
 
   const { list, manageKey: manageKey_ } = useReduxSelector(
     state => state.markets,
@@ -88,10 +90,13 @@ export const MarketsManageModal: FC = () => {
       type: 'transaction/reset',
     });
   };
-
+  const tabHandler = (input: number) => {
+    tabRef.current!.updateTab(input);
+  };
   const marketToManage = Object.values(list).find(i => i.pair === manageKey);
   const content = (
     <CustomSubTabs
+      ref={tabRef}
       selected={currentTab}
       onChange={(_: number) => {
         dispatch({
@@ -104,7 +109,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Borrow',
           content: (
             <Content>
-              <Borrow assetKey={manageKey} />
+              <Borrow assetKey={manageKey} tabHandler={tabHandler} />
             </Content>
           ),
         },
@@ -112,7 +117,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Repay',
           content: (
             <Content>
-              <Repay assetKey={manageKey} />
+              <Repay assetKey={manageKey} tabHandler={tabHandler} />
             </Content>
           ),
         },
@@ -120,7 +125,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Redeem',
           content: (
             <Content>
-              <Redeem assetKey={manageKey} />
+              <Redeem assetKey={manageKey} tabHandler={tabHandler} />
             </Content>
           ),
         },
@@ -128,7 +133,7 @@ export const MarketsManageModal: FC = () => {
           title: 'Deposit',
           content: (
             <Content>
-              <Deposit assetKey={manageKey} />
+              <Deposit assetKey={manageKey} tabHandler={tabHandler} />
             </Content>
           ),
         },

@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux';
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import TransactionHolder from './TransactionHolder';
+import { WithdrawHolder } from './WithdrawHolder';
 
 const title = 'Lorem ipsum redeem';
 const subtitle = (
@@ -38,8 +39,9 @@ const subtitle = (
 );
 interface RedeemProps {
   assetKey: SupportedSelfMintingPairExact;
+  tabHandler: (input: number) => void;
 }
-export const Redeem: React.FC<RedeemProps> = ({ assetKey }) => {
+export const Redeem: React.FC<RedeemProps> = ({ assetKey, tabHandler }) => {
   let assetInValue = '0.00';
   let assetOutValue = '0.00';
   const [showPreview, setShowPreview] = useState(false);
@@ -162,7 +164,7 @@ export const Redeem: React.FC<RedeemProps> = ({ assetKey }) => {
           }}
         />
       ) : (
-        <div>
+        <WithdrawHolder tabHandler={tabHandler} assetInfo={assetDetails!}>
           <Form>
             <ExchangeBox error={Boolean(errorMessage)}>
               <Balance>Balance: {balance.format(4)}</Balance>
@@ -221,7 +223,7 @@ export const Redeem: React.FC<RedeemProps> = ({ assetKey }) => {
               Redeem
             </SubmitButton>
           </SubmitContainer>
-        </div>
+        </WithdrawHolder>
       )}
     </WithPlaceholder>
   );

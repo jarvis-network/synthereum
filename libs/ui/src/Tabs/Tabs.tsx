@@ -1,4 +1,4 @@
-import React, { FC, forwardRef, useState } from 'react';
+import React, { FC, forwardRef, useImperativeHandle, useState } from 'react';
 import { motion, AnimateSharedLayout, HTMLMotionProps } from 'framer-motion';
 
 import { styled, FontSizeType } from '../Theme';
@@ -77,7 +77,10 @@ const TabPointer = styled(motion.div)`
   width: ${TABS_POINTER_WIDTH}px;
 `;
 
-export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
+export type ButtonHandler = {
+  updateTab: (index: number) => void;
+};
+const RefTabs = forwardRef<ButtonHandler, TabsProps>(
   (
     {
       tabs = [],
@@ -109,10 +112,14 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       // (which is handled fine).
       setSelected(tabs.length - 1);
     }
-
+    useImperativeHandle(ref, () => ({
+      updateTab: (index: number) => {
+        setSelected(index);
+      },
+    }));
     return (
       <Container {...props}>
-        <TabsContainer ref={ref}>
+        <TabsContainer>
           {pre && <TabPre>{pre}</TabPre>}
           <TabsWrapper>
             <AnimateSharedLayout>
@@ -148,3 +155,4 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     );
   },
 );
+export const Tabs = React.memo(RefTabs);

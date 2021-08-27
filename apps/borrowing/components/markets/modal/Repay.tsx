@@ -30,6 +30,7 @@ import {
 import { useDispatch } from 'react-redux';
 
 import TransactionHolder from './TransactionHolder';
+import { WithdrawHolder } from './WithdrawHolder';
 
 const title = 'Lorem ipsum repay';
 const subtitle = (
@@ -40,8 +41,9 @@ const subtitle = (
 );
 interface RepayProps {
   assetKey: SupportedSelfMintingPairExact;
+  tabHandler: (input: number) => void;
 }
-export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
+export const Repay: React.FC<RepayProps> = ({ assetKey, tabHandler }) => {
   const dispatch = useDispatch();
 
   const [syntheticValue, setSyntheticValue] = useState('');
@@ -142,7 +144,7 @@ export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
           }}
         />
       ) : (
-        <div>
+        <WithdrawHolder tabHandler={tabHandler} assetInfo={assetDetails!}>
           <Form>
             <Balance>
               Minted: {FPN.fromWei(assetDetails!.positionTokens!).format(4)}
@@ -186,7 +188,7 @@ export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
               Repay
             </SubmitButton>
           </SubmitContainer>
-        </div>
+        </WithdrawHolder>
       )}
     </WithPlaceholder>
   );

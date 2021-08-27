@@ -34,6 +34,7 @@ import { styled } from '@jarvis-network/ui';
 import { useDispatch } from 'react-redux';
 
 import TransactionHolder from './TransactionHolder';
+import { WithdrawHolder } from './WithdrawHolder';
 
 const SplitRow = styled.div`
   display: inline-block;
@@ -55,9 +56,10 @@ const subtitle = (
 );
 interface BorrowProps {
   assetKey: SupportedSelfMintingPairExact;
+  tabHandler: (input: number) => void;
 }
 
-export const Borrow: React.FC<BorrowProps> = ({ assetKey }) => {
+export const Borrow: React.FC<BorrowProps> = ({ assetKey, tabHandler }) => {
   const dispatch = useDispatch();
 
   const [showPreview, setShowPreview] = useState(false);
@@ -192,7 +194,7 @@ export const Borrow: React.FC<BorrowProps> = ({ assetKey }) => {
           }}
         />
       ) : (
-        <div>
+        <WithdrawHolder tabHandler={tabHandler} assetInfo={assetDetails!}>
           <Form>
             <ExchangeBox error>
               <Balance>Balance: {balance.format()}</Balance>
@@ -286,7 +288,7 @@ export const Borrow: React.FC<BorrowProps> = ({ assetKey }) => {
               Borrow
             </SubmitButton>
           </SubmitContainer>
-        </div>
+        </WithdrawHolder>
       )}
     </WithPlaceholder>
   );
