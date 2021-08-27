@@ -5,7 +5,7 @@ import { mapReduce } from './array-fp-utils';
 import { assertIsInteger, assertIsNumericString, isObject } from './asserts';
 import { Tagged } from './tagged-type';
 
-const ether = new BN(10).pow(new BN(18));
+export const ether = new BN(10).pow(new BN(18));
 export const zero = new BN(0);
 export const one = new BN(1);
 export const negativeOne = new BN(-1);

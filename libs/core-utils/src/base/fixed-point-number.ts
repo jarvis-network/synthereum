@@ -1,6 +1,8 @@
 import BN from 'bn.js';
 import { fromWei, toWei } from 'web3-utils';
 
+import { ether as BnEther } from './big-number';
+
 const stringifyValue = (val: string | number | BN) => {
   if (val instanceof BN) {
     return val.toString();
@@ -38,6 +40,12 @@ const prepareValue = (val: string | number | BN) => {
 
 class FixedPointNumber {
   private readonly number: BN;
+
+  static zero = new FixedPointNumber(0);
+
+  static one = new FixedPointNumber(1);
+
+  static ether = new FixedPointNumber(BnEther);
 
   constructor(value: string | number | BN, isWei?: boolean) {
     let val = prepareValue(value);
