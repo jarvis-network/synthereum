@@ -18,6 +18,8 @@ import { borrowEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-
 import { depositEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/deposit';
 import { redeemEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/redeem';
 import { repayEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/repay';
+import { walletEpic } from '@jarvis-network/synthereum-ts/dist/epics/wallet';
+
 import {
   withdrawEpic,
   withdrawCancelEpic,
@@ -59,6 +61,7 @@ const initializeStore = (
     priceFeedEpic,
     marketEpic,
     borrowEpic,
+    walletEpic,
     depositEpic,
     redeemEpic,
     realmEpic,
