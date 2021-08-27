@@ -1,5 +1,6 @@
 import React from 'react';
-import type { AppProps /* , AppContext */ } from 'next/app';
+import type { AppProps } from 'next/app';
+
 import Head from 'next/head';
 import { Provider as StateProvider } from 'react-redux';
 
@@ -17,12 +18,12 @@ import './_app.scss';
 import './_onboard.scss';
 import 'react-table/react-table.css';
 import {
-  CoreObservablesContextProvider,
   AuthFlow,
   useSubjects,
   AuthProvider,
   UnsupportedNetworkModal,
 } from '@jarvis-network/app-toolkit';
+import { CoreObservablesContextProvider } from '@jarvis-network/app-toolkit/dist/CoreObservablesContext';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { Welcome } from '@/components/auth/flow/Welcome';
@@ -43,7 +44,10 @@ const MainWrapper = styled.div`
   color: ${props => props.theme.text.primary};
 `;
 
-function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
+const SelfMintingApp = ({
+  Component,
+  pageProps,
+}: AppProps): JSX.Element | null => {
   const subjects = useSubjects();
 
   const store = useStore(pageProps.initialReduxState);
@@ -92,6 +96,19 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
       </StateProvider>
     </CoreObservablesContextProvider>
   );
-}
+};
 
-export default MyApp;
+// SelfMintingApp.getInitialProps = async (appContext: AppContext) => {
+//   const appProps = await App.getInitialProps(appContext);
+//   // initialize redux store on server side
+//   const reduxStore = initializeStore(initialAppState);
+//   //reduxStore.dispatch(setMarketsList(MockMarkets));
+
+//   appProps.pageProps = {
+//     ...appProps.pageProps,
+//     initialReduxState: reduxStore.getState(),
+//   };
+
+//   return appProps;
+// };
+export default SelfMintingApp;

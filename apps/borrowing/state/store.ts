@@ -1,5 +1,10 @@
 import { useMemo } from 'react';
-import { configureStore, Store, getDefaultMiddleware } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  Store,
+  getDefaultMiddleware,
+  EnhancedStore,
+} from '@reduxjs/toolkit';
 
 import { State, initialAppState } from '@/state/initialState';
 import { reducer } from '@/state/reducer';
@@ -28,6 +33,8 @@ const epicMiddleware = createEpicMiddleware<ReduxAction, ReduxAction, State>({
 function initStore(preloadedState: State = initialAppState) {
   const middleware = [
     ...getDefaultMiddleware(),
+
+    epicMiddleware,
     createPersistMiddleware([
       'theme',
       'exchange.payAsset',
@@ -35,6 +42,7 @@ function initStore(preloadedState: State = initialAppState) {
       'exchange.chartDays',
       'app.isAccountOverviewModalVisible',
       'app.isRecentActivityModalVisible',
+      'app.poolingFrequency',
     ]),
   ];
 
@@ -43,7 +51,7 @@ function initStore(preloadedState: State = initialAppState) {
   return configureStore({ reducer, preloadedState, middleware });
 }
 
-export const initializeStore = (
+const initializeStore = (
   preloadedState: State,
 ): ReturnType<typeof initStore> => {
   let store = cachedStore ?? initStore(preloadedState);
@@ -80,6 +88,6 @@ export const initializeStore = (
   return store;
 };
 
-export function useStore(state: State): ReturnType<typeof initializeStore> {
+export function useStore(state: State): EnhancedStore<State> {
   return useMemo(() => initializeStore(state), [state]);
 }

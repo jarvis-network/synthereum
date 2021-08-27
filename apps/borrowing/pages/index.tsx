@@ -43,17 +43,17 @@ const LayoutWidget = styled(Background)`
   width: 360px;
 `;
 
-export default function Home() {
-  return (
-    <Layout>
-      <LayoutGrid>
-        <LayoutGridContainer>
-          <MarketsGrid />
-        </LayoutGridContainer>
-      </LayoutGrid>
-      <LayoutWidget image="/images/light-mode-background.jpg">
-        <UserHeader />
-      </LayoutWidget>
-    </Layout>
-  );
-}
+const Home = () => (
+  <Layout>
+    <LayoutGrid>
+      <LayoutGridContainer>
+        <MarketsGrid />
+      </LayoutGridContainer>
+    </LayoutGrid>
+    <LayoutWidget image="/images/light-mode-background.jpg">
+      <UserHeader />
+    </LayoutWidget>
+  </Layout>
+);
+
+export default Home;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -18,12 +18,15 @@ import {
 } from '@jarvis-network/synthereum-config';
 import { EnhancedStore } from '@reduxjs/toolkit';
 
+import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
+
 import { ENSHelper } from './ens';
 import { useCoreObservables } from './CoreObservablesContext';
 import { useBehaviorSubject } from './useBehaviorSubject';
 import { getOnboardConfig } from './onboardConfig';
 import { authFactory, useAuthContext } from './AuthContext';
 import { usePrevious } from './usePrevious';
+import { newWeb3Context, emptyWeb3Context } from './core-context';
 
 const ModalWrapper = styled.div`
   @media screen and (max-width: ${props =>
@@ -122,12 +125,13 @@ export function AuthFlow<
 
   const pages = [Welcome, Terms, ServiceSelect];
   const Page = pages[current];
-
+  const walletRef = useRef<any>(null);
   useEffect(() => {
     const onboard = Onboard({
       ...getOnboardConfig(defaultNetwork),
       subscriptions: {
         wallet(wallet) {
+          walletRef.current = wallet;
           if (!wallet.provider) {
             const currentAuth = authFactory(
               onboard,
@@ -138,10 +142,13 @@ export function AuthFlow<
             currentAuth.logout();
             web3$.next(null);
             ens$.next(null);
+            emptyWeb3Context();
             return;
           }
           const web3instance = new Web3(wallet.provider);
+          newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
           web3$.next(web3instance);
+
           const ensInstance = new ENSHelper(web3instance);
           ens$.next(ensInstance);
         },
@@ -176,11 +183,33 @@ export function AuthFlow<
     // address has changed
     if (previousNetworkId === networkId) return;
 
+    const web3instance = new Web3(walletRef.current.provider);
+    newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
+    web3$.next(web3instance);
+
     postNotification('You have switched your network', {
       type: NotificationType.success,
       icon: '⚡️',
     });
   }, [address, previousNetworkId, networkId]);
+
+  const previousAddress = usePrevious(address);
+  useEffect(() => {
+    // just logged in
+    if (!address || !previousAddress) return;
+    // just logged out
+    if (!address) return;
+    // address has changed
+    if (address === previousAddress) return;
+    const web3instance = new Web3(walletRef.current.provider);
+    newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
+    web3$.next(web3instance);
+
+    postNotification('You have switched your network', {
+      type: NotificationType.success,
+      icon: '⚡️',
+    });
+  }, [address, previousAddress]);
 
   useEffect(() => {
     if (isAuthModalVisible) {

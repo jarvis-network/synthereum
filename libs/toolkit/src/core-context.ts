@@ -7,6 +7,7 @@ import { SupportedNetworkId } from '@jarvis-network/synthereum-config';
 
 export const dependencies = {
   context$: new BehaviorSubject<Context>({
+    chainLinkPriceFeed: null,
     networkId: null,
     selfMintingRealmAgent: null,
     web3: null,
@@ -19,6 +20,7 @@ export const newWeb3Context = async (web3: Web3On<SupportedNetworkId>) => {
 
 export function emptyWeb3Context() {
   dependencies.context$.next({
+    chainLinkPriceFeed: null,
     networkId: null,
     selfMintingRealmAgent: null,
     web3: null,
