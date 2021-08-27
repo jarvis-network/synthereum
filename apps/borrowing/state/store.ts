@@ -6,11 +6,19 @@ import { reducer } from '@/state/reducer';
 import { createPersistMiddleware } from '@/state/persist';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import { ReduxAction } from '@jarvis-network/synthereum-ts/dist/epics/types';
-import { realmEpic } from '@jarvis-network/synthereum-ts/dist/epics/core';
-import { dependencies } from '@jarvis-network/app-toolkit/dist/core-context';
 import { priceFeedEpic } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
+import { dependencies } from '@jarvis-network/app-toolkit/dist/core-context';
 import { marketEpic } from '@jarvis-network/synthereum-ts/dist/epics/markets';
-
+import { borrowEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/borrow';
+import { depositEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/deposit';
+import { redeemEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/redeem';
+import { repayEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/repay';
+import {
+  withdrawEpic,
+  withdrawCancelEpic,
+  withdrawApproveEpic,
+} from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/withdraw';
+import { realmEpic } from '@jarvis-network/synthereum-ts/dist/epics/core';
 let cachedStore: Store | undefined;
 
 const epicMiddleware = createEpicMiddleware<ReduxAction, ReduxAction, State>({
@@ -40,10 +48,16 @@ export const initializeStore = (
 ): ReturnType<typeof initStore> => {
   let store = cachedStore ?? initStore(preloadedState);
   const rootEpic = combineEpics(
-    realmEpic,
     priceFeedEpic,
     marketEpic,
-    //walletEpic,
+    borrowEpic,
+    depositEpic,
+    redeemEpic,
+    realmEpic,
+    repayEpic,
+    withdrawEpic,
+    withdrawCancelEpic,
+    withdrawApproveEpic,
   );
   // After navigating to a page with an initial Redux state, merge that state
   // with the current state in the store, and create a new store
