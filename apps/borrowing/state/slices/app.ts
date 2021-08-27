@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { initialAppState } from '@/state/initialState';
 
-interface SetModalVisibilityAction {
-  payload: boolean;
+interface Action<T> {
+  payload: T;
 }
 
 const initialState = initialAppState.app;
@@ -12,16 +12,31 @@ const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setAuthModalVisible(state, action: SetModalVisibilityAction) {
+    contextUpdate(state, action: Action<number>) {
+      state.networkId = action.payload;
+    },
+    setAuthModalVisible(state, action: Action<boolean>) {
       return {
         ...state,
         isAuthModalVisible: action.payload,
       };
     },
-    setUnsupportedNetworkModalVisible(state, action: SetModalVisibilityAction) {
+    setUnsupportedNetworkModalVisible(state, action: Action<boolean>) {
       return {
         ...state,
         isUnsupportedNetworkModalVisible: action.payload,
+      };
+    },
+    setWindowLoaded(state, action: Action<boolean>) {
+      return {
+        ...state,
+        isWindowLoaded: action.payload,
+      };
+    },
+    setPoolingFrequency(state, action: Action<number>) {
+      return {
+        ...state,
+        poolingFrequency: action.payload,
       };
     },
   },
@@ -30,5 +45,8 @@ const appSlice = createSlice({
 export const {
   setAuthModalVisible,
   setUnsupportedNetworkModalVisible,
+  setWindowLoaded,
+  contextUpdate,
+  setPoolingFrequency,
 } = appSlice.actions;
 export const { reducer } = appSlice;

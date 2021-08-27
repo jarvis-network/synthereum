@@ -14,6 +14,9 @@ export interface State {
   app: {
     isAuthModalVisible: boolean;
     isUnsupportedNetworkModalVisible: boolean;
+    poolingFrequency: number;
+    isWindowLoaded: boolean;
+    networkId: number;
   };
   auth: AuthState;
   markets: {
@@ -28,6 +31,9 @@ export const initialAppState: State = {
   app: {
     isAuthModalVisible: false,
     isUnsupportedNetworkModalVisible: false,
+    isWindowLoaded: false,
+    poolingFrequency: 5000,
+    networkId: 0,
   },
   auth: null,
   markets: {

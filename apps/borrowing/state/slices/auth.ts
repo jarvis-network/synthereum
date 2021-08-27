@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { addressSwitch, logoutAction } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 
-interface Action<T> {
+export interface Action<T> {
   payload: T;
 }
 
