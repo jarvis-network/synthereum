@@ -16,7 +16,7 @@ export type AuthState =
 export interface WalletInfo {
   amount: StringAmount;
 }
-
+export type OPType = 'borrow';
 export interface State {
   theme: ThemeNameType;
   app: {
@@ -38,6 +38,12 @@ export interface State {
   prices: {
     [key in PriceFeedSymbols]?: StringAmount;
   };
+  transaction: {
+    params?: any;
+    txHash?: string;
+    opType?: OPType | 'cancel' | 'initial';
+    receipt?: any;
+  };
 }
 
 export const initialAppState: State = {
@@ -57,4 +63,17 @@ export const initialAppState: State = {
   },
   wallet: {},
   prices: {},
+  transaction: {
+    // params: {
+    //   pair: 'jCHF/USDC',
+    //   collateral: '100000000000000000000',
+    //   numTokens: '80000000000000000000',
+    //   feePercentage: '1650000000000000',
+    // },
+    // opType: 'borrow',
+    // txHash: '0x1c8cf561e54cf2740cc0026f8f8f5d0a7cef787d7b279260e050cc4832d434d2',
+    // receipt: {
+    //   txHash: '0x1c8cf561e54cf2740cc0026f8f8f5d0a7cef787d7b279260e050cc4832d434d2',
+    // }
+  },
 };

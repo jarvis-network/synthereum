@@ -23,6 +23,11 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/borrow';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
+import { useDispatch } from 'react-redux';
+
+import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
+
+import TransactionHolder from './TransactionHolder';
 
 const title = 'Lorem ipsum redeem';
 const subtitle = (
@@ -37,8 +42,11 @@ interface RedeemProps {
 export const Redeem: React.FC<RedeemProps> = ({ assetKey }) => {
   let assetInValue = '0.00';
   let assetOutValue = '0.00';
-
+  const [showPreview, setShowPreview] = useState(false);
+  const dispatch = useDispatch();
   const [collateralValue, setCollateralValue] = useState('0');
+  const [collateralError, setCollateralError] = useState('');
+
   const [syntheticValue, setSyntheticValue] = useState('0');
   const [syntheticError, setSyntheticError] = useState('');
   const tokenBalances = useReduxSelector(state => state.wallet);
@@ -93,64 +101,128 @@ export const Redeem: React.FC<RedeemProps> = ({ assetKey }) => {
       setCollateralValue('0');
     }
   }, [syntheticValue]);
-
+  const handleGoBack = () => {
+    setShowPreview(false);
+  };
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="redeem">
-      <Form>
-        <ExchangeBox error={Boolean(errorMessage)}>
-          <Balance>Balance: {balance.format(4)}</Balance>
-          <AssetSelect error={Boolean(errorMessage)}>
-            <Amount
-              value={syntheticValue}
-              inputMode="numeric"
-              onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-              onChange={e => {
-                setSyntheticValue(e.target.value);
-              }}
-              onFocus={e => {
-                e.target.select();
-              }}
-            />
-            <Max onClick={onMaxSelect} />
-            {/* TODO: Fix this and pass asset as 1 object */}
-            <Asset
-              flag={selectedAsset.assetOut.icon}
-              name={selectedAsset.assetOut.name}
-            />
-          </AssetSelect>
-          <ErrorMessage>{errorMessage}</ErrorMessage>
-          <ErrorMessage>{syntheticError}</ErrorMessage>
-        </ExchangeBox>
-        <Value>Value: ${assetOutValue}</Value>
+      {showPreview === true ? (
+        <TransactionHolder
+          showPreview={showPreview}
+          backHandler={handleGoBack}
+          params={[
+            {
+              title: 'Deposit',
+              asset: {
+                name: selectedAsset.assetOut.name,
+                icon: selectedAsset.assetOut.icon!,
+              },
+              value: FPN.toWei(
+                syntheticValue !== '' ? syntheticValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Redeem',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon,
+              },
+              value: FPN.toWei(
+                collateralValue !== '' ? collateralValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Fee Percentage',
+              asset: {
+                name: selectedAsset.assetOut.name,
+                icon: selectedAsset.assetOut.icon!,
+              },
+              value: `${FPN.fromWei(assetDetails!.feePercentage!)
+                .mul(new FPN(100))
+                .format(4)}%`,
+            },
+          ]}
+          confirmHandler={() => {
+            if (collateralValue === '') {
+              setCollateralError('Collateral is Required');
+              return;
+            }
+            if (syntheticValue === '') {
+              setSyntheticError('Synthetic is Required');
+              return;
+            }
+            const borrowParams = {
+              pair: assetKey,
+              collateral: FPN.toWei(collateralValue).toString() as StringAmount,
+              numTokens: FPN.toWei(syntheticValue).toString() as StringAmount,
+              feePercentage: assetDetails!.feePercentage as StringAmount,
+            };
+            console.log({ borrowParams });
+            dispatch({ type: 'CALL_REDEEM', payload: borrowParams });
+          }}
+        />
+      ) : (
+        <div>
+          <Form>
+            <ExchangeBox error={Boolean(errorMessage)}>
+              <Balance>Balance: {balance.format(4)}</Balance>
+              <AssetSelect error={Boolean(errorMessage)}>
+                <Amount
+                  value={syntheticValue}
+                  inputMode="numeric"
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  onChange={e => {
+                    setSyntheticValue(e.target.value);
+                  }}
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                />
+                <Max onClick={onMaxSelect} />
+                {/* TODO: Fix this and pass asset as 1 object */}
+                <Asset
+                  flag={selectedAsset.assetOut.icon}
+                  name={selectedAsset.assetOut.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+              <ErrorMessage>{syntheticError}</ErrorMessage>
+            </ExchangeBox>
+            <Value>Value: ${assetOutValue}</Value>
 
-        <ExchangeBox error={Boolean(errorMessage)}>
-          <AssetSelect error={Boolean(errorMessage)}>
-            <AmountSmallPlaceholder
-              value={collateralValue}
-              inputMode="numeric"
-              onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-              onChange={e => {
-                setCollateralValue(e.target.value);
-              }}
-              placeholder="0.0"
-              required
-              onFocus={e => {
-                e.target.select();
-              }}
-            />
+            <ExchangeBox error={Boolean(errorMessage)}>
+              <AssetSelect error={Boolean(errorMessage)}>
+                <AmountSmallPlaceholder
+                  value={collateralValue}
+                  inputMode="numeric"
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  onChange={e => {
+                    setCollateralValue(e.target.value);
+                  }}
+                  placeholder="0.0"
+                  required
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                />
 
-            <Asset
-              flag={selectedAsset.assetIn.icon}
-              name={selectedAsset.assetIn.name}
-            />
-          </AssetSelect>
-          <ErrorMessage>{errorMessage}</ErrorMessage>
-        </ExchangeBox>
-        <Value>Value: ${assetInValue}</Value>
-      </Form>
-      <SubmitContainer>
-        <SubmitButton>Redeem</SubmitButton>
-      </SubmitContainer>
+                <Asset
+                  flag={selectedAsset.assetIn.icon}
+                  name={selectedAsset.assetIn.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+              <ErrorMessage>{collateralError}</ErrorMessage>
+            </ExchangeBox>
+            <Value>Value: ${assetInValue}</Value>
+          </Form>
+          <SubmitContainer>
+            <SubmitButton onClick={() => setShowPreview(true)}>
+              Redeem
+            </SubmitButton>
+          </SubmitContainer>
+        </div>
+      )}
     </WithPlaceholder>
   );
 };

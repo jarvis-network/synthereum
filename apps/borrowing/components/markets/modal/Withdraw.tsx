@@ -21,6 +21,11 @@ import { selfMintingMarketAssets } from '@/data/markets';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
+import { useDispatch } from 'react-redux';
+
+import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
+
+import TransactionHolder from './TransactionHolder';
 
 const title = 'Lorem ipsum withdraw';
 const subtitle = (
@@ -33,6 +38,10 @@ interface WithdrawProps {
   assetKey: SupportedSelfMintingPairExact;
 }
 export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
+  const dispatch = useDispatch();
+  const [showPreview, setShowPreview] = useState(false);
+  const [collateralError, setCollateralError] = useState('');
+
   const [collateralValue, setCollateralValue] = useState('');
   const [slow, setSlow] = useState(false);
   let assetInValue = '0.00';
@@ -85,38 +94,90 @@ export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
       });
     }
   }, [collateralValue]);
-
+  const handleGoBack = () => {
+    setShowPreview(false);
+  };
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="withdraw">
-      <Form>
-        <ExchangeBox error={Boolean(errorMessage)}>
-          <Balance>Balance: {balance.format(4)}</Balance>
-          <AssetSelect error={insufficientFunds}>
-            <Amount
-              value={collateralValue}
-              inputMode="numeric"
-              onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-              required
-              onChange={e => {
-                setCollateralValue(e.target.value);
-              }}
-              onFocus={e => {
-                e.target.select();
-              }}
-            />
-            <Max onClick={onMaxSelect} />
-            <Asset
-              flag={selectedAsset.assetIn.icon}
-              name={selectedAsset.assetIn.name}
-            />
-          </AssetSelect>
-          <ErrorMessage>{errorMessage}</ErrorMessage>
-        </ExchangeBox>
-        <Value>Value: ${assetInValue}</Value>
-      </Form>
-      <SubmitContainer>
-        <SubmitButton>Withdraw</SubmitButton>
-      </SubmitContainer>
+      {showPreview === true ? (
+        <TransactionHolder
+          showPreview={showPreview}
+          backHandler={handleGoBack}
+          params={[
+            {
+              title: 'Withdraw',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon!,
+              },
+              value: FPN.toWei(
+                collateralValue !== '' ? collateralValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Fee Percentage',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon!,
+              },
+              value: `${FPN.fromWei(assetDetails!.feePercentage!)
+                .mul(new FPN(100))
+                .format(4)}%`,
+            },
+          ]}
+          confirmHandler={() => {
+            if (collateralValue === '') {
+              setCollateralError('Collateral is Required');
+              return;
+            }
+
+            const params = {
+              pair: assetKey,
+              slow,
+              collateral: FPN.toWei(collateralValue).toString() as StringAmount,
+            };
+
+            dispatch({ type: 'CALL_WITHDRAW', payload: params });
+          }}
+        />
+      ) : (
+        <div>
+          <Form>
+            <ExchangeBox error={Boolean(errorMessage)}>
+              <Balance>Balance: {balance.format(4)}</Balance>
+              <AssetSelect
+                error={insufficientFunds || Boolean(collateralError)}
+              >
+                <Amount
+                  value={collateralValue}
+                  inputMode="numeric"
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  required
+                  onChange={e => {
+                    setCollateralValue(e.target.value);
+                  }}
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                />
+                <Max onClick={onMaxSelect} />
+                <Asset
+                  flag={selectedAsset.assetIn.icon}
+                  name={selectedAsset.assetIn.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+              <ErrorMessage>{collateralError}</ErrorMessage>
+            </ExchangeBox>
+            <Value>Value: ${assetInValue}</Value>
+          </Form>
+          <SubmitContainer>
+            <SubmitButton onClick={() => setShowPreview(true)}>
+              Withdraw
+            </SubmitButton>
+          </SubmitContainer>
+        </div>
+      )}
     </WithPlaceholder>
   );
 };

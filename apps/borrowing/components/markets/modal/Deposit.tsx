@@ -20,8 +20,15 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
-import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
+import {
+  StringAmount,
+  wei,
+} from '@jarvis-network/core-utils/dist/base/big-number';
 import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
+
+import { useDispatch } from 'react-redux';
+
+import TransactionHolder from './TransactionHolder';
 
 const title = 'Lorem ipsum deposit';
 const subtitle = (
@@ -34,6 +41,8 @@ interface DepositProps {
   assetKey: SupportedSelfMintingPairExact;
 }
 export const Deposit: React.FC<DepositProps> = ({ assetKey }) => {
+  const dispatch = useDispatch();
+  const [showPreview, setShowPreview] = useState(false);
   const [collateralValue, setCollateralValue] = useState('');
   const [collateralError, setCollateralError] = useState('');
   let assetInValue = '0.00';
@@ -86,40 +95,90 @@ export const Deposit: React.FC<DepositProps> = ({ assetKey }) => {
   }, [collateralValue]);
   const errorMessage =
     insufficientFunds && balance.lt(max) ? 'Insufficient funds' : null;
-
+  const handleGoBack = () => {
+    setShowPreview(false);
+  };
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="deposit">
-      <Form>
-        <ExchangeBox error>
-          <Balance>Balance: {balance.format(4)}</Balance>
-          <AssetSelect error={insufficientFunds || Boolean(collateralError)}>
-            <Amount
-              value={collateralValue}
-              inputMode="numeric"
-              onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-              onChange={e => {
-                setCollateralValue(e.target.value);
-              }}
-              placeholder="0.0"
-              required
-              onFocus={e => {
-                e.target.select();
-              }}
-            />
-            <Max onClick={() => onMaxSelect(max.format(2))} />
-            <Asset
-              flag={selectedAsset.assetIn.icon}
-              name={selectedAsset.assetIn.name}
-            />
-          </AssetSelect>
-          <ErrorMessage>{errorMessage}</ErrorMessage>
-          <ErrorMessage>{collateralError}</ErrorMessage>
-        </ExchangeBox>
-        <Value>Value: ${assetInValue}</Value>
-      </Form>
-      <SubmitContainer>
-        <SubmitButton>Deposit</SubmitButton>
-      </SubmitContainer>
+      {showPreview === true ? (
+        <TransactionHolder
+          showPreview={showPreview}
+          backHandler={handleGoBack}
+          params={[
+            {
+              title: 'Deposit',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon!,
+              },
+              value: FPN.toWei(
+                collateralValue !== '' ? collateralValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Fee Percentage',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon!,
+              },
+              value: `${FPN.fromWei(assetDetails!.feePercentage!)
+                .mul(new FPN(100))
+                .format(4)}%`,
+            },
+          ]}
+          confirmHandler={() => {
+            if (collateralValue === '') {
+              setCollateralError('Collateral is Required');
+              return;
+            }
+
+            const depositParams = {
+              pair: assetKey,
+              collateral: FPN.toWei(collateralValue).toString() as StringAmount,
+            };
+            console.log({ depositParams });
+            dispatch({ type: 'CALL_DEPOSIT', payload: depositParams });
+          }}
+        />
+      ) : (
+        <div>
+          <Form>
+            <ExchangeBox error>
+              <Balance>Balance: {balance.format(4)}</Balance>
+              <AssetSelect
+                error={insufficientFunds || Boolean(collateralError)}
+              >
+                <Amount
+                  value={collateralValue}
+                  inputMode="numeric"
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  onChange={e => {
+                    setCollateralValue(e.target.value);
+                  }}
+                  placeholder="0.0"
+                  required
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                />
+                <Max onClick={() => onMaxSelect(max.format(2))} />
+                <Asset
+                  flag={selectedAsset.assetIn.icon}
+                  name={selectedAsset.assetIn.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+              <ErrorMessage>{collateralError}</ErrorMessage>
+            </ExchangeBox>
+            <Value>Value: ${assetInValue}</Value>
+          </Form>
+          <SubmitContainer>
+            <SubmitButton onClick={() => setShowPreview(true)}>
+              Deposit
+            </SubmitButton>
+          </SubmitContainer>
+        </div>
+      )}
     </WithPlaceholder>
   );
 };

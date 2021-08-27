@@ -22,7 +22,14 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
 import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
-import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
+import {
+  StringAmount,
+  wei,
+} from '@jarvis-network/core-utils/dist/base/big-number';
+
+import { useDispatch } from 'react-redux';
+
+import TransactionHolder from './TransactionHolder';
 
 const title = 'Lorem ipsum repay';
 const subtitle = (
@@ -35,6 +42,8 @@ interface RepayProps {
   assetKey: SupportedSelfMintingPairExact;
 }
 export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
+  const dispatch = useDispatch();
+
   const [syntheticValue, setSyntheticValue] = useState('');
   const tokenBalances = useReduxSelector(state => state.wallet);
   const [syntheticError, setSyntheticError] = useState('');
@@ -48,6 +57,7 @@ export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
   const assetOutPrice = useReduxSelector(
     state => state.prices[selectedAsset.pair],
   );
+  const [showPreview, setShowPreview] = useState(false);
 
   const onMaxSelect = (input: string) => setSyntheticValue(input);
 
@@ -69,7 +79,9 @@ export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
   const maxBurn = FPN.fromWei(assetDetails!.positionTokens!).sub(
     minRemainingTokens,
   );
-
+  const handleGoBack = () => {
+    setShowPreview(false);
+  };
   useEffect(() => {
     if (syntheticValue !== '') {
       if (FPN.toWei(syntheticValue).gt(maxBurn)) {
@@ -89,47 +101,93 @@ export const Repay: React.FC<RepayProps> = ({ assetKey }) => {
   }
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="repay">
-      <Form>
-        <Balance>
-          Minted: {FPN.fromWei(assetDetails!.positionTokens!).format(4)}
-        </Balance>
-        <ExchangeBox error={Boolean(errorMessage)}>
-          <Balance>Balance: {balance.format(4)}</Balance>
+      {showPreview === true ? (
+        <TransactionHolder
+          backHandler={handleGoBack}
+          showPreview={showPreview}
+          params={[
+            {
+              title: 'Borrow',
+              asset: {
+                name: selectedAsset.assetOut.name,
+                icon: selectedAsset.assetOut.icon!,
+              },
+              value: FPN.toWei(
+                syntheticValue !== '' ? syntheticValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Fee Percentage',
+              asset: {
+                name: selectedAsset.assetOut.name,
+                icon: selectedAsset.assetOut.icon!,
+              },
+              value: `${FPN.fromWei(assetDetails!.feePercentage!)
+                .mul(new FPN(100))
+                .format(4)}%`,
+            },
+          ]}
+          confirmHandler={() => {
+            if (syntheticValue === '') {
+              setSyntheticError('Synthetic is Required');
+              return;
+            }
+            const params = {
+              pair: assetKey,
+              numTokens: FPN.toWei(syntheticValue).toString() as StringAmount,
+              feePercentage: assetDetails!.feePercentage as StringAmount,
+            };
 
-          <AssetSelect error={insufficientFunds || Boolean(syntheticError)}>
-            <Amount
-              value={syntheticValue}
-              inputMode="numeric"
-              onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-              onChange={e => {
-                setSyntheticValue(e.target.value);
-              }}
-              placeholder="0.0"
-              required
-              onFocus={e => {
-                e.target.select();
-              }}
-            />
-            <Max
-              onClick={() => {
-                onMaxSelect(maxBurn.format(4));
-              }}
-            />
-            <Asset
-              flag={selectedAsset.assetOut.icon}
-              name={selectedAsset.assetOut.name}
-            />
-          </AssetSelect>
-          <ErrorMessage>{syntheticError}</ErrorMessage>
+            dispatch({ type: 'CALL_REPAY', payload: params });
+          }}
+        />
+      ) : (
+        <div>
+          <Form>
+            <Balance>
+              Minted: {FPN.fromWei(assetDetails!.positionTokens!).format(4)}
+            </Balance>
+            <ExchangeBox error={Boolean(errorMessage)}>
+              <Balance>Balance: {balance.format(4)}</Balance>
 
-          <ErrorMessage>{errorMessage}</ErrorMessage>
-        </ExchangeBox>
+              <AssetSelect error={insufficientFunds || Boolean(syntheticError)}>
+                <Amount
+                  value={syntheticValue}
+                  inputMode="numeric"
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  onChange={e => {
+                    setSyntheticValue(e.target.value);
+                  }}
+                  placeholder="0.0"
+                  required
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                />
+                <Max
+                  onClick={() => {
+                    onMaxSelect(maxBurn.format(4));
+                  }}
+                />
+                <Asset
+                  flag={selectedAsset.assetOut.icon}
+                  name={selectedAsset.assetOut.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{syntheticError}</ErrorMessage>
 
-        <Value>Value: ${assetOutValue}</Value>
-      </Form>
-      <SubmitContainer>
-        <SubmitButton>Repay</SubmitButton>
-      </SubmitContainer>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+            </ExchangeBox>
+
+            <Value>Value: ${assetOutValue}</Value>
+          </Form>
+          <SubmitContainer>
+            <SubmitButton onClick={() => setShowPreview(true)}>
+              Repay
+            </SubmitButton>
+          </SubmitContainer>
+        </div>
+      )}
     </WithPlaceholder>
   );
 };

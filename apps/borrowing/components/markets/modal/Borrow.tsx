@@ -22,12 +22,18 @@ import { selfMintingMarketAssets } from '@/data/markets';
 import _ from 'lodash';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { wei } from '@jarvis-network/core-utils/dist/base/big-number';
+import {
+  StringAmount,
+  wei,
+} from '@jarvis-network/core-utils/dist/base/big-number';
 import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/borrow';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
 
 import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 import { styled } from '@jarvis-network/ui';
+import { useDispatch } from 'react-redux';
+
+import TransactionHolder from './TransactionHolder';
 
 const SplitRow = styled.div`
   display: inline-block;
@@ -52,6 +58,9 @@ interface BorrowProps {
 }
 
 export const Borrow: React.FC<BorrowProps> = ({ assetKey }) => {
+  const dispatch = useDispatch();
+
+  const [showPreview, setShowPreview] = useState(false);
   const [collateralValue, setCollateralValue] = useState('');
   const [syntheticValue, setSyntheticValue] = useState('');
   const [collateralError, setCollateralError] = useState('');
@@ -122,94 +131,163 @@ export const Borrow: React.FC<BorrowProps> = ({ assetKey }) => {
     new FPN(collateralValue === '' ? '0' : collateralValue),
   )!;
   const errorMessage = insufficientFunds ? 'Insufficient funds' : null;
-
+  const handleGoBack = () => {
+    setShowPreview(false);
+  };
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="borrow">
-      <div>
-        <Form>
-          <ExchangeBox error>
-            <Balance>Balance: {balance.format()}</Balance>
-            <AssetSelect error={insufficientFunds || Boolean(collateralError)}>
-              <Amount
-                value={collateralValue}
-                inputMode="numeric"
-                maxLength={8}
-                onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-                onChange={e => {
-                  setCollateralValue(e.target.value);
-                }}
-                placeholder="0.0"
-                required
-                onFocus={e => {
-                  e.target.select();
-                }}
-              />
-              <Asset
-                flag={selectedAsset.assetIn.icon}
-                name={selectedAsset.assetIn.name}
-              />
-            </AssetSelect>
-            <ErrorMessage>{errorMessage}</ErrorMessage>
-            <ErrorMessage>{collateralError}</ErrorMessage>
-          </ExchangeBox>
-          <Value>Value: ${assetInValue}</Value>
+      {showPreview === true ? (
+        <TransactionHolder
+          backHandler={handleGoBack}
+          showPreview={showPreview}
+          params={[
+            {
+              title: 'Deposit',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon,
+              },
+              value: FPN.toWei(
+                collateralValue !== '' ? collateralValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Borrow',
+              asset: {
+                name: selectedAsset.assetOut.name,
+                icon: selectedAsset.assetOut.icon!,
+              },
+              value: FPN.toWei(
+                syntheticValue !== '' ? syntheticValue : '0',
+              ).format(2),
+            },
+            {
+              title: 'Fee Percentage',
+              asset: {
+                name: selectedAsset.assetIn.name,
+                icon: selectedAsset.assetIn.icon,
+              },
+              value: `${FPN.fromWei(assetDetails!.feePercentage!)
+                .mul(new FPN(100))
+                .format(4)}%`,
+            },
+          ]}
+          confirmHandler={() => {
+            if (collateralValue === '') {
+              setCollateralError('Collateral is Required');
+              return;
+            }
+            if (syntheticValue === '') {
+              setSyntheticError('Synthetic is Required');
+              return;
+            }
+            const borrowParams = {
+              pair: assetKey,
+              collateral: FPN.toWei(collateralValue).toString() as StringAmount,
+              numTokens: FPN.toWei(syntheticValue).toString() as StringAmount,
+              feePercentage: assetDetails!.feePercentage as StringAmount,
+            };
 
-          <ExchangeBox error={Boolean(syntheticError)}>
-            <AssetSelect error={Boolean(syntheticError)}>
-              <AmountSmallPlaceholder
-                value={syntheticValue}
-                inputMode="numeric"
-                required
-                maxLength={10}
-                onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-                onChange={e => {
-                  setSyntheticValue(e.target.value);
-                }}
-                onFocus={e => {
-                  e.target.select();
-                }}
-                placeholder={`Min: ${minSynthetic.format(
-                  2,
-                )}/Max: ${maxSynthetic.format(2)}`}
-              />
-              <Max onClick={() => onMaxSelect(maxSynthetic.format(2))} />
-              <Asset
-                flag={selectedAsset.assetOut.icon}
-                name={selectedAsset.assetOut.name}
-              />
-            </AssetSelect>
-            <ErrorMessage>{syntheticError}</ErrorMessage>
-          </ExchangeBox>
-          <br />
+            dispatch({ type: 'CALL_BORROW', payload: borrowParams });
+          }}
+        />
+      ) : (
+        <div>
+          <Form>
+            <ExchangeBox error>
+              <Balance>Balance: {balance.format()}</Balance>
+              <AssetSelect
+                error={insufficientFunds || Boolean(collateralError)}
+              >
+                <Amount
+                  value={collateralValue}
+                  inputMode="numeric"
+                  maxLength={8}
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  onChange={e => {
+                    setCollateralValue(e.target.value);
+                  }}
+                  placeholder="0.0"
+                  required
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                />
+                <Asset
+                  flag={selectedAsset.assetIn.icon}
+                  name={selectedAsset.assetIn.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{errorMessage}</ErrorMessage>
+              <ErrorMessage>{collateralError}</ErrorMessage>
+            </ExchangeBox>
+            <Value>Value: ${assetInValue}</Value>
 
-          <MarginBottom />
-          <Value>
-            <SplitRow>
-              Min: {minSynthetic.format(2)} {selectedAsset.assetOut.name} <br />
-              (Less Risky)
-            </SplitRow>
-            <SplitRow>
-              Max: {maxSynthetic.format(2)} {selectedAsset.assetOut.name} <br />
-              (More Risky)
-            </SplitRow>
-          </Value>
-          <MarginBottom />
-          <Value>
-            Approx Fee: {feeValue} {selectedAsset.assetIn.name}
-          </Value>
-          {/* {assetOutPrice ? (
+            <ExchangeBox error={Boolean(syntheticError)}>
+              <AssetSelect error={Boolean(syntheticError)}>
+                <AmountSmallPlaceholder
+                  value={syntheticValue}
+                  inputMode="numeric"
+                  required
+                  maxLength={10}
+                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                  onChange={e => {
+                    setSyntheticValue(e.target.value);
+                  }}
+                  onFocus={e => {
+                    e.target.select();
+                  }}
+                  placeholder={`Min: ${minSynthetic.format(
+                    2,
+                  )}/Max: ${maxSynthetic.format(2)}`}
+                />
+                <Max onClick={() => onMaxSelect(maxSynthetic.format(2))} />
+                <Asset
+                  flag={selectedAsset.assetOut.icon}
+                  name={selectedAsset.assetOut.name}
+                />
+              </AssetSelect>
+              <ErrorMessage>{syntheticError}</ErrorMessage>
+            </ExchangeBox>
+            <br />
+
+            <MarginBottom />
+            <Value>
+              <SplitRow>
+                Min: {minSynthetic.format(2)} {selectedAsset.assetOut.name}{' '}
+                <br />
+                (Less Risky)
+              </SplitRow>
+              <SplitRow>
+                Max: {maxSynthetic.format(2)} {selectedAsset.assetOut.name}{' '}
+                <br />
+                (More Risky)
+              </SplitRow>
+            </Value>
+            <MarginBottom />
+            <Value>
+              Approx Fee: {feeValue} {selectedAsset.assetIn.name}
+            </Value>
+            {/* {assetOutPrice ? (
           <Value>
             1 {selectedAsset.assetOut.name} = $
             {FPN.fromWei(assetOutPrice!.toString()).format(2)}
           </Value>
         ) : null} */}
-        </Form>
-        <MarginBottom />
-        <MarginBottom />
-        <SubmitContainer>
-          <SubmitButton>Borrow</SubmitButton>
-        </SubmitContainer>
-      </div>
+          </Form>
+          <MarginBottom />
+          <MarginBottom />
+          <SubmitContainer>
+            <SubmitButton
+              onClick={() => {
+                setShowPreview(true);
+              }}
+            >
+              Borrow
+            </SubmitButton>
+          </SubmitContainer>
+        </div>
+      )}
     </WithPlaceholder>
   );
 };
