@@ -96,7 +96,7 @@ export const AccountOverviewModal: FC = () => {
   const isLoggedInViaMetaMask = useReduxSelector(
     state => state.auth?.wallet === 'MetaMask',
   );
-  const { web3$, realmAgent$ } = useCoreObservables();
+  const { web3$, synthereumRealmAgent$: realmAgent$ } = useCoreObservables();
   const web3 = useBehaviorSubject(web3$);
   const realmAgent = useBehaviorSubject(realmAgent$);
 

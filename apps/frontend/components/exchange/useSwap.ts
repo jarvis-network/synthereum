@@ -8,7 +8,7 @@ import {
 import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-config';
 
 export const useSwap = () => {
-  const agent = useBehaviorSubject(useCoreObservables().realmAgent$);
+  const agent = useBehaviorSubject(useCoreObservables().synthereumRealmAgent$);
   const {
     paySymbol,
     payValue,

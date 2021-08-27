@@ -12,12 +12,12 @@ type AbortablePromise = ReturnType<ReturnType<typeof fetchWalletBalances>>;
 export function useFetchWalletBalancesOnNewBlock(
   dispatch: Dispatch,
   {
-    realmAgent$,
+    synthereumRealmAgent$,
   }: {
-    realmAgent$: BehaviorSubject<RealmAgent | null>;
+    synthereumRealmAgent$: BehaviorSubject<RealmAgent | null>;
   },
 ): void {
-  const realmAgentRef = useRef(realmAgent$.value);
+  const realmAgentRef = useRef(synthereumRealmAgent$.value);
   const lastRequestedBlockNumberRef = useRef(0);
   const lastPromiseRef = useRef<AbortablePromise | null>();
   const subscriptionRef = useRef<Subscription<BlockHeader> | null>(null);
@@ -60,10 +60,12 @@ export function useFetchWalletBalancesOnNewBlock(
   }, [dispatch]);
 
   useEffect(() => {
-    const realmAgent$subscription = realmAgent$.subscribe(realmAgent => {
-      realmAgentRef.current = realmAgent;
-      setupSubscription();
-    });
+    const realmAgent$subscription = synthereumRealmAgent$.subscribe(
+      realmAgent => {
+        realmAgentRef.current = realmAgent;
+        setupSubscription();
+      },
+    );
 
     setupSubscription();
 
@@ -72,5 +74,5 @@ export function useFetchWalletBalancesOnNewBlock(
       realmAgentRef.current = null;
       setupSubscription();
     };
-  }, [realmAgent$, setupSubscription]);
+  }, [synthereumRealmAgent$, setupSubscription]);
 }
