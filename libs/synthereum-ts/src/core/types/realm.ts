@@ -1,9 +1,12 @@
 import { ISynthereumRegistry as ISynthereumRegistryContract } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
-import { ContractInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import {
+  ContractInstance,
+  TokenInstance,
+} from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { SupportedNetworkName } from '../../config';
+import { ExchangeSelfMintingToken, SupportedNetworkName } from '../../config';
 
 import { PoolsForVersion, PoolVersion } from './pools';
 import {
@@ -19,22 +22,26 @@ import {
 export interface SynthereumRealm<
   Net extends SupportedNetworkName = SupportedNetworkName
 > {
-  readonly poolRegistry:
-    | ContractInfo<Net, ISynthereumRegistryContract>
-    | undefined;
-  readonly pools:
-    | {
-        [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
-      }
-    | undefined;
-  readonly selfMintingRegistry:
-    | ContractInfo<Net, ISynthereumRegistryContract>
-    | undefined;
-  readonly selfMintingDerivatives:
-    | {
-        [Version in SelfMintingVersion]?: DerivativesForVersion<Version, Net>;
-      }
-    | undefined;
+  readonly poolRegistry: ContractInstance<Net, ISynthereumRegistryContract>;
+  readonly pools: {
+    [Version in PoolVersion]?: PoolsForVersion<Version, Net>;
+  };
+}
+
+export interface SelfMintingRealm<
+  Net extends SupportedNetworkName = SupportedNetworkName
+> {
+  readonly selfMintingRegistry: ContractInstance<
+    Net,
+    ISynthereumRegistryContract
+  >;
+  readonly selfMintingDerivatives: {
+    [Version in SelfMintingVersion]?: DerivativesForVersion<Version, Net>;
+  };
+  readonly tokens: {
+    // eslint-disable-next-line
+    [Token in ExchangeSelfMintingToken]?: TokenInstance<Net> | {};
+  };
 }
 
 /**
@@ -43,6 +50,16 @@ export interface SynthereumRealm<
 export interface SynthereumRealmWithWeb3<
   Net extends SupportedNetworkName = SupportedNetworkName
 > extends SynthereumRealm<Net> {
+  readonly web3: Web3On<Net>;
+  readonly netId: ToNetworkId<Net>;
+}
+
+/**
+ * SelfMinting realm with an associated Web3 instance.
+ */
+export interface SelfMintingRealmWithWeb3<
+  Net extends SupportedNetworkName = SupportedNetworkName
+> extends SelfMintingRealm<Net> {
   readonly web3: Web3On<Net>;
   readonly netId: ToNetworkId<Net>;
 }

@@ -5,7 +5,7 @@ import { Tagged } from '../../base/tagged-type';
 
 import { AddressOn } from '../address';
 
-import { ContractInfo } from './types';
+import { ContractInstance } from './types';
 import { BaseContract } from './typechain/types';
 
 export type AbiFor<Contract extends BaseContract> = Tagged<AbiItem[], Contract>;
@@ -21,13 +21,15 @@ export function getContract<
     gasLimit: number;
     gasPrice: string;
   },
-): ContractInfo<Net, Contract> {
-  const instance = (new web3.eth.Contract(abi, address, {
-    gas: gas?.gasLimit,
-    gasPrice: gas?.gasPrice,
-  }) as unknown) as Contract;
+): ContractInstance<Net, Contract> {
+  const connect = (web3_: Web3On<Net>) =>
+    (new web3_.eth.Contract(abi, address, {
+      gas: gas?.gasLimit,
+      gasPrice: gas?.gasPrice,
+    }) as unknown) as Contract;
   return {
-    instance,
+    connect,
+    instance: connect(web3),
     address,
   };
 }

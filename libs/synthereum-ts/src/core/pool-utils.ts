@@ -35,6 +35,8 @@ import {
 
 import { executeInSequence } from '@jarvis-network/core-utils/dist/base/async';
 
+import { ContractInstance } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+
 import {
   SupportedNetworkId,
   SupportedNetworkName,
@@ -117,9 +119,12 @@ export function mapPools<
   return array;
 }
 
-export interface PoolAddressWithDerivatives<Version extends PoolVersion> {
-  result: PoolContract<Version>;
-  derivativeAddress: IDerivative;
+export interface PoolAddressWithDerivatives<
+  Net extends SupportedNetworkName,
+  Version extends PoolVersion
+> {
+  result: ContractInstance<Net, PoolContract<Version>>;
+  derivative: ContractInstance<Net, IDerivative>;
 }
 
 export async function loadPool<
@@ -129,24 +134,20 @@ export async function loadPool<
   web3: Web3On<Net>,
   version: Version,
   poolAddress: AddressOn<Net>,
-): Promise<PoolAddressWithDerivatives<Version>> {
+): Promise<PoolAddressWithDerivatives<Net, Version>> {
   if (version === 'v4') {
     const result = getContract(
       web3,
       ISynthereumPoolOnChainPriceFeed_Abi,
       poolAddress,
-    ).instance;
-    const derivativeAddresses = (await result.methods
+    );
+    const derivativeAddresses = (await result.instance.methods
       .getAllDerivatives()
       .call()) as AddressOn<Net>[];
 
     return {
-      result: result as PoolContract<Version>,
-      derivativeAddress: getContract(
-        web3,
-        IDerivative_Abi,
-        last(derivativeAddresses),
-      ).instance,
+      result: result as ContractInstance<Net, PoolContract<Version>>,
+      derivative: getContract(web3, IDerivative_Abi, last(derivativeAddresses)),
     };
   }
   throwError(`Unsupported pool version: '${version}'`);
@@ -256,3 +257,56 @@ function sendTxWithMsg<T>(
   txOpt.printInfo.txSummaryText = msg;
   return sendTxAndLog(tx, txOpt);
 }
+
+// export function foreachSelfMintingPool<
+//   Net extends SupportedNetworkName = SupportedNetworkName,
+//   Version extends SelfMintingVersion = SelfMintingVersion
+// >(
+//   realm: SelfMintingRealm<Net>,
+//   version: Version,
+//   callback: (
+//     pool: SelfMintingDerivative<
+//     Version,
+//     Net,
+//     SupportedSelfMintingPairExact<Net>
+//   >,
+//     idx: number,
+//   ) => void,
+// ): void {
+//   const derivaties = assertNotNull(realm.selfMintingDerivatives![version as SelfMintingVersion]);
+//   let idx = 0;
+//   for (const key in derivaties) {
+//     if (!Object.prototype.hasOwnProperty.call(derivaties, key)) continue;
+//     const derivate = derivaties[key as keyof typeof derivaties];
+//     if (!derivate) continue;
+//     callback(
+//       derivate as SelfMintingDerivative<
+//       Version,
+//       Net,
+//       SupportedSelfMintingPairExact<Net>
+//     >,
+//       idx++,
+//     );
+//   }
+// }
+
+// export function mapSelfMintingPools<
+//   Result,
+//   Net extends SupportedNetworkName = SupportedNetworkName,
+//   Version extends SelfMintingVersion = SelfMintingVersion
+// >(
+//   realm: SelfMintingRealm<Net>,
+//   version: Version,
+//   callback: (
+//     p: SelfMintingDerivative<
+//       Version,
+//       Net,
+//       SupportedSelfMintingPairExact<Net>
+//     >,
+//     idx: number,
+//   ) => Result,
+// ): Result[] {
+//   const array: Result[] = [];
+//   foreachSelfMintingPool(realm, version, (derivate, idx) => array.push(callback(derivate, idx)));
+//   return array;
+// }

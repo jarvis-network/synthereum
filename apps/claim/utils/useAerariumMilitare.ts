@@ -16,7 +16,7 @@ import {
   isSupportedNetwork,
   SupportedNetworkId,
 } from '@jarvis-network/synthereum-config';
-import { ContractInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import { ContractInstance } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 
 import { AerariumMilitare } from '@/data/AerariumMilitare';
 import { addresses } from '@/data/addresses';
@@ -24,7 +24,7 @@ import { addresses } from '@/data/addresses';
 import ABI from '../data/abi.json';
 
 export function useAerariumMilitare():
-  | (ContractInfo<NetworkName, AerariumMilitare> & {
+  | (ContractInstance<NetworkName, AerariumMilitare> & {
       networkId: SupportedNetworkId;
     })
   | null {

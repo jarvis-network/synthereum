@@ -1,13 +1,30 @@
 import { AddressOn } from '../address';
-import { NetworkName } from '../web3-instance';
+import { NetworkName, Web3On } from '../web3-instance';
 
 import { ERC20 } from './typechain/ERC20';
 import { BaseContract } from './typechain/types';
 
-export interface TokenInfo<Net extends NetworkName>
-  extends ContractInfo<Net, ERC20> {
-  symbol: string;
+export interface TokenInstance<
+  Net extends NetworkName,
+  TokenSymbol extends string = string
+> extends ContractInstance<Net, ERC20> {
+  symbol: TokenSymbol;
   decimals: number;
+}
+
+export interface TokenInfo<
+  Net extends NetworkName,
+  TokenSymbol extends string = string
+> extends ContractInfo<Net, ERC20> {
+  symbol: TokenSymbol;
+  decimals: number;
+}
+
+export interface ContractInstance<
+  Net extends NetworkName,
+  Contract extends BaseContract
+> extends ContractInfo<Net, Contract> {
+  instance: Contract;
 }
 
 export interface ContractInfo<
@@ -15,7 +32,7 @@ export interface ContractInfo<
   Contract extends BaseContract
 > {
   address: AddressOn<Net>;
-  instance: Contract;
+  connect: (web3: Web3On<Net>) => Contract;
 }
 
 export type TimestampedTransferEvent = {

@@ -11,7 +11,7 @@ import { NetworkName, Web3On } from '../web3-instance';
 
 import { getBlockTimestamp } from '../block';
 
-import { TokenInfo, TimestampedTransferEvent } from './types';
+import { TokenInstance, TimestampedTransferEvent } from './types';
 import { sendTx, FullTxOptions } from './send-tx';
 
 /**
@@ -28,7 +28,7 @@ import { sendTx, FullTxOptions } from './send-tx';
  * @param account the address of the account to get the balance of
  */
 export async function getTokenBalance<Net extends NetworkName>(
-  { instance, decimals }: TokenInfo<Net>,
+  { instance, decimals }: TokenInstance<Net>,
   account: AddressOn<Net>,
 ): Promise<Amount> {
   const amount = await instance.methods.balanceOf(account).call();
@@ -53,7 +53,7 @@ export async function getTokenBalance<Net extends NetworkName>(
  * @param account the address of the account to get the balance of
  */
 export async function getTokenAllowance<Net extends NetworkName>(
-  { instance, decimals }: TokenInfo<Net>,
+  { instance, decimals }: TokenInstance<Net>,
   account: AddressOn<Net>,
   spender: AddressOn<Net>,
 ): Promise<Amount> {
@@ -62,7 +62,7 @@ export async function getTokenAllowance<Net extends NetworkName>(
 }
 
 export async function erc20Transfer<Net extends NetworkName>(
-  info: TokenInfo<Net>,
+  info: TokenInstance<Net>,
   recipient: AddressOn<Net>,
   amount: Amount,
   txOptions: FullTxOptions<Net>,
@@ -81,7 +81,7 @@ export async function erc20Transfer<Net extends NetworkName>(
 }
 
 export function setTokenAllowance<Net extends NetworkName>(
-  { instance, decimals }: TokenInfo<Net>,
+  { instance, decimals }: TokenInstance<Net>,
   spender: AddressOn<Net>,
   allowance: Amount,
 ) {
@@ -90,7 +90,7 @@ export function setTokenAllowance<Net extends NetworkName>(
 }
 
 export function setMaxTokenAllowance<Net extends NetworkName>(
-  info: TokenInfo<Net>,
+  info: TokenInstance<Net>,
   spender: AddressOn<Net>,
 ) {
   return setTokenAllowance(info, spender, maxUint256 as Amount);
@@ -127,7 +127,7 @@ export function weiToTokenAmount({
 }
 
 export function getAllTransferEvents<Net extends NetworkName>(
-  { instance }: TokenInfo<Net>,
+  { instance }: TokenInstance<Net>,
   address?: string,
   fromBlock = 0,
   toBlock: number | 'latest' = 'latest',
@@ -141,7 +141,7 @@ export function getAllTransferEvents<Net extends NetworkName>(
 
 export async function getAllTransferTransactions<Net extends NetworkName>(
   web3: Web3On<Net>,
-  contract: TokenInfo<Net>,
+  contract: TokenInstance<Net>,
   address?: string,
   fromBlock = 0,
   toBlock: number | 'latest' = 'latest',
@@ -170,7 +170,7 @@ export async function getAllTransferTransactions<Net extends NetworkName>(
 
 export async function getAllTransferInfo<Net extends NetworkName>(
   web3: Web3On<Net>,
-  contract: TokenInfo<Net>,
+  contract: TokenInstance<Net>,
   address?: string,
   fromBlock = 0,
   toBlock: number | 'latest' = 'latest',

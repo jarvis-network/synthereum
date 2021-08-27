@@ -1,7 +1,7 @@
 import { log, logTable } from '@jarvis-network/core-utils/dist/logging';
 import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/load';
 import { SelfMintingVersion } from '@jarvis-network/synthereum-ts/dist/core/types/self-minting-derivatives';
-import { SynthereumRealmWithWeb3 } from '@jarvis-network/synthereum-ts/dist/core/types/realm';
+import { SelfMintingRealmWithWeb3 } from '@jarvis-network/synthereum-ts/dist/core/types/realm';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 import { createCliApp } from './common/create-cli-app';
@@ -15,15 +15,15 @@ createCliApp(buildCli(__filename), async ({ web3, netId }) => {
   printPoolBalance(realm, 'v1');
 });
 function printPoolBalance(
-  realm: SynthereumRealmWithWeb3,
+  realm: SelfMintingRealmWithWeb3,
   version: SelfMintingVersion,
 ) {
-  const derivatives = assertNotNull(realm.selfMintingDerivatives![version]);
+  const derivatives = assertNotNull(realm.selfMintingDerivatives[version]);
   const result = Object.entries(derivatives).map(([symbol, derivative]) => ({
     Symbol: symbol,
     [`'${version}' Derivative Address`]: derivative?.address,
-    'Synthetic Token Address': `${derivative?.syntheticToken.address} (${derivative?.syntheticToken.symbol})`,
-    'Collateral Token Address': `${derivative?.collateralToken.address} (${derivative?.collateralToken.symbol})`,
+    'Synthetic Token Address': `${derivative?.static.syntheticToken.address} (${derivative?.static.syntheticToken.symbol})`,
+    'Collateral Token Address': `${derivative?.static.collateralToken.address} (${derivative?.static.collateralToken.symbol})`,
   }));
   logTable(result);
 }

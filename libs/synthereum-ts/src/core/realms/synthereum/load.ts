@@ -110,8 +110,6 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     netId,
     poolRegistry,
     pools,
-    selfMintingDerivatives: undefined,
-    selfMintingRegistry: undefined,
   };
 }
 
@@ -147,14 +145,14 @@ export async function loadPoolInfo<
 
   const poolAddress = assertIsAddress(lastPoolAddress) as AddressOn<Net>;
 
-  const { result: poolInstance, derivativeAddress } = await loadPool(
+  const { result: poolInstance, derivative } = await loadPool(
     web3,
     version,
     poolAddress,
   );
 
   const collateralTokenAddress = assertIsAddress(
-    await poolInstance.methods.collateralToken().call(),
+    await poolInstance.instance.methods.collateralToken().call(),
   ) as AddressOn<Net>;
 
   if (
@@ -167,20 +165,16 @@ export async function loadPoolInfo<
   }
 
   const syntheticTokenAddress = assertIsAddress(
-    await poolInstance.methods.syntheticToken().call(),
+    await poolInstance.instance.methods.syntheticToken().call(),
   ) as AddressOn<Net>;
   return {
     versionId: version,
     networkId: netId,
     priceFeed: priceFeed[symbol],
     symbol,
-    address: poolAddress,
-    instance: poolInstance,
+    ...poolInstance,
     syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
     collateralToken: await getTokenInfo(web3, collateralTokenAddress),
-    derivative: {
-      address: derivativeAddress.options.address as AddressOn<Net>,
-      instance: derivativeAddress,
-    },
+    derivative,
   };
 }

@@ -12,7 +12,7 @@ import {
   weiToTokenAmount,
 } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
 
-import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
+import { TokenInstance } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { t } from '@jarvis-network/core-utils/dist/base/meta';
 
 import {
@@ -75,7 +75,7 @@ export class RealmAgent<
 > {
   public readonly activePools: PoolsForVersion<PoolVersion, Net>;
 
-  private readonly collateralToken: TokenInfo<SupportedNetworkName>;
+  private readonly collateralToken: TokenInstance<SupportedNetworkName>;
 
   private readonly defaultTxOptions: FullTxOptions<Net>;
 
@@ -298,7 +298,7 @@ export class RealmAgent<
   }
 
   private async ensureSufficientAllowanceFor(
-    tokenInfo: TokenInfo<Net>,
+    tokenInfo: TokenInstance<Net>,
     spender: AddressOn<Net>,
     necessaryAllowance: Amount,
     txOptions?: TxOptions,
