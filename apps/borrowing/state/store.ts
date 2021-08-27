@@ -9,6 +9,7 @@ import { ReduxAction } from '@jarvis-network/synthereum-ts/dist/epics/types';
 import { realmEpic } from '@jarvis-network/synthereum-ts/dist/epics/core';
 import { dependencies } from '@jarvis-network/app-toolkit/dist/core-context';
 import { priceFeedEpic } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
+import { marketEpic } from '@jarvis-network/synthereum-ts/dist/epics/markets';
 
 
 let cachedStore: Store | undefined;
@@ -42,6 +43,7 @@ export const initializeStore = (
   const rootEpic = combineEpics(
     realmEpic,
     priceFeedEpic,
+    marketEpic,
   );
   // After navigating to a page with an initial Redux state, merge that state
   // with the current state in the store, and create a new store
