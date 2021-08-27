@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Background, styled, styledScrollbars } from '@jarvis-network/ui';
 import { UserHeader } from '@/components/header/UserHeader';
 import { MarketsGrid } from '@/components/markets/Grid';
+import { useDispatch } from 'react-redux';
+import { setWindowLoaded } from '@/state/slices/app';
+import { parseSupportedNetworkId } from '@jarvis-network/synthereum-config';
+import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
+import _ from 'lodash';
+import { SelfMintingMarketAssets } from '@/state/slices/markets';
+
+import { createContext } from '@jarvis-network/synthereum-ts/dist/epics/core';
+import { getActiveMarkets } from '@jarvis-network/synthereum-ts/dist/epics/markets';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Layout = styled.div`
   display: flex;
@@ -43,17 +53,61 @@ const LayoutWidget = styled(Background)`
   width: 360px;
 `;
 
-const Home = () => (
-  <Layout>
-    <LayoutGrid>
-      <LayoutGridContainer>
-        <MarketsGrid />
-      </LayoutGridContainer>
-    </LayoutGrid>
-    <LayoutWidget image="/images/light-mode-background.jpg">
-      <UserHeader />
-    </LayoutWidget>
-  </Layout>
-);
+const Home = ({ markets }: { markets: SelfMintingMarketAssets }) => {
+  const dispatch = useDispatch();
+  const networkId = useReduxSelector(state => state.app.networkId);
+  useEffect(() => {
+    if (networkId) {
+      dispatch({ type: 'GET_MARKET_LIST' });
+      dispatch({
+        type: 'GET_WALLET_BALANCE',
+        payload: [],
+      });
+      dispatch({
+        type: 'UPDATE_PAIRS',
+        payload: [...Object.keys(markets), 'UMA', 'USDC'],
+      });
+    }
+  }, [networkId]);
+  useEffect(() => {
+    function handleLoad() {
+      setTimeout(() => dispatch(setWindowLoaded(true)), 250);
+      window.removeEventListener('load', handleLoad);
+    }
 
+    window.addEventListener('load', handleLoad);
+  }, []);
+
+  return (
+    <Layout>
+      <LayoutGrid>
+        <LayoutGridContainer>
+          {markets ? (
+            <MarketsGrid networkId={networkId} markets={markets} />
+          ) : null}
+        </LayoutGridContainer>
+      </LayoutGrid>
+      <LayoutWidget image="/images/light-mode-background.jpg">
+        <UserHeader />
+      </LayoutWidget>
+    </Layout>
+  );
+};
+/**
+ * Use this tutorial for the SSR ad SSG
+ * https://pagepro.co/blog/next-js-pre-rendering-and-data-fetching/
+ *
+ */
+export async function getStaticProps() {
+  // TOOD: Choose network dynamically
+  const netId = parseSupportedNetworkId(1);
+  const web3 = getInfuraWeb3(netId);
+  const realm = await createContext(web3);
+  const assets = await getActiveMarkets(realm);
+  return {
+    props: {
+      markets: assets,
+    },
+  };
+}
 export default Home;

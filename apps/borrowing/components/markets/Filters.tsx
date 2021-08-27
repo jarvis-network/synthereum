@@ -4,7 +4,11 @@ import { Button, styled } from '@jarvis-network/ui';
 import { AllButtonProps } from '@jarvis-network/ui/dist/Button/types';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { setMarketsFilterQuery } from '@/state/slices/markets';
+import {
+  SelfMintingMarketAssets,
+  setMarketsFilterQuery,
+} from '@/state/slices/markets';
+import { selfMintingMarketAssets } from '@/data/markets';
 
 const KEY_ALL = 'All';
 
@@ -29,15 +33,24 @@ const FilterButton: FC<AllButtonProps & { isActive: boolean }> = ({
   </InactiveButtonContainer>
 );
 
-export const MarketsFilter: FC = () => {
+export const MarketsFilter: FC<{
+  markets?: Partial<SelfMintingMarketAssets>;
+}> = ({ markets }) => {
   const dispatch = useDispatch();
 
-  const { filterQuery, list } = useReduxSelector(state => state.markets);
+  const { filterQuery } = useReduxSelector(state => state.markets);
 
   const handleFilterClick = (key: string) =>
     dispatch(setMarketsFilterQuery(key === KEY_ALL ? null : key));
 
-  const keys = [KEY_ALL, ...new Set([...list.map(i => i.assetIn.name)])];
+  const keys = [
+    KEY_ALL,
+    ...new Set([
+      ...Object.values(markets!).map(
+        i => selfMintingMarketAssets[i.pair].assetIn.name,
+      ),
+    ]),
+  ];
 
   const activeKey = filterQuery || KEY_ALL;
 

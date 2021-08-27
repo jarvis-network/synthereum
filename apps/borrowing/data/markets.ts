@@ -1,88 +1,202 @@
-import { Market } from '@/state/slices/markets';
+import { SelfMintingMarketAssets } from '@/state/slices/markets';
 
-export const MockMarkets: Market[] = [
-  {
-    key: 'JRT-jEUR',
-    assetIn: {
-      name: 'JRT',
-      icon: null,
-    },
-    assetOut: {
-      name: 'jEUR',
-      icon: 'eur',
-    },
-    collateralizationRatio: 10,
-    liquidationRatio: 3,
-    collateral: 10.3,
-    assetOutMinted: 497.35,
-  },
-  {
-    key: 'JRT-jCHF',
-    assetIn: {
-      name: 'JRT',
-      icon: null,
-    },
-    assetOut: {
-      name: 'jCHF',
-      icon: 'eur',
-    },
-    collateralizationRatio: 10,
-    liquidationRatio: 30,
-    collateral: 11.2,
-    assetOutMinted: 395.48,
-  },
-  {
-    key: 'UMA-jEUR',
+export const selfMintingMarketAssets: SelfMintingMarketAssets<'mainnet'> = {
+  'jCAD/UMA': {
+    pair: 'jCAD/UMA',
     assetIn: {
       name: 'UMA',
-      icon: null,
+      icon: 'uma',
     },
     assetOut: {
-      name: 'jEUR',
-      icon: 'eur',
+      icon: 'cad',
+      name: 'jCAD',
     },
-    collateralizationRatio: 5,
-    liquidationRatio: 2,
-    collateral: 51.5,
-    assetOutMinted: 442.93,
   },
-  {
-    key: 'JRT-jGBP',
+  'jCAD/USDC': {
+    pair: 'jCAD/USDC',
     assetIn: {
-      name: 'JRT',
-      icon: null,
+      name: 'USDC',
+      icon: 'usdc',
     },
     assetOut: {
-      name: 'jGBP',
-      icon: 'gbp',
+      name: 'jCAD',
+      icon: 'cad',
     },
-    collateralizationRatio: 10,
-    liquidationRatio: 3,
   },
-  {
-    key: 'UMA-jGBP',
+  'jCHF/UMA': {
+    pair: 'jCHF/UMA',
     assetIn: {
       name: 'UMA',
-      icon: null,
-    },
-    assetOut: {
-      name: 'jGBP',
-      icon: 'gbp',
-    },
-    collateralizationRatio: 5,
-    liquidationRatio: 2,
-  },
-  {
-    key: 'UMA-jCHF',
-    assetIn: {
-      name: 'UMA',
-      icon: null,
+      icon: 'uma',
     },
     assetOut: {
       name: 'jCHF',
       icon: 'chf',
     },
-    collateralizationRatio: 5,
-    liquidationRatio: 2,
   },
-];
+  'jCHF/USDC': {
+    pair: 'jCHF/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jCHF',
+      icon: 'chf',
+    },
+  },
+  'jEUR/UMA': {
+    pair: 'jEUR/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jEUR',
+      icon: 'eur',
+    },
+  },
+  'jEUR/USDC': {
+    pair: 'jEUR/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jEUR',
+      icon: 'eur',
+    },
+  },
+  'jGBP/UMA': {
+    pair: 'jGBP/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jGBP',
+      icon: 'gbp',
+    },
+  },
+  'jGBP/USDC': {
+    pair: 'jGBP/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jGBP',
+      icon: 'gbp',
+    },
+  },
+  'jJPY/UMA': {
+    pair: 'jJPY/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jJPY',
+      icon: 'jpy',
+    },
+  },
+  'jJPY/USDC': {
+    pair: 'jJPY/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jJPY',
+      icon: 'jpy',
+    },
+  },
+  'jKRW/UMA': {
+    pair: 'jKRW/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jKRW',
+      icon: 'krw',
+    },
+  },
+  'jKRW/USDC': {
+    pair: 'jKRW/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jKRW',
+      icon: 'krw',
+    },
+  },
+  'jNGN/UMA': {
+    pair: 'jNGN/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jNGN',
+      icon: 'ngn',
+    },
+  },
+  'jNGN/USDC': {
+    pair: 'jNGN/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jNGN',
+      icon: 'ngn',
+    },
+  },
+  'jPHP/UMA': {
+    pair: 'jPHP/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jPHP',
+      icon: 'php',
+    },
+  },
+  'jPHP/USDC': {
+    pair: 'jPHP/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jPHP',
+      icon: 'php',
+    },
+  },
+  'jZAR/UMA': {
+    pair: 'jZAR/UMA',
+    assetIn: {
+      name: 'UMA',
+      icon: 'uma',
+    },
+    assetOut: {
+      name: 'jZAR',
+      icon: 'zar',
+    },
+  },
+  'jZAR/USDC': {
+    pair: 'jZAR/USDC',
+    assetIn: {
+      name: 'USDC',
+      icon: 'usdc',
+    },
+    assetOut: {
+      name: 'jZAR',
+      icon: 'zar',
+    },
+  },
+} as const;

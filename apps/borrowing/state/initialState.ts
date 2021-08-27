@@ -1,13 +1,13 @@
 import { ThemeNameType } from '@jarvis-network/ui';
-
 import { cache } from '@jarvis-network/app-toolkit';
-import { Market } from '@/state/slices/markets';
+import { SelfMintingMarketAssets } from '@/state/slices/markets';
 import { UserState } from 'bnc-onboard/dist/src/interfaces';
-import { MockMarkets } from '@/data/markets';
+import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 export type AuthState =
   | (Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] })
   | null;
+
 
 export interface State {
   theme: ThemeNameType;
@@ -21,9 +21,10 @@ export interface State {
   auth: AuthState;
   markets: {
     filterQuery: string | null;
-    manageKey: string | null;
-    list: Market[];
+    manageKey: SupportedSelfMintingPairExact | null;
+    list: Partial<SelfMintingMarketAssets>;
   };
+
 }
 
 export const initialAppState: State = {
@@ -39,6 +40,7 @@ export const initialAppState: State = {
   markets: {
     filterQuery: null,
     manageKey: null,
-    list: MockMarkets,
+    list: {},
   },
+
 };

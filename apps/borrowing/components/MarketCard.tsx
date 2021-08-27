@@ -1,8 +1,15 @@
-import React, { FC } from 'react';
-import { styled, Button } from '@jarvis-network/ui';
+import React, { FC, useState } from 'react';
+import { styled } from '@jarvis-network/ui';
 
 import { FlagsPair } from '@/components/FlagsPair';
 import { Market } from '@/state/slices/markets';
+import { selfMintingMarketAssets } from '@/data/markets';
+import { motion } from 'framer-motion';
+
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+
+import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
+import { useReduxSelector } from '@/state/useReduxSelector';
 
 const Container = styled.div`
   background: ${props => props.theme.background.primary};
@@ -55,62 +62,182 @@ const DataListItem = styled.div<{ label: string }>`
   }
 `;
 
-const ManageButton = styled(Button)`
+const tapAnimation = {
+  tap: {
+    scale: 0.85,
+  },
+};
+
+const ButtonBg = {
+  hover: {
+    scale: 30,
+    transition: {
+      duration: 0.2,
+    },
+  },
+  closed: {
+    scale: 0,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+export const ButtonWrapper = styled.div`
+  width: 100%;
+`;
+
+export const ManageButton = styled(motion.button)`
+  position: relative;
+  overflow: hidden;
+  background: ${props => props.theme.background.inverted};
   display: block;
   width: 100%;
   height: ${props => props.theme.sizes.row};
   border-radius: ${props => props.theme.borderRadius.s};
-  background: ${props => props.theme.background.inverted};
+  outline: none;
+  border: 0px;
+  cursor: pointer;
+`;
+export const BgCircle = styled(motion.div)`
+  position: absolute;
+  left: calc(50% - 5px);
+  top: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50px;
+  // background: ${props => props.theme.background.secondary};
+  background: #0e0e0e;
+  margin: 0;
+`;
+export const ButtonContent = styled.div`
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${props => props.theme.text.inverted};
   text-align: center;
   text-transform: uppercase;
   font-size: ${props => props.theme.font.sizes.l};
 `;
-
-interface MarketCardProps extends Market {
-  onManageClick?: () => void;
-}
-
+export const ButtonLabel = styled.div`
+  z-index: 0;
+`;
+type MarketCardInfo = Pick<
+  Market,
+  | 'pair'
+  | 'collateralizationRatio'
+  | 'liquidationRatio'
+  | 'positionCollateral'
+  | 'positionTokens'
+  | 'price'
+>;
+type MarketCardProps = MarketCardInfo & {
+  onManageClick: () => void;
+};
 export const MarketCard: FC<MarketCardProps> = ({
-  assetIn,
-  assetOut,
+  pair,
   collateralizationRatio,
+  positionCollateral,
+  positionTokens,
+  price,
   liquidationRatio,
-  assetOutMinted,
-  collateral,
   onManageClick,
-}) => (
-  <Container>
-    <Header>
-      <FlagsPair assets={[assetIn.icon, assetOut.icon]} /> {assetIn.name}-
-      {assetOut.name}
-    </Header>
+}) => {
+  const p = pair as SupportedSelfMintingPairExact;
+  const { assetOut, assetIn } = selfMintingMarketAssets[p];
+  const [buttonState, setButtonState] = useState<string>('closed');
+  const auth = useReduxSelector(state => state.auth);
 
-    <DataList>
-      <DataListItem label="Collateralization Ratio">
-        {collateralizationRatio * 100}%
-      </DataListItem>
+  return (
+    <Container>
+      <Header>
+        <FlagsPair assets={[assetOut.icon, assetIn.icon]} /> {assetOut.name}-
+        {assetIn.name}
+      </Header>
 
-      <DataListItem label="Liquidation Ratio">
-        {liquidationRatio * 100}%
-      </DataListItem>
-
-      {collateral && (
-        <DataListItem label="Your Collateral">{collateral * 100}%</DataListItem>
-      )}
-
-      {assetOutMinted && (
-        <DataListItem label={`${assetOut.name} minted`}>
-          {assetOutMinted}
+      <DataList>
+        <DataListItem label="Collateralization">
+          {FPN.fromWei(collateralizationRatio!)
+            .div(FPN.fromWei(price!))
+            .mul(FPN.toWei('100'))
+            .format(2)}
+          %
         </DataListItem>
-      )}
-    </DataList>
 
-    {onManageClick && (
-      <Footer>
-        <ManageButton onClick={onManageClick} size="l" type="dark">
-          Manage
-        </ManageButton>
-      </Footer>
-    )}
-  </Container>
-);
+        <DataListItem label="Liquidation Ratio">
+          {FPN.fromWei(liquidationRatio!).mul(FPN.toWei('100')).format(2)}%
+        </DataListItem>
+
+        {auth && positionCollateral && positionCollateral.toString() !== '0' ? (
+          <DataListItem label="User Collateralization">
+            {FPN.fromWei(positionCollateral!)
+              .div(FPN.fromWei(positionTokens!))
+              .div(FPN.fromWei(price!))
+              .mul(FPN.toWei('100'))
+              .format(2)}
+          </DataListItem>
+        ) : null}
+
+        {auth && positionCollateral && positionCollateral.toString() !== '0' ? (
+          <DataListItem label="Collateral Deposited">
+            {FPN.fromWei(positionCollateral!).format(2)}
+          </DataListItem>
+        ) : null}
+
+        {auth && positionTokens && positionTokens.toString() !== '0' ? (
+          <DataListItem label={`${assetOut.name} minted`}>
+            {FPN.fromWei(positionTokens!).format(2)}
+          </DataListItem>
+        ) : null}
+      </DataList>
+
+      {onManageClick && (
+        <Footer>
+          {collateralizationRatio?.toString() !== '0' ? (
+            <ButtonWrapper onClick={onManageClick}>
+              <motion.div
+                whileTap="tap"
+                variants={tapAnimation}
+                onMouseEnter={() => setButtonState('hover')}
+                onMouseLeave={() => setButtonState('closed')}
+              >
+                <ManageButton animate={buttonState}>
+                  <BgCircle
+                    initial={{ scale: 0 }}
+                    animate={buttonState}
+                    variants={ButtonBg}
+                    className="bg-gray-600"
+                  />
+                  <ButtonContent>
+                    <ButtonLabel>Manage</ButtonLabel>
+                  </ButtonContent>
+                </ManageButton>
+              </motion.div>
+            </ButtonWrapper>
+          ) : (
+            <ButtonWrapper>
+              <motion.div
+                whileTap="tap"
+                variants={tapAnimation}
+                onMouseEnter={() => setButtonState('hover')}
+                onMouseLeave={() => setButtonState('closed')}
+              >
+                <ManageButton animate={buttonState}>
+                  <BgCircle
+                    initial={{ scale: 0 }}
+                    animate={buttonState}
+                    variants={ButtonBg}
+                    className="bg-gray-600"
+                  />
+                  <ButtonContent>
+                    <ButtonLabel>---</ButtonLabel>
+                  </ButtonContent>
+                </ManageButton>
+              </motion.div>
+            </ButtonWrapper>
+          )}
+        </Footer>
+      )}
+    </Container>
+  );
+};

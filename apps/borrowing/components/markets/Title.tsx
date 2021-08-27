@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { styled } from '@jarvis-network/ui';
 
 import { MarketsFilter } from '@/components/markets/Filters';
+import { SelfMintingMarketAssets } from '@/state/slices/markets';
 
 const Container = styled.div`
   width: 100%;
@@ -20,12 +21,17 @@ const Title = styled.div`
 interface MarketsTitleProps {
   title: string;
   showFilters?: boolean;
+  markets?: Partial<SelfMintingMarketAssets>;
 }
 
-export const MarketsTitle: FC<MarketsTitleProps> = ({ title, showFilters }) => (
+export const MarketsTitle: FC<MarketsTitleProps> = ({
+  title,
+  showFilters,
+  markets,
+}) => (
   <Container>
     <Title>{title}</Title>
 
-    {showFilters && <MarketsFilter />}
+    {showFilters && <MarketsFilter markets={markets} />}
   </Container>
 );

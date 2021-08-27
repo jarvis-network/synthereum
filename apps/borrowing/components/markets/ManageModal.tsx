@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, styled, Tabs, IconButton } from '@jarvis-network/ui';
 
@@ -9,6 +9,7 @@ import { Repay } from '@/components/markets/modal/Repay';
 import { Redeem } from '@/components/markets/modal/Redeem';
 import { Withdraw } from '@/components/markets/modal/Withdraw';
 import { Deposit } from '@/components/markets/modal/Deposit';
+import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 const CustomModal = styled(Modal)``;
 
@@ -16,7 +17,7 @@ const ModalRoot = styled.div`
   background: ${props => props.theme.scroll.background};
   color: ${props => props.theme.text.primary};
   border-radius: 20px;
-  height: 500px;
+  height: 560px;
   width: 600px;
   box-sizing: border-box;
   display: flex;
@@ -68,19 +69,35 @@ const Content = styled.div`
 `;
 
 export const MarketsManageModal: FC = () => {
-  const [currentTab, setCurrentTab] = useState(0);
+  const currentTab = 0;
   const dispatch = useDispatch();
 
-  const { list, manageKey } = useReduxSelector(state => state.markets);
+  const { list, manageKey: manageKey_ } = useReduxSelector(
+    state => state.markets,
+  );
+  const manageKey = manageKey_ as SupportedSelfMintingPairExact;
+  const handleClose = () => {
+    dispatch(setMarketsManageKey(null));
 
-  const handleClose = () => dispatch(setMarketsManageKey(null));
+    dispatch({
+      type: 'UPDATE_PAIRS',
+      payload: [...Object.keys(list), 'UMA', 'USDC'],
+    });
+    dispatch({ type: 'GET_MARKET_LIST' });
+    dispatch({
+      type: 'transaction/reset',
+    });
+  };
 
-  const marketToManage = list.find(i => i.key === manageKey);
-
+  const marketToManage = Object.values(list).find(i => i.pair === manageKey);
   const content = (
     <CustomSubTabs
       selected={currentTab}
-      onChange={setCurrentTab}
+      onChange={(_: number) => {
+        dispatch({
+          type: 'transaction/reset',
+        });
+      }}
       pointer={false}
       tabs={[
         {
@@ -137,7 +154,11 @@ export const MarketsManageModal: FC = () => {
           size="xxxl"
           inline
         />
-        <CustomTabs selected={0} tabs={[{ title: 'Manage', content }]} />
+
+        <CustomTabs
+          selected={currentTab}
+          tabs={[{ title: 'Manage', content }]}
+        />
       </ModalRoot>
     </CustomModal>
   );
