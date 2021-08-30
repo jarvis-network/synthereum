@@ -45,7 +45,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     // swap to collateral token (exact[input/output][ETH/ERC20])
     if (isExactInput) {
-      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
+      if (msg.value > 0) {
         // swapExactETHForTokens
         collateralOut = kyberRouter.swapExactETHForTokens{value: msg.value}(
           minOutOrMaxIn,
@@ -85,7 +85,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     } else {
       uint256 inputAmountUsed;
 
-      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
+      if (msg.value > 0) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
 

@@ -45,7 +45,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     bytes memory path = encodeAddresses(tokenSwapPath, fees);
 
     if (isExactInput) {
-      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
+      if (msg.value > 0) {
         // eth as input
         exactAmount = msg.value;
       } else {
@@ -87,7 +87,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       (amountOut, ) = synthereumPool.mint(mintParams);
     } else {
       // exact output (collateral)
-      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
+      if (msg.value > 0) {
         // max eth as input
         minOutOrMaxIn = msg.value;
       } else {

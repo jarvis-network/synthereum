@@ -33,7 +33,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     uint256 numberOfSwaps = tokenSwapPath.length - 1;
     uint256 collateralOut;
     if (isExactInput) {
-      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
+      if (msg.value > 0) {
         //swapExactETHForTokens into this wallet
         collateralOut = router.swapExactETHForTokens{value: msg.value}(
           minOutOrMaxIn,
@@ -64,10 +64,9 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       }
     } else {
       uint256 inputAmountUsed;
-      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
+      if (msg.value > 0) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
-
         uint256[] memory amountsOut =
           router.swapETHForExactTokens{value: msg.value}(
             exactAmount,
@@ -169,6 +168,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     collateralInstance.safeIncreaseAllowance(info.routerAddress, collateralOut);
     uint256[] memory amountsOut;
 
+    uint256 numberOfSwaps = tokenSwapPath.length - 1;
     if (isExactInput) {
       // collateralOut as exactInput
       outputTokenAddress == info.nativeCryptoAddress
@@ -178,14 +178,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           tokenSwapPath,
           recipient,
           redeemParams.expiration
-        )
+        )[numberOfSwaps]
         : amountsOut = router.swapExactTokensForTokens(
         collateralOut,
         minOutOrMaxIn,
         tokenSwapPath,
         recipient,
         redeemParams.expiration
-      );
+      )[numberOfSwaps];
     } else {
       // collateralOut as maxInput
       outputTokenAddress == info.nativeCryptoAddress
@@ -196,7 +196,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           tokenSwapPath,
           recipient,
           redeemParams.expiration
-        )
+        )[numberOfSwaps]
         : amountsOut = router.swapTokensForExactTokens(
         exactAmount,
         collateralOut,
@@ -204,7 +204,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         tokenSwapPath,
         recipient,
         redeemParams.expiration
-      );
+      )[numberOfSwaps];
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
@@ -216,6 +216,6 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     }
 
     // return output token amount
-    return amountsOut[tokenSwapPath.length - 1];
+    return amountsOut[numberOfSwaps];
   }
 }
