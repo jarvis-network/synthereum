@@ -159,10 +159,8 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": [
-              "yarn build contracts",
-              "yarn --cwd libs/contracts test"
-            ],
+            "command": "yarn test",
+            "cwd": "libs/contracts",
             "color": true,
             "parallel": false
           }
@@ -524,20 +522,17 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": [
-              "yarn build contracts",
-              "yarn --cwd libs/legacy-currency-contracts test --no-compile"
-            ],
-            "color": true,
-            "parallel": false
+            "command": "yarn test",
+            "cwd": "libs/legacy-currency-contracts",
+            "color": true
           }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "outputs": ["libs/legacy-currency-contracts/dist"],
           "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/legacy-currency-contracts",
+            "command": "yarn build",
+            "cwd": "libs/legacy-currency-contracts",
             "color": true
           }
         }
@@ -591,20 +586,17 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": [
-              "yarn build yield-farming",
-              "yarn --cwd libs/yield-farming test --no-compile"
-            ],
-            "color": true,
-            "parallel": false
+            "command": "yarn test",
+            "cwd": "libs/yield-farming",
+            "color": true
           }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "outputs": ["libs/yield-farming/dist"],
           "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/yield-farming",
+            "command": "yarn build",
+            "cwd": "libs/yield-farming",
             "color": true
           }
         }
@@ -626,20 +618,20 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
-              "yarn start:local-fork mainnet",
-              "yarn test && ../../scripts/cleanup_contracts_test.bash"
+              "echo FIXME",
+              "yarn test ",
+              "../../scripts/cleanup_contracts_test.bash"
             ],
-            "cwd": "./libs/atomic-swap",
-            "color": true,
-            "parallel": true
+            "cwd": "libs/atomic-swap",
+            "color": true
           }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "outputs": ["libs/atomic-swap/dist"],
           "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/atomic-swap",
+            "command": "yarn build",
+            "cwd": "libs/atomic-swap",
             "color": true
           }
         }
@@ -660,20 +652,17 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": [
-              "yarn build jrt-investors",
-              "yarn --cwd libs/jrt-investors test --no-compile"
-            ],
-            "color": true,
-            "parallel": false
+            "command": "yarn test",
+            "cwd": "libs/jrt-investors",
+            "color": true
           }
         },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "outputs": ["libs/jrt-investors/dist"],
           "options": {
-            "command": "yarn run build",
-            "cwd": "./libs/jrt-investors",
+            "command": "yarn build",
+            "cwd": "libs/jrt-investors",
             "color": true
           }
         }
