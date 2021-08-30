@@ -1,42 +1,44 @@
 #!/usr/bin/env bash
-dotenv () {
-  set -a
-  [ -f .env ] && source .env
-  set +a
-}
-dotenv
-network=$1
-echo "Starting local fork of $network blockchain..."
-if [ "$network" = "kovan" ]; then
-  networkId=42
-  networkName='kovan'
-  projectId=$ETHEREUM_PROJECT_ID
-elif [ "$network" = "ropsten" ]; then
-  networkId=3
-  networkName='ropsten'
- projectId=$ETHEREUM_PROJECT_ID
-elif [ "$network" = "rinkeby" ]; then
-  networkId=4
-  networkName='rinkeby'
-  projectId=$ETHEREUM_PROJECT_ID
-elif [ "$network" = "mainnet" ]; then
-  networkId=1
-  networkName='mainnet'
-  projectId=$ETHEREUM_PROJECT_ID
-elif [ "$network" = "mumbai" ]; then
-  networkId=80001
-  networkName="polygon-mumbai"
-  projectId=$POLYGON_PROJECT_ID
-elif [ "$network" = "polygon" ]; then
-  networkId=137
-  networkName="polygon-mainnet"
-  projectId=$POLYGON_PROJECT_ID
-else
-  echo "Error: Network does not exist"
-  exit 1
+
+set -euo pipefail
+
+set -a
+# shellcheck disable=SC1091
+[ -f .env ] && source .env
+set +a
+
+network="${1:-}"
+if [ -z "${network// }" ]; then
+    echo "Error: required network name argument."
+    echo "Usage:"
+    echo "    ./local-fork.bash NETWORK_NAME"
+    exit 1
 fi
-echo "Network id: $networkId"
-echo "Network $networkName"
+
+if [ "$network" = "kovan" ]; then
+    networkId=42
+    networkName='kovan'
+elif [ "$network" = "ropsten" ]; then
+    networkId=3
+    networkName='ropsten'
+elif [ "$network" = "rinkeby" ]; then
+    networkId=4
+    networkName='rinkeby'
+elif [ "$network" = "mainnet" ]; then
+    networkId=1
+    networkName='mainnet'
+elif [ "$network" = "mumbai" ]; then
+    networkId=80001
+    networkName="polygon-mumbai"
+elif [ "$network" = "polygon" ]; then
+    networkId=137
+    networkName="polygon-mainnet"
+else
+    echo "Error: unknown network '$network'."
+    exit 1
+fi
+
+echo "Starting local fork of $network blockchain..."
 
 yarn ganache-cli -a 10 -p 8545 -i $networkId --chainId $networkId \
     -m "$MNEMONIC" \
