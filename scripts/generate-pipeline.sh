@@ -25,24 +25,23 @@ before_script:
   script:
     - yarn lint:all
 
-🧪 contracts:test:
+🧪:
   parallel:
     matrix:
-      - TARGET: contracts
-      - TARGET: atomic-swap
-      - TARGET: yield-farming
-      - TARGET: legacy-currency-contracts
-      - TARGET: jrt-investors
-
+      - TARGET: [contracts, yield-farming, legacy-currency-contracts, jrt-investors]
   script:
-    - yarn build \$TARGET
     - yarn test \$TARGET
+
+🧪 atomic-swap:
+  allow_failure: true # TODO: Add ganache-cli service to provide a mainnet fork
+  script:
+    - yarn test atomic-swap
 
 🧱 cli:build:
   script:
     - yarn build cli
 
-🚀 deploy:
+🚀:
   variables:
     NETLIFY_AUTH_TOKEN: '\$NETLIFY_AUTH_TOKEN'
   parallel:
