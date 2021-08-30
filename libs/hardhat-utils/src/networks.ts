@@ -28,7 +28,7 @@ export function addPublicNetwork(
 
   const port = process.env.CUSTOM_LOCAL_NODE_PORT || '8545';
   const localRpc = process.env.GITLAB_CI
-    ? `http://trufflesuite-ganache-cli:${port}`
+    ? `http://${process.env.GL_RPC_HOSTNAME}:${port}`
     : `http://127.0.0.1:${port}`;
 
   config.networks[`${networkName}_fork`] = {
