@@ -10,6 +10,17 @@ import {
 /// @notice general interface that atomic swap implementations must adhere to
 /// @notice in order to be callable through the proxy pattern
 interface IAtomicSwapV2 {
+  /// @notice parameters saved in proxy useful for a specific implementation
+  /// @param routerAddress address of the related swap router
+  /// @param synthereumFinder synthereum finder address
+  /// @param nativeCryptoAddress address of the native wrapped crypto (ie WETH)
+  struct ImplementationInfo {
+    address routerAddress;
+    address synthereumFinder;
+    address nativeCryptoAddress;
+  }
+
+  /// @param info: ImplementationInfo related to this implementationss
   /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
   /// @param exactAmount: exact input or exact output based on boolean
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
@@ -19,6 +30,7 @@ interface IAtomicSwapV2 {
   /// @param mintParams: struct to mint from synthereum pool with collateral taken from swap
   /// @return amountOut amount of received jSynths
   function swapToCollateralAndMint(
+    ImplementationInfo memory info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -28,6 +40,7 @@ interface IAtomicSwapV2 {
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut);
 
+  /// @param info: ImplementationInfo related to this implementationss
   /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
   /// @param exactAmount: exact input or exact output based on boolean
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
@@ -38,6 +51,7 @@ interface IAtomicSwapV2 {
   /// @param recipient: recipient of the output tokens
   /// @return amountOut amount of received ERC20
   function redeemCollateralAndSwap(
+    ImplementationInfo memory info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,

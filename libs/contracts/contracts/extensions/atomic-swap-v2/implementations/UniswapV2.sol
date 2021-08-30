@@ -5,19 +5,12 @@ import '../BaseAtomicSwap.sol';
 import {IUniswapV2Router02} from './interfaces/IUniswapV2Router02.sol';
 
 contract UniV2AtomicSwap is BaseAtomicSwap {
-  IUniswapV2Router02 public router;
-
-  constructor(
-    ISynthereumFinder _synthereum,
-    IUniswapV2Router02 _uniV2Router,
-    address _wethAaddress
-  ) BaseAtomicSwap(_wethAaddress, _synthereum) {
-    router = _uniV2Router;
-  }
+  constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
 
   function swapToCollateralAndMint(
+    ImplementationInfo memory info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -26,7 +19,12 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
-    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    // instantiate router
+    IUniswapV2RouterV2 memory router = IUniswapV2RouterV2(info.routerAddress);
+
+    // check pool
+    IERC20 collateralInstance =
+      checkSynthereumPool(info.synthereumFinder, synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
       'Wrong collateral instance'
@@ -35,7 +33,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     uint256 numberOfSwaps = tokenSwapPath.length - 1;
     uint256 collateralOut;
     if (isExactInput) {
-      if (tokenSwapPath[0] == WETH_ADDRESS) {
+      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
         //swapExactETHForTokens into this wallet
         collateralOut = router.swapExactETHForTokens{value: msg.value}(
           minOutOrMaxIn,
@@ -52,7 +50,10 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           address(this),
           exactAmount
         );
-        inputTokenInstance.safeIncreaseAllowance(address(router), exactAmount);
+        inputTokenInstance.safeIncreaseAllowance(
+          info.routerAddress,
+          exactAmount
+        );
         collateralOut = router.swapExactTokensForTokens(
           exactAmount,
           minOutOrMaxIn,
@@ -63,7 +64,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       }
     } else {
       uint256 inputAmountUsed;
-      if (tokenSwapPath[0] == WETH_ADDRESS) {
+      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
 
@@ -93,7 +94,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           mintOutOrMaxIn
         );
         inputTokenInstance.safeIncreaseAllowance(
-          address(router),
+          info.routerAddress,
           minOutOrMaxIn
         );
 
@@ -129,6 +130,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
   function redeemCollateralAndSwap(
+    ImplementationInfo memory info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -138,7 +140,12 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
-    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    // instantiate router
+    IUniswapV2RouterV2 memory router = IUniswapV2RouterV2(info.routerAddress);
+
+    // check pool
+    IERC20 collateralInstance =
+      checkSynthereumPool(info.synthereumFinder, synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[0],
       'Wrong collateral instance'
@@ -159,12 +166,12 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
-    collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
+    collateralInstance.safeIncreaseAllowance(info.routerAddress, collateralOut);
     uint256[] memory amountsOut;
 
     if (isExactInput) {
       // collateralOut as exactInput
-      outputTokenAddress == WETH_ADDRESS
+      outputTokenAddress == info.nativeCryptoAddress
         ? amountsOut = router.swapExactTokensForETH(
           collateralOut,
           minOutOrMaxIn,
@@ -181,8 +188,8 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       );
     } else {
       // collateralOut as maxInput
-      outputTokenAddress == WETH_ADDRESS
-        ? amountsOut = kyberRouter.swapTokensForExactETH(
+      outputTokenAddress == info.nativeCryptoAddress
+        ? amountsOut = router.swapTokensForExactETH(
           exactAmount,
           collateralOut,
           poolsPath,
@@ -190,7 +197,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           recipient,
           redeemParams.expiration
         )
-        : amountsOut = kyberRouter.swapTokensForExactTokens(
+        : amountsOut = router.swapTokensForExactTokens(
         exactAmount,
         collateralOut,
         poolsPath,

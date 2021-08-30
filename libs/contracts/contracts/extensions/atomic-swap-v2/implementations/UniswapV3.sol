@@ -11,20 +11,13 @@ interface IUniswapV3Router is ISwapRouter {
 }
 
 contract UniV3AtomicSwap is BaseAtomicSwap {
-  IUniswapV3Router public router;
-
-  constructor(
-    ISynthereumFinder _synthereum,
-    IUniswapV3Router _uniV3Router,
-    address _wethAddress
-  ) BaseAtomicSwap(_wethAddress, _synthereum) {
-    router = _uniV3Router;
-  }
+  constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
 
   /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function swapToCollateralAndMint(
+    ImplementationInfo memory info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -33,10 +26,14 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
+    // instantiate router
+    IUniswapV3Router memory router = IUniswapV3Router(info.routerAddress);
+
     // unpack the extraParams
     uint24[] memory fees = decodeExtraParams(extraParams);
 
-    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    IERC20 collateralInstance =
+      checkSynthereumPool(info.synthereumFinder, synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
       'Wrong collateral instance'
@@ -48,7 +45,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     bytes memory path = encodeAddresses(tokenSwapPath, fees);
 
     if (isExactInput) {
-      if (tokenSwapPath[0] == WETH_ADDRESS) {
+      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
         // eth as input
         exactAmount = msg.value;
       } else {
@@ -60,7 +57,10 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         );
 
         //approve router to swap tokens
-        inputTokenInstance.safeIncreaseAllowance(address(router), exactAmount);
+        inputTokenInstance.safeIncreaseAllowance(
+          info.routerAddress,
+          exactAmount
+        );
       }
 
       // swap to collateral token into this wallet
@@ -87,7 +87,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       (amountOut, ) = synthereumPool.mint(mintParams);
     } else {
       // exact output (collateral)
-      if (tokenSwapPath[0] == WETH_ADDRESS) {
+      if (tokenSwapPath[0] == info.nativeCryptoAddress) {
         // max eth as input
         minOutOrMaxIn = msg.value;
       } else {
@@ -101,7 +101,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
         // approve router to swap tokens
         inputTokenInstance.safeIncreaseAllowance(
-          address(router),
+          info.routerAddress,
           minOutOrMaxIn
         );
       }
@@ -150,6 +150,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function redeemCollateralAndSwap(
+    ImplementationInfo memory info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -159,7 +160,11 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
-    IERC20 collateralInstance = checkSynthereumPool(synthereumPool);
+    // instantiate router
+    IUniswapV3Router memory router = IUniswapV3Router(info.routerAddress);
+
+    IERC20 collateralInstance =
+      checkSynthereumPool(info.synthereumFinder, synthereumPool);
     require(
       address(collateralInstance) == tokenSwapPath[0],
       'Wrong collateral instance'
@@ -184,7 +189,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     bytes memory path = encodeAddresses(tokenSwapPath, fees);
 
     // approve router to swap tokens
-    collateralInstance.safeIncreaseAllowance(address(router), collateralOut);
+    collateralInstance.safeIncreaseAllowance(info.routerAddress, collateralOut);
 
     if (isExactInput) {
       // collateral as exact input
