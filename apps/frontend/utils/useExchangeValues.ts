@@ -1,8 +1,16 @@
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { useRate } from '@/utils/useRate';
-import { FEE } from '@/data/fee';
 import { calcExchange } from '@/utils/calcExchange';
-import { primaryCollateralSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
+import {
+  primaryCollateralSymbol,
+  synthereumConfig,
+} from '@jarvis-network/synthereum-contracts/dist/config';
+import {
+  useBehaviorSubject,
+  useCoreObservables,
+} from '@jarvis-network/app-toolkit';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { useMemo } from 'react';
 
 export const useExchangeValues = () => {
   const {
@@ -23,6 +31,18 @@ export const useExchangeValues = () => {
     )!,
   }));
 
+  const networkId = useBehaviorSubject(useCoreObservables().networkId$);
+
+  const feePercentage = useMemo(
+    () =>
+      FPN.fromWei(
+        networkId
+          ? synthereumConfig[networkId as 42].fees.feePercentage
+          : '2000000000000000',
+      ),
+    [networkId],
+  );
+
   const paySymbol = assetPay?.symbol || null;
   const receiveSymbol = assetReceive?.symbol || null;
 
@@ -35,7 +55,7 @@ export const useExchangeValues = () => {
       base,
       pay,
       receive,
-      feePercentage: FEE,
+      feePercentage,
       collateralAsset,
     }) || {};
 
@@ -57,5 +77,6 @@ export const useExchangeValues = () => {
     receiveValue,
     receiveString,
     transactionCollateral,
+    feePercentage,
   };
 };

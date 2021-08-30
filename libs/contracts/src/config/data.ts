@@ -245,7 +245,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
   },
   '137': {
     fees: {
-      feePercentage: toWeiString('0.02'),
+      feePercentage: toWeiString('0.001'),
       feeRecipients: [
         A<137>('0x8eF00583bAa186094D9A34a0A4750C1D1BB86831'),
         A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
@@ -307,7 +307,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
   },
   '80001': {
     fees: {
-      feePercentage: toWeiString('0.02'),
+      feePercentage: toWeiString('0.002'),
       feeRecipients: [
         A<80001>('0x61b5A06CE0FcdA6445fb454244Ce84ED64c41aCa'),
         A<80001>('0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb'),

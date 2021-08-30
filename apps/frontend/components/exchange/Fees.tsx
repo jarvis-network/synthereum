@@ -3,7 +3,6 @@ import { styled, Tooltip, useWindowSize } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { useExchangeValues } from '@/utils/useExchangeValues';
-import { FEE } from '@/data/fee';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 const Container = styled.div`
@@ -53,21 +52,23 @@ const QuestionMark = styled.span`
   }
 `;
 
-const liquidityProviderFeeText = `A ${FEE.div(new FPN(2))
-  .mul(new FPN(100))
-  .format()}% liquidity provider fee is collected and send to the Liquidity Provider`;
-
-const treasuryFeeText = `A ${FEE.div(new FPN(2))
-  .mul(new FPN(100))
-  .format()}% treasury fee is collected and is sent to the treasury, in the future to the DAO.`;
-
 export const FEES_BLOCK_HEIGHT_PX = 100;
 
 export const Fees: React.FC = () => {
-  const { fee } = useExchangeValues();
+  const { fee, feePercentage } = useExchangeValues();
   const { innerWidth } = useWindowSize();
 
   const feeItem = fee?.div(new FPN(2)) || null;
+
+  const liquidityProviderFeeText = `A ${feePercentage
+    .div(new FPN(2))
+    .mul(new FPN(100))
+    .format()}% liquidity provider fee is collected and send to the Liquidity Provider`;
+
+  const treasuryFeeText = `A ${feePercentage
+    .div(new FPN(2))
+    .mul(new FPN(100))
+    .format()}% treasury fee is collected and is sent to the treasury, in the future to the DAO.`;
 
   return (
     <Container style={{ marginTop: innerWidth <= 1080 ? 0 : 60 }}>
