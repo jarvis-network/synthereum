@@ -98,13 +98,11 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
     if (!Object.prototype.hasOwnProperty.call(versionsToLoad, i)) continue;
     const version = i as PoolVersion;
     const poolsForVersion = versionsToLoad[version];
-    if (typeof poolsForVersion === 'object' && poolsForVersion !== null) {
-      pools[version] = poolsForVersion;
-      continue;
-    }
-
-    // eslint-disable-next-line no-await-in-loop
-    pools[version] = await loadAllPools(version);
+    pools[version] =
+      typeof poolsForVersion === 'object' && poolsForVersion !== null
+        ? poolsForVersion
+        : // eslint-disable-next-line no-await-in-loop
+          await loadAllPools(version);
   }
 
   return {
