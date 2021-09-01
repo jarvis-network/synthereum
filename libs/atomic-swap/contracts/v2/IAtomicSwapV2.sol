@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.5;
+pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import {
   ISynthereumPoolOnChainPriceFeed
-} from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
 /// @notice general interface that atomic swap implementations must adhere to
 /// @notice in order to be callable through the proxy pattern

@@ -1,10 +1,13 @@
-pragma solidity >=0.7.5;
+pragma solidity ^0.8.4;
 pragma abicoder v2;
 
 import '../BaseAtomicSwap.sol';
-import {IUniswapV2Router02} from './interfaces/IUniswapV2Router02.sol';
+import {IUniswapV2Router02} from '../interfaces/IUniswapV2Router02.sol';
 
 contract UniV2AtomicSwap is BaseAtomicSwap {
+  using SafeERC20 for IERC20;
+  using SafeMath for uint256;
+
   constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
@@ -20,13 +23,11 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
     // instantiate router
-    IUniswapV2RouterV2 memory router = IUniswapV2RouterV2(info.routerAddress);
+    IUniswapV2Router02 router = IUniswapV2Router02(info.routerAddress);
 
-    // check pool
-    IERC20 collateralInstance =
-      checkSynthereumPool(info.synthereumFinder, synthereumPool);
     require(
-      address(collateralInstance) == tokenSwapPath[tokenSwapPath.length - 1],
+      address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
+        tokenSwapPath[tokenSwapPath.length - 1],
       'Wrong collateral instance'
     );
 
@@ -43,14 +44,13 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         )[numberOfSwaps];
       } else {
         //swapExactTokensForTokens into this wallet
-        IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
 
-        inputTokenInstance.safeTransferFrom(
+        IERC20(tokenSwapPath[0]).safeTransferFrom(
           msg.sender,
           address(this),
           exactAmount
         );
-        inputTokenInstance.safeIncreaseAllowance(
+        IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
           info.routerAddress,
           exactAmount
         );
@@ -63,7 +63,6 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         )[numberOfSwaps];
       }
     } else {
-      uint256 inputAmountUsed;
       if (msg.value > 0) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
@@ -73,15 +72,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
             tokenSwapPath,
             address(this),
             mintParams.expiration
-          )[numberOfSwaps];
+          );
 
-        inputAmountUsed = amountsOut[0];
         collateralOut = amountsOut[numberOfSwaps];
 
         // refund eventual eth leftover
-        if (minOutOrMaxIn > inputAmountUsed) {
+        if (minOutOrMaxIn > amountsOut[0]) {
           (bool success, ) =
-            msg.sender.call{value: minOutOrMaxIn.sub(inputAmountUsed)}('');
+            msg.sender.call{value: minOutOrMaxIn.sub(amountsOut[0])}('');
           require(success, 'Refund eth failed');
         }
       } else {
@@ -90,7 +88,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         inputTokenInstance.safeTransferFrom(
           msg.sender,
           address(this),
-          mintOutOrMaxIn
+          minOutOrMaxIn
         );
         inputTokenInstance.safeIncreaseAllowance(
           info.routerAddress,
@@ -106,20 +104,19 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
             mintParams.expiration
           );
 
-        inputAmountUsed = amountsOut[0];
         collateralOut = amountsOut[numberOfSwaps];
 
-        if (minOutOrMaxIn > inputAmountUsed) {
+        if (minOutOrMaxIn > amountsOut[0]) {
           inputTokenInstance.safeTransfer(
             msg.sender,
-            minOutOrMaxIn.sub(inputAmountUsed)
+            minOutOrMaxIn.sub(amountsOut[0])
           );
         }
       }
     }
 
     // mint jSynth
-    collateralInstance.safeIncreaseAllowance(
+    IERC20(tokenSwapPath[numberOfSwaps]).safeIncreaseAllowance(
       address(synthereumPool),
       collateralOut
     );
@@ -140,35 +137,40 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     address payable recipient
   ) external returns (uint256) {
     // instantiate router
-    IUniswapV2RouterV2 memory router = IUniswapV2RouterV2(info.routerAddress);
+    IUniswapV2Router02 router = IUniswapV2Router02(info.routerAddress);
 
     // check pool
-    IERC20 collateralInstance =
-      checkSynthereumPool(info.synthereumFinder, synthereumPool);
     require(
-      address(collateralInstance) == tokenSwapPath[0],
+      address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
+        tokenSwapPath[0],
       'Wrong collateral instance'
     );
     address outputTokenAddress = tokenSwapPath[tokenSwapPath.length - 1];
-    IERC20 synthTokenInstance = synthereumPool.syntheticToken();
+    {
+      IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
-    // redeem USDC with jSynth into this contract
-    synthTokenInstance.safeTransferFrom(
-      msg.sender,
-      address(this),
-      redeemParams.numTokens
-    );
-    synthTokenInstance.safeIncreaseAllowance(
-      address(synthereumPool),
-      redeemParams.numTokens
-    );
+      // redeem USDC with jSynth into this contract
+      synthTokenInstance.safeTransferFrom(
+        msg.sender,
+        address(this),
+        redeemParams.numTokens
+      );
+      synthTokenInstance.safeIncreaseAllowance(
+        address(synthereumPool),
+        redeemParams.numTokens
+      );
+    }
+
+    // redeem to collateral and approve swap
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
-    collateralInstance.safeIncreaseAllowance(info.routerAddress, collateralOut);
+    IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
+      info.routerAddress,
+      collateralOut
+    );
     uint256[] memory amountsOut;
 
-    uint256 numberOfSwaps = tokenSwapPath.length - 1;
     if (isExactInput) {
       // collateralOut as exactInput
       outputTokenAddress == info.nativeCryptoAddress
@@ -178,44 +180,42 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           tokenSwapPath,
           recipient,
           redeemParams.expiration
-        )[numberOfSwaps]
+        )
         : amountsOut = router.swapExactTokensForTokens(
         collateralOut,
         minOutOrMaxIn,
         tokenSwapPath,
         recipient,
         redeemParams.expiration
-      )[numberOfSwaps];
+      );
     } else {
       // collateralOut as maxInput
       outputTokenAddress == info.nativeCryptoAddress
         ? amountsOut = router.swapTokensForExactETH(
           exactAmount,
           collateralOut,
-          poolsPath,
           tokenSwapPath,
           recipient,
           redeemParams.expiration
-        )[numberOfSwaps]
+        )
         : amountsOut = router.swapTokensForExactTokens(
         exactAmount,
         collateralOut,
-        poolsPath,
         tokenSwapPath,
         recipient,
         redeemParams.expiration
-      )[numberOfSwaps];
+      );
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
-        collateralInstance.safeTransfer(
+        IERC20(tokenSwapPath[0]).safeTransfer(
           msg.sender,
-          collateral.sub(amountsOut[0])
+          collateralOut.sub(amountsOut[0])
         );
       }
     }
 
     // return output token amount
-    return amountsOut[numberOfSwaps];
+    return amountsOut[tokenSwapPath.length - 1];
   }
 }

@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.5;
+pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import './IAtomicSwapV2.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
-} from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
+import {
+  ISynthereumFinder
+} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 
 contract AtomicSwapProxy {
   IAtomicSwapV2 public atomicSwapIface;
@@ -41,14 +43,7 @@ contract AtomicSwapProxy {
     _;
   }
 
-  modifier isRegisteredImplementation(string implementationId) {
-    address implementation =
-      idToAddress[keccak256(abi.encode(implementationId))];
-    require(implementation != address(0), 'Implementation id not registered');
-    _;
-  }
-
-  constructor(address _admin) public {
+  constructor(address _admin) {
     admin = _admin;
   }
 
@@ -64,7 +59,7 @@ contract AtomicSwapProxy {
   }
 
   function removeImplementation(string calldata identifier) public onlyAdmin() {
-    bytes32 memory bytesId = keccak256(abi.encode(identifier));
+    bytes32 bytesId = keccak256(abi.encode(identifier));
     delete implementationInfo[idToAddress[bytesId]];
     delete idToAddress[bytesId];
     emit RemovedImplementation(identifier);
@@ -81,7 +76,11 @@ contract AtomicSwapProxy {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public payable isRegisteredImplementation(implementationId) {
+  ) public payable {
+    address implementation =
+      idToAddress[keccak256(abi.encode(implementationId))];
+    require(implementation != address(0), 'Implementation id not registered');
+
     string memory functionSig =
       'swapToCollateralAndMint((address,address,address),bool,uint256,uint256,address[],bytes,address,(address,uint256,uint256,uint256,uint256,address))';
 
@@ -89,7 +88,7 @@ contract AtomicSwapProxy {
       implementation.delegatecall(
         abi.encodeWithSignature(
           functionSig,
-          implementationInfo[implementationId],
+          implementationInfo[implementation],
           isExactInput,
           exactAmount,
           minOutOrMaxIn,
@@ -116,7 +115,10 @@ contract AtomicSwapProxy {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
-  ) public isRegisteredImplementation(implementationId) {
+  ) public {
+    address implementation =
+      idToAddress[keccak256(abi.encode(implementationId))];
+    require(implementation != address(0), 'Implementation id not registered');
     string memory functionSig =
       'redeemCollateralAndSwap((address,address,address),bool,uint256,uint256,address[],bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
 
