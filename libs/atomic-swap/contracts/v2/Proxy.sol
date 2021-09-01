@@ -23,10 +23,10 @@ contract AtomicSwapProxy {
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
   // that means only one implementation for each specific dex can exist
   // on UI side, by fixing the identifiers string no fix needs to be done in case on implementations address change
-  mapping(bytes32 => address) idToAddress;
+  mapping(bytes32 => address) public idToAddress;
 
   // implementationAddress => ImplementationInfo
-  mapping(address => ImplementationInfo) implementationInfo;
+  mapping(address => ImplementationInfo) public implementationInfo;
 
   address admin;
 
@@ -52,17 +52,28 @@ contract AtomicSwapProxy {
     string calldata identifier,
     address implementation,
     ImplementationInfo memory info
-  ) public onlyAdmin() {
+  ) external onlyAdmin() {
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
     implementationInfo[implementation] = info;
     emit RegisterImplementation(identifier, implementation, info);
   }
 
-  function removeImplementation(string calldata identifier) public onlyAdmin() {
+  function removeImplementation(string calldata identifier)
+    external
+    onlyAdmin()
+  {
     bytes32 bytesId = keccak256(abi.encode(identifier));
     delete implementationInfo[idToAddress[bytesId]];
     delete idToAddress[bytesId];
     emit RemovedImplementation(identifier);
+  }
+
+  function getImplementationAddress(string calldata identifier)
+    external
+    view
+    returns (address)
+  {
+    return idToAddress[keccak256(abi.encode(identifier))];
   }
 
   // delegate calls to atomic swap implementations
