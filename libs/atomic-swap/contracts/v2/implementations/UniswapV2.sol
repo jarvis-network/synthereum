@@ -17,13 +17,15 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    address[] memory tokenSwapPath,
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
     // instantiate router
     IUniswapV2Router02 router = IUniswapV2Router02(info.routerAddress);
+
+    // unpack tokenSwapPath from extraParams
+    address[] memory tokenSwapPath = decodeExtraParams(extraParams);
 
     require(
       address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
@@ -130,7 +132,6 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    address[] memory tokenSwapPath,
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
@@ -138,6 +139,9 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
   ) external returns (uint256) {
     // instantiate router
     IUniswapV2Router02 router = IUniswapV2Router02(info.routerAddress);
+
+    // unpack tokenSwapPath from extraParams
+    address[] memory tokenSwapPath = decodeExtraParams(extraParams);
 
     // check pool
     require(
@@ -217,5 +221,13 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
     // return output token amount
     return amountsOut[tokenSwapPath.length - 1];
+  }
+
+  function decodeExtraParams(bytes memory params)
+    internal
+    pure
+    returns (address[] memory)
+  {
+    return abi.decode(params, (address[]));
   }
 }

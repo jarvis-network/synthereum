@@ -72,7 +72,6 @@ contract AtomicSwapProxy {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    address[] memory tokenSwapPath,
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
@@ -82,7 +81,7 @@ contract AtomicSwapProxy {
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint((address,address,address),bool,uint256,uint256,address[],bytes,address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint((address,address,address),bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address))';
 
     (bool success, bytes memory result) =
       implementation.delegatecall(
@@ -92,7 +91,6 @@ contract AtomicSwapProxy {
           isExactInput,
           exactAmount,
           minOutOrMaxIn,
-          tokenSwapPath,
           extraParams,
           synthereumPool,
           mintParams
@@ -110,7 +108,6 @@ contract AtomicSwapProxy {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    address[] memory tokenSwapPath,
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
@@ -120,7 +117,7 @@ contract AtomicSwapProxy {
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
     string memory functionSig =
-      'redeemCollateralAndSwap((address,address,address),bool,uint256,uint256,address[],bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
+      'redeemCollateralAndSwap((address,address,address),bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
 
     (bool success, bytes memory result) =
       implementation.delegatecall(
@@ -130,7 +127,6 @@ contract AtomicSwapProxy {
           isExactInput,
           exactAmount,
           minOutOrMaxIn,
-          tokenSwapPath,
           extraParams,
           synthereumPool,
           redeemParams,

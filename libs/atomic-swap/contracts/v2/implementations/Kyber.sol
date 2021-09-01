@@ -20,7 +20,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    IERC20[] memory tokenSwapPath,
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
@@ -29,7 +28,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     IDMMExchangeRouter kyberRouter = IDMMExchangeRouter(info.routerAddress);
 
     // unpack the extraParams
-    address[] memory poolsPath = decodeExtraParams(extraParams);
+    (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
+      decodeExtraParams(extraParams);
 
     // checks
     require(
@@ -58,17 +58,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       } else {
         // swapExactTokensForTokens
         // get funds from caller
-        IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
-        inputTokenInstance.safeTransferFrom(
+        tokenSwapPath[0].safeTransferFrom(
           msg.sender,
           address(this),
           exactAmount
         );
         //approve kyber router to swap
-        inputTokenInstance.safeIncreaseAllowance(
-          info.routerAddress,
-          exactAmount
-        );
+        tokenSwapPath[0].safeIncreaseAllowance(info.routerAddress, exactAmount);
 
         // swap to collateral token into this wallet
         collateralOut = kyberRouter.swapExactTokensForTokens(
@@ -105,14 +101,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       } else {
         //swapTokensForExactTokens
         // pull the max input tokens allowed to spend
-        IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
-        inputTokenInstance.safeTransferFrom(
+        tokenSwapPath[0].safeTransferFrom(
           msg.sender,
           address(this),
           minOutOrMaxIn
         );
         //approve kyber router to swap s
-        inputTokenInstance.safeIncreaseAllowance(
+        tokenSwapPath[0].safeIncreaseAllowance(
           info.routerAddress,
           minOutOrMaxIn
         );
@@ -131,7 +126,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
         if (minOutOrMaxIn > amountsOut[0]) {
           // refund leftover input erc20
-          inputTokenInstance.safeTransfer(
+          tokenSwapPath[0].safeTransfer(
             msg.sender,
             minOutOrMaxIn.sub(amountsOut[0])
           );
@@ -158,7 +153,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    IERC20[] memory tokenSwapPath,
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
@@ -168,7 +162,9 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     IDMMExchangeRouter kyberRouter = IDMMExchangeRouter(info.routerAddress);
 
     // unpack the extraParams
-    address[] memory poolsPath = decodeExtraParams(extraParams);
+    (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
+      decodeExtraParams(extraParams);
+
     // checks
     require(
       poolsPath.length == tokenSwapPath.length - 1,
@@ -200,10 +196,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
     // approve kyber proxy to swap tokens
-    IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
-      info.routerAddress,
-      collateralOut
-    );
+    tokenSwapPath[0].safeIncreaseAllowance(info.routerAddress, collateralOut);
 
     uint256[] memory amountsOut;
     if (isExactInput) {
@@ -247,7 +240,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
-        IERC20(tokenSwapPath[0]).safeTransfer(
+        tokenSwapPath[0].safeTransfer(
           msg.sender,
           collateralOut.sub(amountsOut[0])
         );
@@ -264,8 +257,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   function decodeExtraParams(bytes memory params)
     internal
     pure
-    returns (address[] memory)
+    returns (address[] memory, IERC20[] memory)
   {
-    return abi.decode(params, (address[]));
+    return abi.decode(params, (address[], IERC20[]));
   }
 }
