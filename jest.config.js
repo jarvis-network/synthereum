@@ -10,5 +10,6 @@ module.exports = {
     '<rootDir>/libs/yield-farming',
     '<rootDir>/libs/atomic-swap',
     '<rootDir>/libs/jrt-investors',
+    '<rootDir>/libs/synthereum-config',
   ],
 };

@@ -105,6 +105,9 @@
     },
     "jrt-investors": {
       "tags": []
+    },
+    "synthereum-config": {
+      "tags": []
     }
   },
   "workspaceLayout": {

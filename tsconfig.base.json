@@ -44,7 +44,10 @@
       "@jarvis-network/hardhat-utils": ["libs/hardhat-utils/src/index.ts"],
       "@jarvis-network/yield-farming": ["libs/yield-farming/src/index.ts"],
       "@jarvis-network/atomic-swap": ["libs/atomic-swap/src/index.ts"],
-      "@jarvis-network/jrt-investors": ["libs/jrt-investors/src/index.ts"]
+      "@jarvis-network/jrt-investors": ["libs/jrt-investors/src/index.ts"],
+      "@jarvis-network/synthereum-config": [
+        "libs/synthereum-config/src/index.ts"
+      ]
     }
   }
 }
