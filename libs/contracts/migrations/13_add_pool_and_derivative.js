@@ -2,7 +2,9 @@ const web3Utils = require('web3-utils');
 const rolesConfig = require('../data/roles.json');
 const umaContracts = require('../data/uma-contract-dependencies.json');
 const umaConfig = require('../data/uma-config.json');
-const { getExistingInstance } = require('../dist/migration-utils/deployment');
+const {
+  getExistingInstance,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
 const {
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');

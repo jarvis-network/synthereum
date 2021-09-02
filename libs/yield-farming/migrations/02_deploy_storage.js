@@ -1,6 +1,8 @@
 const AerariumSanctius = artifacts.require('AerariumSanctius');
 const ElysianFields = artifacts.require('ElysianFields');
-const { getExistingInstance } = require('../dist/migration-utils/deployment');
+const {
+  getExistingInstance,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
 
 const {
   deploy,

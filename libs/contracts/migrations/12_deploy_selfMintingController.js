@@ -5,7 +5,9 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
-  const { getExistingInstance } = require('../dist/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const { SynthereumFinder, SelfMintingController } = migrate.getContracts(
     artifacts,
   );

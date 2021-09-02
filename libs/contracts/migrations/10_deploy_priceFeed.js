@@ -9,7 +9,9 @@ async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
   const aggregators = require('../data/aggregators.json');
   const randomOracleConfig = require('../data/test/randomAggregator.json');
-  const { getExistingInstance } = require('../dist/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const {
     SynthereumFinder,
     SynthereumChainlinkPriceFeed,
