@@ -76,7 +76,3 @@ import '../derivative/v2/PerpetualPositionManagerPoolPartyLib.sol';
 import '../derivative/v2/PerpetualLiquidatablePoolPartyLib.sol';
 import '../derivative/v2/PerpetutalPoolPartyCreator.sol';
 import '../derivative/v2/PerpetualLiquidatablePoolParty.sol';
-
-// TODO: Check if it's correct:
-import '../fixed-rate-currency/FixedRateCurrency.sol';
-import '../fixed-rate-currency/FixedRateWrapper.sol';

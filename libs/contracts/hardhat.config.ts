@@ -13,12 +13,9 @@ import {
   compile,
 } from '@jarvis-network/hardhat-utils/dist/tasks';
 
-import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
 
-import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
-
-import { deployFixedRate } from './src/migration-utils/deploy_fixed_rate';
+import { task as createOrModifyHardhatTask } from 'hardhat/config';
 
 const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
 
@@ -45,33 +42,6 @@ modifyTest(
 modifyAccounts();
 modifyDeploy(resolve('.'));
 compile();
-
-const TASK_DEPLOY_FIXED_RATE = 'deploy_fixed_rate_currency';
-
-task(TASK_DEPLOY_FIXED_RATE)
-  .addParam('jsynth', 'The synthereum peg token address')
-  .addParam('collateral', 'The collateral address of the synth peg token')
-  .addParam('pool', 'The synthereum pool address')
-  .addParam('admin', 'Contract admin address')
-  .addParam('rate', 'The exchange rate')
-  .addParam('name', 'The fixed rate currency name')
-  .addParam('symbol', 'Its symbol')
-  .addParam('atomicswap', 'The address of the atomic swap contract')
-
-  // eslint-disable-next-line require-await
-  .setAction(async (params, hre) => {
-    await hre.run(TASK_COMPILE);
-    const FixedRateCurrency = hre.artifacts.readArtifact('FixedRateCurrency');
-    const SynthereumFinder = hre.artifacts.readArtifact('SynthereumFinder');
-    const AtomicSwap = hre.artifacts.readArtifact('AtomicSwap');
-
-    const address = await deployFixedRate(params, hre.web3, hre.network, {
-      FixedRateCurrency,
-      SynthereumFinder,
-      AtomicSwap,
-    });
-    console.log('Deployed at: ', address);
-  });
 
 export const config = {
   solidity: {

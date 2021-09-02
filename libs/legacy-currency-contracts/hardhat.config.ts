@@ -8,7 +8,36 @@ import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-etherscan';
 
+import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
+import { task } from 'hardhat/config';
+
+import { deployFixedRate } from './src/migration-utils/deploy_fixed_rate';
+
 require('dotenv').config();
+
+const TASK_DEPLOY_FIXED_RATE = 'deploy_fixed_rate_currency';
+
+task(TASK_DEPLOY_FIXED_RATE)
+  .addParam('jsynth', 'The synthereum peg token address')
+  .addParam('collateral', 'The collateral address of the synth peg token')
+  .addParam('pool', 'The synthereum pool address')
+  .addParam('admin', 'Contract admin address')
+  .addParam('rate', 'The exchange rate')
+  .addParam('name', 'The fixed rate currency name')
+  .addParam('symbol', 'Its symbol')
+  .addParam('atomicswap', 'The address of the atomic swap contract')
+  .addParam('finder', 'Synthereum finder address')
+
+  // eslint-disable-next-line require-await
+  .setAction(async (params, hre) => {
+    await hre.run(TASK_COMPILE);
+    const FixedRateCurrency = hre.artifacts.readArtifact('FixedRateCurrency');
+
+    const address = await deployFixedRate(params, hre.web3, hre.network, {
+      FixedRateCurrency,
+    });
+    console.log('Deployed at: ', address);
+  });
 
 const config = {
   solidity: {

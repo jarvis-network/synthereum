@@ -18,12 +18,9 @@
     "add-only-derivative": "MIGRATION_TYPE=add_only_derivative hardhat test ./test/correct-migration.js",
     "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
     "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test test/core/* test/derivative/**/* test/oracle/* test/pool/**/* test/self-minting/**/* test/utils/* test/token/*",
-    "test:fixed-rate": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/FixedRateCurrency.js",
     "test:atomic-swap": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat --network mainnet_fork test ./test/extensions/atomic-swap.js",
-    "test:fixed-rate-oclr": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/OCLR.js",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
-    "deploy:fixed-rate": "hardhat deploy_fixed_rate_currency",
     "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"
   },

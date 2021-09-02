@@ -7,11 +7,7 @@ export async function deployFixedRate(
   network: any,
   artifacts: any,
 ): Promise<string> {
-  const { FixedRateCurrency, SynthereumFinder } = artifacts;
-  const { getExistingInstance } = await import('./deployment');
-
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
-  // const atomicSwap = await getExistingInstance(web3, AtomicSwap); // TODO this errors
+  const { FixedRateCurrency } = artifacts;
 
   const accounts = await web3.eth.getAccounts();
 
@@ -19,7 +15,7 @@ export async function deployFixedRate(
     args.jsynth,
     args.collateral,
     args.pool,
-    synthereumFinder.options.address,
+    args.finder,
     args.atomicswap,
     args.admin,
     args.rate,

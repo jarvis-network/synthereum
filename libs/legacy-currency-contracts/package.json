@@ -10,7 +10,10 @@
     "build:nx-necessary": "cp ./package.json ./dist/",
     "compile": "hardhat compile",
     "migrate-maastricht": "MIGRATION_TYPE=maastricht hardhat test ./test/correct-migration.js",
-    "test": "echo No test defined",
+    "test": "yarn test:fixed-rate &&  test:fixed-rate-oclr",
+    "test:fixed-rate": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/FixedRateCurrency.js",
+    "test:fixed-rate-oclr": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/OCLR.js",
+    "deploy:fixed-rate": "hardhat deploy_fixed_rate_currency",
     "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"
   },

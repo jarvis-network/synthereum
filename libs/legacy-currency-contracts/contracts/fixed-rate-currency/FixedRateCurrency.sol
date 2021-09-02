@@ -1,19 +1,28 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import './FixedRateWrapper.sol';
-import '../extensions/atomic-swap/interfaces/IAtomicSwap.sol';
-import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
-import {ISynthereumRegistry} from '../core/registries/interfaces/IRegistry.sol';
-import {SynthereumInterfaces} from '../core/Constants.sol';
+import '@jarvis-network/atomic-swap/contracts/interfaces/IAtomicSwap.sol';
+import {
+  ISynthereumFinder
+} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {
+  ISynthereumRegistry
+} from '@jarvis-network/synthereum-contracts/contracts/core/registries/interfaces/IRegistry.sol';
+import {
+  SynthereumInterfaces
+} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
 
 import {
   ISynthereumPoolOnChainPriceFeed
-} from '../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
 contract FixedRateCurrency is FixedRateWrapper {
+  using SafeMath for uint256;
+  using SafeERC20 for IERC20;
+
   bool public paused; // Prevents minting when true
 
   ISynthereumFinder public synthereumFinder;
