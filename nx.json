@@ -67,14 +67,6 @@
       "tags": [],
       "implicitDependencies": ["contracts"]
     },
-    "validator": {
-      "tags": [],
-      "implicitDependencies": []
-    },
-    "validator-lib": {
-      "tags": [],
-      "implicitDependencies": ["synthereum-ts"]
-    },
     "toolkit": {
       "tags": [],
       "implicitDependencies": ["synthereum-ts"]

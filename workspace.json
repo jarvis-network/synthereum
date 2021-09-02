@@ -115,35 +115,6 @@
         }
       }
     },
-    "validator-lib": {
-      "root": "libs/validator-lib",
-      "sourceRoot": "libs/validator-lib/src/",
-      "projectType": "library",
-      "generators": {},
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/validator-lib/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/validator-lib/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "./libs/validator-lib",
-            "color": true
-          }
-        }
-      }
-    },
     "contracts": {
       "root": "libs/contracts",
       "sourceRoot": "libs/contracts/src",
@@ -172,52 +143,6 @@
             "command": "yarn run build",
             "cwd": "./libs/contracts",
             "color": true
-          }
-        }
-      }
-    },
-    "validator": {
-      "root": "apps/validator",
-      "sourceRoot": "apps/validator/src",
-      "projectType": "application",
-      "prefix": "validator",
-      "generators": {},
-      "targets": {
-        "build": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run build"],
-            "cwd": "./apps/validator",
-            "color": true
-          }
-        },
-        "start": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run start"],
-            "cwd": "./apps/validator",
-            "color": true
-          }
-        },
-        "start-dev": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": ["yarn run start:dev"],
-            "cwd": "./apps/validator",
-            "color": true
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/validator/src/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/validator/jest.config.js",
-            "passWithNoTests": true
           }
         }
       }
