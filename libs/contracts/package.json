@@ -8,8 +8,8 @@
   "types": "dist",
   "scripts": {
     "clean": "git clean -fdx -e .env -e node_modules -- .",
-    "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
-    "format:sol": "prettier --write './contracts/**/*.sol'",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "build": "yarn build:solidity && yarn build:nx-necessary",
     "build:solidity": "hardhat compile",
     "build:nx-necessary": "cp ./package.json ./dist/",

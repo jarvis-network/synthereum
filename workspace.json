@@ -122,9 +122,11 @@
       "generators": {},
       "targets": {
         "lint": {
-          "executor": "@nrwl/linter:eslint",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "lintFilePatterns": ["libs/contracts/src/**/*.ts"]
+            "command": "yarn format:check",
+            "cwd": "libs/contracts",
+            "color": true
           }
         },
         "test": {
