@@ -602,7 +602,8 @@
           "executor": "@nrwl/node:package",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/libs/synthereum-config",
+            "outputPath": "libs/synthereum-config/dist",
+            "srcRootForCompilationRoot": "libs/synthereum-config/src",
             "tsConfig": "libs/synthereum-config/tsconfig.lib.json",
             "packageJson": "libs/synthereum-config/package.json",
             "main": "libs/synthereum-config/src/index.ts",
@@ -612,7 +613,7 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/synthereum-config/**/*.ts"]
+            "lintFilePatterns": ["libs/synthereum-config/src/**/*.ts"]
           }
         },
         "test": {

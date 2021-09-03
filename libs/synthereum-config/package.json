@@ -1,4 +1,16 @@
 {
   "name": "@jarvis-network/synthereum-config",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "description": "TypeScript library for working with Synthereum contracts",
+  "author": "Petar Kirov",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "git clean -fdx -e .env -e node_modules -- .",
+    "build": "tsc -p ./tsconfig.lib.json"
+  }
 }
