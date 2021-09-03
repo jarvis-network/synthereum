@@ -51,7 +51,7 @@ export function useFetchWalletBalancesOnNewBlock(
       // eslint-disable-next-line no-console
       .on('error', console.error);
 
-    callback(0); // Fetch before new block
+    callback(1); // Fetch before new block
 
     function abortPromise() {
       lastPromiseRef.current?.abort();

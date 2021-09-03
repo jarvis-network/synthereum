@@ -30,10 +30,24 @@ const kovanRPCURL = getInfuraEndpoint(
   process.env.NEXT_PUBLIC_INFURA_API_KEY,
 );
 
+const polygonRPCURL = getInfuraEndpoint(
+  Network.polygon,
+  'https',
+  process.env.NEXT_PUBLIC_INFURA_API_KEY,
+);
+
+const mumbaiRPCURL = getInfuraEndpoint(
+  Network.mumbai,
+  'https',
+  process.env.NEXT_PUBLIC_INFURA_API_KEY,
+);
+
 const walletconnect = new WalletConnectConnector({
   rpc: {
     [Network.mainnet]: mainnetRPCURL,
     [Network.kovan]: kovanRPCURL,
+    [Network.polygon]: polygonRPCURL,
+    [Network.mumbai]: mumbaiRPCURL,
   },
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
