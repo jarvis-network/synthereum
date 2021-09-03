@@ -32,12 +32,10 @@ export function useRealmAgentProvider(
     }
   >({});
 
-  const web3React = useWeb3();
+  const { account: address, chainId: networkId, library: web3 } = useWeb3();
 
   useEffect(() => {
     let canceled = false;
-
-    const { account: address, chainId: networkId, library: web3 } = web3React;
 
     if (!web3 || !address || !isSupportedNetwork(networkId)) {
       realmAgent$.next(null);
@@ -65,5 +63,5 @@ export function useRealmAgentProvider(
       canceled = true;
       realmAgent$.next(null);
     };
-  }, [poolVersion, realmAgent$, web3React]);
+  }, [poolVersion, realmAgent$, address, web3, networkId]);
 }
