@@ -12,8 +12,8 @@ import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import type {
   SupportedNetworkName,
   SupportedSynthereumSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/config';
-import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
+import { priceFeed } from '@jarvis-network/synthereum-config';
 
 export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;

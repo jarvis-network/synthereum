@@ -31,7 +31,7 @@ import {
   SupportedNetworkName,
   SupportedSynthereumSymbol,
   ExchangeSynthereumToken,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 
 import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 

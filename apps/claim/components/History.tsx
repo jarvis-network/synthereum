@@ -17,7 +17,7 @@ import { State } from '@/state/initialState';
 import {
   isSupportedNetwork,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 import { styled } from '@jarvis-network/ui';
 
 import { HistoryItem } from './HistoryItem';

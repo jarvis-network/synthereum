@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
-import { SupportedSelfMintingPair } from '@jarvis-network/synthereum-contracts/dist/config';
-import { chainlinkAggregators } from '@jarvis-network/synthereum-contracts/dist/config/data';
-import { ChainlinkPair } from '@jarvis-network/synthereum-contracts/dist/config/types/config';
+import { SupportedSelfMintingPair } from '@jarvis-network/synthereum-config';
+import { chainlinkAggregators } from '@jarvis-network/synthereum-config/dist/data';
+import { ChainlinkPair } from '@jarvis-network/synthereum-config/dist/types/config';
 import { AggregatorV3Interface_Abi } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import Web3 from 'web3';
 import math from 'mathjs';

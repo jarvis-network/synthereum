@@ -15,7 +15,7 @@ import type { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import {
   supportedSynthereumPairs,
   SupportedSynthereumSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/config/supported/synthereum-pairs';
+} from '@jarvis-network/synthereum-config/dist/supported/synthereum-pairs';
 
 import {
   SynthereumContractDependencies,

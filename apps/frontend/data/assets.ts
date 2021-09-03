@@ -7,7 +7,7 @@ import {
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
-import { PerSynthereumPair } from '@jarvis-network/synthereum-contracts/dist/config';
+import { PerSynthereumPair } from '@jarvis-network/synthereum-config';
 
 export interface Asset {
   name: string;

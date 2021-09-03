@@ -26,7 +26,7 @@ import {
   SupportedSelfMintingSymbol,
   synthereumConfig,
   SynthereumContractDependencies,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 
 import type { SynthereumRealmWithWeb3 } from '../../types/realm';
 

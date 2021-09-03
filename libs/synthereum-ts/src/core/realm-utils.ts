@@ -4,7 +4,7 @@ import {
   SupportedNetworkName,
   SynthereumCollateralSymbol,
   SupportedSynthereumSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 import { valuesOf } from '@jarvis-network/core-utils/dist/base/meta';
 
 import { PoolsForVersion } from './types/pools';

@@ -1,14 +1,14 @@
 import type {
   SupportedNetworkName,
   SupportedSelfMintingSymbol,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 import {
   ContractInfo,
   TokenInfo,
 } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 import { SelfMintingPerpetualMultiParty } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
-import { priceFeed } from '@jarvis-network/synthereum-contracts/dist/config';
+import { priceFeed } from '@jarvis-network/synthereum-config';
 
 export const selfMintingVersions = ['v1'] as const;
 export type SelfMintingVersions = typeof selfMintingVersions;

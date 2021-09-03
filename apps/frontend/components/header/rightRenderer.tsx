@@ -25,7 +25,7 @@ import { avatar } from '@/utils/avatar';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { State } from '@/state/initialState';
 import { isAppReadySelector } from '@/state/selectors';
-import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/config';
+import { isSupportedNetwork } from '@jarvis-network/synthereum-config';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 

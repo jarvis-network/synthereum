@@ -15,7 +15,7 @@ import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   isSupportedNetwork,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 import { ContractInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 
 import { AerariumMilitare } from '@/data/AerariumMilitare';

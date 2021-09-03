@@ -4,7 +4,7 @@ import {
   SupportedNetworkId,
   SupportedNetworkName,
   isSupportedNetwork,
-} from '@jarvis-network/synthereum-contracts/dist/config';
+} from '@jarvis-network/synthereum-config';
 import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/load';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';

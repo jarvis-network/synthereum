@@ -20,7 +20,7 @@ import {
 } from '@jarvis-network/core-utils/dist/eth/address';
 import { sendTx } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 import { useAerariumMilitare } from '@/utils/useAerariumMilitare';
-import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/config';
+import { isSupportedNetwork } from '@jarvis-network/synthereum-config';
 
 import { MessageContainer } from './MessageContainer';
 

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, styled } from '@jarvis-network/ui';
-import { isSupportedNetwork } from '@jarvis-network/synthereum-contracts/dist/config';
+import { isSupportedNetwork } from '@jarvis-network/synthereum-config';
 import { EnhancedStore } from '@reduxjs/toolkit';
 
 import { useAuth } from './AuthContext';

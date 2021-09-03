@@ -5,7 +5,7 @@ import {
   useBehaviorSubject,
   useCoreObservables,
 } from '@jarvis-network/app-toolkit';
-import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
+import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-config';
 
 export const useSwap = () => {
   const agent = useBehaviorSubject(useCoreObservables().realmAgent$);
