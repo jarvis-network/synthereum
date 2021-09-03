@@ -5,7 +5,6 @@ services:
     command: ['dockerd-entrypoint.sh']
 variables:
   DOCKER_DRIVER: overlay2
-  NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
   TAG: mr-${CI_MERGE_REQUEST_ID}
   REGISTRY: jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo
   REGISTRY_USERNAME: asim_jarvis
@@ -15,16 +14,13 @@ before_script:
   - docker buildx create buildx-ctx --use
   - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
 
-.job-config: &job-config
-  only:
-    - merge_requests
-    - dev
-    - production
+.yarn-hash: &yarn-hash |-
+  export YARN_LOCK_SHA256="$(sha256sum yarn.lock | cut -f1 -d' ')"
+  export IMAGE="${REGISTRY}/install:${YARN_LOCK_SHA256}"
 
 stages:
   - prepare
   - test and deploy
-  - security scan
 
 build `install` image:
   stage: prepare
@@ -33,42 +29,30 @@ build `install` image:
   variables:
     TARGET: install
   script:
-    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
+    - *yarn-hash
+    - ./scripts/generate-pipeline.sh > generated-pipeline.yml
     - docker buildx bake ${TARGET} --print
     - docker buildx bake ${TARGET} --progress=plain
-
-generate pipeline:
-  image: alpine
-  stage: prepare
-  only:
-    - merge_requests
-  before_script:
-    - apk add bash
-  script: ./scripts/generate-pipeline.sh > generated-pipeline.yml
   artifacts:
     paths:
       - generated-pipeline.yml
 
 execute pipeline:
   stage: test and deploy
-  needs:
-    - generate pipeline
-    - build `install` image
   rules:
     - if: $CI_MERGE_REQUEST_ID
   trigger:
+    strategy: depend
     include:
       - artifact: generated-pipeline.yml
-        job: generate pipeline
-    strategy: depend
+        job: build `install` image
 
 security scan:
-  <<: *job-config
-  stage: security scan
+  stage: test and deploy
   only:
     - merge_requests
   script:
-    - export YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
-    - docker buildx bake --load install
-    - docker images
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy --severity CRITICAL --timeout 5m  "${REGISTRY}/install:${YARN_LOCK_SHA256}"
+    - *yarn-hash
+    - docker pull "$IMAGE"
+    - docker run --rm -v/var/run/docker.sock:/var/run/docker.sock
+      aquasec/trivy --severity CRITICAL --timeout 5m "$IMAGE"

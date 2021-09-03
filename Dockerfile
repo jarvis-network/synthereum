@@ -19,7 +19,7 @@ RUN mkdir /out \
 #RUN yarn plugin import workspace-tools
 #COPY .yarnrc.yml .yarnrc.yml
 
-# ------------------ Builder image with everything installed ----------------- #
+# --------------- Builder image with all dependencies installed -------------- #
 FROM base as install
 COPY --from=yarn_lock /out .
 RUN yarn install --frozen-lock
