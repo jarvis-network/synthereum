@@ -28,6 +28,7 @@ export function useFetchWalletBalancesOnNewBlock(
     abortPromise();
 
     const realmAgent = realmAgentRef.current;
+    lastRequestedBlockNumberRef.current = 0;
 
     if (!realmAgent) return;
 
