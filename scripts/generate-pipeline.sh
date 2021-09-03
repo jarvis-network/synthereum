@@ -1,15 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-set -euo pipefail
+set -eu
 
-YARN_LOCK_SHA256="$(sha256sum yarn.lock | awk '{ print $1; }')"
+YARN_LOCK_SHA256="${YARN_LOCK_SHA256:=$(sha256sum yarn.lock | cut -f1 -d' ')}"
 
 cat <<EOF
 workflow:
   rules:
     - if: \$CI_MERGE_REQUEST_ID
 
-image: '${REGISTRY}/install:${YARN_LOCK_SHA256}'
+image: '\${REGISTRY}/install:${YARN_LOCK_SHA256}'
 
 variables:
   GIT_STRATEGY: none
@@ -17,9 +17,9 @@ variables:
 before_script:
   - cd /src
   - git init
-  - git remote add jn $CI_PROJECT_URL
-  - git fetch jn $CI_COMMIT_REF_NAME
-  - git switch --discard-changes $CI_COMMIT_REF_NAME
+  - git remote add jn \$CI_PROJECT_URL
+  - git fetch jn \$CI_COMMIT_REF_NAME
+  - git switch --discard-changes \$CI_COMMIT_REF_NAME
 
 🎨 lint:all:
   script:
