@@ -5,14 +5,16 @@ const Web3EthAbi = require('web3-eth-abi');
 
 const truffleAssert = require('truffle-assertions');
 const { assert } = require('chai');
-const { ZERO_ADDRESS } = require('@jarvis-network/uma-common');
+const {
+  ZERO_ADDRESS,
+} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 const Derivative = artifacts.require('PerpetualPoolParty');
 const FixedRateCurrency = artifacts.require('FixedRateCurrency');
 const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
-} = require('../../utils/encoding.js');
+} = require('@jarvis-network/hardhat-utils/dist/deployment/encoding.js');
 const {
   collapseTextChangeRangesAcrossMultipleVersions,
 } = require('typescript');
@@ -27,7 +29,7 @@ const SynthereumPoolOnChainPriceFeed = artifacts.require(
 );
 const PoolMock = artifacts.require('PoolMock');
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
-const MockV3Aggregator = artifacts.require('MockV3Aggregator');
+const MockV3Aggregator = artifacts.require('MockAggregator');
 const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 
@@ -104,7 +106,7 @@ contract('Fixed Rate Currency', accounts => {
   let user = accounts[6];
   beforeEach(async () => {
     // deploy derivatives and synthereum pool
-    collateralInstance = await TestnetERC20.deployed();
+    collateralInstance = await TestnetERC20.new('USDC', 'USDC', 18);
     collateralAddress = collateralInstance.address; //USDC
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];
