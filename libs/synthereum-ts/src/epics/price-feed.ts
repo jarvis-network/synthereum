@@ -6,9 +6,11 @@ import {
   filter,
   map,
 } from 'rxjs';
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
+import {
+  SupportedSelfMintingPairExact,
+  SelfMintingCollateralSymbol,
+} from '@jarvis-network/synthereum-config';
 
-import { SelfMintingCollateralSymbol } from '@jarvis-network/synthereum-config';
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import { dynamicInterval } from './interval';

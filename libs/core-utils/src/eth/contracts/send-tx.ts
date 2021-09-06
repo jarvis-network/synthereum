@@ -50,7 +50,6 @@ export async function sendTx<Result, Net extends NetworkName>(
   }
   nonce = nonces[from]++;
   log('Using nonce:', nonce, { nextNonces: nonces });
-
   const txParams: NonPayableTx = {
     ...rest,
     from,
@@ -62,7 +61,9 @@ export async function sendTx<Result, Net extends NetworkName>(
     tx.arguments,
     txParams,
   );
+
   const estimatedGas = await tx.estimateGas(txParams);
+
   gasLimit ??= estimatedGas;
   txParams.gas = estimatedGas < gasLimit ? estimatedGas : gasLimit;
   log('Setting gasLimit: ', txParams.gas);

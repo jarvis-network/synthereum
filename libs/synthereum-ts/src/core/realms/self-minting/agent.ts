@@ -81,9 +81,9 @@ export class SelfMintingRealmAgent<
   ): Promise<PositionData> {
     if (!this.agentAddress) {
       return {
-        positionTokens: '0' as Amount,
-        positionCollateral: '0' as Amount,
-        positionWithdrawalRequestAmount: '0' as Amount,
+        positionTokens: wei('0'),
+        positionCollateral: wei('0'),
+        positionWithdrawalRequestAmount: wei('0'),
         positionWithdrawalRequestPassTimestamp: 0,
       };
     }

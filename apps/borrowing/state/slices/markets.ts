@@ -7,13 +7,12 @@ import {
   SupportedNetworkName,
   SupportedSelfMintingPairExact,
   SupportedSelfMintingSymbol,
-} from '@jarvis-network/synthereum-config';
-import {
   SyntheticSymbolOf,
   CollateralOf,
   SelfMintingCollateralSymbol,
   AssetFromSyntheticSymbol,
 } from '@jarvis-network/synthereum-config';
+
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 export type MarketAssetFlag = FlagKeys | null;

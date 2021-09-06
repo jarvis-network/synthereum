@@ -1,7 +1,9 @@
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 
-import { PerSelfMintingPair } from '@jarvis-network/synthereum-config';
-import { PerSelfMintingCollateralPair } from '@jarvis-network/synthereum-config';
+import {
+  PerSelfMintingPair,
+  PerSelfMintingCollateralPair,
+} from '@jarvis-network/synthereum-config';
 
 interface Expression {
   simple: string;

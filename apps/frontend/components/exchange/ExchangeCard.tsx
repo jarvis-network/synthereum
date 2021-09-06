@@ -298,7 +298,7 @@ export const ExchangeCard: React.FC = () => {
       notify('Your transaction is complete', NotificationType.success, time);
     } catch (e) {
       if (
-        e?.message ===
+        (e as Error)?.message ===
         'MetaMask Tx Signature: User denied transaction signature.'
       ) {
         return;

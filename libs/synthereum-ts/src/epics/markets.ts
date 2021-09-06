@@ -1,5 +1,5 @@
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 import {
+  SupportedSelfMintingPairExact,
   AssetSymbol,
   SelfMintingCollateralSymbol,
 } from '@jarvis-network/synthereum-config';

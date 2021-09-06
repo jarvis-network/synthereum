@@ -397,7 +397,7 @@ export function modifyDeploy(module: string): void {
                 delete ((hre as unknown) as { skipCompile?: boolean })
                   .skipCompile;
                 break;
-              } catch (error) {
+              } catch (error: any) {
                 if (
                   error.message.includes(
                     'Reason: The Etherscan API responded that the address',
@@ -506,7 +506,7 @@ function shouldDeployUma(networkId: number) {
 async function exists(path: string) {
   try {
     await fs.access(path, fsConstants.F_OK);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       return false;
     }

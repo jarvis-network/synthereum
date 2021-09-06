@@ -304,7 +304,7 @@ const interfaceName = {
 async function didContractThrow(promise: Promise<any>) {
   try {
     await promise;
-  } catch (error) {
+  } catch (error: any) {
     return error.message.match(
       /[invalid opcode|out of gas|revert]/,
       `Expected throw, got '${error}' instead`,

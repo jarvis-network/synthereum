@@ -3,6 +3,7 @@ import {
   SupportedNetworkId,
   SupportedNetworkName,
   SupportedSelfMintingPairExact,
+  SelfMintingCollateralSymbol,
 } from '@jarvis-network/synthereum-config';
 import { chainlinkAggregators } from '@jarvis-network/synthereum-config/dist/data';
 import { ChainlinkPair } from '@jarvis-network/synthereum-config/dist/types/config';
@@ -10,7 +11,6 @@ import { AggregatorV3Interface_Abi } from '@jarvis-network/synthereum-contracts/
 import Web3 from 'web3';
 import { create, all } from 'mathjs';
 
-import { SelfMintingCollateralSymbol } from '@jarvis-network/synthereum-config';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
