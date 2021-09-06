@@ -7,13 +7,14 @@ import 'solidity-coverage';
 import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-etherscan';
-
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import { task } from 'hardhat/config';
 
 import { deployFixedRate } from './src/migration-utils/deploy_fixed_rate';
 
 require('dotenv').config();
+
+const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
 
 const TASK_DEPLOY_FIXED_RATE = 'deploy_fixed_rate_currency';
 
@@ -31,8 +32,7 @@ task(TASK_DEPLOY_FIXED_RATE)
   // eslint-disable-next-line require-await
   .setAction(async (params, hre) => {
     await hre.run(TASK_COMPILE);
-    const FixedRateCurrency = hre.artifacts.readArtifact('FixedRateCurrency');
-
+    const FixedRateCurrency = hre.artifacts.require('FixedRateCurrency');
     const address = await deployFixedRate(params, hre.web3, hre.network, {
       FixedRateCurrency,
     });
@@ -58,6 +58,13 @@ const config = {
       gas: 11500000,
       blockGasLimit: 11500000,
       allowUnlimitedContractSize: false,
+      forking: {
+        url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
+      },
+    },
+    kovan: {
+      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
+      accounts: [`0x${KOVAN_PRIVATE_KEY}`],
     },
     localhost: {
       url: 'http://127.0.0.1:8545',

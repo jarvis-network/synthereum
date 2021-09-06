@@ -8,7 +8,6 @@ export async function deployFixedRate(
   artifacts: any,
 ): Promise<string> {
   const { FixedRateCurrency } = artifacts;
-
   const accounts = await web3.eth.getAccounts();
 
   const fixedRateContract = await FixedRateCurrency.new(
