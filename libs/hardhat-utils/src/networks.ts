@@ -3,9 +3,11 @@ import type { HardhatUserConfig } from 'hardhat/config';
 import {
   NetworkId,
   toNetworkName,
+  isNetworkId,
 } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
+import { NetworksConfig } from 'hardhat/types';
 
 export function addPublicNetwork(
   config: HardhatUserConfig,
@@ -27,13 +29,43 @@ export function addPublicNetwork(
   };
 
   const port = process.env.CUSTOM_LOCAL_NODE_PORT || '8545';
+  const gitlabForkEnvVariable = `ETHEREUM_${networkName.toUpperCase()}_RPC`;
+  const gitlabRpcUrl = process.env.GL_RPC_HOSTNAME
+    ? // Connect to ganache instance in the same network as the GitLab runner:
+      `http://${process.env.GL_RPC_HOSTNAME}:${port}`
+    : // Connect to a third-party RPC URL:
+      process.env[gitlabForkEnvVariable];
+
   const localRpc = process.env.GITLAB_CI
-    ? `http://${process.env.GL_RPC_HOSTNAME}:${port}`
+    ? gitlabRpcUrl ?? 'https://placeholder:8545'
     : `http://127.0.0.1:${port}`;
 
   config.networks[`${networkName}_fork`] = {
     chainId,
     url: localRpc,
     timeout: 60e3,
+    accounts: {
+      mnemonic:
+        process.env.MNEMONIC ??
+        // contents are irrelevant, only used for CI builds
+        'ripple ship viable club inquiry act trap draft supply type again document',
+    },
   };
+}
+
+// set hardhat default network to a forking url if the env is specified
+export function setForkingUrl(networks: NetworksConfig, chainId: number): void {
+  if (!chainId || !isNetworkId(chainId)) {
+    // User didn't specify a (valid) networkId, so
+    // we won't specify a forking URL
+    return;
+  }
+  const networkName = toNetworkName(chainId);
+  const gitlabForkEnvVariable = `ETHEREUM_${networkName.toUpperCase()}_RPC`;
+
+  const forkEnvVariable = process.env[gitlabForkEnvVariable] ?? undefined;
+
+  if (forkEnvVariable !== undefined) {
+    networks.hardhat.forking = { url: forkEnvVariable, enabled: true };
+  }
 }

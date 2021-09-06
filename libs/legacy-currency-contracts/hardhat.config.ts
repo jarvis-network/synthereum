@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { resolve } from 'path';
+
 import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
 
 import '@nomiclabs/hardhat-truffle5';
@@ -7,17 +9,29 @@ import 'solidity-coverage';
 import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-etherscan';
+import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
+
+import {
+  modifiyGetMinimumBuild,
+  modifiyVerifyMinimumBuild,
+  modifyCompile,
+  modifyTest,
+  modifyAccounts,
+  modifyDeploy,
+  compile,
+} from '@jarvis-network/hardhat-utils/dist/tasks';
+
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
-import { task } from 'hardhat/config';
+
+import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
 
 import { deployFixedRate } from './src/migration-utils/deploy_fixed_rate';
 
 require('dotenv').config();
 
-const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
+// const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
 
 const TASK_DEPLOY_FIXED_RATE = 'deploy_fixed_rate_currency';
-
 task(TASK_DEPLOY_FIXED_RATE)
   .addParam('jsynth', 'The synthereum peg token address')
   .addParam('collateral', 'The collateral address of the synth peg token')
@@ -39,6 +53,27 @@ task(TASK_DEPLOY_FIXED_RATE)
     console.log('Deployed at: ', address);
   });
 
+createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
+  (taskArgs, hre, runSuper) => {
+    const network = hre.network.name;
+    if (network === 'polygon' || network === 'mumbai') {
+      (hre.config as any).etherscan.apiKey = process.env.POLYGONSCAN_API_KEY;
+    }
+    return runSuper();
+  },
+);
+
+modifiyGetMinimumBuild();
+modifiyVerifyMinimumBuild();
+modifyCompile(
+  require.resolve('./contracts/test/Import.sol'),
+  resolve('./deploy'),
+);
+modifyTest(require.resolve('./contracts/test/Import.sol'), resolve('./deploy'));
+modifyAccounts();
+modifyDeploy(resolve('.'));
+compile();
+
 const config = {
   solidity: {
     version: '0.8.4',
@@ -48,7 +83,7 @@ const config = {
   },
   paths: {
     root: '.',
-    sources: './contracts',
+    sources: './deploy',
     artifacts: './artifacts',
     cache: './cache',
     tests: './test',
@@ -58,13 +93,6 @@ const config = {
       gas: 11500000,
       blockGasLimit: 11500000,
       allowUnlimitedContractSize: false,
-      forking: {
-        url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
-      },
-    },
-    kovan: {
-      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
-      accounts: [`0x${KOVAN_PRIVATE_KEY}`],
     },
     localhost: {
       url: 'http://127.0.0.1:8545',

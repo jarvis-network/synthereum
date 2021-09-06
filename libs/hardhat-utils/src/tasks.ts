@@ -22,7 +22,7 @@ import {
   TASK_VERIFY_GET_MINIMUM_BUILD,
   TASK_VERIFY_VERIFY_MINIMUM_BUILD,
 } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
-import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
+import { task, task as createOrModifyHardhatTask, types } from 'hardhat/config';
 
 import {
   NetworkName,
@@ -44,7 +44,10 @@ import {
   assertNotNull,
   parseBoolean,
 } from '@jarvis-network/core-utils/dist/base/asserts';
+
 import fse from 'fs-extra';
+
+import { setForkingUrl } from './networks';
 
 const TASK_DEPLOY = 'deploy';
 
@@ -83,8 +86,10 @@ export function modifyCompile(contractsPath: string, deployPath: string): void {
 export function modifyTest(contractsPath: string, deployPath: string): void {
   createOrModifyHardhatTask(TASK_TEST)
     .addFlag('debug', 'Compile without optimizer')
+    .addOptionalParam('forkchainid', 'Fork a chain', 0, types.int)
     .setAction(async (taskArgs, hre, runSuper) => {
       const { debug } = taskArgs;
+      setForkingUrl(hre.config.networks, taskArgs.forkchainid);
       const prepare =
         ((hre as unknown) as { fromDeployScript?: boolean })
           .fromDeployScript !== true;

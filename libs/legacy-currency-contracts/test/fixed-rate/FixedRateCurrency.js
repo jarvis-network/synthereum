@@ -106,7 +106,7 @@ contract('Fixed Rate Currency', accounts => {
   let user = accounts[6];
   beforeEach(async () => {
     // deploy derivatives and synthereum pool
-    collateralInstance = await TestnetERC20.new('USDC', 'USDC', 18);
+    collateralInstance = await TestnetERC20.deployed();
     collateralAddress = collateralInstance.address; //USDC
     deployerInstance = await SynthereumDeployer.deployed();
     derivativeAdmins = [deployerInstance.address];

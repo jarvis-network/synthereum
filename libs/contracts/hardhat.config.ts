@@ -17,8 +17,6 @@ import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/consta
 
 import { task as createOrModifyHardhatTask } from 'hardhat/config';
 
-const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
-
 createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
   (taskArgs, hre, runSuper) => {
     const network = hre.network.name;
@@ -65,13 +63,6 @@ export const config = {
       gas: 11500000,
       blockGasLimit: 11500000,
       allowUnlimitedContractSize: false,
-      forking: {
-        url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
-      },
-    },
-    kovan: {
-      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
-      accounts: [`0x${KOVAN_PRIVATE_KEY}`],
     },
     localhost: {
       url: 'http://127.0.0.1:8545',

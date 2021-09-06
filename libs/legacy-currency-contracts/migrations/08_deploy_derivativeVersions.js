@@ -74,7 +74,6 @@ async function migrate(deployer, network, accounts) {
 
       // Add CollateralWhitelist to finder.
       const umaFinder = await getExistingInstance(web3, UmaFinder);
-      console.log(umaFinder.options.address);
       await umaFinder.methods
         .changeImplementationAddress(
           web3.utils.utf8ToHex(interfaceName.CollateralWhitelist),

@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-import {
-  TestnetERC20
-} from '@uma/core/contracts/common/implementation/TestnetERC20.sol';
+import '@jarvis-network/synthereum-contracts/contracts/test/UmaInfra.sol';
 import {
   PerpetualPoolParty
 } from '@jarvis-network/synthereum-contracts/contracts/derivative/v2/PerpetualPoolParty.sol';
@@ -53,15 +51,9 @@ import {
 import {
   SynthereumDerivativeFactory
 } from '@jarvis-network/synthereum-contracts/contracts/derivative/v2/DerivativeFactory.sol';
-import {Finder} from '@uma/core/contracts/oracle/implementation/Finder.sol';
-import {Timer} from '@uma/core/contracts/common/implementation/Timer.sol';
-import {
-  IdentifierWhitelist
-} from '@uma/core/contracts/oracle/implementation/IdentifierWhitelist.sol';
 import {
   AddressWhitelist
 } from '@uma/core/contracts/common/implementation/AddressWhitelist.sol';
-import {Registry} from '@uma/core/contracts/oracle/implementation/Registry.sol';
 import {
   TestnetERC20
 } from '@uma/core/contracts/common/implementation/TestnetERC20.sol';
@@ -74,3 +66,11 @@ import {
 import {
   MockRandomAggregator
 } from '@jarvis-network/synthereum-contracts/contracts/test/MockRandomAggregator.sol';
+
+import {FixedRateWrapper} from '../fixed-rate-currency/FixedRateWrapper.sol';
+import {FixedRateCurrency} from '../fixed-rate-currency/FixedRateCurrency.sol';
+import {
+  IAtomicSwap
+} from '@jarvis-network/atomic-swap/contracts/interfaces/IAtomicSwap.sol';
+import {AtomicSwap} from '@jarvis-network/atomic-swap/contracts/AtomicSwap.sol';
+import {Maastricht} from '../Maastricht/Maastricht.sol';

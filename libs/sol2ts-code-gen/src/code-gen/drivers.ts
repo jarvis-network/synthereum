@@ -115,8 +115,16 @@ export function getAllModuleExports(moduleFileName: string): string[] {
 }
 
 function shouldGenerateAbiJsonImport(filename: string) {
-  const json = JSON.parse(readFileSync(filename, 'utf-8'));
-  return assertIsArray(json).length > 0;
+  try {
+    const json = JSON.parse(readFileSync(filename, 'utf-8'));
+    return assertIsArray(json).length > 0;
+  } catch (ex) {
+    console.log(
+      `Failed to parse file '${filename}'`,
+      readFileSync(filename, 'utf-8'),
+    );
+    throw ex;
+  }
 }
 
 /**

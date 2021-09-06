@@ -10,9 +10,9 @@
     "build:nx-necessary": "cp ./package.json ./dist/",
     "compile": "hardhat compile",
     "migrate-maastricht": "MIGRATION_TYPE=maastricht hardhat test ./test/correct-migration.js",
-    "test": "yarn test:fixed-rate &&  test:fixed-rate-oclr",
+    "test": "yarn test:fixed-rate &&  yarn test:fixed-rate-oclr",
     "test:fixed-rate": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/FixedRateCurrency.js",
-    "test:fixed-rate-oclr": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/OCLR.js",
+    "test:fixed-rate-oclr": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 hardhat test --forkchainid 42 ./test/fixed-rate/OCLR.js",
     "deploy:fixed-rate": "hardhat deploy_fixed_rate_currency",
     "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"
@@ -24,6 +24,7 @@
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts": "4.1.0",
     "hardhat-gas-reporter": "^1.0.4",
-    "solidity-coverage": "^0.7.16"
+    "solidity-coverage": "^0.7.16",
+    "@uma/core": "2.7.0"
   }
 }
