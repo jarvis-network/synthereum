@@ -44,6 +44,9 @@ export interface Market<
   positionWithdrawalRequestAmount?: StringAmount;
   positionWithdrawalRequestPassTimestamp?: number;
   price?: StringAmount;
+  address?: string;
+  agentAddress?: string | null;
+  collateralTokenDecimals?: number;
 }
 export type SelfMintingMarketAssets<
   Net extends SupportedNetworkName = SupportedNetworkName

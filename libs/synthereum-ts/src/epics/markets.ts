@@ -54,6 +54,9 @@ export interface Market {
   positionWithdrawalRequestAmount?: StringAmount;
   positionWithdrawalRequestPassTimestamp?: number;
   price?: StringAmount;
+  address?: string;
+  collateralTokenDecimals?: number;
+  agentAddress?: string | null;
 }
 
 export type OutputAction = ReduxAction<'markets/setMarketsList', Markets>;
@@ -99,6 +102,11 @@ export const getActiveMarket = async (
       realm.dynamic.totalPositionCollateral,
     ),
     price: (await chainLinkPriceFeed.getPrice(pair)) as StringAmount,
+    address: realm.static.address,
+    collateralTokenDecimals: realm.static.collateralToken.decimals,
+    agentAddress: selfMintingRealmAgent.agentAddress
+      ? selfMintingRealmAgent.agentAddress.toString()
+      : null,
   };
   return {
     [pair]: data,
