@@ -16,12 +16,7 @@ import _ from 'lodash';
 import { TokenInstance } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
-import { log } from '@jarvis-network/core-utils/dist/logging';
-import {
-  FullTxOptions,
-  sendTx,
-  TxOptions,
-} from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
+import { FullTxOptions } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 
 import {
   ExchangeSelfMintingToken,
@@ -31,7 +26,7 @@ import {
 
 import { entriesOf, t } from '@jarvis-network/core-utils/dist/base/meta';
 
-import type { PromiEvent, TransactionReceipt } from 'web3-core';
+import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 
 import { SelfMintingRealmWithWeb3 } from '../../types/realm';
 import {
@@ -41,9 +36,6 @@ import {
 
 import { ContractParams } from './interfaces';
 
-interface TxResult {
-  promiEvent: PromiEvent<TransactionReceipt>;
-}
 interface PositionData {
   positionTokens: Amount;
   positionCollateral: Amount;
@@ -71,7 +63,7 @@ export class SelfMintingRealmAgent<
       web3: this.realm.web3,
 
       printInfo: {
-        log,
+        log: console.log,
       },
     };
   }
@@ -156,144 +148,103 @@ export class SelfMintingRealmAgent<
     }
   }
 
-  async borrow(input: ContractParams<Net>): Promise<TxResult> {
+  borrow(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     console.log('Am here');
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
     const collateralInput = weiToTokenAmount({
       wei: wei(input.collateral),
-      decimals: derivativeInstance!.static.collateralToken.decimals,
+      decimals: derivativeInstance.static.collateralToken.decimals,
     });
 
-    const tx = derivativeInstance?.instance.methods.create(
+    return derivativeInstance.instance.methods.create(
       collateralInput.toString(),
       input.numTokens,
       input.feePercentage,
     );
-
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
   }
 
-  async repay(input: ContractParams<Net>): Promise<TxResult> {
+  repay(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
 
     const tokensInput = weiToTokenAmount({
       wei: wei(input.numTokens),
-      decimals: derivativeInstance!.static.syntheticToken.decimals,
+      decimals: derivativeInstance.static.syntheticToken.decimals,
     });
 
-    const tx = derivativeInstance?.instance.methods.repay(
+    return derivativeInstance.instance.methods.repay(
       tokensInput,
       input.feePercentage,
     );
-
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
   }
 
-  async redeem(input: ContractParams<Net>): Promise<TxResult> {
+  redeem(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
 
     const tokensInput = weiToTokenAmount({
       wei: wei(input.numTokens),
-      decimals: derivativeInstance!.static.syntheticToken.decimals,
+      decimals: derivativeInstance.static.syntheticToken.decimals,
     });
 
-    const tx = derivativeInstance?.instance.methods.redeem(
+    return derivativeInstance.instance.methods.redeem(
       tokensInput,
       input.feePercentage,
     );
-
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
   }
 
-  async deposit(input: ContractParams<Net>): Promise<TxResult> {
+  deposit(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
     const collateralInput = weiToTokenAmount({
       wei: wei(input.collateral),
-      decimals: derivativeInstance!.static.collateralToken.decimals,
+      decimals: derivativeInstance.static.collateralToken.decimals,
     });
 
-    const tx = derivativeInstance?.instance.methods.deposit(
+    return derivativeInstance.instance.methods.deposit(
       collateralInput.toString(),
     );
-
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
   }
 
-  async withdraw(input: ContractParams<Net>): Promise<TxResult> {
+  withdraw(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
     const collateralInput = weiToTokenAmount({
       wei: wei(input.collateral),
-      decimals: derivativeInstance!.static.collateralToken.decimals,
+      decimals: derivativeInstance.static.collateralToken.decimals,
     });
 
     let tx: any;
     if (input.slow) {
-      tx = derivativeInstance?.instance.methods.requestWithdrawal(
+      tx = derivativeInstance.instance.methods.requestWithdrawal(
         collateralInput.toString(),
       );
     } else {
-      tx = derivativeInstance?.instance.methods.withdraw(
+      tx = derivativeInstance.instance.methods.withdraw(
         collateralInput.toString(),
       );
     }
-
-    console.log('Withdraw Function', { tx });
-
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
+    return tx;
   }
 
-  async withdrawCancel(input: ContractParams<Net>): Promise<TxResult> {
+  withdrawCancel(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
-    const tx = derivativeInstance?.instance.methods.cancelWithdrawal();
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
+    return derivativeInstance.instance.methods.cancelWithdrawal();
   }
 
-  async withdrawPass(input: ContractParams<Net>): Promise<TxResult> {
+  withdrawPass(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
-    const tx = derivativeInstance?.instance.methods.withdrawPassedRequest();
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...input.txOptions,
-    });
-    return result;
+    return derivativeInstance.instance.methods.withdrawPassedRequest();
   }
 
   public async isSufficientAllowanceFor(
@@ -331,11 +282,10 @@ export class SelfMintingRealmAgent<
     return true;
   }
 
-  public async increaseAllowance(
+  public increaseAllowance(
     pair: SupportedSelfMintingPairExact<Net>,
     tokenType: 'collateralToken' | 'syntheticToken',
-    txOptions?: TxOptions,
-  ): Promise<TxResult> {
+  ): NonPayableTransactionObject<any> {
     const derivative = this.activeDerivatives[pair]!;
     const spender = derivative.address;
     const token = derivative.static[tokenType];
@@ -349,11 +299,6 @@ export class SelfMintingRealmAgent<
       decimals: token.decimals,
     });
 
-    const tx = setTokenAllowance(tokenInstance, spender, max);
-    const result = await sendTx(tx!, {
-      ...this.defaultTxOptions,
-      ...txOptions,
-    });
-    return result;
+    return setTokenAllowance(tokenInstance, spender, max);
   }
 }

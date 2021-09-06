@@ -14,4 +14,5 @@ export interface ContractParams<
   numTokens: StringAmount;
   feePercentage: StringAmount;
   slow?: boolean;
+  validateOnly?: boolean;
 }

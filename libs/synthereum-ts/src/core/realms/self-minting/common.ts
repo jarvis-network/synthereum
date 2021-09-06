@@ -7,6 +7,8 @@ import { once } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
+import { NonPayableTx } from 'libs/contracts/dist/contracts/typechain';
+
 import { ReduxAction, Context } from '../../../epics/types';
 
 import { ContractParams } from './interfaces';
@@ -16,6 +18,14 @@ export const formatUSDValue = (assetOutPrice: string, price: string) =>
     .mul(FPN.toWei(price))
     .div(FPN.fromWei(ether))
     .format(2);
+
+const decodeErrorMessage = (msg: string, web3: any): string => {
+  const errorMessageData = msg.substr(msg.indexOf('Reverted ') + 9);
+
+  const msgLength = parseInt(errorMessageData.substr(2 + 8 + 64, 64), 16);
+  const msgHex = errorMessageData.substr(2 + 8 + 64 + 64, msgLength * 2);
+  return web3!.utils.toAscii(`0x${msgHex}`);
+};
 
 export const genericTx = (
   context: Context,
@@ -28,43 +38,131 @@ export const genericTx = (
     | 'withdrawCancel'
     | 'withdrawPass',
   allowanceTokenType: 'collateralToken' | 'syntheticToken',
-  payload: ContractParams,
+  { validateOnly = false, ...payload }: ContractParams,
 ) =>
   new Observable<ReduxAction>(observer => {
     (async () => {
-      const isSufficientAllowanceFor = await context.selfMintingRealmAgent!.isSufficientAllowanceFor(
-        payload.pair,
-        allowanceTokenType,
-        wei(payload.collateral),
-      );
-      let approvalTransaction = isSufficientAllowanceFor;
-      if (!isSufficientAllowanceFor) {
-        //  transaction
-        const {
-          promiEvent,
-        } = await context.selfMintingRealmAgent!.increaseAllowance(
-          payload.pair,
-          allowanceTokenType,
-        )!;
-        approvalTransaction = await transactionEvents(
-          promiEvent,
-          observer,
-          'approveTransaction',
-          'approval',
-          {},
-        );
-      }
-      if (approvalTransaction) {
-        const { promiEvent } = await context.selfMintingRealmAgent![opType](
-          payload,
-        );
-        await transactionEvents(
-          promiEvent,
-          observer,
-          'transaction',
-          opType,
-          payload,
-        );
+      try {
+        let isSufficientAllowanceFor;
+        if (!validateOnly) {
+          isSufficientAllowanceFor = await context.selfMintingRealmAgent!.isSufficientAllowanceFor(
+            payload.pair,
+            allowanceTokenType,
+            wei(payload.collateral),
+          );
+        } else {
+          isSufficientAllowanceFor = true;
+        }
+
+        let approvalTransaction = isSufficientAllowanceFor;
+        if (!isSufficientAllowanceFor && !validateOnly) {
+          //  transaction
+          try {
+            const tx = await context.selfMintingRealmAgent!.increaseAllowance(
+              payload.pair,
+              allowanceTokenType,
+            )!;
+
+            const from = context.selfMintingRealmAgent!.agentAddress;
+            console.log('Getting tx nonce');
+            const newNonce = await context.web3!.eth.getTransactionCount(from);
+            const nonce = newNonce + 1;
+            console.log('Using nonce:', nonce, { nextNonces: nonce });
+            const txParams: NonPayableTx = {
+              from,
+              nonce,
+            };
+            console.log(`Gas estimation for tx:`, tx.arguments, txParams);
+
+            let estimatedGas;
+            try {
+              await tx.call(txParams);
+              estimatedGas = await tx.estimateGas(txParams);
+            } catch (err: any) {
+              const msg = err.message;
+              const reason = decodeErrorMessage(msg, context.web3);
+              observer.next({
+                type: `transaction/metaMaskError`,
+                payload: {
+                  message: reason,
+                },
+              });
+              return;
+            }
+
+            txParams.gas = estimatedGas;
+            console.log('Setting gasLimit: ', txParams.gas);
+
+            const promiEvent = tx.send(txParams);
+
+            approvalTransaction = await transactionEvents(
+              promiEvent,
+              observer,
+              'approveTransaction',
+              'approval',
+              {},
+            );
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        if (approvalTransaction) {
+          const tx = context.selfMintingRealmAgent![opType](payload);
+          const from = context.selfMintingRealmAgent!.agentAddress;
+          console.log('Getting tx nonce');
+          const newNonce = await context.web3!.eth.getTransactionCount(from);
+          const nonce = newNonce + 1;
+          console.log('Using nonce:', nonce, { nextNonces: nonce });
+          const txParams: NonPayableTx = {
+            from,
+            nonce,
+          };
+          console.log(`Gas estimation for tx:`, tx.arguments, txParams);
+
+          let estimatedGas;
+          try {
+            await tx.call(txParams);
+            estimatedGas = await tx.estimateGas(txParams);
+            observer.next({
+              type: `transaction/validate`,
+            });
+          } catch (err: any) {
+            const msg = err.message;
+            const reason = decodeErrorMessage(msg, context.web3);
+            observer.next({
+              type: `transaction/metaMaskError`,
+              payload: {
+                message: reason,
+              },
+            });
+            return;
+          }
+          if (validateOnly) {
+            return;
+          }
+          txParams.gas = estimatedGas;
+          console.log('Setting gasLimit: ', txParams.gas);
+
+          const promiEvent = tx.send(txParams);
+
+          await transactionEvents(
+            promiEvent,
+            observer,
+            'transaction',
+            opType,
+            payload,
+          );
+        }
+      } catch (error: any) {
+        console.log(error);
+        observer.next({
+          type: `transaction/metaMaskError`,
+          payload: {
+            code: error.code,
+            message: error.message,
+            data: error.data,
+          },
+        });
       }
       observer.complete();
     })();
