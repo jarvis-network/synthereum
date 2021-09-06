@@ -6518,20 +6518,18 @@
   integrity sha512-ZcYladRCgwn3bbhK3jIORVHcUOBk/MXsUxjfzcw+uD+0H1Kodsvcw1AAIaqd5tlyFhdOb7YkOcH0kUES7F8d1A==
 
 "@truffle/hdwallet-provider@^1.0.25", "@truffle/hdwallet-provider@^1.2.1", "@truffle/hdwallet-provider@^1.2.3":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.2.1.tgz#164f027f688123b991a3fa64ca3519635b65200b"
-  integrity sha512-EijX9JgcR3IaM1978ysHqJpObZNBgFWyBPzwy7YxMfWUaCp6PyM/g2w/b/DGmMHT56D56KVu+1PtHpEG0sbjtg==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.5.0.tgz#f27158753bfb184389358ca43ea72aeee02a31ac"
+  integrity sha512-nWgOBRT3ZCX7VAFVrDrWLvX405J502WlP5azmnWbM5r3fqDKUJlBdtHZTCGeiDKAT6twtpTUj6tO8mKmrjF8PA==
   dependencies:
     "@trufflesuite/web3-provider-engine" "15.0.13-1"
-    "@types/web3" "^1.0.20"
-    any-promise "^1.3.0"
-    bindings "^1.5.0"
+    eth-sig-util "^3.0.1"
     ethereum-cryptography "^0.1.3"
     ethereum-protocol "^1.0.1"
-    ethereumjs-tx "^1.0.0"
+    ethereumjs-common "^1.5.0"
+    ethereumjs-tx "^2.1.2"
     ethereumjs-util "^6.1.0"
     ethereumjs-wallet "^1.0.1"
-    source-map-support "^0.5.19"
 
 "@truffle/interface-adapter@^0.4.16", "@truffle/interface-adapter@^0.4.18":
   version "0.4.18"
@@ -7460,13 +7458,6 @@
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
-
-"@types/web3@^1.0.20":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@types/web3/-/web3-1.2.2.tgz#d95a101547ce625c5ebd0470baa5dbd4b9f3c015"
-  integrity sha512-eFiYJKggNrOl0nsD+9cMh2MLk4zVBfXfGnVeRFbpiZzBE20eet4KLA3fXcjSuHaBn0RnQzwLAGdgzgzdet4C0A==
-  dependencies:
-    web3 "*"
 
 "@types/webpack-env@^1.15.0":
   version "1.16.0"
@@ -8980,11 +8971,6 @@ any-observable@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/any-observable/-/any-observable-0.3.0.tgz#af933475e5806a67d0d7df090dd5e8bef65d119b"
   integrity sha512-/FQM1EDkTsf63Ub2C6O7GuYFDsSXUwsaZDurV0np41ocwq0jthUAYCmhBX9f+KwlaCgIuWyr/4WlUQUBfKfZog==
-
-any-promise@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
-  integrity sha1-q8av7tzqUugJzcA3au0845Y10X8=
 
 anymatch@^2.0.0:
   version "2.0.0"
@@ -16043,7 +16029,7 @@ ethereumjs-testrpc@^6.0.3:
   dependencies:
     webpack "^3.0.0"
 
-ethereumjs-tx@1.3.7, ethereumjs-tx@^1.0.0, ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3, ethereumjs-tx@^1.3.7:
+ethereumjs-tx@1.3.7, ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3, ethereumjs-tx@^1.3.7:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.7.tgz#88323a2d875b10549b8347e09f4862b546f3d89a"
   integrity sha512-wvLMxzt1RPhAQ9Yi3/HKZTn0FZYpnsmQdbKYfUUpi4j1SEIcbkd9tndVjcPrufY3V7j2IebOpC00Zp2P/Ay2kA==
@@ -18590,9 +18576,9 @@ hardhat-watcher@^2.1.1:
     chokidar "^3.4.3"
 
 hardhat@*, hardhat@^2.4.3, hardhat@^2.6.0:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.6.1.tgz#4553ca555c1ba8ed7c3c5a5a93e6082a2869b3ae"
-  integrity sha512-0LozdYbPsiTc6ZXsfDQUTV3L0p4CMO5TRbd5qmeWiCYGmhd+7Mvdg4N+nA8w0g3gZ2OKFUmHIYlAbExI488ceQ==
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.6.2.tgz#940d1df0a0373a6400879e1041fe0c9b746ed84d"
+  integrity sha512-83kCYIrkRq+vrsjOLIv349fbMpL7Vp/ZGpWtu+KLMH3wcAAs+aMsABZJ8W5hb5uo69+06KeF0pCHQ6y8tBAcwA==
   dependencies:
     "@ethereumjs/block" "^3.4.0"
     "@ethereumjs/blockchain" "^5.4.0"
@@ -27354,6 +27340,11 @@ react-color@^2.17.0:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
+react-content-loader@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/react-content-loader/-/react-content-loader-6.0.3.tgz#32e28ca7120e0a2552fc26655d0d4448cc1fc0c5"
+  integrity sha512-CIRgTHze+ls+jGDIfCitw27YkW2XcaMpsYORTUdBxsMFiKuUYMnlvY76dZE4Lsaa9vFXVw+41ieBEK7SJt0nug==
+
 react-dev-utils@^11.0.3:
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-11.0.4.tgz#a7ccb60257a1ca2e0efe7a83e38e6700d17aa37a"
@@ -31892,9 +31883,9 @@ typeforce@^1.11.5:
   integrity sha512-7uc1O8h1M1g0rArakJdf0uLRSSgFcYexrVoKo+bzJd32gd4gDy2L/Z+8/FjPnU9ydY3pEnVPtr9FyscYY60K1g==
 
 typescript@*, typescript@^3.9.7, typescript@^4.1.5, typescript@^4.2.3:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
-  integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.2.tgz#6d618640d430e3569a1dfb44f7d7e600ced3ee86"
+  integrity sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==
 
 typical@^2.6.0, typical@^2.6.1:
   version "2.6.1"
@@ -33040,7 +33031,7 @@ web3-utils@1.2.1, web3-utils@1.2.9, web3-utils@1.3.5, web3-utils@1.5.2, web3-uti
     underscore "1.9.1"
     utf8 "3.0.0"
 
-web3@*, web3@1.2.11, web3@1.2.9, web3@1.3.5, web3@1.5.2, web3@^1.0.0-beta.34, web3@^1.3.0, web3@^1.3.5:
+web3@1.2.11, web3@1.2.9, web3@1.3.5, web3@1.5.2, web3@^1.0.0-beta.34, web3@^1.3.0, web3@^1.3.5:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.3.5.tgz#ef4c3a2241fdd74f2f7794e839f30bc6f9814e46"
   integrity sha512-UyQW/MT5EIGBrXPCh/FDIaD7RtJTn5/rJUNw2FOglp0qoXnCQHNKvntiR1ylztk05fYxIF6UgsC76IrazlKJjw==
