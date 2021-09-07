@@ -11,3 +11,6 @@ import {
 import {
   PoolMock
 } from '@jarvis-network/synthereum-contracts/contracts/test/PoolMock.sol';
+import {
+  SynthereumPoolOnChainPriceFeed
+} from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/PoolOnChainPriceFeed.sol';
