@@ -47,6 +47,8 @@ contract AtomicSwapProxy {
     admin = _admin;
   }
 
+  receive() external payable {}
+
   // overrides any current implementation with same identifier
   function registerImplementation(
     string calldata identifier,
