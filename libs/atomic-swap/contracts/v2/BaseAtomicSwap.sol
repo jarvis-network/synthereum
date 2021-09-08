@@ -60,7 +60,7 @@ contract BaseAtomicSwap {
         version,
         address(synthereumPool)
       ),
-      'Pool not registred'
+      'Pool not registered'
     );
   }
 }
