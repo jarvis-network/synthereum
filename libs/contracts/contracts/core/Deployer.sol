@@ -11,8 +11,8 @@ import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
 import {
-  ISynthereumPoolDeployment
-} from '../synthereum-pool/common/interfaces/IPoolDeployment.sol';
+  ISynthereumPoolWithDerivativeDeployment
+} from '../synthereum-pool/common/interfaces/IPoolWithDerivativeDeployment.sol';
 import {
   IDerivativeDeployment
 } from '../derivative/common/interfaces/IDerivativeDeployment.sol';
@@ -131,7 +131,10 @@ contract SynthereumDeployer is
     override
     onlyMaintainer
     nonReentrant
-    returns (IDerivativeDeployment derivative, ISynthereumPoolDeployment pool)
+    returns (
+      IDerivativeDeployment derivative,
+      ISynthereumPoolWithDerivativeDeployment pool
+    )
   {
     ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
     derivative = deployDerivative(
@@ -181,7 +184,7 @@ contract SynthereumDeployer is
     override
     onlyMaintainer
     nonReentrant
-    returns (ISynthereumPoolDeployment pool)
+    returns (ISynthereumPoolWithDerivativeDeployment pool)
   {
     ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
     pool = deployPool(
@@ -213,7 +216,7 @@ contract SynthereumDeployer is
   function deployOnlyDerivative(
     uint8 derivativeVersion,
     bytes calldata derivativeParamsData,
-    ISynthereumPoolDeployment pool
+    ISynthereumPoolWithDerivativeDeployment pool
   )
     external
     override
@@ -330,7 +333,7 @@ contract SynthereumDeployer is
     uint8 poolVersion,
     IDerivativeDeployment derivative,
     bytes memory poolParamsData
-  ) internal returns (ISynthereumPoolDeployment pool) {
+  ) internal returns (ISynthereumPoolWithDerivativeDeployment pool) {
     address poolFactory =
       factoryVersioning.getFactoryVersion(
         FactoryInterfaces.PoolFactory,
@@ -345,7 +348,7 @@ contract SynthereumDeployer is
         ),
         'Wrong pool deployment'
       );
-    pool = ISynthereumPoolDeployment(
+    pool = ISynthereumPoolWithDerivativeDeployment(
       abi.decode(poolDeploymentResult, (address))
     );
   }
@@ -389,7 +392,7 @@ contract SynthereumDeployer is
    */
   function setDerivativeRoles(
     IDerivativeDeployment derivative,
-    ISynthereumPoolDeployment pool,
+    ISynthereumPoolWithDerivativeDeployment pool,
     bool isOnlyDerivative
   ) internal {
     IRole derivativeRoles = IRole(address(derivative));
@@ -442,7 +445,7 @@ contract SynthereumDeployer is
    */
   function setPoolRole(
     IDerivativeDeployment derivative,
-    ISynthereumPoolDeployment pool
+    ISynthereumPoolWithDerivativeDeployment pool
   ) internal {
     ISynthereumManager manager = getManager();
     address[] memory contracts = new address[](1);
@@ -552,10 +555,10 @@ contract SynthereumDeployer is
    * @param pool Contract pool to check
    * @param version Pool version to check
    */
-  function checkPoolDeployment(ISynthereumPoolDeployment pool, uint8 version)
-    internal
-    view
-  {
+  function checkPoolDeployment(
+    ISynthereumPoolWithDerivativeDeployment pool,
+    uint8 version
+  ) internal view {
     require(
       pool.synthereumFinder() == synthereumFinder,
       'Wrong finder in pool deployment'
@@ -570,7 +573,7 @@ contract SynthereumDeployer is
    * @param isPoolLinked Flag that defines if pool is linked with derivative
    */
   function checkPoolAndDerivativeMatching(
-    ISynthereumPoolDeployment pool,
+    ISynthereumPoolWithDerivativeDeployment pool,
     IDerivativeDeployment derivative,
     bool isPoolLinked
   ) internal view {
@@ -594,7 +597,10 @@ contract SynthereumDeployer is
    * @notice Check correct registration of a pool with PoolRegistry
    * @param pool Contract pool to check
    */
-  function checkPoolRegistration(ISynthereumPoolDeployment pool) internal view {
+  function checkPoolRegistration(ISynthereumPoolWithDerivativeDeployment pool)
+    internal
+    view
+  {
     ISynthereumRegistry poolRegistry = getPoolRegistry();
     require(
       poolRegistry.isDeployed(

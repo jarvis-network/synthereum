@@ -3,8 +3,8 @@ pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  ISynthereumPoolDeployment
-} from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';
+  ISynthereumPoolWithDerivativeDeployment
+} from '../../synthereum-pool/common/interfaces/IPoolWithDerivativeDeployment.sol';
 import {
   IDerivativeDeployment
 } from '../../derivative/common/interfaces/IDerivativeDeployment.sol';
@@ -35,7 +35,10 @@ interface ISynthereumDeployer {
     bytes calldata poolParamsData
   )
     external
-    returns (IDerivativeDeployment derivative, ISynthereumPoolDeployment pool);
+    returns (
+      IDerivativeDeployment derivative,
+      ISynthereumPoolWithDerivativeDeployment pool
+    );
 
   /**
    * @notice Deploys a pool and links it with an already existing derivative
@@ -48,7 +51,7 @@ interface ISynthereumDeployer {
     uint8 poolVersion,
     bytes calldata poolParamsData,
     IDerivativeDeployment derivative
-  ) external returns (ISynthereumPoolDeployment pool);
+  ) external returns (ISynthereumPoolWithDerivativeDeployment pool);
 
   /**
    * @notice Deploys a derivative and option to links it with an already existing pool
@@ -60,7 +63,7 @@ interface ISynthereumDeployer {
   function deployOnlyDerivative(
     uint8 derivativeVersion,
     bytes calldata derivativeParamsData,
-    ISynthereumPoolDeployment pool
+    ISynthereumPoolWithDerivativeDeployment pool
   ) external returns (IDerivativeDeployment derivative);
 
   function deployOnlySelfMintingDerivative(

@@ -41,9 +41,4 @@ interface ISynthereumPoolDeployment {
    * @return symbol The ERC20 synthetic token symbol
    */
   function syntheticTokenSymbol() external view returns (string memory symbol);
-
-  function isDerivativeAdmitted(address derivative)
-    external
-    view
-    returns (bool isAdmitted);
 }

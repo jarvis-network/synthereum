@@ -22,6 +22,7 @@ import '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
 import '../oracle/chainlink/ChainlinkPriceFeed.sol';
 import '../synthereum-pool/v4/interfaces/IPoolGeneral.sol';
 import '../synthereum-pool/common/interfaces/IPoolDeployment.sol';
+import '../synthereum-pool/common/interfaces/IPoolWithDerivativeDeployment.sol';
 import '../synthereum-pool/v4/interfaces/IPoolInteraction.sol';
 import '../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 import '../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeedStorage.sol';
