@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 import {ISynthereumPoolInteraction} from './IPoolInteraction.sol';
-import {ISynthereumPoolDeployment} from './IPoolDeployment.sol';
+import {
+  ISynthereumPoolDeployment
+} from '../../common/interfaces/IPoolDeployment.sol';
 
 interface ISynthereumPoolGeneral is
   ISynthereumPoolDeployment,

@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import {
   ISynthereumPoolOnChainPriceFeed
 } from './interfaces/IPoolOnChainPriceFeed.sol';
-import {ISynthereumPoolGeneral} from '../common/interfaces/IPoolGeneral.sol';
+import {ISynthereumPoolGeneral} from './interfaces/IPoolGeneral.sol';
 import {
   ISynthereumPoolOnChainPriceFeedStorage
 } from './interfaces/IPoolOnChainPriceFeedStorage.sol';

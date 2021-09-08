@@ -13,7 +13,7 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISynthereumPoolDeployment
 } from '../../common/interfaces/IPoolDeployment.sol';
-import {ISynthereumPoolGeneral} from '../../common/interfaces/IPoolGeneral.sol';
+import {ISynthereumPoolGeneral} from './IPoolGeneral.sol';
 
 /**
  * @title Token Issuer Contract Interface
