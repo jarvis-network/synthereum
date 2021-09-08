@@ -11,6 +11,7 @@ const {
 const Proxy = artifacts.require('AtomicSwapProxy');
 const UniV3AtomicSwap = artifacts.require('UniV3AtomicSwap');
 const ISwapRouter = artifacts.require('ISwapRouter');
+const PoolMock = artifacts.require('PoolMock');
 
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumPoolOnChainPriceFeed = artifacts.require(
@@ -22,14 +23,11 @@ const uniswap = require('../../data/test/uniswap.json');
 const synthereum = require('../../data/test/synthereum.json');
 
 contract('AtomicSwapv2 - UniswapV3', async accounts => {
-  let WBTCInstance, USDCInstance, jEURInstance, uniswapInstance;
+  let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
   let WBTCAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
+  let networkId, UniV3Info;
 
-  let AtomicSwapAddr,
-    ProxyAddress,
-    AtomicSwapInstance,
-    ProxyInstance,
-    synthereumFinderAddress = '0xBeFaa064Ad33668C97D4C8C4d0237682B7D04E34'; // from networks/42.json
+  let AtomicSwapInstance, ProxyInstance;
 
   let feePercentage = 2000000000000000;
   let deadline = ((Date.now() / 1000) | 0) + 7200;
@@ -46,6 +44,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     WETHAddress = tokens[networkId].WETH;
     USDTAddress = tokens[networkId].USDT;
 
+    WETHInstance = await initializeTokenInstanace(WETHAddress);
     WBTCInstance = await initializeTokenInstanace(WBTCAddress);
     USDCInstance = await initializeTokenInstanace(USDCAddress);
     USDTInstance = await initializeTokenInstanace(USDTAddress);
@@ -115,12 +114,30 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     });
   };
 
+  const getTxFee = async txReceipt => {
+    try {
+      var txHash = txReceipt.tx;
+      var tx = await web3.eth.getTransaction(txHash);
+      return web3.utils
+        .toBN(txReceipt.receipt.gasUsed)
+        .mul(web3Utils.toBN(tx.gasPrice));
+    } catch (error) {
+      console.log(error);
+      return web3Utils.toBN('0');
+    }
+  };
+
   before(async () => {
     admin = accounts[0];
     user = accounts[1];
 
-    const networkId = await web3.eth.net.getId();
+    networkId = await web3.eth.net.getId();
     expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
+    UniV3Info = {
+      routerAddress: uniswap[networkId].routerV3,
+      synthereumFinder: '0xD451dE78E297b496ee8a4f06dCF991C17580B452',
+      nativeCryptoAddress: tokens[networkId].WETH,
+    };
 
     // init uniswap
     uniswapInstance = await initializeUniswap(networkId);
@@ -139,10 +156,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
   });
 
   describe('From/to ERC20', () => {
-    it('mint jSynth from ERC20 - exact input', async () => {
+    it('mint jSynth from ERC20 - exact input - multihop', async () => {
       const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDCAddress];
-      const fees = [3000];
+      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const fees = [3000, 3000];
 
       await getWBTC(amountETH);
 
@@ -198,11 +215,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
     });
-    // TODO FAILS FOR SLIPPAGE STF error
-    it.skip('mint jSynth from ERC20 - exact output', async () => {
-      const exactTokensOut = web3Utils.toWei('10');
-      const tokenPathSwap = [WBTCAddress, USDCAddress];
-      const fees = [3000];
+
+    it('mint jSynth from ERC20 - exact output - multihop', async () => {
+      const exactTokensOut = 10;
+      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const fees = [3000, 3000];
 
       await getWBTC(amountETH);
 
@@ -214,7 +231,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       const mintParams = {
         derivative: derivative,
-        minNumTokens: 1,
+        minNumTokens: 0,
         collateralAmount: exactTokensOut,
         feePercentage: feePercentage,
         expiration: deadline,
@@ -224,29 +241,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
-      const maxTokenAmountIn = WBTCbalanceBefore.div(web3Utils.toBN(100));
+      const maxTokenAmountIn = WBTCbalanceBefore.div(web3Utils.toBN(10));
 
       // approve proxy to pull tokens
       await WBTCInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
         from: user,
       });
-
-      // let UniV3Info = {
-      //   routerAddress: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-      //   synthereumFinder: "0xD451dE78E297b496ee8a4f06dCF991C17580B452",
-      //   nativeCryptoAddress: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      // };
-
-      // const tx = await AtomicSwapInstance.swapToCollateralAndMint(
-      //   UniV3Info,
-      //   false,
-      //   exactTokensOut,
-      //   maxTokenAmountIn,
-      //   extraParams,
-      //   pool,
-      //   mintParams,
-      //   {from:user}
-      // );
 
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
@@ -260,10 +260,24 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         { from: user },
       );
 
-      // TODO
+      let jSynthOut;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        jSynthOut = ev.outputTokens;
+        return ev.outputTokens > 0;
+      });
+
+      let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      // some WBTC may have been refunded
+      assert.equal(
+        WBTCbalanceAfter.gte(WBTCbalanceBefore.sub(maxTokenAmountIn)),
+        true,
+      );
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
     });
 
-    it('burn jSynth and swaps for ERC20 - exact input', async () => {
+    it('burn jSynth and swaps for ERC20 - exact input - single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
       let WBTCBalanceBefore = await WBTCInstance.balanceOf.call(user);
 
@@ -316,13 +330,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
     });
 
-    it('burn jSynth and swaps for ERC20 - exact output', async () => {
+    it('burn jSynth and swaps for ERC20 - exact output- single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
       let USDTBalanceBefore = await USDTInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
-      const tokenPathSwap = [USDTAddress, USDCAddress];
+      const tokenPathSwap = [USDCAddress, USDTAddress];
       const fees = [3000];
 
       //encode in extra params
@@ -372,11 +386,299 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
     });
+
+    it('mintFromERC20 - Rejects with a not registered pool', async function () {
+      const poolMockInstance = await PoolMock.new(
+        4,
+        USDCAddress,
+        'jEUR',
+        jEURAddress,
+      );
+
+      const tokenAmountIn = 10000;
+      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const fees = [3000, 3000];
+
+      await getWBTC(amountETH);
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      // caalling the implementation directly to being able to read revert message
+      await truffleAssert.reverts(
+        AtomicSwapInstance.swapToCollateralAndMint(
+          UniV3Info,
+          true,
+          tokenAmountIn,
+          0,
+          extraParams,
+          poolMockInstance.address,
+          mintParams,
+          { from: user },
+        ),
+        'Pool not registered',
+      );
+    });
+
+    it('swapToERC20 - Rejects with a not registered pool', async function () {
+      const poolMockInstance = await PoolMock.new(
+        4,
+        USDCAddress,
+        'jEUR',
+        jEURAddress,
+      );
+
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+      const tokenPathSwap = [USDCAddress, USDTAddress];
+      const fees = [3000];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      // caalling the implementation directly to being able to read revert message
+      await truffleAssert.reverts(
+        AtomicSwapInstance.redeemCollateralAndSwap(
+          UniV3Info,
+          true,
+          jEURInput.toString(),
+          0,
+          extraParams,
+          poolMockInstance.address,
+          redeemParams,
+          user,
+          { from: user },
+        ),
+        'Pool not registered',
+      );
+    });
+
+    it('mintFromERC20 - Rejects if pool collateral token is missing in swap path', async function () {
+      const tokenAmountIn = 10000;
+      const tokenPathSwap = [WBTCAddress, USDTAddress];
+      const fees = [3000];
+
+      await getWBTC(amountETH);
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      // caalling the implementation directly to being able to read revert message
+      await truffleAssert.reverts(
+        AtomicSwapInstance.swapToCollateralAndMint(
+          UniV3Info,
+          true,
+          tokenAmountIn,
+          0,
+          extraParams,
+          pool,
+          mintParams,
+          { from: user },
+        ),
+        'Wrong collateral instance',
+      );
+    });
+
+    it('swapToERC20 - Rejects if pool collateral token is missing in swap path', async function () {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+      const tokenPathSwap = [USDTAddress, WBTCAddress];
+      const fees = [3000];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      // caalling the implementation directly to being able to read revert message
+      await truffleAssert.reverts(
+        AtomicSwapInstance.redeemCollateralAndSwap(
+          UniV3Info,
+          true,
+          jEURInput.toString(),
+          0,
+          extraParams,
+          pool,
+          redeemParams,
+          user,
+          { from: user },
+        ),
+        'Wrong collateral instance',
+      );
+    });
   });
 
-  describe('From/to ETH', () => {
-    it('mint jSynth from ETH', async () => {});
-    it('mint jSynth from ETH - exact input', async () => {});
-    it('burn jSynth and swaps for ETH - exact output', async () => {});
+  describe('From ETH', () => {
+    it('mint jSynth from ETH - exact input - multihop', async () => {
+      const tokenAmountIn = web3Utils.toWei('1', 'ether');
+      const tokenPathSwap = [WETHAddress, USDTAddress, USDCAddress];
+      const fees = [3000, 3000];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      // approve proxy to pull tokens
+      await WETHInstance.approve(ProxyInstance.address, tokenAmountIn, {
+        from: user,
+      });
+
+      let EthBalanceBefore = await web3.eth.getBalance(user);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+
+      // tx through proxy
+      const tx = await ProxyInstance.swapAndMint(
+        implementationID,
+        true,
+        tokenAmountIn,
+        0,
+        extraParams,
+        pool,
+        mintParams,
+        { from: user, value: tokenAmountIn },
+      );
+
+      const txFee = await getTxFee(tx);
+
+      let jSynthOut;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        jSynthOut = ev.outputTokens;
+        return ev.outputTokens > 0;
+      });
+
+      let EthBalanceAfter = await web3.eth.getBalance(user);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      const expectedEthBalance = web3Utils
+        .toBN(EthBalanceBefore)
+        .sub(txFee)
+        .sub(web3Utils.toBN(tokenAmountIn));
+      assert.equal(
+        expectedEthBalance.eq(web3Utils.toBN(EthBalanceAfter)),
+        true,
+      );
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
+    });
+    it('mint jSynth from ETH - exact output - single hop', async () => {
+      const maxTokenAmountIn = web3Utils.toWei('1', 'ether');
+      const exactTokensOut = 100;
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const fees = [3000];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      // approve proxy to pull tokens
+      await WETHInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
+        from: user,
+      });
+
+      let EthBalanceBefore = await web3.eth.getBalance(user);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+
+      // tx through proxy
+      const tx = await ProxyInstance.swapAndMint(
+        implementationID,
+        false,
+        exactTokensOut,
+        maxTokenAmountIn,
+        extraParams,
+        pool,
+        mintParams,
+        { from: user, value: maxTokenAmountIn },
+      );
+
+      const txFee = await getTxFee(tx);
+
+      let jSynthOut;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        jSynthOut = ev.outputTokens;
+        return ev.outputTokens > 0;
+      });
+
+      let EthBalanceAfter = await web3.eth.getBalance(user);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      const minExpectedEthBalance = web3Utils
+        .toBN(EthBalanceBefore)
+        .sub(txFee)
+        .sub(web3Utils.toBN(maxTokenAmountIn));
+      assert.equal(
+        web3Utils.toBN(EthBalanceAfter).gte(minExpectedEthBalance),
+        true,
+      );
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
+    });
   });
 });
