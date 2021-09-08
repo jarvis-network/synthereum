@@ -2,8 +2,9 @@ const AtomicSwap = artifacts.require('AtomicSwap');
 //const UniswapV2Router02 = artifacts.require('UniswapV2Router02');
 
 const TestnetERC20 = artifacts.require('TestnetERC20');
-const IUniswapV2Router02 = artifacts.require('IUniswapV2Router02');
-const IUniswapV2Router01 = artifacts.require('IUniswapV2Router01');
+const IUniswapV2Router02 = artifacts.require(
+  'contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
+);
 const IUniswapV2Factory = artifacts.require('IUniswapV2Factory');
 const web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');

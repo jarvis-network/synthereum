@@ -35,7 +35,7 @@ contract('UniswapV2', async accounts => {
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1');
 
-  const implementationID = 'UniV2';
+  const implementationID = 'uniV2';
   const initializeTokenInstanace = async tokenAddress =>
     await TestnetERC20.at(tokenAddress);
 

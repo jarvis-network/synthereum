@@ -13,6 +13,7 @@
     "migrate-atomic-swap": "MIGRATION_TYPE=atomic_swap hardhat test ./test/correct-migration.js",
     "start:local-fork": "../../scripts/local-fork.sh",
     "test": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat  --network mainnet_fork test ./test/atomic-swap.js --no-compile",
+    "test:v2": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat  --network mainnet_fork test ./test/v2/*",
     "verify": "hardhat verify"
   },
   "devDependencies": {

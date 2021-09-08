@@ -31,9 +31,9 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
   let feePercentage = 2000000000000000;
   let deadline = ((Date.now() / 1000) | 0) + 7200;
-  let amountETH = web3Utils.toWei('1');
+  let amountETH = web3Utils.toWei('1', 'ether');
 
-  const implementationID = 'UniV3';
+  const implementationID = 'uniV3';
   const initializeTokenInstanace = async tokenAddress =>
     await TestnetERC20.at(tokenAddress);
 
@@ -64,42 +64,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     let params = {
       tokenIn: WETHAddress,
       tokenOut: WBTCAddress,
-      fee: 3000,
-      recipient: user,
-      deadline,
-      amountIn: ethAmount,
-      amountOutMinimum: 0,
-      sqrtPriceLimitX96: 0,
-    };
-
-    await uniswapInstance.exactInputSingle(params, {
-      value: ethAmount,
-      from: user,
-    });
-  };
-
-  const getUSDC = async ethAmount => {
-    let params = {
-      tokenIn: WETHAddress,
-      tokenOut: USDCAddress,
-      fee: 3000,
-      recipient: user,
-      deadline,
-      amountIn: ethAmount,
-      amountOutMinimum: 0,
-      sqrtPriceLimitX96: 0,
-    };
-
-    await uniswapInstance.exactInputSingle(params, {
-      value: ethAmount,
-      from: user,
-    });
-  };
-
-  const getUSDT = async ethAmount => {
-    let params = {
-      tokenIn: WETHAddress,
-      tokenOut: USDTAddress,
       fee: 3000,
       recipient: user,
       deadline,
@@ -271,7 +235,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       // some WBTC may have been refunded
       assert.equal(
-        WBTCbalanceAfter.gte(WBTCbalanceBefore.sub(maxTokenAmountIn)),
+        WBTCbalanceAfter.gt(WBTCbalanceBefore.sub(maxTokenAmountIn)),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
@@ -675,7 +639,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         .sub(txFee)
         .sub(web3Utils.toBN(maxTokenAmountIn));
       assert.equal(
-        web3Utils.toBN(EthBalanceAfter).gte(minExpectedEthBalance),
+        web3Utils.toBN(EthBalanceAfter).gt(minExpectedEthBalance),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);

@@ -34,6 +34,6 @@ module.exports = async function (deployer, network, accounts) {
   };
 
   await proxyInstance.methods
-    .registerImplementation('UniV3', uniV3Instance.options.address, UniV3Info)
+    .registerImplementation('uniV3', uniV3Instance.options.address, UniV3Info)
     .send({ from: admin });
 };
