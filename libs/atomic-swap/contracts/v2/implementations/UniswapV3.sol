@@ -42,7 +42,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
 
     // unpack the extraParams (fees) and encode the paths
-    bytes memory path = encodeAddresses(tokenSwapPath, fees);
+    bytes memory path = encodeAddresses(isExactInput, tokenSwapPath, fees);
 
     if (isExactInput) {
       if (msg.value > 0) {
@@ -192,7 +192,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
     // uniswapv3 path+fees encoding
-    bytes memory path = encodeAddresses(tokenSwapPath, fees);
+    bytes memory path = encodeAddresses(isExactInput, tokenSwapPath, fees);
 
     // approve router to swap tokens
     IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
@@ -248,22 +248,32 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
   }
 
   // generates the encoded bytes for multihop swap
-  function encodeAddresses(address[] memory addresses, uint24[] memory fees)
-    internal
-    pure
-    returns (bytes memory data)
-  {
+  function encodeAddresses(
+    bool isExactInput,
+    address[] memory addresses,
+    uint24[] memory fees
+  ) internal pure returns (bytes memory data) {
     /// ie 3 tokens 2 pools
     require(
       addresses.length == fees.length + 1,
       'Mismatch between tokens and fees'
     );
 
-    for (uint256 i = 0; i < addresses.length - 1; i++) {
-      data = abi.encodePacked(data, addresses[i], fees[i]);
-    }
+    if (isExactInput) {
+      // path encoded from first to last token and fee
+      for (uint256 i = 0; i < addresses.length - 1; i++) {
+        data = abi.encodePacked(data, addresses[i], fees[i]);
+      }
 
-    // last token
-    data = abi.encodePacked(data, addresses[addresses.length - 1]);
+      // last token
+      data = abi.encodePacked(data, addresses[addresses.length - 1]);
+    } else {
+      // path encoded from last to first token and fee
+      for (uint256 i = addresses.length - 1; i > 0; i--) {
+        data = abi.encodePacked(data, addresses[i], fees[i - 1]);
+      }
+      // last token
+      data = abi.encodePacked(data, addresses[0]);
+    }
   }
 }
