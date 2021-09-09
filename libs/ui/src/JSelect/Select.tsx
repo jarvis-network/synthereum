@@ -114,6 +114,7 @@ export function Select<Option>({
   className,
   optionComponent: Option,
   singleValueComponent: SingleValue,
+  placeholder,
 }: SelectProps<Option>) {
   const formattedOptions = useMemo(
     () =>
@@ -139,6 +140,7 @@ export function Select<Option>({
         components={{ IndicatorSeparator: null, Option, SingleValue }}
         hideSelectedOptions={false}
         classNamePrefix="react-select"
+        placeholder={placeholder}
         theme={theme => ({
           ...theme,
           borderRadius: 0,

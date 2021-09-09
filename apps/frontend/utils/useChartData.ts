@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import type { Asset } from '@/data/assets';
-import { primaryCollateralSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
+import { collateralSymbol } from '@jarvis-network/synthereum-contracts/dist/config';
 
 interface GraphResponse {
   data: {
@@ -30,7 +30,7 @@ const convertToGraphSymbol = (symbol: Asset['symbol']) => {
   if (symbol.startsWith('j')) {
     return symbol.substr(1);
   }
-  if (symbol === primaryCollateralSymbol) {
+  if (symbol === collateralSymbol) {
     return 'USD';
   }
   return null;
@@ -44,7 +44,7 @@ const getPrices = async (
   const fromCurrency = convertToGraphSymbol(from);
   const toCurrency = convertToGraphSymbol(to);
 
-  const invert = from === primaryCollateralSymbol;
+  const invert = from === collateralSymbol;
   const pair = invert
     ? `${toCurrency}/${fromCurrency}`
     : `${fromCurrency}/${toCurrency}`;
@@ -89,8 +89,8 @@ const getIndirectPrices = async (
   days: number,
 ) => {
   const [toUSD, fromUSD] = await Promise.all([
-    getPrices(from, primaryCollateralSymbol, days),
-    getPrices(primaryCollateralSymbol, to, days),
+    getPrices(from, collateralSymbol, days),
+    getPrices(collateralSymbol, to, days),
   ]);
 
   // Always drawing using data from pair which has more points results
@@ -136,8 +136,8 @@ export const useChartData = (
 
     (async () => {
       if (
-        paySymbol !== primaryCollateralSymbol &&
-        receiveSymbol !== primaryCollateralSymbol
+        paySymbol !== collateralSymbol &&
+        receiveSymbol !== collateralSymbol
       ) {
         const twoPairsResult = await getIndirectPrices(
           paySymbol,

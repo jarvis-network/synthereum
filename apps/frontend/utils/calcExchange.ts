@@ -6,6 +6,8 @@ interface Arguments {
   collateralAsset: Asset;
   assetPay: Asset | undefined;
   assetReceive: Asset | undefined;
+  assetPayPrice?: FPN;
+  assetReceivePrice?: FPN;
   base: State['exchange']['base'];
   pay: State['exchange']['pay'];
   receive: State['exchange']['receive'];
@@ -24,6 +26,8 @@ const ZERO_BN = new FPN(0).bn;
 export function calcExchange({
   assetPay,
   assetReceive,
+  assetPayPrice,
+  assetReceivePrice,
   base,
   pay,
   receive,
@@ -33,7 +37,13 @@ export function calcExchange({
   const paySymbol = assetPay?.symbol;
   const receiveSymbol = assetReceive?.symbol;
 
-  if (paySymbol === receiveSymbol || !assetPay?.price || !assetReceive?.price) {
+  if (
+    paySymbol === receiveSymbol ||
+    !assetPayPrice ||
+    !assetReceivePrice ||
+    !assetPay ||
+    !assetReceive
+  ) {
     return null;
   }
 
@@ -43,7 +53,7 @@ export function calcExchange({
       const payValue = new FPN(pay);
       return mintCollateral(
         payValue,
-        assetReceive.price,
+        assetReceivePrice,
         feePercentage,
         collateralAsset.decimals,
       );
@@ -52,7 +62,7 @@ export function calcExchange({
     const receiveValue = new FPN(receive);
     return mintTokens(
       receiveValue,
-      assetReceive.price,
+      assetReceivePrice,
       feePercentage,
       collateralAsset.decimals,
       assetPay.decimals,
@@ -65,7 +75,7 @@ export function calcExchange({
       const payValue = new FPN(pay);
       return redeemTokens(
         payValue,
-        assetPay.price,
+        assetPayPrice,
         feePercentage,
         collateralAsset.decimals,
       );
@@ -76,7 +86,7 @@ export function calcExchange({
 
     return redeemCollateral(
       receiveValue,
-      assetPay.price,
+      assetPayPrice,
       feePercentage,
       collateralAsset.decimals,
       assetPay.decimals,
@@ -87,8 +97,8 @@ export function calcExchange({
     const payValue = new FPN(pay);
     return exchangePay(
       payValue,
-      assetPay.price,
-      assetReceive.price,
+      assetPayPrice,
+      assetReceivePrice,
       feePercentage,
       collateralAsset.decimals,
     );
@@ -97,8 +107,8 @@ export function calcExchange({
   const receiveValue = new FPN(receive);
   return exchangeReceive(
     receiveValue,
-    assetPay.price,
-    assetReceive.price,
+    assetPayPrice,
+    assetReceivePrice,
     feePercentage,
     collateralAsset.decimals,
     assetPay.decimals,

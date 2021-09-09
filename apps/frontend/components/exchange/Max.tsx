@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { styled, themeValue } from '@jarvis-network/ui';
+import { useTransactionSpeed } from '@jarvis-network/app-toolkit';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 
 import { setBase, setPay } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { useExchangeContext } from '@/utils/ExchangeContext';
+
+import { useSwap } from './useSwap';
+import { useMemo } from 'use-memo-one';
 
 const Container = styled.button`
   color: ${themeValue(
@@ -25,31 +32,107 @@ const Container = styled.button`
   font-weight: 300;
 `;
 
+const oneGwei = 1000 * 1000 * 1000;
+const twenty = new FPN(20);
+const one = new FPN(1);
 export const Max: React.FC = () => {
   const dispatch = useDispatch();
+  const { assetPay, path: p } = useExchangeContext();
+  const swap = useSwap();
+  const transactionSpeedContext = useTransactionSpeed();
+  const [estimation, setEstimation] = useState(0);
 
-  const payAsset = useReduxSelector(state => state.exchange.payAsset);
-
-  const max = useReduxSelector(state => {
-    if (!payAsset) {
+  const s = useReduxSelector(state => {
+    if (!assetPay) {
       return null;
     }
-    const wallet = state.wallet[payAsset];
+    const wallet = state.wallet[assetPay.symbol];
     if (!wallet) {
       return null;
     }
 
-    return wallet.amount;
+    return {
+      max: wallet.amount,
+      transactionSpeed: state.exchange.transactionSpeed,
+    };
   });
 
-  if (!max) {
-    return null;
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const m = useMemo(() => s && s.max, [s && s.max && s.max.format(18)]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const path = useMemo(() => p, [p && p.map(token => token.address).join()]);
 
-  const formattedMax = max.format(18).replace(/0*$/, '').replace(/\.$/, '');
+  useEffect(() => {
+    if (!assetPay?.native || !swap || !path || !m) return;
+
+    let requested = false;
+    let canceled = false;
+    let divisor = one;
+    let timeoutId = 0;
+
+    function estimate() {
+      if (requested) return;
+
+      requested = true;
+
+      swap!(m && (divisor.gt(one) ? m.div(divisor) : m))
+        .estimatePromise.then((value: number) => {
+          if (!canceled) {
+            setEstimation(value);
+            requested = false;
+          }
+        })
+        .catch(() => {
+          if (!canceled) {
+            divisor = divisor.mul(twenty);
+            requested = false;
+            clearTimeout(timeoutId);
+            timeoutId = (setTimeout(estimate, 1000) as unknown) as number;
+          }
+        });
+    }
+
+    const intervalId = setInterval(estimate, 30 * 1000);
+
+    estimate();
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+      canceled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assetPay, setEstimation, path, m]);
+
+  if (!s) return null;
+
+  const { max, transactionSpeed } = s;
 
   const handleClick = () => {
-    dispatch(setPay(formattedMax === '0.' ? '0' : formattedMax));
+    const reducedMax = assetPay!.native
+      ? estimation
+        ? max.sub(
+            FPN.fromWei(estimation).mul(
+              new FPN(
+                assertNotNull(transactionSpeedContext)[transactionSpeed] *
+                  oneGwei,
+              ),
+            ),
+          )
+        : max.sub(new FPN('0.01'))
+      : max;
+    const formattedMax = (reducedMax.lt(new FPN(0))
+      ? max.add(FPN.fromWei(1))
+      : reducedMax
+    )
+      .format(18)
+      .replace(/(\.0{18}|0*)$/, '');
+    dispatch(
+      setPay({
+        pay: formattedMax,
+        gasLimit: assetPay?.native ? estimation : 0,
+      }),
+    );
     dispatch(setBase('pay'));
   };
   return <Container onClick={handleClick}>Max</Container>;

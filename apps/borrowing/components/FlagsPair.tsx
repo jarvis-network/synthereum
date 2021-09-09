@@ -1,7 +1,7 @@
 import React from 'react';
-import { Flag, FlagKeys, styled } from '@jarvis-network/ui';
+import { Flag, styled } from '@jarvis-network/ui';
 
-type AssetFlag = FlagKeys | null;
+type AssetFlag = string | undefined;
 
 interface Props {
   assets: [AssetFlag, AssetFlag];
@@ -33,8 +33,8 @@ const Container = styled.div`
 
 export const FlagsPair: React.FC<Props> = ({ assets }) => (
   <Container>
-    {assets.map((icon, index) =>
-      icon ? <Flag flag={icon} className={`item-${index}`} key={icon} /> : null,
-    )}
+    {assets.map((icon, index) => (
+      <Flag flag={icon} className={`item-${index}`} key={icon} />
+    ))}
   </Container>
 );

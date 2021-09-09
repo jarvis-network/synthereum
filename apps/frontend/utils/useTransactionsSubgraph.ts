@@ -1,4 +1,3 @@
-import { assetsObject } from '@/data/assets';
 import { SynthereumTransaction, TransactionIO } from '@/data/transactions';
 import {
   addTransactions,
@@ -7,7 +6,7 @@ import {
 } from '@/state/slices/transactions';
 import {
   isSupportedNetwork,
-  primaryCollateralSymbol,
+  collateralSymbol,
   SupportedNetworkId,
   SupportedNetworkName,
 } from '@jarvis-network/synthereum-contracts/dist/config';
@@ -609,11 +608,11 @@ function getTransactionIO(
   }
   return {
     amount: FPN.fromWei(
-      token.symbol === primaryCollateralSymbol
+      token.symbol === collateralSymbol
         ? `${amount}000000000000` // TODO: Use token.decimals + padEnd
         : amount,
     ).toString(),
-    asset: assetsObject[token.symbol].symbol,
+    asset: token.symbol,
   };
 }
 

@@ -1,7 +1,16 @@
 import React, { FC } from 'react';
-import { styled, Button, useTheme, Flag, OnMobile } from '@jarvis-network/ui';
+import {
+  styled,
+  Button,
+  useTheme,
+  Flag,
+  OnMobile,
+  Icon,
+  Tooltip,
+} from '@jarvis-network/ui';
+import { Global, css } from '@emotion/react';
 
-import { useExchangeValues } from '@/utils/useExchangeValues';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
@@ -9,6 +18,8 @@ import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
 import { Loader } from '../Loader';
 
 import { Fees } from './Fees';
+import { useAssets } from '@/utils/useAssets';
+import { assetsPolygon } from '@/data/assets';
 
 interface SwapConfirmProps {
   onConfim: () => void;
@@ -24,6 +35,8 @@ const ConfirmationContainer = styled.div`
   @media screen and (max-width: ${props =>
       props.theme.rwd.breakpoints[props.theme.rwd.desktopIndex - 1]}px) {
     justify-content: flex-start;
+    overflow-y: auto;
+    padding-bottom: 60px;
   }
 `;
 
@@ -73,7 +86,9 @@ const Value = styled(Key)`
   text-align: right;
 
   img {
+    width: 22px;
     height: 22px;
+    margin: 0 5px;
   }
 `;
 
@@ -93,6 +108,8 @@ const TokenValue = styled.span`
 
 const CustomFees = styled(Fees)``;
 
+type HasSymbol = { symbol: string };
+
 export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
   const theme = useTheme();
 
@@ -103,11 +120,42 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
     receiveString,
     receiveSymbol,
     assetReceive,
-  } = useExchangeValues();
-  const { isSwapLoaderVisible } = useReduxSelector(state => state.app);
+    minimumReceiveValue,
+    maximumSentValue,
+    minimumSynthReceiveValue,
+    maximumSynthSentValue,
+    shouldSwapAndMint,
+    path,
+  } = useExchangeContext();
+
+  const minReceiveValue = minimumSynthReceiveValue || minimumReceiveValue;
+  const maxSentValue = maximumSynthSentValue || maximumSentValue;
+
+  const assets = useAssets();
+
+  const isSwapLoaderVisible = useReduxSelector(
+    state => state.app.isSwapLoaderVisible,
+  );
 
   return (
     <ConfirmationContainer>
+      <Global
+        styles={css`
+          .path-item-tooltip-container {
+            width: 32px;
+            height: 22px;
+            display: inline-block;
+
+            > .tooltip {
+              bottom: auto;
+              top: -40px;
+              width: auto;
+              left: 50%;
+              transform: translateX(-50%);
+            }
+          }
+        `}
+      />
       <Empty />
       <Content>
         <Line>
@@ -118,7 +166,7 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
             Exchange: <TokenValue>{formatExchangeAmount(payString)}</TokenValue>
           </Key>
           <Value>
-            <Flag flag={assetPay!.icon!} />
+            <Flag flag={assetPay!.icon} />
             <TokenName>{paySymbol}</TokenName>
           </Value>
         </Line>
@@ -127,10 +175,74 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
             For: <TokenValue>{formatExchangeAmount(receiveString)}</TokenValue>
           </Key>
           <Value>
-            <Flag flag={assetReceive!.icon!} />
+            <Flag flag={assetReceive!.icon} />
             <TokenName>{receiveSymbol}</TokenName>
           </Value>
         </Line>
+        {minReceiveValue && (
+          <Line>
+            <Key>
+              Minimum amount received:{' '}
+              <TokenValue>
+                {formatExchangeAmount(minReceiveValue.format())}
+              </TokenValue>
+            </Key>
+            <Value>
+              <Flag flag={assetReceive!.icon} />
+              <TokenName>{receiveSymbol}</TokenName>
+            </Value>
+          </Line>
+        )}
+        {maxSentValue && (
+          <Line>
+            <Key>
+              Maximum amount sent:{' '}
+              <TokenValue>
+                {formatExchangeAmount(maxSentValue.format())}
+              </TokenValue>
+            </Key>
+            <Value>
+              <Flag flag={assetPay!.icon} />
+              <TokenName>{paySymbol}</TokenName>
+            </Value>
+          </Line>
+        )}
+        {path && (
+          <Line>
+            <Key>Route: </Key>
+            <Value>
+              {(shouldSwapAndMint
+                ? (path as HasSymbol[]).concat(assetReceive as HasSymbol)
+                : [assetPay as HasSymbol].concat(path as HasSymbol[])
+              )
+                .map(({ symbol }) =>
+                  assets === assetsPolygon && symbol === 'WMATIC'
+                    ? 'MATIC'
+                    : symbol === 'WETH9' || symbol === 'WETH'
+                    ? 'ETH'
+                    : symbol,
+                )
+                .map((symbol, index, array) => (
+                  <React.Fragment key={symbol}>
+                    <Tooltip
+                      wrapperClassName="path-item-tooltip-container"
+                      tooltip={symbol}
+                      position="top"
+                    >
+                      <Flag
+                        flag={
+                          assets.find(asset => symbol === asset.symbol)?.icon
+                        }
+                      />
+                    </Tooltip>
+                    {index !== array.length - 1 && (
+                      <Icon icon="BsArrowRight" style={{ marginLeft: 3 }} />
+                    )}
+                  </React.Fragment>
+                ))}
+            </Value>
+          </Line>
+        )}
         <OnMobile>
           <CustomFees />
         </OnMobile>

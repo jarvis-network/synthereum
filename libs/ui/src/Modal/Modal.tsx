@@ -41,6 +41,7 @@ export const Modal: React.FC<ModalProps> = ({
   animation = 'fade',
   duration = 0.2,
   children,
+  useDisplayNone,
 }) => {
   const overlayAnimation = useMemo(() => generateAnimation('fade', duration), [
     duration,
@@ -95,27 +96,34 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [contentRef, isOpened]);
 
-  return (
-    <AnimatePresence>
-      {isOpened && (
-        <Container
-          className={overlayClassName || ''}
-          style={overlayStyle || {}}
-          {...overlayAnimation}
-        >
-          <Overlay
-            style={{
-              ...modalPosition,
-              zIndex: 2001,
-              position: 'absolute',
-            }}
-            ref={contentRef}
-            {...modalAnimation}
-          >
-            {children}
-          </Overlay>
-        </Container>
-      )}
-    </AnimatePresence>
+  const content = (
+    <Container
+      className={overlayClassName || ''}
+      style={{
+        display: useDisplayNone && !isOpened ? 'none' : undefined,
+        ...(overlayStyle || {}),
+      }}
+      {...(useDisplayNone
+        ? { ...overlayAnimation, animate: isOpened ? 'visible' : 'hidden' }
+        : overlayAnimation)}
+    >
+      <Overlay
+        style={{
+          ...modalPosition,
+          zIndex: 2001,
+          position: 'absolute',
+        }}
+        ref={contentRef}
+        {...modalAnimation}
+      >
+        {children}
+      </Overlay>
+    </Container>
+  );
+
+  return useDisplayNone ? (
+    content
+  ) : (
+    <AnimatePresence>{isOpened && content}</AnimatePresence>
   );
 };

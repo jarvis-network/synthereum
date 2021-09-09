@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Tooltip, useWindowSize } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
-import { useExchangeValues } from '@/utils/useExchangeValues';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 import { PRIMARY_STABLE_COIN } from '@/data/assets';
 
 const Container = styled.div`
@@ -55,7 +55,7 @@ const QuestionMark = styled.span`
 export const FEES_BLOCK_HEIGHT_PX = 100;
 
 export const Fees: React.FC = () => {
-  const { fee, feePercentage } = useExchangeValues();
+  const { fee, feePercentage } = useExchangeContext();
   const { innerWidth } = useWindowSize();
 
   const feeItem = fee?.div(new FPN(2)) || null;

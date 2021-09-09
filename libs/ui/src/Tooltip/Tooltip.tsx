@@ -69,8 +69,9 @@ export const Tooltip: React.FC<TooltipProps> = ({
   tooltip,
   position = 'right',
   width = '250px',
+  wrapperClassName,
 }) => (
-  <Container>
+  <Container className={wrapperClassName}>
     <ChildrenContainer className="children">{children}</ChildrenContainer>
     <TooltipContainer className="tooltip" position={position} width={width}>
       {tooltip}

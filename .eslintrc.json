@@ -13,7 +13,7 @@
     "storybook-static/",
     "libs/contracts/dist/"
   ],
-  "plugins": ["@typescript-eslint", "react", "prettier", "jest"],
+  "plugins": ["@typescript-eslint", "react", "prettier", "jest", "react-hooks"],
   "parser": "@typescript-eslint/parser",
   "rules": {
     "camelcase": [
@@ -88,6 +88,7 @@
       }
     ],
     "@typescript-eslint/type-annotation-spacing": 2,
+    "react-hooks/exhaustive-deps": "error",
     "jsx-a11y/click-events-have-key-events": 0
   }
 }

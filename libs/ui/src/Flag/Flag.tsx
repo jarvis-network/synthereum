@@ -2,7 +2,7 @@ import React from 'react';
 
 import { styled } from '../Theme';
 
-import { files } from './files';
+import { files, questionMark } from './files';
 import { FlagProps, Size } from './types';
 
 const sizesMap = {
@@ -16,8 +16,13 @@ export const getFlagSize = (size: Size = 'medium') => sizesMap[size];
 const FlagImage = styled.img<Pick<FlagProps, 'size'>>`
   width: ${props => getFlagSize(props.size)}px;
   height: ${props => getFlagSize(props.size)}px;
+  border-radius: 50%;
 `;
 
 export const Flag: React.FC<FlagProps> = ({ flag, ...props }) => (
-  <FlagImage alt="" {...props} src={files[flag]} />
+  <FlagImage
+    alt="Flag"
+    {...props}
+    src={(files[flag as keyof typeof files] as string) || questionMark}
+  />
 );

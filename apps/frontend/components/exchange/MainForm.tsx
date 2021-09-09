@@ -23,7 +23,7 @@ import {
   ExchangeRate,
   SkeletonExchangeRate,
 } from '@/components/exchange/ExchangeRate';
-import { useExchangeValues } from '@/utils/useExchangeValues';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 
 import { TwoIconsButton } from '@/components/TwoIconsButton';
 
@@ -170,9 +170,18 @@ export const MainForm: React.FC = () => {
     receiveSymbol,
     assetPay,
     assetReceive,
+    assetReceivePrice,
     payString,
     receiveString,
-  } = useExchangeValues();
+    shouldRedeemAndSwap,
+    shouldSwapAndMint,
+    routeNotFound,
+    isLoading,
+    path,
+    maxMint,
+    maximumSentValue,
+    maximumSynthSentValue,
+  } = useExchangeContext();
 
   const theme = useTheme();
 
@@ -190,12 +199,26 @@ export const MainForm: React.FC = () => {
 
   const insufficientBalance = new FPN(payString).gt(balance);
 
+  const maxMintState = maxMint && maxMint[assetReceive?.symbol as string];
+  const insufficientLiquidityInSyntheticPool =
+    assetReceive?.synthetic &&
+    maxMintState &&
+    maxMintState.price === assetReceivePrice &&
+    new FPN(receiveString).gt(maxMintState.max);
+
+  const insufficientBalanceDueToSlippage =
+    (shouldSwapAndMint || shouldRedeemAndSwap) &&
+    base === 'receive' &&
+    (assetPay?.synthetic ? maximumSynthSentValue : maximumSentValue)?.gt(
+      balance,
+    );
+
   const updateBase = (baseValue: State['exchange']['base']) => {
     dispatch(setBase(baseValue));
   };
 
   const updatePay = (inputValue: State['exchange']['pay']) => {
-    dispatch(setPay(inputValue));
+    dispatch(setPay({ pay: inputValue }));
   };
 
   const updateReceive = (inputValue: State['exchange']['receive']) => {
@@ -224,7 +247,15 @@ export const MainForm: React.FC = () => {
       return false;
     }
 
-    return !Number(payString) || !Number(receiveString) || insufficientBalance;
+    return (
+      !Number(payString) ||
+      !Number(receiveString) ||
+      insufficientBalance ||
+      insufficientLiquidityInSyntheticPool ||
+      insufficientBalanceDueToSlippage ||
+      ((shouldSwapAndMint || shouldRedeemAndSwap) &&
+        (routeNotFound || (isLoading && !path)))
+    );
   };
 
   const handleSwapButtonClick = () => {
@@ -240,7 +271,14 @@ export const MainForm: React.FC = () => {
       return <Loader size="s" color={theme.text.secondary} />;
     }
 
-    return active ? 'Swap' : 'Sign in';
+    return active
+      ? (shouldSwapAndMint || shouldRedeemAndSwap) &&
+        isLoading &&
+        !path &&
+        (base === 'pay' ? Number(pay) : Number(receive))
+        ? 'Calculating...'
+        : 'Swap'
+      : 'Sign in';
   };
 
   const getFormattedPay = () => {
@@ -259,17 +297,33 @@ export const MainForm: React.FC = () => {
     return formatExchangeAmount(receiveString);
   };
 
-  const errorMessage = insufficientBalance ? 'Insufficient funds' : null;
+  const errorMessage = insufficientBalance
+    ? 'Insufficient funds'
+    : insufficientBalanceDueToSlippage
+    ? 'Insufficient balance due to slippage'
+    : active &&
+      assetPay &&
+      assetReceive &&
+      ((!assetPay.synthetic && !assetPay.collateral) ||
+        (!assetReceive.synthetic && !assetReceive.collateral)) &&
+      routeNotFound &&
+      (base === 'pay' ? Number(pay) : Number(receive))
+    ? 'Insufficient liquidity'
+    : null;
 
   const amount = wallet && (
     <Balance>Balance: {wallet.amount.format(5)}</Balance>
+  );
+
+  const inputFieldsShouldHaveRedBorder = Boolean(
+    errorMessage || insufficientLiquidityInSyntheticPool,
   );
 
   return (
     <Container>
       <ExchangeBox>
         <Title>You swap {amount}</Title>
-        <AssetSelect error={Boolean(errorMessage)}>
+        <AssetSelect error={inputFieldsShouldHaveRedBorder}>
           <Amount
             value={getFormattedPay()}
             inputMode="decimal"
@@ -298,7 +352,7 @@ export const MainForm: React.FC = () => {
       </TwoIconsButton>
       <ExchangeBox>
         <Title>For</Title>
-        <AssetSelect error={Boolean(errorMessage)}>
+        <AssetSelect error={inputFieldsShouldHaveRedBorder}>
           <Amount
             value={getFormattedReceive()}
             inputMode="decimal"
@@ -319,6 +373,11 @@ export const MainForm: React.FC = () => {
           />
           <Asset type="receive" />
         </AssetSelect>
+        <ErrorMessage>
+          {insufficientLiquidityInSyntheticPool
+            ? 'Insufficient liquidity in pool'
+            : ''}
+        </ErrorMessage>
       </ExchangeBox>
       <Footer>
         <ExchangeRate />

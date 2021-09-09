@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 import { styled } from '../Theme';
 
-import { NotificationType, NotificationWithId } from './types';
+import { NotificationType, Notification } from './types';
 
-interface Props extends NotificationWithId {
+interface Props extends Notification {
   onHidden: () => void;
   placement: string;
   className?: string;
@@ -86,19 +86,15 @@ export const AnimatedNotification: React.FC<Props> = ({
   const [visible, setVisible] = useState<STATE>('before-open');
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      setVisible('open');
-    });
-    setTimeout(() => {
+    setVisible('open');
+
+    const timeoutId = setTimeout(() => {
       setVisible('close');
     }, time);
-  }, []);
 
-  const onAnimEnd = () => {
-    if (visible === 'close') {
-      onHidden();
-    }
-  };
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const notifType = typeof type === 'object' ? type.type : type;
   const icon = typeof type === 'object' ? type.icon : iconMap[notifType];
@@ -108,7 +104,11 @@ export const AnimatedNotification: React.FC<Props> = ({
       visible={visible}
       type={notifType}
       placement={placement}
-      onTransitionEnd={onAnimEnd}
+      onTransitionEnd={() => {
+        if (visible === 'close') {
+          onHidden();
+        }
+      }}
       className={className}
     >
       <Icon>{icon}</Icon>

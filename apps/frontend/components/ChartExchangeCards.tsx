@@ -1,12 +1,12 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { styled } from '@jarvis-network/ui';
+import { Icon, styled } from '@jarvis-network/ui';
 
 import { ColoredTabs } from '@/components/ColoredTabs';
 import { ChartCard } from '@/components/chart/ChartCard';
 import { ExchangeCard } from '@/components/exchange/ExchangeCard';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { setMobileTab } from '@/state/slices/app';
+import { setExchangeSettingsVisible, setMobileTab } from '@/state/slices/app';
 
 interface Props {
   image: string;
@@ -42,6 +42,23 @@ export const ChartExchangeCards: React.FC<Props> = ({ image }) => {
   }
 
   return (
-    <ColoredTabs tabs={tabs} selected={mobileTab} onChange={setSelected} />
+    <ColoredTabs
+      tabs={tabs}
+      selected={mobileTab}
+      onChange={setSelected}
+      extra={
+        <Icon
+          icon="IoIosCog"
+          style={{
+            fontSize: 24,
+            lineHeight: '68px',
+            display: 'inline-block',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+          onClick={() => dispatch(setExchangeSettingsVisible(true))}
+        />
+      }
+    />
   );
 };

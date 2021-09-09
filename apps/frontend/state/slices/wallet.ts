@@ -1,44 +1,16 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import { ExchangeToken } from '@jarvis-network/synthereum-ts/dist/config';
 import {
   networkSwitchAction,
   addressSwitchAction,
   logoutAction,
 } from '@jarvis-network/app-toolkit';
+import { initialAppState } from '@/state/initialState';
+import {
+  updateWalletBalances,
+  UpdateWalletBalancesAction,
+} from '@/state/actions';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
-
-import { initialAppState, State } from '@/state/initialState';
-
-interface Action<T> {
-  payload: T;
-}
-
-export interface WalletBalance {
-  asset: ExchangeToken;
-  amount: FPN;
-}
-
-type PrivateState = {
-  walletPrivate: {
-    fetchingBalancesFor: { address: string; blockNumber: number } | null;
-  };
-};
-
-type FetchWalletBalancesArgument = RealmAgent;
-export const fetchWalletBalances = createAsyncThunk<
-  WalletBalance[],
-  FetchWalletBalancesArgument,
-  { state: State & PrivateState }
->('wallet/fetch', async (realmAgent, { signal }) => {
-  const balances = await realmAgent.getAllBalances();
-  if (signal.aborted) throw new Error('fetchWalletBalances aborted');
-  return balances.map(([asset, amount]) => ({
-    asset,
-    amount: FPN.fromWei(amount),
-  }));
-});
 
 const initialState = initialAppState.wallet;
 
@@ -51,13 +23,15 @@ const walletSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [fetchWalletBalances.fulfilled.type]: (
+    [updateWalletBalances.type](
       state,
-      { payload: balances }: Action<WalletBalance[]>,
-    ) => {
-      balances.forEach(({ asset, ...value }) => {
-        state[asset] = value;
-      });
+      { payload: balances }: UpdateWalletBalancesAction,
+    ) {
+      for (const { asset, amount } of balances) {
+        if (!state[asset] || !amount.eq(state[asset].amount as FPN)) {
+          state[asset] = { amount };
+        }
+      }
     },
     [logoutAction.type]: resetState,
     [addressSwitchAction.type]: resetState,

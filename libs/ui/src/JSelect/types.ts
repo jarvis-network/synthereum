@@ -1,10 +1,10 @@
 import {
   ActionMeta,
   ValueType,
-  NamedProps,
   SingleValueProps,
   OptionProps as ReactSelectOptionProps,
   OptionTypeBase,
+  Props,
 } from 'react-select';
 
 export type TOption<T> = T extends number | string
@@ -23,15 +23,16 @@ export interface SelectProps<Option> {
   options: (TOption<Option> | string | number)[];
   className?: string;
   optionComponent?: Extract<
-    NamedProps<TOption<Option>, false>['components'],
+    Props<TOption<Option>, false>['components'],
     // eslint-disable-next-line @typescript-eslint/ban-types
     {}
   >['Option'];
   singleValueComponent?: Extract<
-    NamedProps<TOption<Option>, false>['components'],
+    Props<TOption<Option>, false>['components'],
     // eslint-disable-next-line @typescript-eslint/ban-types
     {}
   >['SingleValue'];
+  placeholder?: Props<TOption<Option>>['placeholder'];
 }
 
 export interface OptionProps<

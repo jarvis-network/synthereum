@@ -14,4 +14,5 @@ export interface TooltipProps {
   tooltip?: string | ReactNode;
   position?: TooltipPositionType;
   width?: CSSProperties['width'];
+  wrapperClassName?: string;
 }

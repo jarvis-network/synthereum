@@ -18,7 +18,6 @@ import { formatTransactionStatus, formatTransactionType } from '@/utils/format';
 import { getEtherscanTransactionURL } from '@/utils/url';
 import { formatDayLabel, formatTimestamp } from '@jarvis-network/app-toolkit';
 import { useTransactionsSubgraph } from '@/utils/useTransactionsSubgraph';
-import { assetsObject } from '@/data/assets';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
@@ -33,11 +32,10 @@ const mapTransactionToAssetRow = (
   io: TransactionIO,
   isFrom?: boolean,
 ): AssetProps => {
-  const asset = assetsObject[io.asset];
   const amount = FPN.fromWei(io.amount);
   return {
-    flag: asset.icon ?? undefined,
-    name: asset.symbol,
+    flag: undefined,
+    name: io.asset,
     value: isFrom ? amount.mul(new FPN('-1')).format(5) : amount.format(5),
   };
 };

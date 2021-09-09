@@ -48,7 +48,14 @@ export function formatDate(timestamp: number) {
   return `${year}-${formatedMonth}-${formatedDay}`;
 }
 
-export const formatExchangeAmount = (value: string) => new FPN(value).format(5);
+export const formatExchangeAmount = (value: string): string => {
+  const fpn = new FPN(value);
+  const result = fpn.format(5);
+
+  if (result === '0.00000') return fpn.format();
+
+  return result;
+};
 
 // Wallet
 export const formatWalletAddress = (address: string) => {

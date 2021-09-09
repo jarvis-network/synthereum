@@ -2,6 +2,7 @@
   "name": "@jarvis-network/exchange-frontend",
   "version": "1.0.1",
   "private": true,
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "start:server": "next start",
     "build": "yarn prepare:assets && next build && next export",
@@ -26,6 +27,8 @@
     "@jarvis-network/core-utils": "*",
     "@next/bundle-analyzer": "^10.0.4",
     "@reduxjs/toolkit": "^1.4.0",
+    "@uniswap/default-token-list": "^2.0.0",
+    "@uniswap/v2-sdk": "^3.0.0",
     "color": "^3.1.3",
     "damlev": "^1.0.0",
     "fuse.js": "^6.4.6",
@@ -44,6 +47,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-observable": "^1.2.0",
     "ric-shim": "^1.0.0",
+    "simple-uniswap-sdk": "^2.1.2",
     "subscriptions-transport-ws": "^0.9.18",
     "use-memo-one": "^1.1.2",
     "web3": "^1.3.4"

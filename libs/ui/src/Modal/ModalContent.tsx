@@ -52,8 +52,14 @@ export const ModalContent: FC<ModalContentProps> = ({
   onClose,
   className,
   id,
+  useDisplayNone,
 }) => (
-  <Modal isOpened={isOpened} onClose={onClose} overlayClassName={className}>
+  <Modal
+    isOpened={isOpened}
+    useDisplayNone={useDisplayNone}
+    onClose={onClose}
+    overlayClassName={className}
+  >
     <Container id={id} className="modal-container">
       <Heading className="modal-heading">
         <Title>{title}</Title>

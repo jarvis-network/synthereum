@@ -3,9 +3,10 @@ import { useDispatch } from 'react-redux';
 import { Skeleton, styled } from '@jarvis-network/ui';
 
 import { ExchangeRateIcon } from '@/components/exchange/ExchangeRateIcon';
-import { useRate } from '@/utils/useRate';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 import { invertRateInfo as invertRateInfoAction } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 const Container = styled.div`
   display: flex;
@@ -34,13 +35,15 @@ export const ExchangeRate: React.FC = () => {
     state => state.exchange,
   );
 
-  const rate = invertRateInfo
-    ? useRate(payAsset, receiveAsset)
-    : useRate(receiveAsset, payAsset);
+  const { rate: exchangeRate, executionPrice } = useExchangeContext();
 
-  if (!payAsset || !receiveAsset || !rate) {
+  const r = executionPrice || exchangeRate;
+
+  if (!payAsset || !receiveAsset || !r) {
     return <Container />;
   }
+
+  const rate = invertRateInfo ? new FPN(1).div(r) : r;
 
   const handleInvertClick = () => {
     dispatch(invertRateInfoAction());
@@ -48,7 +51,7 @@ export const ExchangeRate: React.FC = () => {
 
   return (
     <Container>
-      <Rate>{rate.rate.format(5)}</Rate>
+      <Rate>{rate.format(5)}</Rate>
       <Assets>
         {invertRateInfo ? payAsset : receiveAsset} per{' '}
         {invertRateInfo ? receiveAsset : payAsset}

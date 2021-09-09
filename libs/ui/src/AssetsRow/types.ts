@@ -1,10 +1,8 @@
 import { ReactNode } from 'react';
 
-import { FlagKeys } from '../Flag';
-
 export interface AssetProps {
   name: string;
-  flag?: FlagKeys;
+  flag?: string;
   image?: string;
   value?: number | string;
 }

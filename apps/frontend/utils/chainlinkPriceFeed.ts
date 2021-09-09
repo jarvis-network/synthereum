@@ -1,28 +1,21 @@
-import { BehaviorSubject } from 'rxjs';
-import Web3 from 'web3';
-import { Subscription } from 'web3-core-subscriptions';
-import { Log } from 'web3-core';
-import { Contract } from 'web3-eth-contract';
+import { BehaviorSubject, Subscription as RxSubscription } from 'rxjs';
 import { chainlinkAddresses } from '@/data/chainlinkAddresses';
 import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
-import { useEffect, useState } from 'react';
-import { setAssetsPrice } from '@/state/slices/assets';
+import { useEffect } from 'react';
+import { setAssetsPrice } from '@/state/slices/prices_';
 import {
   reversedPriceFeedPairs,
   SupportedNetworkId,
-  SupportedNetworkName,
   isSupportedNetwork,
   synthereumConfig,
   PoolVersion,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 import { PricesMap, PriceUpdate, SubscriptionPair } from '@/utils/priceFeed';
 import { Dispatch } from 'redux';
-import {
-  chainlinkProxyAggregatorV3InterfaceABI,
-  chainlinkProxyAggregatorV3InterfaceABIMumbai,
-} from '@/data/chainlinkProxyAggregatorV3InterfaceABI';
+import { chainlinkProxyAggregatorV3InterfaceABI } from '@/data/chainlinkProxyAggregatorV3InterfaceABI';
 import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
-import { useWeb3 } from '@jarvis-network/app-toolkit';
+import { useMulticallContext, useWeb3 } from '@jarvis-network/app-toolkit';
+import BN from 'bn.js';
 
 type Token = keyof typeof synthereumConfig[SupportedNetworkId]['perVersionConfig']['v4']['syntheticTokens'];
 
@@ -38,55 +31,25 @@ export class ChainlinkPriceFeed {
     jEUR: new BehaviorSubject<$>(null),
     jCHF: new BehaviorSubject<$>(null),
     jGBP: new BehaviorSubject<$>(null),
-    jXAU: new BehaviorSubject<$>(null),
   });
 
-  private lastRequestAfterBlockNumberForPair: {
-    [key in Token]: number;
-  } = {
-    jEUR: 0,
-    jCHF: 0,
-    jGBP: 0,
-    jXAU: 0,
+  private multicallIds: { [key: string]: Token } = {};
+
+  private decimalsMulticallIds: { [key in Token]: string } = {
+    jEUR: '',
+    jGBP: '',
+    jCHF: '',
   };
 
-  private decimals: {
-    [key in Token]?: Promise<number>;
-  } = {};
-
-  private subscriptions: Subscription<Log>[] = [];
-
-  private getLatestRoundData(token: Token, contract: Contract) {
-    Promise.all([
-      contract.methods.latestRoundData().call(),
-      this.decimals[token] ||
-        Promise.reject(
-          new Error(`Missing decimals promise for symbol ${token}`),
-        ),
-    ])
-      .then(
-        ([{ answer, updatedAt }, decimals]: [
-          { answer: string; updatedAt: string },
-          number,
-        ]) => {
-          this.tokens$[token].next({
-            price: Number(answer) / 10 ** decimals,
-            timestamp: Number(updatedAt),
-          });
-        },
-      )
-      .catch(console.error);
-  }
+  private lastResultsSubscription?: RxSubscription;
 
   constructor(
-    web3: Web3,
-    networkId: SupportedNetworkId,
-    reset: () => void,
+    networkId: number,
+    private multicall: ReturnType<typeof useMulticallContext>,
     public readonly poolVersion: Omit<PoolVersion, 'v1' | 'v2'> = 'v4',
   ) {
-    const subscriptions: ChainlinkPriceFeed['subscriptions'] = [];
-    this.subscriptions = subscriptions;
-
+    const networkIsSupported = networkId && isSupportedNetwork(networkId);
+    if (!networkIsSupported) return;
     const network = networkIdToName[networkId as SupportedNetworkId];
     const enabledTokens = Object.keys(
       synthereumConfig[networkId as SupportedNetworkId].perVersionConfig[
@@ -94,97 +57,100 @@ export class ChainlinkPriceFeed {
       ].syntheticTokens,
     ) as Token[];
 
-    // #region contracts object
-    const contracts = {} as {
-      [key in Token]?: Contract;
-    };
     for (const token of enabledTokens) {
-      const contract = getContractForSymbol(
-        this.poolVersion,
-        web3,
-        network,
-        token,
-      );
-      contracts[token] = contract;
-      const decimalsPromise = contract.methods.decimals().call();
-      this.decimals[token] = decimalsPromise;
-      decimalsPromise.catch(console.error);
-    }
-    // #endregion
+      const contractAddress =
+        chainlinkAddresses[network][getPairForToken(this.poolVersion, token)];
 
-    // Get current price
-    web3.eth
-      .getBlockNumber()
-      .then(block => {
-        for (const token of enabledTokens) {
-          this.lastRequestAfterBlockNumberForPair[token] = block;
-          this.getLatestRoundData(token, contracts[token]!);
+      const id = multicall.add({
+        abi: chainlinkProxyAggregatorV3InterfaceABI,
+        calls: [
+          {
+            methodName: 'latestRoundData',
+            methodParameters: [],
+            reference: '',
+          },
+        ],
+        contractAddress,
+      });
+      this.multicallIds[id] = token;
+
+      const decimalsId = multicall.add({
+        abi: chainlinkProxyAggregatorV3InterfaceABI,
+        calls: [
+          {
+            methodName: 'decimals',
+            methodParameters: [],
+            reference: '',
+          },
+        ],
+        contractAddress,
+      });
+      this.decimalsMulticallIds[token] = decimalsId;
+    }
+
+    this.lastResultsSubscription = multicall.lastResults$.subscribe(values => {
+      const decimalsMap: { [key in Token]: number } = {
+        jEUR: -1,
+        jGBP: -1,
+        jCHF: -1,
+      };
+
+      // eslint-disable-next-line guard-for-in
+      for (const token in this.decimalsMulticallIds) {
+        const id = this.decimalsMulticallIds[token as 'jEUR'];
+        if (!id) continue;
+        const result = values.results[id];
+        if (!result) continue;
+
+        decimalsMap[token as 'jEUR'] = result.callsReturnContext[0]
+          .returnValues[0] as number;
+      }
+
+      // eslint-disable-next-line guard-for-in
+      for (const id in this.multicallIds) {
+        const result = values.results[id];
+        if (!values.results[id]) continue;
+        const token = this.multicallIds[id];
+        const decimals = decimalsMap[token];
+        if (decimals === -1) continue;
+
+        const answer = new BN(
+          result.callsReturnContext[0].returnValues[1].hex.substr(2),
+          'hex',
+        ).toNumber();
+        const updatedAt = new BN(
+          result.callsReturnContext[0].returnValues[3].hex.substr(2),
+          'hex',
+        ).toNumber();
+
+        const token$ = this.tokens$[token];
+        const price = Number(answer) / 10 ** decimals;
+        if (price !== token$.value?.price) {
+          this.tokens$[token].next({
+            price,
+            timestamp: Number(updatedAt),
+          });
         }
-      })
-      .catch(console.error);
-
-    for (const token of enabledTokens) {
-      // Subscribe for new transactions
-      if (!contracts[token]!.methods.aggregator) continue; // mumbai
-      contracts[token]!.methods.aggregator()
-        .call()
-        .then((address: string) => {
-          if (subscriptions !== this.subscriptions) return;
-
-          const subscription = web3.eth.subscribe('logs', { address });
-
-          subscription.on('data', data => {
-            if (
-              data.blockNumber > this.lastRequestAfterBlockNumberForPair[token]
-            ) {
-              this.lastRequestAfterBlockNumberForPair[token] = data.blockNumber;
-              this.getLatestRoundData(token, contracts[token]!);
-            }
-          });
-
-          // #region Subscribe to aggregator changes
-          const aggregatorChangeSubscription = web3.eth.subscribe('logs', {
-            address:
-              chainlinkAddresses[network][
-                getPairForToken(this.poolVersion, token)
-              ],
-          });
-
-          subscriptions.push(aggregatorChangeSubscription);
-
-          aggregatorChangeSubscription.on('data', () => {
-            contracts[token]!.methods.aggregator()
-              .call()
-              .then((newAddress: string) => {
-                if (newAddress !== address) {
-                  reset();
-                }
-              });
-          });
-          // #endregion
-        })
-        .catch(console.error);
-
-      // #region Subscribe to aggregator changes
-      const subscription = web3.eth.subscribe('logs', {
-        address:
-          chainlinkAddresses[network][getPairForToken(this.poolVersion, token)],
-        // topics: [confirmAggregatorSignature],
-      });
-
-      subscriptions.push(subscription);
-
-      subscription.on('data', () => {
-        reset();
-      });
-    }
-    // #endregion
+      }
+    });
   }
 
-  destroy() {
-    for (const subscription of this.subscriptions) {
-      subscription.unsubscribe();
+  private multicallRemove() {
+    // eslint-disable-next-line guard-for-in
+    for (const i in this.multicallIds) {
+      this.multicall.remove(i);
+      delete this.multicallIds[i];
     }
+
+    for (const id of Object.values(this.decimalsMulticallIds)) {
+      this.multicall.remove(id);
+    }
+  }
+
+  destroy(): void {
+    this.multicallRemove();
+
+    this.lastResultsSubscription?.unsubscribe();
   }
 }
 
@@ -213,16 +179,15 @@ function getPricesMapFromPriceUpdate({
 }
 
 function useChainlinkPriceFeedHook(dispatch: Dispatch) {
+  const multicall = useMulticallContext();
   const { library: web3, chainId: networkId } = useWeb3();
 
-  const [resetter, setResetter] = useState(false);
-
   useEffect(() => {
-    if (!web3 || !isSupportedNetwork(networkId)) return;
+    if (!networkId) return;
 
-    const reset = () => setResetter(state => !state);
+    const chainlinkPriceFeed = new ChainlinkPriceFeed(networkId, multicall);
 
-    const chainlinkPriceFeed = new ChainlinkPriceFeed(web3, networkId, reset);
+    const subscriptions: RxSubscription[] = [];
 
     const { tokens$: tokens } = chainlinkPriceFeed;
     for (const i in tokens) {
@@ -230,24 +195,30 @@ function useChainlinkPriceFeedHook(dispatch: Dispatch) {
       const token = i as keyof typeof tokens;
       const $ = tokens[token];
       const pair = getPairForToken(chainlinkPriceFeed.poolVersion, token);
-      $.subscribe(value => {
-        if (!value) return;
+      subscriptions.push(
+        $.subscribe(value => {
+          if (!value) return;
 
-        dispatch(
-          setAssetsPrice(
-            getPricesMapFromPriceUpdate({
-              t: value.timestamp * 1000,
-              [pair]: value.price,
-            } as PriceUpdate),
-          ),
-        );
-      });
+          dispatch(
+            setAssetsPrice(
+              getPricesMapFromPriceUpdate({
+                t: value.timestamp * 1000,
+                [pair]: value.price,
+              } as PriceUpdate),
+            ),
+          );
+        }),
+      );
     }
 
     return () => {
+      for (const subscription of subscriptions) {
+        subscription.unsubscribe();
+      }
+
       chainlinkPriceFeed.destroy();
     };
-  }, [web3, networkId, resetter]);
+  }, [dispatch, networkId, web3, multicall]);
 }
 
 export const useChainlinkPriceFeed =
@@ -293,18 +264,4 @@ function getPairForToken(
   }
 
   throw new Error(`Token ${token} not supported`);
-}
-
-function getContractForSymbol(
-  poolVersion: Omit<PoolVersion, 'v1' | 'v2'>,
-  web3: Web3,
-  network: SupportedNetworkName,
-  token: Token,
-) {
-  return new web3.eth.Contract(
-    network === 'mumbai'
-      ? chainlinkProxyAggregatorV3InterfaceABIMumbai
-      : chainlinkProxyAggregatorV3InterfaceABI,
-    chainlinkAddresses[network][getPairForToken(poolVersion, token)],
-  );
 }

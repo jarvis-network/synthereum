@@ -13,7 +13,6 @@ export type { DataGridColumnProps, DataRows } from './DataGrid';
 export { Emoji } from './Emoji';
 export { Form, FormGroup } from './Form';
 export { Flag, getFlagSize, FlagImagesMap } from './Flag';
-export type { FlagKeys } from './Flag';
 export { Header } from './Header';
 export { useWindowSize } from './hooks/useWindowSize';
 export { useIsMobile } from './hooks/useIsMobile';

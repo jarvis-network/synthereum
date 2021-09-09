@@ -1,105 +1,10 @@
 import React, { FC, CSSProperties } from 'react';
-import {
-  IoIosArrowBack,
-  IoIosArrowDown,
-  IoIosArrowForward,
-  IoIosArrowRoundBack,
-  IoIosArrowRoundDown,
-  IoIosArrowRoundForward,
-  IoIosArrowRoundUp,
-  IoIosArrowUp,
-  IoIosClose,
-  IoIosEye,
-  IoIosEyeOff,
-  IoIosHelpCircleOutline,
-  IoIosMenu,
-  IoIosQrScanner,
-  IoIosSearch,
-  IoIosSwap,
-  IoMdClose,
-  IoMdLogOut,
-  IoMdOpen,
-  IoMdSearch,
-  IoIosSunny,
-  IoIosMoon,
-  IoIosCloud,
-  IoIosCloudyNight,
-} from 'react-icons/io';
-import {
-  BsArrowLeft,
-  BsArrowRight,
-  BsCheck,
-  BsChevronDown,
-  BsChevronRight,
-  BsDownload,
-  BsPencil,
-  BsPlus,
-  BsTrash,
-  BsUpload,
-  BsThreeDots,
-  BsQuestion,
-} from 'react-icons/bs';
-import {
-  SiApple,
-  SiDiscord,
-  SiFacebook,
-  SiGithub,
-  SiGoogle,
-  SiLinkedin,
-  SiReddit,
-  SiTwitch,
-  SiTwitter,
-} from 'react-icons/si';
 
 import { styled } from '../Theme';
 
-export const icons = {
-  BsArrowLeft,
-  BsArrowRight,
-  BsCheck,
-  BsChevronDown,
-  BsChevronRight,
-  BsDownload,
-  BsPencil,
-  BsPlus,
-  BsTrash,
-  BsUpload,
-  BsThreeDots,
-  BsQuestion,
-  IoIosArrowBack,
-  IoIosArrowDown,
-  IoIosArrowForward,
-  IoIosArrowRoundBack,
-  IoIosArrowRoundDown,
-  IoIosArrowRoundForward,
-  IoIosArrowRoundUp,
-  IoIosArrowUp,
-  IoIosClose,
-  IoIosEye,
-  IoIosEyeOff,
-  IoIosHelpCircleOutline,
-  IoIosMenu,
-  IoIosQrScanner,
-  IoIosSearch,
-  IoIosSwap,
-  IoIosMoon,
-  IoIosSunny,
-  IoIosCloud,
-  IoIosCloudyNight,
-  IoMdClose,
-  IoMdLogOut,
-  IoMdOpen,
-  IoMdSearch,
-  SiApple,
-  SiDiscord,
-  SiFacebook,
-  SiGithub,
-  SiGoogle,
-  SiLinkedin,
-  SiReddit,
-  SiTwitch,
-  SiTwitter,
-};
+import * as icons from './icons';
+
+export { icons };
 
 export type IconKeys = keyof typeof icons;
 
@@ -107,6 +12,7 @@ interface IconProps {
   icon: IconKeys;
   className?: string;
   style?: CSSProperties;
+  onClick?: React.DOMAttributes<HTMLElement>['onClick'];
 }
 
 export const IconContainer = styled.i`
@@ -115,11 +21,11 @@ export const IconContainer = styled.i`
   justify-content: center;
 `;
 
-export const Icon: FC<IconProps> = ({ icon, className, style = {} }) => {
+export const Icon: FC<IconProps> = ({ icon, className, style, onClick }) => {
   const IconComponent = icons[icon];
 
   return (
-    <IconContainer className={className} style={style}>
+    <IconContainer className={className} style={style} onClick={onClick}>
       <IconComponent />
     </IconContainer>
   );

@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { styled, Flag, themeValue, Skeleton } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { Asset, PRIMARY_STABLE_COIN_TEXT_SYMBOL } from '@/data/assets';
+import { DEXValue } from './DEXValue';
 
 export interface AssetRowProps {
   asset: Asset;
@@ -98,19 +99,29 @@ const Value = styled(Amount)`
   color: ${props => props.theme.text.secondary};
 `;
 
+const wrapper = (children: ReactNode) => (
+  <Value>
+    {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {children}
+  </Value>
+);
 export const AssetRow: FC<AssetRowProps> = ({
   asset,
   amount,
   value,
   onAddToMetaMaskClick,
 }) => {
-  const valueElem = value && (
-    <Value>
-      {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {value.format(2)}
-    </Value>
-  );
+  const valueElem =
+    !asset.synthetic && !asset.collateral ? (
+      <DEXValue asset={asset} amount={amount} wrapper={wrapper} />
+    ) : (
+      value && (
+        <Value>
+          {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {value.format(2)}
+        </Value>
+      )
+    );
 
-  const addToMetaMask = onAddToMetaMaskClick && (
+  const addToMetaMask = onAddToMetaMaskClick && !asset.native && (
     <MetamaskButton onClick={onAddToMetaMaskClick}>
       Add to <MetamaskLogo src="/images/metamask.svg" alt="MetaMask logo" />
     </MetamaskButton>
@@ -119,7 +130,7 @@ export const AssetRow: FC<AssetRowProps> = ({
   return (
     <Container>
       <Information>
-        {asset.icon && <Flag flag={asset.icon} />}
+        <Flag flag={asset.icon} />
         <Title>{asset.symbol}</Title>
         {addToMetaMask}
       </Information>

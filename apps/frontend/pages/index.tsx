@@ -12,7 +12,6 @@ import { ChartCard } from '@/components/chart/ChartCard';
 import { ChartExchangeCards } from '@/components/ChartExchangeCards';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setWindowLoaded } from '@/state/slices/app';
-import { subscribeAllPrices, closeConnection } from '@/state/slices/prices';
 import { backgroundMap } from '@/data/backgrounds';
 
 const Layout = styled.div`
@@ -88,14 +87,6 @@ export default function Home(): JSX.Element {
     } else {
       window.addEventListener('load', handleLoad);
     }
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(subscribeAllPrices());
-
-    return () => {
-      dispatch(closeConnection());
-    };
   }, [dispatch]);
 
   return (

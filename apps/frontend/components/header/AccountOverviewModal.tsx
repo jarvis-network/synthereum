@@ -9,7 +9,7 @@ import {
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import {
   ExchangeToken,
-  primaryCollateralSymbol,
+  collateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
 import { AbstractProvider } from 'web3-core';
 
@@ -27,6 +27,8 @@ import {
   useWeb3,
 } from '@jarvis-network/app-toolkit';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
+import { addresses } from '@/data/addresses';
+import { useAssets } from '@/utils/useAssets';
 
 interface BalanceProps {
   total: FPN | ReactNode;
@@ -85,10 +87,7 @@ const Assets: FC<AssetsProps> = ({ items, onAddToMetaMaskClick }) => (
     {items.map(item => {
       const props: AssetRowProps = { ...item };
 
-      if (
-        onAddToMetaMaskClick &&
-        item.asset.symbol !== primaryCollateralSymbol
-      ) {
+      if (onAddToMetaMaskClick && item.asset.symbol !== collateralSymbol) {
         props.onAddToMetaMaskClick = () => onAddToMetaMaskClick(item.asset);
       }
 
@@ -102,9 +101,12 @@ export const AccountOverviewModal: FC = () => {
   const isVisible = useReduxSelector(
     state => state.app.isAccountOverviewModalVisible,
   );
-  const wallet = useReduxSelector(state => state.wallet);
-  const assets = useReduxSelector(state => state.assets.list);
-  const { library: web3 } = useWeb3();
+  const { wallet, prices } = useReduxSelector(state => ({
+    wallet: state.wallet,
+    prices: state.prices,
+  }));
+  const assets = useAssets();
+  const { library: web3, chainId: networkId } = useWeb3();
   const isLoggedInViaMetaMask = useMemo(
     () =>
       !web3 || !web3.currentProvider || typeof web3.currentProvider === 'string'
@@ -118,14 +120,20 @@ export const AccountOverviewModal: FC = () => {
     dispatch(setAccountOverviewModalVisible(false));
   };
 
-  const handleAddToMetamaskClick = ({ symbol, icon, decimals }: Asset) => {
-    if (symbol === primaryCollateralSymbol) {
+  const handleAddToMetamaskClick = ({
+    symbol,
+    icon,
+    decimals,
+    synthetic,
+  }: Asset) => {
+    if (symbol === collateralSymbol) {
       return;
     }
 
-    const { address } = assertNotNull(realmAgent).activePools[
-      symbol as 'jEUR'
-    ]!.syntheticToken;
+    const address = synthetic
+      ? assertNotNull(realmAgent).activePools[symbol as 'jEUR']!.syntheticToken
+          .address
+      : addresses[networkId as 42][symbol as 'WBTC'];
 
     if (!address) {
       return;
@@ -133,9 +141,12 @@ export const AccountOverviewModal: FC = () => {
 
     const image =
       icon &&
-      `${window.location.href}${
-        FlagImagesMap[icon as keyof typeof FlagImagesMap]
-      }`;
+      (synthetic
+        ? `${window.location.href}${
+            FlagImagesMap[icon as keyof typeof FlagImagesMap]
+          }`
+        : FlagImagesMap[icon as keyof typeof FlagImagesMap]);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     (web3!.currentProvider! as AbstractProvider).request!({
       method: 'wallet_watchAsset',
@@ -171,14 +182,20 @@ export const AccountOverviewModal: FC = () => {
           return null;
         }
 
+        if (asset.symbol === 'WETH' || asset.symbol === 'WMATIC') return null;
+
+        const price = asset.collateral
+          ? FPN.ONE
+          : asset.pair && prices[asset.pair];
+
         return {
           asset,
           amount,
-          value: asset.price ? amount.mul(asset.price) : null,
+          value: price ? amount.mul(price) : null,
         };
       })
       .filter(Boolean) as AssetRowProps[];
-  }, [wallet, assets]);
+  }, [wallet, assets, prices]);
 
   const total = useMemo(
     () => FPN.sum(items.map(_item => _item.value).filter(Boolean) as FPN[]),
@@ -195,7 +212,12 @@ export const AccountOverviewModal: FC = () => {
   ) : null;
 
   return (
-    <ModalContent isOpened={isVisible} onClose={handleClose} title="Account">
+    <ModalContent
+      isOpened={isVisible}
+      useDisplayNone
+      onClose={handleClose}
+      title="Account"
+    >
       <Wrapper>
         {content || (
           <Container>

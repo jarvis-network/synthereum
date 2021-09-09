@@ -22,6 +22,7 @@ import {
   useSubjects,
   AuthProvider,
   UnsupportedNetworkModal,
+  TransactionSpeedProvider,
 } from '@jarvis-network/app-toolkit';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';

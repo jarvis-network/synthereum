@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { uniqueId } from 'lodash';
 
 import { AddFn, useNotifications } from './Provider';
-import { NotificationType, NotificationWithId } from './types';
+import { NotificationType, Notification } from './types';
 import { AnimatedNotification } from './Notification';
 
 interface Props {
@@ -11,47 +12,42 @@ interface Props {
 
 const DEFAULT_TIME = 5000;
 
-export const NotificationsPlacement: React.FC<Props> = ({
+export function NotificationsPlacement({
   name,
   className,
-}) => {
-  const [list, setList] = useState<NotificationWithId[]>([]);
+}: Props): JSX.Element {
+  const [list, setList] = useState<Notification[]>([]);
   const { registerPlacement } = useNotifications();
 
-  const remove = (id: string) => {
-    setList(l => l.filter(stored => stored.id !== id));
-  };
+  useEffect(
+    () =>
+      registerPlacement(name, ((
+        text: string,
+        type = NotificationType.success,
+        time = DEFAULT_TIME,
+      ) => {
+        setList(l => [
+          ...l,
+          {
+            id: uniqueId(),
+            text,
+            type,
+            time,
+          },
+        ]);
+      }) as AddFn),
+    [name, registerPlacement],
+  );
 
-  const add: AddFn = (
-    text: string,
-    type = NotificationType.success,
-    time = DEFAULT_TIME,
-  ) => {
-    setList(l => [
-      ...l,
-      {
-        id: String(Math.random()),
-        text,
-        type,
-        time,
-      },
-    ]);
-  };
+  const notifs = list.map(n => (
+    <AnimatedNotification
+      key={n.id}
+      className={className}
+      onHidden={() => setList(l => l.filter(stored => stored.id !== n.id))}
+      placement={name}
+      {...n}
+    />
+  ));
 
-  useEffect(() => registerPlacement(name, add), [name]);
-
-  const notifs = list.map(n => {
-    const rm = () => remove(n.id);
-    return (
-      <AnimatedNotification
-        key={n.id}
-        className={className}
-        onHidden={rm}
-        placement={name}
-        {...n}
-      />
-    );
-  });
-
-  return <>{notifs}</>;
-};
+  return (notifs as unknown) as JSX.Element;
+}

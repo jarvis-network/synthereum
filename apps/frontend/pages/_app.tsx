@@ -15,6 +15,9 @@ import {
   useRealmAgentProvider,
   useSubjects,
   AuthProvider,
+  BlockNumber$ContextProvider as BlockNumberObservableContextProvider,
+  MulticallContextProvider,
+  TransactionSpeedProvider,
 } from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
@@ -31,9 +34,10 @@ import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { Welcome } from '@/components/auth/flow/Welcome';
 import { setAuthModalVisible } from '@/state/slices/app';
 import { Terms } from '@/components/auth/flow/Terms';
-import { useFetchWalletBalancesOnNewBlock } from '@/utils/useFetchWalletBalancesOnNewBlock';
 import { useChainlinkPriceFeed } from '@/utils/chainlinkPriceFeed';
 import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
+import { FetchWalletBalancesOnNewBlock } from '@/utils/FetchWalletBalancesOnNewBlock';
+import { ExchangeContextProvider } from '@/utils/ExchangeContext';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -60,8 +64,11 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
   if (!isMounted) return null;
 
   const app = (
-    <AuthProvider>
-      <Providers subjects={subjects} store={store} />
+    <TransactionSpeedProvider>
+      <HooksDependingOnWeb3React
+        dispatch={store.dispatch}
+        subjects={subjects}
+      />
       <AuthFlow<typeof store>
         notify={(notify, isMobile, title, options) =>
           notify(title, options, isMobile ? 'global' : 'exchange')
@@ -72,13 +79,14 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
         appName="jarvis"
         setAuthModalVisibleAction={setAuthModalVisible}
       />
+      <FetchWalletBalancesOnNewBlock />
       <BackgroundPreloader backgrounds={backgroundList} />
       <MainWrapper>
         <FullScreenLoader />
         <Component {...pageProps} />
         <GDPRPopup />
       </MainWrapper>
-    </AuthProvider>
+    </TransactionSpeedProvider>
   );
 
   return (
@@ -88,10 +96,20 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover"
         />
+
+        <title>Jarvis Exchange</title>
       </Head>
       <StateProvider store={store}>
         <AppThemeProvider>
-          <NotificationsProvider>{app}</NotificationsProvider>
+          <NotificationsProvider>
+            <AuthProvider>
+              <BlockNumberObservableContextProvider>
+                <MulticallContextProvider>
+                  <ExchangeContextProvider>{app}</ExchangeContextProvider>
+                </MulticallContextProvider>
+              </BlockNumberObservableContextProvider>
+            </AuthProvider>
+          </NotificationsProvider>
         </AppThemeProvider>
       </StateProvider>
     </CoreObservablesContextProvider>
@@ -100,19 +118,18 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
 
 export default MyApp;
 
-function Providers({
-  store,
+function HooksDependingOnWeb3React({
+  dispatch,
   subjects,
 }: {
-  store: ReturnType<typeof useStore>;
+  dispatch: ReturnType<typeof useStore>['dispatch'];
   subjects: ReturnType<typeof useSubjects>;
 }) {
+  useChainlinkPriceFeed(dispatch);
   useRealmAgentProvider(
     assertIsSupportedPoolVersion(process.env.NEXT_PUBLIC_POOL_VERSION),
     subjects,
   );
-  useFetchWalletBalancesOnNewBlock(store.dispatch, subjects);
-  useChainlinkPriceFeed(store.dispatch);
 
   return null;
 }

@@ -1,0 +1,159 @@
+import { Asset } from '@/data/assets';
+import { useReduxSelector } from '@/state/useReduxSelector';
+import {
+  useBehaviorSubject,
+  useCoreObservables,
+  useWeb3,
+} from '@jarvis-network/app-toolkit';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { networkNameToId } from '@jarvis-network/core-utils/dist/eth/networks';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  TradeContext,
+  UniswapPair,
+  UniswapPairSettings,
+  UniswapVersion,
+  WETH,
+} from 'simple-uniswap-sdk';
+import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
+import { useAssets } from './useAssets';
+
+function shouldUseAtomicSwap(asset0: Asset, asset1: Asset) {
+  return asset0.synthetic && !asset1.synthetic && !asset1.collateral;
+}
+
+const addresses = {
+  [networkNameToId.mainnet]: {
+    // USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    WETH: WETH.MAINNET().contractAddress,
+    WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+  },
+  [networkNameToId.kovan]: {
+    // USDC: '0xe22da380ee6B445bb8273C81944ADEB6E8450422',
+    WETH: WETH.KOVAN().contractAddress,
+    WBTC: '0xd1b98b6607330172f1d991521145a22bce793277',
+  },
+} as const;
+
+export const useRate = (
+  inputSymbol: string | null,
+  outputSymbol: string | null,
+): FPN | null => {
+  const { chainId: networkId } = useWeb3();
+  const { realmAgent$ } = useCoreObservables();
+  const realmAgent = useBehaviorSubject(realmAgent$);
+  const assets = useAssets();
+
+  const prices = useReduxSelector(state => (state.prices))
+
+  const { inputAsset, outputAsset } = useMemo(
+    () => {
+      const inputAsset =  inputSymbol
+      ? assets.find(asset => asset.symbol === inputSymbol)
+      : null
+      const outputAsset =  outputSymbol
+      ? assets.find(asset => asset.symbol === outputSymbol)
+      : null
+      return ({
+      inputAsset,
+      inputAssetPrice: assets.pair ? asset
+      outputAsset,
+    })},
+    [assets, inputSymbol, outputSymbol, prices],
+  );
+
+  const [uniswap, setUniswap] = useState<{
+    inputAsset: Asset;
+    outputAsset: Asset;
+    price: FPN;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!inputAsset || !outputAsset || !networkId || !realmAgent) return;
+
+    const inOutAtomicSwap = shouldUseAtomicSwap(inputAsset, outputAsset);
+
+    const [fromAddress, toAddress] = inOutAtomicSwap
+      ? [
+          assertNotNull(realmAgent.activePools[inputAsset.symbol as 'jEUR'])
+            .collateralToken.address,
+          addresses[networkId as 42][outputAsset.symbol as 'WBTC'],
+        ]
+      : shouldUseAtomicSwap(outputAsset, inputAsset)
+      ? [
+          addresses[networkId as 42][inputAsset.symbol as 'WBTC'],
+          assertNotNull(realmAgent.activePools[outputAsset.symbol as 'jEUR'])
+            .collateralToken.address,
+        ]
+      : ['', ''];
+
+    if (!fromAddress || !toAddress) return;
+
+    const uniswapPair = new UniswapPair({
+      fromTokenContractAddress: fromAddress,
+      toTokenContractAddress: toAddress,
+      ethereumAddress: '0x0000000000000000000000000000000000000000',
+      // you can pass in the provider url as well if you want
+      // providerUrl: YOUR_PROVIDER_URL,
+      chainId: networkId,
+
+      settings: new UniswapPairSettings({
+        uniswapVersions: [UniswapVersion.v2],
+      }),
+    });
+
+    let canceled = false;
+    let trade: TradeContext;
+
+    run(async () => {
+      const factory = await uniswapPair.createFactory();
+
+      if (canceled) return;
+      trade = await factory.trade('1');
+
+      function processTrade(trade: TradeContext) {
+        if (canceled) return;
+
+        const price = new FPN(trade.expectedConvertQuote);
+        setUniswap({
+          inputAsset: inputAsset!,
+          outputAsset: outputAsset!,
+          price: inOutAtomicSwap
+            ? price.mul(inputAsset!.price!)
+            : outputAsset!.price!.mul(price),
+        });
+      }
+
+      trade.quoteChanged$.subscribe(processTrade);
+      processTrade(trade);
+    });
+
+    return () => {
+      canceled = true;
+      trade?.destroy();
+    };
+  }, [networkId, realmAgent, inputAsset, outputAsset]);
+
+  if (!inputAsset || !outputAsset) {
+    return null;
+  }
+
+  if (
+    uniswap &&
+    uniswap.inputAsset === inputAsset &&
+    uniswap.outputAsset === outputAsset
+  ) {
+    return uniswap.price;
+  }
+
+  if (!inputAsset || !outputAsset || !inputAsset.price || !outputAsset.price) {
+    // asset not found or price not yet loaded
+    return null;
+  }
+
+  return outputAsset.price.div(inputAsset.price);
+};
+
+function run<T>(callback: () => T) {
+  return callback();
+}

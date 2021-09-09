@@ -12,10 +12,7 @@ import type { TransactionHash } from '../transaction';
 import { Web3On } from '../web3-instance';
 
 import { logTransactionOutput, TxLogParams } from './print-tx';
-import type {
-  NonPayableTransactionObject,
-  NonPayableTx,
-} from './typechain/types';
+import type { PayableTransactionObject, PayableTx } from './typechain/types';
 
 export interface TxOptions {
   nonce?: number;
@@ -23,12 +20,14 @@ export interface TxOptions {
   gasPrice?: number;
   printInfo?: Omit<TxLogParams, 'txhash'>;
   confirmations?: number;
+  value?: PayableTx['value'];
 }
 
 export interface FullTxOptions<Net extends NetworkName> extends TxOptions {
   web3: Web3On<Net>;
   from: AddressOn<Net>;
   chainId?: ToNetworkId<Net>;
+  forcedGasLimit?: number;
 }
 
 const nonces: Record<string, number> = {};
@@ -41,7 +40,7 @@ type TaggedPromiEvent<T> = PromiEvent<T> & {
 };
 
 export async function sendTx<Result, Net extends NetworkName>(
-  tx: NonPayableTransactionObject<Result>,
+  tx: PayableTransactionObject<Result>,
   {
     web3,
     gasLimit,
@@ -67,21 +66,13 @@ export async function sendTx<Result, Net extends NetworkName>(
   nonce = nonces[from]++;
   log('Using nonce:', nonce, { nextNonces: nonces });
 
-  const txParams: NonPayableTx = {
+  const txParams: PayableTx = {
     ...rest,
     from,
     nonce,
   };
 
-  log(
-    `Gas estimation for '${printInfo?.txSummaryText}' tx:`,
-    tx.arguments,
-    txParams,
-  );
-  const estimatedGas = await tx.estimateGas(txParams);
-  gasLimit ??= estimatedGas;
-  txParams.gas = estimatedGas < gasLimit ? estimatedGas : gasLimit;
-  log('Setting gasLimit: ', txParams.gas);
+  txParams.gas = gasLimit ?? (await tx.estimateGas(txParams));
 
   log(`Sending '${printInfo?.txSummaryText}' tx:`, tx.arguments, txParams);
   return {
@@ -90,7 +81,7 @@ export async function sendTx<Result, Net extends NetworkName>(
 }
 
 export async function sendTxAndLog<Result, Net extends NetworkName>(
-  tx: NonPayableTransactionObject<Result>,
+  tx: PayableTransactionObject<Result>,
   options: FullTxOptions<Net>,
 ): Promise<TransactionReceipt> {
   const { promiEvent } = await sendTx(tx, options);

@@ -15,7 +15,7 @@ import {
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
-import { useExchangeValues } from '@/utils/useExchangeValues';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 import { Days, State } from '@/state/initialState';
 import { TwoIconsButton } from '@/components/TwoIconsButton';
 import {
@@ -30,6 +30,7 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { createPairs } from '@/utils/createPairs';
 import { isAppReadySelector } from '@/state/selectors';
+import { useAssets } from '@/utils/useAssets';
 
 const Box = styled.div`
   display: flex;
@@ -214,31 +215,39 @@ const InfoBox: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
   const {
+    assetPay,
+    assetReceive,
     paySymbol,
     receiveSymbol,
     base,
     payString,
     receiveString,
-  } = useExchangeValues();
+  } = useExchangeContext();
 
   const isApplicationReady = useReduxSelector(isAppReadySelector);
 
-  const allAssets = useReduxSelector(state => state.assets.list);
+  const allAssets = useAssets();
   const options = useMemo(
     () =>
-      createPairs(allAssets).map<Option>(p => {
-        const label = `${p.input.symbol} / ${p.output.symbol}`;
-        return {
-          value: label,
-          label,
-          icon: (
-            <Flags>
-              {p.input.icon && <Flag size="small" flag={p.input.icon} />}
-              {p.output.icon && <Flag size="small" flag={p.output.icon} />}
-            </Flags>
-          ),
-        };
-      }),
+      createPairs(allAssets, {})
+        .filter(
+          pair =>
+            (pair.input.collateral || pair.input.synthetic) &&
+            (pair.output.collateral || pair.output.synthetic),
+        )
+        .map<Option>(pair => {
+          const label = `${pair.input.symbol} / ${pair.output.symbol}`;
+          return {
+            value: label,
+            label,
+            icon: (
+              <Flags>
+                <Flag size="small" flag={pair.input.icon} />
+                <Flag size="small" flag={pair.output.icon} />
+              </Flags>
+            ),
+          };
+        }),
     [allAssets],
   );
 
@@ -247,7 +256,7 @@ const InfoBox: React.FC<Props> = ({
   };
 
   const updatePay = (inputValue: State['exchange']['pay']) => {
-    dispatch(setPay(inputValue));
+    dispatch(setPay({ pay: inputValue }));
   };
 
   const updateReceive = (inputValue: State['exchange']['receive']) => {
@@ -278,48 +287,62 @@ const InfoBox: React.FC<Props> = ({
 
   const selectedPair = `${paySymbol} / ${receiveSymbol}`;
 
+  const dataAvailable =
+    (assetPay?.collateral || assetPay?.synthetic) &&
+    (assetReceive?.collateral || assetReceive?.synthetic);
+
   if (!isInfoBoxVisible) return <SkeletonInfoBox />;
 
   return (
     <Box>
       <Symbols>
-        <CurrencySymbol>
-          <CustomSelect
-            selected={selectedPair}
-            onChange={val => handlePairChange(String(val!.value))}
-            rowsText=""
-            options={options}
-            optionComponent={OptionComponent}
-            singleValueComponent={SelectValue}
-          />
-        </CurrencySymbol>
-        <InfoBoxTwoIcons onClick={flipValues}>
-          <Icon icon="IoIosArrowRoundUp" />
-          <Icon icon="IoIosArrowRoundDown" />
-        </InfoBoxTwoIcons>
+        {dataAvailable && (
+          <>
+            <CurrencySymbol>
+              <CustomSelect
+                selected={selectedPair}
+                onChange={val => handlePairChange(String(val!.value))}
+                rowsText=""
+                options={options}
+                optionComponent={OptionComponent}
+                singleValueComponent={SelectValue}
+              />
+            </CurrencySymbol>
+            <InfoBoxTwoIcons onClick={flipValues}>
+              <Icon icon="IoIosArrowRoundUp" />
+              <Icon icon="IoIosArrowRoundDown" />
+            </InfoBoxTwoIcons>
+          </>
+        )}
       </Symbols>
       <Rate>
-        <RateValue>
-          {value} {receiveSymbol}
-        </RateValue>
-        <div>
-          <DayButton active={days === 1} onClick={() => onDaysChange(1)}>
-            24H
-          </DayButton>
-          <DayButton active={days === 7} onClick={() => onDaysChange(7)}>
-            W
-          </DayButton>
-          <DayButton active={days === 30} onClick={() => onDaysChange(30)}>
-            M
-          </DayButton>
-        </div>
+        {dataAvailable && (
+          <>
+            <RateValue>
+              {value} {receiveSymbol}
+            </RateValue>
+            <div>
+              <DayButton active={days === 1} onClick={() => onDaysChange(1)}>
+                24H
+              </DayButton>
+              <DayButton active={days === 7} onClick={() => onDaysChange(7)}>
+                W
+              </DayButton>
+              <DayButton active={days === 30} onClick={() => onDaysChange(30)}>
+                M
+              </DayButton>
+            </div>
+          </>
+        )}
       </Rate>
-      <Change pastHidden={changeValue !== null}>
-        {formatNumberAsDiff(changeValue ?? wholeRangeChangeValue)}{' '}
-        {receiveSymbol} (
-        {formatNumberAsDiff(changeValuePerc ?? wholeRangeChangePerc, 2)}%)
-        <span> Past {daysToLabelMap[days]}</span>
-      </Change>
+      {dataAvailable && (
+        <Change pastHidden={changeValue !== null}>
+          {formatNumberAsDiff(changeValue ?? wholeRangeChangeValue)}{' '}
+          {receiveSymbol} (
+          {formatNumberAsDiff(changeValuePerc ?? wholeRangeChangePerc, 2)}%)
+          <span> Past {daysToLabelMap[days]}</span>
+        </Change>
+      )}
     </Box>
   );
 };

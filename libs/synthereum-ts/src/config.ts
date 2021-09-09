@@ -3,7 +3,7 @@ export {
   parseSupportedNetworkId,
   allSyntheticSymbols,
   synthereumConfig,
-  primaryCollateralSymbol,
+  collateralSymbol,
   priceFeed,
   reversedPriceFeedPairs,
 } from '@jarvis-network/synthereum-contracts/dist/config';

@@ -24,7 +24,7 @@ export const allSyntheticSymbols = [
 ] as const;
 
 const collateralSymbols = ['USDC'] as const;
-export const primaryCollateralSymbol = collateralSymbols[0];
+export const collateralSymbol = collateralSymbols[0];
 export type CollateralSymbol = typeof collateralSymbols[number];
 
 export type SyntheticSymbol = typeof allSyntheticSymbols[number];

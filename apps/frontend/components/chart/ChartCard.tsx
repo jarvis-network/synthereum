@@ -13,8 +13,6 @@ import {
 } from 'recharts';
 import { useTheme, styled, Skeleton } from '@jarvis-network/ui';
 
-import { useExchangeValues } from '@/utils/useExchangeValues';
-import { useRate } from '@/utils/useRate';
 import { getPercentageChange } from '@/utils/getPercentageChange';
 import { InfoBox } from '@/components/chart/InfoBox';
 import { ChartData, useChartData } from '@/utils/useChartData';
@@ -26,6 +24,7 @@ import { setChartDays } from '@/state/slices/exchange';
 import { FULL_WIDGET_HEIGHT_PX } from '@/components/exchange/ExchangeCard';
 import { isAppReadySelector } from '@/state/selectors';
 import { formatTimestamp } from '@jarvis-network/app-toolkit';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 
 type ChangeType = 'more' | 'less';
 
@@ -124,11 +123,20 @@ export const ChartCard: React.FC = () => {
 
   const theme = useTheme();
 
-  const { paySymbol, receiveSymbol } = useExchangeValues();
+  const {
+    paySymbol,
+    receiveSymbol,
+    assetPay,
+    assetReceive,
+    rate,
+  } = useExchangeContext();
 
-  const chartData = useChartData(paySymbol, receiveSymbol, days);
+  const chartData = useChartData(
+    assetPay?.collateral || assetPay?.synthetic ? paySymbol : null,
+    assetReceive?.collateral || assetReceive?.synthetic ? receiveSymbol : null,
+    days,
+  );
 
-  const rate = useRate(receiveSymbol, paySymbol);
   const wholeRangeChange = getWholeRangeChange(chartData);
 
   const customTooltip = (info: TooltipProps<number, string>) => (
@@ -175,7 +183,7 @@ export const ChartCard: React.FC = () => {
     },
   };
 
-  const valueSource = currentValue != null ? new FPN(currentValue) : rate?.rate;
+  const valueSource = currentValue != null ? new FPN(currentValue) : rate;
   const value =
     valueSource?.format(5) ||
     (chartData.length ? new FPN(last(chartData).close).format(5) : '');
@@ -200,52 +208,60 @@ export const ChartCard: React.FC = () => {
 
   const isChartVisible = isApplicationReady && chartData.length;
 
-  const chart = isChartVisible && (
-    <ResponsiveContainer>
-      <AreaChart data={chartData} {...events}>
-        <defs>
-          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={currentFillColor} stopOpacity={1} />
-            <stop offset="80%" stopColor={bgColor} stopOpacity={0.8} />
-          </linearGradient>
-        </defs>
-        <XAxis
-          type="number"
-          dataKey="time"
-          scale="time"
-          domain={['dataMin', 'dataMax']}
-          axisLine={false}
-          interval="preserveStartEnd"
-          tickLine={false}
-          tick={{
-            color: 'black',
-            fontSize: 12,
-          }}
-          hide
-        />
-        <YAxis
-          hide
-          type="number"
-          domain={['dataMin', 'dataMax']}
-          padding={{ top: 0, bottom: 16 }}
-        />
-        <Area
-          dot={false}
-          type="monotone"
-          dataKey="close"
-          stroke={currentStrokeColor}
-          strokeWidth={2}
-          fill="url(#colorUv)"
-        />
-        <Tooltip
-          isAnimationActive={false}
-          content={customTooltip}
-          position={{
-            y: 0,
-          }}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+  const dataAvailable =
+    (assetPay?.collateral || assetPay?.synthetic) &&
+    (assetReceive?.collateral || assetReceive?.synthetic);
+
+  const chart = dataAvailable ? (
+    isChartVisible && (
+      <ResponsiveContainer>
+        <AreaChart data={chartData} {...events}>
+          <defs>
+            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={currentFillColor} stopOpacity={1} />
+              <stop offset="80%" stopColor={bgColor} stopOpacity={0.8} />
+            </linearGradient>
+          </defs>
+          <XAxis
+            type="number"
+            dataKey="time"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
+            axisLine={false}
+            interval="preserveStartEnd"
+            tickLine={false}
+            tick={{
+              color: 'black',
+              fontSize: 12,
+            }}
+            hide
+          />
+          <YAxis
+            hide
+            type="number"
+            domain={['dataMin', 'dataMax']}
+            padding={{ top: 0, bottom: 16 }}
+          />
+          <Area
+            dot={false}
+            type="monotone"
+            dataKey="close"
+            stroke={currentStrokeColor}
+            strokeWidth={2}
+            fill="url(#colorUv)"
+          />
+          <Tooltip
+            isAnimationActive={false}
+            content={customTooltip}
+            position={{
+              y: 0,
+            }}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    )
+  ) : (
+    <SkeletonChart theme={theme} noData />
   );
 
   return (
@@ -266,15 +282,52 @@ export const ChartCard: React.FC = () => {
   );
 };
 
-function SkeletonChart({ theme }: { theme: ReturnType<typeof useTheme> }) {
+function SkeletonChart({
+  theme,
+  noData = false,
+}: {
+  theme: ReturnType<typeof useTheme>;
+  noData?: boolean;
+}) {
   return (
-    <div style={{ height: '100%', width: '100%', position: 'relative' }}>
-      <Skeleton
-        variant="rectangular"
-        width="100%"
-        height="100%"
-        sx={{ borderRadius: '0' }}
-      />
+    <div
+      style={{ height: '100%', width: '100%', position: 'relative', zIndex: 2 }}
+    >
+      {noData ? (
+        <>
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: theme.background.skeletonLoader,
+            }}
+          />
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'absolute',
+              top: 0,
+              zIndex: 3,
+            }}
+          >
+            No chart data available
+          </div>
+        </>
+      ) : (
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
+          sx={{ borderRadius: '0' }}
+        />
+      )}
       <div
         style={{
           position: 'absolute',

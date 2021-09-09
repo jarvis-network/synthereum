@@ -33,6 +33,7 @@ import {
   SupportedNetworkName,
   SyntheticSymbol,
   ExchangeToken,
+  collateralSymbol,
 } from '@jarvis-network/synthereum-contracts/dist/config';
 
 import { NonPayableTransactionObject } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
@@ -43,6 +44,7 @@ import { SynthereumRealmWithWeb3 } from './types/realm';
 import { determineSide, isSupportedCollateral } from './realm-utils';
 
 interface BaseTxParams {
+  expiration: number;
   txOptions?: TxOptions;
 }
 
@@ -110,7 +112,7 @@ export class RealmAgent<
     return Promise.all([
       (async (): Promise<[ExchangeToken, Amount]> =>
         t(
-          'USDC' as const,
+          collateralSymbol,
           await getTokenBalance(this.realm.collateralToken, this.agentAddress),
         ))(),
       ...mapPools(this.realm, this.poolVersion, async p =>
@@ -123,6 +125,7 @@ export class RealmAgent<
     collateral,
     outputAmount,
     outputSynth,
+    expiration,
     txOptions,
   }: MintParams): SwapResult {
     return this.universalExchange({
@@ -130,6 +133,7 @@ export class RealmAgent<
       outputToken: outputSynth,
       inputAmountWei: collateral,
       outputAmountWei: outputAmount,
+      expiration,
       txOptions,
     });
   }
@@ -139,6 +143,7 @@ export class RealmAgent<
     outputSynth,
     inputAmount,
     outputAmount,
+    expiration,
     txOptions,
   }: ExchangeParams): SwapResult {
     return this.universalExchange({
@@ -146,6 +151,7 @@ export class RealmAgent<
       outputToken: outputSynth,
       inputAmountWei: inputAmount,
       outputAmountWei: outputAmount,
+      expiration,
       txOptions,
     });
   }
@@ -154,6 +160,7 @@ export class RealmAgent<
     inputAmount,
     inputSynth,
     collateral,
+    expiration,
     txOptions,
   }: RedeemParams): SwapResult {
     return this.universalExchange({
@@ -161,6 +168,7 @@ export class RealmAgent<
       outputToken: this.realm.collateralToken.symbol as ExchangeToken,
       inputAmountWei: inputAmount,
       outputAmountWei: collateral,
+      expiration,
       txOptions,
     });
   }
@@ -173,23 +181,20 @@ export class RealmAgent<
     return isSupportedCollateral(this.activePools, token);
   }
 
-  private static getExpiration(): number {
-    const timeout = 4 * 3600;
-    return ((Date.now() / 1000) | 0) + timeout;
-  }
-
   // TODO: Make this public and remove mint/exchange/redeem functions
   private universalExchange({
     inputToken,
     outputToken,
     inputAmountWei,
     outputAmountWei,
+    expiration,
     txOptions,
   }: {
     inputToken: ExchangeToken;
     outputToken: ExchangeToken;
     inputAmountWei: Amount;
     outputAmountWei: Amount;
+    expiration: number;
     txOptions?: TxOptions;
   }): SwapResult {
     const side = this.determineSide(inputToken, outputToken);
@@ -259,7 +264,7 @@ export class RealmAgent<
         `0x${outputAmount.toString('hex')}`,
         `0x${inputAmount.toString('hex')}`,
         `0x${feePercentage.toString('hex')}`,
-        RealmAgent.getExpiration(),
+        expiration,
         this.agentAddress,
       ]);
     } else if (side === 'exchange') {
@@ -270,7 +275,7 @@ export class RealmAgent<
         `0x${inputAmount.toString('hex')}`,
         `0x${outputAmount.toString('hex')}`,
         `0x${feePercentage.toString('hex')}`,
-        RealmAgent.getExpiration(),
+        expiration,
         this.agentAddress,
       ]);
     } else if (side === 'redeem') {
@@ -279,7 +284,7 @@ export class RealmAgent<
         `0x${inputAmount.toString('hex')}`,
         `0x${outputAmount.toString('hex')}`,
         `0x${feePercentage.toString('hex')}`,
-        RealmAgent.getExpiration(),
+        expiration,
         this.agentAddress,
       ]);
     }

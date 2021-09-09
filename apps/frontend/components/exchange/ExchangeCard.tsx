@@ -34,6 +34,7 @@ import {
 import {
   setSwapLoaderVisible,
   setExchangeConfirmationVisible,
+  setExchangeSettingsVisible,
 } from '@/state/slices/app';
 import {
   addTransaction,
@@ -45,7 +46,7 @@ import { SynthereumTransaction } from '@/data/transactions';
 
 import { createPairs } from '@/utils/createPairs';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
-import { useExchangeValues } from '@/utils/useExchangeValues';
+import { useExchangeContext } from '@/utils/ExchangeContext';
 import { dbPromise } from '@/utils/db';
 
 import { useSwap } from '@/components/exchange/useSwap';
@@ -57,6 +58,8 @@ import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
 import { SwapConfirm } from './SwapConfirm';
+import { ExchangeSettings } from './ExchangeSettings';
+import { useAssets } from '@/utils/useAssets';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 
@@ -138,8 +141,8 @@ const grid = {
       cell: ({ original }: CellInfo) => {
         const o = original as AssetPair;
 
-        if (o.input.price && o.output.price) {
-          return o.input.price.div(o.output.price).format(5);
+        if (o.inputPrice && o.outputPrice) {
+          return o.inputPrice.div(o.outputPrice).format(5);
         }
         return null;
       },
@@ -241,21 +244,28 @@ const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 export const ExchangeCard: React.FC = () => {
   const notify = useExchangeNotifications();
   const dispatch = useDispatch();
-  const { account: address, library: web3 } = useWeb3();
-  const list = useReduxSelector(state => state.assets.list);
-  const wallet = useReduxSelector(state => state.wallet);
-  const isApplicationReady = useReduxSelector(isAppReadySelector);
-  const isExchangeConfirmationVisible = useReduxSelector(
-    state => state.app.isExchangeConfirmationVisible,
-  );
-  const chooseAsset = useReduxSelector(
-    state => state.exchange.chooseAssetActive,
-  );
+  const { account: address, library: web3, active } = useWeb3();
+  const list = useAssets();
+  const {
+    wallet,
+    isApplicationReady,
+    isExchangeConfirmationVisible,
+    areExchangeSettingsVisible,
+    chooseAsset,
+    prices,
+  } = useReduxSelector(state => ({
+    wallet: state.wallet,
+    isApplicationReady: isAppReadySelector(state),
+    isExchangeConfirmationVisible: state.app.isExchangeConfirmationVisible,
+    areExchangeSettingsVisible: state.app.areExchangeSettingsVisible,
+    chooseAsset: state.exchange.chooseAssetActive,
+    prices: state.prices,
+  }));
 
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const pairsList = useMemo(() => createPairs(list), [list]);
+  const pairsList = useMemo(() => createPairs(list, prices), [list, prices]);
   const searcher = useMemo(
     () =>
       new Fuse(pairsList, {
@@ -264,7 +274,14 @@ export const ExchangeCard: React.FC = () => {
     [pairsList],
   );
 
-  const { fee, paySymbol, assetPay, assetReceive } = useExchangeValues();
+  const {
+    fee,
+    paySymbol,
+    rate,
+    executionPrice,
+    assetPay,
+    assetReceive,
+  } = useExchangeContext();
 
   const swap = useSwap();
 
@@ -311,57 +328,62 @@ export const ExchangeCard: React.FC = () => {
       const { promiEvent } = await sendTx;
 
       promiEvent.once('transactionHash', hash => {
-        const tx: SynthereumTransaction = {
-          block: 0,
-          from: address as any,
-          hash: hash as TransactionHash,
-          input: {
-            amount: payValue,
-            asset: paySymbol,
-          },
-          output: {
-            amount: receiveValue,
-            asset: receiveSymbol,
-          },
-          type,
-          networkId,
-          timestamp: 0,
-          status: 'pending' as TransactionStatus,
-        };
-        dispatch(addTransaction(tx));
-        dbPromise.then(db => db.put('transactions', tx));
+        if (type === 'mint' || type === 'redeem' || type === 'exchange') {
+          const tx: SynthereumTransaction = {
+            block: 0,
+            from: address as any,
+            hash: hash as TransactionHash,
+            input: {
+              amount: payValue,
+              asset: paySymbol,
+            },
+            output: {
+              amount: receiveValue,
+              asset: receiveSymbol,
+            },
+            type,
+            networkId,
+            timestamp: 0,
+            status: 'pending' as TransactionStatus,
+          };
+          dispatch(addTransaction(tx));
+          dbPromise.then(db => db.put('transactions', tx));
+
+          txPromise.catch((data: { blockNumber: number }) => {
+            const failedTx = {
+              ...tx,
+              status: 'failure' as TransactionStatus,
+              block: data.blockNumber,
+            };
+            dispatch(updateTranasactionStatus(failedTx));
+
+            Promise.all([web3!.eth.getBlock(data.blockNumber), dbPromise]).then(
+              ([block, db]) => {
+                failedTx.timestamp = (block.timestamp as number) * 1000;
+                dispatch(updateTranasactionStatus(failedTx));
+                return db.put('transactions', failedTx);
+              },
+            );
+          });
+        }
+
         // transaction confirmed in the wallet app
         reset();
         notify('Your transaction has started', NotificationType.pending, time);
-
-        txPromise.catch((data: { blockNumber: number }) => {
-          const failedTx = {
-            ...tx,
-            status: 'failure' as TransactionStatus,
-            block: data.blockNumber,
-          };
-          dispatch(updateTranasactionStatus(failedTx));
-
-          Promise.all([web3!.eth.getBlock(data.blockNumber), dbPromise]).then(
-            ([block, db]) => {
-              failedTx.timestamp = (block.timestamp as number) * 1000;
-              dispatch(updateTranasactionStatus(failedTx));
-              return db.put('transactions', failedTx);
-            },
-          );
-        });
       });
 
       const data = await txPromise;
       notify('Your transaction is complete', NotificationType.success, time);
 
-      dispatch(
-        updateTranasactionStatus({
-          hash: data.transactionHash as TransactionHash,
-          block: data.blockNumber,
-          status: 'success',
-        }),
-      ); // Timestamp and cache will be updated from The Graph subscription
+      if (type === 'mint' || type === 'redeem' || type === 'exchange') {
+        dispatch(
+          updateTranasactionStatus({
+            hash: data.transactionHash as TransactionHash,
+            block: data.blockNumber,
+            status: 'success',
+          }),
+        ); // Timestamp and cache will be updated from The Graph subscription
+      }
     } catch (e) {
       if (
         e?.message ===
@@ -412,7 +434,7 @@ export const ExchangeCard: React.FC = () => {
       value: query,
       open: searchOpen,
     }),
-    [searchOpen, query, searcher],
+    [pairsList, query, searchOpen, searcher],
   );
 
   if (searchOpen) {
@@ -445,9 +467,16 @@ export const ExchangeCard: React.FC = () => {
 
     if (!web3) return true;
 
-    const isAssetPriceLoaded = assetPay?.price && assetReceive?.price;
+    const r = rate || executionPrice;
 
-    return isAssetPriceLoaded && paySymbol && wallet[paySymbol as 'jEUR'];
+    return active
+      ? ((assetPay?.collateral || assetPay?.synthetic) &&
+        (assetReceive?.collateral || assetReceive?.synthetic)
+          ? r
+          : true) &&
+          paySymbol &&
+          wallet[paySymbol]
+      : r;
   };
 
   const getContent = () => {
@@ -457,6 +486,10 @@ export const ExchangeCard: React.FC = () => {
 
     if (isExchangeConfirmationVisible) {
       return <SwapConfirm onConfim={handleConfirmButtonClick} />;
+    }
+
+    if (areExchangeSettingsVisible) {
+      return <ExchangeSettings />;
     }
 
     const suffix = searchOpen && (
@@ -490,8 +523,30 @@ export const ExchangeCard: React.FC = () => {
       };
     }
 
+    if (areExchangeSettingsVisible) {
+      return {
+        title: 'Exchange settings',
+        onBack() {
+          dispatch(setExchangeSettingsVisible(false));
+        },
+      };
+    }
+
     return {
       title: 'Swap',
+      extra: (
+        <Icon
+          icon="IoIosCog"
+          style={{
+            fontSize: 24,
+            lineHeight: '68px',
+            display: 'inline-block',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+          onClick={() => dispatch(setExchangeSettingsVisible(true))}
+        />
+      ),
     };
   };
 
@@ -517,7 +572,10 @@ export const ExchangeCard: React.FC = () => {
       <CardContainer>
         <OnDesktop>{card()}</OnDesktop>
         <OnMobile>
-          {chooseAsset || searchOpen || isExchangeConfirmationVisible ? (
+          {chooseAsset ||
+          searchOpen ||
+          isExchangeConfirmationVisible ||
+          areExchangeSettingsVisible ? (
             <MobileCardContainer>{card()}</MobileCardContainer>
           ) : isExchangeVisible() ? (
             content

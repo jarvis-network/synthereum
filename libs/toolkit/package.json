@@ -19,6 +19,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch",
     "lint": "eslint '*/**/*.{ts,tsx}'",
     "lint:fix": "eslint '*/**/*.{ts,tsx}' --fix",
     "format": "prettier --check \"**/*.+(json|yml|yaml|md)\"",
@@ -48,6 +49,7 @@
     "@web3-react/walletlink-connector": "^6.2.3",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
+    "ethereum-multicall": "^2.7.0",
     "web3": "^1.3.5"
   },
   "peerDependencies": {},

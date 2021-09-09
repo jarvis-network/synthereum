@@ -5,7 +5,7 @@ import { assertIsAddress as A } from '@jarvis-network/core-utils/dist/eth/addres
 import {
   FixedPointNumber,
   PriceFeed,
-  primaryCollateralSymbol,
+  collateralSymbol,
   SynthereumConfig,
   SyntheticTokens,
 } from './types';
@@ -62,17 +62,6 @@ const syntheticTokensKovan = typeCheck<SyntheticTokens>()({
     minSponsorTokens: '18000000000000000000',
     isContractAllowed: false,
   },
-  jXAU: {
-    syntheticName: 'Jarvis Synthetic Gold',
-    syntheticSymbol: 'jXAU',
-    umaPriceFeedIdentifier: 'XAU/USD',
-    jarvisPriceFeedIdentifier: 'XAUUSD',
-    chainlinkPriceFeedIdentifier: 'XAUUSD',
-    collateralRequirement: '1200000000000000000',
-    startingCollateralization: '2780080000',
-    minSponsorTokens: '13000000000000000',
-    isContractAllowed: false,
-  },
 } as const);
 
 const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
@@ -109,17 +98,6 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
     minSponsorTokens: '0',
     isContractAllowed: true,
   },
-  jXAU: {
-    syntheticName: 'Jarvis Synthetic Gold',
-    syntheticSymbol: 'jXAU',
-    umaPriceFeedIdentifier: 'XAUUSD',
-    jarvisPriceFeedIdentifier: 'XAUUSD',
-    chainlinkPriceFeedIdentifier: 'XAUUSD',
-    collateralRequirement: '1200000000000000000',
-    startingCollateralization: '2696355000',
-    minSponsorTokens: '0',
-    isContractAllowed: true,
-  },
 } as const);
 
 export const synthereumConfig = typeCheck<SynthereumConfig>()({
@@ -148,7 +126,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       synthereum: {
         primaryCollateralToken: {
           address: A<42>('0xe22da380ee6B445bb8273C81944ADEB6E8450422'),
-          symbol: primaryCollateralSymbol,
+          symbol: collateralSymbol,
         },
         poolRegistry: A<42>('0x6De2dd54A1FBBaCAd9a42eC289c5B371be2C9EF1'),
         selfMintingRegistry: A<42>(
@@ -208,7 +186,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       synthereum: {
         primaryCollateralToken: {
           address: A<1>('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
-          symbol: primaryCollateralSymbol,
+          symbol: collateralSymbol,
         },
         poolRegistry: A<1>('0xaB77024DdC68A3Fe942De8dDb0014738ED01A5e5'),
         selfMintingRegistry: A<1>('0x83D7AEee512DF37c694d36C983E0D4BdF12Cb6Bf'),
@@ -268,7 +246,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       synthereum: {
         primaryCollateralToken: {
           address: A<137>('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'),
-          symbol: primaryCollateralSymbol,
+          symbol: collateralSymbol,
         },
         poolRegistry: A<137>('0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2'),
         selfMintingRegistry: A<137>(
@@ -330,7 +308,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       synthereum: {
         primaryCollateralToken: {
           address: A<80001>('0xdEe897d5E6eaA6365F293c37cB3fA8335B9B8f3F'),
-          symbol: primaryCollateralSymbol,
+          symbol: collateralSymbol,
         },
         poolRegistry: A<80001>('0xfaa6229B087Da78cAEBb29799D9a8A74Ec1ea237'),
         selfMintingRegistry: A<80001>(

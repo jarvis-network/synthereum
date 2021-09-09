@@ -47,26 +47,34 @@ class FixedPointNumber {
     this.number = new BN(val);
   }
 
-  static fromWei(value: string | number | BN) {
+  static ZERO = new FixedPointNumber(0);
+
+  static ONE = new FixedPointNumber(1);
+
+  static fromWei(value: string | number | BN): FixedPointNumber {
     return new FixedPointNumber(value, true);
   }
 
-  static sum(values: FixedPointNumber[]) {
+  static sum(values: FixedPointNumber[]): FixedPointNumber {
     return values.reduce(
       (total, current) => total.add(current),
       new FixedPointNumber(0),
     );
   }
 
-  toString(base?: number | 'hex', length?: number) {
+  static fromHex(value: string, isWei?: boolean): FixedPointNumber {
+    return new FixedPointNumber(new BN(value, 'hex'), isWei);
+  }
+
+  toString(base?: number | 'hex', length?: number): string {
     return this.number.toString(base, length);
   }
 
-  toJSON() {
+  toJSON(): string {
     return this.number.toJSON();
   }
 
-  format(decimals = Infinity) {
+  format(decimals = Infinity): string {
     if (decimals !== Infinity) {
       const n = fromWei(this.number);
       const [whole, fraction_] = n.split('.');
@@ -81,61 +89,65 @@ class FixedPointNumber {
     return fromWei(this.number);
   }
 
-  toNumber(decimals?: number) {
+  toNumber(decimals?: number): number {
     return Number(this.format(decimals));
   }
 
-  get bn() {
+  get bn(): BN {
     return this.number;
   }
 
-  add(num: FixedPointNumber) {
+  add(num: FixedPointNumber): FixedPointNumber {
     return FixedPointNumber.fromWei(this.number.add(num.bn));
   }
 
-  sub(num: FixedPointNumber) {
+  sub(num: FixedPointNumber): FixedPointNumber {
     return FixedPointNumber.fromWei(this.number.sub(num.bn));
   }
 
-  div(num: FixedPointNumber) {
+  div(num: FixedPointNumber): FixedPointNumber {
     return FixedPointNumber.fromWei(this.increasePrecision().bn.div(num.bn));
   }
 
-  mul(num: FixedPointNumber) {
+  mul(num: FixedPointNumber): FixedPointNumber {
     return FixedPointNumber.fromWei(
       this.number.mul(num.bn),
     ).decreasePrecision();
   }
 
-  gt(num: FixedPointNumber) {
+  gt(num: FixedPointNumber): boolean {
     return this.number.gt(num.bn);
   }
 
-  gte(num: FixedPointNumber) {
+  gte(num: FixedPointNumber): boolean {
     return this.number.gte(num.bn);
   }
 
-  lt(num: FixedPointNumber) {
+  lt(num: FixedPointNumber): boolean {
     return this.number.lt(num.bn);
   }
 
-  lte(num: FixedPointNumber) {
+  lte(num: FixedPointNumber): boolean {
     return this.number.lte(num.bn);
   }
 
-  increasePrecision(by = 18) {
+  eq(num: FixedPointNumber): boolean {
+    return this.number.eq(num.bn);
+  }
+
+  increasePrecision(by = 18): FixedPointNumber {
     return FixedPointNumber.fromWei(
       this.number.mul(new BN(10).pow(new BN(by))),
     );
   }
 
-  decreasePrecision(by = 18) {
+  decreasePrecision(by = 18): FixedPointNumber {
     return FixedPointNumber.fromWei(
       this.number.div(new BN(10).pow(new BN(by))),
     );
   }
 
-  pow(power: number) {
+  pow(power: number): FixedPointNumber {
     if (power === 0) return new FixedPointNumber(1);
     if (power === 1) return this;
     return Array.from({ length: power - 1 }).reduce<FixedPointNumber>(

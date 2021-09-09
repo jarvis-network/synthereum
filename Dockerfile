@@ -35,14 +35,11 @@ COPY . .
 
 FROM installed-project as build-frontend-base
 # Keep in sync with docker-bake.hcl and apps/frontend/.env.example
-ARG NEXT_PUBLIC_ONBOARD_API_KEY
 ARG NEXT_PUBLIC_NETWORK_ID
 ARG NEXT_PUBLIC_FORTMATIC_API_KEY_MAINNET
 ARG NEXT_PUBLIC_FORTMATIC_API_KEY_TESTNET
 ARG NEXT_PUBLIC_INFURA_API_KEY
 ARG NEXT_PUBLIC_PORTIS_API_KEY
-ARG NEXT_PUBLIC_PRICE_FEED_ROOT
-ARG NEXT_PUBLIC_SUPPORTED_ASSETS
 
 # ------------------------------ Build Frontend ------------------------------ #
 

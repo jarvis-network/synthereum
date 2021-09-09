@@ -58,9 +58,9 @@ const networkNameToName: KeysToKeys<typeof networkNameToId> = {
   rinkeby: 'rinkeby',
   goerli: 'goerli',
   kovan: 'kovan',
-  hardhat: 'hardhat',
   polygon: 'polygon',
   mumbai: 'mumbai',
+  hardhat: 'hardhat',
 };
 
 export function isNetworkId(x: unknown): x is NetworkId {

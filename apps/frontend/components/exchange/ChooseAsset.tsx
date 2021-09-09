@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode } from 'react';
 import { useDispatch } from 'react-redux';
 import { CellInfo } from 'react-table';
 import type { RowInfo } from 'react-table';
@@ -11,53 +11,44 @@ import {
   noColorGrid,
   styled,
   styledScrollbars,
-  Tabs,
   themeValue,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { SyntheticSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 
 import {
   setChooseAsset,
   setPayAsset,
   setReceiveAsset,
+  setPayAndReceiveAsset,
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Asset, AssetWithWalletInfo } from '@/data/assets';
 
+import { DEXValue } from '../DEXValue';
+
 import { StyledSearchBar } from './StyledSearchBar';
+import { useAssets } from '@/utils/useAssets';
+import { useMemo } from 'use-memo-one';
 
 const tabsList = [
   {
     title: 'ALL',
     filterValue: '',
   },
-  {
-    title: 'Forex',
-    filterValue: 'forex',
-  },
-  {
-    title: 'Crypto',
-    filterValue: 'crypto',
-  },
-  {
-    title: 'Commodities',
-    filterValue: 'commodities',
-  },
 ];
+
+const wrapper = (children: ReactNode) => (
+  <div className="dollars">$ {children}</div>
+);
 
 const grid = {
   columns: [
     {
       key: 'flag',
       type: ColumnType.CustomCell,
-      cell: ({ original }: CellInfo) => {
-        const o = original as Asset;
-        if (!o.icon) {
-          return null;
-        }
-        return <Flag flag={o.icon} />;
-      },
+      cell: ({ original }: CellInfo) => (
+        <Flag flag={(original as Asset).icon} />
+      ),
       className: 'flag',
     },
     {
@@ -72,9 +63,14 @@ const grid = {
       cell: ({ original }: CellInfo) => {
         const o = original as AssetWithWalletInfo;
 
-        const stableValue = o.stableCoinValue && (
-          <div className="dollars">$ {o.stableCoinValue.format(2)}</div>
-        );
+        const stableValue =
+          !o.synthetic && !o.collateral ? (
+            <DEXValue asset={o} amount={o.ownedAmount} wrapper={wrapper} />
+          ) : (
+            o.stableCoinValue && (
+              <div className="dollars">$ {o.stableCoinValue.format(2)}</div>
+            )
+          );
         return (
           <>
             <div className="value">{o.ownedAmount.format(5)}</div>
@@ -85,25 +81,6 @@ const grid = {
     },
   ],
 };
-
-const StyledTabs = styled(Tabs)`
-  & > *:first-child {
-    border-top: none;
-    border-bottom: 1px solid ${props => props.theme.border.secondary};
-    background: none;
-    padding-left: 16px;
-    box-sizing: border-box;
-  }
-
-  [role='button'] > div:first-child:not(.active) {
-    color: ${themeValue(
-      {
-        light: theme => theme.text.secondary,
-      },
-      theme => theme.text.medium,
-    )};
-  }
-`;
 
 const StyledHeader = styled.span`
   padding-left: 24px;
@@ -176,50 +153,51 @@ const ScrollableSearchBar = styled(StyledSearchBar)`
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  > :nth-child(2) > :first-child {
-    padding-left: 0;
-
-    [role='button'] {
-      div {
-        font-weight: 300;
-        font-size: 13px;
-
-        :empty {
-          display: none;
-        }
-      }
-    }
-  }
-`;
-
-const ComingSoon = styled.img`
-  margin: 2em;
 `;
 
 const ScrollableContents = styled.div`
   ${props => styledScrollbars(props.theme)}
-  height: calc(100% - 150px);
-`;
 
-const ScrollableTabs = styled(StyledTabs)`
-  height: auto;
+  > span:first-child {
+    margin-top: 8px;
+  }
 `;
 
 export const ChooseAsset: React.FC = () => {
   const dispatch = useDispatch();
-  const list = useReduxSelector(state =>
-    state.assets.list.map(
-      (asset): AssetWithWalletInfo => {
-        const ownedAmount = state.wallet[asset.symbol]?.amount || new FPN('0');
+  const assets = useAssets();
+  const { wallet, payAsset, receiveAsset, prices } = useReduxSelector(
+    state => ({
+      wallet: state.wallet,
+      payAsset: state.exchange.payAsset,
+      receiveAsset: state.exchange.receiveAsset,
+      prices: state.prices,
+    }),
+  );
+  const { list, assetPay, assetReceive } = useMemo(
+    () => ({
+      list: assets
+        .filter(asset => !asset.wrappedNative)
+        .map(
+          (asset): AssetWithWalletInfo => {
+            const ownedAmount = wallet[asset.symbol]?.amount || new FPN('0');
 
-        return {
-          ...asset,
-          stableCoinValue: asset.price ? ownedAmount.mul(asset.price) : null,
-          ownedAmount,
-        };
-      },
-    ),
+            const price = asset.collateral
+              ? FPN.ONE
+              : prices[asset.pair as string];
+
+            return {
+              ...asset,
+              price,
+              stableCoinValue: price ? ownedAmount.mul(price) : null,
+              ownedAmount,
+            };
+          },
+        ),
+      assetPay: assets.find(a => a.symbol === payAsset),
+      assetReceive: assets.find(a => a.symbol === receiveAsset),
+    }),
+    [assets, wallet, payAsset, receiveAsset, prices],
   );
   const asset = useReduxSelector(state => state.exchange.chooseAssetActive);
   const ownedAssets = useReduxSelector(state =>
@@ -228,23 +206,48 @@ export const ChooseAsset: React.FC = () => {
       .map(([symbol]) => symbol),
   );
 
-  const [selected, setSelected] = useState(0);
-
   const onBack = () => dispatch(setChooseAsset(null));
-
-  const handleSelected = (symbol: SyntheticSymbol) => {
-    dispatch(asset === 'pay' ? setPayAsset(symbol) : setReceiveAsset(symbol));
-    onBack();
-  };
 
   const tabs = {
     tabs: tabsList,
-    selected,
+    selected: 0,
     filterProp: 'type',
   };
 
   const getTrProps = (_: any, rowInfo?: RowInfo) => ({
-    onClick: () => handleSelected(rowInfo!.original.symbol as SyntheticSymbol),
+    onClick: () => {
+      const selectedAsset = rowInfo!.original as Asset;
+      if (
+        asset === 'pay' &&
+        !assetReceive!.synthetic &&
+        !selectedAsset.synthetic
+      ) {
+        dispatch(
+          setPayAndReceiveAsset({
+            pay: selectedAsset.symbol,
+            receive: assetPay!.symbol,
+          }),
+        );
+      } else if (
+        asset === 'receive' &&
+        !assetPay!.synthetic &&
+        !selectedAsset.synthetic
+      ) {
+        dispatch(
+          setPayAndReceiveAsset({
+            pay: assetReceive!.symbol,
+            receive: selectedAsset.symbol,
+          }),
+        );
+      } else {
+        dispatch(
+          asset === 'pay'
+            ? setPayAsset(selectedAsset.symbol)
+            : setReceiveAsset(selectedAsset.symbol),
+        );
+      }
+      onBack();
+    },
     style: {
       cursor: 'pointer',
     },
@@ -278,10 +281,6 @@ export const ChooseAsset: React.FC = () => {
             row => !ownedAssets.includes(row.symbol),
           );
 
-          const comingSoon = !owned.length && !other.length && selected > 1 && (
-            <ComingSoon src="/images/coming-soon.svg" />
-          );
-
           const ownedSection = owned.length ? (
             <>
               <StyledHeader>You have</StyledHeader>
@@ -309,18 +308,10 @@ export const ChooseAsset: React.FC = () => {
           ) : null;
 
           return (
-            <>
-              <ScrollableTabs
-                tabs={tabsList}
-                selected={selected}
-                onChange={setSelected}
-              />
-              <ScrollableContents>
-                {ownedSection}
-                {otherSection}
-                {comingSoon}
-              </ScrollableContents>
-            </>
+            <ScrollableContents>
+              {ownedSection}
+              {otherSection}
+            </ScrollableContents>
           );
         }}
       />

@@ -6,14 +6,8 @@ import {
   EnhancedStore,
 } from '@reduxjs/toolkit';
 import type { DeepPartial, Middleware, Reducer } from 'redux';
-import { createEpicMiddleware, EpicMiddleware } from 'redux-observable';
-
-import { getPriceFeedEndpoint } from '@/utils/environment';
-import { PriceFeed } from '@/utils/priceFeed';
-import { Dependencies } from '@/utils/epics';
 import { State, initialAppState } from '@/state/initialState';
 import { reducer } from '@/state/reducer';
-import { epic } from '@/state/epic';
 import { createPersistMiddleware } from '@/state/persist';
 import { Tagged } from '@jarvis-network/core-utils/dist/base/tagged-type';
 
@@ -32,18 +26,6 @@ function initStore(
 
   type NoTaggedState = DeepClearTagged<State>;
 
-  // Create redux-observable middleware
-  const epicMiddleware: EpicMiddleware<
-    any,
-    any,
-    NoTaggedState,
-    Dependencies
-  > = createEpicMiddleware({
-    dependencies: {
-      priceFeed: new PriceFeed(getPriceFeedEndpoint()),
-    },
-  });
-
   const defaultMiddleware = getDefaultMiddleware<NoTaggedState>();
 
   const persistMiddleware = createPersistMiddleware<NoTaggedState>([
@@ -51,15 +33,17 @@ function initStore(
     'exchange.payAsset',
     'exchange.receiveAsset',
     'exchange.chartDays',
+    'exchange.slippage',
+    'exchange.deadline',
+    'exchange.disableMultihops',
+    'exchange.transactionSpeed',
     'app.isAccountOverviewModalVisible',
     'app.isRecentActivityModalVisible',
   ]);
 
-  const middleware = ([
-    ...defaultMiddleware,
-    persistMiddleware,
-    epicMiddleware,
-  ] as unknown) as [Middleware<unknown, NoTaggedState>];
+  const middleware = ([...defaultMiddleware, persistMiddleware] as unknown) as [
+    Middleware<unknown, NoTaggedState>,
+  ];
 
   // If you are going to load preloaded state from serialized data somewhere
   // here, make sure to convert all needed values from strings to BN
@@ -68,9 +52,6 @@ function initStore(
     preloadedState: (preloadedState as unknown) as DeepPartial<NoTaggedState>,
     middleware,
   });
-
-  // Initialize react-observable
-  epicMiddleware.run(epic);
 
   return store;
 }

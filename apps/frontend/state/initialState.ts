@@ -2,7 +2,7 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import {
   ExchangeToken,
-  primaryCollateralSymbol,
+  collateralSymbol,
 } from '@jarvis-network/synthereum-ts/dist/config';
 import { cache } from '@jarvis-network/app-toolkit';
 
@@ -14,10 +14,6 @@ type Values = 'pay' | 'receive';
 
 export interface WalletInfo {
   amount: FPN;
-}
-
-export interface Rate {
-  rate: FPN;
 }
 
 export interface WhitespacePricePoint {
@@ -40,8 +36,18 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
-export const DEFAULT_PAY_ASSET: ExchangeToken = primaryCollateralSymbol;
+export enum TransactionSpeed {
+  standard = 'standard',
+  fast = 'fast',
+  rapid = 'rapid',
+}
+
+export const DEFAULT_PAY_ASSET: ExchangeToken = collateralSymbol;
 export const DEFAULT_RECEIVE_ASSET: ExchangeToken = 'jEUR';
+export const DEFAULT_SLIPPAGE = 0.5;
+export const DEFAULT_DEADLINE = 30;
+export const DEFAULT_DISABLE_MULTIHOPS = false;
+export const DEFAULT_TRANSACTION_SPEED = TransactionSpeed.fast;
 
 export type Days = 1 | 7 | 30;
 
@@ -55,10 +61,8 @@ export interface State {
     isAuthModalVisible: boolean;
     isExchangeConfirmationVisible: boolean;
     isWindowLoaded: boolean;
+    areExchangeSettingsVisible: boolean;
     mobileTab: number;
-  };
-  assets: {
-    list: Asset[];
   };
   exchange: {
     // pay/receive are stored as string to allow incomplete input fills while
@@ -68,22 +72,27 @@ export interface State {
     pay: string;
     receive: string;
     base: Values;
-    payAsset: ExchangeToken | null;
-    receiveAsset: ExchangeToken | null;
+    payAsset: string | null;
+    receiveAsset: string | null;
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
     chartDays: Days;
+    slippage: number;
+    disableMultihops: boolean;
+    deadline: number;
+    transactionSpeed: TransactionSpeed;
+    gasLimit: number;
   };
   wallet: {
-    [key in ExchangeToken]?: WalletInfo;
+    [key: string]: WalletInfo;
   };
   transactions: {
     hashMap: { [txHash: string]: SynthereumTransaction };
     hasOlderTransactions: boolean;
   };
-  prices: {
-    persistedPairs: SubscriptionPair[];
-    feed: PricePointsMap;
+  prices: Record<string, FPN>;
+  cache: {
+    addressIsContract: Record<string, boolean>;
   };
 }
 
@@ -105,10 +114,8 @@ export const initialAppState: State = {
     isAuthModalVisible: false,
     isExchangeConfirmationVisible: false,
     isWindowLoaded: false,
+    areExchangeSettingsVisible: false,
     mobileTab: 1,
-  },
-  assets: {
-    list: assets.filter(a => a.symbol !== 'jXAU'),
   },
   exchange: {
     pay: '0',
@@ -123,15 +130,26 @@ export const initialAppState: State = {
     invertRateInfo: false,
     chooseAssetActive: null,
     chartDays: cache.get<Days | null>('jarvis/state/exchange.chartDays') || 7,
+    slippage:
+      cache.get<number>('jarvis/state/exchange.slippage') || DEFAULT_SLIPPAGE,
+    disableMultihops:
+      cache.get<boolean>('jarvis/state/exchange.disableMultihops') ||
+      DEFAULT_DISABLE_MULTIHOPS,
+    deadline:
+      cache.get<number>('jarvis/state/exchange.deadline') || DEFAULT_DEADLINE,
+    transactionSpeed:
+      cache.get<TransactionSpeed>('jarvis/state/exchange.transactionSpeed') ||
+      DEFAULT_TRANSACTION_SPEED,
+    gasLimit: 0,
   },
   wallet: {},
   transactions: {
     hashMap: {},
     hasOlderTransactions: true,
   },
-  prices: {
-    persistedPairs: [],
-    feed: {},
+  prices: {},
+  cache: {
+    addressIsContract: {},
   },
 };
 

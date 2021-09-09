@@ -1,8 +1,4 @@
-export {
-  poolVersions,
-  allSyntheticSymbols,
-  primaryCollateralSymbol,
-} from './types';
+export { poolVersions, allSyntheticSymbols, collateralSymbol } from './types';
 export type {
   CollateralSymbol,
   PoolVersion,

@@ -14,6 +14,7 @@ export interface ModalProps {
   // animations
   animation?: ModalAnimation | MotionProps;
   duration?: number;
+  useDisplayNone?: boolean;
 }
 
 export interface ModalContentProps {
@@ -23,4 +24,5 @@ export interface ModalContentProps {
   children: ReactNode;
   className?: string;
   id?: string;
+  useDisplayNone?: boolean;
 }

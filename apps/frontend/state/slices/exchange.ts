@@ -1,6 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { logoutAction } from '@jarvis-network/app-toolkit';
 
-import { initialAppState, State } from '@/state/initialState';
+import {
+  DEFAULT_DEADLINE,
+  DEFAULT_DISABLE_MULTIHOPS,
+  DEFAULT_SLIPPAGE,
+  DEFAULT_TRANSACTION_SPEED,
+  initialAppState,
+  State,
+} from '@/state/initialState';
 import { resetSwapAction } from '@/state/actions';
 
 interface SetChooseAssetAction {
@@ -12,7 +20,10 @@ interface SetBaseAction {
 }
 
 interface SetPayAction {
-  payload: State['exchange']['pay'];
+  payload: {
+    pay: State['exchange']['pay'];
+    gasLimit?: State['exchange']['gasLimit'];
+  };
 }
 
 interface SetReceiveAction {
@@ -27,8 +38,31 @@ interface SetReceiveAssetAction {
   payload: State['exchange']['receiveAsset'];
 }
 
+interface SetPayAndReceiveAssetAction {
+  payload: {
+    pay: State['exchange']['payAsset'];
+    receive: State['exchange']['receiveAsset'];
+  };
+}
+
 interface SetChartDays {
   payload: State['exchange']['chartDays'];
+}
+
+interface SetSlippage {
+  payload: State['exchange']['slippage'];
+}
+
+interface SetDisableMultihops {
+  payload: State['exchange']['disableMultihops'];
+}
+
+interface SetDeadline {
+  payload: State['exchange']['deadline'];
+}
+
+interface SetTransactionSpeed {
+  payload: State['exchange']['transactionSpeed'];
 }
 
 const exchangeSlice = createSlice({
@@ -42,7 +76,8 @@ const exchangeSlice = createSlice({
       state.base = action.payload;
     },
     setPay(state, action: SetPayAction) {
-      state.pay = action.payload;
+      state.pay = action.payload.pay;
+      state.gasLimit = action.payload.gasLimit || 0;
     },
     setReceive(state, action: SetReceiveAction) {
       state.receive = action.payload;
@@ -59,11 +94,27 @@ const exchangeSlice = createSlice({
       }
       state.receiveAsset = action.payload;
     },
+    setPayAndReceiveAsset(state, action: SetPayAndReceiveAssetAction) {
+      state.payAsset = action.payload.pay;
+      state.receiveAsset = action.payload.receive;
+    },
     invertRateInfo(state) {
       state.invertRateInfo = !state.invertRateInfo;
     },
     setChartDays(state, action: SetChartDays) {
       state.chartDays = action.payload;
+    },
+    setSlippage(state, action: SetSlippage) {
+      state.slippage = action.payload;
+    },
+    setDisableMultihops(state, action: SetDisableMultihops) {
+      state.disableMultihops = action.payload;
+    },
+    setDeadline(state, action: SetDeadline) {
+      state.deadline = action.payload;
+    },
+    setTransactionSpeed(state, action: SetTransactionSpeed) {
+      state.transactionSpeed = action.payload;
     },
   },
   extraReducers: {
@@ -75,6 +126,16 @@ const exchangeSlice = createSlice({
         base,
         pay,
         receive,
+        gasLimit: 0,
+      };
+    },
+    [logoutAction.type](state) {
+      return {
+        ...state,
+        slippage: DEFAULT_SLIPPAGE,
+        deadline: DEFAULT_DEADLINE,
+        disableMultihops: DEFAULT_DISABLE_MULTIHOPS,
+        transactionSpeed: DEFAULT_TRANSACTION_SPEED,
       };
     },
   },
@@ -87,8 +148,13 @@ export const {
   setReceive,
   setPayAsset,
   setReceiveAsset,
+  setPayAndReceiveAsset,
   invertRateInfo,
   setChartDays,
+  setSlippage,
+  setDisableMultihops,
+  setDeadline,
+  setTransactionSpeed,
 } = exchangeSlice.actions;
 
 export const { reducer } = exchangeSlice;

@@ -34,6 +34,8 @@ export function useRealmAgentProvider(
 
   const { account: address, chainId: networkId, library: web3 } = useWeb3();
 
+  console.log('useRealmAgentProvider');
+
   useEffect(() => {
     let canceled = false;
 
@@ -42,9 +44,11 @@ export function useRealmAgentProvider(
       return;
     }
 
+    console.log('load realm', { networkId });
     loadRealm(web3 as Web3On<SupportedNetworkName>, networkId, {
       [poolVersion]: poolsRef.current[networkId] || null,
     }).then(realm => {
+      console.log({ realm });
       if (canceled) return;
       poolsRef.current[networkId] = assertNotNull(
         realm.pools[poolVersion],
