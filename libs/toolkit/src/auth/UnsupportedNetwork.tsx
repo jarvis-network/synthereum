@@ -21,8 +21,7 @@ export function UnsupportedNetwork({
 
       <p>
         We&apos;ve detected that you need to switch your wallet&apos;s network
-        to <b>mainnet</b>, <b>polygon (matic)</b>, <b>mumbai</b>, or{' '}
-        <b>kovan</b>.
+        to <b>mainnet</b>, <b>polygon (matic)</b>, or <b>kovan</b>.
       </p>
 
       <p>

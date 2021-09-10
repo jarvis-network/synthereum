@@ -17,4 +17,6 @@ export const files = {
     'https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
   wbtc:
     'https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+  matic:
+    'https://raw.githubusercontent.com/sushiswap/icons/master/token/polygon.jpg',
 };

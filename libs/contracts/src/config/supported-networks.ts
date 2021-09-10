@@ -10,7 +10,6 @@ export const supportedNetworkIds = typeCheck<NetworkId[]>()([
   1,
   42,
   137,
-  80001,
 ] as const);
 export type SupportedNetworkIds = typeof supportedNetworkIds;
 export type SupportedNetworkId = SupportedNetworkIds[number];
