@@ -97,9 +97,7 @@ export const FetchWalletBalancesOnNewBlock = (): null => {
         .concat(dexTokens.map(token => token.decimals)),
     };
   }, [realmAgent, networkId, assets]);
-  console.log({ tokenAddresses, symbols, decimals, realmAgent, networkId });
   const tokenAmounts = useTokenBalances(tokenAddresses, address as any);
-  console.log({ tokenAmounts });
 
   useEffect(() => {
     if (!tokenAmounts.length || !symbols.length || !decimals.length) return;

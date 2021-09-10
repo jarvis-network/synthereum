@@ -66,6 +66,7 @@ export const ledger = new LedgerConnector({
   chainId: 1,
   url: mainnetRPCURL,
   pollingInterval: 12000,
+  baseDerivationPath: "44'/60'/0'/0",
 });
 
 const connectors = {
