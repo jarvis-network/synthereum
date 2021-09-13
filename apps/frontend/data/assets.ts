@@ -88,17 +88,63 @@ const matic = {
   type: 'crypto',
 } as Asset;
 
-export const assets: Asset[] = [
-  PRIMARY_STABLE_COIN,
-  ...syntheticAssets,
+const common: Asset[] = [
   {
     name: 'Wrapped Bitcoin',
     symbol: 'WBTC',
     icon: 'wbtc',
     decimals: 8,
     type: 'crypto',
-  } as Asset,
+  },
+  {
+    name: 'UMA Token',
+    symbol: 'UMA',
+    icon: 'uma',
+    decimals: 18,
+    type: 'crypto',
+  },
+  {
+    name: 'Aave Token',
+    symbol: 'AAVE',
+    icon: 'aave',
+    decimals: 18,
+    type: 'crypto',
+  },
+  {
+    name: 'Jarvis Reward Token',
+    symbol: 'JRT',
+    icon: 'jrt',
+    decimals: 18,
+    type: 'crypto',
+  },
+  {
+    name: 'ChainLink Token',
+    symbol: 'LINK',
+    icon: 'link',
+    decimals: 18,
+    type: 'crypto',
+  },
+  {
+    name: 'QuickSwap',
+    symbol: 'QUICK',
+    icon: 'quick',
+    decimals: 18,
+    type: 'crypto',
+  },
+  {
+    name: 'SushiToken',
+    symbol: 'SUSHI',
+    icon: 'sushi',
+    decimals: 18,
+    type: 'crypto',
+  },
+];
+
+export const assets: Asset[] = [
+  PRIMARY_STABLE_COIN,
+  ...syntheticAssets,
   { ...eth, native: true },
+  ...common,
   {
     name: 'Wrapped Ether',
     symbol: 'WETH',
@@ -113,13 +159,7 @@ export const assets: Asset[] = [
 export const assetsPolygon: Asset[] = [
   PRIMARY_STABLE_COIN,
   ...syntheticAssets,
-  {
-    name: 'Wrapped Bitcoin',
-    symbol: 'WBTC',
-    icon: 'wbtc',
-    decimals: 8,
-    type: 'crypto',
-  } as Asset,
+  ...common,
   eth,
   { ...matic, native: true },
   {
