@@ -25,6 +25,7 @@ import { hexToNumberString } from 'web3-utils';
 import { useDispatch } from 'react-redux';
 import { addToAddressIsContractCache } from '@/state/slices/cache';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
+import { addresses } from '@/data/addresses';
 
 const quickswapFactoryAddress = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
 
@@ -773,6 +774,7 @@ type ChainTokenList = {
 const WETH_ONLY: ChainTokenList = {
   '1': [WETH9[1]],
   '42': [WETH9[42]],
+  '137': [new Token(137, addresses[137].WMATIC, 18, 'WMATIC', 'Wrapped Matic')],
 };
 // used to construct intermediary pairs for trading
 const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
