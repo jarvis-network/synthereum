@@ -1,17 +1,17 @@
-import chf from './icons/chf.svg';
-import eur from './icons/eur.svg';
-import gbp from './icons/gbp.svg';
-import us from './icons/us.svg';
-import xau from './icons/xau.svg';
+import jchf from './icons/chf.svg';
+import jeur from './icons/eur.svg';
+import jgbp from './icons/gbp.svg';
+import jxau from './icons/xau.svg';
+import usdc from './icons/us.svg';
 
 export { default as questionMark } from './icons/question-mark.svg';
 
 export const files = {
-  chf,
-  eur,
-  gbp,
-  us,
-  xau,
+  jchf,
+  jeur,
+  jgbp,
+  jxau,
+  usdc,
   eth: 'https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg',
   weth:
     'https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',

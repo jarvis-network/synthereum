@@ -33,7 +33,7 @@ export const PRIMARY_STABLE_COIN_TEXT_SYMBOL = '$';
 export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
   symbol: collateralSymbol,
-  icon: 'us',
+  icon: 'usdc',
   decimals: 6,
   type: 'forex',
   collateral: true,
@@ -46,10 +46,10 @@ export interface AssetWithWalletInfo extends Asset {
 }
 
 const assetIconMap: PerAsset<string | null> = {
-  jEUR: 'eur',
-  jGBP: 'gbp',
-  jCHF: 'chf',
-  jXAU: 'xau',
+  jEUR: 'jeur',
+  jGBP: 'jgbp',
+  jCHF: 'jchf',
+  jXAU: 'jxau',
   jXAG: null,
   jXTI: null,
   jSPX: null,

@@ -34,7 +34,7 @@ const mapTransactionToAssetRow = (
 ): AssetProps => {
   const amount = FPN.fromWei(io.amount);
   return {
-    flag: undefined,
+    flag: io.asset.toLowerCase(),
     name: io.asset,
     value: isFrom ? amount.mul(new FPN('-1')).format(5) : amount.format(5),
   };
