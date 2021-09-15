@@ -54,4 +54,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
     // Address to which send synthetic tokens exchanged
     address recipient;
   }
+
+  /**
+   * @notice Mint synthetic tokens using fixed amount of collateral
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve collateral transfer for the mint request to succeed
+   * @param mintParams Input parameters for minting (see MintParams struct)
+   * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
+   * @return feePaid Amount of collateral paid by the user as fee
+   */
+  function mint(MintParams memory mintParams)
+    external
+    returns (uint256 syntheticTokensMinted, uint256 feePaid);
 }
