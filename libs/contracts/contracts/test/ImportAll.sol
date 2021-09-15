@@ -34,6 +34,8 @@ import '../synthereum-pool/v5/interfaces/IAutonomousPoolGeneral.sol';
 import '../synthereum-pool/v5/interfaces/IAutonomousPoolInteraction.sol';
 import '../synthereum-pool/v5/interfaces/IAutonomousPool.sol';
 import '../synthereum-pool/v5/interfaces/IAutonomousPoolStorage.sol';
+import '../synthereum-pool/v5/AutonomousPool.sol';
+import '../synthereum-pool/v5/AutonomousPoolLib.sol';
 import '../core/Manager.sol';
 import '../core/FactoryVersioning.sol';
 import '../core/Finder.sol';
