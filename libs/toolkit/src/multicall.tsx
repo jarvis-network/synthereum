@@ -16,7 +16,6 @@ import { BaseContract } from '@jarvis-network/core-utils/dist/eth/contracts/type
 import { AbiItem } from 'ethereum-multicall/dist/esm/models';
 import { debounce, isEqual, uniqueId } from 'lodash';
 
-import { useCoreObservables } from './CoreObservablesContext';
 import { useBlockNumber$Context } from './BlockNumber$Context';
 import { useBehaviorSubject } from './useBehaviorSubject';
 import { useVariableLengthDependencies } from './useVariableLengthDependencies';

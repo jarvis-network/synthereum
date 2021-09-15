@@ -9,9 +9,13 @@ import {
 import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
-import { PoolsForVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import type { BehaviorSubject } from 'rxjs';
 import { PoolVersion } from '@jarvis-network/synthereum-ts/dist/config';
+import {
+  SerializablePools,
+  getSerializablePoolsFromRealm,
+} from '@jarvis-network/synthereum-ts/dist/core/realm-utils';
+import { ToNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { useWeb3 } from './auth/useWeb3';
 
@@ -22,12 +26,20 @@ export function useRealmAgentProvider(
   }: {
     realmAgent$: BehaviorSubject<RealmAgent | null>;
   },
+  staticProps?: {
+    [Pool in PoolVersion]?: {
+      [NetworkId in SupportedNetworkId]?: SerializablePools<
+        ToNetworkName<NetworkId>,
+        Pool
+      >;
+    };
+  },
 ): void {
   const poolsRef = useRef<
     {
-      [key in SupportedNetworkId]?: PoolsForVersion<
-        PoolVersion,
-        SupportedNetworkName
+      [NetworkId in SupportedNetworkId]?: SerializablePools<
+        ToNetworkName<NetworkId>,
+        PoolVersion
       >;
     }
   >({});
@@ -42,14 +54,19 @@ export function useRealmAgentProvider(
       return;
     }
 
+    const staticPropsPools = staticProps?.[poolVersion]?.[networkId];
     loadRealm(web3 as Web3On<SupportedNetworkName>, networkId, {
-      [poolVersion]: poolsRef.current[networkId] || null,
+      [poolVersion]: staticPropsPools || poolsRef.current[networkId] || null,
     }).then(realm => {
       if (canceled) return;
-      poolsRef.current[networkId] = assertNotNull(
+      assertNotNull(
         realm.pools[poolVersion],
         'realm.pools[poolVersion] is null',
       );
+      poolsRef.current[networkId as 42] = getSerializablePoolsFromRealm(
+        realm,
+        poolVersion,
+      ) as SerializablePools<'kovan', PoolVersion>;
       realmAgent$.next(
         new RealmAgent(
           realm,
@@ -63,5 +80,16 @@ export function useRealmAgentProvider(
       canceled = true;
       realmAgent$.next(null);
     };
-  }, [poolVersion, realmAgent$, address, web3, networkId]);
+  }, [poolVersion, realmAgent$, address, web3, networkId, staticProps]);
+
+  if (process.env.NODE_ENV === 'development') {
+    const ref = useRef(true);
+    useEffect(() => {
+      if (ref.current) {
+        ref.current = false;
+        return;
+      }
+      throw new Error('Updates of poolVersion not supported');
+    }, [poolVersion]);
+  }
 }

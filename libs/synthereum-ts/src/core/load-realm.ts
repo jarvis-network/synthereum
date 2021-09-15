@@ -2,6 +2,8 @@ import {
   ERC20_Abi,
   ISynthereumRegistry_Abi,
   SelfMintingPerpetualMultiParty_Abi,
+  IDerivative_Abi,
+  ISynthereumPoolOnChainPriceFeed_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import { ISynthereumRegistry } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
@@ -32,19 +34,16 @@ import type {
 import { allSyntheticSymbols, priceFeed, synthereumConfig } from '../config';
 
 import { loadPool } from './pool-utils';
-import type {
-  PoolsForVersion,
-  PoolVersion,
-  SynthereumPool,
-} from './types/pools';
+import type { PoolVersion, SynthereumPool, PoolContract } from './types/pools';
 import type { SynthereumRealmWithWeb3 } from './types/realm';
+import { SerializablePools } from './realm-utils';
 import {
   SelfMintingDerivative,
   SelfMintingVersion,
 } from './types/self-minting-derivatives';
 
 type PoolVersionsToLoad<Net extends SupportedNetworkName> = {
-  [Version in PoolVersion]?: PoolsForVersion<Version, Net> | null;
+  [Version in PoolVersion]?: SerializablePools<Net, Version> | null;
 };
 
 /**
@@ -113,8 +112,43 @@ export async function loadCustomRealm<Net extends SupportedNetworkName>(
   for (const i in versionsToLoad) {
     if (!Object.prototype.hasOwnProperty.call(versionsToLoad, i)) continue;
     const version = i as PoolVersion;
-    const poolsForVersion = versionsToLoad[version];
-    if (typeof poolsForVersion === 'object' && poolsForVersion !== null) {
+    const serializablePools = versionsToLoad[version];
+    if (typeof serializablePools === 'object' && serializablePools !== null) {
+      const poolsForVersion: SynthereumRealmWithWeb3<Net>['pools'][PoolVersion] = {};
+      // eslint-disable-next-line guard-for-in
+      for (const j in serializablePools) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const serializablePool = serializablePools[j as 'jEUR']!;
+        const {
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          collateralToken,
+          syntheticToken,
+          address: poolAddress,
+        } = serializablePool;
+        poolsForVersion[j as 'jEUR'] = {
+          ...serializablePool,
+          derivative: getContract(
+            web3,
+            IDerivative_Abi,
+            serializablePool.derivative,
+          ),
+          collateralToken: {
+            ...getContract(web3, ERC20_Abi, collateralToken.address),
+            decimals: collateralToken.decimals,
+            symbol: collateralToken.symbol,
+          },
+          syntheticToken: {
+            ...getContract(web3, ERC20_Abi, syntheticToken.address),
+            decimals: syntheticToken.decimals,
+            symbol: syntheticToken.symbol,
+          },
+          instance: getContract(
+            web3,
+            ISynthereumPoolOnChainPriceFeed_Abi,
+            poolAddress,
+          ).instance as PoolContract<PoolVersion>,
+        };
+      }
       pools[version] = poolsForVersion;
       continue;
     }
@@ -198,7 +232,7 @@ export async function loadPoolInfo<
 
   const poolAddress = assertIsAddress(lastPoolAddress) as AddressOn<Net>;
 
-  const { result: poolInstance, derivativeAddress } = await loadPool(
+  const { result: poolInstance, derivative } = await loadPool(
     web3,
     version,
     poolAddress,
@@ -229,10 +263,7 @@ export async function loadPoolInfo<
     instance: poolInstance,
     syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
     collateralToken: await getTokenInfo(web3, collateralTokenAddress),
-    derivative: {
-      address: derivativeAddress.options.address as AddressOn<Net>,
-      instance: derivativeAddress,
-    },
+    derivative,
   };
 }
 

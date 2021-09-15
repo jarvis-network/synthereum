@@ -26,8 +26,9 @@ export function getInfuraEndpoint<Net extends Network>(
 export function getInfuraWeb3<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
+  projectId = env.infuraProjectId,
 ): Web3On<Net> {
-  const url = getInfuraEndpoint(network, protocol);
+  const url = getInfuraEndpoint(network, protocol, projectId);
   const result =
     protocol === 'https'
       ? new Web3(new Web3.providers.HttpProvider(url))

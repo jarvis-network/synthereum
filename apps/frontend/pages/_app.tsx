@@ -68,6 +68,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
       <HooksDependingOnWeb3React
         dispatch={store.dispatch}
         subjects={subjects}
+        staticProps={pageProps.pools}
       />
       <AuthFlow<typeof store>
         notify={(notify, isMobile, title, options) =>
@@ -121,14 +122,17 @@ export default MyApp;
 function HooksDependingOnWeb3React({
   dispatch,
   subjects,
+  staticProps,
 }: {
   dispatch: ReturnType<typeof useStore>['dispatch'];
   subjects: ReturnType<typeof useSubjects>;
+  staticProps: Parameters<typeof useRealmAgentProvider>['2'];
 }) {
   useChainlinkPriceFeed(dispatch);
   useRealmAgentProvider(
     assertIsSupportedPoolVersion(process.env.NEXT_PUBLIC_POOL_VERSION),
     subjects,
+    staticProps,
   );
 
   return null;

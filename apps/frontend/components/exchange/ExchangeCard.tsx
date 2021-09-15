@@ -48,6 +48,7 @@ import { createPairs } from '@/utils/createPairs';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 import { useExchangeContext } from '@/utils/ExchangeContext';
 import { dbPromise } from '@/utils/db';
+import { useAssets } from '@/utils/useAssets';
 
 import { useSwap } from '@/components/exchange/useSwap';
 
@@ -59,7 +60,6 @@ import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
 import { SwapConfirm } from './SwapConfirm';
 import { ExchangeSettings } from './ExchangeSettings';
-import { useAssets } from '@/utils/useAssets';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 

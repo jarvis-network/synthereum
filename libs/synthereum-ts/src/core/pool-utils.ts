@@ -18,6 +18,7 @@ import {
   AddressOn,
   assertIsAddress,
 } from '@jarvis-network/core-utils/dist/eth/address';
+import { ContractInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import {
   getTokenBalance,
   erc20Transfer,
@@ -109,9 +110,12 @@ export function mapPools<
   return array;
 }
 
-export interface PoolAddressWithDerivatives<Version extends PoolVersion> {
+export interface PoolAddressWithDerivative<
+  Net extends SupportedNetworkName,
+  Version extends PoolVersion
+> {
   result: PoolContract<Version>;
-  derivativeAddress: IDerivative;
+  derivative: ContractInfo<Net, IDerivative>;
 }
 
 export async function loadPool<
@@ -121,7 +125,7 @@ export async function loadPool<
   web3: Web3On<Net>,
   version: Version,
   poolAddress: AddressOn<Net>,
-): Promise<PoolAddressWithDerivatives<Version>> {
+): Promise<PoolAddressWithDerivative<Net, Version>> {
   if (version === 'v4') {
     const result = getContract(
       web3,
@@ -134,11 +138,7 @@ export async function loadPool<
 
     return {
       result: result as PoolContract<Version>,
-      derivativeAddress: getContract(
-        web3,
-        IDerivative_Abi,
-        last(derivativeAddresses),
-      ).instance,
+      derivative: getContract(web3, IDerivative_Abi, last(derivativeAddresses)),
     };
   }
   throwError(`Unsupported pool version: '${version}'`);

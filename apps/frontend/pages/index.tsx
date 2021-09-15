@@ -13,6 +13,15 @@ import { ChartExchangeCards } from '@/components/ChartExchangeCards';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setWindowLoaded } from '@/state/slices/app';
 import { backgroundMap } from '@/data/backgrounds';
+import { GetStaticProps } from 'next';
+import { supportedNetworkIds } from '@jarvis-network/synthereum-contracts/dist/config/supported-networks';
+import { loadRealm } from '@jarvis-network/synthereum-ts/dist/core/load-realm';
+import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
+import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
+import {
+  getSerializablePoolsFromRealm,
+  SerializablePools,
+} from '@jarvis-network/synthereum-ts/dist/core/realm-utils';
 
 const Layout = styled.div`
   display: flex;
@@ -112,3 +121,40 @@ export default function Home(): JSX.Element {
     </StickyHeader>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const infuraProjectId = process.env.NEXT_PUBLIC_INFURA_API_KEY;
+  const shouldLoad =
+    process.env.NODE_ENV === 'production' ||
+    process.env.NEXT_PUBLIC_DEV_MODE_LOAD_POOLS_ON_ALL_NETWORKS;
+
+  if (infuraProjectId && shouldLoad) {
+    const poolVersion = assertIsSupportedPoolVersion(
+      process.env.NEXT_PUBLIC_POOL_VERSION,
+    );
+    const results = await Promise.all(
+      supportedNetworkIds.map(async networkId => ({
+        networkId,
+        serializedPools: getSerializablePoolsFromRealm(
+          await loadRealm(
+            getInfuraWeb3(networkId, 'https', infuraProjectId),
+            networkId,
+            {
+              [poolVersion]: null,
+            },
+          ),
+          poolVersion,
+        ),
+      })),
+    );
+
+    const pools: Record<number, SerializablePools> = {};
+    for (const result of results) {
+      if (!result.serializedPools) continue;
+      pools[result.networkId] = result.serializedPools;
+    }
+
+    return { props: { pools: { [poolVersion]: pools } }, revalidate: 3600 };
+  }
+  return { props: {} };
+};

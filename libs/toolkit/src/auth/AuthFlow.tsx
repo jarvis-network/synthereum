@@ -109,7 +109,7 @@ export function AuthFlow<
 
     localStorage.removeItem('jarvis/auto-login');
     dispatch(logoutAction());
-  }, [active, previousActive, dispatch]);
+  }, [active, previousActive, dispatch, connector]);
 
   const previousNetworkId = usePrevious(networkId);
   useEffect(() => {
