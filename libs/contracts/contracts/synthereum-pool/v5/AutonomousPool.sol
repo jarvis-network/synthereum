@@ -57,6 +57,15 @@ contract SynthereumAutonomousPool is
   // Events
   //----------------------------------------
 
+  event Mint(
+    address indexed account,
+    address indexed pool,
+    uint256 collateralSent,
+    uint256 numTokensReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
   event SetFeePercentage(uint256 feePercentage);
 
   event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
@@ -102,6 +111,27 @@ contract SynthereumAutonomousPool is
     );
     poolStorage.setFeePercentage(_fee.feePercentage);
     poolStorage.setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
+  }
+
+  /**
+   * @notice Mint synthetic tokens using fixed amount of collateral
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve collateral transfer for the mint request to succeed
+   * @param mintParams Input parameters for minting (see MintParams struct)
+   * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
+   * @return feePaid Amount of collateral paid by the user as fee
+   */
+  function mint(MintParams memory mintParams)
+    external
+    override
+    nonReentrant
+    returns (uint256 syntheticTokensMinted, uint256 feePaid)
+  {
+    (syntheticTokensMinted, feePaid) = poolStorage.mint(
+      lpPosition,
+      feeStatus,
+      mintParams
+    );
   }
 
   //----------------------------------------

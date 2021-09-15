@@ -4,14 +4,23 @@ pragma solidity ^0.8.4;
 import {
   ISynthereumAutonomousPoolStorage
 } from './interfaces/IAutonomousPoolStorage.sol';
+import {ISynthereumAutonomousPool} from './interfaces/IAutonomousPool.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {
+  ISynthereumPriceFeed
+} from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * @notice Pool implementation is stored here to reduce deployment costs
@@ -19,11 +28,38 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 
 library SynthereumAutonomousPoolLib {
   using FixedPoint for FixedPoint.Unsigned;
+  using FixedPoint for uint256;
+  using SafeERC20 for IERC20;
   using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.Storage;
+  using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.LPPosition;
+  using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.FeeStatus;
+
+  struct ExecuteMintParams {
+    // Amount of synth tokens to mint
+    FixedPoint.Unsigned numTokens;
+    // Amount of collateral (excluding fees) needed for mint
+    FixedPoint.Unsigned collateralAmount;
+    // Amount of fees of collateral user must pay
+    FixedPoint.Unsigned feeAmount;
+    // Amount of collateral equal to collateral minted + fees
+    FixedPoint.Unsigned totCollateralAmount;
+    // Recipient address that will receive synthetic tokens
+    address recipient;
+  }
 
   //----------------------------------------
   // Events
   //----------------------------------------
+
+  event Mint(
+    address indexed account,
+    address indexed pool,
+    uint256 collateralSent,
+    uint256 numTokensReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
   event SetFeePercentage(uint256 feePercentage);
 
   event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
@@ -62,6 +98,56 @@ library SynthereumAutonomousPoolLib {
     self.syntheticToken = _syntheticToken;
     self.overCollateralization = _overCollateralization;
     self.priceIdentifier = _priceIdentifier;
+  }
+
+  /**
+   * @notice Mint synthetic tokens using fixed amount of collateral
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve collateral transfer for the mint request to succeed
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param mintParams Input parameters for minting (see MintParams struct)
+   * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
+   * @return feePaid Amount of collateral paid by the user as fee
+   */
+  function mint(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumAutonomousPool.MintParams memory mintParams
+  ) external returns (uint256 syntheticTokensMinted, uint256 feePaid) {
+    FixedPoint.Unsigned memory totCollateralAmount =
+      FixedPoint.Unsigned(mintParams.collateralAmount);
+    FixedPoint.Unsigned memory feeAmount =
+      totCollateralAmount.mul(self.fee.feePercentage);
+    FixedPoint.Unsigned memory collateralAmount =
+      totCollateralAmount.sub(feeAmount);
+    FixedPoint.Unsigned memory numTokens =
+      calculateNumberOfTokens(
+        self.finder,
+        IStandardERC20(address(self.collateralToken)),
+        self.priceIdentifier,
+        collateralAmount
+      );
+    require(
+      numTokens.isGreaterThanOrEqual(mintParams.minNumTokens),
+      'Number of tokens less than minimum limit'
+    );
+    checkParams(self, mintParams.feePercentage, mintParams.expiration);
+    self.executeMint(
+      lpPosition,
+      feeStatus,
+      ExecuteMintParams(
+        numTokens,
+        collateralAmount,
+        feeAmount,
+        totCollateralAmount,
+        mintParams.recipient
+      )
+    );
+    syntheticTokensMinted = numTokens.rawValue;
+    feePaid = feeAmount.rawValue;
   }
 
   /**
@@ -105,5 +191,217 @@ library SynthereumAutonomousPoolLib {
     self.fee.feeProportions = _feeProportions;
     self.fee.totalFeeProportions = totalActualFeeProportions;
     emit SetFeeRecipients(_feeRecipients, _feeProportions);
+  }
+
+  //----------------------------------------
+  //  Internal functions
+  //----------------------------------------
+
+  /**
+   * @notice Execute mint of synthetic tokens
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param executeMintParams Params for execution of mint (see ExecuteMintParams struct)
+   */
+  function executeMint(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ExecuteMintParams memory executeMintParams
+  ) internal {
+    // Sending amount must be different from 0
+    require(
+      executeMintParams.collateralAmount.isGreaterThan(0),
+      'Sending amount is equal to 0'
+    );
+
+    // Collateral available
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.collateralToken.balanceOf(address(this)).sub(
+        lpPosition.totalCollateralAmount.add(feeStatus.totalFeeAmount)
+      );
+
+    // Update LP's collateralization status
+    FixedPoint.Unsigned memory overCollateral =
+      lpPosition.updateLpPositionInMint(
+        self.overCollateralization,
+        executeMintParams.collateralAmount,
+        executeMintParams.numTokens
+      );
+
+    //Check there is enough liquidity in the pool for overcollateralization
+    require(
+      unusedCollateral.isGreaterThanOrEqual(overCollateral),
+      'No enough liquidity for cover mint operation'
+    );
+
+    // Update fees status
+    feeStatus.updateFees(self.fee, executeMintParams.feeAmount);
+
+    // Pull user's collateral and mint fee into the pool
+    self.pullCollateral(msg.sender, executeMintParams.totCollateralAmount);
+
+    // Mint synthetic asset and transfer to the recipient
+    self.syntheticToken.mint(
+      executeMintParams.recipient,
+      executeMintParams.numTokens.rawValue
+    );
+
+    emit Mint(
+      msg.sender,
+      address(this),
+      executeMintParams.totCollateralAmount.rawValue,
+      executeMintParams.numTokens.rawValue,
+      executeMintParams.feeAmount.rawValue,
+      executeMintParams.recipient
+    );
+  }
+
+  /**
+   * @notice Update LP's collateralization status after a mint
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param overCollateralization Overcollateralization rate
+   * @param collateralAmount Collateral amount to be added (only user collateral)
+   * @param numTokens Tokens to be added
+   * @return overCollateral Amount of collateral to be provided by LP for overcollateralization
+   */
+  function updateLpPositionInMint(
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    FixedPoint.Unsigned storage overCollateralization,
+    FixedPoint.Unsigned memory collateralAmount,
+    FixedPoint.Unsigned memory numTokens
+  ) internal returns (FixedPoint.Unsigned memory overCollateral) {
+    overCollateral = collateralAmount.mul(overCollateralization);
+    lpPosition.totalCollateralAmount = lpPosition
+      .totalCollateralAmount
+      .add(collateralAmount)
+      .add(overCollateral);
+    lpPosition.tokenCollateralised = lpPosition.tokenCollateralised.add(
+      numTokens
+    );
+  }
+
+  /**
+   * @notice Update fee gained by the fee recipients
+   * @param feeStatus Actual status of fee gained to be withdrawn
+   * @param feeInfo Actual status of fee recipients and their proportions
+   * @param feeAmount Collateral fee charged
+   */
+  function updateFees(
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumAutonomousPoolStorage.Fee storage feeInfo,
+    FixedPoint.Unsigned memory feeAmount
+  ) internal {
+    FixedPoint.Unsigned memory feeCharged;
+    uint256 numberOfRecipients = feeInfo.feeRecipients.length;
+    for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
+      address feeRecipient = feeInfo.feeRecipients[i];
+      FixedPoint.Unsigned memory feeReceived =
+        feeAmount.mul(feeInfo.feeProportions[i]).div(
+          feeInfo.totalFeeProportions
+        );
+      feeStatus.feeGained[feeRecipient] = feeStatus.feeGained[feeRecipient].add(
+        feeReceived
+      );
+      feeCharged = feeCharged.add(feeReceived);
+    }
+    address lastRecipient = feeInfo.feeRecipients[numberOfRecipients - 1];
+    feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient].add(
+      feeAmount.sub(feeCharged)
+    );
+    feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
+  }
+
+  /**
+   * @notice Pulls collateral tokens from the sender to store in the Pool
+   * @param self Data type the library is attached to
+   * @param numTokens The number of tokens to pull
+   */
+  function pullCollateral(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    address from,
+    FixedPoint.Unsigned memory numTokens
+  ) internal {
+    self.collateralToken.safeTransferFrom(
+      from,
+      address(this),
+      numTokens.rawValue
+    );
+  }
+
+  //----------------------------------------
+  //  Internal views functions
+  //----------------------------------------
+
+  /**
+   * @notice Check fee percentage and expiration of mint, redeem and exchange transaction
+   * @param self Data type the library is attached tfo
+   * @param feePercentage Maximum percentage of fee that a user want to pay
+   * @param expiration Expiration time of the transaction
+   */
+  function checkParams(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    uint256 feePercentage,
+    uint256 expiration
+  ) internal view {
+    require(block.timestamp <= expiration, 'Transaction expired');
+    require(
+      self.fee.feePercentage.rawValue <= feePercentage,
+      'User fee percentage less than actual one'
+    );
+  }
+
+  /**
+   * @notice Calculate synthetic token amount starting from an amount of collateral, using on-chain oracle
+   * @param finder Synthereum finder
+   * @param collateralToken Collateral token contract
+   * @param priceIdentifier Identifier of price pair
+   * @param numTokens Amount of collateral from which you want to calculate synthetic token amount
+   * @return numTokens Amount of tokens after on-chain oracle conversion
+   */
+  function calculateNumberOfTokens(
+    ISynthereumFinder finder,
+    IStandardERC20 collateralToken,
+    bytes32 priceIdentifier,
+    FixedPoint.Unsigned memory collateralAmount
+  ) internal view returns (FixedPoint.Unsigned memory numTokens) {
+    FixedPoint.Unsigned memory priceRate =
+      getPriceFeedRate(finder, priceIdentifier);
+    uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
+    numTokens = collateralAmount.mul(10**(18 - decimalsOfCollateral)).div(
+      priceRate
+    );
+  }
+
+  /**
+   * @notice Retrun the on-chain oracle price for a pair
+   * @param finder Synthereum finder
+   * @param priceIdentifier Identifier of price pair
+   * @return priceRate Latest rate of the pair
+   */
+  function getPriceFeedRate(ISynthereumFinder finder, bytes32 priceIdentifier)
+    internal
+    view
+    returns (FixedPoint.Unsigned memory priceRate)
+  {
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+      );
+    priceRate = FixedPoint.Unsigned(priceFeed.getLatestPrice(priceIdentifier));
+  }
+
+  /**
+   * @notice Retrun the number of decimals of collateral token
+   * @param collateralToken Collateral token contract
+   * @return decimals number of decimals
+   */
+  function getCollateralDecimals(IStandardERC20 collateralToken)
+    internal
+    view
+    returns (uint256 decimals)
+  {
+    decimals = collateralToken.decimals();
   }
 }
