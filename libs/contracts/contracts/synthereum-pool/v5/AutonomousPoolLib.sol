@@ -30,6 +30,7 @@ library SynthereumAutonomousPoolLib {
   using FixedPoint for FixedPoint.Unsigned;
   using FixedPoint for uint256;
   using SafeERC20 for IERC20;
+  using SafeERC20 for IMintableBurnableERC20;
   using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.Storage;
   using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.LPPosition;
   using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.FeeStatus;
@@ -47,6 +48,19 @@ library SynthereumAutonomousPoolLib {
     address recipient;
   }
 
+  struct ExecuteRedeemParams {
+    //Amount of synth tokens needed for redeem
+    FixedPoint.Unsigned numTokens;
+    // Amount of collateral that user will receive
+    FixedPoint.Unsigned collateralAmount;
+    // Amount of fees of collateral user must pay
+    FixedPoint.Unsigned feeAmount;
+    // Amount of collateral equal to collateral redeemed + fees
+    FixedPoint.Unsigned totCollateralAmount;
+    // Recipient address that will receive synthetic tokens
+    address recipient;
+  }
+
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -56,6 +70,15 @@ library SynthereumAutonomousPoolLib {
     address indexed pool,
     uint256 collateralSent,
     uint256 numTokensReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
+  event Redeem(
+    address indexed account,
+    address indexed pool,
+    uint256 numTokensSent,
+    uint256 collateralReceived,
     uint256 feePaid,
     address recipient
   );
@@ -148,6 +171,56 @@ library SynthereumAutonomousPoolLib {
     );
     syntheticTokensMinted = numTokens.rawValue;
     feePaid = feeAmount.rawValue;
+  }
+
+  /**
+   * @notice Redeem amount of collateral using fixed number of synthetic token
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
+   * @return collateralRedeemed Amount of collateral redeeem by user
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function redeem(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumAutonomousPool.RedeemParams memory redeemParams
+  ) external returns (uint256 collateralRedeemed, uint256 feePaid) {
+    FixedPoint.Unsigned memory numTokens =
+      FixedPoint.Unsigned(redeemParams.numTokens);
+    FixedPoint.Unsigned memory totCollateralAmount =
+      calculateCollateralAmount(
+        self.finder,
+        IStandardERC20(address(self.collateralToken)),
+        self.priceIdentifier,
+        numTokens
+      );
+    FixedPoint.Unsigned memory feeAmount =
+      totCollateralAmount.mul(self.fee.feePercentage);
+    FixedPoint.Unsigned memory collateralAmount =
+      totCollateralAmount.sub(feeAmount);
+    require(
+      collateralAmount.isGreaterThanOrEqual(redeemParams.minCollateral),
+      'Collateral amount less than minimum limit'
+    );
+    checkParams(self, redeemParams.feePercentage, redeemParams.expiration);
+    self.executeRedeem(
+      lpPosition,
+      feeStatus,
+      ExecuteRedeemParams(
+        numTokens,
+        collateralAmount,
+        feeAmount,
+        totCollateralAmount,
+        redeemParams.recipient
+      )
+    );
+    feePaid = feeAmount.rawValue;
+    collateralRedeemed = collateralAmount.rawValue;
   }
 
   /**
@@ -259,6 +332,67 @@ library SynthereumAutonomousPoolLib {
   }
 
   /**
+   * @notice Execute redeem of collateral
+   * @param self Data type the library is attached tfo
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param executeRedeemParams Params for execution of redeem (see ExecuteRedeemParams struct)
+   */
+  function executeRedeem(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ExecuteRedeemParams memory executeRedeemParams
+  ) internal {
+    // Sending amount must be different from 0
+    require(
+      executeRedeemParams.numTokens.isGreaterThan(0),
+      'Sending amount is equal to 0'
+    );
+
+    FixedPoint.Unsigned memory collateralRedeemed =
+      lpPosition.updateLpPositionInRedeem(executeRedeemParams.numTokens);
+
+    // Check that collateral redemeed is enough for cover the value of synthetic tokens
+    require(
+      collateralRedeemed.isGreaterThanOrEqual(
+        executeRedeemParams.totCollateralAmount
+      ),
+      'Position undercapitalized'
+    );
+
+    // Update fees status
+    feeStatus.updateFees(self.fee, executeRedeemParams.feeAmount);
+
+    IMintableBurnableERC20 synthToken = self.syntheticToken;
+
+    // Transfer synthetic token from the user to the pool
+    synthToken.safeTransferFrom(
+      msg.sender,
+      address(this),
+      executeRedeemParams.numTokens.rawValue
+    );
+
+    // Burn synthetic asset
+    synthToken.burn(executeRedeemParams.numTokens.rawValue);
+
+    //Send net amount of collateral to the user that submited the redeem request
+    self.collateralToken.safeTransfer(
+      executeRedeemParams.recipient,
+      executeRedeemParams.collateralAmount.rawValue
+    );
+
+    emit Redeem(
+      msg.sender,
+      address(this),
+      executeRedeemParams.numTokens.rawValue,
+      executeRedeemParams.collateralAmount.rawValue,
+      executeRedeemParams.feeAmount.rawValue,
+      executeRedeemParams.recipient
+    );
+  }
+
+  /**
    * @notice Update LP's collateralization status after a mint
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param overCollateralization Overcollateralization rate
@@ -279,6 +413,29 @@ library SynthereumAutonomousPoolLib {
       .add(overCollateral);
     lpPosition.tokenCollateralised = lpPosition.tokenCollateralised.add(
       numTokens
+    );
+  }
+
+  /**
+   * @notice Update LP's collateralization status after a redeem
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param numTokens Tokens to be removed
+   * @return collateralRedeemed Collateral redeemed
+   */
+  function updateLpPositionInRedeem(
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    FixedPoint.Unsigned memory numTokens
+  ) internal returns (FixedPoint.Unsigned memory collateralRedeemed) {
+    FixedPoint.Unsigned memory totalActualTokens =
+      lpPosition.tokenCollateralised;
+    FixedPoint.Unsigned memory totalActualCollateral =
+      lpPosition.totalCollateralAmount;
+    FixedPoint.Unsigned memory fractionRedeemed =
+      numTokens.div(totalActualTokens);
+    collateralRedeemed = fractionRedeemed.mul(totalActualCollateral);
+    lpPosition.tokenCollateralised = totalActualTokens.sub(numTokens);
+    lpPosition.totalCollateralAmount = totalActualCollateral.sub(
+      collateralRedeemed
     );
   }
 
@@ -371,6 +528,28 @@ library SynthereumAutonomousPoolLib {
     uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
     numTokens = collateralAmount.mul(10**(18 - decimalsOfCollateral)).div(
       priceRate
+    );
+  }
+
+  /**
+   * @notice Calculate collateral amount starting from an amount of synthtic token, using on-chain oracle
+   * @param finder Synthereum finder
+   * @param collateralToken Collateral token contract
+   * @param priceIdentifier Identifier of price pair
+   * @param numTokens Amount of synthetic tokens from which you want to calculate collateral amount
+   * @return collateralAmount Amount of collateral after on-chain oracle conversion
+   */
+  function calculateCollateralAmount(
+    ISynthereumFinder finder,
+    IStandardERC20 collateralToken,
+    bytes32 priceIdentifier,
+    FixedPoint.Unsigned memory numTokens
+  ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
+    FixedPoint.Unsigned memory priceRate =
+      getPriceFeedRate(finder, priceIdentifier);
+    uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
+    collateralAmount = numTokens.mul(priceRate).div(
+      10**(18 - decimalsOfCollateral)
     );
   }
 

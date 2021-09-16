@@ -61,7 +61,14 @@ contract SynthereumAutonomousPool is
     address indexed account,
     address indexed pool,
     uint256 collateralSent,
-    uint256 numTokensReceived,
+    uint256 numTokensReceived
+  );
+
+  event Redeem(
+    address indexed account,
+    address indexed pool,
+    uint256 numTokensSent,
+    uint256 collateralReceived,
     uint256 feePaid,
     address recipient
   );
@@ -131,6 +138,27 @@ contract SynthereumAutonomousPool is
       lpPosition,
       feeStatus,
       mintParams
+    );
+  }
+
+  /**
+   * @notice Redeem amount of collateral using fixed number of synthetic token
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
+   * @return collateralRedeemed Amount of collateral redeeem by user
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function redeem(RedeemParams memory redeemParams)
+    external
+    override
+    nonReentrant
+    returns (uint256 collateralRedeemed, uint256 feePaid)
+  {
+    (collateralRedeemed, feePaid) = poolStorage.redeem(
+      lpPosition,
+      feeStatus,
+      redeemParams
     );
   }
 

@@ -66,4 +66,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function mint(MintParams memory mintParams)
     external
     returns (uint256 syntheticTokensMinted, uint256 feePaid);
+
+  /**
+   * @notice Redeem amount of collateral using fixed number of synthetic token
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
+   * @return collateralRedeemed Amount of collateral redeeem by user
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function redeem(RedeemParams memory redeemParams)
+    external
+    returns (uint256 collateralRedeemed, uint256 feePaid);
 }
