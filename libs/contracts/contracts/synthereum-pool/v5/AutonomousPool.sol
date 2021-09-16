@@ -73,6 +73,16 @@ contract SynthereumAutonomousPool is
     address recipient
   );
 
+  event Exchange(
+    address indexed account,
+    address indexed sourcePool,
+    address indexed destPool,
+    uint256 numTokensSent,
+    uint256 destNumTokensReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
   event SetFeePercentage(uint256 feePercentage);
 
   event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
@@ -159,6 +169,48 @@ contract SynthereumAutonomousPool is
       lpPosition,
       feeStatus,
       redeemParams
+    );
+  }
+
+  /**
+   * @notice Exchange a fixed amount of synthetic token of this pool, with an amount of synthetic tokens of an another pool
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param exchangeParams Input parameters for exchanging (see ExchangeParams struct)
+   * @return destNumTokensMinted Amount of collateral redeeem by user
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function exchange(ExchangeParams memory exchangeParams)
+    external
+    override
+    nonReentrant
+    returns (uint256 destNumTokensMinted, uint256 feePaid)
+  {
+    (destNumTokensMinted, feePaid) = poolStorage.exchange(
+      lpPosition,
+      feeStatus,
+      exchangeParams
+    );
+  }
+
+  /**
+   * @notice Called by a source Pool's `exchange` function to mint destination tokens
+   * @notice This functon can be called only by a pool registred in the PoolRegister contract
+   * @param collateralAmount The amount of collateral to use from the source Pool
+   * @param numTokens The number of new tokens to mint
+   * @param recipient Recipient to which send synthetic token minted
+   */
+  function exchangeMint(
+    uint256 collateralAmount,
+    uint256 numTokens,
+    address recipient
+  ) external override nonReentrant {
+    poolStorage.exchangeMint(
+      lpPosition,
+      feeStatus,
+      FixedPoint.Unsigned(collateralAmount),
+      FixedPoint.Unsigned(numTokens),
+      recipient
     );
   }
 
