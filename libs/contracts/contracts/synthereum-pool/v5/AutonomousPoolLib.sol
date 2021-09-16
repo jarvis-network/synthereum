@@ -15,8 +15,14 @@ import {
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
+  ISynthereumRegistry
+} from '../../core/registries/interfaces/IRegistry.sol';
+import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {
+  ISynthereumAutonomousPoolGeneral
+} from './interfaces/IAutonomousPoolGeneral.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   SafeERC20
@@ -61,6 +67,23 @@ library SynthereumAutonomousPoolLib {
     address recipient;
   }
 
+  struct ExecuteExchangeParams {
+    // Destination pool in which mint new tokens
+    ISynthereumAutonomousPoolGeneral destPool;
+    // Amount of tokens to send
+    FixedPoint.Unsigned numTokens;
+    // Amount of collateral (excluding fees) equivalent to synthetic token (exluding fees) to send
+    FixedPoint.Unsigned collateralAmount;
+    // Amount of fees of collateral user must pay
+    FixedPoint.Unsigned feeAmount;
+    // Amount of collateral equal to collateral redemeed + fees
+    FixedPoint.Unsigned totCollateralAmount;
+    // Amount of synthetic token to receive
+    FixedPoint.Unsigned destNumTokens;
+    // Recipient address that will receive synthetic tokens
+    address recipient;
+  }
+
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -79,6 +102,16 @@ library SynthereumAutonomousPoolLib {
     address indexed pool,
     uint256 numTokensSent,
     uint256 collateralReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
+  event Exchange(
+    address indexed account,
+    address indexed sourcePool,
+    address indexed destPool,
+    uint256 numTokensSent,
+    uint256 destNumTokensReceived,
     uint256 feePaid,
     address recipient
   );
@@ -221,6 +254,122 @@ library SynthereumAutonomousPoolLib {
     );
     feePaid = feeAmount.rawValue;
     collateralRedeemed = collateralAmount.rawValue;
+  }
+
+  /**
+   * @notice Exchange a fixed amount of synthetic token of this pool, with an amount of synthetic tokens of an another pool
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param exchangeParams Input parameters for exchanging (see ExchangeParams struct)
+   * @return destNumTokensMinted Amount of synthetic token minted in the destination pool
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function exchange(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumAutonomousPool.ExchangeParams memory exchangeParams
+  ) external returns (uint256 destNumTokensMinted, uint256 feePaid) {
+    FixedPoint.Unsigned memory numTokens =
+      FixedPoint.Unsigned(exchangeParams.numTokens);
+
+    FixedPoint.Unsigned memory totCollateralAmount =
+      calculateCollateralAmount(
+        self.finder,
+        IStandardERC20(address(self.collateralToken)),
+        self.priceIdentifier,
+        numTokens
+      );
+
+    FixedPoint.Unsigned memory feeAmount =
+      totCollateralAmount.mul(self.fee.feePercentage);
+
+    FixedPoint.Unsigned memory collateralAmount =
+      totCollateralAmount.sub(feeAmount);
+
+    FixedPoint.Unsigned memory destNumTokens =
+      calculateNumberOfTokens(
+        self.finder,
+        IStandardERC20(address(self.collateralToken)),
+        exchangeParams.destPool.getPriceFeedIdentifier(),
+        collateralAmount
+      );
+
+    require(
+      destNumTokens.isGreaterThanOrEqual(exchangeParams.minDestNumTokens),
+      'Number of destination tokens less than minimum limit'
+    );
+
+    checkParams(self, exchangeParams.feePercentage, exchangeParams.expiration);
+
+    self.executeExchange(
+      lpPosition,
+      feeStatus,
+      ExecuteExchangeParams(
+        exchangeParams.destPool,
+        numTokens,
+        collateralAmount,
+        feeAmount,
+        totCollateralAmount,
+        destNumTokens,
+        exchangeParams.recipient
+      )
+    );
+
+    destNumTokensMinted = destNumTokens.rawValue;
+    feePaid = feeAmount.rawValue;
+  }
+
+  /**
+   * @notice Called by a source Pool's `exchange` function to mint destination tokens
+   * @notice This functon can be called only by a pool registred in the deployer
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param collateralAmount The amount of collateral to use from the source Pool
+   * @param numTokens The number of new tokens to mint
+   * @param recipient Recipient to which send synthetic token minted
+   */
+  function exchangeMint(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    FixedPoint.Unsigned memory collateralAmount,
+    FixedPoint.Unsigned memory numTokens,
+    address recipient
+  ) external {
+    self.checkPool(ISynthereumAutonomousPoolGeneral(msg.sender));
+
+    // Sending amount must be different from 0
+    require(collateralAmount.isGreaterThan(0), 'Sending amount is equal to 0');
+
+    // Collateral available
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.collateralToken.balanceOf(address(this)).sub(
+        lpPosition.totalCollateralAmount.add(feeStatus.totalFeeAmount).add(
+          collateralAmount
+        )
+      );
+
+    // Update LP's collateralization status
+    FixedPoint.Unsigned memory overCollateral =
+      lpPosition.updateLpPositionInMint(
+        self.overCollateralization,
+        collateralAmount,
+        numTokens
+      );
+
+    //Check there is enough liquidity in the pool for overcollateralization
+    require(
+      unusedCollateral.isGreaterThanOrEqual(overCollateral),
+      'No enough liquidity for cover mint operation'
+    );
+
+    // Mint synthetic asset and transfer to the recipient
+    self.syntheticToken.mint(recipient, numTokens.rawValue);
   }
 
   /**
@@ -393,6 +542,80 @@ library SynthereumAutonomousPoolLib {
   }
 
   /**
+   * @notice Execute exchange between synthetic tokens
+   * @param self Data type the library is attached tfo
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param executeExchangeParams Params for execution of exchange (see ExecuteExchangeParams struct)
+   */
+  function executeExchange(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ExecuteExchangeParams memory executeExchangeParams
+  ) internal {
+    // Sending amount must be different from 0
+    require(
+      executeExchangeParams.numTokens.isGreaterThan(0),
+      'Sending amount is equal to 0'
+    );
+
+    FixedPoint.Unsigned memory collateralRedeemed =
+      lpPosition.updateLpPositionInRedeem(executeExchangeParams.numTokens);
+
+    // Check that collateral redemeed is enough for cover the value of synthetic tokens
+    require(
+      collateralRedeemed.isGreaterThanOrEqual(
+        executeExchangeParams.totCollateralAmount
+      ),
+      'Position undercapitalized'
+    );
+
+    // Update fees status
+    feeStatus.updateFees(self.fee, executeExchangeParams.feeAmount);
+
+    IMintableBurnableERC20 synthToken = self.syntheticToken;
+
+    // Transfer synthetic token from the user to the pool
+    synthToken.safeTransferFrom(
+      msg.sender,
+      address(this),
+      executeExchangeParams.numTokens.rawValue
+    );
+
+    // Burn synthetic asset
+    synthToken.burn(executeExchangeParams.numTokens.rawValue);
+
+    ISynthereumAutonomousPoolGeneral destinationPool =
+      executeExchangeParams.destPool;
+
+    self.checkPool(destinationPool);
+
+    // Transfer collateral amount (without overcollateralization) to the destination pool
+    self.collateralToken.safeTransfer(
+      address(destinationPool),
+      executeExchangeParams.collateralAmount.rawValue
+    );
+
+    // Mint the destination tokens with the withdrawn collateral
+    destinationPool.exchangeMint(
+      executeExchangeParams.collateralAmount.rawValue,
+      executeExchangeParams.destNumTokens.rawValue,
+      executeExchangeParams.recipient
+    );
+
+    emit Exchange(
+      msg.sender,
+      address(this),
+      address(destinationPool),
+      executeExchangeParams.numTokens.rawValue,
+      executeExchangeParams.destNumTokens.rawValue,
+      executeExchangeParams.feeAmount.rawValue,
+      executeExchangeParams.recipient
+    );
+  }
+
+  /**
    * @notice Update LP's collateralization status after a mint
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param overCollateralization Overcollateralization rate
@@ -506,6 +729,37 @@ library SynthereumAutonomousPoolLib {
     require(
       self.fee.feePercentage.rawValue <= feePercentage,
       'User fee percentage less than actual one'
+    );
+  }
+
+  /**
+   * @notice Check if sender or receiver pool is a correct registered pool
+   * @param self Data type the library is attached to
+   * @param poolToCheck Pool that should be compared with this pool
+   */
+  function checkPool(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolGeneral poolToCheck
+  ) internal view {
+    IERC20 collateralToken = self.collateralToken;
+    require(
+      collateralToken == poolToCheck.collateralToken(),
+      'Collateral tokens do not match'
+    );
+    ISynthereumFinder finder = self.finder;
+    require(finder == poolToCheck.synthereumFinder(), 'Finders do not match');
+    ISynthereumRegistry poolRegister =
+      ISynthereumRegistry(
+        finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
+      );
+    require(
+      poolRegister.isDeployed(
+        poolToCheck.syntheticTokenSymbol(),
+        collateralToken,
+        poolToCheck.version(),
+        address(poolToCheck)
+      ),
+      'Destination pool not registred'
     );
   }
 

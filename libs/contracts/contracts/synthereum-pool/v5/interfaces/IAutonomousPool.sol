@@ -78,4 +78,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function redeem(RedeemParams memory redeemParams)
     external
     returns (uint256 collateralRedeemed, uint256 feePaid);
+
+  /**
+   * @notice Exchange a fixed amount of synthetic token of this pool, with an amount of synthetic tokens of an another pool
+   * @notice This calculate the price using on chain price feed
+   * @notice User must approve synthetic token transfer for the redeem request to succeed
+   * @param exchangeParams Input parameters for exchanging (see ExchangeParams struct)
+   * @return destNumTokensMinted Amount of collateral redeeem by user
+   * @return feePaid Amount of collateral paid by user as fee
+   */
+  function exchange(ExchangeParams memory exchangeParams)
+    external
+    returns (uint256 destNumTokensMinted, uint256 feePaid);
 }
