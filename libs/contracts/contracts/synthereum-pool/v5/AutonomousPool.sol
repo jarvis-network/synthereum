@@ -87,6 +87,24 @@ contract SynthereumAutonomousPool is
 
   event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
 
+  event WithdrawLiquidity(
+    address indexed lp,
+    uint256 liquidityWithdrawn,
+    uint256 remainingLiquidity
+  );
+
+  //----------------------------------------
+  // Modifiers
+  //----------------------------------------
+
+  modifier onlyLiquidityProvider() {
+    require(
+      hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender),
+      'Sender must be the liquidity provider'
+    );
+    _;
+  }
+
   //----------------------------------------
   // Constructor
   //----------------------------------------
@@ -211,6 +229,26 @@ contract SynthereumAutonomousPool is
       FixedPoint.Unsigned(collateralAmount),
       FixedPoint.Unsigned(numTokens),
       recipient
+    );
+  }
+
+  /**
+   * @notice Withdraw unused deposited collateral by the LP
+   * @notice Only a sender with LP role can call this function
+   * @param collateralAmount Collateral to be withdrawn
+   * @return remainingLiquidity Remaining unused collateral in the pool
+   */
+  function withdrawLiquidity(uint256 collateralAmount)
+    external
+    override
+    onlyLiquidityProvider
+    nonReentrant
+    returns (uint256 remainingLiquidity)
+  {
+    remainingLiquidity = poolStorage.withdrawLiquidity(
+      lpPosition,
+      feeStatus,
+      FixedPoint.Unsigned(collateralAmount)
     );
   }
 

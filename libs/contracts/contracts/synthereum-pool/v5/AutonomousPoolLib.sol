@@ -120,6 +120,12 @@ library SynthereumAutonomousPoolLib {
 
   event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
 
+  event WithdrawLiquidity(
+    address indexed lp,
+    uint256 liquidityWithdrawn,
+    uint256 remainingLiquidity
+  );
+
   //----------------------------------------
   // External function
   //----------------------------------------
@@ -348,10 +354,10 @@ library SynthereumAutonomousPoolLib {
 
     // Collateral available
     FixedPoint.Unsigned memory unusedCollateral =
-      self.collateralToken.balanceOf(address(this)).sub(
-        lpPosition.totalCollateralAmount.add(feeStatus.totalFeeAmount).add(
-          collateralAmount
-        )
+      self.calculateUnusedCollateral(
+        lpPosition.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        collateralAmount
       );
 
     // Update LP's collateralization status
@@ -370,6 +376,39 @@ library SynthereumAutonomousPoolLib {
 
     // Mint synthetic asset and transfer to the recipient
     self.syntheticToken.mint(recipient, numTokens.rawValue);
+  }
+
+  /**
+   * @notice Withdraw unused deposited collateral by the LP
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param collateralAmount Collateral to be withdrawn
+   * @return remainingLiquidity Remaining unused collateral in the pool
+   */
+  function withdrawLiquidity(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    FixedPoint.Unsigned memory collateralAmount
+  ) external returns (uint256 remainingLiquidity) {
+    // Collateral available
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.calculateUnusedCollateral(
+        lpPosition.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      );
+
+    // Check that available collateral is bigger than collateral to be withdrawn and returns the difference
+    remainingLiquidity = (unusedCollateral.sub(collateralAmount)).rawValue;
+
+    // Transfer amount to the Lp
+    uint256 _collateralAmount = collateralAmount.rawValue;
+
+    self.collateralToken.safeTransfer(msg.sender, _collateralAmount);
+
+    emit WithdrawLiquidity(msg.sender, _collateralAmount, remainingLiquidity);
   }
 
   /**
@@ -440,8 +479,10 @@ library SynthereumAutonomousPoolLib {
 
     // Collateral available
     FixedPoint.Unsigned memory unusedCollateral =
-      self.collateralToken.balanceOf(address(this)).sub(
-        lpPosition.totalCollateralAmount.add(feeStatus.totalFeeAmount)
+      self.calculateUnusedCollateral(
+        lpPosition.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
       );
 
     // Update LP's collateralization status
@@ -760,6 +801,26 @@ library SynthereumAutonomousPoolLib {
         address(poolToCheck)
       ),
       'Destination pool not registred'
+    );
+  }
+
+  /**
+   * @notice Calculate the unused collateral of this pool
+   * @param self Data type the library is attached to
+   * @param totalCollateral Total collateral used
+   * @param totalFees Total fees gained to be whitdrawn
+   * @param collateralReceived Collateral sent to the pool by a user or contract to be used for collateralization
+   * @param unusedCollateral Unused collateral of the pool
+   */
+  function calculateUnusedCollateral(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned storage totalCollateral,
+    FixedPoint.Unsigned storage totalFees,
+    FixedPoint.Unsigned memory collateralReceived
+  ) internal view returns (FixedPoint.Unsigned memory unusedCollateral) {
+    // Collateral available
+    unusedCollateral = self.collateralToken.balanceOf(address(this)).sub(
+      totalCollateral.add(totalFees).add(collateralReceived)
     );
   }
 
