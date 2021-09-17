@@ -2,16 +2,27 @@
 pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {ISynthereumPoolOnChainPriceFeed} from './IPoolOnChainPriceFeed.sol';
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+  IMintableBurnableERC20
+} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
-interface ISynthereumPoolOnChainPriceFeedStorage {
+interface ISynthereumAutonomousPoolStorage {
+  // Describe fee structure
+  struct Fee {
+    // Fees charged when a user mints, redeem and exchanges tokens
+    FixedPoint.Unsigned feePercentage;
+    // Recipient receiving fees
+    address[] feeRecipients;
+    // Proportion for each recipient
+    uint32[] feeProportions;
+    // Used with individual proportions to scale values
+    uint256 totalFeeProportions;
+  }
+
   struct Storage {
     // Synthereum finder
     ISynthereumFinder finder;
@@ -20,16 +31,33 @@ interface ISynthereumPoolOnChainPriceFeedStorage {
     // Collateral token
     IERC20 collateralToken;
     // Synthetic token
-    IERC20 syntheticToken;
-    // Derivatives supported
-    EnumerableSet.AddressSet derivatives;
-    // Starting collateralization ratio
-    FixedPoint.Unsigned startingCollateralization;
+    IMintableBurnableERC20 syntheticToken;
+    // Over-collateralization ratio
+    FixedPoint.Unsigned overCollateralization;
     // Fees
-    ISynthereumPoolOnChainPriceFeed.Fee fee;
-    // Used with individual proportions to scale values
-    uint256 totalFeeProportions;
+    Fee fee;
     // Price identifier
     bytes32 priceIdentifier;
+  }
+
+  struct LPPosition {
+    // Collateral used for collateralize tokens
+    FixedPoint.Unsigned totalCollateralAmount;
+    // Number of tokens collateralised
+    FixedPoint.Unsigned tokenCollateralised;
+  }
+
+  struct Liquidation {
+    // Percentage of overcollateralization to which a liquidation can triggered
+    FixedPoint.Unsigned collateralRequirement;
+    // Percentage of reward for correct liquidation by a liquidator
+    FixedPoint.Unsigned liquidationReward;
+  }
+
+  struct FeeStatus {
+    // Track the fee gained to be withdrawn by an address
+    mapping(address => FixedPoint.Unsigned) feeGained;
+    // Total amount of fees to be withdrawn
+    FixedPoint.Unsigned totalFeeAmount;
   }
 }
