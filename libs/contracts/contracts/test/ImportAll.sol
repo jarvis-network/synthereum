@@ -58,7 +58,8 @@ import '../derivative/self-minting/v1/SelfMintingPerpetutalMultiPartyCreator.sol
 import '../tokens/MintableBurnableSyntheticToken.sol';
 import '../tokens/MintableBurnableSyntheticTokenPermit.sol';
 import '../derivative/common/interfaces/IDerivativeDeployment.sol';
-import '../tokens/interfaces/MintableBurnableIERC20.sol';
+import '../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+import '../tokens/interfaces/IMintableBurnableERC20.sol';
 import '../derivative/common/interfaces/IDerivative.sol';
 import '../derivative/common/interfaces/IDerivativeMain.sol';
 import '../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';

@@ -9,7 +9,9 @@ import {
   SynthereumInterfaces,
   FactoryInterfaces
 } from '../../core/Constants.sol';
-import {MintableBurnableIERC20} from '../interfaces/MintableBurnableIERC20.sol';
+import {
+  BaseControlledMintableBurnableERC20
+} from '../interfaces/BaseControlledMintableBurnableERC20.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
@@ -81,13 +83,13 @@ abstract contract MintableBurnableTokenFactory is Lockable {
     string memory tokenName,
     string memory tokenSymbol,
     uint8 tokenDecimals
-  ) public virtual returns (MintableBurnableIERC20 newToken);
+  ) public virtual returns (BaseControlledMintableBurnableERC20 newToken);
 
   /**
    * @notice Set admin rol to the token
    * @param token Token on which the adim role is set
    */
-  function _setAdminRole(MintableBurnableIERC20 token) internal {
+  function _setAdminRole(BaseControlledMintableBurnableERC20 token) internal {
     token.addAdmin(msg.sender);
     token.renounceAdmin();
   }

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {MintableBurnableIERC20} from '../interfaces/MintableBurnableIERC20.sol';
+import {
+  BaseControlledMintableBurnableERC20
+} from '../interfaces/BaseControlledMintableBurnableERC20.sol';
 import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 import {
   MintableBurnableSyntheticTokenPermit
@@ -37,7 +39,7 @@ contract SynthereumSyntheticTokenPermitFactory is MintableBurnableTokenFactory {
     override
     onlyDerivativeFactory
     nonReentrant()
-    returns (MintableBurnableIERC20 newToken)
+    returns (BaseControlledMintableBurnableERC20 newToken)
   {
     MintableBurnableSyntheticTokenPermit mintableToken =
       new MintableBurnableSyntheticTokenPermit(
@@ -45,7 +47,7 @@ contract SynthereumSyntheticTokenPermitFactory is MintableBurnableTokenFactory {
         tokenSymbol,
         tokenDecimals
       );
-    newToken = MintableBurnableIERC20(address(mintableToken));
+    newToken = BaseControlledMintableBurnableERC20(address(mintableToken));
     _setAdminRole(newToken);
   }
 }

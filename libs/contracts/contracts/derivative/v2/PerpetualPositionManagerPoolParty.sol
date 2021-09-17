@@ -4,8 +4,8 @@ pragma solidity ^0.8.4;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
-  MintableBurnableIERC20
-} from '../../tokens/interfaces/MintableBurnableIERC20.sol';
+  BaseControlledMintableBurnableERC20
+} from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {
   IDerivativeDeployment
 } from '../common/interfaces/IDerivativeDeployment.sol';
@@ -56,7 +56,7 @@ contract PerpetualPositionManagerPoolParty is
 {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
-  using SafeERC20 for MintableBurnableIERC20;
+  using SafeERC20 for BaseControlledMintableBurnableERC20;
   using PerpetualPositionManagerPoolPartyLib for PositionData;
   using PerpetualPositionManagerPoolPartyLib for PositionManagerData;
   using FeePayerPartyLib for FixedPoint.Unsigned;
@@ -124,7 +124,7 @@ contract PerpetualPositionManagerPoolParty is
     // SynthereumFinder contract
     ISynthereumFinder synthereumFinder;
     // Synthetic token created by this contract.
-    MintableBurnableIERC20 tokenCurrency;
+    BaseControlledMintableBurnableERC20 tokenCurrency;
     // Unique identifier for DVM price feed ticker.
     bytes32 priceIdentifier;
     // Time that has to elapse for a withdrawal request to be considered passed, if no liquidations occur.
@@ -269,7 +269,7 @@ contract PerpetualPositionManagerPoolParty is
       .synthereumFinder;
     positionManagerData.withdrawalLiveness = _positionManagerData
       .withdrawalLiveness;
-    positionManagerData.tokenCurrency = MintableBurnableIERC20(
+    positionManagerData.tokenCurrency = BaseControlledMintableBurnableERC20(
       _positionManagerData.tokenAddress
     );
     positionManagerData.minSponsorTokens = _positionManagerData

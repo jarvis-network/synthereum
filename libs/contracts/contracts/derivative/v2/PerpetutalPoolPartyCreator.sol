@@ -3,8 +3,8 @@ pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
-  MintableBurnableIERC20
-} from '../../tokens/interfaces/MintableBurnableIERC20.sol';
+  BaseControlledMintableBurnableERC20
+} from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {
   IMintableBurnableTokenFactory
 } from '../../tokens/factories/interfaces/IMintableBurnableTokenFactory.sol';
@@ -116,7 +116,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
             SynthereumInterfaces.TokenFactory
           )
         );
-      MintableBurnableIERC20 tokenCurrency =
+      BaseControlledMintableBurnableERC20 tokenCurrency =
         tokenFactory.createToken(
           params.syntheticName,
           params.syntheticSymbol,
@@ -133,8 +133,8 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
       );
       tokenCurrency.renounceAdmin();
     } else {
-      MintableBurnableIERC20 tokenCurrency =
-        MintableBurnableIERC20(params.syntheticToken);
+      BaseControlledMintableBurnableERC20 tokenCurrency =
+        BaseControlledMintableBurnableERC20(params.syntheticToken);
       require(
         keccak256(abi.encodePacked(tokenCurrency.name())) ==
           keccak256(abi.encodePacked(params.syntheticName)),
@@ -168,7 +168,7 @@ contract PerpetualPoolPartyCreator is ContractCreator, Testable, Lockable {
   // Converts createPerpetual params to Perpetual constructor params.
   function _convertParams(
     Params memory params,
-    MintableBurnableIERC20 newTokenCurrency
+    BaseControlledMintableBurnableERC20 newTokenCurrency
   )
     internal
     view
