@@ -90,4 +90,14 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function exchange(ExchangeParams memory exchangeParams)
     external
     returns (uint256 destNumTokensMinted, uint256 feePaid);
+
+  /**
+   * @notice Withdraw unused deposited collateral by the LP
+   * @notice Only a sender with LP role can call this function
+   * @param collateralAmount Collateral to be withdrawn
+   * @return remainingLiquidity Remaining unused collateral in the pool
+   */
+  function withdrawLiquidity(uint256 collateralAmount)
+    external
+    returns (uint256 remainingLiquidity);
 }
