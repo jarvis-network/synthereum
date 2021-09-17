@@ -2,23 +2,15 @@
 pragma solidity ^0.8.4;
 
 import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import {IMintableBurnableERC20} from './IMintableBurnableERC20.sol';
 
 /**
  * @title ERC20 interface that includes burn mint and roles methods.
  */
-abstract contract MintableBurnableIERC20 is ERC20 {
-  /**
-   * @notice Burns a specific amount of the caller's tokens.
-   * @dev This method should be permissioned to only allow designated parties to burn tokens.
-   */
-  function burn(uint256 value) external virtual;
-
-  /**
-   * @notice Mints tokens and adds them to the balance of the `to` address.
-   * @dev This method should be permissioned to only allow designated parties to mint tokens.
-   */
-  function mint(address to, uint256 value) external virtual returns (bool);
-
+abstract contract BaseControlledMintableBurnableERC20 is
+  ERC20,
+  IMintableBurnableERC20
+{
   /**
    * @notice Add Minter role to an account
    * @param account Address to which Minter role will be added

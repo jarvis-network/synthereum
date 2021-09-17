@@ -2,8 +2,8 @@
 pragma solidity ^0.8.4;
 
 import {
-  MintableBurnableIERC20
-} from '../../../tokens/interfaces/MintableBurnableIERC20.sol';
+  BaseControlledMintableBurnableERC20
+} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISelfMintingController
@@ -127,8 +127,8 @@ contract SelfMintingPerpetutalMultiPartyCreator is
     address derivative;
     // If the collateral token does not have a `decimals()` method,
     // then a default precision of 18 will be applied to the newly created synthetic token.
-    MintableBurnableIERC20 tokenCurrency =
-      MintableBurnableIERC20(params.syntheticToken);
+    BaseControlledMintableBurnableERC20 tokenCurrency =
+      BaseControlledMintableBurnableERC20(params.syntheticToken);
     require(
       keccak256(abi.encodePacked(tokenCurrency.name())) ==
         keccak256(abi.encodePacked(params.syntheticName)),

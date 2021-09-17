@@ -6,8 +6,8 @@ import {
   IERC20Standard
 } from '@uma/core/contracts/common/interfaces/IERC20Standard.sol';
 import {
-  MintableBurnableIERC20
-} from '../../../tokens/interfaces/MintableBurnableIERC20.sol';
+  BaseControlledMintableBurnableERC20
+} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {
   ISelfMintingController
 } from '../common/interfaces/ISelfMintingController.sol';
@@ -35,7 +35,7 @@ library SelfMintingPerpetualPositionManagerMultiPartyLib {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
-  using SafeERC20 for MintableBurnableIERC20;
+  using SafeERC20 for BaseControlledMintableBurnableERC20;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionData;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData;
   using SelfMintingPerpetualPositionManagerMultiPartyLib for FeePayerParty.FeePayerData;

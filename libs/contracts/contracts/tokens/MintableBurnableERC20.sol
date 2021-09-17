@@ -5,14 +5,16 @@ import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {MintableBurnableIERC20} from './interfaces/MintableBurnableIERC20.sol';
+import {
+  BaseControlledMintableBurnableERC20
+} from './interfaces/BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title ERC20 token contract
  */
 contract MintableBurnableERC20 is
   ERC20,
-  MintableBurnableIERC20,
+  BaseControlledMintableBurnableERC20,
   AccessControlEnumerable
 {
   bytes32 public constant MINTER_ROLE = keccak256('Minter');

@@ -3,8 +3,8 @@ pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  MintableBurnableIERC20
-} from '../../tokens/interfaces/MintableBurnableIERC20.sol';
+  BaseControlledMintableBurnableERC20
+} from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {
   IERC20Standard
 } from '@uma/core/contracts/common/interfaces/IERC20Standard.sol';
@@ -31,7 +31,7 @@ library PerpetualPositionManagerPoolPartyLib {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
-  using SafeERC20 for MintableBurnableIERC20;
+  using SafeERC20 for BaseControlledMintableBurnableERC20;
   using PerpetualPositionManagerPoolPartyLib for PerpetualPositionManagerPoolParty.PositionData;
   using PerpetualPositionManagerPoolPartyLib for PerpetualPositionManagerPoolParty.PositionManagerData;
   using PerpetualPositionManagerPoolPartyLib for FeePayerParty.FeePayerData;

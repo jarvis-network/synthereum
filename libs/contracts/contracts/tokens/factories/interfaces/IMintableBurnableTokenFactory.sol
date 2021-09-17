@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 import {
-  MintableBurnableIERC20
-} from '../../interfaces/MintableBurnableIERC20.sol';
+  BaseControlledMintableBurnableERC20
+} from '../../interfaces/BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Interface for interacting with the MintableBurnableTokenFactory contract
@@ -17,5 +17,5 @@ interface IMintableBurnableTokenFactory {
     string memory tokenName,
     string memory tokenSymbol,
     uint8 tokenDecimals
-  ) external returns (MintableBurnableIERC20 newToken);
+  ) external returns (BaseControlledMintableBurnableERC20 newToken);
 }
