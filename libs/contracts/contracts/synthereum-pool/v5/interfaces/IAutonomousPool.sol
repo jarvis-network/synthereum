@@ -100,4 +100,10 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function withdrawLiquidity(uint256 collateralAmount)
     external
     returns (uint256 remainingLiquidity);
+
+  /**
+   * @notice Withdraw fees gained by the sender
+   * @return feeClaimed Amount of fee claimed
+   */
+  function claimFee() external returns (uint256 feeClaimed);
 }
