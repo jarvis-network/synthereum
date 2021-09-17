@@ -14,27 +14,16 @@ import {
 contract AtomicSwapProxy {
   IAtomicSwapV2 public atomicSwapIface;
 
-  struct ImplementationInfo {
-    address routerAddress;
-    address synthereumFinder;
-    address nativeCryptoAddress; // ie weth address
-  }
-
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
   // that means only one implementation for each specific dex can exist
   // on UI side, by fixing the identifiers string no fix needs to be done in case on implementations address change
   mapping(bytes32 => address) public idToAddress;
 
-  // implementationAddress => ImplementationInfo
-  mapping(address => ImplementationInfo) public implementationInfo;
+  mapping(address => bytes) public dexImplementationInfo;
 
   address admin;
 
-  event RegisterImplementation(
-    string id,
-    address implementation,
-    ImplementationInfo info
-  );
+  event RegisterImplementation(string id, address implementation, bytes info);
   event RemovedImplementation(string id);
   event Swap(uint256 outputTokens);
 
@@ -53,10 +42,10 @@ contract AtomicSwapProxy {
   function registerImplementation(
     string calldata identifier,
     address implementation,
-    ImplementationInfo memory info
+    bytes memory info
   ) external onlyAdmin() {
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
-    implementationInfo[implementation] = info;
+    dexImplementationInfo[implementation] = info;
     emit RegisterImplementation(identifier, implementation, info);
   }
 
@@ -65,7 +54,7 @@ contract AtomicSwapProxy {
     onlyAdmin()
   {
     bytes32 bytesId = keccak256(abi.encode(identifier));
-    delete implementationInfo[idToAddress[bytesId]];
+    delete dexImplementationInfo[idToAddress[bytesId]];
     delete idToAddress[bytesId];
     emit RemovedImplementation(identifier);
   }
@@ -94,13 +83,13 @@ contract AtomicSwapProxy {
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint((address,address,address),bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint(bytes,bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address))';
 
     (bool success, bytes memory result) =
       implementation.delegatecall(
         abi.encodeWithSignature(
           functionSig,
-          implementationInfo[implementation],
+          dexImplementationInfo[implementation],
           isExactInput,
           exactAmount,
           minOutOrMaxIn,
@@ -130,13 +119,13 @@ contract AtomicSwapProxy {
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
     string memory functionSig =
-      'redeemCollateralAndSwap((address,address,address),bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
+      'redeemCollateralAndSwap(bytes,bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
 
     (bool success, bytes memory result) =
       implementation.delegatecall(
         abi.encodeWithSignature(
           functionSig,
-          implementationInfo[implementation],
+          dexImplementationInfo[implementation],
           isExactInput,
           exactAmount,
           minOutOrMaxIn,

@@ -26,16 +26,6 @@ contract BaseAtomicSwap {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
-  /// @notice parameters saved in proxy useful for a specific implementation
-  /// @param routerAddress address of the related swap router
-  /// @param synthereumFinder synthereum finder address
-  /// @param nativeCryptoAddress address of the native wrapped crypto (ie WETH)
-  struct ImplementationInfo {
-    address routerAddress;
-    address synthereumFinder;
-    address nativeCryptoAddress;
-  }
-
   constructor() {}
 
   function checkSynthereumPool(

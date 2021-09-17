@@ -14,35 +14,43 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
+  struct ImplementationInfo {
+    address routerAddress;
+    address synthereumFinder;
+  }
+
   constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
 
   /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function swapToCollateralAndMint(
-    ImplementationInfo memory info,
+    bytes calldata info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
+    // decode implementation info
+    ImplementationInfo memory implementationInfo =
+      decodeImplementationInfo(info);
+
     // instantiate router
-    IUniswapV3Router router = IUniswapV3Router(info.routerAddress);
+    IUniswapV3Router router =
+      IUniswapV3Router(implementationInfo.routerAddress);
 
     // unpack the extraParams
     (uint24[] memory fees, address[] memory tokenSwapPath) =
       decodeExtraParams(extraParams);
 
     require(
-      address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
-        tokenSwapPath[tokenSwapPath.length - 1],
+      address(
+        checkSynthereumPool(implementationInfo.synthereumFinder, synthereumPool)
+      ) == tokenSwapPath[tokenSwapPath.length - 1],
       'Wrong collateral instance'
     );
-
-    // unpack the extraParams (fees) and encode the paths
-    bytes memory path = encodeAddresses(isExactInput, tokenSwapPath, fees);
 
     if (isExactInput) {
       if (msg.value > 0) {
@@ -59,7 +67,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
         //approve router to swap tokens
         IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
-          info.routerAddress,
+          implementationInfo.routerAddress,
           exactAmount
         );
       }
@@ -67,7 +75,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // swap to collateral token into this wallet
       ISwapRouter.ExactInputParams memory params =
         ISwapRouter.ExactInputParams({
-          path: path,
+          path: encodeAddresses(isExactInput, tokenSwapPath, fees),
           recipient: address(this),
           deadline: mintParams.expiration,
           amountIn: exactAmount,
@@ -102,7 +110,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
         // approve router to swap tokens
         IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
-          info.routerAddress,
+          implementationInfo.routerAddress,
           minOutOrMaxIn
         );
       }
@@ -110,7 +118,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // swap to collateral token into this wallet
       ISwapRouter.ExactOutputParams memory params =
         ISwapRouter.ExactOutputParams({
-          path: path,
+          path: encodeAddresses(isExactInput, tokenSwapPath, fees),
           recipient: address(this),
           deadline: mintParams.expiration,
           amountOut: exactAmount,
@@ -151,28 +159,34 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function redeemCollateralAndSwap(
-    ImplementationInfo memory info,
+    bytes calldata info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
-    // instantiate router
-    IUniswapV3Router router = IUniswapV3Router(info.routerAddress);
+    // decode implementation info
+    ImplementationInfo memory implementationInfo =
+      decodeImplementationInfo(info);
 
     // unpack the extraParams
     (uint24[] memory fees, address[] memory tokenSwapPath) =
       decodeExtraParams(extraParams);
 
-    require(
-      address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
-        tokenSwapPath[0],
-      'Wrong collateral instance'
-    );
     {
+      require(
+        address(
+          checkSynthereumPool(
+            implementationInfo.synthereumFinder,
+            synthereumPool
+          )
+        ) == tokenSwapPath[0],
+        'Wrong collateral instance'
+      );
+
       IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
       // redeem USDC with jSynth into this contract
@@ -185,58 +199,65 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         address(synthereumPool),
         redeemParams.numTokens
       );
+
+      redeemParams.recipient = address(this);
+      isExactInput
+        ? (exactAmount, ) = synthereumPool.redeem(redeemParams)
+        : (minOutOrMaxIn, ) = synthereumPool.redeem(redeemParams);
+
+      IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
+        implementationInfo.routerAddress,
+        isExactInput ? exactAmount : minOutOrMaxIn
+      );
     }
-
-    // redeem to collateral and approve swap
-    redeemParams.recipient = address(this);
-    (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
-
-    // uniswapv3 path+fees encoding
-    bytes memory path = encodeAddresses(isExactInput, tokenSwapPath, fees);
-
-    // approve router to swap tokens
-    IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
-      info.routerAddress,
-      collateralOut
-    );
 
     if (isExactInput) {
       // collateral as exact input
       // swap to erc20 token into recipient wallet
       ISwapRouter.ExactInputParams memory params =
         ISwapRouter.ExactInputParams(
-          path,
+          encodeAddresses(isExactInput, tokenSwapPath, fees),
           recipient,
           redeemParams.expiration,
-          collateralOut,
+          exactAmount,
           minOutOrMaxIn
         );
 
-      return router.exactInput(params);
+      return
+        IUniswapV3Router(implementationInfo.routerAddress).exactInput(params);
     } else {
       // collateralOut as maxInput
       // swap to erc20 token into recipient wallet
       ISwapRouter.ExactOutputParams memory params =
         ISwapRouter.ExactOutputParams(
-          path,
+          encodeAddresses(isExactInput, tokenSwapPath, fees),
           recipient,
           redeemParams.expiration,
           exactAmount,
-          collateralOut
+          minOutOrMaxIn
         );
 
-      uint256 inputTokensUsed = router.exactOutput(params);
+      uint256 inputTokensUsed =
+        IUniswapV3Router(implementationInfo.routerAddress).exactOutput(params);
 
       // refund leftover input (collateral) tokens
-      if (collateralOut > inputTokensUsed) {
+      if (minOutOrMaxIn > inputTokensUsed) {
         IERC20(tokenSwapPath[0]).safeTransfer(
           msg.sender,
-          collateralOut.sub(inputTokensUsed)
+          minOutOrMaxIn.sub(inputTokensUsed)
         );
       }
 
       return inputTokensUsed;
     }
+  }
+
+  function decodeImplementationInfo(bytes calldata info)
+    internal
+    pure
+    returns (ImplementationInfo memory)
+  {
+    return abi.decode(info, (ImplementationInfo));
   }
 
   function decodeExtraParams(bytes memory params)

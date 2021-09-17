@@ -27,7 +27,7 @@ const synthereum = require('../../data/test/synthereum.json');
 contract('UniswapV2', async accounts => {
   let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
   let WBTCAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
-  let networkId, UniV2Info;
+  let networkId, UniV2Info, encodedInfo;
 
   let AtomicSwapInstance, ProxyInstance;
 
@@ -99,6 +99,15 @@ contract('UniswapV2', async accounts => {
       synthereumFinder: '0xD451dE78E297b496ee8a4f06dCF991C17580B452',
       nativeCryptoAddress: tokens[networkId].WETH,
     };
+
+    encodedInfo = web3.eth.abi.encodeParameters(
+      ['address', 'address', 'address'],
+      [
+        UniV2Info.routerAddress,
+        UniV2Info.synthereumFinder,
+        UniV2Info.nativeCryptoAddress,
+      ],
+    );
 
     // init uniswap
     uniswapInstance = await initializeUniswap(networkId);
@@ -375,7 +384,7 @@ contract('UniswapV2', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
-          UniV2Info,
+          encodedInfo,
           true,
           tokenAmountIn,
           0,
@@ -419,7 +428,7 @@ contract('UniswapV2', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
-          UniV2Info,
+          encodedInfo,
           true,
           jEURInput.toString(),
           0,
@@ -457,7 +466,7 @@ contract('UniswapV2', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
-          UniV2Info,
+          encodedInfo,
           true,
           tokenAmountIn,
           0,
@@ -494,7 +503,7 @@ contract('UniswapV2', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
-          UniV2Info,
+          encodedInfo,
           true,
           jEURInput.toString(),
           0,

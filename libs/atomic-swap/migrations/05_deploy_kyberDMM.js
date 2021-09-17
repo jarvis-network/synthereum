@@ -33,11 +33,20 @@ module.exports = async function (deployer, network, accounts) {
     nativeCryptoAddress: tokens[networkId].WETH,
   };
 
+  let encodedInfo = web3.eth.abi.encodeParameters(
+    ['address', 'address', 'address'],
+    [
+      KyberInfo.routerAddress,
+      KyberInfo.synthereumFinder,
+      KyberInfo.nativeCryptoAddress,
+    ],
+  );
+
   await proxyInstance.methods
     .registerImplementation(
       'kyberDMM',
       kyberInstance.options.address,
-      KyberInfo,
+      encodedInfo,
     )
     .send({ from: admin });
 };

@@ -8,32 +8,48 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
+  struct ImplementationInfo {
+    address routerAddress;
+    address synthereumFinder;
+    address nativeCryptoAddress;
+  }
+
   constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
 
   function swapToCollateralAndMint(
-    ImplementationInfo memory info,
+    bytes calldata info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
+    // decode implementation info
+    ImplementationInfo memory implementationInfo =
+      decodeImplementationInfo(info);
+
     // instantiate router
-    IUniswapV2Router02 router = IUniswapV2Router02(info.routerAddress);
+    IUniswapV2Router02 router =
+      IUniswapV2Router02(implementationInfo.routerAddress);
 
     // unpack tokenSwapPath from extraParams
     address[] memory tokenSwapPath = decodeExtraParams(extraParams);
 
-    require(
-      address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
-        tokenSwapPath[tokenSwapPath.length - 1],
-      'Wrong collateral instance'
-    );
+    {
+      require(
+        address(
+          checkSynthereumPool(
+            implementationInfo.synthereumFinder,
+            synthereumPool
+          )
+        ) == tokenSwapPath[tokenSwapPath.length - 1],
+        'Wrong collateral instance'
+      );
+    }
 
-    uint256 numberOfSwaps = tokenSwapPath.length - 1;
     uint256 collateralOut;
     if (isExactInput) {
       if (msg.value > 0) {
@@ -43,7 +59,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           tokenSwapPath,
           address(this),
           mintParams.expiration
-        )[numberOfSwaps];
+        )[tokenSwapPath.length - 1];
       } else {
         //swapExactTokensForTokens into this wallet
 
@@ -53,7 +69,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           exactAmount
         );
         IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
-          info.routerAddress,
+          implementationInfo.routerAddress,
           exactAmount
         );
         collateralOut = router.swapExactTokensForTokens(
@@ -62,7 +78,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           tokenSwapPath,
           address(this),
           mintParams.expiration
-        )[numberOfSwaps];
+        )[tokenSwapPath.length - 1];
       }
     } else {
       if (msg.value > 0) {
@@ -76,7 +92,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
             mintParams.expiration
           );
 
-        collateralOut = amountsOut[numberOfSwaps];
+        collateralOut = amountsOut[tokenSwapPath.length - 1];
 
         // refund eventual eth leftover
         if (minOutOrMaxIn > amountsOut[0]) {
@@ -93,7 +109,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           minOutOrMaxIn
         );
         inputTokenInstance.safeIncreaseAllowance(
-          info.routerAddress,
+          implementationInfo.routerAddress,
           minOutOrMaxIn
         );
 
@@ -106,7 +122,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
             mintParams.expiration
           );
 
-        collateralOut = amountsOut[numberOfSwaps];
+        collateralOut = amountsOut[tokenSwapPath.length - 1];
 
         if (minOutOrMaxIn > amountsOut[0]) {
           inputTokenInstance.safeTransfer(
@@ -118,7 +134,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     }
 
     // mint jSynth
-    IERC20(tokenSwapPath[numberOfSwaps]).safeIncreaseAllowance(
+    IERC20(tokenSwapPath[tokenSwapPath.length - 1]).safeIncreaseAllowance(
       address(synthereumPool),
       collateralOut
     );
@@ -128,7 +144,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
   function redeemCollateralAndSwap(
-    ImplementationInfo memory info,
+    bytes calldata info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -137,16 +153,22 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
+    // decode implementation info
+    ImplementationInfo memory implementationInfo =
+      decodeImplementationInfo(info);
+
     // instantiate router
-    IUniswapV2Router02 router = IUniswapV2Router02(info.routerAddress);
+    IUniswapV2Router02 router =
+      IUniswapV2Router02(implementationInfo.routerAddress);
 
     // unpack tokenSwapPath from extraParams
     address[] memory tokenSwapPath = decodeExtraParams(extraParams);
 
     // check pool
     require(
-      address(checkSynthereumPool(info.synthereumFinder, synthereumPool)) ==
-        tokenSwapPath[0],
+      address(
+        checkSynthereumPool(implementationInfo.synthereumFinder, synthereumPool)
+      ) == tokenSwapPath[0],
       'Wrong collateral instance'
     );
     address outputTokenAddress = tokenSwapPath[tokenSwapPath.length - 1];
@@ -170,14 +192,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
     IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
-      info.routerAddress,
+      implementationInfo.routerAddress,
       collateralOut
     );
     uint256[] memory amountsOut;
 
     if (isExactInput) {
       // collateralOut as exactInput
-      outputTokenAddress == info.nativeCryptoAddress
+      outputTokenAddress == implementationInfo.nativeCryptoAddress
         ? amountsOut = router.swapExactTokensForETH(
           collateralOut,
           minOutOrMaxIn,
@@ -194,7 +216,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       );
     } else {
       // collateralOut as maxInput
-      outputTokenAddress == info.nativeCryptoAddress
+      outputTokenAddress == implementationInfo.nativeCryptoAddress
         ? amountsOut = router.swapTokensForExactETH(
           exactAmount,
           collateralOut,
@@ -221,6 +243,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
     // return output token amount
     return amountsOut[tokenSwapPath.length - 1];
+  }
+
+  function decodeImplementationInfo(bytes calldata info)
+    internal
+    pure
+    returns (ImplementationInfo memory)
+  {
+    return abi.decode(info, (ImplementationInfo));
   }
 
   function decodeExtraParams(bytes memory params)

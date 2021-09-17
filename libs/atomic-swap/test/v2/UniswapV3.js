@@ -25,7 +25,7 @@ const synthereum = require('../../data/test/synthereum.json');
 contract('AtomicSwapv2 - UniswapV3', async accounts => {
   let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
   let WBTCAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
-  let networkId, UniV3Info;
+  let networkId, UniV3Info, encodedInfo;
 
   let AtomicSwapInstance, ProxyInstance;
 
@@ -102,6 +102,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       synthereumFinder: '0xD451dE78E297b496ee8a4f06dCF991C17580B452',
       nativeCryptoAddress: tokens[networkId].WETH,
     };
+
+    encodedInfo = web3.eth.abi.encodeParameters(
+      ['address', 'address'],
+      [UniV3Info.routerAddress, UniV3Info.synthereumFinder],
+    );
 
     // init uniswap
     uniswapInstance = await initializeUniswap(networkId);
@@ -383,7 +388,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
-          UniV3Info,
+          encodedInfo,
           true,
           tokenAmountIn,
           0,
@@ -428,7 +433,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
-          UniV3Info,
+          encodedInfo,
           true,
           jEURInput.toString(),
           0,
@@ -467,7 +472,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
-          UniV3Info,
+          encodedInfo,
           true,
           tokenAmountIn,
           0,
@@ -505,7 +510,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
-          UniV3Info,
+          encodedInfo,
           true,
           jEURInput.toString(),
           0,

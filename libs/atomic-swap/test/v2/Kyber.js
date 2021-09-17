@@ -25,7 +25,7 @@ const synthereum = require('../../data/test/synthereum.json');
 contract('KyberDMM', async accounts => {
   let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, kyberInstance;
   let WBTCAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
-  let networkId, KyberInfo, kyberPools;
+  let networkId, KyberInfo, kyberPools, encodedInfo;
 
   let AtomicSwapInstance, ProxyInstance;
 
@@ -58,6 +58,15 @@ contract('KyberDMM', async accounts => {
       synthereumFinder: '0xD451dE78E297b496ee8a4f06dCF991C17580B452',
       nativeCryptoAddress: tokens[networkId].WETH,
     };
+    encodedInfo = web3.eth.abi.encodeParameters(
+      ['address', 'address', 'address'],
+      [
+        KyberInfo.routerAddress,
+        KyberInfo.synthereumFinder,
+        KyberInfo.nativeCryptoAddress,
+      ],
+    );
+
     kyberInstance = await IKyberRouter.at(kyber[networkId].DMMRouter);
   };
 
@@ -378,7 +387,7 @@ contract('KyberDMM', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
-          KyberInfo,
+          encodedInfo,
           true,
           tokenAmountIn,
           0,
@@ -423,7 +432,7 @@ contract('KyberDMM', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
-          KyberInfo,
+          encodedInfo,
           true,
           jEURInput.toString(),
           0,
@@ -462,7 +471,7 @@ contract('KyberDMM', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
-          KyberInfo,
+          encodedInfo,
           true,
           tokenAmountIn,
           0,
@@ -500,7 +509,7 @@ contract('KyberDMM', async accounts => {
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
-          KyberInfo,
+          encodedInfo,
           true,
           jEURInput.toString(),
           0,

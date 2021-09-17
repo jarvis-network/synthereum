@@ -10,22 +10,33 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
+  struct ImplementationInfo {
+    address routerAddress;
+    address synthereumFinder;
+    address nativeCryptoAddress;
+  }
+
   constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
 
   /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
   function swapToCollateralAndMint(
-    ImplementationInfo memory info,
+    bytes calldata info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut) {
+    // decode implementation info
+    ImplementationInfo memory implementationInfo =
+      decodeImplementationInfo(info);
+
     // insantiate router
-    IDMMExchangeRouter kyberRouter = IDMMExchangeRouter(info.routerAddress);
+    IDMMExchangeRouter kyberRouter =
+      IDMMExchangeRouter(implementationInfo.routerAddress);
 
     // unpack the extraParams
     (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
@@ -36,12 +47,16 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       poolsPath.length == tokenSwapPath.length - 1,
       'Pools and tokens length mismatch'
     );
-    IERC20 collateralInstance =
-      checkSynthereumPool(info.synthereumFinder, synthereumPool);
-    require(
-      collateralInstance == tokenSwapPath[tokenSwapPath.length - 1],
-      'Wrong collateral instance'
-    );
+
+    {
+      require(
+        checkSynthereumPool(
+          implementationInfo.synthereumFinder,
+          synthereumPool
+        ) == tokenSwapPath[tokenSwapPath.length - 1],
+        'Wrong collateral instance'
+      );
+    }
 
     uint256 collateralOut;
     // swap to collateral token (exact[input/output][ETH/ERC20])
@@ -64,7 +79,10 @@ contract KyberAtomicSwap is BaseAtomicSwap {
           exactAmount
         );
         //approve kyber router to swap
-        tokenSwapPath[0].safeIncreaseAllowance(info.routerAddress, exactAmount);
+        tokenSwapPath[0].safeIncreaseAllowance(
+          implementationInfo.routerAddress,
+          exactAmount
+        );
 
         // swap to collateral token into this wallet
         collateralOut = kyberRouter.swapExactTokensForTokens(
@@ -108,7 +126,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         );
         //approve kyber router to swap s
         tokenSwapPath[0].safeIncreaseAllowance(
-          info.routerAddress,
+          implementationInfo.routerAddress,
           minOutOrMaxIn
         );
 
@@ -135,7 +153,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     }
 
     // approve synthereum to pull collateral
-    collateralInstance.safeIncreaseAllowance(
+    tokenSwapPath[tokenSwapPath.length - 1].safeIncreaseAllowance(
       address(synthereumPool),
       collateralOut
     );
@@ -149,7 +167,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   // redeem jSynth into collateral and use that to swap into erc20/eth
   /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
   function redeemCollateralAndSwap(
-    ImplementationInfo memory info,
+    bytes calldata info,
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
@@ -158,8 +176,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
   ) external returns (uint256) {
+    // decode implementation info
+    ImplementationInfo memory implementationInfo =
+      decodeImplementationInfo(info);
+
     // insantiate router
-    IDMMExchangeRouter kyberRouter = IDMMExchangeRouter(info.routerAddress);
+    IDMMExchangeRouter kyberRouter =
+      IDMMExchangeRouter(implementationInfo.routerAddress);
 
     // unpack the extraParams
     (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
@@ -171,12 +194,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       'Pools and tokens length mismatch'
     );
     require(
-      checkSynthereumPool(info.synthereumFinder, synthereumPool) ==
-        tokenSwapPath[0],
+      checkSynthereumPool(
+        implementationInfo.synthereumFinder,
+        synthereumPool
+      ) == tokenSwapPath[0],
       'Wrong collateral instance'
     );
-    address outputTokenInstance =
-      address(tokenSwapPath[tokenSwapPath.length - 1]);
+
     {
       IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
@@ -196,12 +220,16 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
     // approve kyber proxy to swap tokens
-    tokenSwapPath[0].safeIncreaseAllowance(info.routerAddress, collateralOut);
+    tokenSwapPath[0].safeIncreaseAllowance(
+      implementationInfo.routerAddress,
+      collateralOut
+    );
 
     uint256[] memory amountsOut;
     if (isExactInput) {
       // collateralOut as exactInput
-      outputTokenInstance == info.nativeCryptoAddress
+      address(tokenSwapPath[tokenSwapPath.length - 1]) ==
+        implementationInfo.nativeCryptoAddress
         ? amountsOut = kyberRouter.swapExactTokensForETH(
           collateralOut,
           minOutOrMaxIn,
@@ -220,7 +248,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       );
     } else {
       // collateralOut as maxInput
-      outputTokenInstance == info.nativeCryptoAddress
+      address(tokenSwapPath[tokenSwapPath.length - 1]) ==
+        implementationInfo.nativeCryptoAddress
         ? amountsOut = kyberRouter.swapTokensForExactETH(
           exactAmount,
           collateralOut,
@@ -249,6 +278,14 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     // return output token amount
     return amountsOut[tokenSwapPath.length - 1];
+  }
+
+  function decodeImplementationInfo(bytes calldata info)
+    internal
+    pure
+    returns (ImplementationInfo memory)
+  {
+    return abi.decode(info, (ImplementationInfo));
   }
 
   // generic function that each AtomicSwap implementation can implement

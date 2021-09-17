@@ -33,7 +33,16 @@ module.exports = async function (deployer, network, accounts) {
     nativeCryptoAddress: tokens[networkId].WETH,
   };
 
+  let encodedInfo = web3.eth.abi.encodeParameters(
+    ['address', 'address', 'address'],
+    [
+      UniV2Info.routerAddress,
+      UniV2Info.synthereumFinder,
+      UniV2Info.nativeCryptoAddress,
+    ],
+  );
+
   let tx = await proxyInstance.methods
-    .registerImplementation('uniV2', uniV2Instance.options.address, UniV2Info)
+    .registerImplementation('uniV2', uniV2Instance.options.address, encodedInfo)
     .send({ from: admin });
 };

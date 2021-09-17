@@ -30,10 +30,14 @@ module.exports = async function (deployer, network, accounts) {
   let UniV3Info = {
     routerAddress: uniswapData[networkId].routerV3,
     synthereumFinder: synthereumFinderAddress,
-    nativeCryptoAddress: tokens[networkId].WETH,
   };
 
+  let encodedInfo = web3.eth.abi.encodeParameters(
+    ['address', 'address'],
+    [UniV3Info.routerAddress, UniV3Info.synthereumFinder],
+  );
+
   await proxyInstance.methods
-    .registerImplementation('uniV3', uniV3Instance.options.address, UniV3Info)
+    .registerImplementation('uniV3', uniV3Instance.options.address, encodedInfo)
     .send({ from: admin });
 };

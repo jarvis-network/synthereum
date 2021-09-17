@@ -17,6 +17,16 @@ contract('AtomicSwap Proxy', accounts => {
     synthereumFinder: accounts[2],
     nativeCryptoAddress: accounts[3],
   };
+
+  let encodedInfo = web3.eth.abi.encodeParameters(
+    ['address', 'address', 'address'],
+    [
+      implementationInfo.routerAddress,
+      implementationInfo.synthereumFinder,
+      implementationInfo.nativeCryptoAddress,
+    ],
+  );
+
   let implementationId1 = 'sushiSwap';
   let implementationAddr1 = accounts[4];
   let implementationAddr2 = accounts[5];
@@ -25,14 +35,15 @@ contract('AtomicSwap Proxy', accounts => {
     before(async () => {
       proxyInstance = await Proxy.new(admin);
     });
+
     it('Register a new implementation', async () => {
       let tx = await proxyInstance.registerImplementation(
         implementationId1,
         implementationAddr1,
-        implementationInfo,
+        encodedInfo,
         { from: admin },
       );
-      let actualInfo = await proxyInstance.implementationInfo.call(
+      let actualInfo = await proxyInstance.dexImplementationInfo.call(
         implementationAddr1,
       );
 
@@ -40,9 +51,9 @@ contract('AtomicSwap Proxy', accounts => {
         await proxyInstance.getImplementationAddress(implementationId1),
         implementationAddr1,
       );
-      assert.equal(actualInfo[0], implementationInfo.routerAddress);
-      assert.equal(actualInfo[1], implementationInfo.synthereumFinder);
-      assert.equal(actualInfo[2], implementationInfo.nativeCryptoAddress);
+      assert.equal(actualInfo, encodedInfo);
+      // assert.equal(actualInfo[1], implementationInfo.synthereumFinder);
+      // assert.equal(actualInfo[2], implementationInfo.nativeCryptoAddress);
 
       truffleAssert.eventEmitted(tx, 'RegisterImplementation', ev => {
         return (
@@ -54,10 +65,10 @@ contract('AtomicSwap Proxy', accounts => {
       let tx = await proxyInstance.registerImplementation(
         implementationId1,
         implementationAddr2,
-        implementationInfo,
+        encodedInfo,
         { from: admin },
       );
-      let actualInfo = await proxyInstance.implementationInfo.call(
+      let actualInfo = await proxyInstance.dexImplementationInfo.call(
         implementationAddr1,
       );
 
@@ -65,9 +76,7 @@ contract('AtomicSwap Proxy', accounts => {
         await proxyInstance.getImplementationAddress(implementationId1),
         implementationAddr2,
       );
-      assert.equal(actualInfo[0], implementationInfo.routerAddress);
-      assert.equal(actualInfo[1], implementationInfo.synthereumFinder);
-      assert.equal(actualInfo[2], implementationInfo.nativeCryptoAddress);
+      assert.equal(actualInfo, encodedInfo);
 
       truffleAssert.eventEmitted(tx, 'RegisterImplementation', ev => {
         return (
@@ -79,7 +88,7 @@ contract('AtomicSwap Proxy', accounts => {
       let tx = await proxyInstance.removeImplementation(implementationId1, {
         from: admin,
       });
-      let actualInfo = await proxyInstance.implementationInfo.call(
+      let actualInfo = await proxyInstance.dexImplementationInfo.call(
         implementationAddr2,
       );
 
@@ -87,9 +96,8 @@ contract('AtomicSwap Proxy', accounts => {
         await proxyInstance.getImplementationAddress(implementationId1),
         ZERO_ADDRESS,
       );
-      assert.equal(actualInfo[0], ZERO_ADDRESS);
-      assert.equal(actualInfo[1], ZERO_ADDRESS);
-      assert.equal(actualInfo[2], ZERO_ADDRESS);
+      assert.equal(actualInfo, null);
+
       truffleAssert.eventEmitted(tx, 'RemovedImplementation', ev => {
         return ev.id == implementationId1;
       });
@@ -99,7 +107,7 @@ contract('AtomicSwap Proxy', accounts => {
         proxyInstance.registerImplementation(
           implementationId1,
           implementationAddr1,
-          implementationInfo,
+          encodedInfo,
           { from: accounts[9] },
         ),
         'Only admin',
