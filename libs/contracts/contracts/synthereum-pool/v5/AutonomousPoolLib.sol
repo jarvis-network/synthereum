@@ -126,6 +126,12 @@ library SynthereumAutonomousPoolLib {
     uint256 remainingLiquidity
   );
 
+  event ClaimFee(
+    address indexed claimer,
+    uint256 feeAmount,
+    uint256 totalRemainingFees
+  );
+
   //----------------------------------------
   // External function
   //----------------------------------------
@@ -409,6 +415,38 @@ library SynthereumAutonomousPoolLib {
     self.collateralToken.safeTransfer(msg.sender, _collateralAmount);
 
     emit WithdrawLiquidity(msg.sender, _collateralAmount, remainingLiquidity);
+  }
+
+  /**
+   * @notice Withdraw fees gained by the sender
+   * @param self Data type the library is attached to
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @return feeClaimed Amount of fee claimed
+   */
+  function claimFee(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus
+  ) external returns (uint256 feeClaimed) {
+    // Fee to claim
+    FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msg.sender];
+
+    // Check that fee is available
+    require(_feeClaimed.isGreaterThanOrEqual(0), 'No fee to claim');
+
+    // Update fee status
+    delete feeStatus.feeGained[msg.sender];
+
+    FixedPoint.Unsigned memory _totalRemainingFees =
+      feeStatus.totalFeeAmount.sub(_feeClaimed);
+
+    feeStatus.totalFeeAmount = _totalRemainingFees;
+
+    // Transfer amount to the sender
+    feeClaimed = _feeClaimed.rawValue;
+
+    self.collateralToken.safeTransfer(msg.sender, _feeClaimed.rawValue);
+
+    emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
   }
 
   /**

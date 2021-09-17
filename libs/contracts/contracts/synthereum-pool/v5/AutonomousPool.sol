@@ -93,6 +93,12 @@ contract SynthereumAutonomousPool is
     uint256 remainingLiquidity
   );
 
+  event ClaimFee(
+    address indexed claimer,
+    uint256 feeAmount,
+    uint256 totalRemainingFees
+  );
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -250,6 +256,19 @@ contract SynthereumAutonomousPool is
       feeStatus,
       FixedPoint.Unsigned(collateralAmount)
     );
+  }
+
+  /**
+   * @notice Withdraw fees gained by the sender
+   * @return feeClaimed Amount of fee claimed
+   */
+  function claimFee()
+    external
+    override
+    nonReentrant
+    returns (uint256 feeClaimed)
+  {
+    feeClaimed = poolStorage.claimFee(feeStatus);
   }
 
   //----------------------------------------
