@@ -93,6 +93,12 @@ contract SynthereumAutonomousPool is
     uint256 remainingLiquidity
   );
 
+  event IncreaseCollateral(
+    address indexed lp,
+    uint256 collateralAdded,
+    uint256 newTotalCollateral
+  );
+
   event ClaimFee(
     address indexed claimer,
     uint256 feeAmount,
@@ -252,6 +258,26 @@ contract SynthereumAutonomousPool is
     returns (uint256 remainingLiquidity)
   {
     remainingLiquidity = poolStorage.withdrawLiquidity(
+      lpPosition,
+      feeStatus,
+      FixedPoint.Unsigned(collateralAmount)
+    );
+  }
+
+  /**
+   * @notice Increase collaterallization of Lp position
+   * @notice Only a sender with LP role can call this function
+   * @param collateralAmount Collateral to add
+   * @return newTotalCollateral New total collateral amount
+   */
+  function increaseCollateral(uint256 collateralAmount)
+    external
+    override
+    onlyLiquidityProvider
+    nonReentrant
+    returns (uint256 newTotalCollateral)
+  {
+    newTotalCollateral = poolStorage.increaseCollateral(
       lpPosition,
       feeStatus,
       FixedPoint.Unsigned(collateralAmount)
