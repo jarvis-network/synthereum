@@ -450,3 +450,74 @@ export const calculateRepayLiquidationPrice = (
     .mul(_positionTokens.sub(inputSynthetic).div(_positionCollateral.sub(fee)))
     .mul(_price);
 };
+/* -------------------------------------------------------------------------- */
+/*                                   DEPOSIT                                  */
+/* -------------------------------------------------------------------------- */
+/**
+ * (capDepositRatio * tokensOutstanding) - rawCollateral
+ */
+export const calculateMaxDeposit = (
+  positionCollateral: StringAmount,
+  positionTokens: StringAmount,
+  capDepositRatio: StringAmount,
+  collateralTokenDecimals: number,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _capDepositRatio = FPN.fromWei(
+    scaleTokenAmountToWei({
+      amount: wei(capDepositRatio!),
+      decimals: collateralTokenDecimals,
+    }),
+  );
+  return _capDepositRatio.mul(_positionTokens).sub(_positionCollateral);
+};
+/**
+ *((rawCollateral + UserInputOfCollateral)  / tokensOutstanding) * UMA expressed in jSynthToken price * 100
+ */
+export const calculateDepositNewCollateralizationRatio = (
+  positionCollateral: StringAmount,
+  positionTokens: StringAmount,
+  inputCollateral: FPN,
+  price: StringAmount,
+  collateralPrice: StringAmount,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _price = FPN.fromWei(price);
+  const _collateralPrice = FPN.fromWei(collateralPrice);
+
+  return _positionCollateral
+    .add(inputCollateral)
+    .div(_positionTokens)
+    .mul(_collateralPrice.div(_price))
+    .mul(new FPN(100));
+};
+/**
+ * LiquidationPrice = ((Collateral Requirement * (tokensOutstanding / (rawCollateral + UserInputOfCollateral))) * jSynth/USD)
+ */
+export const calculateDepositLiquidationPrice = (
+  collateralRequirement: StringAmount,
+  positionTokens: StringAmount,
+  inputCollateral: FPN,
+  positionCollateral: StringAmount,
+  price: StringAmount,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _price = FPN.fromWei(price);
+  const _collateralRequirement = FPN.fromWei(collateralRequirement);
+
+  return _collateralRequirement
+    .mul(_positionTokens.div(_positionCollateral.add(inputCollateral)))
+    .mul(_price);
+};

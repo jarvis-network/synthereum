@@ -8,99 +8,148 @@ import {
   ExchangeBox,
   Form,
   handleKeyPress,
-  Link,
   Max,
   SubmitButton,
   SubmitContainer,
-  Value,
 } from '@/components/markets/modal/common';
 import { selfMintingMarketAssets } from '@/data/markets';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
-import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
-import {
-  StringAmount,
-  wei,
-} from '@jarvis-network/core-utils/dist/base/big-number';
-import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
+import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import { useDispatch } from 'react-redux';
+import { useTheme } from '@jarvis-network/ui';
 
 import TransactionHolder from '../transaction/TransactionHolder';
-
-import { WithdrawHolder } from '../WithdrawHolder';
+import {
+  ActionProps,
+  ErrorMessageContainer,
+  subtitle,
+  title,
+} from '../common/shared';
 import { WithPlaceholder } from '../holders/WithPlaceholder';
+import { WithdrawHolder } from '../WithdrawHolder';
 
-const title = 'Lorem ipsum deposit';
-const subtitle = (
-  <>
-    You can find more information about our synthetic tokens{' '}
-    <Link href="/">here</Link>
-  </>
-);
-interface DepositProps {
-  assetKey: SupportedSelfMintingPairExact;
-  tabHandler: (input: number) => void;
-}
-export const Deposit: React.FC<DepositProps> = ({ assetKey, tabHandler }) => {
+import { ModalFooter } from '../ModalFooter';
+import { LoadingSection } from '../transaction/style';
+import { Loader } from '../common/Loader';
+import { ApprovalTransaction } from '../ApprovalTransaction';
+
+import { useBalance } from './useBalance';
+import { useMinMax } from './useMinMax';
+import { useCalculateUserCollateralizationRatioLiquiationpriceFee } from './ucr_lp_fee';
+
+export const Deposit: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
   const dispatch = useDispatch();
+  /* -------------------------------------------------------------------------- */
+  /*                            Local State Variables                           */
+  /* -------------------------------------------------------------------------- */
   const [showPreview, setShowPreview] = useState(false);
   const [collateralValue, setCollateralValue] = useState('');
   const [collateralError, setCollateralError] = useState('');
-  let assetInValue = '0.00';
-  const assetDetails = useReduxSelector(state => state.markets.list[assetKey])!;
+  const [inProgress, setInProgress] = useState<boolean>(false);
+  const [collateralRequiredError, setCollateralRequiredError] = useState('');
+  const [maxDeposit, setMaxDeposit] = useState(false);
+
+  const theme = useTheme();
+  /* -------------------------------- Variables ------------------------------- */
 
   const selectedAsset = selfMintingMarketAssets[assetKey];
-  const balance = FPN.fromWei(
-    assetDetails!.positionTokens!,
-    // '1000000000000000000000'
-  );
-  const assetInPrice = useReduxSelector(
-    state => state.prices[selectedAsset.assetIn.name],
-  );
-  const onMaxSelect = (input: string) => setCollateralValue(input);
 
-  const insufficientFunds = balance.lt(
-    new FPN(collateralValue === '' ? '0' : collateralValue),
-  )!;
-  if (assetInPrice && collateralValue !== '') {
-    assetInValue = formatUSDValue(assetInPrice, collateralValue);
-  }
+  /* -------------------------------------------------------------------------- */
+  /*                               Redux Selectors                              */
+  /* -------------------------------------------------------------------------- */
+  const metaMaskError = useReduxSelector(state => state.transaction.error);
+  const txValid = useReduxSelector(state => state.transaction.valid);
+  const assetDetails = useReduxSelector(state => state.markets.list[assetKey])!;
 
-  let max!: FPN;
+  /* -------------------------------------------------------------------------- */
+  /*                                     UI                                     */
+  /* -------------------------------------------------------------------------- */
 
-  if (assetDetails!.positionCollateral!.toString() !== '0') {
-    const ucr = FPN.fromWei(assetDetails!.positionCollateral!).div(
-      FPN.fromWei(assetDetails!.positionTokens!),
-    );
-    const capDepositRatio = scaleTokenAmountToWei({
-      amount: wei(assetDetails!.capDepositRatio!),
-      decimals: 6,
-    });
-    max = FPN.fromWei(capDepositRatio)
-      .sub(ucr)
-      .mul(FPN.fromWei(assetDetails!.positionTokens!));
-  }
+  /* ---------------------------- Component Updates --------------------------- */
 
   useEffect(() => {
+    if (metaMaskError?.message) {
+      setInProgress(false);
+    }
+  }, [metaMaskError]);
+
+  useEffect(() => {
+    if (txValid) {
+      setShowPreview(true);
+      dispatch({
+        type: 'approvalTransaction/reset',
+      });
+      dispatch({
+        type: 'transaction/reset',
+      });
+    }
+  }, [txValid]);
+  /* --------------------------------- Balance -------------------------------- */
+  const { balance } = useBalance(collateralValue, assetKey);
+  const {
+    fee,
+    liquidationPrice,
+    newRatio,
+  } = useCalculateUserCollateralizationRatioLiquiationpriceFee(
+    collateralValue,
+    assetDetails!,
+  );
+
+  const { maxCollateral, validInput, ...minMaxErrors } = useMinMax(
+    collateralValue,
+    assetDetails!,
+  );
+  /* -------------------------------------------------------------------------- */
+  /*                                  Handlers                                  */
+  /* -------------------------------------------------------------------------- */
+  const onMaxSelect = (input: string) => {
+    setCollateralValue(input);
+    setMaxDeposit(true);
+  };
+  const handleGoBack = () => {
+    dispatch({
+      type: 'transaction/reset',
+    });
+    setShowPreview(false);
+    setInProgress(false);
+  };
+
+  useEffect(() => {
+    if (validInput && maxCollateral.gt(new FPN(0))) {
+      setCollateralError('');
+    }
+    if (minMaxErrors.collateralError) {
+      setCollateralError(minMaxErrors.collateralError);
+    }
+  }, [minMaxErrors]);
+
+  useEffect(() => {
+    if (collateralValue === '') {
+      setCollateralError('');
+    }
     if (collateralValue !== '') {
-      if (FPN.toWei(collateralValue).gt(max)) {
-        setCollateralError(
-          `Cannot Repay more than ${max.format(2)} ${
-            selectedAsset.assetOut.name
-          }`,
+      const collateralInput = FPN.toWei(collateralValue);
+
+      if (collateralInput.lt(maxCollateral)) {
+        setMaxDeposit(false);
+      }
+      setCollateralRequiredError('');
+
+      const parts = collateralValue.split('.');
+      const decimals = parts[1] || '';
+
+      if (decimals.length > assetDetails.collateralTokenDecimals!) {
+        setCollateralRequiredError(
+          `Max ${assetDetails.collateralTokenDecimals} decimal palaces allowed`,
         );
-      } else {
-        setCollateralError('');
+      }
+      if (maxCollateral.eq(new FPN(0)) && collateralInput.gt(new FPN(0))) {
+        setCollateralError('Invalid amount');
       }
     }
   }, [collateralValue]);
-  const errorMessage =
-    insufficientFunds && balance.lt(max) ? 'Insufficient funds' : null;
-  const handleGoBack = () => {
-    setShowPreview(false);
-  };
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="deposit">
       {showPreview === true ? (
@@ -118,69 +167,121 @@ export const Deposit: React.FC<DepositProps> = ({ assetKey, tabHandler }) => {
                 collateralValue !== '' ? collateralValue : '0',
               ).format(2),
             },
-            {
-              title: 'Fee Percentage',
-              asset: {
-                name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
-              },
-              value: `${FPN.fromWei(assetDetails!.feePercentage!)
-                .mul(new FPN(100))
-                .format(4)}%`,
-            },
           ]}
           confirmHandler={() => {
-            if (collateralValue === '') {
-              setCollateralError('Collateral is Required');
-              return;
-            }
-
             const depositParams = {
               pair: assetKey,
               collateral: FPN.toWei(collateralValue).toString() as StringAmount,
             };
-            console.log({ depositParams });
+
             dispatch({ type: 'CALL_DEPOSIT', payload: depositParams });
           }}
         />
       ) : (
-        <WithdrawHolder tabHandler={tabHandler} assetInfo={assetDetails}>
-          <Form>
-            <ExchangeBox error>
-              <Balance>Balance: {balance.format(4)}</Balance>
-              <AssetSelect
-                error={insufficientFunds || Boolean(collateralError)}
-              >
-                <Amount
-                  value={collateralValue}
-                  inputMode="numeric"
-                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-                  onChange={e => {
-                    setCollateralValue(e.target.value);
+        assetDetails && (
+          <WithdrawHolder tabHandler={tabHandler!} assetInfo={assetDetails}>
+            <Form>
+              <ExchangeBox error>
+                <Balance>Balance: {balance && balance.format(6)}</Balance>
+                <AssetSelect
+                  error={
+                    Boolean(collateralError) || Boolean(collateralRequiredError)
+                  }
+                >
+                  <Amount
+                    value={collateralValue}
+                    inputMode="numeric"
+                    maxLength={50}
+                    onKeyPress={e => {
+                      handleKeyPress(e, {
+                        decimals: assetDetails.collateralTokenDecimals!,
+                      });
+                    }}
+                    onChange={e => {
+                      setCollateralValue(e.target.value);
+                    }}
+                    placeholder={`Max: ${maxCollateral.format(6)}`}
+                    required
+                    onFocus={e => {
+                      e.target.select();
+                    }}
+                  />
+                  {maxCollateral && (
+                    <Max onClick={() => onMaxSelect(maxCollateral.format(6))} />
+                  )}
+                  <Asset
+                    flag={selectedAsset.assetIn.icon}
+                    name={selectedAsset.assetIn.name}
+                  />
+                </AssetSelect>
+                <ErrorMessage>{collateralError}</ErrorMessage>
+                <ErrorMessage>{collateralRequiredError}</ErrorMessage>
+              </ExchangeBox>
+            </Form>
+            <div>
+              {metaMaskError?.message && (
+                <ErrorMessageContainer>
+                  {metaMaskError?.message}
+                </ErrorMessageContainer>
+              )}
+            </div>
+            <SubmitContainer>
+              {!inProgress ? (
+                <SubmitButton
+                  style={
+                    validInput
+                      ? {
+                          background: theme.common.success,
+                          text: theme.text.primary,
+                        }
+                      : {}
+                  }
+                  onClick={() => {
+                    dispatch({
+                      type: 'transaction/reset',
+                    });
+                    if (collateralValue === '') {
+                      setCollateralRequiredError('Collateral is Required');
+                      return;
+                    }
+                    if (!validInput) return;
+                    const depositParams = {
+                      pair: assetKey,
+                      collateral: FPN.toWei(
+                        collateralValue,
+                      ).toString() as StringAmount,
+                      validateOnly: true,
+                    };
+                    setInProgress(true);
+                    if (maxDeposit) {
+                      depositParams.collateral = FPN.fromWei(
+                        assetDetails!.positionTokens!,
+                      ).toString() as StringAmount;
+                    }
+                    dispatch({ type: 'CALL_DEPOSIT', payload: depositParams });
                   }}
-                  placeholder="0.0"
-                  required
-                  onFocus={e => {
-                    e.target.select();
-                  }}
-                />
-                <Max onClick={() => onMaxSelect(max.format(2))} />
-                <Asset
-                  flag={selectedAsset.assetIn.icon}
-                  name={selectedAsset.assetIn.name}
-                />
-              </AssetSelect>
-              <ErrorMessage>{errorMessage}</ErrorMessage>
-              <ErrorMessage>{collateralError}</ErrorMessage>
-            </ExchangeBox>
-            <Value>Value: ${assetInValue}</Value>
-          </Form>
-          <SubmitContainer>
-            <SubmitButton onClick={() => setShowPreview(true)}>
-              Deposit
-            </SubmitButton>
-          </SubmitContainer>
-        </WithdrawHolder>
+                >
+                  <ApprovalTransaction
+                    currency={selectedAsset.assetIn.name}
+                    text="Deposit"
+                  />
+                </SubmitButton>
+              ) : (
+                <LoadingSection>
+                  <Loader />
+                </LoadingSection>
+              )}
+            </SubmitContainer>
+            {newRatio.gt(new FPN(0)) && (
+              <ModalFooter
+                newRatio={newRatio}
+                liquidationPrice={liquidationPrice}
+                fee={fee}
+                currency={selectedAsset.assetIn.name}
+              />
+            )}
+          </WithdrawHolder>
+        )
       )}
     </WithPlaceholder>
   );
