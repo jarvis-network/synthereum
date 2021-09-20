@@ -355,3 +355,98 @@ export const calculateBorrowLiquidationPrice = (
     )
     .mul(_price);
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    REPAY                                   */
+/* -------------------------------------------------------------------------- */
+/**
+ *
+ * MAX = ((tokensOutstanding * capDepositRatio) - rawCollateral) / (capDepositRatio - ((rawCollateral / tokensOutstanding) * feePercenage))
+ */
+export const calculateMaxSyntheticRepay = (
+  positionCollateral: StringAmount,
+  positionTokens: StringAmount,
+  feePercentage: StringAmount,
+  capDepositRatio: StringAmount,
+  collateralTokenDecimals: number,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _feePercentage = FPN.fromWei(feePercentage);
+
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _capDepositRatio = FPN.fromWei(
+    scaleTokenAmountToWei({
+      amount: wei(capDepositRatio!),
+      decimals: collateralTokenDecimals,
+    }),
+  );
+  return _positionTokens
+    .mul(_capDepositRatio)
+    .sub(_positionCollateral)
+    .div(
+      _capDepositRatio.sub(
+        _positionCollateral.div(_positionTokens).mul(_feePercentage),
+      ),
+    );
+};
+/**
+ * ((rawCollateral -calculateDaoFee(UserInputOfSynthTokens))  / (tokensOutstanding - UserInputOfTokens) * UMA expressed in jSynthToken price * 100
+ */
+export const calculateRepayNewCollateralizationRatio = (
+  positionCollateral: StringAmount,
+  positionTokens: StringAmount,
+  inputSynthetic: FPN,
+  feePercentage: StringAmount,
+  gcr: StringAmount,
+  price: StringAmount,
+) => {
+  const fee = calculateDaoFee({
+    collateral: inputSynthetic,
+    collateralizationRatio: gcr,
+    feePercentage,
+  });
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _price = FPN.fromWei(price);
+
+  return _positionCollateral
+    .sub(fee)
+    .div(_positionTokens.sub(inputSynthetic))
+    .mul(new FPN(1).div(_price))
+    .mul(new FPN(100));
+};
+/**
+ * LiquidationPrice = ((Collateral Requirement * ((tokensOutstanding - UserInputOfTokens) / rawCollateral)) * jSynth/USD)
+ */
+export const calculateRepayLiquidationPrice = (
+  collateralRequirement: StringAmount,
+  positionTokens: StringAmount,
+  inputSynthetic: FPN,
+  positionCollateral: StringAmount,
+  price: StringAmount,
+  gcr: StringAmount,
+  feePercentage: StringAmount,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _price = FPN.fromWei(price);
+  const _collateralRequirement = FPN.fromWei(collateralRequirement);
+  const fee = calculateDaoFee({
+    collateral: inputSynthetic,
+    collateralizationRatio: gcr,
+    feePercentage,
+  });
+
+  return _collateralRequirement
+    .mul(_positionTokens.sub(inputSynthetic).div(_positionCollateral.sub(fee)))
+    .mul(_price);
+};
