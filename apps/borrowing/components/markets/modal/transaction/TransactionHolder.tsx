@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { SupportedNetworkId } from '@jarvis-network/synthereum-config/dist';
 
 import { toNetworkName } from '@jarvis-network/core-utils/dist/eth/networks';
+import { useTheme } from '@jarvis-network/ui';
 
 import { useDispatch } from 'react-redux';
 
@@ -45,6 +46,7 @@ const TransactionHolder: React.FC<Props> = ({
   backHandler,
 }) => {
   const dispatch = useDispatch();
+  const theme = useTheme();
 
   const opType = useReduxSelector(state => state.transaction.opType);
   const txHash = useReduxSelector(state => state.transaction.txHash);
@@ -130,6 +132,10 @@ const TransactionHolder: React.FC<Props> = ({
               <SubmitContainer>
                 {!inProgress ? (
                   <SubmitButton
+                    style={{
+                      background: theme.common.success,
+                      text: theme.text.primary,
+                    }}
                     animate={alertVariant}
                     onClick={() => {
                       dispatch({
