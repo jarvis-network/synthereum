@@ -69,20 +69,6 @@ const tapAnimation = {
   },
 };
 
-const ButtonBg = {
-  hover: {
-    scale: 30,
-    transition: {
-      duration: 0.2,
-    },
-  },
-  closed: {
-    scale: 0,
-    transition: {
-      duration: 0.2,
-    },
-  },
-};
 export const ButtonWrapper = styled.div`
   width: 100%;
 `;
@@ -136,16 +122,7 @@ export const DisabledButton = styled(motion.button)`
   border: 0px;
   cursor: pointer;
 `;
-export const BgCircle = styled(motion.div)`
-  position: absolute;
-  left: calc(50% - 5px);
-  top: calc(50% - 5px);
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
-  background: ${props => props.theme.background.secondary};
-  margin: 0;
-`;
+
 export const ButtonContent = styled.div`
   z-index: 2;
   display: flex;
@@ -243,24 +220,12 @@ export const MarketCard: FC<MarketCardProps> = ({
               >
                 {auth && positionTokens && positionTokens.toString() !== '0' ? (
                   <ManageButton animate={buttonState}>
-                    <BgCircle
-                      initial={{ scale: 0 }}
-                      animate={buttonState}
-                      variants={ButtonBg}
-                      className="bg-gray-600"
-                    />
                     <ButtonContent>
                       <ButtonLabel>Manage</ButtonLabel>
                     </ButtonContent>
                   </ManageButton>
                 ) : (
                   <BorrowButton animate={buttonState}>
-                    <BgCircle
-                      initial={{ scale: 0 }}
-                      animate={buttonState}
-                      variants={ButtonBg}
-                      className="bg-gray-600"
-                    />
                     <ButtonContent>
                       <ButtonLabel>Borrow</ButtonLabel>
                     </ButtonContent>
