@@ -26,9 +26,9 @@ import { useDispatch } from 'react-redux';
 
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
-import { WithdrawHolder } from './WithdrawHolder';
-import { WithPlaceholder } from './holders/WithPlaceholder';
-import TransactionHolder from './transaction/TransactionHolder';
+import { WithdrawHolder } from '../WithdrawHolder';
+import { WithPlaceholder } from '../holders/WithPlaceholder';
+import TransactionHolder from '../transaction/TransactionHolder';
 
 const title = 'Lorem ipsum redeem';
 const subtitle = (

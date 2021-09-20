@@ -10,9 +10,9 @@ import { DateTime } from 'luxon';
 import CountDownTimer from '@/components/countdown/Countdown';
 import { useDispatch } from 'react-redux';
 
-import { SubmitContainer, SubmitButton } from './common';
-import TransactionHolder from './transaction/TransactionHolder';
-import { TransactionParams } from './transaction/TransactionParams';
+import { SubmitContainer, SubmitButton } from '../common';
+import TransactionHolder from '../transaction/TransactionHolder';
+import { TransactionParams } from '../transaction/TransactionParams';
 
 const WithdrawContainer = styled.div`
   overflow: hidden;

@@ -4,11 +4,11 @@ import { Modal, styled, Tabs, IconButton } from '@jarvis-network/ui';
 
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { setMarketsManageKey } from '@/state/slices/markets';
-import { Borrow } from '@/components/markets/modal/Borrow';
-import { Repay } from '@/components/markets/modal/Repay';
-import { Redeem } from '@/components/markets/modal/Redeem';
-import { Withdraw } from '@/components/markets/modal/Withdraw';
-import { Deposit } from '@/components/markets/modal/Deposit';
+import { Borrow } from '@/components/markets/modal/borrow/Borrow';
+import { Repay } from '@/components/markets/modal/repay/Repay';
+import { Redeem } from '@/components/markets/modal/redeem/Redeem';
+import { Withdraw } from '@/components/markets/modal/withdraw/Withdraw';
+import { Deposit } from '@/components/markets/modal/deposit/Deposit';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 import { ButtonHandler } from '@jarvis-network/ui/dist/Tabs/Tabs';
 
