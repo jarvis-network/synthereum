@@ -4,7 +4,7 @@ import { styled } from '@jarvis-network/ui';
 import { motion } from 'framer-motion';
 
 import { Market, setMarketsManageKey } from '@/state/slices/markets';
-import { MarketCard } from '@/components/MarketCard';
+import { MarketCard } from '@/components/markets/MarketCard';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { useAuth } from '@jarvis-network/app-toolkit';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
