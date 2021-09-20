@@ -11,7 +11,8 @@ import CountDownTimer from '@/components/countdown/Countdown';
 import { useDispatch } from 'react-redux';
 
 import { SubmitContainer, SubmitButton } from './common';
-import TransactionHolder, { TransactionParams } from './TransactionHolder';
+import TransactionHolder from './transaction/TransactionHolder';
+import { TransactionParams } from './transaction/TransactionParams';
 
 const WithdrawContainer = styled.div`
   overflow: hidden;

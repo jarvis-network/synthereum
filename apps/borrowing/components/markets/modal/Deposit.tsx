@@ -27,7 +27,8 @@ import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contr
 
 import { useDispatch } from 'react-redux';
 
-import TransactionHolder from './TransactionHolder';
+import TransactionHolder from '../modal/transaction/TransactionHolder';
+
 import { WithdrawHolder } from './WithdrawHolder';
 import { WithPlaceholder } from './holders/WithPlaceholder';
 

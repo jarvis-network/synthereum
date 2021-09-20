@@ -32,9 +32,9 @@ import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contr
 import { styled } from '@jarvis-network/ui';
 import { useDispatch } from 'react-redux';
 
-import TransactionHolder from './TransactionHolder';
 import { WithdrawHolder } from './WithdrawHolder';
 import { WithPlaceholder } from './holders/WithPlaceholder';
+import TransactionHolder from './transaction/TransactionHolder';
 
 const SplitRow = styled.div`
   display: inline-block;

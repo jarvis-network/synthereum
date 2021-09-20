@@ -28,9 +28,9 @@ import {
 
 import { useDispatch } from 'react-redux';
 
-import TransactionHolder from './TransactionHolder';
 import { WithdrawHolder } from './WithdrawHolder';
 import { WithPlaceholder } from './holders/WithPlaceholder';
+import TransactionHolder from './transaction/TransactionHolder';
 
 const title = 'Lorem ipsum repay';
 const subtitle = (

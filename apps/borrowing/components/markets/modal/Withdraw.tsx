@@ -24,9 +24,9 @@ import { useDispatch } from 'react-redux';
 
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
-import TransactionHolder from './TransactionHolder';
 import { ManageWithdraw } from './ManageWithdraw';
 import { WithPlaceholder } from './holders/WithPlaceholder';
+import TransactionHolder from './transaction/TransactionHolder';
 
 const title = 'Lorem ipsum withdraw';
 const subtitle = (

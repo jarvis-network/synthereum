@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 import { Market } from '@jarvis-network/synthereum-ts/dist/epics/markets';
 
 import { SubmitContainer, SubmitButton } from './common';
-import { TransactionParams } from './TransactionHolder';
+import { TransactionParams } from './transaction/TransactionParams';
 
 const WithdrawContainer = styled.div`
   overflow: hidden;
