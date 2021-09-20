@@ -49,6 +49,16 @@ export interface State {
       message: string;
     };
   };
+  approveTransaction: {
+    params?: any;
+    txHash?: string;
+    opType?: OPType | 'cancel' | 'initial' | 'approval';
+    receipt?: any;
+    valid?: boolean;
+    error?: {
+      message: string;
+    };
+  };
 }
 
 export const initialAppState: State = {
@@ -71,16 +81,8 @@ export const initialAppState: State = {
   prices: {},
   transaction: {
     valid: false,
-    // params: {
-    //   pair: 'jCHF/USDC',
-    //   collateral: '100000000000000000000',
-    //   numTokens: '80000000000000000000',
-    //   feePercentage: '1650000000000000',
-    // },
-    // opType: 'borrow',
-    // txHash: '0x1c8cf561e54cf2740cc0026f8f8f5d0a7cef787d7b279260e050cc4832d434d2',
-    // receipt: {
-    //   txHash: '0x1c8cf561e54cf2740cc0026f8f8f5d0a7cef787d7b279260e050cc4832d434d2',
-    // }
+  },
+  approveTransaction: {
+    valid: false,
   },
 };

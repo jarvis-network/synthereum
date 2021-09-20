@@ -91,6 +91,9 @@ export const MarketsManageModal: FC = () => {
     dispatch({
       type: 'transaction/reset',
     });
+    dispatch({
+      type: 'approvalTransaction/reset',
+    });
   };
   const tabHandler = (input: number) => {
     tabRef.current!.updateTab(input);
@@ -103,6 +106,9 @@ export const MarketsManageModal: FC = () => {
       onChange={(_: number) => {
         dispatch({
           type: 'transaction/reset',
+        });
+        dispatch({
+          type: 'approvalTransaction/reset',
         });
       }}
       pointer={false}

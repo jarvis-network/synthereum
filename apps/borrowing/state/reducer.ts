@@ -7,6 +7,7 @@ import { reducer as markets } from '@/state/slices/markets';
 import { reducer as wallet } from '@/state/slices/wallet';
 import { reducer as prices } from '@/state/slices/prices';
 import { reducer as transaction } from '@/state/slices/transaction';
+import { reducer as approveTransaction } from '@/state/slices/approveTransaction';
 
 export const reducer = combineReducers({
   app,
@@ -16,6 +17,7 @@ export const reducer = combineReducers({
   prices,
   transaction,
   markets,
+  approveTransaction,
 });
 
 export type RootState = ReturnType<typeof reducer>;
