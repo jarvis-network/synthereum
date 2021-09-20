@@ -60,6 +60,25 @@ const transactionSlice = createSlice({
         params: undefined,
         receipt: undefined,
         txHash: undefined,
+        error: undefined,
+        valid: false,
+      };
+    },
+    metaMaskError(
+      state,
+      action: Action<{
+        message: any;
+      }>,
+    ) {
+      return {
+        ...state,
+        error: action.payload,
+      };
+    },
+    validate(state) {
+      return {
+        ...state,
+        valid: true,
       };
     },
   },

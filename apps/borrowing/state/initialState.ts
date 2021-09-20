@@ -43,6 +43,10 @@ export interface State {
     txHash?: string;
     opType?: OPType | 'cancel' | 'initial';
     receipt?: any;
+    valid?: boolean;
+    error?: {
+      message: string;
+    };
   };
 }
 
@@ -64,6 +68,7 @@ export const initialAppState: State = {
   wallet: {},
   prices: {},
   transaction: {
+    valid: false,
     // params: {
     //   pair: 'jCHF/USDC',
     //   collateral: '100000000000000000000',
