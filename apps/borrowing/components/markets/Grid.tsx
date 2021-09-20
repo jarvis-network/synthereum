@@ -93,22 +93,26 @@ export const MarketsGrid: FC<MarketGridProps> = React.memo(({ markets }) => {
   const { list: loadedMarketList, filterQuery } = useReduxSelector(
     state => state.markets,
   );
+
   const isWindowLoaded = useReduxSelector(state => state.app.isWindowLoaded);
   const auth = useReduxSelector(state => state.auth?.address);
+  const agentAddress = useReduxSelector(state => state.app.agentAddress);
   const [show, setShow] = useState(false);
   const list = _.isEmpty(loadedMarketList) ? markets : loadedMarketList;
 
   useEffect(() => {
-    if (!_.isEmpty(loadedMarketList)) {
-      setShow(true);
+    if (agentAddress && auth) {
+      if (agentAddress === auth) {
+        setShow(true);
+      }
     }
-    if (_.isEmpty(loadedMarketList) && _.isEmpty(auth) && isWindowLoaded) {
+    if (_.isEmpty(auth)) {
       setShow(true);
     }
     if (_.isEmpty(loadedMarketList) && !_.isEmpty(auth)) {
       setShow(false);
     }
-  }, [loadedMarketList, auth, isWindowLoaded]);
+  }, [loadedMarketList, agentAddress, auth, isWindowLoaded]);
   return (
     <div>
       {show ? (
