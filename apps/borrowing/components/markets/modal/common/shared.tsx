@@ -1,6 +1,6 @@
 import { styled } from '@jarvis-network/ui';
 
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-contracts/dist/config';
+import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config/dist';
 import React from 'react';
 
 import { Link } from '.';

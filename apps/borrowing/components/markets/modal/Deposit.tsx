@@ -14,7 +14,6 @@ import {
   SubmitContainer,
   Value,
 } from '@/components/markets/modal/common';
-import { WithPlaceholder } from '@/components/markets/modal/WithPlaceholder';
 import { selfMintingMarketAssets } from '@/data/markets';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
@@ -30,6 +29,7 @@ import { useDispatch } from 'react-redux';
 
 import TransactionHolder from './TransactionHolder';
 import { WithdrawHolder } from './WithdrawHolder';
+import { WithPlaceholder } from './holders/WithPlaceholder';
 
 const title = 'Lorem ipsum deposit';
 const subtitle = (

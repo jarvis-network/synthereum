@@ -14,7 +14,6 @@ import {
   SubmitContainer,
   Value,
 } from '@/components/markets/modal/common';
-import { WithPlaceholder } from '@/components/markets/modal/WithPlaceholder';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 import { selfMintingMarketAssets } from '@/data/markets';
@@ -31,6 +30,7 @@ import { useDispatch } from 'react-redux';
 
 import TransactionHolder from './TransactionHolder';
 import { WithdrawHolder } from './WithdrawHolder';
+import { WithPlaceholder } from './holders/WithPlaceholder';
 
 const title = 'Lorem ipsum repay';
 const subtitle = (

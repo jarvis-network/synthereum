@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocalStorage } from '@jarvis-network/app-toolkit';
-import { Placeholder } from '@/components/markets/modal/Placeholder';
+
+import { Placeholder } from './Placeholder';
 
 interface Props {
   title: React.ReactNode;

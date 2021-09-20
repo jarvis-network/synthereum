@@ -15,7 +15,6 @@ import {
   SubmitContainer,
   Value,
 } from '@/components/markets/modal/common';
-import { WithPlaceholder } from '@/components/markets/modal/WithPlaceholder';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 import _ from 'lodash';
 import { selfMintingMarketAssets } from '@/data/markets';
@@ -29,6 +28,7 @@ import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import TransactionHolder from './TransactionHolder';
 import { WithdrawHolder } from './WithdrawHolder';
+import { WithPlaceholder } from './holders/WithPlaceholder';
 
 const title = 'Lorem ipsum redeem';
 const subtitle = (

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { WithPlaceholder } from '@/components/markets/modal/WithPlaceholder';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 import {
@@ -35,6 +34,7 @@ import { useDispatch } from 'react-redux';
 
 import TransactionHolder from './TransactionHolder';
 import { WithdrawHolder } from './WithdrawHolder';
+import { WithPlaceholder } from './holders/WithPlaceholder';
 
 const SplitRow = styled.div`
   display: inline-block;
