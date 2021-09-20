@@ -12,6 +12,11 @@ import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { PriceFeedSymbols } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
 
+import {
+  calculateGlobalCollateralizationRatio,
+  calculateUserCollateralizationRatio,
+} from './modal/helpers/gcr';
+
 const Container = styled.div`
   background: ${props => props.theme.background.primary};
   box-shadow: ${props => props.theme.shadow.base};
@@ -165,6 +170,18 @@ export const MarketCard: FC<MarketCardProps> = ({
   const collateralPrice = useReduxSelector(
     state => state.prices[collateralAsset],
   );
+  const syntheticPrice = useReduxSelector(state => state.prices[p]);
+
+  const gcr = calculateGlobalCollateralizationRatio(
+    collateralizationRatio!,
+    syntheticPrice || price!,
+  );
+  const ucr = calculateUserCollateralizationRatio(
+    positionCollateral!,
+    positionTokens!,
+    syntheticPrice || price!,
+    collateralPrice!,
+  );
   return (
     <Container>
       <Header>
@@ -173,7 +190,9 @@ export const MarketCard: FC<MarketCardProps> = ({
       </Header>
 
       <DataList>
-        <DataListItem label="Collateralization Ratio">100%</DataListItem>
+        <DataListItem label="Collateralization Ratio">
+          {gcr && gcr.format(2)}%
+        </DataListItem>
 
         <DataListItem label="Liquidation Ratio">
           {FPN.fromWei(liquidationRatio!).mul(FPN.toWei('100')).format(2)}%
@@ -181,17 +200,7 @@ export const MarketCard: FC<MarketCardProps> = ({
 
         {auth && positionCollateral && positionCollateral.toString() !== '0' ? (
           <DataListItem label="UCR ">
-            {collateralPrice &&
-              FPN.fromWei(positionCollateral!)
-                .div(FPN.fromWei(positionTokens!))
-                .mul(
-                  FPN.fromWei(collateralPrice.toString()).div(
-                    FPN.fromWei(price!),
-                  ),
-                )
-                .mul(FPN.toWei('100'))
-                .format(2)}
-            %
+            {collateralPrice && ucr.format(2)}%
           </DataListItem>
         ) : null}
 
