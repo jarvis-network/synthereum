@@ -107,12 +107,13 @@ export const Modal: React.FC<ModalProps> = ({
             style={{
               ...modalPosition,
               zIndex: 2001,
+              height: '735px',
               position: 'absolute',
             }}
             ref={contentRef}
             {...modalAnimation}
           >
-            {children}
+            <div>{children}</div>
           </Overlay>
         </Container>
       )}

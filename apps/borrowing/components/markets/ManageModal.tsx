@@ -23,7 +23,7 @@ const ModalRoot = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  // overflow: hidden;
   position: relative;
 `;
 
@@ -77,7 +77,9 @@ export const MarketsManageModal: FC = () => {
   const { list, manageKey: manageKey_ } = useReduxSelector(
     state => state.markets,
   );
+
   const manageKey = manageKey_ as SupportedSelfMintingPairExact;
+
   const handleClose = () => {
     dispatch(setMarketsManageKey(null));
 
