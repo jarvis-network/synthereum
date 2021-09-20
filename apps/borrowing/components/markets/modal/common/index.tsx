@@ -1,6 +1,9 @@
 import React from 'react';
 
 import { Button, styled } from '@jarvis-network/ui';
+import { motion } from 'framer-motion';
+
+import { ActionVariants, tapAnimation } from './variants';
 
 export const Link = styled.a`
   color: #0093ff;
@@ -19,7 +22,7 @@ export const ExchangeBox = styled.div<{ error: boolean }>`
     'value';
   position: relative;
   margin-top: 15px;
-  width: 80%;
+  width: 90%;
 `;
 
 export const AssetSelect = styled.div<{ error: boolean }>`
@@ -99,18 +102,40 @@ export const SubmitContainer = styled.div`
   text-align: center;
 `;
 
-export const SubmitButton = styled(Button)`
+export const SubmitButtonInner = styled(Button)`
   font-size: 20px;
-  width: 202px;
   height: 60px;
+  min-width: 202px;
   text-align: center;
-  margin-bottom: 20px;
   text-transform: uppercase;
 
   &:disabled {
     color: ${props => props.theme.text.secondary};
   }
 `;
+export const Container = styled.div`
+  width: 520px;
+`;
+
+const BtnContainer = styled(motion.div)`
+  width: max-content;
+  margin: 0px auto;
+  height: max-content;
+`;
+export interface ButtonProps {
+  animate?: ActionVariants;
+  onClick: () => void;
+}
+export const SubmitButton: React.FC<ButtonProps> = ({
+  children,
+  animate = 'tap',
+
+  onClick,
+}) => (
+  <BtnContainer whileTap="tap" animate={animate} variants={tapAnimation}>
+    <SubmitButtonInner onClick={onClick}>{children}</SubmitButtonInner>
+  </BtnContainer>
+);
 
 const allowedKeys = '0123456789.'.split('');
 
