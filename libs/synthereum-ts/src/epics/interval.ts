@@ -6,7 +6,7 @@ interface Result {
   interval$: Observable<number>;
   intervalSubject: BehaviorSubject<number>;
 }
-export const dynamicInterval = (defaultInterval = 1000): Result => {
+export const dynamicInterval = (defaultInterval = 10000): Result => {
   const intervalSubject = new BehaviorSubject<number>(defaultInterval);
   const interval$ = intervalSubject.pipe(
     switchMap(intervalDuration =>

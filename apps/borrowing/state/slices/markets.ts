@@ -42,11 +42,13 @@ export interface Market<
   totalTokensOutstanding?: StringAmount;
   totalPositionCollateral?: StringAmount;
   positionWithdrawalRequestAmount?: StringAmount;
+  minSponsorTokens?: StringAmount;
   positionWithdrawalRequestPassTimestamp?: number;
   price?: StringAmount;
   address?: string;
   agentAddress?: string | null;
   collateralTokenDecimals?: number;
+  syntheticTokenDecimals?: number;
 }
 export type SelfMintingMarketAssets<
   Net extends SupportedNetworkName = SupportedNetworkName

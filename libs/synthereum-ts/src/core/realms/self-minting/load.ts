@@ -227,33 +227,29 @@ export async function getDerivativeData<
   collateralToken: TokenInstance<Net, CollateralOf<Pair>>,
   syntheticToken: TokenInstance<Net, SyntheticSymbolOf<Pair>>,
 ): Promise<SelfMintingDerivativeData> {
-  const feePercentage = wei(
-    (await derivate.instance.methods.daoFee().call()).feePercentage,
-  ) as Amount;
+  const [fp, cdr, cr, cma, tto, tpo] = await Promise.all([
+    derivate.instance.methods.daoFee().call(),
+    derivate.instance.methods.capDepositRatio().call(),
+    derivate.instance.methods.liquidatableData().call(),
+    derivate.instance.methods.capMintAmount().call(),
+    derivate.instance.methods.totalTokensOutstanding().call(),
+    derivate.instance.methods.totalPositionCollateral().call(),
+  ]);
 
-  const capDepositRatio = wei(
-    await derivate.instance.methods.capDepositRatio().call(),
-  ) as Amount;
-  const collateralRequirement = wei(
-    (await derivate.instance.methods.liquidatableData().call())
-      .collateralRequirement[0],
-  ) as Amount;
-  const capMintAmount = wei(
-    await derivate.instance.methods.capMintAmount().call(),
-  ) as Amount;
+  const feePercentage = wei(fp.feePercentage) as Amount;
+  const capDepositRatio = wei(cdr) as Amount;
+  const collateralRequirement = wei(cr.collateralRequirement[0]) as Amount;
+  const capMintAmount = wei(cma) as Amount;
 
   const totalTokensOutstanding = scaleTokenAmountToWei({
-    amount: wei(
-      await derivate.instance.methods.totalTokensOutstanding().call(),
-    ),
+    amount: wei(tto),
     decimals: syntheticToken.decimals,
   });
   const totalPositionCollateral = scaleTokenAmountToWei({
-    amount: wei(
-      await derivate.instance.methods.totalPositionCollateral().call(),
-    ),
+    amount: wei(tpo),
     decimals: collateralToken.decimals,
   });
+
   return {
     totalPositionCollateral,
     totalTokensOutstanding,

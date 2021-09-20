@@ -22,8 +22,6 @@ import { calculateGCR } from '../core/realms/self-minting/utils';
 
 import { SelfMintingRealmAgent } from '../core/realms/self-minting/agent';
 
-import { ChainLinkPriceFeed } from '../price-feed/chainlink';
-
 import { Context, Dependencies, Epic, ReduxAction } from './types';
 
 import { sortAssetArray } from './utils';
@@ -54,26 +52,28 @@ export interface Market {
   price?: StringAmount;
   address?: string;
   collateralTokenDecimals?: number;
-  agentAddress?: string | null;
+  syntheticTokenDecimals?: number;
 }
 
 export type OutputAction = ReduxAction<'markets/setMarketsList', Markets>;
 
 export type InputAction = ReduxAction<'GET_MARKET_LIST', Empty> | OutputAction;
 
-type Markets = {
+export type Markets = {
   [Pair in SupportedSelfMintingPairExact]?: Market;
 };
 
 export const getActiveMarket = async (
   selfMintingRealmAgent: SelfMintingRealmAgent,
   pair: SupportedSelfMintingPairExact,
-  chainLinkPriceFeed: ChainLinkPriceFeed,
 ): Promise<Markets> => {
   if (!selfMintingRealmAgent) {
     return {};
   }
   const realm = selfMintingRealmAgent!.activeDerivatives[pair]!;
+  const [getPositionsData] = await Promise.all([
+    selfMintingRealmAgent.getPositionsData(pair),
+  ]);
   const data = {
     pair,
     liquidationRatio: realm.dynamic.collateralRequirement.toString() as StringAmount,
@@ -81,30 +81,19 @@ export const getActiveMarket = async (
     capDepositRatio: realm.dynamic.capDepositRatio.toString() as StringAmount,
     capMintAmount: realm.dynamic.capMintAmount.toString() as StringAmount,
     collateralRequirement: realm.dynamic.collateralRequirement.toString() as StringAmount,
-    positionCollateral: (await selfMintingRealmAgent.getPositionsData(
-      pair,
-    ))!.positionCollateral.toString() as StringAmount,
-    positionTokens: (await selfMintingRealmAgent.getPositionsData(
-      pair,
-    ))!.positionTokens.toString() as StringAmount,
-    positionWithdrawalRequestAmount: (await selfMintingRealmAgent.getPositionsData(
-      pair,
-    ))!.positionWithdrawalRequestAmount.toString() as StringAmount,
-    positionWithdrawalRequestPassTimestamp: (await selfMintingRealmAgent.getPositionsData(
-      pair,
-    ))!.positionWithdrawalRequestPassTimestamp!,
+    positionCollateral: getPositionsData.positionCollateral.toString() as StringAmount,
+    positionTokens: getPositionsData.positionTokens.toString() as StringAmount,
+    positionWithdrawalRequestAmount: getPositionsData.positionWithdrawalRequestAmount.toString() as StringAmount,
+    positionWithdrawalRequestPassTimestamp: getPositionsData.positionWithdrawalRequestPassTimestamp!,
     totalTokensOutstanding: realm.dynamic.totalTokensOutstanding.toString() as StringAmount,
     totalPositionCollateral: realm.dynamic.totalPositionCollateral.toString() as StringAmount,
     collateralizationRatio: calculateGCR(
       realm.dynamic.totalTokensOutstanding,
       realm.dynamic.totalPositionCollateral,
     ),
-    price: (await chainLinkPriceFeed.getPrice(pair)) as StringAmount,
     address: realm.static.address,
     collateralTokenDecimals: realm.static.collateralToken.decimals,
-    agentAddress: selfMintingRealmAgent.agentAddress
-      ? selfMintingRealmAgent.agentAddress.toString()
-      : null,
+    syntheticTokenDecimals: realm.static.syntheticToken.decimals,
   };
   return {
     [pair]: data,
@@ -113,8 +102,7 @@ export const getActiveMarket = async (
 
 export const getActiveMarkets = async ({
   selfMintingRealmAgent,
-  chainLinkPriceFeed,
-}: Context): Promise<Markets> => {
+}: Partial<Context>): Promise<Markets> => {
   if (!selfMintingRealmAgent) {
     return {};
   }
@@ -122,17 +110,14 @@ export const getActiveMarkets = async ({
     const syntheticPairs = Object.entries(
       selfMintingRealmAgent!.activeDerivatives,
     );
-    const assets: Market[] = await Promise.all(
-      syntheticPairs.map(async ([pair_]) => {
+    const assetsArray = await Promise.all(
+      syntheticPairs.map(([pair_]) => {
         const pair = pair_ as SupportedSelfMintingPairExact;
-        const data = await getActiveMarket(
-          selfMintingRealmAgent,
-          pair,
-          chainLinkPriceFeed!,
-        );
-        return data[pair] as Market;
+        return getActiveMarket(selfMintingRealmAgent, pair);
       }),
     );
+    const assets = assetsArray.flatMap(a => Object.values(a));
+
     return Object.fromEntries(sortAssetArray(assets).map(a => [a.pair, a]));
   } catch (error) {
     return {};
@@ -140,7 +125,7 @@ export const getActiveMarkets = async ({
 };
 
 const currentPairs = new BehaviorSubject<SupportedSelfMintingPairExact>(
-  'jCAD/UMA',
+  'jEUR/UMA',
 );
 
 export const marketEpic: Epic<ReduxAction, ReduxAction> = (
