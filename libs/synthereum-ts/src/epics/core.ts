@@ -50,10 +50,20 @@ export const realmEpic: Epic<ReduxAction, ReduxAction> = (
   { context$ },
 ) =>
   context$!.pipe(
-    map((context: Context) => ({
-      type: 'app/contextUpdate',
-      payload: context.networkId,
-    })),
+    map(
+      (context: Context) => ({
+        type: 'app/contextUpdate',
+        payload: {
+          networkId: context.networkId,
+          agentAddress: context.selfMintingRealmAgent?.agentAddress.toLowerCase(),
+        },
+      }),
+      takeUntil(
+        action$.pipe(
+          filter(a => a.type === 'networkSwitch' || a.type === 'addressSwitch'),
+        ),
+      ),
+    ),
   );
 
 export const AppEvents = [

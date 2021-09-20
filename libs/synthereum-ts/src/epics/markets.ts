@@ -11,6 +11,7 @@ import {
   filter,
   BehaviorSubject,
   tap,
+  takeUntil,
 } from 'rxjs';
 
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
@@ -160,9 +161,23 @@ export const marketEpic: Epic<ReduxAction, ReduxAction> = (
     }),
     switchMapTo(interval$),
     switchMapTo(currentPairs),
-    switchMapTo(context$!),
+    switchMap(_ =>
+      context$!.pipe(
+        map(context => ({
+          context,
+        })),
+        takeUntil(
+          action$.pipe(
+            filter(
+              a => a.type === 'networkSwitch' || a.type === 'addressSwitch',
+            ),
+          ),
+        ),
+      ),
+    ),
+
     switchMap(
-      async (context) => await getActiveMarkets(context), // eslint-disable-line
+      async ({context}) => await getActiveMarkets(context), // eslint-disable-line
     ),
     map(results => ({
       type: 'markets/setMarketsList',

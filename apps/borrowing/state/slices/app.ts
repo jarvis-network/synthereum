@@ -12,8 +12,15 @@ const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    contextUpdate(state, action: Action<number>) {
-      state.networkId = action.payload;
+    contextUpdate(
+      state,
+      action: Action<{
+        networkId: number;
+        agentAddress: string;
+      }>,
+    ) {
+      state.networkId = action.payload.networkId;
+      state.agentAddress = action.payload.agentAddress;
     },
     setAuthModalVisible(state, action: Action<boolean>) {
       return {

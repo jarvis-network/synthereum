@@ -4,6 +4,7 @@ import {
   switchMapTo,
   filter,
   mapTo,
+  takeUntil,
   distinctUntilChanged,
 } from 'rxjs';
 import {
@@ -46,7 +47,18 @@ export const walletEpic: Epic<ReduxAction, ReduxAction, MinimalState> = (
     switchMapTo(state$.pipe(map(state => state.markets.manageKey))),
     distinctUntilChanged(),
     switchMap(symbol => interval$.pipe(mapTo(symbol))),
-    switchMap(symbol => context$!.pipe(map(context => ({ context, symbol })))),
+    switchMap(symbol =>
+      context$!.pipe(
+        map(context => ({ context, symbol })),
+        takeUntil(
+          action$.pipe(
+            filter(
+              a => a.type === 'networkSwitch' || a.type === 'addressSwitch',
+            ),
+          ),
+        ),
+      ),
+    ),
     switchMap(async ({ context, symbol }) => {
       try {
         if (symbol && symbol.length > 0) {

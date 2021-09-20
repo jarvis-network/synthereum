@@ -5,6 +5,7 @@ import {
   switchMapTo,
   filter,
   map,
+  takeUntil,
 } from 'rxjs';
 import {
   SupportedSelfMintingPairExact,
@@ -57,7 +58,18 @@ export const priceFeedEpic: Epic<ReduxAction, ReduxAction> = (
     }),
     switchMapTo(interval$),
     switchMapTo(currentPairs),
-    switchMap(pairs => context$!.pipe(map(core => ({ core, pairs })))),
+    switchMap(pairs =>
+      context$!.pipe(
+        map(core => ({ core, pairs })),
+        takeUntil(
+          action$.pipe(
+            filter(
+              a => a.type === 'networkSwitch' || a.type === 'addressSwitch',
+            ),
+          ),
+        ),
+      ),
+    ),
     filter(({ core }) => !!core.chainLinkPriceFeed),
     switchMap(async ({ pairs, core }) => {
       try {

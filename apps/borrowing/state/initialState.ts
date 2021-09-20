@@ -25,6 +25,7 @@ export interface State {
     poolingFrequency: number;
     isWindowLoaded: boolean;
     networkId: number;
+    agentAddress: string | null;
   };
   auth: AuthState;
   markets: {
@@ -58,6 +59,7 @@ export const initialAppState: State = {
     isWindowLoaded: false,
     poolingFrequency: 5000,
     networkId: 0,
+    agentAddress: null,
   },
   auth: null,
   markets: {
