@@ -126,6 +126,12 @@ library SynthereumAutonomousPoolLib {
     uint256 remainingLiquidity
   );
 
+  event IncreaseCollateral(
+    address indexed lp,
+    uint256 collateralAdded,
+    uint256 newTotalCollateral
+  );
+
   event ClaimFee(
     address indexed claimer,
     uint256 feeAmount,
@@ -415,6 +421,50 @@ library SynthereumAutonomousPoolLib {
     self.collateralToken.safeTransfer(msg.sender, _collateralAmount);
 
     emit WithdrawLiquidity(msg.sender, _collateralAmount, remainingLiquidity);
+  }
+
+  /**
+   * @notice Increase collaterallization of Lp position
+   * @notice Only a sender with LP role can call this function
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param collateralAmount Collateral to add
+   * @return newTotalCollateral New total collateral amount
+   */
+  function increaseCollateral(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    FixedPoint.Unsigned memory collateralAmount
+  ) external returns (uint256 newTotalCollateral) {
+    // Collateral available
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.calculateUnusedCollateral(
+        lpPosition.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      );
+
+    // Check that there is enoush availabe collateral deposited in the pool
+    require(
+      unusedCollateral.isGreaterThanOrEqual(collateralAmount),
+      'No enough liquidity for increasing collateral'
+    );
+
+    // Update new total collateral amount
+    FixedPoint.Unsigned memory _newTotalCollateral =
+      lpPosition.totalCollateralAmount.add(collateralAmount);
+
+    lpPosition.totalCollateralAmount = _newTotalCollateral;
+
+    newTotalCollateral = _newTotalCollateral.rawValue;
+
+    emit IncreaseCollateral(
+      msg.sender,
+      collateralAmount.rawValue,
+      newTotalCollateral
+    );
   }
 
   /**
