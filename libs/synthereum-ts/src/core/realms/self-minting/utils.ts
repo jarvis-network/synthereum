@@ -4,6 +4,8 @@ import {
   toBN,
 } from '@jarvis-network/core-utils/dist/base/big-number';
 
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+
 import { divideBigInt } from './BigInt';
 
 export const calculateGCR = (
@@ -25,6 +27,15 @@ export const calculateGCR = (
   return globalCollateralizationRation;
 };
 
-export const getLiquidationRatio = (
-  collateralRequirement: Amount,
-): StringAmount => collateralRequirement.toString() as StringAmount;
+export const calculateDaoFee = ({
+  collateral,
+  collateralizationRatio,
+  feePercentage,
+}: {
+  collateral: FPN;
+  collateralizationRatio: StringAmount;
+  feePercentage: StringAmount;
+}) =>
+  collateral
+    .mul(FPN.fromWei(collateralizationRatio!))
+    .mul(FPN.fromWei(feePercentage!));

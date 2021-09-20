@@ -55,3 +55,19 @@ export const realmEpic: Epic<ReduxAction, ReduxAction> = (
       payload: context.networkId,
     })),
   );
+
+export const AppEvents = [
+  'networkSwitch',
+  'addressSwitch',
+  'transaction/metaMaskError',
+  'transaction/cancel',
+  'transaction/reset',
+  'transaction/confirmed',
+  'transaction/send',
+  'transaction/validate',
+  'transaction/metaMaskConfirmation',
+  'approveTransaction/cancel',
+  'approveTransaction/confirmed',
+  'approveTransaction/send',
+  'approveTransaction/metaMaskConfirmation',
+];

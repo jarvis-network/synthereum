@@ -20,7 +20,7 @@ import _ from 'lodash';
 import { selfMintingMarketAssets } from '@/data/markets';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/borrow';
+import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/utils';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
 import { useDispatch } from 'react-redux';
 

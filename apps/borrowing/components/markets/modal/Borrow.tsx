@@ -25,7 +25,7 @@ import {
   StringAmount,
   wei,
 } from '@jarvis-network/core-utils/dist/base/big-number';
-import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/borrow';
+import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/utils';
 import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
 
 import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';

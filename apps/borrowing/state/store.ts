@@ -14,17 +14,8 @@ import { ReduxAction } from '@jarvis-network/synthereum-ts/dist/epics/types';
 import { priceFeedEpic } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
 import { dependencies } from '@jarvis-network/app-toolkit/dist/core-context';
 import { marketEpic } from '@jarvis-network/synthereum-ts/dist/epics/markets';
-import { borrowEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/borrow';
-import { depositEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/deposit';
-import { redeemEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/redeem';
-import { repayEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/repay';
+import { createRealmAgentEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/epic';
 import { walletEpic } from '@jarvis-network/synthereum-ts/dist/epics/wallet';
-
-import {
-  withdrawEpic,
-  withdrawCancelEpic,
-  withdrawApproveEpic,
-} from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/withdraw';
 import { realmEpic } from '@jarvis-network/synthereum-ts/dist/epics/core';
 
 let cachedStore: Store | undefined;
@@ -61,15 +52,15 @@ const initializeStore = (
   const rootEpic = combineEpics(
     priceFeedEpic,
     marketEpic,
-    borrowEpic,
+    createRealmAgentEpic('CALL_BORROW'),
     walletEpic,
-    depositEpic,
-    redeemEpic,
+    createRealmAgentEpic('CALL_REPAY'),
+    createRealmAgentEpic('CALL_REDEEM'),
     realmEpic,
-    repayEpic,
-    withdrawEpic,
-    withdrawCancelEpic,
-    withdrawApproveEpic,
+    createRealmAgentEpic('CALL_DEPOSIT'),
+    createRealmAgentEpic('CALL_WITHDRAW'),
+    createRealmAgentEpic('CALL_APPROVE_WITHDRAW'),
+    createRealmAgentEpic('CALL_CANCEL_WITHDRAW'),
   );
   // After navigating to a page with an initial Redux state, merge that state
   // with the current state in the store, and create a new store

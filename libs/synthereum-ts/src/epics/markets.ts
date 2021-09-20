@@ -17,10 +17,7 @@ import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import { Empty } from '@jarvis-network/core-utils/dist/base/optional';
 
-import {
-  calculateGCR,
-  getLiquidationRatio,
-} from '../core/realms/self-minting/utils';
+import { calculateGCR } from '../core/realms/self-minting/utils';
 
 import { SelfMintingRealmAgent } from '../core/realms/self-minting/agent';
 
@@ -78,7 +75,7 @@ export const getActiveMarket = async (
   const realm = selfMintingRealmAgent!.activeDerivatives[pair]!;
   const data = {
     pair,
-    liquidationRatio: getLiquidationRatio(realm.dynamic.collateralRequirement),
+    liquidationRatio: realm.dynamic.collateralRequirement.toString() as StringAmount,
     feePercentage: realm.dynamic.feePercentage.toString() as StringAmount,
     capDepositRatio: realm.dynamic.capDepositRatio.toString() as StringAmount,
     capMintAmount: realm.dynamic.capMintAmount.toString() as StringAmount,

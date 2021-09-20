@@ -233,14 +233,16 @@ export class SelfMintingRealmAgent<
     return tx;
   }
 
-  withdrawCancel(input: ContractParams<Net>): NonPayableTransactionObject<any> {
+  cancelWithdraw(input: ContractParams<Net>): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;
     return derivativeInstance.instance.methods.cancelWithdrawal();
   }
 
-  withdrawPass(input: ContractParams<Net>): NonPayableTransactionObject<any> {
+  approveWithdraw(
+    input: ContractParams<Net>,
+  ): NonPayableTransactionObject<any> {
     const derivativeInstance = assertNotNull(
       this.activeDerivatives[input.pair],
     )!;

@@ -7,7 +7,12 @@ import { once } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
-import { NonPayableTx } from 'libs/contracts/dist/contracts/typechain';
+import {
+  NonPayableTransactionObject,
+  NonPayableTx,
+} from 'libs/contracts/dist/contracts/typechain';
+
+import { toAscii } from 'web3-utils';
 
 import { ReduxAction, Context } from '../../../epics/types';
 
@@ -19,12 +24,11 @@ export const formatUSDValue = (assetOutPrice: string, price: string) =>
     .div(FPN.fromWei(ether))
     .format(2);
 
-const decodeErrorMessage = (msg: string, web3: any): string => {
-  const errorMessageData = msg.substr(msg.indexOf('Reverted ') + 9);
-
+const decodeErrorMessage = (msg: string): string => {
+  const errorMessageData = msg.match(/0x[0-9a-fA-F]{136,}/)![0];
   const msgLength = parseInt(errorMessageData.substr(2 + 8 + 64, 64), 16);
   const msgHex = errorMessageData.substr(2 + 8 + 64 + 64, msgLength * 2);
-  return web3!.utils.toAscii(`0x${msgHex}`);
+  return toAscii(`0x${msgHex}`);
 };
 
 export const genericTx = (
@@ -35,27 +39,24 @@ export const genericTx = (
     | 'redeem'
     | 'deposit'
     | 'withdraw'
-    | 'withdrawCancel'
-    | 'withdrawPass',
+    | 'approveWithdraw'
+    | 'cancelWithdraw',
   allowanceTokenType: 'collateralToken' | 'syntheticToken',
   { validateOnly = false, ...payload }: ContractParams,
 ) =>
   new Observable<ReduxAction>(observer => {
     (async () => {
       try {
-        let isSufficientAllowanceFor;
-        if (!validateOnly) {
-          isSufficientAllowanceFor = await context.selfMintingRealmAgent!.isSufficientAllowanceFor(
-            payload.pair,
-            allowanceTokenType,
-            wei(payload.collateral),
-          );
-        } else {
-          isSufficientAllowanceFor = true;
-        }
+        const isSufficientAllowanceFor = await context.selfMintingRealmAgent!.isSufficientAllowanceFor(
+          payload.pair,
+          allowanceTokenType,
+          allowanceTokenType === 'collateralToken'
+            ? wei(payload.collateral)
+            : wei(payload.numTokens),
+        );
 
         let approvalTransaction = isSufficientAllowanceFor;
-        if (!isSufficientAllowanceFor && !validateOnly) {
+        if (!isSufficientAllowanceFor) {
           //  transaction
           try {
             const tx = await context.selfMintingRealmAgent!.increaseAllowance(
@@ -80,7 +81,7 @@ export const genericTx = (
               estimatedGas = await tx.estimateGas(txParams);
             } catch (err: any) {
               const msg = err.message;
-              const reason = decodeErrorMessage(msg, context.web3);
+              const reason = decodeErrorMessage(msg);
               observer.next({
                 type: `transaction/metaMaskError`,
                 payload: {
@@ -107,7 +108,9 @@ export const genericTx = (
           }
         }
         if (approvalTransaction) {
-          const tx = context.selfMintingRealmAgent![opType](payload);
+          const tx: NonPayableTransactionObject<any> | null = context.selfMintingRealmAgent![
+            opType
+          ](payload);
           const from = context.selfMintingRealmAgent!.agentAddress;
           console.log('Getting tx nonce');
           const newNonce = await context.web3!.eth.getTransactionCount(from);
@@ -128,16 +131,21 @@ export const genericTx = (
             });
           } catch (err: any) {
             const msg = err.message;
-            const reason = decodeErrorMessage(msg, context.web3);
+            const reason = decodeErrorMessage(msg);
             observer.next({
               type: `transaction/metaMaskError`,
               payload: {
                 message: reason,
               },
             });
+            observer.complete();
             return;
           }
           if (validateOnly) {
+            observer.next({
+              type: `transaction/cancel`,
+            });
+            observer.complete();
             return;
           }
           txParams.gas = estimatedGas;
