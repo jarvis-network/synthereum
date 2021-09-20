@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 import {
   ExchangeBox,
-  Link,
   Balance,
   AssetSelect,
-  Amount,
-  AmountSmallPlaceholder,
   handleKeyPress,
   Asset,
   ErrorMessage,
@@ -15,130 +11,179 @@ import {
   Form,
   SubmitContainer,
   SubmitButton,
-  Value,
+  Amount,
 } from '@/components/markets/modal/common';
 import { selfMintingMarketAssets } from '@/data/markets';
 import _ from 'lodash';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import {
-  StringAmount,
-  wei,
-} from '@jarvis-network/core-utils/dist/base/big-number';
-import { calculateDaoFee } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/utils';
-import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
+import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
-import { scaleTokenAmountToWei } from '@jarvis-network/core-utils/dist/eth/contracts/erc20';
-import { styled } from '@jarvis-network/ui';
 import { useDispatch } from 'react-redux';
 
-import { WithdrawHolder } from '../WithdrawHolder';
-import { WithPlaceholder } from '../holders/WithPlaceholder';
+import { useTheme } from '@jarvis-network/ui';
+
+import { ContractParams } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/interfaces';
+
 import TransactionHolder from '../transaction/TransactionHolder';
+import {
+  ActionProps,
+  ErrorMessageContainer,
+  subtitle,
+  title,
+} from '../common/shared';
+import { WithPlaceholder } from '../holders/WithPlaceholder';
+import { WithdrawHolder } from '../WithdrawHolder';
+import { ModalFooter } from '../ModalFooter';
 
-const SplitRow = styled.div`
-  display: inline-block;
-  width: 50%;
-  &:nth-child(1) {
-    text-align: left;
-  }
-`;
-const MarginBottom = styled.div`
-  margin-bottom: 5px;
-`;
+import { ApprovalTransaction } from '../ApprovalTransaction';
 
-const title = 'Lorem ipsum borrow';
-const subtitle = (
-  <>
-    You can find more information about our synthetic tokens{' '}
-    <Link href="/">here</Link>
-  </>
-);
-interface BorrowProps {
-  assetKey: SupportedSelfMintingPairExact;
-  tabHandler: (input: number) => void;
-}
+import { LoadingSection } from '../transaction/style';
 
-export const Borrow: React.FC<BorrowProps> = ({ assetKey, tabHandler }) => {
+import { Loader } from '../common/Loader';
+
+import { useCalculateUserCollateralizationRatioLiquiationpriceFee } from './ucr_lp_fee';
+import { useBalance } from './useBalance';
+import { useMinMax } from './useMinMax';
+import { useMintLimit } from './useMintLimit';
+
+export const Borrow: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
   const dispatch = useDispatch();
-
+  /* -------------------------------------------------------------------------- */
+  /*                            Local State Variables                           */
+  /* -------------------------------------------------------------------------- */
   const [showPreview, setShowPreview] = useState(false);
   const [collateralValue, setCollateralValue] = useState('');
   const [syntheticValue, setSyntheticValue] = useState('');
   const [collateralError, setCollateralError] = useState('');
   const [syntheticError, setSyntheticError] = useState('');
+  const [inputFocus, setInputFocus] = useState('');
 
-  const [minSynthetic, setMinSynthetic] = useState<FPN>(new FPN(0));
-  const [maxSynthetic, setMaxSynthetic] = useState<FPN>(new FPN(0));
-  let assetInValue = '0.00';
-  const [feeValue, setFeeValue] = useState('0');
+  const [collateralRequiredError, setCollateralRequiredError] = useState('');
+  const [syntheticRequiredError, setSyntheticRequiredError] = useState('');
 
-  const tokenBalances = useReduxSelector(state => state.wallet);
-  const assetDetails = useReduxSelector(state => state.markets.list[assetKey]);
+  const [borrowError, setBorrowError] = useState('');
+  const [inProgress, setInProgress] = useState<boolean>(false);
+
+  /* -------------------------------- Variables ------------------------------- */
+
   const selectedAsset = selfMintingMarketAssets[assetKey];
-  const balance = FPN.fromWei(
-    tokenBalances[selectedAsset.assetIn.name]!.amount,
-    // '1000000000000000000000'
+
+  /* -------------------------------------------------------------------------- */
+  /*                               Redux Selectors                              */
+  /* -------------------------------------------------------------------------- */
+
+  const assetDetails = useReduxSelector(state => state.markets.list[assetKey]);
+
+  const metaMaskError = useReduxSelector(state => state.transaction.error);
+  const txValid = useReduxSelector(state => state.transaction.valid);
+  /* -------------------------------------------------------------------------- */
+  /*                                    HOOKS                                   */
+  /* -------------------------------------------------------------------------- */
+  const theme = useTheme();
+  const { insufficientFunds, balanceErrorMessage, balance } = useBalance(
+    collateralValue,
+    assetKey,
+  );
+  const {
+    minSynthetic,
+    maxSynthetic,
+    minCollateral,
+    maxCollateral,
+    validInput,
+    ...minMaxErrors
+  } = useMinMax(
+    collateralValue,
+    syntheticValue,
+    assetDetails!,
+    inputFocus as any,
   );
 
-  const assetInPrice = useReduxSelector(
-    state => state.prices[selectedAsset.assetIn.name],
+  const {
+    fee,
+    liquidationPrice,
+    newRatio,
+  } = useCalculateUserCollateralizationRatioLiquiationpriceFee(
+    collateralValue,
+    syntheticValue,
+    assetDetails!,
   );
+  const { isMintLimitReached, mintLimitReachMessage } = useMintLimit(
+    syntheticValue,
+    assetDetails!,
+  );
+
+  /* -------------------------------------------------------------------------- */
+  /*                                     UI                                     */
+  /* -------------------------------------------------------------------------- */
+
+  /* ---------------------------- Component Updates --------------------------- */
 
   useEffect(() => {
-    if (assetInPrice && collateralValue !== '') {
-      setCollateralError('');
-      const inputCollateral = FPN.toWei(collateralValue.toString());
-      const fee = calculateDaoFee({
-        collateral: inputCollateral,
-        collateralizationRatio: assetDetails!.collateralizationRatio!,
-        feePercentage: assetDetails!.feePercentage!,
+    if (txValid) {
+      setShowPreview(true);
+      dispatch({
+        type: 'transaction/reset',
       });
-
-      setFeeValue(fee.format(2));
-
-      const gcr = assetDetails?.collateralizationRatio;
-      const capDepositRatio = scaleTokenAmountToWei({
-        amount: wei(assetDetails!.capDepositRatio!),
-        decimals: 6,
-      });
-
-      setMinSynthetic(inputCollateral.div(FPN.fromWei(capDepositRatio)));
-
-      setMaxSynthetic(inputCollateral.div(FPN.fromWei(gcr!)));
     }
-  }, [collateralValue, assetInPrice, assetInValue]);
+  }, [txValid]);
+  useEffect(() => {
+    if (metaMaskError?.message) {
+      setInProgress(false);
+    }
+  }, [metaMaskError]);
+
+  /* ----------------------- Synthetic Error validation ----------------------- */
+  useEffect(() => {
+    if (isMintLimitReached) {
+      setBorrowError(mintLimitReachMessage!);
+    }
+  }, [isMintLimitReached]);
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Handlers                                  */
+  /* -------------------------------------------------------------------------- */
+  const onMaxSyntheticSelect = (input: string) => {
+    setInputFocus('synthetic');
+    setSyntheticValue(input);
+  };
+  const onMaxCollateralSelect = (input: string) => {
+    setInputFocus('collateral');
+    setCollateralValue(input);
+  };
+  const handleGoBack = () => {
+    dispatch({
+      type: 'transaction/reset',
+    });
+    setInProgress(false);
+    setShowPreview(false);
+  };
+
+  useEffect(() => {
+    if (validInput) {
+      setCollateralError('');
+      setSyntheticError('');
+    }
+    setCollateralError(
+      minMaxErrors.collateralError ? minMaxErrors.collateralError : '',
+    );
+    setSyntheticError(
+      minMaxErrors.syntheticError ? minMaxErrors.syntheticError : '',
+    );
+  }, [minMaxErrors.collateralError, minMaxErrors.syntheticError]);
 
   useEffect(() => {
     if (syntheticValue !== '') {
-      setSyntheticError('');
-      const syntheticInput = FPN.toWei(syntheticValue.toString());
-
-      if (syntheticInput.gt(maxSynthetic) || syntheticInput.lt(minSynthetic)) {
-        setSyntheticError(
-          `Cannot deposit more than ${maxSynthetic.format(
-            2,
-          )} and less than ${minSynthetic.format(2)}`,
-        );
-      }
+      setSyntheticRequiredError('');
     }
-  }, [syntheticValue]);
+    if (collateralValue !== '') {
+      setCollateralRequiredError('');
+    }
+  }, [syntheticValue, collateralValue]);
 
-  if (assetInPrice && collateralValue !== '') {
-    assetInValue = formatUSDValue(assetInPrice, collateralValue);
-  }
-
-  const onMaxSelect = (input: string) => setSyntheticValue(input);
-  const insufficientFunds = balance.lt(
-    new FPN(collateralValue === '' ? '0' : collateralValue),
-  )!;
-  const errorMessage = insufficientFunds ? 'Insufficient funds' : null;
-  const handleGoBack = () => {
-    setShowPreview(false);
-  };
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="borrow">
-      {showPreview === true ? (
+      {showPreview ? (
         <TransactionHolder
           backHandler={handleGoBack}
           showPreview={showPreview}
@@ -151,7 +196,7 @@ export const Borrow: React.FC<BorrowProps> = ({ assetKey, tabHandler }) => {
               },
               value: FPN.toWei(
                 collateralValue !== '' ? collateralValue : '0',
-              ).format(2),
+              ).format(assetDetails?.collateralTokenDecimals),
             },
             {
               title: 'Borrow',
@@ -161,29 +206,19 @@ export const Borrow: React.FC<BorrowProps> = ({ assetKey, tabHandler }) => {
               },
               value: FPN.toWei(
                 syntheticValue !== '' ? syntheticValue : '0',
-              ).format(2),
+              ).format(assetDetails?.syntheticTokenDecimals),
             },
             {
-              title: 'Fee Percentage',
+              title: 'Fee',
               asset: {
                 name: selectedAsset.assetIn.name,
                 icon: selectedAsset.assetIn.icon,
               },
-              value: `${FPN.fromWei(assetDetails!.feePercentage!)
-                .mul(new FPN(100))
-                .format(4)}%`,
+              value: `${fee.format(6)}`,
             },
           ]}
           confirmHandler={() => {
-            if (collateralValue === '') {
-              setCollateralError('Collateral is Required');
-              return;
-            }
-            if (syntheticValue === '') {
-              setSyntheticError('Synthetic is Required');
-              return;
-            }
-            const borrowParams = {
+            const borrowParams: ContractParams = {
               pair: assetKey,
               collateral: FPN.toWei(collateralValue).toString() as StringAmount,
               numTokens: FPN.toWei(syntheticValue).toString() as StringAmount,
@@ -194,101 +229,226 @@ export const Borrow: React.FC<BorrowProps> = ({ assetKey, tabHandler }) => {
           }}
         />
       ) : (
-        <WithdrawHolder tabHandler={tabHandler} assetInfo={assetDetails!}>
-          <Form>
-            <ExchangeBox error>
-              <Balance>Balance: {balance.format()}</Balance>
-              <AssetSelect
-                error={insufficientFunds || Boolean(collateralError)}
-              >
-                <Amount
-                  value={collateralValue}
-                  inputMode="numeric"
-                  maxLength={8}
-                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-                  onChange={e => {
-                    setCollateralValue(e.target.value);
-                  }}
-                  placeholder="0.0"
-                  required
-                  onFocus={e => {
-                    e.target.select();
-                  }}
-                />
-                <Asset
-                  flag={selectedAsset.assetIn.icon}
-                  name={selectedAsset.assetIn.name}
-                />
-              </AssetSelect>
-              <ErrorMessage>{errorMessage}</ErrorMessage>
-              <ErrorMessage>{collateralError}</ErrorMessage>
-            </ExchangeBox>
-            <Value>Value: ${assetInValue}</Value>
+        assetDetails && (
+          <WithdrawHolder tabHandler={tabHandler!} assetInfo={assetDetails!}>
+            <Form>
+              <ExchangeBox error>
+                <Balance>Balance: {balance && balance.format(6)}</Balance>
+                <AssetSelect
+                  error={
+                    insufficientFunds ||
+                    Boolean(collateralError) ||
+                    Boolean(collateralRequiredError)
+                  }
+                >
+                  <Amount
+                    value={collateralValue}
+                    inputMode="decimal"
+                    maxLength={20}
+                    onKeyPress={e => {
+                      handleKeyPress(e, {
+                        decimals: assetDetails.collateralTokenDecimals!,
+                      });
+                    }}
+                    onChange={e => {
+                      setInputFocus('collateral');
+                      setCollateralValue(e.target.value);
+                    }}
+                    placeholder={`${
+                      minCollateral.gt(new FPN(0))
+                        ? `Min: ${minCollateral.format(
+                            assetDetails.collateralTokenDecimals,
+                          )}/`
+                        : ``
+                    }${
+                      maxCollateral.gt(new FPN(0))
+                        ? `Max: ${maxCollateral.format(
+                            assetDetails.collateralTokenDecimals,
+                          )}`
+                        : `${new FPN(0).format(
+                            assetDetails.collateralTokenDecimals,
+                          )}`
+                    }`}
+                    required
+                    onFocus={e => {
+                      e.target.select();
+                    }}
+                  />
+                  {maxCollateral.gt(new FPN(0)) && (
+                    <Max
+                      onClick={() =>
+                        onMaxCollateralSelect(
+                          maxCollateral.format(
+                            assetDetails.collateralTokenDecimals,
+                          ),
+                        )
+                      }
+                    />
+                  )}
 
-            <ExchangeBox error={Boolean(syntheticError)}>
-              <AssetSelect error={Boolean(syntheticError)}>
-                <AmountSmallPlaceholder
-                  value={syntheticValue}
-                  inputMode="numeric"
-                  required
-                  maxLength={10}
-                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-                  onChange={e => {
-                    setSyntheticValue(e.target.value);
-                  }}
-                  onFocus={e => {
-                    e.target.select();
-                  }}
-                  placeholder={`Min: ${minSynthetic.format(
-                    2,
-                  )}/Max: ${maxSynthetic.format(2)}`}
-                />
-                <Max onClick={() => onMaxSelect(maxSynthetic.format(2))} />
-                <Asset
-                  flag={selectedAsset.assetOut.icon}
-                  name={selectedAsset.assetOut.name}
-                />
-              </AssetSelect>
-              <ErrorMessage>{syntheticError}</ErrorMessage>
-            </ExchangeBox>
-            <br />
+                  <Asset
+                    flag={selectedAsset.assetIn.icon}
+                    name={selectedAsset.assetIn.name}
+                  />
+                </AssetSelect>
+                <ErrorMessage>
+                  {balanceErrorMessage}
+                  {!insufficientFunds && collateralError}
+                  {!insufficientFunds && collateralRequiredError}
+                </ErrorMessage>
+              </ExchangeBox>
 
-            <MarginBottom />
-            <Value>
-              <SplitRow>
-                Min: {minSynthetic.format(2)} {selectedAsset.assetOut.name}{' '}
-                <br />
-                (Less Risky)
-              </SplitRow>
-              <SplitRow>
-                Max: {maxSynthetic.format(2)} {selectedAsset.assetOut.name}{' '}
-                <br />
-                (More Risky)
-              </SplitRow>
-            </Value>
-            <MarginBottom />
-            <Value>
-              Approx Fee: {feeValue} {selectedAsset.assetIn.name}
-            </Value>
-            {/* {assetOutPrice ? (
-          <Value>
-            1 {selectedAsset.assetOut.name} = $
-            {FPN.fromWei(assetOutPrice!.toString()).format(2)}
-          </Value>
-        ) : null} */}
-          </Form>
-          <MarginBottom />
-          <MarginBottom />
-          <SubmitContainer>
-            <SubmitButton
-              onClick={() => {
-                setShowPreview(true);
-              }}
-            >
-              Borrow
-            </SubmitButton>
-          </SubmitContainer>
-        </WithdrawHolder>
+              <ExchangeBox error>
+                <AssetSelect
+                  error={
+                    Boolean(syntheticError) || Boolean(syntheticRequiredError)
+                  }
+                >
+                  <Amount
+                    value={syntheticValue}
+                    inputMode="numeric"
+                    required
+                    maxLength={20}
+                    onKeyPress={e =>
+                      handleKeyPress(e, {
+                        decimals: assetDetails.syntheticTokenDecimals!,
+                      })
+                    }
+                    onChange={e => {
+                      setInputFocus('synthetic');
+                      setSyntheticValue(e.target.value);
+                    }}
+                    onFocus={e => {
+                      e.target.select();
+                    }}
+                    placeholder={`${
+                      minSynthetic.gt(new FPN(0))
+                        ? `Min: ${minSynthetic.format(
+                            assetDetails.collateralTokenDecimals,
+                          )}/`
+                        : ``
+                    }${
+                      maxSynthetic.gt(new FPN(0))
+                        ? `Max: ${maxSynthetic.format(
+                            assetDetails.collateralTokenDecimals,
+                          )}`
+                        : `${new FPN(0).format(
+                            assetDetails.collateralTokenDecimals,
+                          )}`
+                    }`}
+                  />
+                  {maxSynthetic.gt(new FPN(0)) && (
+                    <Max
+                      onClick={() =>
+                        onMaxSyntheticSelect(maxSynthetic.format(6))
+                      }
+                    />
+                  )}
+                  <Asset
+                    flag={selectedAsset.assetOut.icon}
+                    name={selectedAsset.assetOut.name}
+                  />
+                </AssetSelect>
+
+                <ErrorMessage>
+                  {!insufficientFunds && syntheticError}
+                  {!insufficientFunds && syntheticRequiredError}
+                </ErrorMessage>
+              </ExchangeBox>
+              <br />
+            </Form>
+
+            <div>
+              {!insufficientFunds && (metaMaskError?.message || borrowError) && (
+                <ErrorMessageContainer>
+                  {metaMaskError?.message}
+                  {borrowError}
+                </ErrorMessageContainer>
+              )}
+            </div>
+            <SubmitContainer>
+              {!inProgress ? (
+                <SubmitButton
+                  key={Date.now()}
+                  animate=""
+                  style={
+                    validInput &&
+                    collateralError === '' &&
+                    syntheticError === ''
+                      ? {
+                          background: theme.common.success,
+                          text: theme.text.primary,
+                        }
+                      : {}
+                  }
+                  onClick={() => {
+                    console.log({
+                      collateralValue,
+                      syntheticValue,
+                      validInput,
+                      maxCollateral: maxCollateral.format(),
+                      minCollateral: minCollateral.format(),
+                      maxSynthetic: maxSynthetic.format(),
+                      minSynthetic: minSynthetic.format(),
+                      minMaxErrors,
+                    });
+                    if (collateralValue === '') {
+                      setCollateralRequiredError('Collateral is Required');
+                      return;
+                    }
+                    if (syntheticValue === '') {
+                      setSyntheticRequiredError('Synthetic is Required');
+                      return;
+                    }
+                    if (
+                      !validInput ||
+                      collateralError !== '' ||
+                      syntheticError !== ''
+                    )
+                      return;
+
+                    dispatch({
+                      type: 'transaction/reset',
+                    });
+
+                    const borrowParams = {
+                      pair: assetKey,
+                      collateral: FPN.toWei(
+                        collateralValue,
+                      ).toString() as StringAmount,
+                      numTokens: FPN.toWei(
+                        syntheticValue,
+                      ).toString() as StringAmount,
+                      feePercentage: assetDetails!
+                        .feePercentage as StringAmount,
+                      validateOnly: true,
+                    };
+                    setInProgress(true);
+
+                    dispatch({ type: 'CALL_BORROW', payload: borrowParams });
+                  }}
+                >
+                  <ApprovalTransaction
+                    currency={selectedAsset.assetIn.name}
+                    text="Borrow"
+                  />
+                </SubmitButton>
+              ) : (
+                <LoadingSection>
+                  <Loader />
+                </LoadingSection>
+              )}
+            </SubmitContainer>
+            {newRatio.gt(new FPN(0)) && (
+              <ModalFooter
+                newRatio={newRatio}
+                liquidationPrice={liquidationPrice}
+                fee={fee}
+                currency={selectedAsset.assetIn.name}
+              />
+            )}
+          </WithdrawHolder>
+        )
       )}
     </WithPlaceholder>
   );

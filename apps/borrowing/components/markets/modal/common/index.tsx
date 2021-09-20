@@ -19,6 +19,7 @@ export const ExchangeBox = styled.div<{ error: boolean }>`
   grid-template-areas:
     'title'
     'asset-select'
+    'error'
     'value';
   position: relative;
   margin-top: 15px;
@@ -47,7 +48,7 @@ export const Amount = styled.input`
   background: none;
   color: ${props => props.theme.text.secondary};
   font-size: ${props => props.theme.font.sizes.l};
-  width: 45%;
+  width: 65%;
   outline: none !important;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -78,12 +79,12 @@ export const Value = styled.div`
   text-align: right;
   font-size: 16px;
   margin-right: 15px;
-  width: 300px;
   grid-area: value;
 `;
 
 export const ErrorMessage = styled.div`
   position: absolute;
+  grid-area: error;
   bottom: -14px;
   font-size: 8px;
   color: ${props => props.theme.text.invalid};
@@ -125,15 +126,19 @@ const BtnContainer = styled(motion.div)`
 export interface ButtonProps {
   animate?: ActionVariants;
   onClick: () => void;
+  style?: any;
 }
 export const SubmitButton: React.FC<ButtonProps> = ({
   children,
   animate = 'tap',
+  style,
 
   onClick,
 }) => (
   <BtnContainer whileTap="tap" animate={animate} variants={tapAnimation}>
-    <SubmitButtonInner onClick={onClick}>{children}</SubmitButtonInner>
+    <SubmitButtonInner style={style} onClick={onClick}>
+      {children}
+    </SubmitButtonInner>
   </BtnContainer>
 );
 
@@ -147,12 +152,15 @@ export const handleKeyPress = (
     e.currentTarget.selectionStart !== e.currentTarget.selectionEnd;
   const parts = e.currentTarget.value.split('.');
   const decimals = parts[1] || '';
+  const num = parts[0] || '';
 
   if (
     !allowedKeys.includes(e.key) ||
     (e.key === '.' && e.currentTarget.value.includes('.')) ||
-    (decimals.length >= asset.decimals && !somethingSelected)
+    (decimals.length > asset.decimals && !somethingSelected)
   ) {
+    console.log(decimals.length, e.currentTarget.value, num.length);
+    console.log('prevented input');
     e.preventDefault();
   }
 };
