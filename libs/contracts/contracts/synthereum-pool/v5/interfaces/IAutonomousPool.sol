@@ -112,6 +112,17 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
     returns (uint256 newTotalCollateral);
 
   /**
+   * @notice Decrease collaterallization of Lp position
+   * @notice Check that final poosition is not undercollateralized
+   * @notice Only a sender with LP role can call this function
+   * @param collateralAmount Collateral to add
+   * @return newTotalCollateral New total collateral amount
+   */
+  function decreaseCollateral(uint256 collateralAmount)
+    external
+    returns (uint256 newTotalCollateral);
+
+  /**
    * @notice Withdraw fees gained by the sender
    * @return feeClaimed Amount of fee claimed
    */

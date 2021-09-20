@@ -99,6 +99,12 @@ contract SynthereumAutonomousPool is
     uint256 newTotalCollateral
   );
 
+  event DecreaseCollateral(
+    address indexed lp,
+    uint256 collateralRemoved,
+    uint256 newTotalCollateral
+  );
+
   event ClaimFee(
     address indexed claimer,
     uint256 feeAmount,
@@ -280,6 +286,27 @@ contract SynthereumAutonomousPool is
     newTotalCollateral = poolStorage.increaseCollateral(
       lpPosition,
       feeStatus,
+      FixedPoint.Unsigned(collateralAmount)
+    );
+  }
+
+  /**
+   * @notice Decrease collaterallization of Lp position
+   * @notice Check that final poosition is not undercollateralized
+   * @notice Only a sender with LP role can call this function
+   * @param collateralAmount Collateral to add
+   * @return newTotalCollateral New total collateral amount
+   */
+  function decreaseCollateral(uint256 collateralAmount)
+    external
+    override
+    onlyLiquidityProvider
+    nonReentrant
+    returns (uint256 newTotalCollateral)
+  {
+    newTotalCollateral = poolStorage.decreaseCollateral(
+      lpPosition,
+      liquidationData,
       FixedPoint.Unsigned(collateralAmount)
     );
   }

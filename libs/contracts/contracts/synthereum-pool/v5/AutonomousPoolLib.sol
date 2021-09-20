@@ -132,6 +132,12 @@ library SynthereumAutonomousPoolLib {
     uint256 newTotalCollateral
   );
 
+  event DecreaseCollateral(
+    address indexed lp,
+    uint256 collateralRemoved,
+    uint256 newTotalCollateral
+  );
+
   event ClaimFee(
     address indexed claimer,
     uint256 feeAmount,
@@ -461,6 +467,48 @@ library SynthereumAutonomousPoolLib {
     newTotalCollateral = _newTotalCollateral.rawValue;
 
     emit IncreaseCollateral(
+      msg.sender,
+      collateralAmount.rawValue,
+      newTotalCollateral
+    );
+  }
+
+  /**
+   * @notice Decrease collaterallization of Lp position
+   * @notice Check that final position is not undercollateralized
+   * @notice Only a sender with LP role can call this function
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param liquidationData Liquidation info (see LiquidationData struct)
+   * @param collateralAmount Collateral to add
+   * @return newTotalCollateral New total collateral amount
+   */
+  function decreaseCollateral(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    FixedPoint.Unsigned memory collateralAmount
+  ) external returns (uint256 newTotalCollateral) {
+    // Resulting total collateral amount
+    FixedPoint.Unsigned memory _newTotalCollateral =
+      lpPosition.totalCollateralAmount.sub(collateralAmount);
+
+    // Check that position doesn't become undercollateralized
+    require(
+      self.isOverCollateralized(
+        lpPosition,
+        liquidationData,
+        _newTotalCollateral
+      ),
+      'Position undercollateralized'
+    );
+
+    // Update new total collateral amount
+    lpPosition.totalCollateralAmount = _newTotalCollateral;
+
+    newTotalCollateral = _newTotalCollateral.rawValue;
+
+    emit DecreaseCollateral(
       msg.sender,
       collateralAmount.rawValue,
       newTotalCollateral
@@ -889,6 +937,34 @@ library SynthereumAutonomousPoolLib {
         address(poolToCheck)
       ),
       'Destination pool not registred'
+    );
+  }
+
+  /**
+   * @notice Check if an amount of collateral is enough to collateralize the position
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param liquidationData Liquidation info (see LiquidationData struct)
+   * @param collateralToCompare collateral used for checking the overcollaterlization
+   * @return isCollateralized True if position is overcollaterlized, otherwise false
+   */
+  function isOverCollateralized(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    FixedPoint.Unsigned memory collateralToCompare
+  ) internal view returns (bool isCollateralized) {
+    isCollateralized = collateralToCompare.isGreaterThanOrEqual(
+      calculateCollateralAmount(
+        self
+          .finder,
+        IStandardERC20(address(self.collateralToken)),
+        self
+          .priceIdentifier,
+        lpPosition
+          .tokenCollateralised
+      )
+        .mul(liquidationData.collateralRequirement)
     );
   }
 
