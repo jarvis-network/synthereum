@@ -771,14 +771,41 @@ type ChainTokenList = {
   readonly [chainId: number]: Token[];
 };
 
-const WETH_ONLY: ChainTokenList = {
-  '1': [WETH9[1]],
-  '42': [WETH9[42]],
-  '137': [new Token(137, addresses[137].WMATIC, 18, 'WMATIC', 'Wrapped Matic')],
-};
 // used to construct intermediary pairs for trading
 const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-  ...WETH_ONLY,
+  '1': [
+    new Token(1, addresses[1].WBTC, 8, 'WBTC', 'Wrapped Bitcoin'),
+    WETH9[1],
+    new Token(1, addresses[1].MATIC, 18, 'MATIC', 'Matic'),
+    new Token(1, addresses[1].JRT, 18, 'JRT', 'Jarvis Reward Token'),
+    new Token(1, addresses[1].AAVE, 18, 'AAVE', 'Aave Token'),
+    new Token(1, addresses[1].UMA, 18, 'UMA', 'UMA Token'),
+    new Token(1, addresses[1].LINK, 18, 'LINK', 'ChainLink Token'),
+    new Token(1, addresses[1].QUICK, 18, 'QUICK', 'Quickswap'),
+    new Token(1, addresses[1].SUSHI, 18, 'SUSHI', 'SushiToken'),
+  ],
+  '42': [
+    new Token(42, addresses[42].WBTC, 8, 'WBTC', 'Wrapped Bitcoin'),
+    WETH9[42],
+    new Token(42, addresses[42].MATIC, 18, 'MATIC', 'Matic'),
+    new Token(42, addresses[42].JRT, 18, 'JRT', 'Jarvis Reward Token'),
+    new Token(42, addresses[42].AAVE, 18, 'AAVE', 'Aave Token'),
+    new Token(42, addresses[42].UMA, 18, 'UMA', 'UMA Token'),
+    new Token(42, addresses[42].LINK, 18, 'LINK', 'ChainLink Token'),
+    new Token(42, addresses[42].QUICK, 18, 'QUICK', 'Quickswap'),
+    new Token(42, addresses[42].SUSHI, 18, 'SUSHI', 'SushiToken'),
+  ],
+  '137': [
+    new Token(137, addresses[137].WBTC, 8, 'WBTC', 'Wrapped Bitcoin'),
+    new Token(137, addresses[137].ETH, 18, 'ETH', 'Ether'),
+    new Token(137, addresses[137].WMATIC, 18, 'WMATIC', 'Wrapped Matic'),
+    new Token(137, addresses[137].JRT, 18, 'JRT', 'Jarvis Reward Token'),
+    new Token(137, addresses[137].AAVE, 18, 'AAVE', 'Aave Token'),
+    new Token(137, addresses[137].UMA, 18, 'UMA', 'UMA Token'),
+    new Token(137, addresses[137].LINK, 18, 'LINK', 'ChainLink Token'),
+    new Token(137, addresses[137].QUICK, 18, 'QUICK', 'Quickswap'),
+    new Token(137, addresses[137].SUSHI, 18, 'SUSHI', 'SushiToken'),
+  ],
 };
 const ADDITIONAL_BASES: {
   [chainId: number]: { [tokenAddress: string]: Token[] };

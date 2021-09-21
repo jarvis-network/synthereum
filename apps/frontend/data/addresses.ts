@@ -34,8 +34,8 @@ export const addresses = {
     JRT: A<137>('0x596ebe76e2db4470966ea395b0d063ac6197a8c5'),
     AAVE: A<137>('0xd6df932a45c0f255f85145f286ea0b292b21c90b'),
     UMA: A<137>('0x3066818837c5e6ed6601bd5a91b0762877a6b731'),
-    LINK: A<42>('0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39'),
-    QUICK: A<42>('0x831753dd7087cac61ab5644b308642cc1c33dc13'),
-    SUSHI: A<42>('0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a'),
+    LINK: A<137>('0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39'),
+    QUICK: A<137>('0x831753dd7087cac61ab5644b308642cc1c33dc13'),
+    SUSHI: A<137>('0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a'),
   },
 } as const;
