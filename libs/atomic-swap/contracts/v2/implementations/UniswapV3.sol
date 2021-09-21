@@ -32,7 +32,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256 amountOut) {
+  ) external payable returns (uint256[2] memory amounts) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -53,6 +53,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
 
     if (isExactInput) {
+      amounts[0] = msg.value > 0 ? msg.value : exactAmount;
       if (msg.value > 0) {
         // eth as input
         exactAmount = msg.value;
@@ -82,18 +83,17 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           amountOutMinimum: minOutOrMaxIn
         });
 
-      uint256 collateralOut = router.exactInput{value: msg.value}(params);
+      mintParams.collateralAmount = router.exactInput{value: msg.value}(params);
 
       // approve synthereum to pull collateral
       IERC20(tokenSwapPath[tokenSwapPath.length - 1]).safeIncreaseAllowance(
         address(synthereumPool),
-        collateralOut
+        mintParams.collateralAmount
       );
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
-      mintParams.collateralAmount = collateralOut;
-      (amountOut, ) = synthereumPool.mint(mintParams);
+      (amounts[1], ) = synthereumPool.mint(mintParams);
     } else {
       // exact output (collateral)
       if (msg.value > 0) {
@@ -125,10 +125,10 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           amountInMaximum: minOutOrMaxIn
         });
 
-      uint256 inputTokenUsed = router.exactOutput{value: msg.value}(params);
+      amounts[0] = router.exactOutput{value: msg.value}(params);
 
       // refund leftover tokens
-      if (minOutOrMaxIn > inputTokenUsed) {
+      if (minOutOrMaxIn > amounts[0]) {
         if (msg.value > 0) {
           // take leftover eth from the router
           router.refundETH();
@@ -139,7 +139,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
             msg.sender,
-            minOutOrMaxIn.sub(inputTokenUsed)
+            minOutOrMaxIn.sub(amounts[0])
           );
         }
       }
@@ -153,7 +153,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
       mintParams.collateralAmount = exactAmount;
-      (amountOut, ) = synthereumPool.mint(mintParams);
+      (amounts[1], ) = synthereumPool.mint(mintParams);
     }
   }
 
@@ -248,7 +248,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         );
       }
 
-      return inputTokensUsed;
+      return exactAmount;
     }
   }
 
