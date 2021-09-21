@@ -8,97 +8,138 @@ import {
   ExchangeBox,
   Form,
   handleKeyPress,
-  Link,
-  Max,
   SubmitButton,
   SubmitContainer,
-  Value,
 } from '@/components/markets/modal/common';
-import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
+
 import _ from 'lodash';
 import { selfMintingMarketAssets } from '@/data/markets';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { formatUSDValue } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/common';
+import { useTheme } from '@jarvis-network/ui';
 import { useDispatch } from 'react-redux';
 
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
 import { WithPlaceholder } from '../holders/WithPlaceholder';
+
 import TransactionHolder from '../transaction/TransactionHolder';
 
-import { ManageWithdraw } from './ManageWithdraw';
+import {
+  ActionProps,
+  ErrorMessageContainer,
+  subtitle,
+  title,
+} from '../common/shared';
 
-const title = 'Lorem ipsum withdraw';
-const subtitle = (
-  <>
-    You can find more information about our synthetic tokens{' '}
-    <Link href="/">here</Link>
-  </>
-);
-interface WithdrawProps {
-  assetKey: SupportedSelfMintingPairExact;
-}
-export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
+import { calculateGlobalCollateralizationRatio } from '../helpers/gcr';
+
+import { ModalFooter } from '../ModalFooter';
+import { Loader } from '../common/Loader';
+import { LoadingSection } from '../transaction/style';
+import { ApprovalTransaction } from '../ApprovalTransaction';
+
+import { ManageWithdraw } from './ManageWithdraw';
+import { useCalculateUserCollateralizationRatioLiquiationpriceFee } from './ucr_lp_fee';
+import { errors } from './messages';
+
+export const Withdraw: React.FC<ActionProps> = ({ assetKey }) => {
   const dispatch = useDispatch();
+  /* -------------------------------------------------------------------------- */
+  /*                            Local State Variables                           */
+  /* -------------------------------------------------------------------------- */
   const [showPreview, setShowPreview] = useState(false);
   const [collateralError, setCollateralError] = useState('');
-
   const [collateralValue, setCollateralValue] = useState('');
   const [slow, setSlow] = useState(false);
-  let assetInValue = '0.00';
-  const assetDetails = useReduxSelector(state => state.markets.list[assetKey]);
+
+  const [inProgress, setInProgress] = useState<boolean>(false);
+
+  const theme = useTheme();
+  /* -------------------------------- Variables ------------------------------- */
 
   const selectedAsset = selfMintingMarketAssets[assetKey];
-  const balance = FPN.fromWei(
-    assetDetails!.positionCollateral!,
-    // '1000000000000000000000'
-  );
-  const assetInPrice = useReduxSelector(
-    state => state.prices[selectedAsset.assetIn.name],
-  );
 
-  const assetOutPrice = useReduxSelector(
+  /* -------------------------------------------------------------------------- */
+  /*                               Redux Selectors                              */
+  /* -------------------------------------------------------------------------- */
+  const assetDetails = useReduxSelector(state => state.markets.list[assetKey]);
+
+  const syntheticPrice = useReduxSelector(
     state => state.prices[selectedAsset.pair],
   );
-  const onMaxSelect = () => setCollateralValue(balance.format(2));
+  const metaMaskError = useReduxSelector(state => state.transaction.error);
+  const txValid = useReduxSelector(state => state.transaction.valid);
 
-  const insufficientFunds = balance.lt(
-    new FPN(collateralValue === '' ? '0' : collateralValue),
-  )!;
-  if (assetInPrice && collateralValue !== '') {
-    assetInValue = formatUSDValue(assetInPrice, collateralValue);
-  }
-  const errorMessage = insufficientFunds ? 'Insufficient funds' : null;
+  /* -------------------------------------------------------------------------- */
+  /*                                     UI                                     */
+  /* -------------------------------------------------------------------------- */
+  /* ---------------------------- Component Updates --------------------------- */
+  useEffect(() => {
+    if (metaMaskError?.message) {
+      setInProgress(false);
+    }
+  }, [metaMaskError]);
 
   useEffect(() => {
-    if (collateralValue !== '') {
-      const inputCollateral = FPN.toWei(collateralValue.toString());
-
-      const newRatio = FPN.fromWei(assetDetails!.positionCollateral!)
-        .sub(inputCollateral)
-        .div(FPN.fromWei(assetDetails!.positionTokens!));
-
-      setSlow(newRatio.lt(FPN.fromWei(assetDetails!.collateralizationRatio!)));
-      console.log({
-        aa: 'tt',
-        dd: FPN.fromWei(assetDetails!.collateralRequirement!).toString(),
-        d1: newRatio
-          .mul(FPN.fromWei(assetOutPrice!.toString()))
-
-          .toString(),
-        lt: FPN.fromWei(assetDetails!.collateralRequirement!).lt(
-          newRatio.mul(FPN.fromWei(assetOutPrice!.toString())),
-        ),
-        gcr: assetDetails?.collateralizationRatio!.toString(),
-        nro: newRatio.toString(),
-        slow,
+    if (txValid) {
+      setShowPreview(true);
+      dispatch({
+        type: 'transaction/reset',
+      });
+      dispatch({
+        type: 'approvalTransaction/reset',
       });
     }
-  }, [collateralValue]);
+  }, [txValid]);
+  /* --------------------------------- Balance -------------------------------- */
+  const balance = FPN.fromWei(assetDetails!.positionCollateral!);
+  const {
+    fee,
+    liquidationPrice,
+    newRatio,
+  } = useCalculateUserCollateralizationRatioLiquiationpriceFee(
+    collateralValue,
+    assetDetails!,
+  );
+  /* ------------------------------- Formatting ------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Handlers                                  */
+  /* -------------------------------------------------------------------------- */
   const handleGoBack = () => {
+    dispatch({
+      type: 'transaction/reset',
+    });
+    setInProgress(false);
     setShowPreview(false);
   };
+  /* -------------------------------------------------------------------------- */
+  /*                       Calculate Fast or Slow withdraw                      */
+  /* -------------------------------------------------------------------------- */
+
+  useEffect(() => {
+    const lr = FPN.fromWei(assetDetails!.liquidationRatio!).mul(
+      FPN.toWei('100'),
+    );
+    if (newRatio.gt(new FPN(0)) && collateralValue !== '') {
+      if (newRatio.lte(lr)) {
+        setCollateralError(errors.blt);
+      } else {
+        setCollateralError('');
+      }
+
+      setSlow(
+        newRatio.lt(
+          calculateGlobalCollateralizationRatio(
+            assetDetails!.collateralizationRatio!,
+            syntheticPrice!,
+          ),
+        ),
+      );
+    }
+  }, [newRatio]);
+
   return (
     <WithPlaceholder title={title} subtitle={subtitle} skipKey="withdraw">
       {showPreview === true ? (
@@ -114,25 +155,10 @@ export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
               },
               value: FPN.toWei(
                 collateralValue !== '' ? collateralValue : '0',
-              ).format(2),
-            },
-            {
-              title: 'Fee Percentage',
-              asset: {
-                name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
-              },
-              value: `${FPN.fromWei(assetDetails!.feePercentage!)
-                .mul(new FPN(100))
-                .format(4)}%`,
+              ).format(6),
             },
           ]}
           confirmHandler={() => {
-            if (collateralValue === '') {
-              setCollateralError('Collateral is Required');
-              return;
-            }
-
             const params = {
               pair: assetKey,
               slow,
@@ -143,42 +169,96 @@ export const Withdraw: React.FC<WithdrawProps> = ({ assetKey }) => {
           }}
         />
       ) : (
-        <ManageWithdraw assetInfo={assetDetails!}>
-          <Form>
-            <ExchangeBox error={Boolean(errorMessage)}>
-              <Balance>Balance: {balance.format(4)}</Balance>
-              <AssetSelect
-                error={insufficientFunds || Boolean(collateralError)}
-              >
-                <Amount
-                  value={collateralValue}
-                  inputMode="numeric"
-                  onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
-                  required
-                  onChange={e => {
-                    setCollateralValue(e.target.value);
+        assetDetails && (
+          <ManageWithdraw assetInfo={assetDetails!}>
+            <Form>
+              <ExchangeBox error>
+                <Balance>Balance: {balance.format(6)}</Balance>
+                <AssetSelect error={Boolean(collateralError)}>
+                  <Amount
+                    value={collateralValue}
+                    inputMode="numeric"
+                    onKeyPress={e => handleKeyPress(e, { decimals: 5 })}
+                    required
+                    onChange={e => {
+                      setCollateralValue(e.target.value);
+                    }}
+                    placeholder="0.000000"
+                    onFocus={e => {
+                      e.target.select();
+                    }}
+                  />
+                  <Asset
+                    flag={selectedAsset.assetIn.icon}
+                    name={selectedAsset.assetIn.name}
+                  />
+                </AssetSelect>
+
+                <ErrorMessage>{collateralError}</ErrorMessage>
+              </ExchangeBox>
+            </Form>
+            <div>
+              {metaMaskError?.message && (
+                <ErrorMessageContainer>
+                  {metaMaskError?.message}
+                </ErrorMessageContainer>
+              )}
+            </div>
+            <SubmitContainer>
+              {!inProgress ? (
+                <SubmitButton
+                  style={
+                    collateralError === '' &&
+                    collateralValue !== '' &&
+                    FPN.toWei(collateralValue).gt(new FPN(0))
+                      ? {
+                          background: theme.common.success,
+                          text: theme.text.primary,
+                        }
+                      : {}
+                  }
+                  onClick={() => {
+                    if (collateralError !== '') return;
+                    dispatch({
+                      type: 'transaction/reset',
+                    });
+                    if (collateralValue === '') {
+                      setCollateralError('Collateral is Required');
+                      return;
+                    }
+                    const params = {
+                      pair: assetKey,
+                      slow,
+                      collateral: FPN.toWei(
+                        collateralValue,
+                      ).toString() as StringAmount,
+                      validateOnly: true,
+                    };
+                    setInProgress(true);
+                    dispatch({ type: 'CALL_WITHDRAW', payload: params });
                   }}
-                  onFocus={e => {
-                    e.target.select();
-                  }}
-                />
-                <Max onClick={onMaxSelect} />
-                <Asset
-                  flag={selectedAsset.assetIn.icon}
-                  name={selectedAsset.assetIn.name}
-                />
-              </AssetSelect>
-              <ErrorMessage>{errorMessage}</ErrorMessage>
-              <ErrorMessage>{collateralError}</ErrorMessage>
-            </ExchangeBox>
-            <Value>Value: ${assetInValue}</Value>
-          </Form>
-          <SubmitContainer>
-            <SubmitButton onClick={() => setShowPreview(true)}>
-              Withdraw
-            </SubmitButton>
-          </SubmitContainer>
-        </ManageWithdraw>
+                >
+                  <ApprovalTransaction
+                    currency={selectedAsset.assetIn.name}
+                    text="Withdraw"
+                  />
+                </SubmitButton>
+              ) : (
+                <LoadingSection>
+                  <Loader />
+                </LoadingSection>
+              )}
+            </SubmitContainer>
+            {newRatio.gt(new FPN(0)) && (
+              <ModalFooter
+                newRatio={newRatio}
+                liquidationPrice={liquidationPrice}
+                fee={fee}
+                currency={selectedAsset.assetIn.name}
+              />
+            )}
+          </ManageWithdraw>
+        )
       )}
     </WithPlaceholder>
   );

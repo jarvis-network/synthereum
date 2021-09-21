@@ -521,3 +521,55 @@ export const calculateDepositLiquidationPrice = (
     .mul(_positionTokens.div(_positionCollateral.add(inputCollateral)))
     .mul(_price);
 };
+/* -------------------------------------------------------------------------- */
+/*                                  WITHDRAW                                  */
+/* -------------------------------------------------------------------------- */
+/**
+ * ((rawCollateral - UserInput) / tokensOutstanding) * UMA price expressed in Synth * 100
+ *
+ */
+export const calculateWithdrawNewCollateralizationRatio = (
+  positionCollateral: StringAmount,
+  positionTokens: StringAmount,
+  inputCollateral: FPN,
+  price: StringAmount,
+  collateralPrice: StringAmount,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _price = FPN.fromWei(price);
+  const _collateralPrice = FPN.fromWei(collateralPrice);
+
+  return _positionCollateral
+    .sub(inputCollateral)
+    .div(_positionTokens)
+    .mul(_collateralPrice.div(_price))
+    .mul(new FPN(100));
+};
+/**
+ * LiquidationPrice = ((Collateral Requirement * (tokensOutstanding / (rawCollateral - UserInputOfCollateral))) * jSynth/USD)
+ */
+export const calculateWithdrawLiquidationPrice = (
+  collateralRequirement: StringAmount,
+  positionTokens: StringAmount,
+  inputCollateral: FPN,
+  positionCollateral: StringAmount,
+  price: StringAmount,
+) => {
+  const _positionCollateral = FPN.fromWei(positionCollateral);
+  if (_positionCollateral.lte(new FPN('0'))) {
+    return new FPN(0);
+  }
+  const _positionTokens = FPN.fromWei(positionTokens);
+  const _price = FPN.fromWei(price);
+  const _collateralRequirement = FPN.fromWei(collateralRequirement);
+  if (inputCollateral.eq(_positionCollateral)) {
+    return new FPN(0);
+  }
+  return _collateralRequirement
+    .mul(_positionTokens.div(_positionCollateral.sub(inputCollateral)))
+    .mul(_price);
+};

@@ -1,6 +1,5 @@
 import { Market } from '@jarvis-network/synthereum-ts/dist/epics/markets';
 import React, { useState } from 'react';
-import { styled } from '@jarvis-network/ui';
 
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { selfMintingMarketAssets } from '@/data/markets';
@@ -9,50 +8,42 @@ import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config
 import { DateTime } from 'luxon';
 import CountDownTimer from '@/components/countdown/Countdown';
 import { useDispatch } from 'react-redux';
+import { styled, useTheme } from '@jarvis-network/ui';
 
-import { SubmitContainer, SubmitButton } from '../common';
 import TransactionHolder from '../transaction/TransactionHolder';
 import { TransactionParams } from '../transaction/TransactionParams';
 
-const WithdrawContainer = styled.div`
-  overflow: hidden;
-`;
+import {
+  WithdrawContainer,
+  InnerContainer,
+  Title,
+  SubTitle,
+  Note,
+  GotoWithdrawButton,
+} from './style';
 
-const InnerContainer = styled.div`
-  display: flex;
+export const Container = styled.div`
+  height: 100%;
   width: 100%;
-  position: relative;
-  flex-direction: row;
-`;
-
-const Title = styled.div`
-  text-align: center;
-  font-size: 18px;
-  margin: 20px 0px;
-`;
-
-const Note = styled.div`
-  text-align: center;
-  font-size: 12px;
-`;
-
-const SubTitle = styled.div`
-  text-align: center;
-  font-size: 12px;
-  margin-bottom: 10px;
-  > span {
-    font-size: 14px;
-    font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  > :nth-child(n + 1) {
+    flex: 1 1 auto;
   }
 `;
-
-const GotoWithdrawButton = styled(SubmitButton)`
-  width: 200px;
-  font-size: 16px;
-  margin: 20px 10px;
+export const GridContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  > :nth-child(n + 1) {
+    flex: 1 1 auto;
+    display: grid;
+  }
 `;
-const Container = styled.div`
-  width: 520px;
+export const SubmitContainer = styled.div`
+  text-align: center;
+  display: flex;
 `;
 export interface ManageWithdrawProps {
   assetInfo: Market;
@@ -71,13 +62,14 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
   const dispatch = useDispatch();
   const [showTimer, setShowTimer] = useState(true);
   const [cancelTx, setCancelTx] = useState(false);
+  const theme = useTheme();
   const [approveWithdraw, setApproveWithdraw] = useState(false);
   const handleGoBack = () => {
     setCancelTx(false);
     setApproveWithdraw(false);
   };
   return (
-    <div>
+    <Container>
       {!isRequestPending && approveWithdraw === false && cancelTx === false ? (
         children
       ) : cancelTx === true ? (
@@ -98,7 +90,7 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
           ]}
           confirmHandler={() => {
             dispatch({
-              type: 'CANCEL_WITHDRAW',
+              type: 'CALL_CANCEL_WITHDRAW',
               payload: {
                 pair: asset!.pair,
               },
@@ -123,7 +115,7 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
           ]}
           confirmHandler={() => {
             dispatch({
-              type: 'APPROVE_WITHDRAW',
+              type: 'CALL_APPROVE_WITHDRAW',
               payload: {
                 pair: asset!.pair,
               },
@@ -133,54 +125,71 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
       ) : (
         <WithdrawContainer>
           <InnerContainer>
-            <Container>
-              <Title>You have Withdrawal Request Pending </Title>
-              <SubTitle>
-                It will Processed after:{' '}
-                <span>
-                  {withdrawTimeStamp.toLocaleString(DateTime.DATETIME_MED)}
-                </span>
-              </SubTitle>
-              <Note>
-                You need to can click <span>Withdraw Now</span> to receive funds
-              </Note>
-              <TransactionParams
-                params={[
-                  {
-                    title: 'Withdraw',
-                    asset: {
-                      name: selectedAsset.assetIn.name,
-                      icon: selectedAsset.assetIn.icon!,
+            <GridContainer>
+              <div>
+                <Title>You have Withdrawal Request Pending </Title>
+                <SubTitle>
+                  It will Processed after:{' '}
+                  <span>
+                    {withdrawTimeStamp.toLocaleString(DateTime.DATETIME_MED)}
+                  </span>
+                </SubTitle>
+                <Note>
+                  You need to can click <span>Withdraw Now</span> to receive
+                  funds
+                </Note>
+                <TransactionParams
+                  params={[
+                    {
+                      title: 'Withdraw',
+                      asset: {
+                        name: selectedAsset.assetIn.name,
+                        icon: selectedAsset.assetIn.icon!,
+                      },
+                      value: FPN.fromWei(
+                        asset!.positionWithdrawalRequestAmount!,
+                      ).format(2),
                     },
-                    value: FPN.fromWei(
-                      asset!.positionWithdrawalRequestAmount!,
-                    ).format(2),
-                  },
-                ]}
-              />
-              {showTimer && (
-                <CountDownTimer
-                  endDate={withdrawTimeStamp}
-                  completeCB={() => {
-                    setShowTimer(false);
-                  }}
+                  ]}
                 />
-              )}
-              <SubmitContainer>
-                <GotoWithdrawButton onClick={() => setCancelTx(true)}>
-                  Cancel Withdraw
-                </GotoWithdrawButton>
-
-                {!showTimer && (
-                  <GotoWithdrawButton onClick={() => setApproveWithdraw(true)}>
-                    Withdraw Now
-                  </GotoWithdrawButton>
+              </div>
+              <div>
+                {showTimer && (
+                  <CountDownTimer
+                    endDate={withdrawTimeStamp}
+                    completeCB={() => {
+                      setShowTimer(false);
+                    }}
+                  />
                 )}
-              </SubmitContainer>
-            </Container>
+                <SubmitContainer>
+                  <GotoWithdrawButton
+                    style={{
+                      background: theme.common.success,
+                      text: theme.text.primary,
+                    }}
+                    onClick={() => setCancelTx(true)}
+                  >
+                    Cancel Withdraw
+                  </GotoWithdrawButton>
+
+                  {!showTimer && (
+                    <GotoWithdrawButton
+                      style={{
+                        background: theme.common.success,
+                        text: theme.text.primary,
+                      }}
+                      onClick={() => setApproveWithdraw(true)}
+                    >
+                      Withdraw Now
+                    </GotoWithdrawButton>
+                  )}
+                </SubmitContainer>
+              </div>
+            </GridContainer>
           </InnerContainer>
         </WithdrawContainer>
       )}
-    </div>
+    </Container>
   );
 };
