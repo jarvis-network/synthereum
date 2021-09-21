@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { networkSwitch, logoutAction, addressSwitch } from '../actions';
+
 import { initialAppState, OPType } from '../initialState';
 
 import { Action } from './auth';
@@ -80,6 +82,17 @@ const transactionSlice = createSlice({
         ...state,
         valid: true,
       };
+    },
+  },
+  extraReducers: {
+    [addressSwitch.type]() {
+      return initialState;
+    },
+    [networkSwitch.type]() {
+      return initialState;
+    },
+    [logoutAction.type]() {
+      return initialState;
     },
   },
 });

@@ -3,6 +3,7 @@ import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { PriceFeedSymbols } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
 
 import { initialAppState } from '../initialState';
+import { networkSwitch, logoutAction } from '../actions';
 
 const initialState = initialAppState.prices;
 interface SetCurrentPriceAction {
@@ -19,6 +20,14 @@ const priceSlice = createSlice({
         ...state,
         ...action.payload,
       };
+    },
+  },
+  extraReducers: {
+    [networkSwitch.type]() {
+      return initialState;
+    },
+    [logoutAction.type]() {
+      return initialState;
     },
   },
 });

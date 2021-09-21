@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { FlagKeys } from '@jarvis-network/ui';
 
-import { addressSwitch, networkSwitch } from '@/state/actions';
+import { addressSwitch, logoutAction, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 import {
   SupportedNetworkName,
@@ -133,6 +133,9 @@ const marketsSlice = createSlice({
       return initialState;
     },
     [networkSwitch.type]() {
+      return initialState;
+    },
+    [logoutAction.type]() {
       return initialState;
     },
   },
