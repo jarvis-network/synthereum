@@ -21,6 +21,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   receive() external payable {}
 
   /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
+  /// @return amounts = [inputAmount, outputAmount]
   function swapToCollateralAndMint(
     bytes calldata info,
     bool isExactInput,
@@ -29,7 +30,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256 amountOut) {
+  ) external payable returns (uint256[2] memory amounts) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -58,12 +59,14 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       );
     }
 
-    uint256 collateralOut;
     // swap to collateral token (exact[input/output][ETH/ERC20])
     if (isExactInput) {
+      amounts[0] = msg.value > 0 ? msg.value : exactAmount;
       if (msg.value > 0) {
         // swapExactETHForTokens
-        collateralOut = kyberRouter.swapExactETHForTokens{value: msg.value}(
+        mintParams.collateralAmount = kyberRouter.swapExactETHForTokens{
+          value: msg.value
+        }(
           minOutOrMaxIn,
           poolsPath,
           tokenSwapPath,
@@ -85,7 +88,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         );
 
         // swap to collateral token into this wallet
-        collateralOut = kyberRouter.swapExactTokensForTokens(
+        mintParams.collateralAmount = kyberRouter.swapExactTokensForTokens(
           exactAmount,
           minOutOrMaxIn,
           poolsPath,
@@ -95,21 +98,20 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         )[tokenSwapPath.length - 1];
       }
     } else {
+      uint256[] memory amountsOut;
+
       if (msg.value > 0) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
 
         // swap to exact collateral and refund leftover
-        uint256[] memory amountsOut =
-          kyberRouter.swapETHForExactTokens{value: msg.value}(
-            exactAmount,
-            poolsPath,
-            tokenSwapPath,
-            address(this),
-            mintParams.expiration
-          );
-
-        collateralOut = amountsOut[tokenSwapPath.length - 1];
+        amountsOut = kyberRouter.swapETHForExactTokens{value: msg.value}(
+          exactAmount,
+          poolsPath,
+          tokenSwapPath,
+          address(this),
+          mintParams.expiration
+        );
 
         if (minOutOrMaxIn > amountsOut[0]) {
           (bool success, ) =
@@ -131,16 +133,14 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         );
 
         // swap to collateral token into this wallet
-        uint256[] memory amountsOut =
-          kyberRouter.swapTokensForExactTokens(
-            exactAmount,
-            minOutOrMaxIn,
-            poolsPath,
-            tokenSwapPath,
-            address(this),
-            mintParams.expiration
-          );
-        collateralOut = amountsOut[tokenSwapPath.length - 1];
+        amountsOut = kyberRouter.swapTokensForExactTokens(
+          exactAmount,
+          minOutOrMaxIn,
+          poolsPath,
+          tokenSwapPath,
+          address(this),
+          mintParams.expiration
+        );
 
         if (minOutOrMaxIn > amountsOut[0]) {
           // refund leftover input erc20
@@ -150,18 +150,21 @@ contract KyberAtomicSwap is BaseAtomicSwap {
           );
         }
       }
+
+      //return value
+      amounts[0] = amountsOut[0];
+      mintParams.collateralAmount = amountsOut[tokenSwapPath.length - 1];
     }
 
     // approve synthereum to pull collateral
     tokenSwapPath[tokenSwapPath.length - 1].safeIncreaseAllowance(
       address(synthereumPool),
-      collateralOut
+      mintParams.collateralAmount
     );
 
     // mint jSynth to mintParams.recipient (supposedly msg.sender)
     // returns the output amount
-    mintParams.collateralAmount = collateralOut;
-    (amountOut, ) = synthereumPool.mint(mintParams);
+    (amounts[1], ) = synthereumPool.mint(mintParams);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth

@@ -20,7 +20,7 @@ interface IAtomicSwapV2 {
     address nativeCryptoAddress;
   }
 
-  /// @param info: ImplementationInfo related to this implementationss
+  /// @param info: ImplementationInfo related to this implementation
   /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
   /// @param exactAmount: exact input or exact output based on boolean
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
@@ -38,7 +38,7 @@ interface IAtomicSwapV2 {
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut);
 
-  /// @param info: ImplementationInfo related to this implementationss
+  /// @param info: ImplementationInfo related to this implementation
   /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
   /// @param exactAmount: exact input or exact output based on boolean
   /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean

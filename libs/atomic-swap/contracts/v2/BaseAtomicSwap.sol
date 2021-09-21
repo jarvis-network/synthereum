@@ -20,7 +20,7 @@ import {
   SynthereumInterfaces
 } from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
 
-import './IAtomicSwapV2.sol';
+import './interfaces/IAtomicSwapV2.sol';
 
 contract BaseAtomicSwap {
   using SafeMath for uint256;

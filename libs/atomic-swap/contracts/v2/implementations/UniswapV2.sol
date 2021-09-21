@@ -26,7 +26,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256 amountOut) {
+  ) external payable returns (uint256[2] memory amounts) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -50,16 +50,15 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       );
     }
 
-    uint256 collateralOut;
     if (isExactInput) {
+      amounts[0] = msg.value > 0 ? msg.value : exactAmount;
       if (msg.value > 0) {
         //swapExactETHForTokens into this wallet
-        collateralOut = router.swapExactETHForTokens{value: msg.value}(
-          minOutOrMaxIn,
-          tokenSwapPath,
-          address(this),
-          mintParams.expiration
-        )[tokenSwapPath.length - 1];
+        mintParams.collateralAmount = router.swapExactETHForTokens{
+          value: msg.value
+        }(minOutOrMaxIn, tokenSwapPath, address(this), mintParams.expiration)[
+          tokenSwapPath.length - 1
+        ];
       } else {
         //swapExactTokensForTokens into this wallet
 
@@ -72,7 +71,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           implementationInfo.routerAddress,
           exactAmount
         );
-        collateralOut = router.swapExactTokensForTokens(
+        mintParams.collateralAmount = router.swapExactTokensForTokens(
           exactAmount,
           minOutOrMaxIn,
           tokenSwapPath,
@@ -81,18 +80,19 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         )[tokenSwapPath.length - 1];
       }
     } else {
+      uint256[] memory amountsOut;
+
       if (msg.value > 0) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
-        uint256[] memory amountsOut =
-          router.swapETHForExactTokens{value: msg.value}(
-            exactAmount,
-            tokenSwapPath,
-            address(this),
-            mintParams.expiration
-          );
 
-        collateralOut = amountsOut[tokenSwapPath.length - 1];
+        // swap to exact collateral
+        amountsOut = router.swapETHForExactTokens{value: msg.value}(
+          exactAmount,
+          tokenSwapPath,
+          address(this),
+          mintParams.expiration
+        );
 
         // refund eventual eth leftover
         if (minOutOrMaxIn > amountsOut[0]) {
@@ -113,16 +113,13 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           minOutOrMaxIn
         );
 
-        uint256[] memory amountsOut =
-          router.swapTokensForExactTokens(
-            exactAmount,
-            minOutOrMaxIn,
-            tokenSwapPath,
-            address(this),
-            mintParams.expiration
-          );
-
-        collateralOut = amountsOut[tokenSwapPath.length - 1];
+        amountsOut = router.swapTokensForExactTokens(
+          exactAmount,
+          minOutOrMaxIn,
+          tokenSwapPath,
+          address(this),
+          mintParams.expiration
+        );
 
         if (minOutOrMaxIn > amountsOut[0]) {
           inputTokenInstance.safeTransfer(
@@ -131,15 +128,19 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           );
         }
       }
+
+      //return value
+      amounts[0] = amountsOut[0];
+      mintParams.collateralAmount = amountsOut[tokenSwapPath.length - 1];
     }
 
-    // mint jSynth
+    // mint jSynth with collateral out
     IERC20(tokenSwapPath[tokenSwapPath.length - 1]).safeIncreaseAllowance(
       address(synthereumPool),
-      collateralOut
+      mintParams.collateralAmount
     );
-    mintParams.collateralAmount = collateralOut;
-    (amountOut, ) = synthereumPool.mint(mintParams);
+
+    (amounts[1], ) = synthereumPool.mint(mintParams);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth

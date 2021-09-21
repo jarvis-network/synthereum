@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
-import './IAtomicSwapV2.sol';
+import './interfaces/IAtomicSwapV2.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
@@ -69,6 +69,7 @@ contract AtomicSwapProxy {
 
   // delegate calls to atomic swap implementations
   // will run implementers code in this context (storage, msg.value, msg.sender and so on)
+  /// @return amounts = [inputAmount, outputAmount]
   function swapAndMint(
     string calldata implementationId,
     bool isExactInput,
@@ -77,7 +78,7 @@ contract AtomicSwapProxy {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) public payable {
+  ) external payable returns (uint256[2] memory amounts) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -102,7 +103,9 @@ contract AtomicSwapProxy {
     // checks
     require(success, 'Delegate call failed');
 
-    emit Swap(abi.decode(result, (uint256)));
+    amounts = abi.decode(result, (uint256[2]));
+
+    emit Swap(amounts[1]);
   }
 
   function redeemCollateralAndSwap(
@@ -114,7 +117,7 @@ contract AtomicSwapProxy {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
-  ) public {
+  ) external returns (uint256 outputAmount) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -139,6 +142,8 @@ contract AtomicSwapProxy {
     // checks
     require(success, 'Delegate call failed');
 
-    emit Swap(abi.decode(result, (uint256)));
+    outputAmount = abi.decode(result, (uint256));
+
+    emit Swap(outputAmount);
   }
 }
