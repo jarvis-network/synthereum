@@ -82,9 +82,7 @@ const Home = ({ markets }: { markets: SelfMintingMarketAssets }) => {
     <Layout>
       <LayoutGrid>
         <LayoutGridContainer>
-          {markets ? (
-            <MarketsGrid networkId={networkId} markets={markets} />
-          ) : null}
+          {markets ? <MarketsGrid markets={markets} /> : null}
         </LayoutGridContainer>
       </LayoutGrid>
       <LayoutWidget image="/images/light-mode-background.jpg">
