@@ -33,7 +33,7 @@ import {
   title,
 } from '../common/shared';
 import { WithPlaceholder } from '../holders/WithPlaceholder';
-import { WithdrawHolder } from '../WithdrawHolder';
+import { WithdrawHolder } from '../withdraw/WithdrawHolder';
 import { ModalFooter } from '../ModalFooter';
 
 import { ApprovalTransaction } from '../ApprovalTransaction';

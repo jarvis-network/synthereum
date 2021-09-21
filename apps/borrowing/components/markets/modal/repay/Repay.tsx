@@ -29,13 +29,14 @@ import {
   title,
 } from '../common/shared';
 import { WithPlaceholder } from '../holders/WithPlaceholder';
-import { WithdrawHolder } from '../WithdrawHolder';
 import { ModalFooter } from '../ModalFooter';
 import { ApprovalTransaction } from '../ApprovalTransaction';
 
 import { Loader } from '../common/Loader';
 
 import { LoadingSection } from '../transaction/style';
+
+import { WithdrawHolder } from '../withdraw/WithdrawHolder';
 
 import { useCalculateUserCollateralizationRatioLiquiationpriceFee } from './ucr_lp_fee';
 import { useMinMax } from './useMinMax';

@@ -28,12 +28,13 @@ import {
   title,
 } from '../common/shared';
 import { WithPlaceholder } from '../holders/WithPlaceholder';
-import { WithdrawHolder } from '../WithdrawHolder';
 
 import { ModalFooter } from '../ModalFooter';
 import { LoadingSection } from '../transaction/style';
 import { Loader } from '../common/Loader';
 import { ApprovalTransaction } from '../ApprovalTransaction';
+
+import { WithdrawHolder } from '../withdraw/WithdrawHolder';
 
 import { useBalance } from './useBalance';
 import { useMinMax } from './useMinMax';
