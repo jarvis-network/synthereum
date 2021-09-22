@@ -127,14 +127,17 @@ export class ChainLinkPriceFeed<
     } = {} as any;
     for (const [index, pair] of this.feed[symbol]!.pairs.entries()) {
       try {
-        prices[pair] = convertToDecimal(
-          (
+        if (this.feed[symbol]!.priceFeedInstances[index].decimals) {
+          const p = (
             await this.feed[symbol]?.priceFeedInstances[index].instance.methods // eslint-disable-line
               .latestRoundData()
               .call()
-          )[1],
-          this.feed[symbol]!.priceFeedInstances[index].decimals!,
-        );
+          )[1];
+          prices[pair] = convertToDecimal(
+            p,
+            this.feed[symbol]!.priceFeedInstances[index].decimals!,
+          );
+        }
       } catch (err) {
         console.error(`Error getting the price of ${symbol}:`, err);
       }

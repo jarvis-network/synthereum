@@ -5,7 +5,11 @@ import { UserHeader } from '@/components/header/UserHeader';
 import { MarketsGrid } from '@/components/markets/Grid';
 import { useDispatch } from 'react-redux';
 import { setWindowLoaded } from '@/state/slices/app';
-import { parseSupportedNetworkId } from '@jarvis-network/synthereum-config';
+import {
+  parseSupportedNetworkId,
+  SupportedNetworkName,
+  SupportedSelfMintingPairExact,
+} from '@jarvis-network/synthereum-config';
 import { getInfuraWeb3 } from '@jarvis-network/core-utils/dist/apis/infura';
 import _ from 'lodash';
 import { SelfMintingMarketAssets } from '@/state/slices/markets';
@@ -13,6 +17,8 @@ import { SelfMintingMarketAssets } from '@/state/slices/markets';
 import { createContext } from '@jarvis-network/synthereum-ts/dist/epics/core';
 import { getActiveMarkets } from '@jarvis-network/synthereum-ts/dist/epics/markets';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { SelfMintingRealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/agent';
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 
 const Layout = styled.div`
   display: flex;
@@ -55,9 +61,16 @@ const LayoutWidget = styled(Background)`
 
 const Home = ({ markets }: { markets: SelfMintingMarketAssets }) => {
   const dispatch = useDispatch();
-  const networkId = useReduxSelector(state => state.app.networkId);
+  const auth = useReduxSelector(state => state.auth?.address);
+
   useEffect(() => {
-    if (networkId) {
+    if (auth) {
+      dispatch({
+        type: 'transaction/reset',
+      });
+      dispatch({
+        type: 'approvalTransaction/reset',
+      });
       dispatch({ type: 'GET_MARKET_LIST' });
       dispatch({
         type: 'GET_WALLET_BALANCE',
@@ -68,7 +81,7 @@ const Home = ({ markets }: { markets: SelfMintingMarketAssets }) => {
         payload: [...Object.keys(markets), 'UMA', 'USDC'],
       });
     }
-  }, [networkId]);
+  }, [auth]);
   useEffect(() => {
     function handleLoad() {
       setTimeout(() => dispatch(setWindowLoaded(true)), 250);
@@ -100,8 +113,27 @@ export async function getStaticProps() {
   // TOOD: Choose network dynamically
   const netId = parseSupportedNetworkId(1);
   const web3 = getInfuraWeb3(netId);
-  const realm = await createContext(web3);
-  const assets = await getActiveMarkets(realm);
+  const { realm, chainLinkPriceFeed } = await createContext(web3);
+  const realmAgent = new SelfMintingRealmAgent(
+    realm!,
+    '0x0000000000000000000000000000000000000000' as AddressOn<SupportedNetworkName>,
+    'v1',
+  );
+
+  const assets = await getActiveMarkets({ selfMintingRealmAgent: realmAgent });
+  const marketSymbols = [
+    ...Object.keys(assets),
+  ] as SupportedSelfMintingPairExact[];
+  await chainLinkPriceFeed!.init();
+  await Promise.all(
+    marketSymbols.map(async marketSymbol => {
+      const price = await chainLinkPriceFeed!.getPrice(marketSymbol);
+      if (price) {
+        assets[marketSymbol]!.price = price;
+      }
+    }),
+  );
+
   return {
     props: {
       markets: assets,

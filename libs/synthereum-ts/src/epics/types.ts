@@ -2,7 +2,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import type Web3 from 'web3';
 
+import { SupportedNetworkName } from '../config';
+
 import { SelfMintingRealmAgent } from '../core/realms/self-minting/agent';
+import { SelfMintingRealmWithWeb3 } from '../core/types/realm';
 import { ChainLinkPriceFeed } from '../price-feed/chainlink';
 
 export interface Context {
@@ -10,6 +13,7 @@ export interface Context {
   selfMintingRealmAgent: SelfMintingRealmAgent | null;
   networkId: number | null;
   chainLinkPriceFeed: ChainLinkPriceFeed | null;
+  realm: SelfMintingRealmWithWeb3<SupportedNetworkName> | null;
 }
 
 export const context$ = new BehaviorSubject<Context>({
@@ -17,6 +21,7 @@ export const context$ = new BehaviorSubject<Context>({
   selfMintingRealmAgent: null,
   chainLinkPriceFeed: null,
   web3: null,
+  realm: null,
 });
 export type ReduxAction<Type extends string = string, Payload = any> = {
   type: Type;

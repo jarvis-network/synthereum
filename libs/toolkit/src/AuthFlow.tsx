@@ -15,10 +15,13 @@ import Web3 from 'web3';
 import {
   isSupportedNetwork,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-config';
+  SupportedNetworkName,
+} from '@jarvis-network/synthereum-config/dist';
 import { EnhancedStore } from '@reduxjs/toolkit';
 
 import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
+
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 
 import { ENSHelper } from './ens';
 import { useCoreObservables } from './CoreObservablesContext';
@@ -26,7 +29,11 @@ import { useBehaviorSubject } from './useBehaviorSubject';
 import { getOnboardConfig } from './onboardConfig';
 import { authFactory, useAuthContext } from './AuthContext';
 import { usePrevious } from './usePrevious';
-import { newWeb3Context, emptyWeb3Context } from './core-context';
+import {
+  newWeb3Context,
+  emptyWeb3Context,
+  onAddressUpdate,
+} from './core-context';
 
 const ModalWrapper = styled.div`
   @media screen and (max-width: ${props =>
@@ -130,7 +137,7 @@ export function AuthFlow<
     const onboard = Onboard({
       ...getOnboardConfig(defaultNetwork),
       subscriptions: {
-        wallet(wallet) {
+        async wallet(wallet) {
           walletRef.current = wallet;
           if (!wallet.provider) {
             const currentAuth = authFactory(
@@ -140,19 +147,52 @@ export function AuthFlow<
               logoutAction,
             );
             currentAuth.logout();
+            dispatch({
+              type: 'transaction/reset',
+            });
+            dispatch({
+              type: 'approvalTransaction/reset',
+            });
             web3$.next(null);
             ens$.next(null);
             emptyWeb3Context();
             return;
           }
-          const web3instance = new Web3(wallet.provider);
-          newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
-          web3$.next(web3instance);
-
-          const ensInstance = new ENSHelper(web3instance);
-          ens$.next(ensInstance);
+          const web3instance = new Web3(walletRef.current.provider);
+          console.time('RealmLoaded');
+          try {
+            await newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
+            web3$.next(web3instance);
+            console.timeEnd('RealmLoaded');
+          } catch (error: any) {
+            console.log(error);
+            dispatch({
+              type: 'app/realmError',
+              payload: {
+                message: error.message,
+              },
+            });
+          }
+          ens$.next(new ENSHelper(web3instance));
         },
-        address(newAddress) {
+        async address(newAddress) {
+          dispatch(setAuthModalVisibleAction(false));
+          if (walletRef.current) {
+            try {
+              await onAddressUpdate(
+                newAddress as AddressOn<SupportedNetworkName>,
+              );
+            } catch (error: any) {
+              console.log(error);
+              dispatch({
+                type: 'app/realmError',
+                payload: {
+                  message: error.message,
+                },
+              });
+            }
+          }
+
           dispatch(addressSwitchAction({ address: newAddress }));
         },
         network(newNetworkId) {
@@ -176,21 +216,33 @@ export function AuthFlow<
 
   const previousNetworkId = usePrevious(networkId);
   useEffect(() => {
-    // just logged in
-    if (!previousNetworkId || !address) return;
-    // just logged out
-    if (!networkId) return;
-    // address has changed
-    if (previousNetworkId === networkId) return;
-
-    const web3instance = new Web3(walletRef.current.provider);
-    newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
-    web3$.next(web3instance);
-
-    postNotification('You have switched your network', {
-      type: NotificationType.success,
-      icon: '⚡️',
-    });
+    async function updateRealm() {
+      // just logged in
+      if (!previousNetworkId || !address) return;
+      // just logged out
+      if (!networkId) return;
+      // address has changed
+      if (previousNetworkId === networkId) return;
+      dispatch(setAuthModalVisibleAction(false));
+      try {
+        const web3instance = new Web3(walletRef.current.provider);
+        await newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
+        onAddressUpdate(address as AddressOn<SupportedNetworkName>);
+      } catch (error: any) {
+        console.log(error);
+        dispatch({
+          type: 'app/realmError',
+          payload: {
+            message: error.message,
+          },
+        });
+      }
+      postNotification('You have switched your network', {
+        type: NotificationType.success,
+        icon: '⚡️',
+      });
+    }
+    updateRealm();
   }, [address, previousNetworkId, networkId]);
 
   const previousAddress = usePrevious(address);
@@ -199,13 +251,21 @@ export function AuthFlow<
     if (!address || !previousAddress) return;
     // just logged out
     if (!address) return;
+
     // address has changed
     if (address === previousAddress) return;
-    const web3instance = new Web3(walletRef.current.provider);
-    newWeb3Context(web3instance as Web3On<SupportedNetworkId>);
-    web3$.next(web3instance);
-
-    postNotification('You have switched your network', {
+    try {
+      onAddressUpdate(address as AddressOn<SupportedNetworkName>);
+    } catch (error: any) {
+      console.log(error);
+      dispatch({
+        type: 'app/realmError',
+        payload: {
+          message: error.message,
+        },
+      });
+    }
+    postNotification('You have switched your address', {
       type: NotificationType.success,
       icon: '⚡️',
     });
@@ -247,11 +307,11 @@ export function AuthFlow<
 
     auth
       .login(autoLoginWallet)
+
       .then(loginSuccessful => {
         if (!loginSuccessful) {
           return;
         }
-
         postNotification('You have successfully signed in', {
           type: NotificationType.success,
           icon: '👍🏻',
