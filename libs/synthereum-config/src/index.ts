@@ -6,6 +6,7 @@ export {
 } from './types/price-feed-symbols';
 export type {
   SynthereumCollateralSymbol,
+  SelfMintingCollateralSymbol,
   PerAsset,
   PairToExactPair,
   AssetOf,
@@ -28,6 +29,7 @@ export type {
 export type {
   ExchangeSelfMintingToken,
   PerSelfMintingPair,
+  PerSelfMintingCollateralPair,
   SupportedSelfMintingPair,
   SupportedSelfMintingSymbol,
   SupportedSelfMintingPairExact,
