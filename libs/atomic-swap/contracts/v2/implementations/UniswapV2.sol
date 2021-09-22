@@ -152,7 +152,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
-    address payable recipient
+    address recipient
   ) external returns (uint256) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =

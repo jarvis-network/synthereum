@@ -23,6 +23,6 @@ interface IAtomicSwapProxy {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
-    address payable recipient
+    address recipient
   ) external returns (uint256);
 }

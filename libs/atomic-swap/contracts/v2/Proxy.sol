@@ -116,7 +116,7 @@ contract AtomicSwapProxy {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
-    address payable recipient
+    address recipient
   ) external returns (uint256 outputAmount) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
