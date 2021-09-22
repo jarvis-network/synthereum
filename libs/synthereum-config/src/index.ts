@@ -5,14 +5,15 @@ export {
   reversedPriceFeedPairs,
 } from './types/price-feed-symbols';
 export type {
-  SynthereumCollateralSymbol,
-  SelfMintingCollateralSymbol,
-  PerAsset,
-  PairToExactPair,
-  AssetOf,
-  SyntheticSymbolOf,
   AssetFromSyntheticSymbol,
+  AssetOf,
+  AssetSymbol,
   CollateralOf,
+  PairToExactPair,
+  PerAsset,
+  SelfMintingCollateralSymbol,
+  SynthereumCollateralSymbol,
+  SyntheticSymbolOf,
 } from './types/price-feed-symbols';
 
 export { poolVersions } from './supported/pool-versions';
