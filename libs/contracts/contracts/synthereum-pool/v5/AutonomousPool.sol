@@ -53,6 +53,8 @@ contract SynthereumAutonomousPool is
 
   FeeStatus private feeStatus;
 
+  Shutdown private emergencyShutdownData;
+
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -118,6 +120,8 @@ contract SynthereumAutonomousPool is
     uint256 rewardReceived
   );
 
+  event EmergencyShutdown(uint256 timestamp, uint256 price);
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -126,6 +130,19 @@ contract SynthereumAutonomousPool is
     require(
       hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender),
       'Sender must be the liquidity provider'
+    );
+    _;
+  }
+
+  modifier notEmergencyShutdown() {
+    require(emergencyShutdownData.timestamp == 0, 'Pool emergency shutdown');
+    _;
+  }
+
+  modifier isEmergencyShutdown() {
+    require(
+      emergencyShutdownData.timestamp != 0,
+      'Pool not emergency shutdown'
     );
     _;
   }
@@ -184,6 +201,7 @@ contract SynthereumAutonomousPool is
   function mint(MintParams memory mintParams)
     external
     override
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 syntheticTokensMinted, uint256 feePaid)
   {
@@ -205,6 +223,7 @@ contract SynthereumAutonomousPool is
   function redeem(RedeemParams memory redeemParams)
     external
     override
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 collateralRedeemed, uint256 feePaid)
   {
@@ -226,6 +245,7 @@ contract SynthereumAutonomousPool is
   function exchange(ExchangeParams memory exchangeParams)
     external
     override
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 destNumTokensMinted, uint256 feePaid)
   {
@@ -247,7 +267,7 @@ contract SynthereumAutonomousPool is
     uint256 collateralAmount,
     uint256 numTokens,
     address recipient
-  ) external override nonReentrant {
+  ) external override notEmergencyShutdown nonReentrant {
     poolStorage.exchangeMint(
       lpPosition,
       feeStatus,
@@ -267,6 +287,7 @@ contract SynthereumAutonomousPool is
     external
     override
     onlyLiquidityProvider
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 remainingLiquidity)
   {
@@ -308,6 +329,7 @@ contract SynthereumAutonomousPool is
     external
     override
     onlyLiquidityProvider
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 newTotalCollateral)
   {
@@ -341,6 +363,7 @@ contract SynthereumAutonomousPool is
   function liquidate(uint256 numSynthTokens)
     external
     override
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 collateralReceived, uint256 rewardAmount)
   {
@@ -350,6 +373,22 @@ contract SynthereumAutonomousPool is
       feeStatus,
       FixedPoint.Unsigned(numSynthTokens)
     );
+  }
+
+  /**
+   * @notice Shutdown the pool in case of emergency
+   * @notice Only Synthereum manager contract can call this function
+   * @return timestamp Timestamp of emergency shutdown transaction
+   * @return price Price of the pair at the moment of shutdown execution
+   */
+  function emergencyShutdown()
+    external
+    override
+    notEmergencyShutdown
+    nonReentrant
+    returns (uint256 timestamp, uint256 price)
+  {
+    (timestamp, price) = poolStorage.emergencyShutdown(emergencyShutdownData);
   }
 
   //----------------------------------------

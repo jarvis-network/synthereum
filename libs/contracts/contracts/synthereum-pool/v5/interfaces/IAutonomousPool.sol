@@ -138,4 +138,14 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function liquidate(uint256 numSynthTokens)
     external
     returns (uint256 collateralReceived, uint256 rewardAmount);
+
+  /**
+   * @notice Shutdown the pool in case of emergency
+   * @notice Only Synthereum manager contract can call this function
+   * @return timestamp Timestamp of emergency shutdown transaction
+   * @return price Price of the pair at the moment of shutdown execution
+   */
+  function emergencyShutdown()
+    external
+    returns (uint256 timestamp, uint256 price);
 }

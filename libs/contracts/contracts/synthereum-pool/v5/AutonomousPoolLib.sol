@@ -151,6 +151,8 @@ library SynthereumAutonomousPoolLib {
     uint256 rewardReceived
   );
 
+  event EmergencyShutdown(uint256 timestamp, uint256 price);
+
   //----------------------------------------
   // External function
   //----------------------------------------
@@ -626,6 +628,33 @@ library SynthereumAutonomousPoolLib {
       collateralReceived,
       rewardAmount
     );
+  }
+
+  /**
+   * @notice Shutdown the pool in case of emergency
+   * @notice Only Synthereum manager contract can call this function
+   * @param self Data type the library is attached to
+   * @param emergencyShutdownData Emergency shutdown info (see Shutdown struct)
+   * @return timestamp Timestamp of emergency shutdown transaction
+   * @return price Price of the pair at the moment of shutdown execution
+   */
+  function emergencyShutdown(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.Shutdown storage emergencyShutdownData
+  ) external returns (uint256 timestamp, uint256 price) {
+    ISynthereumFinder _finder = self.finder;
+    require(
+      msg.sender ==
+        _finder.getImplementationAddress(SynthereumInterfaces.Manager),
+      'Caller must be the Synthereum manager'
+    );
+    uint256 _timestamp = block.timestamp;
+    emergencyShutdownData.timestamp = _timestamp;
+    FixedPoint.Unsigned memory _price =
+      getPriceFeedRate(_finder, self.priceIdentifier);
+    emergencyShutdownData.price = _price;
+    price = _price.rawValue;
+    emit EmergencyShutdown(timestamp, price);
   }
 
   /**
