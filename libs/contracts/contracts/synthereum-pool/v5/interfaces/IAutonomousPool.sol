@@ -127,4 +127,15 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @return feeClaimed Amount of fee claimed
    */
   function claimFee() external returns (uint256 feeClaimed);
+
+  /**
+   * @notice Liquidate Lp position for an amount of synthetic tokens undercollateralized
+   * @notice Revert if position is not undercollateralized
+   * @param numSynthTokens Number of synthetic tokens to be liquidated
+   * @return collateralReceived Amount of received collateral equal to the value of tokens liquidated
+   * @return rewardAmount Amount of received collateral as reward for the liquidation
+   */
+  function liquidate(uint256 numSynthTokens)
+    external
+    returns (uint256 collateralReceived, uint256 rewardAmount);
 }
