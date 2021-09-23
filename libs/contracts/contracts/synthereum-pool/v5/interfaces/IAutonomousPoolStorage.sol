@@ -60,4 +60,11 @@ interface ISynthereumAutonomousPoolStorage {
     // Total amount of fees to be withdrawn
     FixedPoint.Unsigned totalFeeAmount;
   }
+
+  struct Shutdown {
+    // Timestamp of execution of shutdown
+    uint256 timestamp;
+    // Price of the pair at the moment of the shutdown
+    FixedPoint.Unsigned price;
+  }
 }
