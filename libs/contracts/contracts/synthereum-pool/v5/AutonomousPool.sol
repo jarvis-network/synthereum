@@ -111,6 +111,13 @@ contract SynthereumAutonomousPool is
     uint256 totalRemainingFees
   );
 
+  event Liquidate(
+    address indexed liquidator,
+    uint256 tokensLiquidated,
+    uint256 collateralReceived,
+    uint256 rewardReceived
+  );
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -322,6 +329,27 @@ contract SynthereumAutonomousPool is
     returns (uint256 feeClaimed)
   {
     feeClaimed = poolStorage.claimFee(feeStatus);
+  }
+
+  /**
+   * @notice Liquidate Lp position for an amount of synthetic tokens undercollateralized
+   * @notice Revert if position is not undercollateralized
+   * @param numSynthTokens Number of synthetic tokens to be liquidated
+   * @return collateralReceived Amount of received collateral equal to the value of tokens liquidated
+   * @return rewardAmount Amount of received collateral as reward for the liquidation
+   */
+  function liquidate(uint256 numSynthTokens)
+    external
+    override
+    nonReentrant
+    returns (uint256 collateralReceived, uint256 rewardAmount)
+  {
+    (collateralReceived, rewardAmount) = poolStorage.liquidate(
+      lpPosition,
+      liquidationData,
+      feeStatus,
+      FixedPoint.Unsigned(numSynthTokens)
+    );
   }
 
   //----------------------------------------

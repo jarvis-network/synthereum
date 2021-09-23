@@ -144,6 +144,13 @@ library SynthereumAutonomousPoolLib {
     uint256 totalRemainingFees
   );
 
+  event Liquidate(
+    address indexed liquidator,
+    uint256 tokensLiquidated,
+    uint256 collateralReceived,
+    uint256 rewardReceived
+  );
+
   //----------------------------------------
   // External function
   //----------------------------------------
@@ -494,14 +501,14 @@ library SynthereumAutonomousPoolLib {
       lpPosition.totalCollateralAmount.sub(collateralAmount);
 
     // Check that position doesn't become undercollateralized
-    require(
+    (bool _isOverCollateralized, ) =
       self.isOverCollateralized(
         lpPosition,
         liquidationData,
         _newTotalCollateral
-      ),
-      'Position undercollateralized'
-    );
+      );
+
+    require(_isOverCollateralized, 'Position undercollateralized');
 
     // Update new total collateral amount
     lpPosition.totalCollateralAmount = _newTotalCollateral;
@@ -545,6 +552,80 @@ library SynthereumAutonomousPoolLib {
     self.collateralToken.safeTransfer(msg.sender, _feeClaimed.rawValue);
 
     emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
+  }
+
+  /**
+   * @notice Liquidate Lp position for an amount of synthetic tokens undercollateralized
+   * @notice Revert if position is not undercollateralized
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param liquidationData Liquidation info (see LiquidationData struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param numSynthTokens Number of synthetic tokens to be liquidated
+   * @return collateralReceived Amount of received collateral equal to the value of tokens liquidated
+   * @return rewardAmount Amount of received collateral as reward for the liquidation
+   */
+  function liquidate(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    FixedPoint.Unsigned memory numSynthTokens
+  ) external returns (uint256 collateralReceived, uint256 rewardAmount) {
+    // Collateral to liquidate
+    FixedPoint.Unsigned memory collateralInLiquidation =
+      lpPosition.updateLpPositionInRedeem(numSynthTokens);
+
+    // Collateral value of the synthetic token passed
+    (
+      bool _isOverCollaterlized,
+      FixedPoint.Unsigned memory _collateralReceived
+    ) =
+      self.isOverCollateralized(
+        lpPosition,
+        liquidationData,
+        collateralInLiquidation
+      );
+
+    // Revert if position is not undercollataralized
+    require(!_isOverCollaterlized, 'Position is not undercollataralized');
+
+    // Burn synthetic tokens to be liquidated
+    self.burnSyntheticTokens(numSynthTokens.rawValue);
+
+    // Check that in case of undercapitalization there is enough unused liquidity
+    if (collateralInLiquidation.isGreaterThan(_collateralReceived)) {
+      rewardAmount = (
+        (collateralInLiquidation.sub(_collateralReceived))
+          .mul(liquidationData.liquidationReward)
+          .rawValue
+      );
+    } else if (
+      _collateralReceived.sub(collateralInLiquidation).isGreaterThan(
+        self.calculateUnusedCollateral(
+          lpPosition.totalCollateralAmount,
+          feeStatus.totalFeeAmount,
+          FixedPoint.Unsigned(0)
+        )
+      )
+    ) {
+      revert('Not enough liquidity for liquidation');
+    }
+
+    //Send net amount of collateral to the user that submitted the redeem request
+    self.collateralToken.safeTransfer(
+      msg.sender,
+      (_collateralReceived.add(rewardAmount)).rawValue
+    );
+
+    collateralReceived = _collateralReceived.rawValue;
+
+    emit Liquidate(
+      msg.sender,
+      numSynthTokens.rawValue,
+      collateralReceived,
+      rewardAmount
+    );
   }
 
   /**
@@ -638,7 +719,7 @@ library SynthereumAutonomousPoolLib {
     // Update fees status
     feeStatus.updateFees(self.fee, executeMintParams.feeAmount);
 
-    // Pull user's collateral and mint fee into the pool
+    // Pull user's collateral
     self.pullCollateral(msg.sender, executeMintParams.totCollateralAmount);
 
     // Mint synthetic asset and transfer to the recipient
@@ -690,19 +771,10 @@ library SynthereumAutonomousPoolLib {
     // Update fees status
     feeStatus.updateFees(self.fee, executeRedeemParams.feeAmount);
 
-    IMintableBurnableERC20 synthToken = self.syntheticToken;
+    // Burn synthetic tokens
+    self.burnSyntheticTokens(executeRedeemParams.numTokens.rawValue);
 
-    // Transfer synthetic token from the user to the pool
-    synthToken.safeTransferFrom(
-      msg.sender,
-      address(this),
-      executeRedeemParams.numTokens.rawValue
-    );
-
-    // Burn synthetic asset
-    synthToken.burn(executeRedeemParams.numTokens.rawValue);
-
-    //Send net amount of collateral to the user that submited the redeem request
+    //Send net amount of collateral to the user that submitted the redeem request
     self.collateralToken.safeTransfer(
       executeRedeemParams.recipient,
       executeRedeemParams.collateralAmount.rawValue
@@ -751,17 +823,8 @@ library SynthereumAutonomousPoolLib {
     // Update fees status
     feeStatus.updateFees(self.fee, executeExchangeParams.feeAmount);
 
-    IMintableBurnableERC20 synthToken = self.syntheticToken;
-
-    // Transfer synthetic token from the user to the pool
-    synthToken.safeTransferFrom(
-      msg.sender,
-      address(this),
-      executeExchangeParams.numTokens.rawValue
-    );
-
-    // Burn synthetic asset
-    synthToken.burn(executeExchangeParams.numTokens.rawValue);
+    // Burn synthetic tokens
+    self.burnSyntheticTokens(executeExchangeParams.numTokens.rawValue);
 
     ISynthereumAutonomousPoolGeneral destinationPool =
       executeExchangeParams.destPool;
@@ -887,6 +950,24 @@ library SynthereumAutonomousPoolLib {
     );
   }
 
+  /**
+   * @notice Pulls synthetic tokens from the sender and burn them
+   * @param self Data type the library is attached to
+   * @param numTokens The number of tokens to be burned
+   */
+  function burnSyntheticTokens(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    uint256 numTokens
+  ) internal {
+    IMintableBurnableERC20 synthToken = self.syntheticToken;
+
+    // Transfer synthetic token from the user to the pool
+    synthToken.safeTransferFrom(msg.sender, address(this), numTokens);
+
+    // Burn synthetic asset
+    synthToken.burn(numTokens);
+  }
+
   //----------------------------------------
   //  Internal views functions
   //----------------------------------------
@@ -946,25 +1027,30 @@ library SynthereumAutonomousPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param collateralToCompare collateral used for checking the overcollaterlization
-   * @return isCollateralized True if position is overcollaterlized, otherwise false
+   * @return _isOverCollateralized True if position is overcollaterlized, otherwise false
+   * @return collateralValue Collateral amount equal to the value of tokens passed
    */
   function isOverCollateralized(
     ISynthereumAutonomousPoolStorage.Storage storage self,
     ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
     ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
     FixedPoint.Unsigned memory collateralToCompare
-  ) internal view returns (bool isCollateralized) {
-    isCollateralized = collateralToCompare.isGreaterThanOrEqual(
-      calculateCollateralAmount(
-        self
-          .finder,
-        IStandardERC20(address(self.collateralToken)),
-        self
-          .priceIdentifier,
-        lpPosition
-          .tokenCollateralised
-      )
-        .mul(liquidationData.collateralRequirement)
+  )
+    internal
+    view
+    returns (
+      bool _isOverCollateralized,
+      FixedPoint.Unsigned memory collateralValue
+    )
+  {
+    collateralValue = calculateCollateralAmount(
+      self.finder,
+      IStandardERC20(address(self.collateralToken)),
+      self.priceIdentifier,
+      lpPosition.tokenCollateralised
+    );
+    _isOverCollateralized = collateralToCompare.isGreaterThanOrEqual(
+      collateralValue.mul(liquidationData.collateralRequirement)
     );
   }
 
