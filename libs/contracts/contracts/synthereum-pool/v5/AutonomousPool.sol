@@ -122,6 +122,13 @@ contract SynthereumAutonomousPool is
 
   event EmergencyShutdown(uint256 timestamp, uint256 price);
 
+  event Settlement(
+    address indexed account,
+    uint256 numTokensSettled,
+    uint256 collateralExpected,
+    uint256 collateralSettled
+  );
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -389,6 +396,27 @@ contract SynthereumAutonomousPool is
     returns (uint256 timestamp, uint256 price)
   {
     (timestamp, price) = poolStorage.emergencyShutdown(emergencyShutdownData);
+  }
+
+  /**
+   * @notice Redeem tokens after emergency shutdown
+   * @return synthTokensSettled Amount of synthetic tokens liquidated
+   * @return amountSettled Amount of collateral withdrawn after emergency shutdown
+   */
+  function settleEmergencyShutdown()
+    external
+    override
+    isEmergencyShutdown
+    nonReentrant
+    returns (uint256 synthTokensSettled, uint256 amountSettled)
+  {
+    bool isLiquidityProvider = hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender);
+    (synthTokensSettled, amountSettled) = poolStorage.settleEmergencyShutdown(
+      lpPosition,
+      feeStatus,
+      emergencyShutdownData,
+      isLiquidityProvider
+    );
   }
 
   //----------------------------------------
