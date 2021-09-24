@@ -84,6 +84,29 @@ library SynthereumAutonomousPoolLib {
     address recipient;
   }
 
+  struct ExecuteSettlement {
+    // Price of emergency shutdown
+    FixedPoint.Unsigned emergencyPrice;
+    // Amount of synthtic tokens to be liquidated
+    FixedPoint.Unsigned userNumTokens;
+    // Total amount of collateral (excluding unused and fees) deposited
+    FixedPoint.Unsigned totalCollateralAmount;
+    // Total amount of synthetic tokens
+    FixedPoint.Unsigned tokensCollaterlized;
+    // Total actual amount of fees to be withdrawn
+    FixedPoint.Unsigned totalFeeAmount;
+    // Overcollateral to be withdrawn by Lp (0 if standard user)
+    FixedPoint.Unsigned overCollateral;
+    // Amount of collateral which value is equal to the synthetic tokens value according to the emergency price
+    FixedPoint.Unsigned totalRedeemableCollateral;
+    // Exepected amount of collateral
+    FixedPoint.Unsigned redeemableCollateral;
+    // Collateral deposited but not used to collateralize
+    FixedPoint.Unsigned unusedCollateral;
+    // Amount of collateral settled to the sender
+    FixedPoint.Unsigned transferableCollateral;
+  }
+
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -152,6 +175,13 @@ library SynthereumAutonomousPoolLib {
   );
 
   event EmergencyShutdown(uint256 timestamp, uint256 price);
+
+  event Settlement(
+    address indexed account,
+    uint256 numTokensSettled,
+    uint256 collateralExpected,
+    uint256 collateralSettled
+  );
 
   //----------------------------------------
   // External function
@@ -658,6 +688,126 @@ library SynthereumAutonomousPoolLib {
   }
 
   /**
+   * @notice Redeem tokens after emergency shutdown
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param emergencyShutdownData Emergency shutdown info (see Shutdown struct)
+   * @param isLiquidityProvider True if the sender is an LP, otherwise false
+   * @return synthTokensSettled Amount of synthetic tokens liquidated
+   * @return amountSettled Amount of collateral withdrawn after emergency shutdown
+   */
+  function settleEmergencyShutdown(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumAutonomousPoolStorage.Shutdown storage emergencyShutdownData,
+    bool isLiquidityProvider
+  ) external returns (uint256 synthTokensSettled, uint256 amountSettled) {
+    // Memory struct for saving local varibales
+    ExecuteSettlement memory executeSettlement;
+
+    IMintableBurnableERC20 syntheticToken = self.syntheticToken;
+
+    executeSettlement.emergencyPrice = emergencyShutdownData.price;
+
+    executeSettlement.userNumTokens = FixedPoint.Unsigned(
+      syntheticToken.balanceOf(msg.sender)
+    );
+
+    // Make sure there is something for the user to settle
+    require(
+      executeSettlement.userNumTokens.isGreaterThan(0) || isLiquidityProvider,
+      'Account has nothing to settle'
+    );
+
+    if (executeSettlement.userNumTokens.isGreaterThan(0)) {
+      // Move synthetic tokens from the user to the pool
+      // - This is because derivative expects the tokens to come from the sponsor address
+      syntheticToken.safeTransferFrom(
+        msg.sender,
+        address(this),
+        executeSettlement.userNumTokens.rawValue
+      );
+    }
+
+    executeSettlement.totalCollateralAmount = lpPosition.totalCollateralAmount;
+
+    executeSettlement.tokensCollaterlized = lpPosition.tokenCollateralised;
+
+    executeSettlement.totalFeeAmount = feeStatus.totalFeeAmount;
+
+    executeSettlement.overCollateral;
+
+    // Add overcollateral and deposited synthetic tokens if the sender is the LP
+    if (isLiquidityProvider) {
+      FixedPoint.Unsigned memory totalRedeemableCollateral =
+        executeSettlement.tokensCollaterlized.mul(
+          executeSettlement.emergencyPrice
+        );
+
+      executeSettlement.overCollateral = executeSettlement
+        .totalCollateralAmount
+        .isGreaterThan(totalRedeemableCollateral)
+        ? executeSettlement.totalCollateralAmount.sub(totalRedeemableCollateral)
+        : FixedPoint.Unsigned(0);
+
+      executeSettlement.userNumTokens = FixedPoint.Unsigned(
+        syntheticToken.balanceOf(address(this))
+      );
+    }
+
+    // Calculate expected and settled collateral
+    executeSettlement.redeemableCollateral = (
+      executeSettlement.userNumTokens.mul(executeSettlement.emergencyPrice)
+    )
+      .add(executeSettlement.overCollateral);
+
+    executeSettlement.unusedCollateral = self.calculateUnusedCollateral(
+      executeSettlement.totalCollateralAmount,
+      executeSettlement.totalFeeAmount,
+      FixedPoint.Unsigned(0)
+    );
+
+    executeSettlement.transferableCollateral = FixedPoint.min(
+      executeSettlement.redeemableCollateral,
+      executeSettlement.totalCollateralAmount.add(
+        executeSettlement.unusedCollateral
+      )
+    );
+
+    // Update Lp position
+    lpPosition.totalCollateralAmount = executeSettlement
+      .totalCollateralAmount
+      .isGreaterThan(executeSettlement.redeemableCollateral)
+      ? executeSettlement.totalCollateralAmount.sub(
+        executeSettlement.redeemableCollateral
+      )
+      : FixedPoint.Unsigned(0);
+
+    lpPosition.tokenCollateralised = executeSettlement.tokensCollaterlized.sub(
+      executeSettlement.userNumTokens
+    );
+
+    synthTokensSettled = executeSettlement.userNumTokens.rawValue;
+
+    amountSettled = executeSettlement.transferableCollateral.rawValue;
+
+    // Burn synthetic tokens
+    syntheticToken.burn(synthTokensSettled);
+
+    // Redeem the collateral for the underlying asset and transfer to the user
+    self.collateralToken.safeTransfer(msg.sender, amountSettled);
+
+    emit Settlement(
+      msg.sender,
+      synthTokensSettled,
+      executeSettlement.redeemableCollateral.rawValue,
+      amountSettled
+    );
+  }
+
+  /**
    * @notice Update the fee percentage
    * @param self Data type the library is attached to
    * @param _feePercentage The new fee percentage
@@ -1093,8 +1243,8 @@ library SynthereumAutonomousPoolLib {
    */
   function calculateUnusedCollateral(
     ISynthereumAutonomousPoolStorage.Storage storage self,
-    FixedPoint.Unsigned storage totalCollateral,
-    FixedPoint.Unsigned storage totalFees,
+    FixedPoint.Unsigned memory totalCollateral,
+    FixedPoint.Unsigned memory totalFees,
     FixedPoint.Unsigned memory collateralReceived
   ) internal view returns (FixedPoint.Unsigned memory unusedCollateral) {
     // Collateral available

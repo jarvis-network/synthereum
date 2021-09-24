@@ -148,4 +148,13 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function emergencyShutdown()
     external
     returns (uint256 timestamp, uint256 price);
+
+  /**
+   * @notice Redeem tokens after emergency shutdown
+   * @return synthTokensSettled Amount of synthetic tokens liquidated
+   * @return amountSettled Amount of collateral withdrawn after emergency shutdown
+   */
+  function settleEmergencyShutdown()
+    external
+    returns (uint256 synthTokensSettled, uint256 amountSettled);
 }
