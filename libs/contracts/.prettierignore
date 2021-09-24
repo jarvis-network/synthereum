@@ -1,9 +1,5 @@
-.next
 node_modules
-public
-build
+artifacts
+cache
+deploy
 dist
-out
-src/contracts/abi/**/*
-src/contracts/typechain/**/*
-*.md
