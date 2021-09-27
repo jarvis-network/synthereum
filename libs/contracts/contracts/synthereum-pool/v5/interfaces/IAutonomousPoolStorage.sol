@@ -32,7 +32,7 @@ interface ISynthereumAutonomousPoolStorage {
     IERC20 collateralToken;
     // Synthetic token
     IMintableBurnableERC20 syntheticToken;
-    // Over-collateralization ratio
+    // Overcollateralization percentage
     FixedPoint.Unsigned overCollateralization;
     // Fees
     Fee fee;
