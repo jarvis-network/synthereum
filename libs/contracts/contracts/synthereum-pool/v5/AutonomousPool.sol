@@ -133,6 +133,14 @@ contract SynthereumAutonomousPool is
   // Modifiers
   //----------------------------------------
 
+  modifier onlyMaintainer() {
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
+    );
+    _;
+  }
+
   modifier onlyLiquidityProvider() {
     require(
       hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender),
@@ -417,6 +425,48 @@ contract SynthereumAutonomousPool is
       emergencyShutdownData,
       isLiquidityProvider
     );
+  }
+
+  /**
+   * @notice Update the fee percentage, recipients and recipient proportions
+   * @notice Only the maintainer can call this function
+   * @param fee Fee info (percentage + recipients + weigths)
+   */
+  function setFee(ISynthereumAutonomousPoolStorage.Fee memory fee)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    poolStorage.setFeePercentage(fee.feePercentage);
+    poolStorage.setFeeRecipients(fee.feeRecipients, fee.feeProportions);
+  }
+
+  /**
+   * @notice Update the fee percentage
+   * @notice Only the maintainer can call this function
+   * @param feePercentage The new fee percentage
+   */
+  function setFeePercentage(uint256 feePercentage)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    poolStorage.setFeePercentage(FixedPoint.Unsigned(feePercentage));
+  }
+
+  /**
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @notice Only the maintainer can call this function
+   * @param feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param feeProportions An array of the proportions of fees generated each recipient will receive
+   */
+  function setFeeRecipients(
+    address[] calldata feeRecipients,
+    uint32[] calldata feeProportions
+  ) external override onlyMaintainer nonReentrant {
+    poolStorage.setFeeRecipients(feeRecipients, feeProportions);
   }
 
   //----------------------------------------

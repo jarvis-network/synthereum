@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import {ISynthereumAutonomousPoolGeneral} from './IAutonomousPoolGeneral.sol';
+import {ISynthereumAutonomousPoolStorage} from './IAutonomousPoolStorage.sol';
 
 /**
  * @title Token Issuer Contract Interface
@@ -157,4 +158,29 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function settleEmergencyShutdown()
     external
     returns (uint256 synthTokensSettled, uint256 amountSettled);
+
+  /**
+   * @notice Update the fee percentage, recipients and recipient proportions
+   * @notice Only the maintainer can call this function
+   * @param fee Fee info (percentage + recipients + weigths)
+   */
+  function setFee(ISynthereumAutonomousPoolStorage.Fee memory fee) external;
+
+  /**
+   * @notice Update the fee percentage
+   * @notice Only the maintainer can call this function
+   * @param feePercentage The new fee percentage
+   */
+  function setFeePercentage(uint256 feePercentage) external;
+
+  /**
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @notice Only the maintainer can call this function
+   * @param feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param feeProportions An array of the proportions of fees generated each recipient will receive
+   */
+  function setFeeRecipients(
+    address[] memory feeRecipients,
+    uint32[] memory feeProportions
+  ) external;
 }
