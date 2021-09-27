@@ -891,6 +891,23 @@ library SynthereumAutonomousPoolLib {
     self.overCollateralization = _overCollateralization;
   }
 
+  /**
+   * @notice Update the liquidation reward percentage
+   * @param liquidationData Liquidation info (see LiquidationData struct)
+   * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
+   */
+  function setLiquidationReward(
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    FixedPoint.Unsigned memory _liquidationReward
+  ) external {
+    require(
+      _liquidationReward.isGreaterThan(0) &&
+        _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
+      'Liquidation reward must be between 0 and 100%'
+    );
+    liquidationData.liquidationReward = _liquidationReward;
+  }
+
   //----------------------------------------
   //  Internal functions
   //----------------------------------------

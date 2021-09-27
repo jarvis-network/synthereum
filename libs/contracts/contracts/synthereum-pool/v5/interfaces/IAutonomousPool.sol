@@ -190,4 +190,11 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @param overCollateralization Overcollateralization percentage
    */
   function setOverCollateralization(uint256 overCollateralization) external;
+
+  /**
+   * @notice Update the liquidation reward percentage
+   * @notice Only the maintainer can call this function
+   * @param liquidationReward Percentage of reward for correct liquidation by a liquidator
+   */
+  function setLiquidationReward(uint256 liquidationReward) external;
 }

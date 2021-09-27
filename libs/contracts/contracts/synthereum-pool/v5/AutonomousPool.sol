@@ -31,6 +31,7 @@ contract SynthereumAutonomousPool is
   Lockable
 {
   using SynthereumAutonomousPoolLib for Storage;
+  using SynthereumAutonomousPoolLib for Liquidation;
 
   //----------------------------------------
   // Constants
@@ -490,6 +491,22 @@ contract SynthereumAutonomousPool is
     poolStorage.setOverCollateralization(
       liquidationData,
       FixedPoint.Unsigned(overCollateralization)
+    );
+  }
+
+  /**
+   * @notice Update the liquidation reward percentage
+   * @notice Only the maintainer can call this function
+   * @param liquidationReward Percentage of reward for correct liquidation by a liquidator
+   */
+  function setLiquidationReward(uint256 liquidationReward)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    liquidationData.setLiquidationReward(
+      FixedPoint.Unsigned(liquidationReward)
     );
   }
 
