@@ -183,4 +183,11 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
     address[] memory feeRecipients,
     uint32[] memory feeProportions
   ) external;
+
+  /**
+   * @notice Update the overcollateralization percentage
+   * @notice Only the maintainer can call this function
+   * @param overCollateralization Overcollateralization percentage
+   */
+  function setOverCollateralization(uint256 overCollateralization) external;
 }

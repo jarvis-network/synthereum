@@ -191,25 +191,42 @@ library SynthereumAutonomousPoolLib {
    * @notice Initializes a fresh on chain pool
    * @notice `_overCollateralization should be greater than 0
    * @param self Data type the library is attached to
+   * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param _finder The Synthereum finder
    * @param _version Synthereum version
    * @param _collateralToken ERC20 collateral token
    * @param _syntheticToken ERC20 synthetic token
    * @param _overCollateralization Over-collateralization ratio
    * @param _priceIdentifier Identifier of price to be used in the price feed
+   * @param _collateralRequirement Percentage of overcollateralization to which a liquidation can triggered
+   * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
    */
   function initialize(
     ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
     ISynthereumFinder _finder,
     uint8 _version,
     IERC20 _collateralToken,
     IMintableBurnableERC20 _syntheticToken,
     FixedPoint.Unsigned memory _overCollateralization,
-    bytes32 _priceIdentifier
+    bytes32 _priceIdentifier,
+    FixedPoint.Unsigned memory _collateralRequirement,
+    FixedPoint.Unsigned memory _liquidationReward
   ) external {
     require(
-      _overCollateralization.isGreaterThan(0),
-      'Overcollateralization must be bigger than 0'
+      _collateralRequirement.isGreaterThan(FixedPoint.fromUnscaledUint(1)),
+      'Collateral requirement must be bigger than 100%'
+    );
+    require(
+      _overCollateralization.isGreaterThan(
+        _collateralRequirement.sub(FixedPoint.fromUnscaledUint(1))
+      ),
+      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
+    );
+    require(
+      _liquidationReward.isGreaterThan(0) &&
+        _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
+      'Liquidation reward must be between 0 and 100%'
     );
     self.finder = _finder;
     self.version = _version;
@@ -217,6 +234,8 @@ library SynthereumAutonomousPoolLib {
     self.syntheticToken = _syntheticToken;
     self.overCollateralization = _overCollateralization;
     self.priceIdentifier = _priceIdentifier;
+    liquidationData.collateralRequirement = _collateralRequirement;
+    liquidationData.liquidationReward = _liquidationReward;
   }
 
   /**
@@ -848,6 +867,28 @@ library SynthereumAutonomousPoolLib {
     self.fee.feeProportions = _feeProportions;
     self.fee.totalFeeProportions = totalActualFeeProportions;
     emit SetFeeRecipients(_feeRecipients, _feeProportions);
+  }
+
+  /**
+   * @notice Update the overcollateralization percentage
+   * @param self Data type the library is attached to
+   * @param liquidationData Liquidation info (see LiquidationData struct)
+   * @param _overCollateralization Overcollateralization percentage
+   */
+  function setOverCollateralization(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    FixedPoint.Unsigned memory _overCollateralization
+  ) external {
+    require(
+      _overCollateralization.isGreaterThan(
+        liquidationData.collateralRequirement.sub(
+          FixedPoint.fromUnscaledUint(1)
+        )
+      ),
+      'Overcollateralization must be bigger than the Lp part of the collateral requirement'
+    );
+    self.overCollateralization = _overCollateralization;
   }
 
   //----------------------------------------

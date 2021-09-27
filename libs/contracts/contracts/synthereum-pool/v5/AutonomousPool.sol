@@ -173,9 +173,11 @@ contract SynthereumAutonomousPool is
    * @param _collateralToken ERC20 collateral token
    * @param _syntheticToken ERC20 synthetic token
    * @param _roles The addresses of admin, maintainer, liquidity provider and validator
-   * @param _overCollateralization Over-collateralization ratio
+   * @param _overCollateralization Overcollateralization percentage
    * @param _fee The fee structure
    * @param _priceIdentifier Identifier of price to be used in the price feed
+   * @param _collateralRequirement Percentage of overcollateralization to which a liquidation can triggered
+   * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
    */
   constructor(
     ISynthereumFinder _finder,
@@ -185,7 +187,9 @@ contract SynthereumAutonomousPool is
     Roles memory _roles,
     uint256 _overCollateralization,
     Fee memory _fee,
-    bytes32 _priceIdentifier
+    bytes32 _priceIdentifier,
+    uint256 _collateralRequirement,
+    uint256 _liquidationReward
   ) nonReentrant {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -194,12 +198,15 @@ contract SynthereumAutonomousPool is
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
     _setupRole(LIQUIDITY_PROVIDER_ROLE, _roles.liquidityProvider);
     poolStorage.initialize(
+      liquidationData,
       _finder,
       _version,
       _collateralToken,
       _syntheticToken,
       FixedPoint.Unsigned(_overCollateralization),
-      _priceIdentifier
+      _priceIdentifier,
+      FixedPoint.Unsigned(_collateralRequirement),
+      FixedPoint.Unsigned(_liquidationReward)
     );
     poolStorage.setFeePercentage(_fee.feePercentage);
     poolStorage.setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
@@ -467,6 +474,23 @@ contract SynthereumAutonomousPool is
     uint32[] calldata feeProportions
   ) external override onlyMaintainer nonReentrant {
     poolStorage.setFeeRecipients(feeRecipients, feeProportions);
+  }
+
+  /**
+   * @notice Update the overcollateralization percentage
+   * @notice Only the maintainer can call this function
+   * @param overCollateralization Overcollateralization percentage
+   */
+  function setOverCollateralization(uint256 overCollateralization)
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+  {
+    poolStorage.setOverCollateralization(
+      liquidationData,
+      FixedPoint.Unsigned(overCollateralization)
+    );
   }
 
   //----------------------------------------
