@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.12;
+pragma solidity >=0.7.5;
 pragma experimental ABIEncoderV2;
 
 import {
   ISynthereumPoolOnChainPriceFeed
 } from '../../synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
+/// @notice general interface that atomic swap implementations must adhere to
+/// @notice in order to be callable through the proxy pattern
 interface IAtomicSwapV2 {
   /// @param isExactInput: determine if amountSpecified is to be treated as exactInput (true) or exactOutput (false)
   /// @param amountSpecified: exact input | exact output based on boolean
@@ -19,7 +21,7 @@ interface IAtomicSwapV2 {
     bool isExactInput,
     uint256 amountSpecified,
     uint256 minOutOrMaxIn,
-    address[] calldata tokenSwapPath,
+    address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external returns (uint256 amountOut);
@@ -33,7 +35,7 @@ interface IAtomicSwapV2 {
   function swapETHToCollateralAndMint(
     bool isExactInput,
     uint256 minOutOrMaxIn,
-    address[] calldata tokenSwapPath,
+    address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (uint256 amountOut);
@@ -50,7 +52,7 @@ interface IAtomicSwapV2 {
     bool isExactInput,
     int256 amountSpecified,
     int256 minOutOrMaxIn,
-    address[] calldata tokenSwapPath,
+    address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
@@ -66,7 +68,7 @@ interface IAtomicSwapV2 {
   function redeemCollateralAndSwapETH(
     bool isExactInput,
     uint256 minOutOrMaxIn,
-    address[] calldata tokenSwapPath,
+    address[] memory tokenSwapPath,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
