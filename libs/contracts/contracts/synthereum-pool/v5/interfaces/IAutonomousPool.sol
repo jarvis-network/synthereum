@@ -301,4 +301,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
     external
     view
     returns (uint256 synthTokensReceived, uint256 feePaid);
+
+  /**
+   * @notice Returns the collateral amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
+   * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
+   * @param  syntheticTokens Amount of synthetic tokens to be exchanged
+   * @return collateralAmountReceived Collateral amount will be received by the user
+   * @return feePaid Collateral fee will be paid
+   */
+  function getRedeemTradeInfo(uint256 syntheticTokens)
+    external
+    view
+    returns (uint256 collateralAmountReceived, uint256 feePaid);
 }

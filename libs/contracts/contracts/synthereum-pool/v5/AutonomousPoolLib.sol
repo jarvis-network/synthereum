@@ -301,17 +301,11 @@ library SynthereumAutonomousPoolLib {
   ) external returns (uint256 collateralRedeemed, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(redeemParams.numTokens);
-    FixedPoint.Unsigned memory totCollateralAmount =
-      calculateCollateralAmount(
-        self.finder,
-        IStandardERC20(address(self.collateralToken)),
-        self.priceIdentifier,
-        numTokens
-      );
-    FixedPoint.Unsigned memory feeAmount =
-      totCollateralAmount.mul(self.fee.feePercentage);
-    FixedPoint.Unsigned memory collateralAmount =
-      totCollateralAmount.sub(feeAmount);
+    (
+      FixedPoint.Unsigned memory totCollateralAmount,
+      FixedPoint.Unsigned memory feeAmount,
+      FixedPoint.Unsigned memory collateralAmount
+    ) = self.redeemCalculation(numTokens);
     require(
       collateralAmount.isGreaterThanOrEqual(redeemParams.minCollateral),
       'Collateral amount less than minimum limit'
@@ -987,6 +981,27 @@ library SynthereumAutonomousPoolLib {
     feePaid = _feePaid.rawValue;
   }
 
+  /**
+   * @notice Returns the collateral amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
+   * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
+   * @param self Data type the library is attached to
+   * @param  syntheticTokens Amount of synthetic tokens to be exchanged
+   * @return collateralAmountReceived Collateral amount will be received by the user
+   * @return feePaid Collateral fee will be paid
+   */
+  function getRedeemTradeInfo(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned memory syntheticTokens
+  ) external view returns (uint256 collateralAmountReceived, uint256 feePaid) {
+    (
+      ,
+      FixedPoint.Unsigned memory _feePaid,
+      FixedPoint.Unsigned memory _collateralAmountReceived
+    ) = self.mintCalculation(syntheticTokens);
+    collateralAmountReceived = _collateralAmountReceived.rawValue;
+    feePaid = _feePaid.rawValue;
+  }
+
   //----------------------------------------
   //  Internal functions
   //----------------------------------------
@@ -1316,6 +1331,36 @@ library SynthereumAutonomousPoolLib {
       self.priceIdentifier,
       collateralAmount
     );
+  }
+
+  /**
+   * @notice Given a an amount of synthetic tokens to be exchanged, returns the fee amount, net collateral and gross collateral
+   * @param self Data type the library is attached tfo
+   * @param numTokens Synthetic tokens amount to be exchanged
+   * @return totCollateralAmount Gross collateral amount (collateralAmount + feeAmount)
+   * @return feeAmount Fee to be paid according to the fee percentage
+   * @return collateralAmount Net collateral amount will be received according to the actual price in exchange for numTokens
+   */
+  function redeemCalculation(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned memory numTokens
+  )
+    internal
+    view
+    returns (
+      FixedPoint.Unsigned memory totCollateralAmount,
+      FixedPoint.Unsigned memory feeAmount,
+      FixedPoint.Unsigned memory collateralAmount
+    )
+  {
+    totCollateralAmount = calculateCollateralAmount(
+      self.finder,
+      IStandardERC20(address(self.collateralToken)),
+      self.priceIdentifier,
+      numTokens
+    );
+    feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+    collateralAmount = totCollateralAmount.sub(feeAmount);
   }
 
   /**
