@@ -63,6 +63,7 @@ export const config = {
       gas: 11500000,
       blockGasLimit: 11500000,
       allowUnlimitedContractSize: false,
+      è,
     },
     localhost: {
       url: 'http://127.0.0.1:8545',
