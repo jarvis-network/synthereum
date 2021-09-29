@@ -638,6 +638,20 @@ contract SynthereumAutonomousPool is
   }
 
   /**
+   * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
+   * @return Total available liquidity
+   */
+  function totalAvailableLiquidity()
+    external
+    view
+    override
+    nonReentrantView
+    returns (uint256)
+  {
+    return poolStorage.totalAvailableLiquidity(lpPosition, feeStatus);
+  }
+
+  /**
    * @notice Returns the total amount of fees to be withdrawn
    * @return Total fee amount
    */
@@ -689,5 +703,33 @@ contract SynthereumAutonomousPool is
     returns (uint256)
   {
     return emergencyShutdownData.timestamp;
+  }
+
+  /**
+   * @notice Check if collateral is enough to collateralize the position
+   * @return True if position is overcollaterlized, otherwise false
+   */
+  function isOverCollateralized()
+    external
+    view
+    override
+    nonReentrantView
+    returns (bool)
+  {
+    return poolStorage.isOverCollateralized(lpPosition, liquidationData);
+  }
+
+  /**
+   * @notice Returns percentage of coverage of the collateral according to the last price
+   * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
+   */
+  function collateralCoverage()
+    external
+    view
+    override
+    nonReentrantView
+    returns (uint256)
+  {
+    return poolStorage.collateralCoverage(lpPosition);
   }
 }
