@@ -257,17 +257,11 @@ library SynthereumAutonomousPoolLib {
   ) external returns (uint256 syntheticTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory totCollateralAmount =
       FixedPoint.Unsigned(mintParams.collateralAmount);
-    FixedPoint.Unsigned memory feeAmount =
-      totCollateralAmount.mul(self.fee.feePercentage);
-    FixedPoint.Unsigned memory collateralAmount =
-      totCollateralAmount.sub(feeAmount);
-    FixedPoint.Unsigned memory numTokens =
-      calculateNumberOfTokens(
-        self.finder,
-        IStandardERC20(address(self.collateralToken)),
-        self.priceIdentifier,
-        collateralAmount
-      );
+    (
+      FixedPoint.Unsigned memory collateralAmount,
+      FixedPoint.Unsigned memory feeAmount,
+      FixedPoint.Unsigned memory numTokens
+    ) = self.mintCalculation(totCollateralAmount);
     require(
       numTokens.isGreaterThanOrEqual(mintParams.minNumTokens),
       'Number of tokens less than minimum limit'
@@ -972,6 +966,27 @@ library SynthereumAutonomousPoolLib {
         .rawValue;
   }
 
+  /**
+   * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
+   * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
+   * @param self Data type the library is attached to
+   * @param inputCollateral Input collateral amount to be exchanged
+   * @return synthTokensReceived Synthetic tokens will be minted
+   * @return feePaid Collateral fee will be paid
+   */
+  function getMintTradeInfo(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned memory inputCollateral
+  ) external view returns (uint256 synthTokensReceived, uint256 feePaid) {
+    (
+      ,
+      FixedPoint.Unsigned memory _feePaid,
+      FixedPoint.Unsigned memory _synthTokensReceived
+    ) = self.mintCalculation(inputCollateral);
+    synthTokensReceived = _synthTokensReceived.rawValue;
+    feePaid = _feePaid.rawValue;
+  }
+
   //----------------------------------------
   //  Internal functions
   //----------------------------------------
@@ -1272,6 +1287,36 @@ library SynthereumAutonomousPoolLib {
   //----------------------------------------
   //  Internal views functions
   //----------------------------------------
+
+  /**
+   * @notice Given a collateral value to be exchanged, returns the fee amount, net collateral and synthetic tokens
+   * @param self Data type the library is attached tfo
+   * @param totCollateralAmount Collateral amount to be exchanged
+   * @return collateralAmount Net collateral amount (totCollateralAmount - feePercentage)
+   * @return feeAmount Fee to be paid according to the fee percentage
+   * @return numTokens Number of synthetic tokens will be received according to the actual price in exchange for collateralAmount
+   */
+  function mintCalculation(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned memory totCollateralAmount
+  )
+    internal
+    view
+    returns (
+      FixedPoint.Unsigned memory collateralAmount,
+      FixedPoint.Unsigned memory feeAmount,
+      FixedPoint.Unsigned memory numTokens
+    )
+  {
+    feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+    collateralAmount = totCollateralAmount.sub(feeAmount);
+    numTokens = calculateNumberOfTokens(
+      self.finder,
+      IStandardERC20(address(self.collateralToken)),
+      self.priceIdentifier,
+      collateralAmount
+    );
+  }
 
   /**
    * @notice Check fee percentage and expiration of mint, redeem and exchange transaction

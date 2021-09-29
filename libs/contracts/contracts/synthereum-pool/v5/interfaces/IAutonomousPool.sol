@@ -289,4 +289,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
    */
   function collateralCoverage() external view returns (uint256);
+
+  /**
+   * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
+   * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
+   * @param inputCollateral Input collateral amount to be exchanged
+   * @return synthTokensReceived Synthetic tokens will be minted
+   * @return feePaid Collateral fee will be paid
+   */
+  function getMintTradeInfo(uint256 inputCollateral)
+    external
+    view
+    returns (uint256 synthTokensReceived, uint256 feePaid);
 }
