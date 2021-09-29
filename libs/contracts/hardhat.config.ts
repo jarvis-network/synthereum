@@ -17,7 +17,7 @@ import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/consta
 
 import { task as createOrModifyHardhatTask } from 'hardhat/config';
 
-const { KOVAN_PRIVATE_KEY, ALCHEMY_API_KEY } = process.env;
+const { KOVAN_PRIVATE_KEY, ALCHEMY_PROJECT_ID } = process.env;
 
 createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
   (taskArgs, hre, runSuper) => {
@@ -67,7 +67,7 @@ export const config = {
       allowUnlimitedContractSize: false,
     },
     kovan: {
-      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      url: `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_PROJECT_ID}`,
       accounts: [`0x${KOVAN_PRIVATE_KEY}`],
     },
     localhost: {
