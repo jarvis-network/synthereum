@@ -552,14 +552,14 @@ library SynthereumAutonomousPoolLib {
       lpPosition.totalCollateralAmount.sub(collateralAmount);
 
     // Check that position doesn't become undercollateralized
-    (bool _isOverCollateralized, ) =
-      self.isOverCollateralized(
+    (bool _isOverCollateralized_, ) =
+      self._isOverCollateralized(
         lpPosition,
         liquidationData,
         _newTotalCollateral
       );
 
-    require(_isOverCollateralized, 'Position undercollateralized');
+    require(_isOverCollateralized_, 'Position undercollateralized');
 
     // Update new total collateral amount
     lpPosition.totalCollateralAmount = _newTotalCollateral;
@@ -629,17 +629,17 @@ library SynthereumAutonomousPoolLib {
 
     // Collateral value of the synthetic token passed
     (
-      bool _isOverCollaterlized,
+      bool _isOverCollaterlized_,
       FixedPoint.Unsigned memory _collateralReceived
     ) =
-      self.isOverCollateralized(
+      self._isOverCollateralized(
         lpPosition,
         liquidationData,
         collateralInLiquidation
       );
 
     // Revert if position is not undercollataralized
-    require(!_isOverCollaterlized, 'Position is not undercollataralized');
+    require(!_isOverCollaterlized_, 'Position is not undercollataralized');
 
     // Burn synthetic tokens to be liquidated
     self.burnSyntheticTokens(numSynthTokens.rawValue);
@@ -906,6 +906,70 @@ library SynthereumAutonomousPoolLib {
       'Liquidation reward must be between 0 and 100%'
     );
     liquidationData.liquidationReward = _liquidationReward;
+  }
+
+  /**
+   * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @return Total available liquidity
+   */
+  function totalAvailableLiquidity(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus
+  ) external view returns (uint256) {
+    return
+      self
+        .calculateUnusedCollateral(
+        lpPosition
+          .totalCollateralAmount,
+        feeStatus
+          .totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      )
+        .rawValue;
+  }
+
+  /**
+   * @notice Check if collateral is enough to collateralize the position
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param liquidationData Liquidation info (see LiquidationData struct)
+   * @return _isOverCollateralized_ True if position is overcollaterlized, otherwise false
+   */
+  function isOverCollateralized(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData
+  ) external view returns (bool _isOverCollateralized_) {
+    (_isOverCollateralized_, ) = self._isOverCollateralized(
+      lpPosition,
+      liquidationData,
+      lpPosition.totalCollateralAmount
+    );
+  }
+
+  /**
+   * @notice Returns percentage of coverage of the collateral according to the last price
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
+   */
+  function collateralCoverage(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition
+  ) external view returns (uint256) {
+    return
+      lpPosition
+        .totalCollateralAmount
+        .div(
+        lpPosition.tokenCollateralised.mul(
+          getPriceFeedRate(self.finder, self.priceIdentifier)
+        )
+      )
+        .rawValue;
   }
 
   //----------------------------------------
@@ -1264,10 +1328,10 @@ library SynthereumAutonomousPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param collateralToCompare collateral used for checking the overcollaterlization
-   * @return _isOverCollateralized True if position is overcollaterlized, otherwise false
+   * @return _isOverCollateralized_ True if position is overcollaterlized, otherwise false
    * @return collateralValue Collateral amount equal to the value of tokens passed
    */
-  function isOverCollateralized(
+  function _isOverCollateralized(
     ISynthereumAutonomousPoolStorage.Storage storage self,
     ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
     ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
@@ -1276,7 +1340,7 @@ library SynthereumAutonomousPoolLib {
     internal
     view
     returns (
-      bool _isOverCollateralized,
+      bool _isOverCollateralized_,
       FixedPoint.Unsigned memory collateralValue
     )
   {
@@ -1286,7 +1350,7 @@ library SynthereumAutonomousPoolLib {
       self.priceIdentifier,
       lpPosition.tokenCollateralised
     );
-    _isOverCollateralized = collateralToCompare.isGreaterThanOrEqual(
+    _isOverCollateralized_ = collateralToCompare.isGreaterThanOrEqual(
       collateralValue.mul(liquidationData.collateralRequirement)
     );
   }

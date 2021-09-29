@@ -236,6 +236,12 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   function totalCollateralAmount() external view returns (uint256);
 
   /**
+   * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
+   * @return Total available liquidity
+   */
+  function totalAvailableLiquidity() external view returns (uint256);
+
+  /**
    * @notice Returns the total amount of fees to be withdrawn
    * @return Total fee amount
    */
@@ -271,4 +277,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @return Timestamp
    */
   function emergencyShutdoenTimestamp() external view returns (uint256);
+
+  /**
+   * @notice Check if collateral is enough to collateralize the position
+   * @return True if position is overcollaterlized, otherwise false
+   */
+  function isOverCollateralized() external view returns (bool);
+
+  /**
+   * @notice Returns percentage of coverage of the collateral according to the last price
+   * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
+   */
+  function collateralCoverage() external view returns (uint256);
 }
