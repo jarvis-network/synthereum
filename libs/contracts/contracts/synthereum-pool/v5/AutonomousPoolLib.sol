@@ -1175,6 +1175,12 @@ library SynthereumAutonomousPoolLib {
     ISynthereumAutonomousPoolGeneral destinationPool =
       executeExchangeParams.destPool;
 
+    // Check that destination pool is different from this pool
+    require(
+      address(this) != address(destinationPool),
+      'Same source and destination pool'
+    );
+
     self.checkPool(destinationPool);
 
     // Transfer collateral amount (without overcollateralization) to the destination pool
