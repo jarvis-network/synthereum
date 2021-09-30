@@ -1278,9 +1278,9 @@ library SynthereumAutonomousPoolLib {
       feeCharged = feeCharged.add(feeReceived);
     }
     address lastRecipient = feeInfo.feeRecipients[numberOfRecipients - 1];
-    feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient].add(
-      feeAmount.sub(feeCharged)
-    );
+    feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient]
+      .add(feeAmount)
+      .sub(feeCharged);
     feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
   }
 
