@@ -346,27 +346,12 @@ library SynthereumAutonomousPoolLib {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(exchangeParams.numTokens);
 
-    FixedPoint.Unsigned memory totCollateralAmount =
-      calculateCollateralAmount(
-        self.finder,
-        IStandardERC20(address(self.collateralToken)),
-        self.priceIdentifier,
-        numTokens
-      );
-
-    FixedPoint.Unsigned memory feeAmount =
-      totCollateralAmount.mul(self.fee.feePercentage);
-
-    FixedPoint.Unsigned memory collateralAmount =
-      totCollateralAmount.sub(feeAmount);
-
-    FixedPoint.Unsigned memory destNumTokens =
-      calculateNumberOfTokens(
-        self.finder,
-        IStandardERC20(address(self.collateralToken)),
-        exchangeParams.destPool.getPriceFeedIdentifier(),
-        collateralAmount
-      );
+    (
+      FixedPoint.Unsigned memory totCollateralAmount,
+      FixedPoint.Unsigned memory feeAmount,
+      FixedPoint.Unsigned memory collateralAmount,
+      FixedPoint.Unsigned memory destNumTokens
+    ) = self.exchangeCalculation(numTokens, exchangeParams.destPool);
 
     require(
       destNumTokens.isGreaterThanOrEqual(exchangeParams.minDestNumTokens),
@@ -1002,6 +987,35 @@ library SynthereumAutonomousPoolLib {
     feePaid = _feePaid.rawValue;
   }
 
+  /**
+   * @notice Returns the destination synthetic tokens amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
+   * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
+   * @param self Data type the library is attached to
+   * @param  syntheticTokens Amount of synthetic tokens to be exchanged
+   * @param  destinationPool Pool in which mint the destination synthetic token
+   * @return destSyntheticTokensReceived Synthetic tokens will be received from destination pool
+   * @return feePaid Collateral fee will be paid
+   */
+  function getExchangeTradeInfo(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned memory syntheticTokens,
+    ISynthereumAutonomousPoolGeneral destinationPool
+  )
+    external
+    view
+    returns (uint256 destSyntheticTokensReceived, uint256 feePaid)
+  {
+    self.checkPool(destinationPool);
+    (
+      ,
+      FixedPoint.Unsigned memory _feePaid,
+      ,
+      FixedPoint.Unsigned memory _destSyntheticTokensReceived
+    ) = self.exchangeCalculation(syntheticTokens, destinationPool);
+    destSyntheticTokensReceived = _destSyntheticTokensReceived.rawValue;
+    feePaid = _feePaid.rawValue;
+  }
+
   //----------------------------------------
   //  Internal functions
   //----------------------------------------
@@ -1361,6 +1375,49 @@ library SynthereumAutonomousPoolLib {
     );
     feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
     collateralAmount = totCollateralAmount.sub(feeAmount);
+  }
+
+  /**
+   * @notice Given a an amount of synthetic tokens to be exchanged, returns the fee amount, net collateral and gross collateral and number of destination tokens
+   * @param self Data type the library is attached tfo
+   * @param numTokens Synthetic tokens amount to be exchanged
+   * @param destinationPool Pool from which destination tokens will be received
+   * @return totCollateralAmount Gross collateral amount according to the price
+   * @return feeAmount Fee to be paid according to the fee percentage
+   * @return collateralAmount Net collateral amount (totCollateralAmount - feeAmount)
+   * @return destNumTokens Number of destination synthetic tokens will be received according to the actual price in exchange for synthetic tokens
+   */
+  function exchangeCalculation(
+    ISynthereumAutonomousPoolStorage.Storage storage self,
+    FixedPoint.Unsigned memory numTokens,
+    ISynthereumAutonomousPoolGeneral destinationPool
+  )
+    internal
+    view
+    returns (
+      FixedPoint.Unsigned memory totCollateralAmount,
+      FixedPoint.Unsigned memory feeAmount,
+      FixedPoint.Unsigned memory collateralAmount,
+      FixedPoint.Unsigned memory destNumTokens
+    )
+  {
+    totCollateralAmount = calculateCollateralAmount(
+      self.finder,
+      IStandardERC20(address(self.collateralToken)),
+      self.priceIdentifier,
+      numTokens
+    );
+
+    feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+
+    collateralAmount = totCollateralAmount.sub(feeAmount);
+
+    destNumTokens = calculateNumberOfTokens(
+      self.finder,
+      IStandardERC20(address(self.collateralToken)),
+      destinationPool.getPriceFeedIdentifier(),
+      collateralAmount
+    );
   }
 
   /**

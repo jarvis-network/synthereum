@@ -10,6 +10,9 @@ import {ISynthereumAutonomousPool} from './interfaces/IAutonomousPool.sol';
 import {
   ISynthereumAutonomousPoolStorage
 } from './interfaces/IAutonomousPoolStorage.sol';
+import {
+  ISynthereumAutonomousPoolGeneral
+} from './interfaces/IAutonomousPoolGeneral.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   FixedPoint
@@ -768,6 +771,30 @@ contract SynthereumAutonomousPool is
   {
     (collateralAmountReceived, feePaid) = poolStorage.getRedeemTradeInfo(
       FixedPoint.Unsigned(syntheticTokens)
+    );
+  }
+
+  /**
+   * @notice Returns the destination synthetic tokens amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
+   * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
+   * @param  syntheticTokens Amount of synthetic tokens to be exchanged
+   * @param  destinationPool Pool in which mint the destination synthetic token
+   * @return destSyntheticTokensReceived Synthetic tokens will be received from destination pool
+   * @return feePaid Collateral fee will be paid
+   */
+  function getExchangeTradeInfo(
+    uint256 syntheticTokens,
+    ISynthereumAutonomousPoolGeneral destinationPool
+  )
+    external
+    view
+    override
+    nonReentrantView
+    returns (uint256 destSyntheticTokensReceived, uint256 feePaid)
+  {
+    (destSyntheticTokensReceived, feePaid) = poolStorage.getExchangeTradeInfo(
+      FixedPoint.Unsigned(syntheticTokens),
+      destinationPool
     );
   }
 }
