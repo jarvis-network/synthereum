@@ -189,7 +189,7 @@ contract SynthereumAutonomousPool is
   constructor(
     ISynthereumFinder _finder,
     uint8 _version,
-    IERC20 _collateralToken,
+    IStandardERC20 _collateralToken,
     IMintableBurnableERC20 _syntheticToken,
     Roles memory _roles,
     uint256 _overCollateralization,

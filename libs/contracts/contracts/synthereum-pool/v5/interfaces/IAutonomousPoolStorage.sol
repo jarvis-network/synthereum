@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
 } from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
@@ -29,7 +29,7 @@ interface ISynthereumAutonomousPoolStorage {
     // Synthereum version
     uint8 version;
     // Collateral token
-    IERC20 collateralToken;
+    IStandardERC20 collateralToken;
     // Synthetic token
     IMintableBurnableERC20 syntheticToken;
     // Overcollateralization percentage

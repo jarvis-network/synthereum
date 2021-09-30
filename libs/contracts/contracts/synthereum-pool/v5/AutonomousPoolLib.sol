@@ -8,7 +8,6 @@ import {ISynthereumAutonomousPool} from './interfaces/IAutonomousPool.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
@@ -35,7 +34,7 @@ import {
 library SynthereumAutonomousPoolLib {
   using FixedPoint for FixedPoint.Unsigned;
   using FixedPoint for uint256;
-  using SafeERC20 for IERC20;
+  using SafeERC20 for IStandardERC20;
   using SafeERC20 for IMintableBurnableERC20;
   using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.Storage;
   using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.LPPosition;
@@ -207,7 +206,7 @@ library SynthereumAutonomousPoolLib {
     ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
     ISynthereumFinder _finder,
     uint8 _version,
-    IERC20 _collateralToken,
+    IStandardERC20 _collateralToken,
     IMintableBurnableERC20 _syntheticToken,
     FixedPoint.Unsigned memory _overCollateralization,
     bytes32 _priceIdentifier,
@@ -228,6 +227,10 @@ library SynthereumAutonomousPoolLib {
       _liquidationReward.isGreaterThan(0) &&
         _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
       'Liquidation reward must be between 0 and 100%'
+    );
+    require(
+      _collateralToken.decimals() <= 18,
+      'Collateral has more than 18 decimals'
     );
     self.finder = _finder;
     self.version = _version;
@@ -1347,7 +1350,7 @@ library SynthereumAutonomousPoolLib {
     collateralAmount = totCollateralAmount.sub(feeAmount);
     numTokens = calculateNumberOfTokens(
       self.finder,
-      IStandardERC20(address(self.collateralToken)),
+      self.collateralToken,
       self.priceIdentifier,
       collateralAmount
     );
@@ -1375,7 +1378,7 @@ library SynthereumAutonomousPoolLib {
   {
     totCollateralAmount = calculateCollateralAmount(
       self.finder,
-      IStandardERC20(address(self.collateralToken)),
+      self.collateralToken,
       self.priceIdentifier,
       numTokens
     );
@@ -1409,7 +1412,7 @@ library SynthereumAutonomousPoolLib {
   {
     totCollateralAmount = calculateCollateralAmount(
       self.finder,
-      IStandardERC20(address(self.collateralToken)),
+      self.collateralToken,
       self.priceIdentifier,
       numTokens
     );
@@ -1420,7 +1423,7 @@ library SynthereumAutonomousPoolLib {
 
     destNumTokens = calculateNumberOfTokens(
       self.finder,
-      IStandardERC20(address(self.collateralToken)),
+      self.collateralToken,
       destinationPool.getPriceFeedIdentifier(),
       collateralAmount
     );
@@ -1453,7 +1456,7 @@ library SynthereumAutonomousPoolLib {
     ISynthereumAutonomousPoolStorage.Storage storage self,
     ISynthereumAutonomousPoolGeneral poolToCheck
   ) internal view {
-    IERC20 collateralToken = self.collateralToken;
+    IStandardERC20 collateralToken = self.collateralToken;
     require(
       collateralToken == poolToCheck.collateralToken(),
       'Collateral tokens do not match'
@@ -1499,7 +1502,7 @@ library SynthereumAutonomousPoolLib {
   {
     collateralValue = calculateCollateralAmount(
       self.finder,
-      IStandardERC20(address(self.collateralToken)),
+      self.collateralToken,
       self.priceIdentifier,
       lpPosition.tokenCollateralised
     );
