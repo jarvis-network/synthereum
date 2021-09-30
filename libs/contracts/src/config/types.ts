@@ -21,6 +21,7 @@ export const allSyntheticSymbols = [
   'jSPX',
   'jXTI',
   'jXAG',
+  'jPHP',
 ] as const;
 
 const collateralSymbols = ['USDC'] as const;

@@ -17,7 +17,9 @@ import { typeCheck } from '@jarvis-network/core-utils/dist/base/meta';
 import { useMulticallContext, useWeb3 } from '@jarvis-network/app-toolkit';
 import BN from 'bn.js';
 
-type Token = keyof typeof synthereumConfig[SupportedNetworkId]['perVersionConfig']['v4']['syntheticTokens'];
+type Token =
+  | keyof typeof synthereumConfig[SupportedNetworkId]['perVersionConfig']['v4']['syntheticTokens']
+  | 'jPHP';
 
 type $ = {
   price: number;
@@ -31,6 +33,7 @@ export class ChainlinkPriceFeed {
     jEUR: new BehaviorSubject<$>(null),
     jCHF: new BehaviorSubject<$>(null),
     jGBP: new BehaviorSubject<$>(null),
+    jPHP: new BehaviorSubject<$>(null),
   });
 
   private multicallIds: { [key: string]: Token } = {};
@@ -39,6 +42,7 @@ export class ChainlinkPriceFeed {
     jEUR: '',
     jGBP: '',
     jCHF: '',
+    jPHP: '',
   };
 
   private lastResultsSubscription?: RxSubscription;
@@ -59,7 +63,9 @@ export class ChainlinkPriceFeed {
 
     for (const token of enabledTokens) {
       const contractAddress =
-        chainlinkAddresses[network][getPairForToken(this.poolVersion, token)];
+        chainlinkAddresses[network][
+          getPairForToken(this.poolVersion, token, networkId)
+        ];
 
       const id = multicall.add({
         abi: chainlinkProxyAggregatorV3InterfaceABI,
@@ -93,6 +99,7 @@ export class ChainlinkPriceFeed {
         jEUR: -1,
         jGBP: -1,
         jCHF: -1,
+        jPHP: -1,
       };
 
       // eslint-disable-next-line guard-for-in
@@ -183,7 +190,7 @@ function useChainlinkPriceFeedHook(dispatch: Dispatch) {
   const { library: web3, chainId: networkId } = useWeb3();
 
   useEffect(() => {
-    if (!networkId) return;
+    if (!isSupportedNetwork(networkId)) return;
 
     const chainlinkPriceFeed = new ChainlinkPriceFeed(networkId, multicall);
 
@@ -194,7 +201,11 @@ function useChainlinkPriceFeedHook(dispatch: Dispatch) {
       if (!Object.prototype.hasOwnProperty.call(tokens, i)) continue;
       const token = i as keyof typeof tokens;
       const $ = tokens[token];
-      const pair = getPairForToken(chainlinkPriceFeed.poolVersion, token);
+      const pair = getPairForToken(
+        chainlinkPriceFeed.poolVersion,
+        token,
+        networkId,
+      );
       subscriptions.push(
         $.subscribe(value => {
           if (!value) return;
@@ -230,8 +241,9 @@ export const useChainlinkPriceFeed =
 function getPairForToken(
   poolVersion: Omit<PoolVersion, 'v1' | 'v2'>,
   token: Token,
+  networkId: SupportedNetworkId,
 ) {
-  const { syntheticTokens } = synthereumConfig[1].perVersionConfig[
+  const { syntheticTokens } = synthereumConfig[networkId].perVersionConfig[
     poolVersion as 'v4'
   ];
   if (process.env.NODE_ENV === 'development') {

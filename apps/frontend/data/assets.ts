@@ -53,24 +53,39 @@ const assetIconMap: PerAsset<string | null> = {
   jXAG: null,
   jXTI: null,
   jSPX: null,
+  jPHP: 'jphp',
 } as const;
 
+type SynthereumConfig = typeof synthereumConfig;
+type PolygonSyntheticTokens = SynthereumConfig[137]['perVersionConfig']['v4']['syntheticTokens'];
+type MainnetSyntheticTokens = SynthereumConfig[1]['perVersionConfig']['v4']['syntheticTokens'];
+type KovanSyntheticTokens = SynthereumConfig[42]['perVersionConfig']['v4']['syntheticTokens'];
+type MumbaiSyntheticTokens = SynthereumConfig[80001]['perVersionConfig']['v4']['syntheticTokens'];
+type SyntheticToken =
+  | PolygonSyntheticTokens[keyof PolygonSyntheticTokens]
+  | MainnetSyntheticTokens[keyof MainnetSyntheticTokens]
+  | KovanSyntheticTokens[keyof KovanSyntheticTokens]
+  | MumbaiSyntheticTokens[keyof MumbaiSyntheticTokens];
+
+function mapSyntheticAssets(info: SyntheticToken) {
+  return {
+    name: info.syntheticName,
+    symbol: info.syntheticSymbol,
+    pair: info.jarvisPriceFeedIdentifier,
+    icon: assetIconMap[info.syntheticSymbol],
+    price: null,
+    decimals: 18,
+    type: 'forex',
+    synthetic: true,
+  } as Asset;
+}
 // FIXME: Instead of hardcoding the networkId and pool version make them dynamic
 const syntheticAssets = Object.values(
   synthereumConfig[1].perVersionConfig.v4.syntheticTokens,
-).map(
-  info =>
-    ({
-      name: info.syntheticName,
-      symbol: info.syntheticSymbol,
-      pair: info.jarvisPriceFeedIdentifier,
-      icon: assetIconMap[info.syntheticSymbol],
-      price: null,
-      decimals: 18,
-      type: 'forex',
-      synthetic: true,
-    } as Asset),
-);
+).map(mapSyntheticAssets);
+const syntheticAssetsPolygon = Object.values(
+  synthereumConfig[137].perVersionConfig.v4.syntheticTokens,
+).map(mapSyntheticAssets);
 
 const eth = {
   name: 'Ether',
@@ -158,7 +173,7 @@ export const assets: Asset[] = [
 
 export const assetsPolygon: Asset[] = [
   PRIMARY_STABLE_COIN,
-  ...syntheticAssets,
+  ...syntheticAssetsPolygon,
   ...common,
   eth,
   { ...matic, native: true },

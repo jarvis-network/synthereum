@@ -8,6 +8,8 @@ import {
   collateralSymbol,
   SynthereumConfig,
   SyntheticTokens,
+  SyntheticTokenConfig,
+  SyntheticSymbol,
 } from './types';
 
 function toFixed(num: string): FixedPointNumber {
@@ -24,6 +26,7 @@ export const priceFeed = typeCheck<PriceFeed>()({
   jSPX: 'SPXUSD',
   jXTI: 'XTIUSD',
   jXAG: 'XAGUSD',
+  jPHP: 'PHPUSD',
 } as const);
 
 export const reversedPriceFeedPairs: string[] = [priceFeed.jCHF];
@@ -98,6 +101,18 @@ const syntheticTokensMainnet = typeCheck<SyntheticTokens>()({
     minSponsorTokens: '0',
     isContractAllowed: true,
   },
+} as const);
+
+const jPHP = typeCheck<SyntheticTokenConfig<SyntheticSymbol>>()({
+  syntheticName: 'Jarvis Synthetic Philippine Peso',
+  syntheticSymbol: 'jPHP',
+  umaPriceFeedIdentifier: 'PHPUSD',
+  jarvisPriceFeedIdentifier: 'PHPUSD',
+  chainlinkPriceFeedIdentifier: 'PHPUSD',
+  collateralRequirement: '1050000000000000000',
+  startingCollateralization: '24490',
+  minSponsorTokens: '0',
+  isContractAllowed: true,
 } as const);
 
 export const synthereumConfig = typeCheck<SynthereumConfig>()({
@@ -279,7 +294,7 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       },
       v4: {
         version: 4,
-        syntheticTokens: syntheticTokensMainnet,
+        syntheticTokens: { ...syntheticTokensMainnet, jPHP } as const,
       },
     },
   },
