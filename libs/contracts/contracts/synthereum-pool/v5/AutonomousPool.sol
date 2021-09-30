@@ -65,14 +65,12 @@ contract SynthereumAutonomousPool is
 
   event Mint(
     address indexed account,
-    address indexed pool,
     uint256 collateralSent,
     uint256 numTokensReceived
   );
 
   event Redeem(
     address indexed account,
-    address indexed pool,
     uint256 numTokensSent,
     uint256 collateralReceived,
     uint256 feePaid,
@@ -81,7 +79,6 @@ contract SynthereumAutonomousPool is
 
   event Exchange(
     address indexed account,
-    address indexed sourcePool,
     address indexed destPool,
     uint256 numTokensSent,
     uint256 destNumTokensReceived,

@@ -113,7 +113,6 @@ library SynthereumAutonomousPoolLib {
 
   event Mint(
     address indexed account,
-    address indexed pool,
     uint256 collateralSent,
     uint256 numTokensReceived,
     uint256 feePaid,
@@ -122,7 +121,6 @@ library SynthereumAutonomousPoolLib {
 
   event Redeem(
     address indexed account,
-    address indexed pool,
     uint256 numTokensSent,
     uint256 collateralReceived,
     uint256 feePaid,
@@ -131,7 +129,6 @@ library SynthereumAutonomousPoolLib {
 
   event Exchange(
     address indexed account,
-    address indexed sourcePool,
     address indexed destPool,
     uint256 numTokensSent,
     uint256 destNumTokensReceived,
@@ -1075,7 +1072,6 @@ library SynthereumAutonomousPoolLib {
 
     emit Mint(
       msg.sender,
-      address(this),
       executeMintParams.totCollateralAmount.rawValue,
       executeMintParams.numTokens.rawValue,
       executeMintParams.feeAmount.rawValue,
@@ -1127,7 +1123,6 @@ library SynthereumAutonomousPoolLib {
 
     emit Redeem(
       msg.sender,
-      address(this),
       executeRedeemParams.numTokens.rawValue,
       executeRedeemParams.collateralAmount.rawValue,
       executeRedeemParams.feeAmount.rawValue,
@@ -1191,7 +1186,6 @@ library SynthereumAutonomousPoolLib {
 
     emit Exchange(
       msg.sender,
-      address(this),
       address(destinationPool),
       executeExchangeParams.numTokens.rawValue,
       executeExchangeParams.destNumTokens.rawValue,
