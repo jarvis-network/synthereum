@@ -227,7 +227,7 @@ contract SynthereumAutonomousPool is
    * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
    * @return feePaid Amount of collateral paid by the user as fee
    */
-  function mint(MintParams memory mintParams)
+  function mint(MintParams calldata mintParams)
     external
     override
     notEmergencyShutdown
@@ -249,7 +249,7 @@ contract SynthereumAutonomousPool is
    * @return collateralRedeemed Amount of collateral redeeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
-  function redeem(RedeemParams memory redeemParams)
+  function redeem(RedeemParams calldata redeemParams)
     external
     override
     notEmergencyShutdown
@@ -271,7 +271,7 @@ contract SynthereumAutonomousPool is
    * @return destNumTokensMinted Amount of collateral redeeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
-  function exchange(ExchangeParams memory exchangeParams)
+  function exchange(ExchangeParams calldata exchangeParams)
     external
     override
     notEmergencyShutdown
@@ -446,7 +446,7 @@ contract SynthereumAutonomousPool is
    * @notice Only the maintainer can call this function
    * @param fee Fee info (percentage + recipients + weigths)
    */
-  function setFee(ISynthereumAutonomousPoolStorage.Fee memory fee)
+  function setFee(ISynthereumAutonomousPoolStorage.Fee calldata fee)
     external
     override
     onlyMaintainer

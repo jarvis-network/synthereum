@@ -64,7 +64,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
    * @return feePaid Amount of collateral paid by the user as fee
    */
-  function mint(MintParams memory mintParams)
+  function mint(MintParams calldata mintParams)
     external
     returns (uint256 syntheticTokensMinted, uint256 feePaid);
 
@@ -76,7 +76,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @return collateralRedeemed Amount of collateral redeeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
-  function redeem(RedeemParams memory redeemParams)
+  function redeem(RedeemParams calldata redeemParams)
     external
     returns (uint256 collateralRedeemed, uint256 feePaid);
 
@@ -88,7 +88,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @return destNumTokensMinted Amount of collateral redeeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
-  function exchange(ExchangeParams memory exchangeParams)
+  function exchange(ExchangeParams calldata exchangeParams)
     external
     returns (uint256 destNumTokensMinted, uint256 feePaid);
 
@@ -164,7 +164,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @notice Only the maintainer can call this function
    * @param fee Fee info (percentage + recipients + weigths)
    */
-  function setFee(ISynthereumAutonomousPoolStorage.Fee memory fee) external;
+  function setFee(ISynthereumAutonomousPoolStorage.Fee calldata fee) external;
 
   /**
    * @notice Update the fee percentage
@@ -180,8 +180,8 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @param feeProportions An array of the proportions of fees generated each recipient will receive
    */
   function setFeeRecipients(
-    address[] memory feeRecipients,
-    uint32[] memory feeProportions
+    address[] calldata feeRecipients,
+    uint32[] calldata feeProportions
   ) external;
 
   /**
