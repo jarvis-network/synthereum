@@ -2,9 +2,9 @@
 pragma solidity ^0.8.4;
 
 import {
-  ISynthereumAutonomousPoolStorage
-} from './interfaces/IAutonomousPoolStorage.sol';
-import {ISynthereumAutonomousPool} from './interfaces/IAutonomousPool.sol';
+  ISynthereumLiquidityPoolStorage
+} from './interfaces/ILiquidityPoolStorage.sol';
+import {ISynthereumLiquidityPool} from './interfaces/ILiquidityPool.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
@@ -20,8 +20,8 @@ import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
 import {
-  ISynthereumAutonomousPoolGeneral
-} from './interfaces/IAutonomousPoolGeneral.sol';
+  ISynthereumLiquidityPoolGeneral
+} from './interfaces/ILiquidityPoolGeneral.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   SafeERC20
@@ -31,14 +31,14 @@ import {
  * @notice Pool implementation is stored here to reduce deployment costs
  */
 
-library SynthereumAutonomousPoolLib {
+library SynthereumLiquidityPoolLib {
   using FixedPoint for FixedPoint.Unsigned;
   using FixedPoint for uint256;
   using SafeERC20 for IStandardERC20;
   using SafeERC20 for IMintableBurnableERC20;
-  using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.Storage;
-  using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.LPPosition;
-  using SynthereumAutonomousPoolLib for ISynthereumAutonomousPoolStorage.FeeStatus;
+  using SynthereumLiquidityPoolLib for ISynthereumLiquidityPoolStorage.Storage;
+  using SynthereumLiquidityPoolLib for ISynthereumLiquidityPoolStorage.LPPosition;
+  using SynthereumLiquidityPoolLib for ISynthereumLiquidityPoolStorage.FeeStatus;
 
   struct ExecuteMintParams {
     // Amount of synth tokens to mint
@@ -68,7 +68,7 @@ library SynthereumAutonomousPoolLib {
 
   struct ExecuteExchangeParams {
     // Destination pool in which mint new tokens
-    ISynthereumAutonomousPoolGeneral destPool;
+    ISynthereumLiquidityPoolGeneral destPool;
     // Amount of tokens to send
     FixedPoint.Unsigned numTokens;
     // Amount of collateral (excluding fees) equivalent to synthetic token (exluding fees) to send
@@ -202,8 +202,8 @@ library SynthereumAutonomousPoolLib {
    * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
    */
   function initialize(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     ISynthereumFinder _finder,
     uint8 _version,
     IStandardERC20 _collateralToken,
@@ -258,10 +258,10 @@ library SynthereumAutonomousPoolLib {
    * @return feePaid Amount of collateral paid by the user as fee
    */
   function mint(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumAutonomousPool.MintParams calldata mintParams
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPool.MintParams calldata mintParams
   ) external returns (uint256 syntheticTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory totCollateralAmount =
       FixedPoint.Unsigned(mintParams.collateralAmount);
@@ -307,10 +307,10 @@ library SynthereumAutonomousPoolLib {
    * @return feePaid Amount of collateral paid by user as fee
    */
   function redeem(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumAutonomousPool.RedeemParams calldata redeemParams
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPool.RedeemParams calldata redeemParams
   ) external returns (uint256 collateralRedeemed, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(redeemParams.numTokens);
@@ -356,10 +356,10 @@ library SynthereumAutonomousPoolLib {
    * @return feePaid Amount of collateral paid by user as fee
    */
   function exchange(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumAutonomousPool.ExchangeParams calldata exchangeParams
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPool.ExchangeParams calldata exchangeParams
   ) external returns (uint256 destNumTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(exchangeParams.numTokens);
@@ -407,14 +407,14 @@ library SynthereumAutonomousPoolLib {
    * @param recipient Recipient to which send synthetic token minted
    */
   function exchangeMint(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata collateralAmount,
     FixedPoint.Unsigned calldata numTokens,
     address recipient
   ) external {
-    self.checkPool(ISynthereumAutonomousPoolGeneral(msg.sender));
+    self.checkPool(ISynthereumLiquidityPoolGeneral(msg.sender));
 
     // Sending amount must be different from 0
     require(collateralAmount.isGreaterThan(0), 'Sending amount is equal to 0');
@@ -454,9 +454,9 @@ library SynthereumAutonomousPoolLib {
    * @return remainingLiquidity Remaining unused collateral in the pool
    */
   function withdrawLiquidity(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata collateralAmount
   ) external returns (uint256 remainingLiquidity) {
     // Collateral available
@@ -488,9 +488,9 @@ library SynthereumAutonomousPoolLib {
    * @return newTotalCollateral New total collateral amount
    */
   function increaseCollateral(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata collateralAmount
   ) external returns (uint256 newTotalCollateral) {
     // Collateral available
@@ -533,9 +533,9 @@ library SynthereumAutonomousPoolLib {
    * @return newTotalCollateral New total collateral amount
    */
   function decreaseCollateral(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     FixedPoint.Unsigned calldata collateralAmount
   ) external returns (uint256 newTotalCollateral) {
     // Resulting total collateral amount
@@ -571,8 +571,8 @@ library SynthereumAutonomousPoolLib {
    * @return feeClaimed Amount of fee claimed
    */
   function claimFee(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus
   ) external returns (uint256 feeClaimed) {
     // Fee to claim
     FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msg.sender];
@@ -608,10 +608,10 @@ library SynthereumAutonomousPoolLib {
    * @return rewardAmount Amount of received collateral as reward for the liquidation
    */
   function liquidate(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata numSynthTokens
   ) external returns (uint256 collateralReceived, uint256 rewardAmount) {
     // Collateral to liquidate
@@ -679,8 +679,8 @@ library SynthereumAutonomousPoolLib {
    * @return price Price of the pair at the moment of shutdown execution
    */
   function emergencyShutdown(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.Shutdown storage emergencyShutdownData
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Shutdown storage emergencyShutdownData
   ) external returns (uint256 timestamp, uint256 price) {
     ISynthereumFinder _finder = self.finder;
 
@@ -715,10 +715,10 @@ library SynthereumAutonomousPoolLib {
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
    */
   function settleEmergencyShutdown(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumAutonomousPoolStorage.Shutdown storage emergencyShutdownData,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Shutdown storage emergencyShutdownData,
     bool isLiquidityProvider
   ) external returns (uint256 synthTokensSettled, uint256 amountSettled) {
     // Memory struct for saving local varibales
@@ -827,7 +827,7 @@ library SynthereumAutonomousPoolLib {
    * @param _feePercentage The new fee percentage
    */
   function setFeePercentage(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned calldata _feePercentage
   ) external {
     require(
@@ -847,7 +847,7 @@ library SynthereumAutonomousPoolLib {
    * @param _feeProportions An array of the proportions of fees generated each recipient will receive
    */
   function setFeeRecipients(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     address[] calldata _feeRecipients,
     uint32[] calldata _feeProportions
   ) external {
@@ -877,8 +877,8 @@ library SynthereumAutonomousPoolLib {
    * @param _overCollateralization Overcollateralization percentage
    */
   function setOverCollateralization(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     FixedPoint.Unsigned calldata _overCollateralization
   ) external {
     require(
@@ -901,7 +901,7 @@ library SynthereumAutonomousPoolLib {
    * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
    */
   function setLiquidationReward(
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     FixedPoint.Unsigned calldata _liquidationReward
   ) external {
     require(
@@ -923,9 +923,9 @@ library SynthereumAutonomousPoolLib {
    * @return Total available liquidity
    */
   function totalAvailableLiquidity(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus
   ) external view returns (uint256) {
     return
       self
@@ -947,9 +947,9 @@ library SynthereumAutonomousPoolLib {
    * @return _isOverCollateralized_ True if position is overcollaterlized, otherwise false
    */
   function isOverCollateralized(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData
   ) external view returns (bool _isOverCollateralized_) {
     (_isOverCollateralized_, ) = self._isOverCollateralized(
       lpPosition,
@@ -965,8 +965,8 @@ library SynthereumAutonomousPoolLib {
    * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
   function collateralCoverage(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition
   ) external view returns (uint256) {
     return
       lpPosition
@@ -988,7 +988,7 @@ library SynthereumAutonomousPoolLib {
    * @return feePaid Collateral fee will be paid
    */
   function getMintTradeInfo(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned calldata inputCollateral
   ) external view returns (uint256 synthTokensReceived, uint256 feePaid) {
     (
@@ -1010,7 +1010,7 @@ library SynthereumAutonomousPoolLib {
    * @return feePaid Collateral fee will be paid
    */
   function getRedeemTradeInfo(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned calldata syntheticTokens
   ) external view returns (uint256 collateralAmountReceived, uint256 feePaid) {
     (
@@ -1033,9 +1033,9 @@ library SynthereumAutonomousPoolLib {
    * @return feePaid Collateral fee will be paid
    */
   function getExchangeTradeInfo(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned calldata syntheticTokens,
-    ISynthereumAutonomousPoolGeneral destinationPool
+    ISynthereumLiquidityPoolGeneral destinationPool
   )
     external
     view
@@ -1065,9 +1065,9 @@ library SynthereumAutonomousPoolLib {
    * @param executeMintParams Params for execution of mint (see ExecuteMintParams struct)
    */
   function executeMint(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     ExecuteMintParams memory executeMintParams
   ) internal {
     // Sending amount must be different from 0
@@ -1127,9 +1127,9 @@ library SynthereumAutonomousPoolLib {
    * @param executeRedeemParams Params for execution of redeem (see ExecuteRedeemParams struct)
    */
   function executeRedeem(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     ExecuteRedeemParams memory executeRedeemParams
   ) internal {
     // Sending amount must be different from 0
@@ -1178,9 +1178,9 @@ library SynthereumAutonomousPoolLib {
    * @param executeExchangeParams Params for execution of exchange (see ExecuteExchangeParams struct)
    */
   function executeExchange(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     ExecuteExchangeParams memory executeExchangeParams
   ) internal {
     // Sending amount must be different from 0
@@ -1206,7 +1206,7 @@ library SynthereumAutonomousPoolLib {
     // Burn synthetic tokens
     self.burnSyntheticTokens(executeExchangeParams.numTokens.rawValue);
 
-    ISynthereumAutonomousPoolGeneral destinationPool =
+    ISynthereumLiquidityPoolGeneral destinationPool =
       executeExchangeParams.destPool;
 
     // Check that destination pool is different from this pool
@@ -1249,7 +1249,7 @@ library SynthereumAutonomousPoolLib {
    * @return overCollateral Amount of collateral to be provided by LP for overcollateralization
    */
   function updateLpPositionInMint(
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     FixedPoint.Unsigned storage overCollateralization,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens
@@ -1273,7 +1273,7 @@ library SynthereumAutonomousPoolLib {
    * @return collateralRedeemed Collateral redeemed
    */
   function updateLpPositionInRedeem(
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     FixedPoint.Unsigned memory numTokens
   ) internal returns (FixedPoint.Unsigned memory collateralRedeemed) {
     FixedPoint.Unsigned memory totalActualTokens =
@@ -1301,8 +1301,8 @@ library SynthereumAutonomousPoolLib {
    * @param feeAmount Collateral fee charged
    */
   function updateFees(
-    ISynthereumAutonomousPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumAutonomousPoolStorage.Fee storage feeInfo,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    ISynthereumLiquidityPoolStorage.Fee storage feeInfo,
     FixedPoint.Unsigned memory feeAmount
   ) internal {
     FixedPoint.Unsigned memory feeCharged;
@@ -1336,7 +1336,7 @@ library SynthereumAutonomousPoolLib {
    * @param numTokens The number of tokens to pull
    */
   function pullCollateral(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     address from,
     FixedPoint.Unsigned memory numTokens
   ) internal {
@@ -1353,7 +1353,7 @@ library SynthereumAutonomousPoolLib {
    * @param numTokens The number of tokens to be burned
    */
   function burnSyntheticTokens(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     uint256 numTokens
   ) internal {
     IMintableBurnableERC20 synthToken = self.syntheticToken;
@@ -1378,7 +1378,7 @@ library SynthereumAutonomousPoolLib {
    * @return numTokens Number of synthetic tokens will be received according to the actual price in exchange for collateralAmount
    */
   function mintCalculation(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned memory totCollateralAmount
   )
     internal
@@ -1410,7 +1410,7 @@ library SynthereumAutonomousPoolLib {
    * @return collateralAmount Net collateral amount will be received according to the actual price in exchange for numTokens
    */
   function redeemCalculation(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned memory numTokens
   )
     internal
@@ -1444,9 +1444,9 @@ library SynthereumAutonomousPoolLib {
    * @return destNumTokens Number of destination synthetic tokens will be received according to the actual price in exchange for synthetic tokens
    */
   function exchangeCalculation(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned memory numTokens,
-    ISynthereumAutonomousPoolGeneral destinationPool
+    ISynthereumLiquidityPoolGeneral destinationPool
   )
     internal
     view
@@ -1483,7 +1483,7 @@ library SynthereumAutonomousPoolLib {
    * @param expiration Expiration time of the transaction
    */
   function checkParams(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     uint256 feePercentage,
     uint256 expiration
   ) internal view {
@@ -1501,8 +1501,8 @@ library SynthereumAutonomousPoolLib {
    * @param poolToCheck Pool that should be compared with this pool
    */
   function checkPool(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolGeneral poolToCheck
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolGeneral poolToCheck
   ) internal view {
     IStandardERC20 collateralToken = self.collateralToken;
     require(
@@ -1540,9 +1540,9 @@ library SynthereumAutonomousPoolLib {
    * @return collateralValue Collateral amount equal to the value of tokens passed
    */
   function _isOverCollateralized(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
-    ISynthereumAutonomousPoolStorage.LPPosition storage lpPosition,
-    ISynthereumAutonomousPoolStorage.Liquidation storage liquidationData,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     FixedPoint.Unsigned memory collateralToCompare
   )
     internal
@@ -1573,7 +1573,7 @@ library SynthereumAutonomousPoolLib {
    * @param unusedCollateral Unused collateral of the pool
    */
   function calculateUnusedCollateral(
-    ISynthereumAutonomousPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.Storage storage self,
     FixedPoint.Unsigned memory totalCollateral,
     FixedPoint.Unsigned memory totalFees,
     FixedPoint.Unsigned memory collateralReceived

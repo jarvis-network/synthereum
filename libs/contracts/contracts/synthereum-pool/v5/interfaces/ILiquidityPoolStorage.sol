@@ -10,7 +10,7 @@ import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
-interface ISynthereumAutonomousPoolStorage {
+interface ISynthereumLiquidityPoolStorage {
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and exchanges tokens
