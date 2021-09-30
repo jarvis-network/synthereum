@@ -217,21 +217,25 @@ library SynthereumAutonomousPoolLib {
       _collateralRequirement.isGreaterThan(FixedPoint.fromUnscaledUint(1)),
       'Collateral requirement must be bigger than 100%'
     );
+
     require(
       _overCollateralization.isGreaterThan(
         _collateralRequirement.sub(FixedPoint.fromUnscaledUint(1))
       ),
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
+
     require(
       _liquidationReward.isGreaterThan(0) &&
         _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
       'Liquidation reward must be between 0 and 100%'
     );
+
     require(
       _collateralToken.decimals() <= 18,
       'Collateral has more than 18 decimals'
     );
+
     self.finder = _finder;
     self.version = _version;
     self.collateralToken = _collateralToken;
@@ -261,16 +265,20 @@ library SynthereumAutonomousPoolLib {
   ) external returns (uint256 syntheticTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory totCollateralAmount =
       FixedPoint.Unsigned(mintParams.collateralAmount);
+
     (
       FixedPoint.Unsigned memory collateralAmount,
       FixedPoint.Unsigned memory feeAmount,
       FixedPoint.Unsigned memory numTokens
     ) = self.mintCalculation(totCollateralAmount);
+
     require(
       numTokens.isGreaterThanOrEqual(mintParams.minNumTokens),
       'Number of tokens less than minimum limit'
     );
+
     checkParams(self, mintParams.feePercentage, mintParams.expiration);
+
     self.executeMint(
       lpPosition,
       feeStatus,
@@ -282,6 +290,7 @@ library SynthereumAutonomousPoolLib {
         mintParams.recipient
       )
     );
+
     syntheticTokensMinted = numTokens.rawValue;
     feePaid = feeAmount.rawValue;
   }
@@ -305,16 +314,20 @@ library SynthereumAutonomousPoolLib {
   ) external returns (uint256 collateralRedeemed, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(redeemParams.numTokens);
+
     (
       FixedPoint.Unsigned memory totCollateralAmount,
       FixedPoint.Unsigned memory feeAmount,
       FixedPoint.Unsigned memory collateralAmount
     ) = self.redeemCalculation(numTokens);
+
     require(
       collateralAmount.isGreaterThanOrEqual(redeemParams.minCollateral),
       'Collateral amount less than minimum limit'
     );
+
     checkParams(self, redeemParams.feePercentage, redeemParams.expiration);
+
     self.executeRedeem(
       lpPosition,
       feeStatus,
@@ -326,6 +339,7 @@ library SynthereumAutonomousPoolLib {
         redeemParams.recipient
       )
     );
+
     feePaid = feeAmount.rawValue;
     collateralRedeemed = collateralAmount.rawValue;
   }
@@ -669,17 +683,24 @@ library SynthereumAutonomousPoolLib {
     ISynthereumAutonomousPoolStorage.Shutdown storage emergencyShutdownData
   ) external returns (uint256 timestamp, uint256 price) {
     ISynthereumFinder _finder = self.finder;
+
     require(
       msg.sender ==
         _finder.getImplementationAddress(SynthereumInterfaces.Manager),
       'Caller must be the Synthereum manager'
     );
+
     uint256 _timestamp = block.timestamp;
+
     emergencyShutdownData.timestamp = _timestamp;
+
     FixedPoint.Unsigned memory _price =
       getPriceFeedRate(_finder, self.priceIdentifier);
+
     emergencyShutdownData.price = _price;
+
     price = _price.rawValue;
+
     emit EmergencyShutdown(timestamp, price);
   }
 
@@ -728,11 +749,8 @@ library SynthereumAutonomousPoolLib {
     }
 
     executeSettlement.totalCollateralAmount = lpPosition.totalCollateralAmount;
-
     executeSettlement.tokensCollaterlized = lpPosition.tokensCollateralized;
-
     executeSettlement.totalFeeAmount = feeStatus.totalFeeAmount;
-
     executeSettlement.overCollateral;
 
     // Add overcollateral and deposited synthetic tokens if the sender is the LP
@@ -816,7 +834,9 @@ library SynthereumAutonomousPoolLib {
       _feePercentage.rawValue < 10**(18),
       'Fee Percentage must be less than 100%'
     );
+
     self.fee.feePercentage = _feePercentage;
+
     emit SetFeePercentage(_feePercentage.rawValue);
   }
 
@@ -835,14 +855,18 @@ library SynthereumAutonomousPoolLib {
       _feeRecipients.length == _feeProportions.length,
       'Fee recipients and fee proportions do not match'
     );
+
     uint256 totalActualFeeProportions;
+
     // Store the sum of all proportions
     for (uint256 i = 0; i < _feeProportions.length; i++) {
       totalActualFeeProportions += _feeProportions[i];
     }
+
     self.fee.feeRecipients = _feeRecipients;
     self.fee.feeProportions = _feeProportions;
     self.fee.totalFeeProportions = totalActualFeeProportions;
+
     emit SetFeeRecipients(_feeRecipients, _feeProportions);
   }
 
@@ -865,7 +889,9 @@ library SynthereumAutonomousPoolLib {
       ),
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
+
     self.overCollateralization = _overCollateralization;
+
     emit SetOverCollateralization(_overCollateralization.rawValue);
   }
 
@@ -883,7 +909,9 @@ library SynthereumAutonomousPoolLib {
         _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
       'Liquidation reward must be between 0 and 100%'
     );
+
     liquidationData.liquidationReward = _liquidationReward;
+
     emit SetLiquidationReward(_liquidationReward.rawValue);
   }
 
@@ -968,6 +996,7 @@ library SynthereumAutonomousPoolLib {
       FixedPoint.Unsigned memory _feePaid,
       FixedPoint.Unsigned memory _synthTokensReceived
     ) = self.mintCalculation(inputCollateral);
+
     synthTokensReceived = _synthTokensReceived.rawValue;
     feePaid = _feePaid.rawValue;
   }
@@ -989,6 +1018,7 @@ library SynthereumAutonomousPoolLib {
       FixedPoint.Unsigned memory _feePaid,
       FixedPoint.Unsigned memory _collateralAmountReceived
     ) = self.mintCalculation(syntheticTokens);
+
     collateralAmountReceived = _collateralAmountReceived.rawValue;
     feePaid = _feePaid.rawValue;
   }
@@ -1018,6 +1048,7 @@ library SynthereumAutonomousPoolLib {
       ,
       FixedPoint.Unsigned memory _destSyntheticTokensReceived
     ) = self.exchangeCalculation(syntheticTokens, destinationPool);
+
     destSyntheticTokensReceived = _destSyntheticTokensReceived.rawValue;
     feePaid = _feePaid.rawValue;
   }
@@ -1224,10 +1255,12 @@ library SynthereumAutonomousPoolLib {
     FixedPoint.Unsigned memory numTokens
   ) internal returns (FixedPoint.Unsigned memory overCollateral) {
     overCollateral = collateralAmount.mul(overCollateralization);
+
     lpPosition.totalCollateralAmount = lpPosition
       .totalCollateralAmount
       .add(collateralAmount)
       .add(overCollateral);
+
     lpPosition.tokensCollateralized = lpPosition.tokensCollateralized.add(
       numTokens
     );
@@ -1245,12 +1278,17 @@ library SynthereumAutonomousPoolLib {
   ) internal returns (FixedPoint.Unsigned memory collateralRedeemed) {
     FixedPoint.Unsigned memory totalActualTokens =
       lpPosition.tokensCollateralized;
+
     FixedPoint.Unsigned memory totalActualCollateral =
       lpPosition.totalCollateralAmount;
+
     FixedPoint.Unsigned memory fractionRedeemed =
       numTokens.div(totalActualTokens);
+
     collateralRedeemed = fractionRedeemed.mul(totalActualCollateral);
+
     lpPosition.tokensCollateralized = totalActualTokens.sub(numTokens);
+
     lpPosition.totalCollateralAmount = totalActualCollateral.sub(
       collateralRedeemed
     );
@@ -1268,7 +1306,9 @@ library SynthereumAutonomousPoolLib {
     FixedPoint.Unsigned memory feeAmount
   ) internal {
     FixedPoint.Unsigned memory feeCharged;
+
     uint256 numberOfRecipients = feeInfo.feeRecipients.length;
+
     for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
       address feeRecipient = feeInfo.feeRecipients[i];
       FixedPoint.Unsigned memory feeReceived =
@@ -1280,10 +1320,13 @@ library SynthereumAutonomousPoolLib {
       );
       feeCharged = feeCharged.add(feeReceived);
     }
+
     address lastRecipient = feeInfo.feeRecipients[numberOfRecipients - 1];
+
     feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient]
       .add(feeAmount)
       .sub(feeCharged);
+
     feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
   }
 
@@ -1347,7 +1390,9 @@ library SynthereumAutonomousPoolLib {
     )
   {
     feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+
     collateralAmount = totCollateralAmount.sub(feeAmount);
+
     numTokens = calculateNumberOfTokens(
       self.finder,
       self.collateralToken,
@@ -1382,7 +1427,9 @@ library SynthereumAutonomousPoolLib {
       self.priceIdentifier,
       numTokens
     );
+
     feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+
     collateralAmount = totCollateralAmount.sub(feeAmount);
   }
 
@@ -1441,6 +1488,7 @@ library SynthereumAutonomousPoolLib {
     uint256 expiration
   ) internal view {
     require(block.timestamp <= expiration, 'Transaction expired');
+
     require(
       self.fee.feePercentage.rawValue <= feePercentage,
       'User fee percentage less than actual one'
@@ -1461,12 +1509,16 @@ library SynthereumAutonomousPoolLib {
       collateralToken == poolToCheck.collateralToken(),
       'Collateral tokens do not match'
     );
+
     ISynthereumFinder finder = self.finder;
+
     require(finder == poolToCheck.synthereumFinder(), 'Finders do not match');
+
     ISynthereumRegistry poolRegister =
       ISynthereumRegistry(
         finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
       );
+
     require(
       poolRegister.isDeployed(
         poolToCheck.syntheticTokenSymbol(),
@@ -1506,6 +1558,7 @@ library SynthereumAutonomousPoolLib {
       self.priceIdentifier,
       lpPosition.tokensCollateralized
     );
+
     _isOverCollateralized_ = collateralToCompare.isGreaterThanOrEqual(
       collateralValue.mul(liquidationData.collateralRequirement)
     );
@@ -1547,7 +1600,9 @@ library SynthereumAutonomousPoolLib {
   ) internal view returns (FixedPoint.Unsigned memory numTokens) {
     FixedPoint.Unsigned memory priceRate =
       getPriceFeedRate(finder, priceIdentifier);
+
     uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
+
     numTokens = collateralAmount.mul(10**(18 - decimalsOfCollateral)).div(
       priceRate
     );
@@ -1569,7 +1624,9 @@ library SynthereumAutonomousPoolLib {
   ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
     FixedPoint.Unsigned memory priceRate =
       getPriceFeedRate(finder, priceIdentifier);
+
     uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
+
     collateralAmount = numTokens.mul(priceRate).div(
       10**(18 - decimalsOfCollateral)
     );
@@ -1590,6 +1647,7 @@ library SynthereumAutonomousPoolLib {
       ISynthereumPriceFeed(
         finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
       );
+
     priceRate = FixedPoint.Unsigned(priceFeed.getLatestPrice(priceIdentifier));
   }
 
