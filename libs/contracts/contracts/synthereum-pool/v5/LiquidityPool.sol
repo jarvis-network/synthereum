@@ -6,18 +6,18 @@ import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
 } from '../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {ISynthereumAutonomousPool} from './interfaces/IAutonomousPool.sol';
+import {ISynthereumLiquidityPool} from './interfaces/ILiquidityPool.sol';
 import {
-  ISynthereumAutonomousPoolStorage
-} from './interfaces/IAutonomousPoolStorage.sol';
+  ISynthereumLiquidityPoolStorage
+} from './interfaces/ILiquidityPoolStorage.sol';
 import {
-  ISynthereumAutonomousPoolGeneral
-} from './interfaces/IAutonomousPoolGeneral.sol';
+  ISynthereumLiquidityPoolGeneral
+} from './interfaces/ILiquidityPoolGeneral.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {SynthereumAutonomousPoolLib} from './AutonomousPoolLib.sol';
+import {SynthereumLiquidityPoolLib} from './LiquidityPoolLib.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 import {
   AccessControlEnumerable
@@ -27,14 +27,14 @@ import {
  * @title Token Issuer Contract
  * @notice Collects collateral and issues synthetic assets
  */
-contract SynthereumAutonomousPool is
+contract SynthereumLiquidityPool is
   AccessControlEnumerable,
-  ISynthereumAutonomousPoolStorage,
-  ISynthereumAutonomousPool,
+  ISynthereumLiquidityPoolStorage,
+  ISynthereumLiquidityPool,
   Lockable
 {
-  using SynthereumAutonomousPoolLib for Storage;
-  using SynthereumAutonomousPoolLib for Liquidation;
+  using SynthereumLiquidityPoolLib for Storage;
+  using SynthereumLiquidityPoolLib for Liquidation;
 
   //----------------------------------------
   // Constants
@@ -446,7 +446,7 @@ contract SynthereumAutonomousPool is
    * @notice Only the maintainer can call this function
    * @param fee Fee info (percentage + recipients + weigths)
    */
-  function setFee(ISynthereumAutonomousPoolStorage.Fee calldata fee)
+  function setFee(ISynthereumLiquidityPoolStorage.Fee calldata fee)
     external
     override
     onlyMaintainer
@@ -787,7 +787,7 @@ contract SynthereumAutonomousPool is
    */
   function getExchangeTradeInfo(
     uint256 syntheticTokens,
-    ISynthereumAutonomousPoolGeneral destinationPool
+    ISynthereumLiquidityPoolGeneral destinationPool
   )
     external
     view

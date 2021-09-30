@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {ISynthereumAutonomousPoolGeneral} from './IAutonomousPoolGeneral.sol';
-import {ISynthereumAutonomousPoolStorage} from './IAutonomousPoolStorage.sol';
+import {ISynthereumLiquidityPoolGeneral} from './ILiquidityPoolGeneral.sol';
+import {ISynthereumLiquidityPoolStorage} from './ILiquidityPoolStorage.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
-interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
+interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   // Describe role structure
   struct Roles {
     address admin;
@@ -43,7 +43,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
 
   struct ExchangeParams {
     // Destination pool
-    ISynthereumAutonomousPoolGeneral destPool;
+    ISynthereumLiquidityPoolGeneral destPool;
     // Amount of source synthetic tokens that user wants to use for exchanging
     uint256 numTokens;
     // Minimum Amount of destination synthetic tokens that user wants to receive (anti-slippage)
@@ -164,7 +164,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    * @notice Only the maintainer can call this function
    * @param fee Fee info (percentage + recipients + weigths)
    */
-  function setFee(ISynthereumAutonomousPoolStorage.Fee calldata fee) external;
+  function setFee(ISynthereumLiquidityPoolStorage.Fee calldata fee) external;
 
   /**
    * @notice Update the fee percentage
@@ -324,7 +324,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
    */
   function getExchangeTradeInfo(
     uint256 syntheticTokens,
-    ISynthereumAutonomousPoolGeneral destinationPool
+    ISynthereumLiquidityPoolGeneral destinationPool
   )
     external
     view

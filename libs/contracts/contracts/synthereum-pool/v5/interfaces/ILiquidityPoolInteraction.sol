@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-interface ISynthereumAutonomousPoolInteraction {
+interface ISynthereumLiquidityPoolInteraction {
   /**
    * @notice Called by a source Pool's `exchange` function to mint destination tokens
    * @notice This functon can be called only by a pool registred in the PoolRegister contract

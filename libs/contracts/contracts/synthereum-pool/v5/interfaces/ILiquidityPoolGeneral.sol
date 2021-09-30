@@ -2,13 +2,13 @@
 pragma solidity ^0.8.4;
 
 import {
-  ISynthereumAutonomousPoolInteraction
-} from './IAutonomousPoolInteraction.sol';
+  ISynthereumLiquidityPoolInteraction
+} from './ILiquidityPoolInteraction.sol';
 import {
   ISynthereumPoolDeployment
 } from '../../common/interfaces/IPoolDeployment.sol';
 
-interface ISynthereumAutonomousPoolGeneral is
+interface ISynthereumLiquidityPoolGeneral is
   ISynthereumPoolDeployment,
-  ISynthereumAutonomousPoolInteraction
+  ISynthereumLiquidityPoolInteraction
 {}
