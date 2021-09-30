@@ -130,6 +130,10 @@ contract SynthereumAutonomousPool is
     uint256 collateralSettled
   );
 
+  event SetOverCollateralization(uint256 overCollateralization);
+
+  event SetLiquidationReward(uint256 liquidationReward);
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------

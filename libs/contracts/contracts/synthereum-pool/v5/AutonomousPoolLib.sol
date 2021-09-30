@@ -180,6 +180,10 @@ library SynthereumAutonomousPoolLib {
     uint256 collateralSettled
   );
 
+  event SetOverCollateralization(uint256 overCollateralization);
+
+  event SetLiquidationReward(uint256 liquidationReward);
+
   //----------------------------------------
   // External function
   //----------------------------------------
@@ -859,6 +863,7 @@ library SynthereumAutonomousPoolLib {
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
     self.overCollateralization = _overCollateralization;
+    emit SetOverCollateralization(_overCollateralization.rawValue);
   }
 
   /**
@@ -876,6 +881,7 @@ library SynthereumAutonomousPoolLib {
       'Liquidation reward must be between 0 and 100%'
     );
     liquidationData.liquidationReward = _liquidationReward;
+    emit SetLiquidationReward(_liquidationReward.rawValue);
   }
 
   /**
