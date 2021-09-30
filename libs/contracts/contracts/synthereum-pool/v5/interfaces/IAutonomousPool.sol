@@ -169,9 +169,9 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   /**
    * @notice Update the fee percentage
    * @notice Only the maintainer can call this function
-   * @param feePercentage The new fee percentage
+   * @param _feePercentage The new fee percentage
    */
-  function setFeePercentage(uint256 feePercentage) external;
+  function setFeePercentage(uint256 _feePercentage) external;
 
   /**
    * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
@@ -187,16 +187,16 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
   /**
    * @notice Update the overcollateralization percentage
    * @notice Only the maintainer can call this function
-   * @param overCollateralization Overcollateralization percentage
+   * @param _overCollateralization Overcollateralization percentage
    */
-  function setOverCollateralization(uint256 overCollateralization) external;
+  function setOverCollateralization(uint256 _overCollateralization) external;
 
   /**
    * @notice Update the liquidation reward percentage
    * @notice Only the maintainer can call this function
-   * @param liquidationReward Percentage of reward for correct liquidation by a liquidator
+   * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
    */
-  function setLiquidationReward(uint256 liquidationReward) external;
+  function setLiquidationReward(uint256 _liquidationReward) external;
 
   /**
    * @notice Return overcollateralization percentage from the storage
