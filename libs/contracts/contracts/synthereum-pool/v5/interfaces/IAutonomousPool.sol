@@ -286,7 +286,7 @@ interface ISynthereumAutonomousPool is ISynthereumAutonomousPoolGeneral {
 
   /**
    * @notice Returns percentage of coverage of the collateral according to the last price
-   * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
+   * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
   function collateralCoverage() external view returns (uint256);
 
