@@ -64,7 +64,11 @@ export class ChainlinkPriceFeed {
     for (const token of enabledTokens) {
       const contractAddress =
         chainlinkAddresses[network][
-          getPairForToken(this.poolVersion, token, networkId)
+          getPairForToken(
+            this.poolVersion,
+            token,
+            networkId as SupportedNetworkId,
+          )
         ];
 
       const id = multicall.add({
@@ -197,8 +201,16 @@ function useChainlinkPriceFeedHook(dispatch: Dispatch) {
     const subscriptions: RxSubscription[] = [];
 
     const { tokens$: tokens } = chainlinkPriceFeed;
+    const { syntheticTokens } = synthereumConfig[networkId].perVersionConfig[
+      chainlinkPriceFeed.poolVersion as 'v4'
+    ];
     for (const i in tokens) {
-      if (!Object.prototype.hasOwnProperty.call(tokens, i)) continue;
+      if (
+        !Object.prototype.hasOwnProperty.call(tokens, i) ||
+        !syntheticTokens[i as 'jEUR']
+      )
+        continue;
+
       const token = i as keyof typeof tokens;
       const $ = tokens[token];
       const pair = getPairForToken(

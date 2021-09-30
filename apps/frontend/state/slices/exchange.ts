@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { logoutAction } from '@jarvis-network/app-toolkit';
+import { logoutAction, networkSwitchAction } from '@jarvis-network/app-toolkit';
 
 import {
   DEFAULT_DEADLINE,
   DEFAULT_DISABLE_MULTIHOPS,
+  DEFAULT_PAY_ASSET,
+  DEFAULT_RECEIVE_ASSET,
   DEFAULT_SLIPPAGE,
   DEFAULT_TRANSACTION_SPEED,
   initialAppState,
@@ -128,6 +130,19 @@ const exchangeSlice = createSlice({
         receive,
         gasLimit: 0,
       };
+    },
+    [networkSwitchAction.type](state) {
+      if (state.payAsset === 'jPHP') {
+        state.payAsset = DEFAULT_PAY_ASSET;
+        if (state.receiveAsset === DEFAULT_PAY_ASSET) {
+          state.receiveAsset = initialAppState.exchange.receiveAsset;
+        }
+      } else if (state.receiveAsset === 'jPHP') {
+        state.receiveAsset = DEFAULT_RECEIVE_ASSET;
+        if (state.payAsset === DEFAULT_RECEIVE_ASSET) {
+          state.payAsset = initialAppState.exchange.payAsset;
+        }
+      }
     },
     [logoutAction.type](state) {
       return {
