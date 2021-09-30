@@ -632,7 +632,7 @@ contract SynthereumAutonomousPool is
    * @return Number of synthetic tokens
    */
   function totalSyntheticTokens() external view override returns (uint256) {
-    return lpPosition.tokenCollateralised.rawValue;
+    return lpPosition.tokensCollateralized.rawValue;
   }
 
   /**
@@ -727,7 +727,7 @@ contract SynthereumAutonomousPool is
 
   /**
    * @notice Returns percentage of coverage of the collateral according to the last price
-   * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
+   * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
   function collateralCoverage()
     external

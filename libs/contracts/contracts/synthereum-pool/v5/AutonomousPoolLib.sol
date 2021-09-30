@@ -729,7 +729,7 @@ library SynthereumAutonomousPoolLib {
 
     executeSettlement.totalCollateralAmount = lpPosition.totalCollateralAmount;
 
-    executeSettlement.tokensCollaterlized = lpPosition.tokenCollateralised;
+    executeSettlement.tokensCollaterlized = lpPosition.tokensCollateralized;
 
     executeSettlement.totalFeeAmount = feeStatus.totalFeeAmount;
 
@@ -781,7 +781,7 @@ library SynthereumAutonomousPoolLib {
       )
       : FixedPoint.Unsigned(0);
 
-    lpPosition.tokenCollateralised = executeSettlement.tokensCollaterlized.sub(
+    lpPosition.tokensCollateralized = executeSettlement.tokensCollaterlized.sub(
       executeSettlement.userNumTokens
     );
 
@@ -934,7 +934,7 @@ library SynthereumAutonomousPoolLib {
    * @notice Returns percentage of coverage of the collateral according to the last price
    * @param self Data type the library is attached to
    * @param lpPosition Position of the LP (see LPPosition struct)
-   * @return Percentage of coverage (totalCollateralAmount / (price * tokenCollateralised))
+   * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
   function collateralCoverage(
     ISynthereumAutonomousPoolStorage.Storage storage self,
@@ -944,7 +944,7 @@ library SynthereumAutonomousPoolLib {
       lpPosition
         .totalCollateralAmount
         .div(
-        lpPosition.tokenCollateralised.mul(
+        lpPosition.tokensCollateralized.mul(
           getPriceFeedRate(self.finder, self.priceIdentifier)
         )
       )
@@ -1228,7 +1228,7 @@ library SynthereumAutonomousPoolLib {
       .totalCollateralAmount
       .add(collateralAmount)
       .add(overCollateral);
-    lpPosition.tokenCollateralised = lpPosition.tokenCollateralised.add(
+    lpPosition.tokensCollateralized = lpPosition.tokensCollateralized.add(
       numTokens
     );
   }
@@ -1244,13 +1244,13 @@ library SynthereumAutonomousPoolLib {
     FixedPoint.Unsigned memory numTokens
   ) internal returns (FixedPoint.Unsigned memory collateralRedeemed) {
     FixedPoint.Unsigned memory totalActualTokens =
-      lpPosition.tokenCollateralised;
+      lpPosition.tokensCollateralized;
     FixedPoint.Unsigned memory totalActualCollateral =
       lpPosition.totalCollateralAmount;
     FixedPoint.Unsigned memory fractionRedeemed =
       numTokens.div(totalActualTokens);
     collateralRedeemed = fractionRedeemed.mul(totalActualCollateral);
-    lpPosition.tokenCollateralised = totalActualTokens.sub(numTokens);
+    lpPosition.tokensCollateralized = totalActualTokens.sub(numTokens);
     lpPosition.totalCollateralAmount = totalActualCollateral.sub(
       collateralRedeemed
     );
@@ -1504,7 +1504,7 @@ library SynthereumAutonomousPoolLib {
       self.finder,
       self.collateralToken,
       self.priceIdentifier,
-      lpPosition.tokenCollateralised
+      lpPosition.tokensCollateralized
     );
     _isOverCollateralized_ = collateralToCompare.isGreaterThanOrEqual(
       collateralValue.mul(liquidationData.collateralRequirement)

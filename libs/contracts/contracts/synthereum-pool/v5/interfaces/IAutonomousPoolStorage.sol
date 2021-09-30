@@ -43,8 +43,8 @@ interface ISynthereumAutonomousPoolStorage {
   struct LPPosition {
     // Collateral used for collateralize tokens
     FixedPoint.Unsigned totalCollateralAmount;
-    // Number of tokens collateralised
-    FixedPoint.Unsigned tokenCollateralised;
+    // Number of tokens collateralized
+    FixedPoint.Unsigned tokensCollateralized;
   }
 
   struct Liquidation {
