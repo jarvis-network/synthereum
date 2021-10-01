@@ -826,7 +826,7 @@ function calcRate(inputPrice?: FPN | null, outputPrice?: FPN | null) {
     return null;
   }
 
-  return outputPrice.div(inputPrice);
+  return inputPrice.div(outputPrice);
 }
 
 function defaultMaxMintState() {
