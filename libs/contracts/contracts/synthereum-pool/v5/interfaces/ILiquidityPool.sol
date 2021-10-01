@@ -162,9 +162,10 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   /**
    * @notice Update the fee percentage, recipients and recipient proportions
    * @notice Only the maintainer can call this function
-   * @param fee Fee info (percentage + recipients + weigths)
+   * @param _feeData Fee info (percentage + recipients + weigths)
    */
-  function setFee(ISynthereumLiquidityPoolStorage.Fee calldata fee) external;
+  function setFee(ISynthereumLiquidityPoolStorage.FeeData calldata _feeData)
+    external;
 
   /**
    * @notice Update the fee percentage

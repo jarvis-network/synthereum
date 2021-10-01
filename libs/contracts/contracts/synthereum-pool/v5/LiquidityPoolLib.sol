@@ -835,7 +835,7 @@ library SynthereumLiquidityPoolLib {
       'Fee Percentage must be less than 100%'
     );
 
-    self.fee.feePercentage = _feePercentage;
+    self.fee.feeData.feePercentage = _feePercentage;
 
     emit SetFeePercentage(_feePercentage.rawValue);
   }
@@ -863,8 +863,10 @@ library SynthereumLiquidityPoolLib {
       totalActualFeeProportions += _feeProportions[i];
     }
 
-    self.fee.feeRecipients = _feeRecipients;
-    self.fee.feeProportions = _feeProportions;
+    ISynthereumLiquidityPoolStorage.FeeData storage _feeData = self.fee.feeData;
+
+    _feeData.feeRecipients = _feeRecipients;
+    _feeData.feeProportions = _feeProportions;
     self.fee.totalFeeProportions = totalActualFeeProportions;
 
     emit SetFeeRecipients(_feeRecipients, _feeProportions);
@@ -1307,25 +1309,28 @@ library SynthereumLiquidityPoolLib {
   ) internal {
     FixedPoint.Unsigned memory feeCharged;
 
-    uint256 numberOfRecipients = feeInfo.feeRecipients.length;
+    ISynthereumLiquidityPoolStorage.FeeData memory _feeData = feeInfo.feeData;
+
+    uint256 _totalFeeProportions = feeInfo.totalFeeProportions;
+
+    uint256 numberOfRecipients = _feeData.feeRecipients.length;
+
+    mapping(address => FixedPoint.Unsigned) storage _feeGained =
+      feeStatus.feeGained;
 
     for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
-      address feeRecipient = feeInfo.feeRecipients[i];
+      address feeRecipient = _feeData.feeRecipients[i];
       FixedPoint.Unsigned memory feeReceived =
-        feeAmount.mul(feeInfo.feeProportions[i]).div(
-          feeInfo.totalFeeProportions
-        );
-      feeStatus.feeGained[feeRecipient] = feeStatus.feeGained[feeRecipient].add(
-        feeReceived
-      );
+        feeAmount.mul(_feeData.feeProportions[i]).div(_totalFeeProportions);
+      _feeGained[feeRecipient] = _feeGained[feeRecipient].add(feeReceived);
       feeCharged = feeCharged.add(feeReceived);
     }
 
-    address lastRecipient = feeInfo.feeRecipients[numberOfRecipients - 1];
+    address lastRecipient = _feeData.feeRecipients[numberOfRecipients - 1];
 
-    feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient]
-      .add(feeAmount)
-      .sub(feeCharged);
+    _feeGained[lastRecipient] = _feeGained[lastRecipient].add(feeAmount).sub(
+      feeCharged
+    );
 
     feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
   }
@@ -1389,7 +1394,7 @@ library SynthereumLiquidityPoolLib {
       FixedPoint.Unsigned memory numTokens
     )
   {
-    feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+    feeAmount = totCollateralAmount.mul(self.fee.feeData.feePercentage);
 
     collateralAmount = totCollateralAmount.sub(feeAmount);
 
@@ -1428,7 +1433,7 @@ library SynthereumLiquidityPoolLib {
       numTokens
     );
 
-    feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+    feeAmount = totCollateralAmount.mul(self.fee.feeData.feePercentage);
 
     collateralAmount = totCollateralAmount.sub(feeAmount);
   }
@@ -1464,7 +1469,7 @@ library SynthereumLiquidityPoolLib {
       numTokens
     );
 
-    feeAmount = totCollateralAmount.mul(self.fee.feePercentage);
+    feeAmount = totCollateralAmount.mul(self.fee.feeData.feePercentage);
 
     collateralAmount = totCollateralAmount.sub(feeAmount);
 
@@ -1490,7 +1495,7 @@ library SynthereumLiquidityPoolLib {
     require(block.timestamp <= expiration, 'Transaction expired');
 
     require(
-      self.fee.feePercentage.rawValue <= feePercentage,
+      self.fee.feeData.feePercentage.rawValue <= feePercentage,
       'User fee percentage less than actual one'
     );
   }
