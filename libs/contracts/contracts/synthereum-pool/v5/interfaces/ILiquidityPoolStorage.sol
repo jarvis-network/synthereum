@@ -11,14 +11,20 @@ import {
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ISynthereumLiquidityPoolStorage {
-  // Describe fee structure
-  struct Fee {
+  // Describe fee data structure
+  struct FeeData {
     // Fees charged when a user mints, redeem and exchanges tokens
     FixedPoint.Unsigned feePercentage;
     // Recipient receiving fees
     address[] feeRecipients;
     // Proportion for each recipient
     uint32[] feeProportions;
+  }
+
+  // Describe fee structure
+  struct Fee {
+    // Fee data structure
+    FeeData feeData;
     // Used with individual proportions to scale values
     uint256 totalFeeProportions;
   }

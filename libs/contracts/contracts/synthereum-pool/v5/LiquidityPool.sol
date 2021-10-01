@@ -181,7 +181,7 @@ contract SynthereumLiquidityPool is
    * @param _syntheticToken ERC20 synthetic token
    * @param _roles The addresses of admin, maintainer, liquidity provider and validator
    * @param _overCollateralization Overcollateralization percentage
-   * @param _fee The fee structure
+   * @param _feeData The feeData structure
    * @param _priceIdentifier Identifier of price to be used in the price feed
    * @param _collateralRequirement Percentage of overcollateralization to which a liquidation can triggered
    * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
@@ -193,7 +193,7 @@ contract SynthereumLiquidityPool is
     IMintableBurnableERC20 _syntheticToken,
     Roles memory _roles,
     uint256 _overCollateralization,
-    Fee memory _fee,
+    FeeData memory _feeData,
     bytes32 _priceIdentifier,
     uint256 _collateralRequirement,
     uint256 _liquidationReward
@@ -215,8 +215,11 @@ contract SynthereumLiquidityPool is
       FixedPoint.Unsigned(_collateralRequirement),
       FixedPoint.Unsigned(_liquidationReward)
     );
-    poolStorage.setFeePercentage(_fee.feePercentage);
-    poolStorage.setFeeRecipients(_fee.feeRecipients, _fee.feeProportions);
+    poolStorage.setFeePercentage(_feeData.feePercentage);
+    poolStorage.setFeeRecipients(
+      _feeData.feeRecipients,
+      _feeData.feeProportions
+    );
   }
 
   /**
@@ -444,16 +447,19 @@ contract SynthereumLiquidityPool is
   /**
    * @notice Update the fee percentage, recipients and recipient proportions
    * @notice Only the maintainer can call this function
-   * @param fee Fee info (percentage + recipients + weigths)
+   * @param _feeData Fee info (percentage + recipients + weigths)
    */
-  function setFee(ISynthereumLiquidityPoolStorage.Fee calldata fee)
+  function setFee(ISynthereumLiquidityPoolStorage.FeeData calldata _feeData)
     external
     override
     onlyMaintainer
     nonReentrant
   {
-    poolStorage.setFeePercentage(fee.feePercentage);
-    poolStorage.setFeeRecipients(fee.feeRecipients, fee.feeProportions);
+    poolStorage.setFeePercentage(_feeData.feePercentage);
+    poolStorage.setFeeRecipients(
+      _feeData.feeRecipients,
+      _feeData.feeProportions
+    );
   }
 
   /**
@@ -606,7 +612,7 @@ contract SynthereumLiquidityPool is
    * @return Fee percentage
    */
   function feePercentage() external view override returns (uint256) {
-    return poolStorage.fee.feePercentage.rawValue;
+    return poolStorage.fee.feeData.feePercentage.rawValue;
   }
 
   /**
@@ -623,8 +629,12 @@ contract SynthereumLiquidityPool is
       uint256
     )
   {
-    Fee storage _fee = poolStorage.fee;
-    return (_fee.feeRecipients, _fee.feeProportions, _fee.totalFeeProportions);
+    FeeData storage _feeData = poolStorage.fee.feeData;
+    return (
+      _feeData.feeRecipients,
+      _feeData.feeProportions,
+      poolStorage.fee.totalFeeProportions
+    );
   }
 
   /**
