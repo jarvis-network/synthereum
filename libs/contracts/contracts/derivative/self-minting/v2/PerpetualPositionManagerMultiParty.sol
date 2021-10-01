@@ -33,8 +33,8 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
-  SelfMintingPerpetualPositionManagerMultiPartyLib
-} from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
+  PerpetualPositionManagerMultiPartyLib
+} from './PerpetualPositionManagerMultiPartyLib.sol';
 import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {FeePayerParty} from '../../common/FeePayerParty.sol';
 
@@ -43,15 +43,15 @@ import {FeePayerParty} from '../../common/FeePayerParty.sol';
  * @notice Handles positions for multiple sponsors in an optimistic (i.e., priceless) way without relying
  * on a price feed. On construction, deploys a new ERC20, managed by this contract, that is the synthetic token.
  */
-contract SelfMintingPerpetualPositionManagerMultiParty is
+contract PerpetualPositionManagerMultiParty is
   ISelfMintingDerivativeDeployment,
   FeePayerParty
 {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
-  using SelfMintingPerpetualPositionManagerMultiPartyLib for PositionData;
-  using SelfMintingPerpetualPositionManagerMultiPartyLib for PositionManagerData;
+  using PerpetualPositionManagerMultiPartyLib for PositionData;
+  using PerpetualPositionManagerMultiPartyLib for PositionManagerData;
   using FeePayerPartyLib for FixedPoint.Unsigned;
 
   /**
@@ -89,14 +89,14 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     FixedPoint.Unsigned rawCollateral;
   }
 
-  // struct GlobalPositionData {
-  //   // Keep track of the total collateral and tokens across all positions to enable calculating the
-  //   // global collateralization ratio without iterating over all positions.
-  //   FixedPoint.Unsigned totalTokensOutstanding;
-  //   // Similar to the rawCollateral in PositionData, this value should not be used directly.
-  //   //_getFeeAdjustedCollateral(), _addCollateral() and _removeCollateral() must be used to access and adjust.
-  //   FixedPoint.Unsigned rawTotalPositionCollateral;
-  // }
+  struct GlobalPositionData {
+    // Keep track of the total collateral and tokens across all positions to enable calculating the
+    // global collateralization ratio without iterating over all positions.
+    FixedPoint.Unsigned totalTokensOutstanding;
+    // Similar to the rawCollateral in PositionData, this value should not be used directly.
+    //_getFeeAdjustedCollateral(), _addCollateral() and _removeCollateral() must be used to access and adjust.
+    FixedPoint.Unsigned rawTotalPositionCollateral;
+  }
 
   struct PositionManagerData {
     // SynthereumFinder contract
@@ -107,8 +107,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     bytes32 priceIdentifier;
     // Minimum number of tokens in a sponsor's position.
     FixedPoint.Unsigned minSponsorTokens;
-    // Ratio TokensOut*Price/Collateral Value over which a position is liquidatable
-    FixedPoint.Unsigned maxLeverage;
     // Expiry price pulled from Chainlink in the case of an emergency shutdown.
     FixedPoint.Unsigned emergencyShutdownPrice;
     // Timestamp used in case of emergency shutdown.
@@ -126,7 +124,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   // Maps sponsor addresses to their positions. Each sponsor can have only one position.
   mapping(address => PositionData) public positions;
 
-  // GlobalPositionData public globalPositionData;
+  GlobalPositionData public globalPositionData;
 
   PositionManagerData public positionManagerData;
 
@@ -182,11 +180,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     _;
   }
 
-  modifier noPendingWithdrawal(address sponsor) {
-    _positionHasNoPendingWithdrawal(sponsor);
-    _;
-  }
-
   //----------------------------------------
   // Constructor
   //----------------------------------------
@@ -198,7 +191,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   constructor(PositionManagerParams memory _positionManagerData)
     FeePayerParty(
       _positionManagerData.collateralAddress,
-      _positionManagerData.finderAddress,
+      address(_positionManagerData.synthereumFinder),
       _positionManagerData.timerAddress
     )
     nonReentrant()
@@ -253,72 +246,21 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   function withdraw(uint256 collateralAmount)
     external
     notEmergencyShutdown()
-    noPendingWithdrawal(msg.sender)
     fees()
     nonReentrant()
     returns (uint256 amountWithdrawn)
   {
+    // TODO ADD liquidation threshold check
     PositionData storage positionData = _getPositionData(msg.sender);
 
     amountWithdrawn = positionData
       .withdraw(
-      // globalPositionData,
+      globalPositionData,
       FixedPoint.Unsigned(collateralAmount),
       feePayerData
     )
       .rawValue;
   }
-
-  /**
-   * @notice Starts a withdrawal request that, if passed, allows the sponsor to withdraw` from their position.
-   * @dev The request will be pending for `withdrawalLiveness`, during which the position can be liquidated.
-   * @param collateralAmount the amount of collateral requested to withdraw
-   */
-  function requestWithdrawal(uint256 collateralAmount)
-    external
-    notEmergencyShutdown()
-    noPendingWithdrawal(msg.sender)
-    nonReentrant()
-  {
-    // TODO ADD liquidation threshold check
-    uint256 actualTime = getCurrentTime();
-    PositionData storage positionData = _getPositionData(msg.sender);
-    positionData.requestWithdrawal(
-      positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      actualTime,
-      feePayerData
-    );
-  }
-
-  /**
-   * @notice After a passed withdrawal request (i.e., by a call to `requestWithdrawal` and waiting
-   * `withdrawalLiveness`), withdraws `positionData.withdrawalRequestAmount` of collateral currency.
-   * @dev Might not withdraw the full requested amount in order to account for precision loss or if the full requested
-   * amount exceeds the collateral in the position (due to paying fees).
-   * @return amountWithdrawn The actual amount of collateral withdrawn.
-   */
-  // function withdrawPassedRequest()
-  //   external
-  //   notEmergencyShutdown()
-  //   fees()
-  //   nonReentrant()
-  //   returns (uint256 amountWithdrawn)
-  // {
-  //   uint256 actualTime = getCurrentTime();
-  //   PositionData storage positionData = _getPositionData(msg.sender);
-  //   amountWithdrawn = positionData
-  //     .withdrawPassedRequest(globalPositionData, actualTime, feePayerData)
-  //     .rawValue;
-  // }
-
-  /**
-   * @notice Cancels a pending withdrawal request.
-   */
-  // function cancelWithdrawal() external notEmergencyShutdown() nonReentrant() {
-  //   PositionData storage positionData = _getPositionData(msg.sender);
-  //   positionData.cancelWithdrawal();
-  // }
 
   /**
    * @notice Creates tokens by creating a new position or by augmenting an existing position. Pulls `collateralAmount
@@ -344,7 +286,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     PositionData storage positionData = positions[msg.sender];
     daoFeeAmount = positionData
       .create(
-      // globalPositionData,
+      globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
       FixedPoint.Unsigned(numTokens),
@@ -365,7 +307,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   function redeem(uint256 numTokens, uint256 feePercentage)
     external
     notEmergencyShutdown()
-    noPendingWithdrawal(msg.sender)
     fees()
     nonReentrant()
     returns (uint256 amountWithdrawn, uint256 daoFeeAmount)
@@ -377,7 +318,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
       FixedPoint.Unsigned memory feeAmount
     ) =
       positionData.redeeem(
-        // globalPositionData,
+        globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
         FixedPoint.Unsigned(feePercentage),
@@ -399,7 +340,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   function repay(uint256 numTokens, uint256 feePercentage)
     external
     notEmergencyShutdown()
-    noPendingWithdrawal(msg.sender)
     fees()
     nonReentrant()
     returns (uint256 daoFeeAmount)
@@ -407,7 +347,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     PositionData storage positionData = _getPositionData(msg.sender);
     daoFeeAmount = (
       positionData.repay(
-        // globalPositionData,
+        globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
         FixedPoint.Unsigned(feePercentage),
@@ -436,7 +376,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     PositionData storage positionData = positions[msg.sender];
     amountWithdrawn = positionData
       .settleEmergencyShutdown(
-      // globalPositionData,
+      globalPositionData,
       positionManagerData,
       feePayerData
     )
@@ -464,10 +404,10 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
       'Caller must be a Synthereum manager or the UMA governor'
     );
     positionManagerData.emergencyShutdownTimestamp = getCurrentTime();
-    positionManagerData.requestOraclePrice(
-      positionManagerData.emergencyShutdownTimestamp,
-      feePayerData
-    );
+    // positionManagerData.requestOraclePrice(
+    //   positionManagerData.emergencyShutdownTimestamp,
+    //   feePayerData
+    // );
     emit EmergencyShutdown(
       msg.sender,
       positionManagerData.emergencyShutdownTimestamp
@@ -619,7 +559,7 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     return
       positionManagerData
         .calculateDaoFee(
-        // globalPositionData,
+        globalPositionData,
         FixedPoint.Unsigned(numTokens),
         feePayerData
       )
@@ -652,16 +592,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     capMint = positionManagerData.capMintAmount().rawValue;
   }
 
-  /** @notice Check the current cap on deposit of collateral into a self-minting derivative.
-   * A cap deposit ratio is set in order to avoid a troll attack in which an attacker
-   * can increase infinitely the GCR thus making it extremelly expensive or impossible
-   * for other users to self-mint synthetic assets with a given collateral.
-   * @return capDeposit The current cap deposit ratio
-   */
-  function capDepositRatio() external view returns (uint256 capDeposit) {
-    capDeposit = positionManagerData.capDepositRatio().rawValue;
-  }
-
   /**
    * @notice Transfers `collateralAmount` of `feePayerData.collateralCurrency` into the specified sponsor's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
@@ -672,14 +602,13 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
   function depositTo(address sponsor, uint256 collateralAmount)
     public
     notEmergencyShutdown()
-    noPendingWithdrawal(sponsor)
     fees()
     nonReentrant()
   {
     PositionData storage positionData = _getPositionData(sponsor);
 
     positionData.depositTo(
-      // globalPositionData,
+      globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
       feePayerData,
@@ -793,16 +722,6 @@ contract SelfMintingPerpetualPositionManagerMultiParty is
     require(
       positionManagerData.emergencyShutdownTimestamp != 0,
       'Contract not emergency shutdown'
-    );
-  }
-
-  /** @notice Make sure that there are no pending withdraws on a position of a token sponsor
-   * @param sponsor Token sponsor address for which to check
-   */
-  function _positionHasNoPendingWithdrawal(address sponsor) internal view {
-    require(
-      _getPositionData(sponsor).withdrawalRequestPassTimestamp == 0,
-      'Pending withdrawal'
     );
   }
 

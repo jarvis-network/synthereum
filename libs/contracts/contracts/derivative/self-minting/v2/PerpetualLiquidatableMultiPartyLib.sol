@@ -14,28 +14,28 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {
-  SelfMintingPerpetualPositionManagerMultiPartyLib
-} from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
+  PerpetualPositionManagerMultiPartyLib
+} from './PerpetualPositionManagerMultiPartyLib.sol';
 import {FeePayerParty} from '../../common/FeePayerParty.sol';
 import {
-  SelfMintingPerpetualLiquidatableMultiParty
-} from './SelfMintingPerpetualLiquidatableMultiParty.sol';
+  PerpetualLiquidatableMultiParty
+} from './PerpetualLiquidatableMultiParty.sol';
 import {
-  SelfMintingPerpetualPositionManagerMultiParty
-} from './SelfMintingPerpetualPositionManagerMultiParty.sol';
+  PerpetualPositionManagerMultiParty
+} from './PerpetualPositionManagerMultiParty.sol';
 
-/** @title A library for SelfMintingPerpetualLiquidatableMultiParty contract
+/** @title A library for PerpetualLiquidatableMultiParty contract
  */
-library SelfMintingPerpetualLiquidatableMultiPartyLib {
+library PerpetualLiquidatableMultiPartyLib {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
   using FixedPoint for FixedPoint.Unsigned;
-  using SelfMintingPerpetualPositionManagerMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionData;
+  using PerpetualPositionManagerMultiPartyLib for PerpetualPositionManagerMultiParty.PositionData;
   using FeePayerPartyLib for FixedPoint.Unsigned;
-  using SelfMintingPerpetualPositionManagerMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData;
-  using SelfMintingPerpetualLiquidatableMultiPartyLib for SelfMintingPerpetualLiquidatableMultiParty.LiquidationData;
-  using SelfMintingPerpetualPositionManagerMultiPartyLib for FixedPoint.Unsigned;
+  using PerpetualPositionManagerMultiPartyLib for PerpetualPositionManagerMultiParty.PositionManagerData;
+  using PerpetualLiquidatableMultiPartyLib for PerpetualLiquidatableMultiParty.LiquidationData;
+  using PerpetualPositionManagerMultiPartyLib for FixedPoint.Unsigned;
 
   struct CreateLiquidationParams {
     FixedPoint.Unsigned minCollateralPerToken;
@@ -111,7 +111,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     uint256 paidToLiquidator,
     uint256 paidToDisputer,
     uint256 paidToSponsor,
-    SelfMintingPerpetualLiquidatableMultiParty.Status indexed liquidationStatus,
+    PerpetualLiquidatableMultiParty.Status indexed liquidationStatus,
     uint256 settlementPrice
   );
 
@@ -120,7 +120,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
   //----------------------------------------
 
   /**
-   * @notice A function used by createLiquidation from SelfMintingPerpetualLiquidatableMultiParty contract
+   * @notice A function used by createLiquidation from PerpetualLiquidatableMultiParty contract
    * to return all necessary parameters for a liquidation and perform the liquidation
    * @param positionToLiquidate The position to be liquidated
    * @param globalPositionData Global data for the position that will be liquidated fetched from storage
@@ -131,16 +131,13 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param feePayerData Fees and distribution data fetched from storage
    */
   function createLiquidation(
-    SelfMintingPerpetualPositionManagerMultiParty.PositionData
-      storage positionToLiquidate,
-    SelfMintingPerpetualPositionManagerMultiParty.GlobalPositionData
+    PerpetualPositionManagerMultiParty.PositionData storage positionToLiquidate,
+    PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+    PerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
-      storage liquidatableData,
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidationData[]
-      storage liquidations,
+    PerpetualLiquidatableMultiParty.LiquidatableData storage liquidatableData,
+    PerpetualLiquidatableMultiParty.LiquidationData[] storage liquidations,
     CreateLiquidationParams memory params,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (CreateLiquidationReturnParams memory returnValues) {
@@ -197,10 +194,10 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
 
       returnValues.liquidationId = liquidations.length;
       liquidations.push(
-        SelfMintingPerpetualLiquidatableMultiParty.LiquidationData({
+        PerpetualLiquidatableMultiParty.LiquidationData({
           sponsor: params.sponsor,
           liquidator: msg.sender,
-          state: SelfMintingPerpetualLiquidatableMultiParty.Status.PreDispute,
+          state: PerpetualLiquidatableMultiParty.Status.PreDispute,
           liquidationTime: params.actualTime,
           tokensOutstanding: returnValues.tokensLiquidated,
           lockedCollateral: returnValues.lockedCollateral,
@@ -215,20 +212,20 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       );
     }
 
-    {
-      FixedPoint.Unsigned memory griefingThreshold =
-        positionManagerData.minSponsorTokens;
-      if (
-        positionToLiquidate.withdrawalRequestPassTimestamp > 0 &&
-        positionToLiquidate.withdrawalRequestPassTimestamp >
-        params.actualTime &&
-        returnValues.tokensLiquidated.isGreaterThanOrEqual(griefingThreshold)
-      ) {
-        positionToLiquidate.withdrawalRequestPassTimestamp = params
-          .actualTime
-          .add(positionManagerData.withdrawalLiveness);
-      }
-    }
+    // {
+    //   FixedPoint.Unsigned memory griefingThreshold =
+    //     positionManagerData.minSponsorTokens;
+    //   if (
+    //     positionToLiquidate.withdrawalRequestPassTimestamp > 0 &&
+    //     positionToLiquidate.withdrawalRequestPassTimestamp >
+    //     params.actualTime &&
+    //     returnValues.tokensLiquidated.isGreaterThanOrEqual(griefingThreshold)
+    //   ) {
+    //     positionToLiquidate.withdrawalRequestPassTimestamp = params
+    //       .actualTime
+    //       .add(positionManagerData.withdrawalLiveness);
+    //   }
+    // }
     emit LiquidationCreated(
       params.sponsor,
       msg.sender,
@@ -248,7 +245,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
   }
 
   /**
-   * @notice A function used by dispute function from SelfMintingPerpetualLiquidatableMultiParty contract
+   * @notice A function used by dispute function from PerpetualLiquidatableMultiParty contract
    * to return all necessary parameters for a dispute and perform the dispute
    * @param disputedLiquidation The liquidation to be disputed fetched from storage
    * @param liquidatableData Data for the liquidation fetched from storage
@@ -258,11 +255,9 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param sponsor The address of the token sponsor on which a liqudation was performed
    */
   function dispute(
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidationData
-      storage disputedLiquidation,
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
-      storage liquidatableData,
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+    PerpetualLiquidatableMultiParty.LiquidationData storage disputedLiquidation,
+    PerpetualLiquidatableMultiParty.LiquidatableData storage liquidatableData,
+    PerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
     FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
@@ -282,15 +277,15 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       feePayerData.cumulativeFeeMultiplier
     );
 
-    disputedLiquidation.state = SelfMintingPerpetualLiquidatableMultiParty
+    disputedLiquidation.state = PerpetualLiquidatableMultiParty
       .Status
       .PendingDispute;
     disputedLiquidation.disputer = msg.sender;
 
-    positionManagerData.requestOraclePrice(
-      disputedLiquidation.liquidationTime,
-      feePayerData
-    );
+    // positionManagerData.requestOraclePrice(
+    //   disputedLiquidation.liquidationTime,
+    //   feePayerData
+    // );
 
     emit LiquidationDisputed(
       sponsor,
@@ -315,7 +310,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
   }
 
   /**
-   * @notice A function used by withdrawLiquidation function from SelfMintingPerpetualLiquidatableMultiParty contract
+   * @notice A function used by withdrawLiquidation function from PerpetualLiquidatableMultiParty contract
    * to withdraw any proceeds after a successfull liquidation on a token sponsor position
    * @param liquidation The liquidation for which proceeds will be withdrawn fetched from storage
    * @param liquidatableData Data for the liquidation fetched from storage
@@ -325,20 +320,16 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param sponsor The address of the token sponsor on which a liqudation was performed
    */
   function withdrawLiquidation(
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidationData
-      storage liquidation,
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
-      storage liquidatableData,
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+    PerpetualLiquidatableMultiParty.LiquidationData storage liquidation,
+    PerpetualLiquidatableMultiParty.LiquidatableData storage liquidatableData,
+    PerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
     FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   )
     external
-    returns (
-      SelfMintingPerpetualLiquidatableMultiParty.RewardsData memory rewards
-    )
+    returns (PerpetualLiquidatableMultiParty.RewardsData memory rewards)
   {
     liquidation._settle(
       positionManagerData,
@@ -376,7 +367,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
 
     if (
       liquidation.state ==
-      SelfMintingPerpetualLiquidatableMultiParty.Status.DisputeSucceeded
+      PerpetualLiquidatableMultiParty.Status.DisputeSucceeded
     ) {
       rewards.payToDisputer = settleParams
         .disputerDisputeReward
@@ -424,8 +415,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
         rewards.paidToSponsor.rawValue
       );
     } else if (
-      liquidation.state ==
-      SelfMintingPerpetualLiquidatableMultiParty.Status.DisputeFailed
+      liquidation.state == PerpetualLiquidatableMultiParty.Status.DisputeFailed
     ) {
       rewards.payToLiquidator = settleParams
         .collateral
@@ -444,8 +434,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
         rewards.paidToLiquidator.rawValue
       );
     } else if (
-      liquidation.state ==
-      SelfMintingPerpetualLiquidatableMultiParty.Status.PreDispute
+      liquidation.state == PerpetualLiquidatableMultiParty.Status.PreDispute
     ) {
       rewards.payToLiquidator = settleParams.collateral.add(
         settleParams.finalFee
@@ -473,7 +462,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       settleParams.settlementPrice.rawValue
     );
 
-    SelfMintingPerpetualLiquidatableMultiParty(address(this)).deleteLiquidation(
+    PerpetualLiquidatableMultiParty(address(this)).deleteLiquidation(
       liquidationId,
       sponsor
     );
@@ -494,14 +483,12 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param liquidationCollateralParams Collateral parameters passed to a liquidation process fetched from storage
    */
   function liquidateCollateral(
-    SelfMintingPerpetualPositionManagerMultiParty.PositionData
-      storage positionToLiquidate,
-    SelfMintingPerpetualPositionManagerMultiParty.GlobalPositionData
+    PerpetualPositionManagerMultiParty.PositionData storage positionToLiquidate,
+    PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+    PerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
-      storage liquidatableData,
+    PerpetualLiquidatableMultiParty.LiquidatableData storage liquidatableData,
     FeePayerParty.FeePayerData storage feePayerData,
     CreateLiquidationCollateral memory liquidationCollateralParams
   )
@@ -523,18 +510,18 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
         .startCollateralNetOfWithdrawal
         .mul(ratio);
 
-      FixedPoint.Unsigned memory withdrawalAmountToRemove =
-        positionToLiquidate.withdrawalRequestAmount.mul(ratio);
+      // FixedPoint.Unsigned memory withdrawalAmountToRemove =
+      //   positionToLiquidate.withdrawalRequestAmount.mul(ratio);
 
-      positionToLiquidate.reduceSponsorPosition(
-        globalPositionData,
-        positionManagerData,
-        liquidationCollateralParams.tokensLiquidated,
-        lockedCollateral,
-        withdrawalAmountToRemove,
-        feePayerData,
-        liquidationCollateralParams.sponsor
-      );
+      // positionToLiquidate.reduceSponsorPosition(
+      //   globalPositionData,
+      //   positionManagerData,
+      //   liquidationCollateralParams.tokensLiquidated,
+      //   lockedCollateral,
+      //   withdrawalAmountToRemove,
+      //   feePayerData,
+      //   liquidationCollateralParams.sponsor
+      // );
     }
 
     liquidatableData.rawLiquidationCollateral.addCollateral(
@@ -551,7 +538,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param finalFeeBond The amount of fee posted as a bond when triggering liquidation
    */
   function burnAndLiquidateFee(
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+    PerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
     FeePayerParty.FeePayerData storage feePayerData,
     FixedPoint.Unsigned memory tokensLiquidated,
@@ -581,19 +568,16 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param sponsor The address of the token sponsor on which a liquidation was performed
    */
   function _settle(
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidationData
-      storage liquidation,
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerData
+    PerpetualLiquidatableMultiParty.LiquidationData storage liquidation,
+    PerpetualPositionManagerMultiParty.PositionManagerData
       storage positionManagerData,
-    SelfMintingPerpetualLiquidatableMultiParty.LiquidatableData
-      storage liquidatableData,
+    PerpetualLiquidatableMultiParty.LiquidatableData storage liquidatableData,
     FeePayerParty.FeePayerData storage feePayerData,
     uint256 liquidationId,
     address sponsor
   ) internal {
     if (
-      liquidation.state !=
-      SelfMintingPerpetualLiquidatableMultiParty.Status.PendingDispute
+      liquidation.state != PerpetualLiquidatableMultiParty.Status.PendingDispute
     ) {
       return;
     }
@@ -617,8 +601,8 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
     bool disputeSucceeded =
       liquidation.liquidatedCollateral.isGreaterThanOrEqual(requiredCollateral);
     liquidation.state = disputeSucceeded
-      ? SelfMintingPerpetualLiquidatableMultiParty.Status.DisputeSucceeded
-      : SelfMintingPerpetualLiquidatableMultiParty.Status.DisputeFailed;
+      ? PerpetualLiquidatableMultiParty.Status.DisputeSucceeded
+      : PerpetualLiquidatableMultiParty.Status.DisputeFailed;
 
     emit DisputeSettled(
       msg.sender,
@@ -637,8 +621,7 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
    * @param feePayerData Fees and distribution data fetched from storage
    */
   function calculateNetLiquidation(
-    SelfMintingPerpetualPositionManagerMultiParty.PositionData
-      storage positionToLiquidate,
+    PerpetualPositionManagerMultiParty.PositionData storage positionToLiquidate,
     CreateLiquidationParams memory params,
     FeePayerParty.FeePayerData storage feePayerData
   )
@@ -663,14 +646,14 @@ library SelfMintingPerpetualLiquidatableMultiPartyLib {
       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier);
     startCollateralNetOfWithdrawal = FixedPoint.fromUnscaledUint(0);
 
-    if (
-      positionToLiquidate.withdrawalRequestAmount.isLessThanOrEqual(
-        startCollateral
-      )
-    ) {
-      startCollateralNetOfWithdrawal = startCollateral.sub(
-        positionToLiquidate.withdrawalRequestAmount
-      );
-    }
+    // if (
+    //   positionToLiquidate.withdrawalRequestAmount.isLessThanOrEqual(
+    //     startCollateral
+    //   )
+    // ) {
+    //   startCollateralNetOfWithdrawal = startCollateral.sub(
+    //     positionToLiquidate.withdrawalRequestAmount
+    //   );
+    // }
   }
 }

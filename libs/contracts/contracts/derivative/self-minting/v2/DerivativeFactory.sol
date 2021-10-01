@@ -6,14 +6,12 @@ import {
   IDeploymentSignature
 } from '../../../core/interfaces/IDeploymentSignature.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
-import {
-  SelfMintingPerpetutalMultiPartyCreator
-} from './SelfMintingPerpetutalMultiPartyCreator.sol';
+import {PerpetutalMultiPartyCreator} from './PerpetutalMultiPartyCreator.sol';
 
 /** @title Contract factory of self-minting derivatives
  */
-contract SelfMintingDerivativeFactory is
-  SelfMintingPerpetutalMultiPartyCreator,
+contract DerivativeFactory is
+  PerpetutalMultiPartyCreator,
   IDeploymentSignature
 {
   //----------------------------------------
@@ -36,13 +34,7 @@ contract SelfMintingDerivativeFactory is
     address _umaFinder,
     address _synthereumFinder,
     address _timerAddress
-  )
-    SelfMintingPerpetutalMultiPartyCreator(
-      _umaFinder,
-      _synthereumFinder,
-      _timerAddress
-    )
-  {
+  ) PerpetutalMultiPartyCreator(_umaFinder, _synthereumFinder, _timerAddress) {
     deploymentSignature = this.createPerpetual.selector;
   }
 

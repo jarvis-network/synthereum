@@ -21,12 +21,8 @@ import {
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {
-  SelfMintingPerpetualMultiPartyLib
-} from './SelfMintingPerpetualMultiPartyLib.sol';
-import {
-  SelfMintingPerpetualMultiParty
-} from './SelfMintingPerpetualMultiParty.sol';
+import {PerpetualMultiPartyLib} from './PerpetualMultiPartyLib.sol';
+import {PerpetualMultiParty} from './PerpetualMultiParty.sol';
 import {
   ContractCreator
 } from '@uma/core/contracts/oracle/implementation/ContractCreator.sol';
@@ -43,11 +39,7 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
  * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
   we can enforce deployment configurations here.
  */
-contract SelfMintingPerpetutalMultiPartyCreator is
-  ContractCreator,
-  Testable,
-  Lockable
-{
+contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
@@ -143,9 +135,7 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       tokenCurrency.decimals() == uint8(18),
       'Decimals of synthetic token must be 18'
     );
-    derivative = SelfMintingPerpetualMultiPartyLib.deploy(
-      _convertParams(params)
-    );
+    derivative = PerpetualMultiPartyLib.deploy(_convertParams(params));
 
     _setControllerValues(
       derivative,
@@ -169,13 +159,10 @@ contract SelfMintingPerpetutalMultiPartyCreator is
   function _convertParams(Params calldata params)
     internal
     view
-    returns (
-      SelfMintingPerpetualMultiParty.ConstructorParams memory constructorParams
-    )
+    returns (PerpetualMultiParty.ConstructorParams memory constructorParams)
   {
     // Known from creator deployment.
 
-    constructorParams.positionManagerParams.finderAddress = finderAddress;
     constructorParams.positionManagerParams.synthereumFinder = synthereumFinder;
     constructorParams.positionManagerParams.timerAddress = timerAddress;
 
@@ -223,8 +210,6 @@ contract SelfMintingPerpetutalMultiPartyCreator is
       .disputerDisputeRewardPct;
     constructorParams.positionManagerParams.minSponsorTokens = params
       .minSponsorTokens;
-    constructorParams.positionManagerParams.withdrawalLiveness = params
-      .withdrawalLiveness;
     constructorParams.liquidatableParams.liquidationLiveness = params
       .liquidationLiveness;
     constructorParams.positionManagerParams.excessTokenBeneficiary = params
