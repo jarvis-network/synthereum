@@ -165,23 +165,37 @@ library PerpetualPositionManagerMultiPartyLib {
       collateralAmount.sub(feeAmount);
 
     // Either the new create ratio or the resultant position CR must be above the current GCR.
+    // require(
+    //   (_checkCollateralization(
+    //     globalPositionData,
+    //     positionData
+    //       .rawCollateral
+    //       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
+    //       .add(netCollateralAmount),
+    //     positionData.tokensOutstanding.add(numTokens),
+    //     feePayerData
+    //   ) ||
+    //     _checkCollateralization(
+    //       globalPositionData,
+    //       netCollateralAmount,
+    //       numTokens,
+    //       feePayerData
+    //     )),
+    //   'Insufficient collateral'
+    // );
+
     require(
-      (_checkCollateralization(
-        globalPositionData,
+      checkCollateralizaion(
         positionData
           .rawCollateral
           .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
           .add(netCollateralAmount),
         positionData.tokensOutstanding.add(numTokens),
-        feePayerData
-      ) ||
-        _checkCollateralization(
-          globalPositionData,
-          netCollateralAmount,
-          numTokens,
-          feePayerData
-        )),
-      'Insufficient collateral'
+        positionManagerData.overCollateralization,
+        positionManagerData.synthereumFinder,
+        positionManagerData.priceIdentifier
+      ),
+      'Insufficient Collateral'
     );
 
     if (positionData.tokensOutstanding.isEqual(0)) {
@@ -776,6 +790,20 @@ library PerpetualPositionManagerMultiPartyLib {
     FixedPoint.Unsigned memory thisChange =
       _getCollateralizationRatio(collateral, numTokens);
     return !global.isGreaterThan(thisChange);
+  }
+
+  function checkCollateralizaion(
+    FixedPoint.Unsigned memory collateral,
+    FixedPoint.Unsigned memory numTokens,
+    FixedPoint.Unsigned memory overCollateralization,
+    ISynthereumFinder finder,
+    bytes32 priceFeedIdentifier
+  ) internal view returns (bool) {
+    // calculate the needed collateral with chainlink
+    FixedPoint.Unsigned memory thresholdValue =
+      numTokens.mul(getPriceFeedRate(finder, priceFeedIdentifier));
+    thresholdValue = thresholdValue.mul(overCollateralization);
+    return collateral.isGreaterThan(thresholdValue);
   }
 
   // Check new total number of tokens does not overcome mint limit

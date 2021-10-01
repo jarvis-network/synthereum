@@ -105,6 +105,8 @@ contract PerpetualPositionManagerMultiParty is
     BaseControlledMintableBurnableERC20 tokenCurrency;
     // Unique identifier for DVM price feed ticker.
     bytes32 priceIdentifier;
+    // Overcollateralization percentage
+    FixedPoint.Unsigned overCollateralization;
     // Minimum number of tokens in a sponsor's position.
     FixedPoint.Unsigned minSponsorTokens;
     // Expiry price pulled from Chainlink in the case of an emergency shutdown.
