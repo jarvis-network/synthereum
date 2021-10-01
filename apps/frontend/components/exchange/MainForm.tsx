@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Icon, Skeleton, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { formatExchangeAmount, useWeb3 } from '@jarvis-network/app-toolkit';
+import { networkNameToId } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { State } from '@/state/initialState';
 import {
+  resetAssetsIfUnsupported,
   setBase,
   setPay,
   setPayAsset,
@@ -185,11 +187,30 @@ export const MainForm: React.FC = () => {
 
   const theme = useTheme();
 
-  const isSwapLoaderVisible = useReduxSelector(
-    state => state.app.isSwapLoaderVisible,
+  const { isSwapLoaderVisible, payAsset, receiveAsset } = useReduxSelector(
+    state => ({
+      isSwapLoaderVisible: state.app.isSwapLoaderVisible,
+      payAsset: state.exchange.payAsset,
+      receiveAsset: state.exchange.receiveAsset,
+    }),
   );
 
-  const { active } = useWeb3();
+  const { active, chainId: networkId } = useWeb3();
+
+  useEffect(() => {
+    if (networkId !== networkNameToId.polygon) {
+      if (
+        payAsset === 'jPHP' ||
+        payAsset === 'jSGD' ||
+        receiveAsset === 'jPHP' ||
+        receiveAsset === 'jSGD'
+      ) {
+        setTimeout(() => {
+          dispatch(resetAssetsIfUnsupported());
+        }, 0);
+      }
+    }
+  }, [networkId, payAsset, receiveAsset, dispatch]);
 
   const wallet = useReduxSelector(
     state => (paySymbol && state.wallet[paySymbol]) || null,

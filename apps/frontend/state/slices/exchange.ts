@@ -118,6 +118,7 @@ const exchangeSlice = createSlice({
     setTransactionSpeed(state, action: SetTransactionSpeed) {
       state.transactionSpeed = action.payload;
     },
+    resetAssetsIfUnsupported: resetAssetsIfUnsupportedReducer,
   },
   extraReducers: {
     [resetSwapAction.type](state) {
@@ -131,20 +132,7 @@ const exchangeSlice = createSlice({
         gasLimit: 0,
       };
     },
-    [networkSwitchAction.type](state) {
-      if (state.payAsset === 'jPHP' || state.payAsset === 'jSGD') {
-        state.payAsset = DEFAULT_PAY_ASSET;
-        if (state.receiveAsset === DEFAULT_PAY_ASSET) {
-          state.receiveAsset = DEFAULT_RECEIVE_ASSET;
-        }
-      }
-      if (state.receiveAsset === 'jPHP' || state.receiveAsset === 'jSGD') {
-        state.receiveAsset = DEFAULT_RECEIVE_ASSET;
-        if (state.payAsset === DEFAULT_RECEIVE_ASSET) {
-          state.payAsset = DEFAULT_PAY_ASSET;
-        }
-      }
-    },
+    [networkSwitchAction.type]: resetAssetsIfUnsupportedReducer,
     [logoutAction.type](state) {
       return {
         ...state,
@@ -156,6 +144,23 @@ const exchangeSlice = createSlice({
     },
   },
 });
+
+function resetAssetsIfUnsupportedReducer(
+  state: typeof initialAppState.exchange,
+) {
+  if (state.payAsset === 'jPHP' || state.payAsset === 'jSGD') {
+    state.payAsset = DEFAULT_PAY_ASSET;
+    if (state.receiveAsset === DEFAULT_PAY_ASSET) {
+      state.receiveAsset = DEFAULT_RECEIVE_ASSET;
+    }
+  }
+  if (state.receiveAsset === 'jPHP' || state.receiveAsset === 'jSGD') {
+    state.receiveAsset = DEFAULT_RECEIVE_ASSET;
+    if (state.payAsset === DEFAULT_RECEIVE_ASSET) {
+      state.payAsset = DEFAULT_PAY_ASSET;
+    }
+  }
+}
 
 export const {
   setChooseAsset,
@@ -171,6 +176,7 @@ export const {
   setDisableMultihops,
   setDeadline,
   setTransactionSpeed,
+  resetAssetsIfUnsupported,
 } = exchangeSlice.actions;
 
 export const { reducer } = exchangeSlice;

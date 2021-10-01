@@ -6,7 +6,6 @@ import { Asset as AssetItemType } from '@/data/assets';
 import { AssetType } from '@/state/initialState';
 import { setChooseAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
-import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 import { useAssets } from '@/utils/useAssets';
 
 const Container = styled.div`
@@ -99,11 +98,11 @@ export const Asset: React.FC<Props> = ({ type }) => {
   const dispatch = useDispatch();
   const assets = useAssets();
 
-  const asset: AssetItemType = useReduxSelector(state => {
+  const asset: AssetItemType | undefined = useReduxSelector(state => {
     const assetSymbol =
       type === 'pay' ? state.exchange.payAsset : state.exchange.receiveAsset;
 
-    return assertNotNull(assets.find(a => a.symbol === assetSymbol));
+    return assets.find(a => a.symbol === assetSymbol);
   });
 
   const handleChooseAsset = () => dispatch(setChooseAsset(type));
