@@ -54,6 +54,7 @@ const assetIconMap: PerAsset<string | null> = {
   jXTI: null,
   jSPX: null,
   jPHP: 'jphp',
+  jSGD: 'jsgd',
 } as const;
 
 type SynthereumConfig = typeof synthereumConfig;

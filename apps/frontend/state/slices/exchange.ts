@@ -132,15 +132,16 @@ const exchangeSlice = createSlice({
       };
     },
     [networkSwitchAction.type](state) {
-      if (state.payAsset === 'jPHP') {
+      if (state.payAsset === 'jPHP' || state.payAsset === 'jSGD') {
         state.payAsset = DEFAULT_PAY_ASSET;
         if (state.receiveAsset === DEFAULT_PAY_ASSET) {
-          state.receiveAsset = initialAppState.exchange.receiveAsset;
+          state.receiveAsset = DEFAULT_RECEIVE_ASSET;
         }
-      } else if (state.receiveAsset === 'jPHP') {
+      }
+      if (state.receiveAsset === 'jPHP' || state.receiveAsset === 'jSGD') {
         state.receiveAsset = DEFAULT_RECEIVE_ASSET;
         if (state.payAsset === DEFAULT_RECEIVE_ASSET) {
-          state.payAsset = initialAppState.exchange.payAsset;
+          state.payAsset = DEFAULT_PAY_ASSET;
         }
       }
     },

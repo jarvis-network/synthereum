@@ -2,6 +2,7 @@ import jchf from './icons/jchf.svg';
 import jeur from './icons/jeur.svg';
 import jgbp from './icons/jgbp.svg';
 import jphp from './icons/jphp.svg';
+import jsgd from './icons/jsgd.svg';
 import jxau from './icons/xau.svg';
 import usdc from './icons/us.svg';
 
@@ -12,6 +13,7 @@ export const files = {
   jeur,
   jgbp,
   jphp,
+  jsgd,
   jxau,
   usdc,
   eth: 'https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg',

@@ -28,11 +28,9 @@ import {
 import { addresses } from '@/data/addresses';
 import { debounce, isEqual, memoize } from 'lodash';
 import { useStore } from 'react-redux';
-import { State } from '@/state/initialState';
 
 import { useV2TradeExactIn, useV2TradeExactOut, MAX_HOPS } from './uniswap';
 import { useAssets } from './useAssets';
-import { string } from 'yargs';
 
 const ZERO = new FPN(0);
 const ONE = new FPN(1);
@@ -579,6 +577,8 @@ function useExchangeValues() {
     receive,
     shouldSwapAndMint,
     feePercentage,
+    assetPayPrice,
+    assetReceivePrice,
   ]);
 
   const tradeOptions = useMemo(
@@ -609,6 +609,11 @@ function useExchangeValues() {
         : calcRate(assetPayPrice, assetReceivePrice),
     [shouldSwapAndMint, shouldRedeemAndSwap, assetPayPrice, assetReceivePrice],
   );
+  console.log({
+    assetPayPrice: assetPayPrice?.format(),
+    assetReceivePrice: assetReceivePrice?.format(),
+    rate: rate?.format(),
+  });
 
   const executionPrice = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
