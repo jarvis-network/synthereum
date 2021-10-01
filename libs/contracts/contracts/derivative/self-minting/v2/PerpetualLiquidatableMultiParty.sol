@@ -11,17 +11,17 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {
-  SelfMintingPerpetualPositionManagerMultiPartyLib
-} from './SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
+  PerpetualPositionManagerMultiPartyLib
+} from './PerpetualPositionManagerMultiPartyLib.sol';
 import {
-  SelfMintingPerpetualLiquidatableMultiPartyLib
-} from './SelfMintingPerpetualLiquidatableMultiPartyLib.sol';
+  PerpetualLiquidatableMultiPartyLib
+} from './PerpetualLiquidatableMultiPartyLib.sol';
 import {
-  SelfMintingPerpetualPositionManagerMultiParty
-} from './SelfMintingPerpetualPositionManagerMultiParty.sol';
+  PerpetualPositionManagerMultiParty
+} from './PerpetualPositionManagerMultiParty.sol';
 
 /**
- * @title SelfMintingPerpetualLiquidatableMultiParty
+ * @title PerpetualLiquidatableMultiParty
  * @notice Adds logic to a position-managing contract that enables callers to liquidate an undercollateralized position.
  * @dev The liquidation has a liveness period before expiring successfully, during which someone can "dispute" the
  * liquidation, which sends a price request to the relevant Oracle to settle the final collateralization ratio based on
@@ -29,15 +29,13 @@ import {
  * liquidations and compensate position sponsors who had their position incorrectly liquidated. Importantly, a
  * prospective disputer must deposit a dispute bond that they can lose in the case of an unsuccessful dispute.
  */
-contract SelfMintingPerpetualLiquidatableMultiParty is
-  SelfMintingPerpetualPositionManagerMultiParty
-{
+contract PerpetualLiquidatableMultiParty is PerpetualPositionManagerMultiParty {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
   using FeePayerPartyLib for FixedPoint.Unsigned;
-  using SelfMintingPerpetualLiquidatableMultiPartyLib for SelfMintingPerpetualPositionManagerMultiParty.PositionData;
-  using SelfMintingPerpetualLiquidatableMultiPartyLib for LiquidationData;
+  using PerpetualLiquidatableMultiPartyLib for PerpetualPositionManagerMultiParty.PositionData;
+  using PerpetualLiquidatableMultiPartyLib for LiquidationData;
 
   // Because of the check in withdrawable(), the order of these enum values should not change.
   enum Status {
@@ -82,7 +80,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   // This is required to enable more params, over and above Solidity's limits.
   struct ConstructorParams {
     // Params for PricelessPositionManager only
-    SelfMintingPerpetualPositionManagerMultiParty.PositionManagerParams positionManagerParams;
+    PerpetualPositionManagerMultiParty.PositionManagerParams positionManagerParams;
     // Params specifically for Liquidatable.
     LiquidatableParams liquidatableParams;
   }
@@ -188,12 +186,12 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
   //----------------------------------------
 
   /**
-   * @notice Constructs the SelfMintingPerpetualPositionManagerMultiParty contract
+   * @notice Constructs the PerpetualPositionManagerMultiParty contract
    * @param params struct to define input parameters for construction of Liquidatable. Some params
    * are fed directly into the PositionManager's constructor within the inheritance tree.
    */
   constructor(ConstructorParams memory params)
-    SelfMintingPerpetualPositionManagerMultiParty(params.positionManagerParams)
+    PerpetualPositionManagerMultiParty(params.positionManagerParams)
   {
     require(
       params.liquidatableParams.collateralRequirement.isGreaterThan(1),
@@ -270,11 +268,8 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
 
     uint256 actualTime = getCurrentTime();
 
-
-      SelfMintingPerpetualLiquidatableMultiPartyLib.CreateLiquidationParams
-        memory params
-     =
-      SelfMintingPerpetualLiquidatableMultiPartyLib.CreateLiquidationParams(
+    PerpetualLiquidatableMultiPartyLib.CreateLiquidationParams memory params =
+      PerpetualLiquidatableMultiPartyLib.CreateLiquidationParams(
         minCollateralPerToken,
         maxCollateralPerToken,
         maxTokensToLiquidate,
@@ -285,7 +280,7 @@ contract SelfMintingPerpetualLiquidatableMultiParty is
       );
 
 
-      SelfMintingPerpetualLiquidatableMultiPartyLib.CreateLiquidationReturnParams
+      PerpetualLiquidatableMultiPartyLib.CreateLiquidationReturnParams
         memory returnValues
     ;
 
