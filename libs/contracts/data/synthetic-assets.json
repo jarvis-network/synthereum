@@ -115,6 +115,26 @@
       "minSponsorTokens": "0",
       "capMintAmount": "",
       "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Philippine Peso",
+      "syntheticSymbol": "jPHP",
+      "priceFeedIdentifier": "PHPUSD",
+      "collateralRequirement": "1050000000000000000",
+      "startingCollateralization": "24490",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Singapore Dollar",
+      "syntheticSymbol": "jSGD",
+      "priceFeedIdentifier": "SGDUSD",
+      "collateralRequirement": "1050000000000000000",
+      "startingCollateralization": "920375",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
     }
   ]
 }
