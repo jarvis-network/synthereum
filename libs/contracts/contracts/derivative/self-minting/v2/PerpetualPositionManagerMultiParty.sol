@@ -252,7 +252,6 @@ contract PerpetualPositionManagerMultiParty is
     nonReentrant()
     returns (uint256 amountWithdrawn)
   {
-    // TODO ADD liquidation threshold check
     PositionData storage positionData = _getPositionData(msg.sender);
 
     amountWithdrawn = positionData
