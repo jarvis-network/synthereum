@@ -116,21 +116,22 @@ library PerpetualPositionManagerMultiPartyLib {
     PerpetualPositionManagerMultiParty.PositionData storage positionData,
     PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData positionManagerData,
+    PerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
 
-    // Decrement the sponsor's collateral and global collateral amounts. Reverts if the resulting position is not
-    // properly collateralized
+    // Decrement the sponsor's collateral and global collateral amounts.
+    // Reverts if the resulting position is not properly collateralized
     amountWithdrawn = _decrementCollateralBalancesCheckCR(
       positionData,
       globalPositionData,
       collateralAmount,
       positionManagerData.overCollateralization,
-      positionManagerData.priceIdentifier,
       positionManagerData.synthereumFinder,
+      positionManagerData.priceIdentifier,
       feePayerData
     );
 
@@ -168,46 +169,38 @@ library PerpetualPositionManagerMultiPartyLib {
     FixedPoint.Unsigned memory netCollateralAmount =
       collateralAmount.sub(feeAmount);
 
-    // Either the new create ratio or the resultant position CR must be above the current GCR.
-    // require(
-    //   (_checkCollateralization(
-    //     globalPositionData,
-    //     positionData
-    //       .rawCollateral
-    //       .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-    //       .add(netCollateralAmount),
-    //     positionData.tokensOutstanding.add(numTokens),
-    //     feePayerData
-    //   ) ||
-    //     _checkCollateralization(
-    //       globalPositionData,
-    //       netCollateralAmount,
-    //       numTokens,
-    //       feePayerData
-    //     )),
-    //   'Insufficient collateral'
-    // );
-
-    require(
-      _checkCollateralizaion(
-        positionData
-          .rawCollateral
-          .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-          .add(netCollateralAmount),
-        positionData.tokensOutstanding.add(numTokens),
-        positionManagerData.overCollateralization,
-        positionManagerData.synthereumFinder,
-        positionManagerData.priceIdentifier
-      ),
-      'Insufficient Collateral'
-    );
-
     if (positionData.tokensOutstanding.isEqual(0)) {
+      // new position check is collateralized
+      require(
+        _checkCollateralization(
+          netCollateralAmount,
+          numTokens,
+          positionManagerData.overCollateralization,
+          positionManagerData.synthereumFinder,
+          positionManagerData.priceIdentifier
+        ),
+        'Insufficient Collateral'
+      );
       require(
         numTokens.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
         'Below minimum sponsor position'
       );
       emit NewSponsor(msg.sender);
+    } else {
+      // not a new position, check CR on updated position
+      require(
+        _checkCollateralization(
+          positionData
+            .rawCollateral
+            .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
+            .add(netCollateralAmount),
+          positionData.tokensOutstanding.add(numTokens),
+          positionManagerData.overCollateralization,
+          positionManagerData.synthereumFinder,
+          positionManagerData.priceIdentifier
+        ),
+        'Insufficient Collateral'
+      );
     }
 
     // Increase the position and global collateral balance by collateral amount.
