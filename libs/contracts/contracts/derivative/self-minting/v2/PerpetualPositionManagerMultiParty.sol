@@ -29,6 +29,7 @@ import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -47,6 +48,7 @@ contract PerpetualPositionManagerMultiParty is
   ISelfMintingDerivativeDeployment,
   FeePayerParty
 {
+  using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
@@ -76,6 +78,7 @@ contract PerpetualPositionManagerMultiParty is
     address tokenAddress;
     bytes32 priceFeedIdentifier;
     FixedPoint.Unsigned minSponsorTokens;
+    FixedPoint.Unsigned overCollateralization;
     address timerAddress;
     address excessTokenBeneficiary;
     uint8 version;
@@ -215,8 +218,10 @@ contract PerpetualPositionManagerMultiParty is
     positionManagerData.tokenCurrency = BaseControlledMintableBurnableERC20(
       _positionManagerData.tokenAddress
     );
+    positionManagerData.overCollateralization = _positionManagerData
+      .overCollateralization;
     positionManagerData.minSponsorTokens = _positionManagerData
-      .minSponsorTokens; // TO KEEP?
+      .minSponsorTokens;
     positionManagerData.priceIdentifier = _positionManagerData
       .priceFeedIdentifier;
     positionManagerData.excessTokenBeneficiary = _positionManagerData
@@ -257,6 +262,7 @@ contract PerpetualPositionManagerMultiParty is
     amountWithdrawn = positionData
       .withdraw(
       globalPositionData,
+      positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
       feePayerData
     )
@@ -408,12 +414,13 @@ contract PerpetualPositionManagerMultiParty is
     positionManagerData.emergencyShutdownTimestamp = getCurrentTime();
 
     FixedPoint.Unsigned memory oraclePrice =
-      _getOraclePrice(
+      positionManagerData._getOraclePrice(
         positionManagerData.synthereumFinder,
         positionManagerData.priceIdentifier
       );
 
-    uint8 tokenCurrencyDecimals = IStandardERC20(tokenCurrency()).decimals();
+    uint8 tokenCurrencyDecimals =
+      IStandardERC20(address(positionManagerData.tokenCurrency)).decimals();
     FixedPoint.Unsigned memory scaledPrice =
       oraclePrice.div((10**(uint256(18)).sub(tokenCurrencyDecimals)));
     positionManagerData.emergencyShutdownPrice = scaledPrice;

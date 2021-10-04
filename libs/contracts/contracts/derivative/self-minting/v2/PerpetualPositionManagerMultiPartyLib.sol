@@ -125,10 +125,8 @@ library PerpetualPositionManagerMultiPartyLib {
     amountWithdrawn = _decrementCollateralBalancesCheckCR(
       positionData,
       globalPositionData,
+      positionManagerData,
       collateralAmount,
-      positionManagerData.overCollateralization,
-      positionManagerData.synthereumFinder,
-      positionManagerData.priceIdentifier,
       feePayerData
     );
 
@@ -168,16 +166,13 @@ library PerpetualPositionManagerMultiPartyLib {
 
     if (positionData.tokensOutstanding.isEqual(0)) {
       // new position check is collateralized
-      require(
+      (bool isCollateralised, ) =
         _checkCollateralization(
+          positionManagerData,
           netCollateralAmount,
-          numTokens,
-          positionManagerData.overCollateralization,
-          positionManagerData.synthereumFinder,
-          positionManagerData.priceIdentifier
-        ),
-        'Insufficient Collateral'
-      );
+          numTokens
+        );
+      require(isCollateralised, 'Insufficient Collateral');
       require(
         numTokens.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
         'Below minimum sponsor position'
@@ -185,19 +180,16 @@ library PerpetualPositionManagerMultiPartyLib {
       emit NewSponsor(msg.sender);
     } else {
       // not a new position, check CR on updated position
-      require(
+      (bool isCollateralised, ) =
         _checkCollateralization(
+          positionManagerData,
           positionData
             .rawCollateral
             .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
             .add(netCollateralAmount),
-          positionData.tokensOutstanding.add(numTokens),
-          positionManagerData.overCollateralization,
-          positionManagerData.synthereumFinder,
-          positionManagerData.priceIdentifier
-        ),
-        'Insufficient Collateral'
-      );
+          positionData.tokensOutstanding.add(numTokens)
+        );
+      require(isCollateralised, 'Insufficient Collateral');
     }
 
     // Increase the position and global collateral balance by collateral amount.
@@ -413,22 +405,6 @@ library PerpetualPositionManagerMultiPartyLib {
       storage positionManagerData,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
-    // if (
-    //   positionManagerData.emergencyShutdownPrice.isEqual(
-    //     FixedPoint.fromUnscaledUint(0)
-    //   )
-    // ) {
-    //   // store last price in emergency shutdown price
-    //   FixedPoint.Unsigned memory oraclePrice =
-    //     _getOraclePrice(
-    //       positionManagerData.synthereumFinder,
-    //       positionManagerData.priceIdentifier
-    //     );
-
-    //   positionManagerData.emergencyShutdownPrice = oraclePrice
-    //     ._decimalsScalingFactor(feePayerData);
-    // }
-
     // Get caller's tokens balance and calculate amount of underlying entitled to them.
     FixedPoint.Unsigned memory tokensToRedeem =
       FixedPoint.Unsigned(
@@ -683,10 +659,9 @@ library PerpetualPositionManagerMultiPartyLib {
     PerpetualPositionManagerMultiParty.PositionData storage positionData,
     PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
+    PerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
-    FixedPoint.Unsigned memory overCollateralization,
-    ISynthereumFinder synthereumFinder,
-    bytes32 priceFeedId,
     FeePayerParty.FeePayerData storage feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
     //remove the withdrawn collateral from the position and then check its CR
@@ -694,16 +669,17 @@ library PerpetualPositionManagerMultiPartyLib {
       collateralAmount,
       feePayerData.cumulativeFeeMultiplier
     );
+    (bool isCollateralised, ) =
+      _checkCollateralization(
+        positionManagerData,
+        positionData.rawCollateral.getFeeAdjustedCollateral(
+          feePayerData.cumulativeFeeMultiplier
+        ),
+        positionData.tokensOutstanding
+      );
     require(
-      _checkPositionCollateralization(
-        positionData,
-        globalPositionData,
-        overCollateralization,
-        priceFeedId,
-        synthereumFinder,
-        feePayerData
-      ),
-      'CR is not sufficiently high after the withdraw'
+      isCollateralised,
+      'CR is not sufficiently high after the withdraw - try less amount'
     );
     return
       globalPositionData.rawTotalPositionCollateral.removeCollateral(
@@ -748,41 +724,32 @@ library PerpetualPositionManagerMultiPartyLib {
       );
   }
 
-  // Checks whether the provided `collateral` and `numTokens` have a collateralization ratio above the global
-  // collateralization ratio.
-  function _checkPositionCollateralization(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    FixedPoint.Unsigned memory overCollateralization,
-    bytes32 priceFeedId,
-    ISynthereumFinder synthereumFinder,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (bool) {
-    return
-      _checkCollateralization(
-        positionData.rawCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
-        positionData.tokensOutstanding,
-        overCollateralization,
-        synthereumFinder,
-        priceFeedId
-      );
-  }
-
   function _checkCollateralization(
+    PerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData,
     FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory overCollateralization,
-    ISynthereumFinder finder,
-    bytes32 priceFeedIdentifier
-  ) internal view returns (bool) {
-    // calculate the needed collateral with chainlink
-    FixedPoint.Unsigned memory thresholdValue =
-      numTokens.mul(getPriceFeedRate(finder, priceFeedIdentifier));
-    thresholdValue = thresholdValue.mul(overCollateralization);
-    return collateral.isGreaterThan(thresholdValue);
+    FixedPoint.Unsigned memory numTokens
+  ) internal view returns (bool, FixedPoint.Unsigned memory) {
+    // get oracle price
+    FixedPoint.Unsigned memory oraclePrice =
+      _getOraclePrice(
+        positionManagerData,
+        positionManagerData.synthereumFinder,
+        positionManagerData.priceIdentifier
+      );
+    // calculate the min collateral of numTokens with chainlink
+    FixedPoint.Unsigned memory thresholdValue = numTokens.mul(oraclePrice);
+    thresholdValue = thresholdValue.mul(
+      positionManagerData.overCollateralization
+    );
+
+    //calculate the potential liquidatable portion
+    FixedPoint.Unsigned memory liquidatableTokens =
+      thresholdValue.sub(collateral).isGreaterThan(0)
+        ? FixedPoint.fromUnscaledUint(0)
+        : thresholdValue.sub(collateral).div(oraclePrice);
+
+    return (collateral.isGreaterThan(thresholdValue), liquidatableTokens);
   }
 
   // Check new total number of tokens does not overcome mint limit
@@ -851,18 +818,18 @@ library PerpetualPositionManagerMultiPartyLib {
    * @param numTokens Amount of collateral from which you want to calculate synthetic token amount
    * @return numTokens Amount of tokens after on-chain oracle conversion
    */
-  function _calculateNumberOfTokens(
-    ISynthereumFinder finder,
-    IStandardERC20 collateralToken,
-    bytes32 priceIdentifier,
-    FixedPoint.Unsigned memory collateralAmount
-  ) internal view returns (FixedPoint.Unsigned memory numTokens) {
-    FixedPoint.Unsigned memory priceRate =
-      _getOraclePrice(finder, priceIdentifier);
-    numTokens = collateralAmount.mul(10**(18 - collateralToken.decimals())).div(
-      priceRate
-    );
-  }
+  // function _calculateNumberOfTokens(
+  //   ISynthereumFinder finder,
+  //   IStandardERC20 collateralToken,
+  //   bytes32 priceIdentifier,
+  //   FixedPoint.Unsigned memory collateralAmount
+  // ) internal view returns (FixedPoint.Unsigned memory numTokens) {
+  //   FixedPoint.Unsigned memory priceRate =
+  //     _getOraclePrice(finder, priceIdentifier);
+  //   numTokens = collateralAmount.mul(10**(18 - collateralToken.decimals())).div(
+  //     priceRate
+  //   );
+  // }
 
   /**
    * @notice Retrun the on-chain oracle price for a pair
@@ -870,11 +837,12 @@ library PerpetualPositionManagerMultiPartyLib {
    * @param priceIdentifier Identifier of price pair
    * @return priceRate Latest rate of the pair
    */
-  function _getOraclePrice(ISynthereumFinder finder, bytes32 priceIdentifier)
-    internal
-    view
-    returns (FixedPoint.Unsigned memory priceRate)
-  {
+  function _getOraclePrice(
+    PerpetualPositionManagerMultiParty.PositionManagerData
+      storage positionManagerData,
+    ISynthereumFinder finder,
+    bytes32 priceIdentifier
+  ) internal view returns (FixedPoint.Unsigned memory priceRate) {
     ISynthereumPriceFeed priceFeed =
       ISynthereumPriceFeed(
         finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
