@@ -116,17 +116,21 @@ library PerpetualPositionManagerMultiPartyLib {
     PerpetualPositionManagerMultiParty.PositionData storage positionData,
     PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
+    PerpetualPositionManagerMultiParty.PositionManagerData positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
 
-    // Decrement the sponsor's collateral and global collateral amounts. Check the GCR between decrement to ensure
-    // position remains above the GCR within the withdrawl. If this is not the case the caller must submit a request.
-    amountWithdrawn = _decrementCollateralBalancesCheckGCR(
+    // Decrement the sponsor's collateral and global collateral amounts. Reverts if the resulting position is not
+    // properly collateralized
+    amountWithdrawn = _decrementCollateralBalancesCheckCR(
       positionData,
       globalPositionData,
       collateralAmount,
+      positionManagerData.overCollateralization,
+      positionManagerData.priceIdentifier,
+      positionManagerData.synthereumFinder,
       feePayerData
     );
 
@@ -185,7 +189,7 @@ library PerpetualPositionManagerMultiPartyLib {
     // );
 
     require(
-      checkCollateralizaion(
+      _checkCollateralizaion(
         positionData
           .rawCollateral
           .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
@@ -690,13 +694,17 @@ library PerpetualPositionManagerMultiPartyLib {
       );
   }
 
-  function _decrementCollateralBalancesCheckGCR(
+  function _decrementCollateralBalancesCheckCR(
     PerpetualPositionManagerMultiParty.PositionData storage positionData,
     PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
+    FixedPoint.Unsigned memory overCollateralization,
+    ISynthereumFinder synthereumFinder,
+    bytes32 priceFeedId,
     FeePayerParty.FeePayerData storage feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
+    //remove the withdrawn collateral from the position and then check its CR
     positionData.rawCollateral.removeCollateral(
       collateralAmount,
       feePayerData.cumulativeFeeMultiplier
@@ -704,10 +712,13 @@ library PerpetualPositionManagerMultiPartyLib {
     require(
       _checkPositionCollateralization(
         positionData,
-        globalPositionData, // globlCollateralizationRatio
+        globalPositionData,
+        overCollateralization,
+        priceFeedId,
+        synthereumFinder,
         feePayerData
       ),
-      'CR below GCR'
+      'CR is not sufficiently high after the withdraw'
     );
     return
       globalPositionData.rawTotalPositionCollateral.removeCollateral(
@@ -758,41 +769,24 @@ library PerpetualPositionManagerMultiPartyLib {
     PerpetualPositionManagerMultiParty.PositionData storage positionData,
     PerpetualPositionManagerMultiParty.GlobalPositionData
       storage globalPositionData,
+    FixedPoint.Unsigned memory overCollateralization,
+    bytes32 priceFeedId,
+    ISynthereumFinder synthereumFinder,
     FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (bool) {
     return
       _checkCollateralization(
-        globalPositionData,
         positionData.rawCollateral.getFeeAdjustedCollateral(
           feePayerData.cumulativeFeeMultiplier
         ),
         positionData.tokensOutstanding,
-        feePayerData
+        overCollateralization,
+        synthereumFinder,
+        priceFeedId
       );
   }
 
-  // TODO Refactor to use chainlink price nd maxLeverage
-  //Check new position overcomes GCR
   function _checkCollateralization(
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory numTokens,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (bool) {
-    FixedPoint.Unsigned memory global =
-      _getCollateralizationRatio(
-        globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
-        globalPositionData.totalTokensOutstanding
-      );
-    FixedPoint.Unsigned memory thisChange =
-      _getCollateralizationRatio(collateral, numTokens);
-    return !global.isGreaterThan(thisChange);
-  }
-
-  function checkCollateralizaion(
     FixedPoint.Unsigned memory collateral,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory overCollateralization,
