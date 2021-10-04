@@ -158,7 +158,7 @@ library PerpetualPositionManagerMultiPartyLib {
     FixedPoint.Unsigned memory feePercentage,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
-    // TODO
+    // TODO feeStatus
     feeAmount = _checkAndCalculateDaoFee(
       globalPositionData,
       positionManagerData,
@@ -421,10 +421,15 @@ library PerpetualPositionManagerMultiPartyLib {
         FixedPoint.fromUnscaledUint(0)
       )
     ) {
-      // FixedPoint.Unsigned memory oraclePrice =
-      //   positionManagerData._getOracleEmergencyShutdownPrice(feePayerData);
-      // positionManagerData.emergencyShutdownPrice = oraclePrice
-      //   ._decimalsScalingFactor(feePayerData);
+      // store last price in emergency shutdown price
+      FixedPoint.Unsigned memory oraclePrice =
+        _getOraclePrice(
+          positionManagerData.synthereumFinder,
+          positionManagerData.priceIdentifier
+        );
+
+      positionManagerData.emergencyShutdownPrice = oraclePrice
+        ._decimalsScalingFactor(feePayerData);
     }
 
     // Get caller's tokens balance and calculate amount of underlying entitled to them.
@@ -584,16 +589,6 @@ library PerpetualPositionManagerMultiPartyLib {
     globalPositionData.totalTokensOutstanding = globalPositionData
       .totalTokensOutstanding
       .sub(tokensToRemove);
-  }
-
-  // Call to the internal one (see _getOraclePrice)
-  function getOraclePrice(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
-    uint256 requestedTime,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) external view returns (FixedPoint.Unsigned memory price) {
-    // return _getOraclePrice(positionManagerData, requestedTime, feePayerData);
   }
 
   //Call to the internal one (see _decimalsScalingFactor)
@@ -859,14 +854,14 @@ library PerpetualPositionManagerMultiPartyLib {
    * @param numTokens Amount of collateral from which you want to calculate synthetic token amount
    * @return numTokens Amount of tokens after on-chain oracle conversion
    */
-  function calculateNumberOfTokens(
+  function _calculateNumberOfTokens(
     ISynthereumFinder finder,
     IStandardERC20 collateralToken,
     bytes32 priceIdentifier,
     FixedPoint.Unsigned memory collateralAmount
   ) internal view returns (FixedPoint.Unsigned memory numTokens) {
     FixedPoint.Unsigned memory priceRate =
-      getPriceFeedRate(finder, priceIdentifier);
+      _getOraclePrice(finder, priceIdentifier);
     numTokens = collateralAmount.mul(10**(18 - collateralToken.decimals())).div(
       priceRate
     );
@@ -878,7 +873,7 @@ library PerpetualPositionManagerMultiPartyLib {
    * @param priceIdentifier Identifier of price pair
    * @return priceRate Latest rate of the pair
    */
-  function getPriceFeedRate(ISynthereumFinder finder, bytes32 priceIdentifier)
+  function _getOraclePrice(ISynthereumFinder finder, bytes32 priceIdentifier)
     internal
     view
     returns (FixedPoint.Unsigned memory priceRate)
@@ -897,10 +892,7 @@ library PerpetualPositionManagerMultiPartyLib {
   //     storage positionManagerData,
   //   FeePayerParty.FeePayerData storage feePayerData
   // ) internal view returns (FixedPoint.Unsigned memory) {
-  //   return positionManagerData.getPriceFeedRate(
-  //     positionManagerData.emergencyShutdownTimestamp,
-  //     feePayerData
-  //   );
+  //   return getOraclePrice(positionManagerData, requestedTime, feePayerData);
   // }
 
   // Reduce orcale price according to the decimals of the collateral
