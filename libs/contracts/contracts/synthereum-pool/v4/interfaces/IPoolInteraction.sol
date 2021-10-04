@@ -8,7 +8,7 @@ import {
 interface ISynthereumPoolInteraction {
   /**
    * @notice Called by a source Pool's `exchange` function to mint destination tokens
-   * @notice This functon can be called only by a pool registred in the PoolRegister contract
+   * @notice This functon can be called only by a pool registered in the PoolRegister contract
    * @param srcDerivative Derivative used by the source pool
    * @param derivative The derivative of the destination pool to use for mint
    * @param collateralAmount The amount of collateral to use from the source Pool

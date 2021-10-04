@@ -290,7 +290,7 @@ contract SynthereumLiquidityPool is
 
   /**
    * @notice Called by a source Pool's `exchange` function to mint destination tokens
-   * @notice This functon can be called only by a pool registred in the PoolRegister contract
+   * @notice This functon can be called only by a pool registered in the PoolRegister contract
    * @param collateralAmount The amount of collateral to use from the source Pool
    * @param numTokens The number of new tokens to mint
    * @param recipient Recipient to which send synthetic token minted

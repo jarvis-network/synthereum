@@ -396,7 +396,7 @@ library SynthereumLiquidityPoolLib {
 
   /**
    * @notice Called by a source Pool's `exchange` function to mint destination tokens
-   * @notice This functon can be called only by a pool registred in the deployer
+   * @notice This functon can be called only by a pool registered in the deployer
    * @param self Data type the library is attached to
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
@@ -1530,7 +1530,7 @@ library SynthereumLiquidityPoolLib {
         poolToCheck.version(),
         address(poolToCheck)
       ),
-      'Destination pool not registred'
+      'Destination pool not registered'
     );
   }
 

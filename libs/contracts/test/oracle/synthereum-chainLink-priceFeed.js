@@ -337,7 +337,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
       );
       await truffleAssert.reverts(
         proxyPriceContract.getPrice.call(priceFeedId),
-        'Pool not registred',
+        'Pool not registered',
       );
     });
   });

@@ -93,7 +93,7 @@ contract SynthereumChainlinkPriceFeed is
           pool.version(),
           msg.sender
         ),
-        'Pool not registred'
+        'Pool not registered'
       );
     }
     _;

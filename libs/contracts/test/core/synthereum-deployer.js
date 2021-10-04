@@ -849,7 +849,7 @@ contract('Synthereum Deployer', function (accounts) {
         'Wrong collateral matching',
       );
     });
-    it('Revert if pool is not registred', async () => {
+    it('Revert if pool is not registered', async () => {
       const mockPool = await PoolMock.new(
         poolVersion,
         collateralAddress,
@@ -880,7 +880,7 @@ contract('Synthereum Deployer', function (accounts) {
           mockPool.address,
           { from: maintainer },
         ),
-        'Pool not registred',
+        'Pool not registered',
       );
     });
   });
