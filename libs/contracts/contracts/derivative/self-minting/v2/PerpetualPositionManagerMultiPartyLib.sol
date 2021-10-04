@@ -4,9 +4,6 @@ pragma solidity ^0.8.4;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
-  IERC20Standard
-} from '@uma/core/contracts/common/interfaces/IERC20Standard.sol';
-import {
   BaseControlledMintableBurnableERC20
 } from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {
@@ -416,21 +413,21 @@ library PerpetualPositionManagerMultiPartyLib {
       storage positionManagerData,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
-    if (
-      positionManagerData.emergencyShutdownPrice.isEqual(
-        FixedPoint.fromUnscaledUint(0)
-      )
-    ) {
-      // store last price in emergency shutdown price
-      FixedPoint.Unsigned memory oraclePrice =
-        _getOraclePrice(
-          positionManagerData.synthereumFinder,
-          positionManagerData.priceIdentifier
-        );
+    // if (
+    //   positionManagerData.emergencyShutdownPrice.isEqual(
+    //     FixedPoint.fromUnscaledUint(0)
+    //   )
+    // ) {
+    //   // store last price in emergency shutdown price
+    //   FixedPoint.Unsigned memory oraclePrice =
+    //     _getOraclePrice(
+    //       positionManagerData.synthereumFinder,
+    //       positionManagerData.priceIdentifier
+    //     );
 
-      positionManagerData.emergencyShutdownPrice = oraclePrice
-        ._decimalsScalingFactor(feePayerData);
-    }
+    //   positionManagerData.emergencyShutdownPrice = oraclePrice
+    //     ._decimalsScalingFactor(feePayerData);
+    // }
 
     // Get caller's tokens balance and calculate amount of underlying entitled to them.
     FixedPoint.Unsigned memory tokensToRedeem =
@@ -901,7 +898,7 @@ library PerpetualPositionManagerMultiPartyLib {
     FeePayerParty.FeePayerData storage feePayerData
   ) internal view returns (FixedPoint.Unsigned memory scaledPrice) {
     uint8 collateralDecimalsNumber =
-      IERC20Standard(address(feePayerData.collateralCurrency)).decimals();
+      IStandardERC20(address(feePayerData.collateralCurrency)).decimals();
     scaledPrice = oraclePrice.div(
       (10**(uint256(18)).sub(collateralDecimalsNumber))
     );

@@ -404,11 +404,20 @@ contract PerpetualPositionManagerMultiParty is
         msg.sender == _getFinancialContractsAdminAddress(),
       'Caller must be a Synthereum manager or the UMA governor'
     );
+    // store timestamp and last price
     positionManagerData.emergencyShutdownTimestamp = getCurrentTime();
-    // positionManagerData.requestOraclePrice(
-    //   positionManagerData.emergencyShutdownTimestamp,
-    //   feePayerData
-    // );
+
+    FixedPoint.Unsigned memory oraclePrice =
+      _getOraclePrice(
+        positionManagerData.synthereumFinder,
+        positionManagerData.priceIdentifier
+      );
+
+    uint8 tokenCurrencyDecimals = IStandardERC20(tokenCurrency()).decimals();
+    FixedPoint.Unsigned memory scaledPrice =
+      oraclePrice.div((10**(uint256(18)).sub(tokenCurrencyDecimals)));
+    positionManagerData.emergencyShutdownPrice = scaledPrice;
+
     emit EmergencyShutdown(
       msg.sender,
       positionManagerData.emergencyShutdownTimestamp
