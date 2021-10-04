@@ -74,8 +74,9 @@ export const Max: React.FC = () => {
       if (requested) return;
 
       requested = true;
-
-      swap!(m && (divisor.gt(one) ? m.div(divisor) : m))
+      const mm = m && (divisor.gt(one) ? m.div(divisor) : m);
+      if (mm?.eq(FPN.ZERO)) return;
+      swap!(mm)
         .estimatePromise.then((value: number) => {
           if (!canceled) {
             setEstimation(value);

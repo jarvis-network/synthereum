@@ -609,11 +609,6 @@ function useExchangeValues() {
         : calcRate(assetPayPrice, assetReceivePrice),
     [shouldSwapAndMint, shouldRedeemAndSwap, assetPayPrice, assetReceivePrice],
   );
-  console.log({
-    assetPayPrice: assetPayPrice?.format(),
-    assetReceivePrice: assetReceivePrice?.format(),
-    rate: rate?.format(),
-  });
 
   const executionPrice = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow

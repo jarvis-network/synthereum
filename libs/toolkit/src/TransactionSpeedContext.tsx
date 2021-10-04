@@ -1,4 +1,6 @@
+import { assertIsString } from '@jarvis-network/core-utils/dist/base/asserts';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
+import { noop } from '@jarvis-network/ui';
 import React, {
   createContext,
   ReactNode,
@@ -16,84 +18,58 @@ interface Context {
 }
 const context = createContext<Context | null>(null);
 
-const oneGwei = 1000 * 1000 * 1000;
-
-class MainnetGasProvider {
-  private timeoutId = 0;
-
-  private connection?: WebSocket;
+class EtherscanGasProvider {
+  private intervalId = 0;
 
   constructor(
+    domain: 'etherscan.io' | 'polygonscan.com',
+    apiKey: string,
     private setState: (value: {
       networkId: number;
       value: Context | null;
     }) => void,
   ) {
-    this.connect();
-  }
+    assertIsString(apiKey, 34);
+    if (typeof window !== 'object') return;
 
-  private setTimeout() {
-    this.timeoutId = (setTimeout(this.reconnect) as unknown,
-    20 * 1000) as number;
-  }
+    const networkId =
+      domain === 'etherscan.io' ? Network.mainnet : Network.polygon;
+    const interval = domain === 'etherscan.io' ? 10 : 3;
 
-  private connect() {
-    this.connection = new WebSocket('wss://www.gasnow.org/ws');
-    this.connection.addEventListener('open', this.setTimeout);
-    this.connection.addEventListener('message', event => {
-      const data = JSON.parse(event.data) as {
-        data: {
-          gasPrices: {
-            fast: number;
-            rapid: number;
-            slow: number;
-            standard: number;
-          };
-        };
-        type: 'gasprice';
-      };
-
-      if (data.type === 'gasprice') {
-        this.setState({
-          networkId: Network.mainnet,
-          value: {
-            fast: Math.floor(data.data.gasPrices.fast / oneGwei),
-            rapid: Math.floor(data.data.gasPrices.rapid / oneGwei),
-            standard: Math.floor(data.data.gasPrices.standard / oneGwei),
+    const callback = () => {
+      fetch(
+        `https://api.${domain}/api?module=gastracker&action=gasoracle&apikey=${apiKey}`,
+      )
+        .then(response => response.json())
+        .then(
+          (data: {
+            status: string;
+            message: 'OK';
+            result: {
+              LastBlock: string;
+              SafeGasPrice: string;
+              ProposeGasPrice: string;
+              FastGasPrice: string;
+              UsdPrice: string;
+            };
+          }) => {
+            const fast = Number(data.result.ProposeGasPrice);
+            const rapid = Number(data.result.FastGasPrice);
+            const standard = Number(data.result.SafeGasPrice);
+            if (!fast || !rapid || !standard) return;
+            this.setState({ networkId, value: { fast, rapid, standard } });
           },
-        });
+        );
+    };
 
-        clearTimeout(this.timeoutId);
-        this.setTimeout();
-      }
-    });
-    this.connection.addEventListener('close', this.closeHandler);
-    this.connection.addEventListener('error', this.closeHandler);
+    callback();
+
+    this.intervalId = window.setInterval(callback, interval * 1000);
   }
-
-  private closeHandler = () => {
-    clearTimeout(this.timeoutId);
-    setTimeout(() => {
-      this.connect();
-    }, 1000);
-  };
-
-  private reconnect = () => {
-    if (this.connection) {
-      this.connection.removeEventListener('close', this.closeHandler);
-      this.connection.removeEventListener('error', this.closeHandler);
-      this.connection.close();
-    }
-    this.connect();
-  };
 
   destroy() {
-    clearTimeout(this.timeoutId);
-    if (this.connection) {
-      this.connection.removeEventListener('close', this.closeHandler);
-      this.connection.removeEventListener('error', this.closeHandler);
-      this.connection.close();
-    }
+    this.setState = noop;
+    clearInterval(this.intervalId);
   }
 }
 
@@ -113,7 +89,11 @@ export function TransactionSpeedProvider({
     if (!networkId) return;
 
     if (networkId === Network.mainnet) {
-      const provider = new MainnetGasProvider(setState);
+      const provider = new EtherscanGasProvider(
+        'etherscan.io',
+        process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY as string,
+        setState,
+      );
       return () => provider.destroy();
     }
     if (networkId === Network.kovan) {
@@ -124,11 +104,12 @@ export function TransactionSpeedProvider({
       return;
     }
     if (networkId === Network.polygon) {
-      setState({
-        networkId: Network.polygon,
-        value: { standard: 1, fast: 1, rapid: 5 },
-      });
-      return;
+      const provider = new EtherscanGasProvider(
+        'polygonscan.com',
+        process.env.NEXT_PUBLIC_POLYGONSCAN_API_KEY as string,
+        setState,
+      );
+      return () => provider.destroy();
     }
     if (networkId === Network.mumbai) {
       setState({
