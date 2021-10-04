@@ -609,7 +609,7 @@ contract SynthereumDeployer is
         pool.version(),
         address(pool)
       ),
-      'Pool not registred'
+      'Pool not registered'
     );
   }
 

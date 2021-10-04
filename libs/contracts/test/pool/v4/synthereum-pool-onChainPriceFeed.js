@@ -1070,7 +1070,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         'Collateral tokens do not match',
       );
     });
-    it('Revert if destination pool is not registred', async () => {
+    it('Revert if destination pool is not registered', async () => {
       const synthereumPoolLibInstance = await SynthereumPoolOnChainPriceFeedLib.deployed();
       await SynthereumPoolOnChainPriceFeed.link(synthereumPoolLibInstance);
       const feeScaled = fee;
@@ -1099,7 +1099,7 @@ contract('Synthereum pool with on chain price feed', function (accounts) {
         poolInstance.exchange(ExchangeParameters, {
           from: sender,
         }),
-        'Destination pool not registred',
+        'Destination pool not registered',
       );
       fee.feePercentage = '0.002';
     });

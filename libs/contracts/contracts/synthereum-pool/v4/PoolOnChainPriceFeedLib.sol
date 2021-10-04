@@ -376,7 +376,7 @@ library SynthereumPoolOnChainPriceFeedLib {
 
   /**
    * @notice Called by a source Pool's `exchange` function to mint destination tokens
-   * @notice This functon can be called only by a pool registred in the deployer
+   * @notice This functon can be called only by a pool registered in the deployer
    * @param self Data type the library is attached to
    * @param srcDerivative Derivative used by the source pool
    * @param derivative Derivative that this pool will use
@@ -1074,7 +1074,7 @@ library SynthereumPoolOnChainPriceFeedLib {
         poolToCheck.version(),
         address(poolToCheck)
       ),
-      'Destination pool not registred'
+      'Destination pool not registered'
     );
   }
 

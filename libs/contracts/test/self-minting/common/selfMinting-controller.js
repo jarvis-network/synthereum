@@ -559,7 +559,7 @@ contract('Self-minting controller', function (accounts) {
     });
   });
 
-  it('Revert if self-minting derivative is not registred', async () => {
+  it('Revert if self-minting derivative is not registered', async () => {
     const selfMintingRegistryAddr = (await SelfMintingRegistry.deployed())
       .address;
     const newSelfMintingRegistry = await SelfMintingRegistry.new(
@@ -584,7 +584,7 @@ contract('Self-minting controller', function (accounts) {
           from: maintainer,
         },
       ),
-      'Self-minting derivative not registred',
+      'Self-minting derivative not registered',
     );
     await truffleAssert.reverts(
       controllerInstance.setCapMintAmount(
@@ -594,7 +594,7 @@ contract('Self-minting controller', function (accounts) {
           from: maintainer,
         },
       ),
-      'Self-minting derivative not registred',
+      'Self-minting derivative not registered',
     );
     await truffleAssert.reverts(
       controllerInstance.setCapDepositRatio(
@@ -604,7 +604,7 @@ contract('Self-minting controller', function (accounts) {
           from: maintainer,
         },
       ),
-      'Self-minting derivative not registred',
+      'Self-minting derivative not registered',
     );
     await truffleAssert.reverts(
       controllerInstance.setDaoFeePercentage(
@@ -614,7 +614,7 @@ contract('Self-minting controller', function (accounts) {
           from: maintainer,
         },
       ),
-      'Self-minting derivative not registred',
+      'Self-minting derivative not registered',
     );
     truffleAssert.reverts(
       controllerInstance.setDaoFeeRecipient(
@@ -624,7 +624,7 @@ contract('Self-minting controller', function (accounts) {
           from: maintainer,
         },
       ),
-      'Self-minting derivative not registred',
+      'Self-minting derivative not registered',
     );
     await synthereumFinderInstance.changeImplementationAddress(
       web3Utils.stringToHex('SelfMintingRegistry'),

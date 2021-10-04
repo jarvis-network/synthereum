@@ -363,7 +363,7 @@ contract SelfMintingController is
         selfMintingDerivative.version(),
         address(selfMintingDerivative)
       ),
-      'Self-minting derivative not registred'
+      'Self-minting derivative not registered'
     );
   }
 
