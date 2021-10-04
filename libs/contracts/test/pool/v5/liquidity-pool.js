@@ -520,5 +520,120 @@ contract('LiquidityPool', function (accounts) {
         'Wrong synth balance with redirection',
       );
     });
+    it('Can revert if too much slippage for the tokens received', async () => {
+      const totalCollateralAmount = web3Utils.toWei('120.24048', 'mwei');
+      const minNumberOfTokens = web3Utils.toWei('100.01');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: minNumberOfTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await truffleAssert.reverts(
+        liquidityPoolInstance.mint(mintOperation, {
+          from: firstUser,
+        }),
+        'Number of tokens less than minimum limit',
+      );
+    });
+    it('Can revert if too much slippage for the fee percentage', async () => {
+      const totalCollateralAmount = web3Utils.toWei('120.24048', 'mwei');
+      const minNumberOfTokens = web3Utils.toWei('100');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const wrongFeePercentageValue = web3Utils.toWei('0.00199');
+      const mintOperation = {
+        minNumTokens: minNumberOfTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: wrongFeePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await truffleAssert.reverts(
+        liquidityPoolInstance.mint(mintOperation, {
+          from: firstUser,
+        }),
+        'User fee percentage less than actual one',
+      );
+    });
+    it('Can revert if transaction is expired', async () => {
+      const totalCollateralAmount = web3Utils.toWei('120.24048', 'mwei');
+      const minNumberOfTokens = web3Utils.toWei('100');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp - 1);
+      const mintOperation = {
+        minNumTokens: minNumberOfTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await truffleAssert.reverts(
+        liquidityPoolInstance.mint(mintOperation, {
+          from: firstUser,
+        }),
+        'Transaction expired',
+      );
+    });
+    it('Can revert if no collateral amount is sent', async () => {
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await truffleAssert.reverts(
+        liquidityPoolInstance.mint(mintOperation, {
+          from: firstUser,
+        }),
+        'Sending collateral amount is equal to 0',
+      );
+    });
+    it('Can revert if there is no enough liquidity in the pool', async () => {
+      const totalCollateralAmount = web3Utils.toWei('12000', 'mwei');
+      await collateralInstance.allocateTo(firstUser, totalCollateralAmount);
+      const minNumberOfTokens = web3Utils.toWei('9980');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: minNumberOfTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await truffleAssert.reverts(
+        liquidityPoolInstance.mint(mintOperation, {
+          from: firstUser,
+        }),
+        'No enough liquidity for covering mint operation',
+      );
+    });
   });
 });

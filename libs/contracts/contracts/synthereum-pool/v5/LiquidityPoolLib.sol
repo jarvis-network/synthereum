@@ -1090,7 +1090,7 @@ library SynthereumLiquidityPoolLib {
     // Sending amount must be different from 0
     require(
       executeMintParams.collateralAmount.rawValue > 0,
-      'Sending amount is equal to 0'
+      'Sending collateral amount is equal to 0'
     );
 
     // Collateral available
@@ -1112,7 +1112,7 @@ library SynthereumLiquidityPoolLib {
     //Check there is enough liquidity in the pool for overcollateralization
     require(
       unusedCollateral.isGreaterThanOrEqual(overCollateral),
-      'No enough liquidity for cover mint operation'
+      'No enough liquidity for covering mint operation'
     );
 
     // Update fees status
