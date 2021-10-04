@@ -214,20 +214,18 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned calldata _liquidationReward
   ) external {
     require(
-      _collateralRequirement.isGreaterThan(FixedPoint.fromUnscaledUint(1)),
+      _collateralRequirement.isGreaterThan(1),
       'Collateral requirement must be bigger than 100%'
     );
 
     require(
-      _overCollateralization.isGreaterThan(
-        _collateralRequirement.sub(FixedPoint.fromUnscaledUint(1))
-      ),
+      _overCollateralization.isGreaterThan(_collateralRequirement.sub(1)),
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
 
     require(
-      _liquidationReward.isGreaterThan(0) &&
-        _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
+      _liquidationReward.rawValue > 0 &&
+        _liquidationReward.isLessThanOrEqual(1),
       'Liquidation reward must be between 0 and 100%'
     );
 
@@ -273,7 +271,7 @@ library SynthereumLiquidityPoolLib {
     ) = self.mintCalculation(totCollateralAmount);
 
     require(
-      numTokens.isGreaterThanOrEqual(mintParams.minNumTokens),
+      numTokens.rawValue >= mintParams.minNumTokens,
       'Number of tokens less than minimum limit'
     );
 
@@ -322,7 +320,7 @@ library SynthereumLiquidityPoolLib {
     ) = self.redeemCalculation(numTokens);
 
     require(
-      collateralAmount.isGreaterThanOrEqual(redeemParams.minCollateral),
+      collateralAmount.rawValue >= redeemParams.minCollateral,
       'Collateral amount less than minimum limit'
     );
 
@@ -372,7 +370,7 @@ library SynthereumLiquidityPoolLib {
     ) = self.exchangeCalculation(numTokens, exchangeParams.destPool);
 
     require(
-      destNumTokens.isGreaterThanOrEqual(exchangeParams.minDestNumTokens),
+      destNumTokens.rawValue >= exchangeParams.minDestNumTokens,
       'Number of destination tokens less than minimum limit'
     );
 
@@ -417,7 +415,7 @@ library SynthereumLiquidityPoolLib {
     self.checkPool(ISynthereumLiquidityPoolGeneral(msg.sender));
 
     // Sending amount must be different from 0
-    require(collateralAmount.isGreaterThan(0), 'Sending amount is equal to 0');
+    require(collateralAmount.rawValue > 0, 'Sending amount is equal to 0');
 
     // Collateral available
     FixedPoint.Unsigned memory unusedCollateral =
@@ -576,6 +574,7 @@ library SynthereumLiquidityPoolLib {
   ) external returns (uint256 feeClaimed) {
     // Fee to claim
     FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msg.sender];
+    feeClaimed = _feeClaimed.rawValue;
 
     // Check that fee is available
     require(_feeClaimed.isGreaterThanOrEqual(0), 'No fee to claim');
@@ -589,9 +588,8 @@ library SynthereumLiquidityPoolLib {
     feeStatus.totalFeeAmount = _totalRemainingFees;
 
     // Transfer amount to the sender
-    feeClaimed = _feeClaimed.rawValue;
 
-    self.collateralToken.safeTransfer(msg.sender, _feeClaimed.rawValue);
+    self.collateralToken.safeTransfer(msg.sender, feeClaimed);
 
     emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
   }
@@ -637,11 +635,9 @@ library SynthereumLiquidityPoolLib {
 
     // Check that in case of undercapitalization there is enough unused liquidity
     if (collateralInLiquidation.isGreaterThan(_collateralReceived)) {
-      rewardAmount = (
-        (collateralInLiquidation.sub(_collateralReceived))
-          .mul(liquidationData.liquidationReward)
-          .rawValue
-      );
+      rewardAmount = (collateralInLiquidation.sub(_collateralReceived))
+        .mul(liquidationData.liquidationReward)
+        .rawValue;
     } else if (
       _collateralReceived.sub(collateralInLiquidation).isGreaterThan(
         self.calculateUnusedCollateral(
@@ -733,12 +729,14 @@ library SynthereumLiquidityPoolLib {
     );
 
     // Make sure there is something for the user to settle
+    uint256 _userNumTokens = executeSettlement.userNumTokens.rawValue;
+
     require(
-      executeSettlement.userNumTokens.isGreaterThan(0) || isLiquidityProvider,
+      _userNumTokens > 0 || isLiquidityProvider,
       'Account has nothing to settle'
     );
 
-    if (executeSettlement.userNumTokens.isGreaterThan(0)) {
+    if (_userNumTokens > 0) {
       // Move synthetic tokens from the user to the pool
       // - This is because derivative expects the tokens to come from the sponsor address
       syntheticToken.safeTransferFrom(
@@ -885,9 +883,7 @@ library SynthereumLiquidityPoolLib {
   ) external {
     require(
       _overCollateralization.isGreaterThan(
-        liquidationData.collateralRequirement.sub(
-          FixedPoint.fromUnscaledUint(1)
-        )
+        liquidationData.collateralRequirement.sub(1)
       ),
       'Overcollateralization must be bigger than the Lp part of the collateral requirement'
     );
@@ -907,8 +903,8 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned calldata _liquidationReward
   ) external {
     require(
-      _liquidationReward.isGreaterThan(0) &&
-        _liquidationReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
+      _liquidationReward.rawValue > 0 &&
+        _liquidationReward.isLessThanOrEqual(1),
       'Liquidation reward must be between 0 and 100%'
     );
 
@@ -1074,7 +1070,7 @@ library SynthereumLiquidityPoolLib {
   ) internal {
     // Sending amount must be different from 0
     require(
-      executeMintParams.collateralAmount.isGreaterThan(0),
+      executeMintParams.collateralAmount.rawValue > 0,
       'Sending amount is equal to 0'
     );
 
@@ -1136,7 +1132,7 @@ library SynthereumLiquidityPoolLib {
   ) internal {
     // Sending amount must be different from 0
     require(
-      executeRedeemParams.numTokens.isGreaterThan(0),
+      executeRedeemParams.numTokens.rawValue > 0,
       'Sending amount is equal to 0'
     );
 
@@ -1187,7 +1183,7 @@ library SynthereumLiquidityPoolLib {
   ) internal {
     // Sending amount must be different from 0
     require(
-      executeExchangeParams.numTokens.isGreaterThan(0),
+      executeExchangeParams.numTokens.rawValue > 0,
       'Sending amount is equal to 0'
     );
 
@@ -1321,7 +1317,10 @@ library SynthereumLiquidityPoolLib {
     for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
       address feeRecipient = _feeData.feeRecipients[i];
       FixedPoint.Unsigned memory feeReceived =
-        feeAmount.mul(_feeData.feeProportions[i]).div(_totalFeeProportions);
+        FixedPoint.Unsigned(
+          (feeAmount.rawValue * _feeData.feeProportions[i]) /
+            _totalFeeProportions
+        );
       _feeGained[feeRecipient] = _feeGained[feeRecipient].add(feeReceived);
       feeCharged = feeCharged.add(feeReceived);
     }
@@ -1584,7 +1583,9 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned memory collateralReceived
   ) internal view returns (FixedPoint.Unsigned memory unusedCollateral) {
     // Collateral available
-    unusedCollateral = self.collateralToken.balanceOf(address(this)).sub(
+    FixedPoint.Unsigned memory actualBalance =
+      FixedPoint.Unsigned(self.collateralToken.balanceOf(address(this)));
+    unusedCollateral = actualBalance.sub(
       totalCollateral.add(totalFees).add(collateralReceived)
     );
   }
