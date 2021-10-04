@@ -17,6 +17,7 @@ import '../test/UtilsMock.sol';
 import '../test/DerivativeMock.sol';
 import '../test/PoolFactoryMock.sol';
 import '../test/PoolMock.sol';
+import '../test/PoolRegistryMock.sol';
 import '../oracle/common/interfaces/IPriceFeed.sol';
 import '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
 import '../oracle/chainlink/ChainlinkPriceFeed.sol';
