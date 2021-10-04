@@ -99,11 +99,15 @@ const Value = styled(Amount)`
   color: ${props => props.theme.text.secondary};
 `;
 
-const wrapper = (children: ReactNode) => (
-  <Value>
-    {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {children}
-  </Value>
-);
+const wrapper = (children: ReactNode) =>
+  children === '-.--' ? (
+    <Value>Loading…</Value>
+  ) : (
+    <Value>
+      {PRIMARY_STABLE_COIN_TEXT_SYMBOL}
+      {children}
+    </Value>
+  );
 export const AssetRow: FC<AssetRowProps> = ({
   asset,
   amount,
@@ -116,7 +120,8 @@ export const AssetRow: FC<AssetRowProps> = ({
     ) : (
       value && (
         <Value>
-          {PRIMARY_STABLE_COIN_TEXT_SYMBOL} {value.format(2)}
+          {PRIMARY_STABLE_COIN_TEXT_SYMBOL}
+          {value.format(2)}
         </Value>
       )
     );

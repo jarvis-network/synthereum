@@ -38,6 +38,7 @@ import { useChainlinkPriceFeed } from '@/utils/chainlinkPriceFeed';
 import { assertIsSupportedPoolVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import { FetchWalletBalancesOnNewBlock } from '@/utils/FetchWalletBalancesOnNewBlock';
 import { ExchangeContextProvider } from '@/utils/ExchangeContext';
+import { DEXValueContextProvider } from '@/components/DEXValue';
 
 const MainWrapper = styled.div`
   height: 100%;
@@ -106,7 +107,9 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
             <AuthProvider>
               <BlockNumberObservableContextProvider>
                 <MulticallContextProvider>
-                  <ExchangeContextProvider>{app}</ExchangeContextProvider>
+                  <DEXValueContextProvider>
+                    <ExchangeContextProvider>{app}</ExchangeContextProvider>
+                  </DEXValueContextProvider>
                 </MulticallContextProvider>
               </BlockNumberObservableContextProvider>
             </AuthProvider>

@@ -503,7 +503,7 @@ export function useV2Pairs(
             tokenB,
           }),
       ),
-    [tokens],
+    [tokens, networkId],
   );
 
   const addressIsContractCache = useReduxSelector(

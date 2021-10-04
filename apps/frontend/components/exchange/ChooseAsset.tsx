@@ -14,6 +14,7 @@ import {
   themeValue,
 } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { useMemo } from 'use-memo-one';
 
 import {
   setChooseAsset,
@@ -23,12 +24,11 @@ import {
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Asset, AssetWithWalletInfo } from '@/data/assets';
+import { useAssets } from '@/utils/useAssets';
 
-import { DEXValue } from '../DEXValue';
+import { DEXValueFromContext } from '../DEXValue';
 
 import { StyledSearchBar } from './StyledSearchBar';
-import { useAssets } from '@/utils/useAssets';
-import { useMemo } from 'use-memo-one';
 
 const tabsList = [
   {
@@ -37,9 +37,12 @@ const tabsList = [
   },
 ];
 
-const wrapper = (children: ReactNode) => (
-  <div className="dollars">$ {children}</div>
-);
+const wrapper = (children: ReactNode) =>
+  children === '-.--' ? (
+    <div className="dollars">Loading…</div>
+  ) : (
+    <div className="dollars">${children}</div>
+  );
 
 const grid = {
   columns: [
@@ -65,10 +68,14 @@ const grid = {
 
         const stableValue =
           !o.synthetic && !o.collateral ? (
-            <DEXValue asset={o} amount={o.ownedAmount} wrapper={wrapper} />
+            <DEXValueFromContext
+              asset={o}
+              amount={o.ownedAmount}
+              wrapper={wrapper}
+            />
           ) : (
             o.stableCoinValue && (
-              <div className="dollars">$ {o.stableCoinValue.format(2)}</div>
+              <div className="dollars">${o.stableCoinValue.format(2)}</div>
             )
           );
         return (
