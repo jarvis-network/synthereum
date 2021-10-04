@@ -2,7 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { ExchangeSelfMintingToken } from '@jarvis-network/synthereum-ts/dist/config';
 
-import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
+import {
+  networkSwitchAction,
+  logoutAction,
+  addressSwitchAction,
+} from '@jarvis-network/app-toolkit/dist/sharedActions';
 import { initialAppState } from '@/state/initialState';
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
@@ -29,10 +33,10 @@ const walletSlice = createSlice({
     [logoutAction.type]() {
       return initialState;
     },
-    [addressSwitch.type]() {
+    [addressSwitchAction.type]() {
       return initialState;
     },
-    [networkSwitch.type]() {
+    [networkSwitchAction.type]() {
       return initialState;
     },
   },

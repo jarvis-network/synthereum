@@ -56,36 +56,42 @@ export const priceFeedEpic: Epic<ReduxAction, ReduxAction> = (
           break;
       }
     }),
-    switchMapTo(interval$),
+    switchMapTo(
+      interval$!.pipe(
+        takeUntil(action$.pipe(filter(a => a.type === 'logout'))),
+      ),
+    ),
     switchMapTo(currentPairs),
     switchMap(pairs =>
       context$!.pipe(
         map(core => ({ core, pairs })),
         takeUntil(
           action$.pipe(
-            filter(
-              a => a.type === 'networkSwitch' || a.type === 'addressSwitch',
-            ),
+            filter(a => a.type === 'logout' || a.type === 'addressSwitch'),
           ),
         ),
       ),
     ),
-    filter(({ core }) => !!core.chainLinkPriceFeed),
+    filter(({ core }) => (core ? !!core.chainLinkPriceFeed : false)),
     switchMap(async ({ pairs, core }) => {
-      try {
-        return Object.fromEntries(
-          await Promise.all(
-            pairs.map(async p => [
-              p,
-              (await core.chainLinkPriceFeed!.getPrice(p))!,
-            ]),
-          ),
-        ) as SymbolPrice;
-      } catch (error) {
-        console.log('Unable to load prices');
-        return undefined;
+      if (core) {
+        try {
+          return Object.fromEntries(
+            await Promise.all(
+              pairs.map(async p => [
+                p,
+                (await core.chainLinkPriceFeed!.getPrice(p))!,
+              ]),
+            ),
+          ) as SymbolPrice;
+        } catch (error) {
+          console.log('Unable to load prices');
+          return undefined;
+        }
       }
+      return undefined;
     }),
+
     map(results => ({
       type: 'prices/setCurrentPrice',
       payload: results,

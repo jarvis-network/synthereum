@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   AccountSummary,
@@ -10,20 +10,25 @@ import {
 
 import { setTheme } from '@/state/slices/theme';
 import { State } from '@/state/initialState';
-import { useReduxSelector } from '@/state/useReduxSelector';
+import { avatar } from '@/utils/avatar';
+
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import { setAuthModalVisible } from '@/state/slices/app';
 import {
   formatWalletAddress,
   useAuth,
   usePrettyName,
+  useWeb3,
 } from '@jarvis-network/app-toolkit';
+import { networkIdToName } from '@jarvis-network/core-utils/dist/eth/networks';
 
 const UserHeader = (): JSX.Element => {
   const dispatch = useDispatch();
-  const auth = useReduxSelector(state => state.auth);
+  const { account: address, chainId: networkId } = useWeb3();
+
   const { logout } = useAuth();
-  const name = usePrettyName((auth?.address ?? null) as Address | null);
+  const name = usePrettyName((address ?? null) as Address | null);
+
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
   const notify = useNotifications();
@@ -52,35 +57,33 @@ const UserHeader = (): JSX.Element => {
         });
       }, 1000);
     }
-  }, [isSigningOut]);
+  }, [isSigningOut, notify]);
 
   const onHelp = () =>
     window.open('https://help.jarvis.exchange/en/', '_blank', 'noopener');
-
-  const getName = () => {
-    if (isSigningOut) {
-      return '';
-    }
-
-    return name || '';
-  };
 
   const getAddress = () => {
     if (isSigningOut) {
       return 'Signing out...';
     }
 
-    return auth ? formatWalletAddress(auth.address) : undefined;
+    return address ? formatWalletAddress(address) : undefined;
   };
 
-  const image = undefined; // @TODO fix mock
+  const image = useMemo(
+    () => (address && !isSigningOut ? avatar(address) : undefined),
+    [address, isSigningOut],
+  );
+
+  const networkProp = networkId ? networkIdToName[networkId as 1] : undefined;
 
   return (
     <AccountSummary
-      name={getName()}
+      name={isSigningOut ? '' : name || ''}
       wallet={getAddress()}
       image={image}
       menu={[]}
+      network={networkProp === 'mainnet' ? 'ethereum' : networkProp}
       contentOnTop={innerWidth <= 1080}
       onLogout={isSigningOut ? noop : handleLogOut}
       onLogin={isSigningOut ? noop : handleLogIn}

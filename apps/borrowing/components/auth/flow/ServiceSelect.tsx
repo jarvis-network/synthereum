@@ -63,33 +63,31 @@ const DiagonalIcons = styled.div`
 
 const Content = styled.div``;
 
-export const ServiceSelect: React.FC<PageProps> = ({ onNext }) => {
-  return (
-    <TutorialContent>
-      <ImgContainer>
-        <Img src="/images/service-statue.svg" alt="" />
-      </ImgContainer>
+export const ServiceSelect: React.FC<PageProps> = ({ onNext }) => (
+  <TutorialContent>
+    <ImgContainer>
+      <Img src="/images/service-statue.svg" alt="" />
+    </ImgContainer>
 
-      <Content>
-        <BigP>
-          <b>No account</b> needed!
-        </BigP>
+    <Content>
+      <BigP>
+        <b>No account</b> needed!
+      </BigP>
 
-        <TermsContainer>
-          <Btn inverted type="dark" onClick={onNext}>
-            <DiagonalIcons>
-              <img src="/images/ledger.svg" alt="" />
-              <img src="/images/metamask.svg" alt="" />
-            </DiagonalIcons>
-            <span>
-              Sign Up/In
-              <br />
-              <b>with your wallet</b>
-            </span>
-            <ChevronRight />
-          </Btn>
-        </TermsContainer>
-      </Content>
-    </TutorialContent>
-  );
-};
+      <TermsContainer>
+        <Btn inverted type="dark" onClick={onNext}>
+          <DiagonalIcons>
+            <img src="/images/ledger.svg" alt="" />
+            <img src="/images/metamask.svg" alt="" />
+          </DiagonalIcons>
+          <span>
+            Sign Up/In
+            <br />
+            <b>with your wallet</b>
+          </span>
+          <ChevronRight />
+        </Btn>
+      </TermsContainer>
+    </Content>
+  </TutorialContent>
+);

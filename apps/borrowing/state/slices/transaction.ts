@@ -1,10 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { addressSwitch, networkSwitch, logoutAction } from '../actions';
+import {
+  networkSwitchAction,
+  logoutAction,
+  addressSwitchAction,
+} from '@jarvis-network/app-toolkit/dist/sharedActions';
 
 import { initialAppState, OPType } from '../initialState';
 
-import { Action } from './auth';
+interface Action<T> {
+  payload: T;
+}
 
 const initialState = initialAppState.transaction;
 
@@ -85,10 +91,10 @@ const transactionSlice = createSlice({
     },
   },
   extraReducers: {
-    [addressSwitch.type]() {
+    [addressSwitchAction.type]() {
       return initialState;
     },
-    [networkSwitch.type]() {
+    [networkSwitchAction.type]() {
       return initialState;
     },
     [logoutAction.type]() {

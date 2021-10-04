@@ -46,7 +46,12 @@ export const walletEpic: Epic<ReduxAction, ReduxAction, MinimalState> = (
     filter(action => action.type === 'GET_WALLET_BALANCE'),
     switchMapTo(state$.pipe(map(state => state.markets.manageKey))),
     distinctUntilChanged(),
-    switchMap(symbol => interval$.pipe(mapTo(symbol))),
+    switchMap(symbol =>
+      interval$.pipe(
+        takeUntil(action$.pipe(filter(a => a.type === 'logout'))),
+        mapTo(symbol),
+      ),
+    ),
     switchMap(symbol =>
       context$!.pipe(
         map(context => ({ context, symbol })),
@@ -71,6 +76,7 @@ export const walletEpic: Epic<ReduxAction, ReduxAction, MinimalState> = (
         return undefined;
       }
     }),
+
     map(results => ({
       type: 'wallet/setWalletBalances',
       payload:

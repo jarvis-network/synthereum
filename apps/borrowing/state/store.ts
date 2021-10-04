@@ -16,7 +16,6 @@ import { dependencies } from '@jarvis-network/app-toolkit/dist/core-context';
 import { marketEpic } from '@jarvis-network/synthereum-ts/dist/epics/markets';
 import { createRealmAgentEpic } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/epic';
 import { walletEpic } from '@jarvis-network/synthereum-ts/dist/epics/wallet';
-import { realmEpic } from '@jarvis-network/synthereum-ts/dist/epics/core';
 
 let cachedStore: Store | undefined;
 
@@ -56,7 +55,6 @@ const initializeStore = (
     walletEpic,
     createRealmAgentEpic('CALL_REPAY'),
     createRealmAgentEpic('CALL_REDEEM'),
-    realmEpic,
     createRealmAgentEpic('CALL_DEPOSIT'),
     createRealmAgentEpic('CALL_WITHDRAW'),
     createRealmAgentEpic('CALL_APPROVE_WITHDRAW'),

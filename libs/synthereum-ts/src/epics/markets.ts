@@ -144,7 +144,11 @@ export const marketEpic: Epic<ReduxAction, ReduxAction> = (
           break;
       }
     }),
-    switchMapTo(interval$),
+    switchMapTo(
+      interval$!.pipe(
+        takeUntil(action$.pipe(filter(a => a.type === 'logout'))),
+      ),
+    ),
     switchMapTo(currentPairs),
     switchMap(_ =>
       context$!.pipe(
@@ -161,9 +165,12 @@ export const marketEpic: Epic<ReduxAction, ReduxAction> = (
       ),
     ),
 
-    switchMap(
-      async ({context}) => await getActiveMarkets(context), // eslint-disable-line
-    ),
+    switchMap(async ({ context }) => {
+      if (context) {
+        return await getActiveMarkets(context); // eslint-disable-line
+      }
+      return [];
+    }),
     map(results => ({
       type: 'markets/setMarketsList',
       payload: results,

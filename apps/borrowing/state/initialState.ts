@@ -1,17 +1,12 @@
 import { ThemeNameType } from '@jarvis-network/ui';
 import { cache } from '@jarvis-network/app-toolkit';
 import { SelfMintingMarketAssets } from '@/state/slices/markets';
-import { UserState } from 'bnc-onboard/dist/src/interfaces';
 import {
   ExchangeSelfMintingToken,
   SupportedSelfMintingPairExact,
 } from '@jarvis-network/synthereum-config';
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { PriceFeedSymbols } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
-
-export type AuthState =
-  | (Omit<UserState, 'wallet'> & { wallet: UserState['wallet']['name'] })
-  | null;
 
 export interface WalletInfo {
   amount: StringAmount;
@@ -27,7 +22,6 @@ export interface State {
     networkId: number;
     agentAddress: string | null;
   };
-  auth: AuthState;
   markets: {
     filterQuery: string | null;
     manageKey: SupportedSelfMintingPairExact | null;
@@ -71,7 +65,6 @@ export const initialAppState: State = {
     networkId: 0,
     agentAddress: null,
   },
-  auth: null,
   markets: {
     filterQuery: null,
     manageKey: null,

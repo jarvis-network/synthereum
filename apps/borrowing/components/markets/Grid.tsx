@@ -9,6 +9,7 @@ import { Market, SelfMintingMarketAssets } from '@/state/slices/markets';
 import _ from 'lodash';
 import { selfMintingMarketAssets } from '@/data/markets';
 import ContentLoader from 'react-content-loader';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 
 const Container = styled.div`
   width: 920px;
@@ -32,7 +33,7 @@ interface MarketsGridInnerProps {
 
 const MarketsGridInner = React.memo(
   ({ list, filterQuery }: MarketsGridInnerProps) => {
-    const auth = useReduxSelector(state => state.auth);
+    const { account: address } = useWeb3();
 
     const filteredList = filterQuery
       ? Object.values(list).filter(
@@ -50,7 +51,7 @@ const MarketsGridInner = React.memo(
 
     return (
       <Container>
-        {auth ? (
+        {address ? (
           <div>
             <MarketsRow
               key={`open-${Date.now()}`}
@@ -95,24 +96,22 @@ export const MarketsGrid: FC<MarketGridProps> = React.memo(({ markets }) => {
   );
 
   const isWindowLoaded = useReduxSelector(state => state.app.isWindowLoaded);
-  const auth = useReduxSelector(state => state.auth?.address);
-  const agentAddress = useReduxSelector(state => state.app.agentAddress);
+  const { account: address, library: web3, active } = useWeb3();
   const [show, setShow] = useState(false);
-  const list = _.isEmpty(loadedMarketList) ? markets : loadedMarketList;
+  let list = _.isEmpty(loadedMarketList) ? markets : loadedMarketList;
 
   useEffect(() => {
-    if (agentAddress && auth) {
-      if (agentAddress === auth) {
-        setShow(true);
-      }
-    }
-    if (_.isEmpty(auth)) {
+    if (address && active) {
       setShow(true);
     }
-    if (_.isEmpty(loadedMarketList) && !_.isEmpty(auth)) {
+    if (_.isEmpty(web3)) {
+      list = markets;
+      setShow(true);
+    }
+    if (_.isEmpty(loadedMarketList) && !_.isEmpty(address)) {
       setShow(false);
     }
-  }, [loadedMarketList, agentAddress, auth, isWindowLoaded]);
+  }, [loadedMarketList, address, web3, isWindowLoaded]);
   return (
     <div>
       {show ? (

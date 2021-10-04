@@ -17,7 +17,7 @@ export interface Context {
   realm: SelfMintingRealmWithWeb3<SupportedNetworkName> | null;
 }
 
-export const context$ = new BehaviorSubject<Context>({
+export const context$ = new BehaviorSubject<Context | null>({
   networkId: null,
   selfMintingRealmAgent: null,
   chainLinkPriceFeed: null,

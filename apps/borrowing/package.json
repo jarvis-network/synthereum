@@ -24,7 +24,7 @@
     "@jarvis-network/synthereum-ts": "*",
     "@jarvis-network/ui": "*",
     "@next/bundle-analyzer": "^11.1.3",
-    "bnc-onboard": "^1.30.0",
+    "ethereum-blockies": "^0.1.1",
     "luxon": "^2.0.2",
     "next": "^11.0.1",
     "next-pwa": "^5.2.24",

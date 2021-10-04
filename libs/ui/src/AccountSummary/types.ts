@@ -16,6 +16,7 @@ export interface AccountSummaryProps {
 
   // actions
   menu?: MenuDropdownLink[];
+  network?: string;
   mode?: AccountModeType;
 
   // handlers

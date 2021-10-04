@@ -12,6 +12,8 @@ import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { PriceFeedSymbols } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
 
+import { useWeb3 } from '@jarvis-network/app-toolkit';
+
 import {
   calculateGlobalCollateralizationRatio,
   calculateUserCollateralizationRatio,
@@ -165,7 +167,8 @@ export const MarketCard: FC<MarketCardProps> = ({
   const p = pair as SupportedSelfMintingPairExact;
   const { assetOut, assetIn } = selfMintingMarketAssets[p];
   const [buttonState, setButtonState] = useState<string>('closed');
-  const auth = useReduxSelector(state => state.auth);
+  const { account: address } = useWeb3();
+
   const collateralAsset = assetIn.name as PriceFeedSymbols;
   const collateralPrice = useReduxSelector(
     state => state.prices[collateralAsset],
@@ -198,19 +201,23 @@ export const MarketCard: FC<MarketCardProps> = ({
           {FPN.fromWei(liquidationRatio!).mul(FPN.toWei('100')).format(2)}%
         </DataListItem>
 
-        {auth && positionCollateral && positionCollateral.toString() !== '0' ? (
+        {address &&
+        positionCollateral &&
+        positionCollateral.toString() !== '0' ? (
           <DataListItem label="UCR ">
             {collateralPrice && ucr.format(2)}%
           </DataListItem>
         ) : null}
 
-        {auth && positionCollateral && positionCollateral.toString() !== '0' ? (
+        {address &&
+        positionCollateral &&
+        positionCollateral.toString() !== '0' ? (
           <DataListItem label="Collateral Deposited">
             {FPN.fromWei(positionCollateral!).format(2)}
           </DataListItem>
         ) : null}
 
-        {auth && positionTokens && positionTokens.toString() !== '0' ? (
+        {address && positionTokens && positionTokens.toString() !== '0' ? (
           <DataListItem label={`${assetOut.name} minted`}>
             {FPN.fromWei(positionTokens!).format(2)}
           </DataListItem>
@@ -227,7 +234,9 @@ export const MarketCard: FC<MarketCardProps> = ({
                 onMouseEnter={() => setButtonState('hover')}
                 onMouseLeave={() => setButtonState('closed')}
               >
-                {auth && positionTokens && positionTokens.toString() !== '0' ? (
+                {address &&
+                positionTokens &&
+                positionTokens.toString() !== '0' ? (
                   <ManageButton animate={buttonState}>
                     <ButtonContent>
                       <ButtonLabel>Manage</ButtonLabel>

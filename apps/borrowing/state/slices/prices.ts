@@ -2,8 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { PriceFeedSymbols } from '@jarvis-network/synthereum-ts/dist/epics/price-feed';
 
+import {
+  networkSwitchAction,
+  logoutAction,
+  addressSwitchAction,
+} from '@jarvis-network/app-toolkit/dist/sharedActions';
+
 import { initialAppState } from '../initialState';
-import { networkSwitch, logoutAction } from '../actions';
 
 const initialState = initialAppState.prices;
 interface SetCurrentPriceAction {
@@ -23,7 +28,10 @@ const priceSlice = createSlice({
     },
   },
   extraReducers: {
-    [networkSwitch.type]() {
+    [addressSwitchAction.type]() {
+      return initialState;
+    },
+    [networkSwitchAction.type]() {
       return initialState;
     },
     [logoutAction.type]() {

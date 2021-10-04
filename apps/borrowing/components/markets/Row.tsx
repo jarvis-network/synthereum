@@ -5,8 +5,7 @@ import { motion } from 'framer-motion';
 
 import { Market, setMarketsManageKey } from '@/state/slices/markets';
 import { MarketCard } from '@/components/markets/MarketCard';
-import { useReduxSelector } from '@/state/useReduxSelector';
-import { useAuth } from '@jarvis-network/app-toolkit';
+import { useAuth, useWeb3 } from '@jarvis-network/app-toolkit';
 import { SupportedSelfMintingPairExact } from '@jarvis-network/synthereum-config';
 
 const Container = styled.div`
@@ -36,14 +35,14 @@ interface MarketsRowProps {
 
 const MarketsRow: FC<MarketsRowProps> = ({ title, markets }) => {
   const dispatch = useDispatch();
-  const networkId = useReduxSelector(state => state.app.networkId);
+  const { chainId: networkId } = useWeb3();
   const { login } = useAuth();
   if (!markets.length) {
     return null;
   }
 
   const handleManageClick = (key: SupportedSelfMintingPairExact) => {
-    if (networkId > 0) {
+    if (networkId! > 0) {
       dispatch(setMarketsManageKey(key));
 
       dispatch({
@@ -52,7 +51,7 @@ const MarketsRow: FC<MarketsRowProps> = ({ title, markets }) => {
       });
       dispatch({ type: 'GET_MARKET_LIST', payload: key });
     } else {
-      login();
+      login('injected');
     }
   };
   return (

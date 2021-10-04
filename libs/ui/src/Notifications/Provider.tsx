@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo, useRef } from 'react';
 
 import { NotificationTypeWithOptions } from './types';
 import { NotificationsPlacement } from './Placement';
@@ -20,48 +20,39 @@ interface ShowNotificationFn {
   registerPlacement: RegisterPlacement;
 }
 
-export const NotificationsContext = createContext<
-  ShowNotificationFn | undefined
->(undefined);
+export const NotificationsContext = createContext<ShowNotificationFn | null>(
+  null,
+);
 
 export const NotificationsProvider: React.FC = ({ children }) => {
-  const [places, setPlaces] = useState<Record<string, AddFn>>({});
+  const placesRef = useRef<Record<string, AddFn>>({});
 
-  const showNotification: ShowNotificationFn = (
-    text,
-    type?,
-    placement = 'global',
-    time?,
-  ) => {
-    if (!places[placement]) {
-      throw new TypeError(`Place named ${placement} is not mounted.`);
-    }
+  const showNotification = useMemo(() => {
+    const sn = ((text, type?, placement = 'global', time?) => {
+      if (!placesRef.current[placement]) {
+        throw new TypeError(`Place named ${placement} is not mounted.`);
+      }
 
-    places[placement](text, type, time);
-  };
-  showNotification.registerPlacement = (name, fn) => {
-    setPlaces(p => {
+      placesRef.current[placement](text, type, time);
+    }) as ShowNotificationFn;
+
+    sn.registerPlacement = (name, fn) => {
       // overwrite may happen, it is by purpose, see below
-      const newPlaces = { ...p };
-      newPlaces[name] = fn;
-      return newPlaces;
-    });
+      placesRef.current[name] = fn;
 
-    return () => {
-      setPlaces(p => {
+      return () => {
         // check if not overwritten
         // this can actually happen while rendering the frontend (when switching
         // from desktop to mobile) - new instance of the component is mounted
         // before the old one calls the "unmount" callback
-        if (p[name] === fn) {
-          const newPlaces = { ...p };
-          delete newPlaces[name];
-          return newPlaces;
+        if (placesRef.current[name] === fn) {
+          delete placesRef.current[name];
         }
-        return p;
-      });
+      };
     };
-  };
+
+    return sn;
+  }, []);
 
   return (
     <NotificationsContext.Provider value={showNotification}>
@@ -71,4 +62,8 @@ export const NotificationsProvider: React.FC = ({ children }) => {
   );
 };
 
-export const useNotifications = () => useContext(NotificationsContext)!;
+export const useNotifications = (): ShowNotificationFn => {
+  const value = useContext(NotificationsContext);
+  if (!value) throw new Error('NotificationsContext not provided');
+  return value;
+};

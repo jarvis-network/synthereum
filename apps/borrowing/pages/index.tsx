@@ -16,9 +16,9 @@ import { SelfMintingMarketAssets } from '@/state/slices/markets';
 
 import { createContext } from '@jarvis-network/synthereum-ts/dist/epics/core';
 import { getActiveMarkets } from '@jarvis-network/synthereum-ts/dist/epics/markets';
-import { useReduxSelector } from '@/state/useReduxSelector';
 import { SelfMintingRealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/agent';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 
 const Layout = styled.div`
   display: flex;
@@ -61,10 +61,10 @@ const LayoutWidget = styled(Background)`
 
 const Home = ({ markets }: { markets: SelfMintingMarketAssets }) => {
   const dispatch = useDispatch();
-  const auth = useReduxSelector(state => state.auth?.address);
+  const { account: address, active } = useWeb3();
 
   useEffect(() => {
-    if (auth) {
+    if (address && active) {
       dispatch({
         type: 'transaction/reset',
       });
@@ -81,7 +81,7 @@ const Home = ({ markets }: { markets: SelfMintingMarketAssets }) => {
         payload: [...Object.keys(markets), 'UMA', 'USDC'],
       });
     }
-  }, [auth]);
+  }, [address, active]);
   useEffect(() => {
     function handleLoad() {
       setTimeout(() => dispatch(setWindowLoaded(true)), 250);

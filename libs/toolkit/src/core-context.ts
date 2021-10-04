@@ -19,9 +19,13 @@ export const newWeb3Context = async (web3: Web3On<SupportedNetworkId>) => {
 };
 
 export const onAddressUpdate = async (
-  address: AddressOn<SupportedNetworkName>,
+  address: AddressOn<SupportedNetworkName> | undefined,
 ) => {
-  context$.next(await updateAddress(address));
+  if (address) {
+    context$.next(await updateAddress(address));
+  } else {
+    context$.next(null);
+  }
 };
 
 export function emptyWeb3Context() {

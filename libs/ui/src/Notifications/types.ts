@@ -12,12 +12,8 @@ export type NotificationTypeWithOptions =
     };
 
 export interface Notification {
-  text: string;
-  type: NotificationTypeWithOptions;
-  time?: number;
-}
-
-export interface NotificationWithId extends Notification {
   time: number;
   id: string;
+  text: string;
+  type: NotificationTypeWithOptions;
 }

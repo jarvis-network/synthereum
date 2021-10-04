@@ -18,13 +18,23 @@ import {
 } from '@jarvis-network/ui';
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { UnsupportedChainIdError } from '@web3-react/core';
+import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
-import { usePrevious } from '../usePrevious';
+import {
+  SupportedNetworkId,
+  SupportedNetworkName,
+} from '@jarvis-network/synthereum-config/dist';
+
+import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
+
 import {
   logoutAction,
   networkSwitchAction,
   addressSwitchAction,
 } from '../sharedActions';
+
+import { usePrevious } from '../usePrevious';
+import { newWeb3Context, onAddressUpdate } from '../core-context';
 
 import { useAuth, weakMapConnectors, Connectors } from './AuthContext';
 import { WalletPicker } from './WalletPicker';
@@ -54,7 +64,6 @@ interface PageProps {
 type Page = React.ComponentClass<PageProps> | React.FC<PageProps>;
 
 type GetState<T> = T extends EnhancedStore<infer U> ? U : never;
-
 interface Props {
   appName: string;
   // eslint-disable-next-line react/require-default-props
@@ -69,6 +78,8 @@ interface Props {
   Welcome: Page;
   Terms: Page;
   ServiceSelect: Page;
+  // eslint-disable-next-line react/require-default-props
+  updateContext?: boolean;
 }
 
 export function AuthFlow<
@@ -82,6 +93,7 @@ export function AuthFlow<
   Welcome,
   Terms,
   ServiceSelect,
+  updateContext,
 }: Props): JSX.Element {
   const {
     error,
@@ -91,9 +103,7 @@ export function AuthFlow<
     library: web3,
     connector,
   } = useWeb3();
-
   const dispatch = useDispatch();
-
   const previousActive = usePrevious(active);
   useEffect(() => {
     if (active) {
@@ -109,7 +119,7 @@ export function AuthFlow<
 
     localStorage.removeItem('jarvis/auto-login');
     dispatch(logoutAction());
-  }, [active, previousActive, dispatch]);
+  }, [active, previousActive, dispatch, connector]);
 
   const previousNetworkId = usePrevious(networkId);
   useEffect(() => {
@@ -165,23 +175,47 @@ export function AuthFlow<
   useEffect(() => {
     // just logged in
     if (!previousNetworkId) {
-      if (address)
-        postNotificationRef.current('You have successfully signed in', {
-          type: NotificationType.success,
-          icon: '👍🏻',
-        });
+      if (address) {
+        const showNotification = () =>
+          postNotificationRef.current('You have successfully signed in', {
+            type: NotificationType.success,
+            icon: '👍🏻',
+          });
 
-      return;
+        if (updateContext) {
+          newWeb3Context(web3 as Web3On<SupportedNetworkId>).then(() => {
+            onAddressUpdate(address as AddressOn<SupportedNetworkName>);
+            showNotification();
+          });
+        } else {
+          showNotification();
+        }
+
+        return;
+      }
     }
     // just logged out
-    if (!networkId) return;
+    if (!networkId) {
+      if (updateContext) onAddressUpdate(undefined);
+      return;
+    }
     // address has changed
-    if (previousNetworkId === networkId) return;
+    if (previousNetworkId === networkId) {
+      if (updateContext) {
+        onAddressUpdate(address as AddressOn<SupportedNetworkName>);
+      }
+      return;
+    }
 
     postNotificationRef.current('You have switched your network', {
       type: NotificationType.success,
       icon: '⚡️',
     });
+    if (updateContext) {
+      newWeb3Context(web3 as Web3On<SupportedNetworkId>).then(() => {
+        onAddressUpdate(address as AddressOn<SupportedNetworkName>);
+      });
+    }
   }, [address, previousNetworkId, networkId]);
 
   useEffect(() => {
