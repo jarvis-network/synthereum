@@ -743,11 +743,12 @@ library PerpetualPositionManagerMultiPartyLib {
       positionManagerData.overCollateralization
     );
 
-    //calculate the potential liquidatable portion
+    // calculate the potential liquidatable portion
+    // if the minimum collateral is greaater than position collateral then the position is undercollateralized
     FixedPoint.Unsigned memory liquidatableTokens =
       thresholdValue.sub(collateral).isGreaterThan(0)
-        ? FixedPoint.fromUnscaledUint(0)
-        : thresholdValue.sub(collateral).div(oraclePrice);
+        ? thresholdValue.sub(collateral).div(oraclePrice)
+        : FixedPoint.fromUnscaledUint(0);
 
     return (collateral.isGreaterThan(thresholdValue), liquidatableTokens);
   }
