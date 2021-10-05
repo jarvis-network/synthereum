@@ -178,14 +178,15 @@ export async function logTransactionStatus<T, Net extends NetworkName>({
   confirmations?: number;
 }) {
   await once(promiEvent, 'sent');
-  log('  [1/4] Sending tx...');
+  log('  [1/3] Sending tx...');
 
-  await once(promiEvent, 'sending');
-  log('  [2/4] Tx sent. Waiting for hash...');
+  once(promiEvent, 'sending').then(() => {
+    log('  Tx sent. Waiting for hash...');
+  });
 
   const txHash = await once(promiEvent, 'transactionHash');
   log(
-    `  [3/4]: Tx hash: '${txHash}'. Waiting for ${confirmations} confirmations...`,
+    `  [2/3]: Tx hash: '${txHash}'. Waiting for ${confirmations} confirmations...`,
   );
 
   const [confirmation, receipt] = await once(
@@ -195,7 +196,7 @@ export async function logTransactionStatus<T, Net extends NetworkName>({
   );
   const { gasUsed, blockNumber } = receipt;
   log(
-    `  [4/4]: Tx confirmed ${confirmation} time(s). Gas used: ${gasUsed} | block number: ${blockNumber}`,
+    `  [3/3]: Tx confirmed ${confirmation} time(s). Gas used: ${gasUsed} | block number: ${blockNumber}`,
   );
 
   return receipt;
