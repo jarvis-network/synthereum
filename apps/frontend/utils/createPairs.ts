@@ -31,5 +31,9 @@ export const createPairs = (
     }, [])
     .filter(pair => pair.input.synthetic || pair.output.synthetic)
     .filter(
-      pair => pair.input.symbol !== 'WETH' && pair.output.symbol !== 'WETH',
+      pair =>
+        pair.input.symbol !== 'WETH' &&
+        pair.output.symbol !== 'WETH' &&
+        pair.input.symbol !== 'WMATIC' &&
+        pair.output.symbol !== 'WMATIC',
     );
