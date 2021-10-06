@@ -23,9 +23,6 @@ import {
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {PerpetualMultiPartyLib} from './PerpetualMultiPartyLib.sol';
 import {PerpetualMultiParty} from './PerpetualMultiParty.sol';
-import {
-  ContractCreator
-} from '@uma/core/contracts/oracle/implementation/ContractCreator.sol';
 import {Testable} from '@uma/core/contracts/common/implementation/Testable.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
@@ -39,7 +36,7 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
  * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
   we can enforce deployment configurations here.
  */
-contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
+contract PerpetutalMultiPartyCreator is Testable, Lockable {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
@@ -48,18 +45,13 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
     string syntheticName;
     string syntheticSymbol;
     address syntheticToken;
-    FixedPoint.Unsigned collateralRequirement;
-    FixedPoint.Unsigned disputeBondPct;
-    FixedPoint.Unsigned sponsorDisputeRewardPct;
-    FixedPoint.Unsigned disputerDisputeRewardPct;
+    FixedPoint.Unsigned overCollateralization;
+    FixedPoint.Unsigned liquidatorRewardPct;
     FixedPoint.Unsigned minSponsorTokens;
-    uint256 withdrawalLiveness;
-    uint256 liquidationLiveness;
     address excessTokenBeneficiary;
     uint8 version;
     ISelfMintingController.DaoFee daoFee;
     uint256 capMintAmount;
-    uint256 capDepositRatio;
   }
 
   // Address of Synthereum Finder
@@ -79,15 +71,13 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
 
   /**
    * @notice Constructs the Perpetual contract.
-   * @param _umaFinderAddress UMA protocol Finder used to discover other protocol contracts.
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
    * @param _timerAddress Contract that stores the current time in a testing environment.
    */
-  constructor(
-    address _umaFinderAddress,
-    address _synthereumFinder,
-    address _timerAddress
-  ) ContractCreator(_umaFinderAddress) Testable(_timerAddress) nonReentrant() {
+  constructor(address _synthereumFinder, address _timerAddress)
+    Testable(_timerAddress)
+    nonReentrant()
+  {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
@@ -137,14 +127,7 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
     );
     derivative = PerpetualMultiPartyLib.deploy(_convertParams(params));
 
-    _setControllerValues(
-      derivative,
-      params.daoFee,
-      params.capMintAmount,
-      params.capDepositRatio
-    );
-
-    _registerContract(new address[](0), address(derivative));
+    _setControllerValues(derivative, params.daoFee, params.capMintAmount);
 
     emit CreatedPerpetual(address(derivative), msg.sender);
 
@@ -167,11 +150,6 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
     constructorParams.positionManagerParams.timerAddress = timerAddress;
 
     // Enforce configuration constraints.
-    require(params.withdrawalLiveness != 0, 'Withdrawal liveness cannot be 0');
-    require(
-      params.liquidationLiveness != 0,
-      'Liquidation liveness cannot be 0'
-    );
     require(
       params.excessTokenBeneficiary != address(0),
       'Token Beneficiary cannot be 0x00'
@@ -179,19 +157,6 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
     require(
       params.daoFee.feeRecipient != address(0),
       'Fee recipient cannot be 0x00'
-    );
-    // We don't want perpetual deployers to be able to intentionally or unintentionally set
-    // liveness periods that could induce arithmetic overflow, but we also don't want
-    // to be opinionated about what livenesses are "correct", so we will somewhat
-    // arbitrarily set the liveness upper bound to 100 years (5200 weeks). In practice, liveness
-    // periods even greater than a few days would make the perpetual unusable for most users.
-    require(
-      params.withdrawalLiveness < 5200 weeks,
-      'Withdrawal liveness too large'
-    );
-    require(
-      params.liquidationLiveness < 5200 weeks,
-      'Liquidation liveness too large'
     );
 
     // Input from function call.
@@ -201,17 +166,12 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
       .collateralAddress;
     constructorParams.positionManagerParams.priceFeedIdentifier = params
       .priceFeedIdentifier;
-    constructorParams.liquidatableParams.collateralRequirement = params
-      .collateralRequirement;
-    constructorParams.liquidatableParams.disputeBondPct = params.disputeBondPct;
-    constructorParams.liquidatableParams.sponsorDisputeRewardPct = params
-      .sponsorDisputeRewardPct;
-    constructorParams.liquidatableParams.disputerDisputeRewardPct = params
-      .disputerDisputeRewardPct;
+    constructorParams.positionManagerParams.overCollateralization = params
+      .overCollateralization;
+    constructorParams.positionManagerParams.liquidatorRewardPct = params
+      .liquidatorRewardPct;
     constructorParams.positionManagerParams.minSponsorTokens = params
       .minSponsorTokens;
-    constructorParams.liquidatableParams.liquidationLiveness = params
-      .liquidationLiveness;
     constructorParams.positionManagerParams.excessTokenBeneficiary = params
       .excessTokenBeneficiary;
     constructorParams.positionManagerParams.version = params.version;
@@ -222,13 +182,11 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
    * @param daoFee The DAO fee that will be paid when interacting with the self-minting derivative
    * @param capMintAmount Cap on mint amount. How much synthetic tokens can be minted through a self-minting derivative.
    * This value is updatable
-   * @param capDepositRatio The cap set on the deposit ratio for a self-minting derivative. This value is updatable.
    */
   function _setControllerValues(
     address derivative,
     ISelfMintingController.DaoFee calldata daoFee,
-    uint256 capMintAmount,
-    uint256 capDepositRatio
+    uint256 capMintAmount
   ) internal {
     ISelfMintingController selfMintingController =
       ISelfMintingController(
@@ -243,10 +201,7 @@ contract PerpetutalMultiPartyCreator is ContractCreator, Testable, Lockable {
     inuptFee[0] = daoFee;
     uint256[] memory inputCapMint = new uint256[](1);
     inputCapMint[0] = capMintAmount;
-    uint256[] memory inputCapRatio = new uint256[](1);
-    inputCapRatio[0] = capDepositRatio;
     selfMintingController.setDaoFee(inputAddress, inuptFee);
     selfMintingController.setCapMintAmount(inputAddress, inputCapMint);
-    selfMintingController.setCapDepositRatio(inputAddress, inputCapRatio);
   }
 }

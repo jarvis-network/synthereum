@@ -26,15 +26,12 @@ contract DerivativeFactory is
 
   /**
    * @notice Constructs the SelfMintingDerivativeFactory contract
-   * @param _umaFinder UMA protocol Finder used to discover other protocol contracts.
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
    * @param _timerAddress Contract that stores the current time in a testing environment.
    */
-  constructor(
-    address _umaFinder,
-    address _synthereumFinder,
-    address _timerAddress
-  ) PerpetutalMultiPartyCreator(_umaFinder, _synthereumFinder, _timerAddress) {
+  constructor(address _synthereumFinder, address _timerAddress)
+    PerpetutalMultiPartyCreator(_synthereumFinder, _timerAddress)
+  {
     deploymentSignature = this.createPerpetual.selector;
   }
 
