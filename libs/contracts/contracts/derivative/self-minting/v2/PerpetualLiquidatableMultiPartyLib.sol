@@ -73,9 +73,12 @@ library PerpetualLiquidatableMultiPartyLib {
       maxTokensLiquidatable.isGreaterThan(numSynthTokens)
         ? numSynthTokens
         : maxTokensLiquidatable;
+
     FixedPoint.Unsigned memory collateralLiquidated =
       positionToLiquidate.reducePosition(globalPositionData, tokensToLiquidate);
 
+    FixedPoint.Unsigned memory liquidatorReward =
+      collateralLiquidated.mul(positionManagerData.liquidatorRewardPct);
     // burn tokens
     burnSyntheticTokens(
       sponsor,
@@ -83,14 +86,18 @@ library PerpetualLiquidatableMultiPartyLib {
       tokensToLiquidate.rawValue
     );
 
-    // pay sender with collateral unlocked + TODO rewards
+    // pay sender with collateral unlocked + rewards
     feePayerData.collateralCurrency.safeTransfer(
       msg.sender,
-      collateralLiquidated.rawValue
+      collateralLiquidated.add(liquidatorReward).rawValue
     );
 
-    // return values + TODO rewards
-    return (collateralLiquidated.rawValue, tokensToLiquidate.rawValue, 0);
+    // return values
+    return (
+      collateralLiquidated.rawValue,
+      tokensToLiquidate.rawValue,
+      liquidatorReward.rawValue
+    );
   }
 
   //----------------------------------------

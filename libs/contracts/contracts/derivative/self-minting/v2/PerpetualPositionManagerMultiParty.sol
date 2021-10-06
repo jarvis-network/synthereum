@@ -79,6 +79,7 @@ contract PerpetualPositionManagerMultiParty is
     bytes32 priceFeedIdentifier;
     FixedPoint.Unsigned minSponsorTokens;
     FixedPoint.Unsigned overCollateralization;
+    FixedPoint.Unsigned liquidatorRewardPct;
     address timerAddress;
     address excessTokenBeneficiary;
     uint8 version;
@@ -110,6 +111,8 @@ contract PerpetualPositionManagerMultiParty is
     bytes32 priceIdentifier;
     // Overcollateralization percentage
     FixedPoint.Unsigned overCollateralization;
+    // percentage of collateral liquidated as reward to liquidator
+    FixedPoint.Unsigned liquidatorRewardPct;
     // Minimum number of tokens in a sponsor's position.
     FixedPoint.Unsigned minSponsorTokens;
     // Expiry price pulled from Chainlink in the case of an emergency shutdown.
@@ -213,6 +216,12 @@ contract PerpetualPositionManagerMultiParty is
     //   ),
     //   'Collateral not whitelisted'
     // );
+
+    require(
+      _positionManagerData.overCollateralization.isGreaterThan(1),
+      'CR must be higher than 100%'
+    );
+
     positionManagerData.synthereumFinder = _positionManagerData
       .synthereumFinder;
     positionManagerData.tokenCurrency = BaseControlledMintableBurnableERC20(
@@ -220,6 +229,8 @@ contract PerpetualPositionManagerMultiParty is
     );
     positionManagerData.overCollateralization = _positionManagerData
       .overCollateralization;
+    positionManagerData.liquidatorRewardPct = _positionManagerData
+      .liquidatorRewardPct;
     positionManagerData.minSponsorTokens = _positionManagerData
       .minSponsorTokens;
     positionManagerData.priceIdentifier = _positionManagerData

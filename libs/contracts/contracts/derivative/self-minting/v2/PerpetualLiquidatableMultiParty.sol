@@ -37,24 +37,6 @@ contract PerpetualLiquidatableMultiParty is PerpetualPositionManagerMultiParty {
   using PerpetualLiquidatableMultiPartyLib for PerpetualPositionManagerMultiParty.PositionData;
   using PerpetualLiquidatableMultiPartyLib for LiquidationData;
 
-  // Because of the check in withdrawable(), the order of these enum values should not change.
-  enum Status {
-    Uninitialized,
-    PreDispute,
-    PendingDispute,
-    DisputeSucceeded,
-    DisputeFailed
-  }
-
-  // Store parameters for liquidation
-  struct LiquidatableParams {
-    uint256 liquidationLiveness;
-    FixedPoint.Unsigned collateralRequirement;
-    FixedPoint.Unsigned disputeBondPct;
-    FixedPoint.Unsigned sponsorDisputeRewardPct;
-    FixedPoint.Unsigned disputerDisputeRewardPct;
-  }
-
   struct LiquidationData {
     address sponsor;
     address liquidator;
@@ -68,21 +50,6 @@ contract PerpetualLiquidatableMultiParty is PerpetualPositionManagerMultiParty {
   struct ConstructorParams {
     // Params for PricelessPositionManager only
     PerpetualPositionManagerMultiParty.PositionManagerParams positionManagerParams;
-    // Params specifically for Liquidatable.
-    LiquidatableParams liquidatableParams;
-  }
-
-  // This struct is used in the `withdrawLiquidation` method that disperses liquidation and dispute rewards.
-  // `payToX` stores the total collateral to withdraw from the contract to pay X. This value might differ
-  // from `paidToX` due to precision loss between accounting for the `rawCollateral` versus the
-  // fee-adjusted collateral. These variables are stored within a struct to avoid the stack too deep error.
-  struct RewardsData {
-    FixedPoint.Unsigned payToSponsor;
-    FixedPoint.Unsigned payToLiquidator;
-    FixedPoint.Unsigned payToDisputer;
-    FixedPoint.Unsigned paidToSponsor;
-    FixedPoint.Unsigned paidToLiquidator;
-    FixedPoint.Unsigned paidToDisputer;
   }
 
   //----------------------------------------
@@ -115,35 +82,7 @@ contract PerpetualLiquidatableMultiParty is PerpetualPositionManagerMultiParty {
    */
   constructor(ConstructorParams memory params)
     PerpetualPositionManagerMultiParty(params.positionManagerParams)
-  {
-    require(
-      params.liquidatableParams.collateralRequirement.isGreaterThan(1),
-      'CR is more than 100%'
-    );
-
-    require(
-      params
-        .liquidatableParams
-        .sponsorDisputeRewardPct
-        .add(params.liquidatableParams.disputerDisputeRewardPct)
-        .isLessThan(1),
-      'Rewards are more than 100%'
-    );
-
-    // liquidatableData.liquidationLiveness = params
-    //   .liquidatableParams
-    //   .liquidationLiveness;
-    // liquidatableData.collateralRequirement = params
-    //   .liquidatableParams
-    //   .collateralRequirement;
-    // liquidatableData.disputeBondPct = params.liquidatableParams.disputeBondPct;
-    // liquidatableData.sponsorDisputeRewardPct = params
-    //   .liquidatableParams
-    //   .sponsorDisputeRewardPct;
-    // liquidatableData.disputerDisputeRewardPct = params
-    //   .liquidatableParams
-    //   .disputerDisputeRewardPct;
-  }
+  {}
 
   //----------------------------------------
   // External functions
