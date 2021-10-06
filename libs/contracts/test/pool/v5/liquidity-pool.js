@@ -11,6 +11,9 @@ const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 const SynthereumLiquidityPoolLib = artifacts.require(
   'SynthereumLiquidityPoolLib',
 );
+const SynthereumChainlinkPriceFeed = artifacts.require(
+  'SynthereumChainlinkPriceFeed',
+);
 const MockAggregator = artifacts.require('MockAggregator');
 const PoolRegistryMock = artifacts.require('PoolRegistryMock');
 
@@ -25,9 +28,11 @@ contract('LiquidityPool', function (accounts) {
   let liquidityPoolInstance;
   let liquidityPoolAddress;
   let aggregatorInstance;
+  let aggregatorInstanceAddress;
   let poolRegistryInstance;
   let poolRegistryAddress;
   let synthereumFinderInstance;
+  let priceFeedInstance;
   const version = 5;
   const admin = accounts[0];
   const maintainer = accounts[1];
@@ -63,6 +68,8 @@ contract('LiquidityPool', function (accounts) {
   const initialUserAllocation = web3Utils.toWei('500', 'mwei');
 
   const checkResult = async (
+    liquidityPool,
+    synthToken,
     user,
     userCollBalance,
     userSynthBalance,
@@ -80,43 +87,43 @@ contract('LiquidityPool', function (accounts) {
       'Wrong user collateral balance',
     );
     assert.equal(
-      (await synthTokenInstance.balanceOf.call(user)).toString(),
+      (await synthToken.balanceOf.call(user)).toString(),
       userSynthBalance,
       'Wrong user synth token balance',
     );
     assert.equal(
-      (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+      (await liquidityPool.totalAvailableLiquidity.call()).toString(),
       unusedLiquidity,
       'Wrong available liquidity',
     );
     assert.equal(
-      (await liquidityPoolInstance.totalCollateralAmount.call()).toString(),
+      (await liquidityPool.totalCollateralAmount.call()).toString(),
       totCollateralAmount,
       'Wrong total collateral amount',
     );
     assert.equal(
-      (await liquidityPoolInstance.totalSyntheticTokens.call()).toString(),
+      (await liquidityPool.totalSyntheticTokens.call()).toString(),
       totSyntheticTokens,
       'Wrong total synthetic tokens amount',
     );
     assert.equal(
-      (await liquidityPoolInstance.totalFeeAmount.call()).toString(),
+      (await liquidityPool.totalFeeAmount.call()).toString(),
       totFees,
       'Wrong total fee amount',
     );
     assert.equal(
-      (await liquidityPoolInstance.userFee.call(liquidityProvider)).toString(),
+      (await liquidityPool.userFee.call(liquidityProvider)).toString(),
       lpFees,
       'Wrong Lp fee amount',
     );
     assert.equal(
-      (await liquidityPoolInstance.userFee.call(DAO)).toString(),
+      (await liquidityPool.userFee.call(DAO)).toString(),
       daoFees,
       'Wrong Dao fee amount',
     );
     assert.equal(
       (
-        await collateralInstance.balanceOf.call(liquidityPoolAddress)
+        await collateralInstance.balanceOf.call(liquidityPool.address)
       ).toString(),
       totCollateralInThePool,
       'Total collateral in the pool amount',
@@ -161,8 +168,17 @@ contract('LiquidityPool', function (accounts) {
     );
     await collateralInstance.allocateTo(firstUser, initialUserAllocation);
     await collateralInstance.allocateTo(secondUser, initialUserAllocation);
-    aggregatorInstance = await MockAggregator.deployed();
-    await aggregatorInstance.updateAnswer(web3Utils.toWei('120', 'mwei'));
+    priceFeedInstance = await SynthereumChainlinkPriceFeed.deployed();
+    aggregatorInstance = await MockAggregator.new(
+      8,
+      web3Utils.toWei('120', 'mwei'),
+    );
+    aggregatorInstanceAddress = aggregatorInstance.address;
+    await priceFeedInstance.setAggregator(
+      priceFeedIdentifier,
+      aggregatorInstanceAddress,
+      { from: maintainer },
+    );
     poolRegistryInstance = await PoolRegistryMock.new();
     poolRegistryAddress = poolRegistryInstance.address;
     synthereumFinderInstance = await SynthereumFinder.deployed();
@@ -453,6 +469,8 @@ contract('LiquidityPool', function (accounts) {
         );
       });
       await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
         firstUser,
         web3Utils
           .toBN(actualUserCollBalance)
@@ -725,6 +743,8 @@ contract('LiquidityPool', function (accounts) {
         );
       });
       await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
         secondUser,
         web3Utils
           .toBN(actualUserCollBalance)
@@ -852,7 +872,7 @@ contract('LiquidityPool', function (accounts) {
         'Transaction expired',
       );
     });
-    it('Can revert if no collateral amount is sent', async () => {
+    it('Can revert if no synthetic tokens are sent', async () => {
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
       const redeeemOperation = {
@@ -869,7 +889,7 @@ contract('LiquidityPool', function (accounts) {
         'Sending tokens amount is equal to 0',
       );
     });
-    it('Revert if position becomes undercapitalized', async () => {
+    it('Can revert if position becomes undercapitalized', async () => {
       await aggregatorInstance.updateAnswer(web3Utils.toWei('160', 'mwei'));
       const synthTokens = web3Utils.toWei('50');
       const collateralAmount = web3Utils.toWei('79.84', 'mwei');
@@ -892,7 +912,7 @@ contract('LiquidityPool', function (accounts) {
         'Position undercapitalized',
       );
     });
-    it('Revert if trying to redeem more token than ones generated by the pool', async () => {
+    it('Can revert if trying to redeem more token than ones generated by the pool', async () => {
       const synthTokens = web3Utils.toWei('150');
       await synthTokenInstance.addMinter(admin, { from: admin });
       await synthTokenInstance.mint(secondUser, synthTokens, { from: admin });
@@ -914,6 +934,294 @@ contract('LiquidityPool', function (accounts) {
         liquidityPoolInstance.redeem(redeeemOperation, {
           from: secondUser,
         }),
+      );
+    });
+  });
+
+  describe('Should exchange synthetic tokens', async () => {
+    let destSynthTokenInstance;
+    let destSynthTokenAddress;
+    let destLiquidityPoolInstance;
+    let destLiquidityPoolAddress;
+    let destAggregatorInstance;
+    let destAggregatorAddress;
+    const destSynthTokenSymbol = 'jGBP';
+    const destPriceFeedIdentifier = web3Utils.padRight(
+      web3Utils.toHex('GBP/USD'),
+      64,
+    );
+    const destOverCollateralization = web3Utils.toWei('0.15');
+    const sourceRate = web3Utils.toWei('130', 'mwei');
+    const destRate = web3Utils.toWei('160', 'mwei');
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('240', 'mwei');
+      const totSynthTokens = web3Utils.toWei('199.6');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+      destSynthTokenInstance = await await MintableBurnableSyntheticTokenPermit.new(
+        'Jarvis Synthetic Sterlin',
+        destSynthTokenSymbol,
+        18,
+        { from: admin },
+      );
+      destSynthTokenAddress = destSynthTokenInstance.address;
+      destAggregatorInstance = await MockAggregator.new(8, destRate);
+      destAggregatorAddress = destAggregatorInstance.address;
+      await priceFeedInstance.setAggregator(
+        destPriceFeedIdentifier,
+        destAggregatorAddress,
+        { from: maintainer },
+      );
+      destLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        finderAddress,
+        version,
+        collateralAddress,
+        destSynthTokenAddress,
+        roles,
+        destOverCollateralization,
+        fee,
+        destPriceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+      );
+      destLiquidityPoolAddress = destLiquidityPoolInstance.address;
+      await destSynthTokenInstance.addMinter(destLiquidityPoolAddress, {
+        from: admin,
+      });
+      await destSynthTokenInstance.addBurner(destLiquidityPoolAddress, {
+        from: admin,
+      });
+      await collateralInstance.allocateTo(
+        destLiquidityPoolAddress,
+        initialPoolAllocation,
+      );
+      await poolRegistryInstance.register(
+        destSynthTokenSymbol,
+        collateralAddress,
+        version,
+        destLiquidityPoolAddress,
+      );
+      await aggregatorInstance.updateAnswer(sourceRate);
+    });
+    it('Can exchange in the correct way', async () => {
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const totalCollateralAmount = web3Utils.toWei('65', 'mwei');
+      const collateralAmount = web3Utils.toWei('64.87', 'mwei');
+      const feeAmount = web3Utils.toWei('0.13', 'mwei');
+      const daoFee = web3Utils.toWei('0.065', 'mwei');
+      const lpFee = web3Utils.toWei('0.065', 'mwei');
+      const destOverCollateralAmount = web3Utils
+        .toBN(destOverCollateralization)
+        .mul(web3Utils.toBN(collateralAmount))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const actualUserCollBalance = await collateralInstance.balanceOf.call(
+        firstUser,
+      );
+      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
+        firstUser,
+      );
+      const destTotalCollateralPosition = await destLiquidityPoolInstance.totalCollateralAmount.call();
+      const destTotalSynthTokensInPool = await destLiquidityPoolInstance.totalSyntheticTokens.call();
+      const destActualUserSynthBalance = await destSynthTokenInstance.balanceOf.call(
+        firstUser,
+      );
+      const redeemRatio =
+        Decimal(synthTokens.toString())
+          .div(Decimal(totalSynthTokensInPool.toString()))
+          .toFixed(18) * Math.pow(10, 18);
+      const freedCollateral = web3Utils
+        .toBN(totalCollateralPosition)
+        .mul(web3Utils.toBN(redeemRatio))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .sub(web3Utils.toBN(totalCollateralAmount));
+      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
+      const totalLpAmount = await liquidityPoolInstance.userFee.call(
+        liquidityProvider,
+      );
+      const totalDaoAmount = await liquidityPoolInstance.userFee.call(DAO);
+      const totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      const destAvailableLiquidity = await destLiquidityPoolInstance.totalAvailableLiquidity.call();
+      const destTotalFeeAmount = await destLiquidityPoolInstance.totalFeeAmount.call();
+      const destTotalLpAmount = await destLiquidityPoolInstance.userFee.call(
+        liquidityProvider,
+      );
+      const destTotalDaoAmount = await destLiquidityPoolInstance.userFee.call(
+        DAO,
+      );
+      const destTotalPoolBalance = await collateralInstance.balanceOf.call(
+        destLiquidityPoolAddress,
+      );
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      const exchangeTx = await liquidityPoolInstance.exchange(
+        exchangeOperation,
+        {
+          from: firstUser,
+        },
+      );
+      console.log(
+        'Gas used for inital exchange: ' + exchangeTx.receipt.gasUsed,
+      );
+      truffleAssert.eventEmitted(exchangeTx, 'Exchange', ev => {
+        return (
+          ev.account == firstUser &&
+          ev.destPool == destLiquidityPoolAddress &&
+          ev.numTokensSent == synthTokens &&
+          ev.destNumTokensReceived == destNumTokens.toString() &&
+          ev.feePaid == feeAmount &&
+          ev.recipient == firstUser
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        firstUser,
+        web3Utils.toBN(actualUserCollBalance),
+        web3Utils
+          .toBN(actualUserSynthBalance)
+          .sub(web3Utils.toBN(synthTokens))
+          .toString(),
+        web3Utils.toBN(availableLiquidity).add(freedCollateral).toString(),
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .sub(web3Utils.toBN(totalCollateralAmount))
+          .sub(web3Utils.toBN(freedCollateral))
+          .toString(),
+        web3Utils
+          .toBN(totalSynthTokensInPool)
+          .sub(web3Utils.toBN(synthTokens))
+          .toString(),
+        web3Utils
+          .toBN(totalFeeAmount)
+          .add(web3Utils.toBN(feeAmount))
+          .toString(),
+        web3Utils.toBN(totalLpAmount).add(web3Utils.toBN(lpFee)).toString(),
+        web3Utils.toBN(totalDaoAmount).add(web3Utils.toBN(daoFee)).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(collateralAmount))
+          .toString(),
+      );
+      await checkResult(
+        destLiquidityPoolInstance,
+        destSynthTokenInstance,
+        firstUser,
+        web3Utils.toBN(actualUserCollBalance),
+        web3Utils
+          .toBN(destActualUserSynthBalance)
+          .add(destNumTokens)
+          .toString(),
+        web3Utils
+          .toBN(destAvailableLiquidity)
+          .sub(web3Utils.toBN(destOverCollateralAmount))
+          .toString(),
+        web3Utils
+          .toBN(destTotalCollateralPosition)
+          .add(web3Utils.toBN(destOverCollateralAmount))
+          .add(web3Utils.toBN(collateralAmount))
+          .toString(),
+        web3Utils
+          .toBN(destTotalSynthTokensInPool)
+          .add(destNumTokens)
+          .toString(),
+        web3Utils.toBN(destTotalFeeAmount).toString(),
+        web3Utils.toBN(destTotalLpAmount).toString(),
+        web3Utils.toBN(destTotalDaoAmount).toString(),
+        web3Utils
+          .toBN(destTotalPoolBalance)
+          .add(web3Utils.toBN(collateralAmount))
+          .toString(),
+      );
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      const secondExchangeTx = await liquidityPoolInstance.exchange(
+        exchangeOperation,
+        {
+          from: firstUser,
+        },
+      );
+      console.log(
+        'Gas used for standard exchange: ' + secondExchangeTx.receipt.gasUsed,
+      );
+    });
+    it('Can exchange in the correct way and redirect tokens to a different address', async () => {
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const destActualUserSynthBalance = await destSynthTokenInstance.balanceOf.call(
+        secondUser,
+      );
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: secondUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await liquidityPoolInstance.exchange(exchangeOperation, {
+        from: firstUser,
+      });
+      assert.equal(
+        (await destSynthTokenInstance.balanceOf.call(secondUser)).toString(),
+        web3Utils
+          .toWei(destActualUserSynthBalance)
+          .add(destNumTokens)
+          .toString(),
+        'Wrong destination synthetic balance',
       );
     });
   });
