@@ -619,15 +619,15 @@ function useExchangeValues() {
         ? shouldSwapAndMint
           ? calcRate(
               // Precision will be decreased inside of `calcRate` because the second argument is divided to the first one and both have increased precision
-              new FPN(1).increasePrecision().div(executionPrice),
               assetReceivePrice &&
                 new FPN(1).increasePrecision().div(assetReceivePrice),
+              new FPN(1).increasePrecision().div(executionPrice),
             )
           : calcRate(
               // Precision will be decreased inside of `calcRate` because the second argument is divided to the first one and both have increased precision
+              executionPrice.increasePrecision(),
               assetPayPrice &&
                 new FPN(1).increasePrecision().div(assetPayPrice),
-              executionPrice.increasePrecision(),
             )
         : null
       : rate;
