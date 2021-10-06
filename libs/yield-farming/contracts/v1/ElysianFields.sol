@@ -138,10 +138,10 @@ contract ElysianFields is Ownable {
     massUpdatePools();
     uint256 tempTotalAllocPoints = totalAllocPoints;
     for (uint256 j = 0; j < _pids.length; j++) {
-      poolInfo[_pids[j]].allocPoint = _allocPoints[j];
       tempTotalAllocPoints = tempTotalAllocPoints
         .sub(poolInfo[_pids[j]].allocPoint)
         .add(_allocPoints[j]);
+      poolInfo[_pids[j]].allocPoint = _allocPoints[j];
     }
     totalAllocPoints = tempTotalAllocPoints;
   }
