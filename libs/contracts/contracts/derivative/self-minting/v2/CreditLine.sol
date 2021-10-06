@@ -1,30 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
+import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
-import {
-  IdentifierWhitelistInterface
-} from '@uma/core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
-import {
-  AddressWhitelistInterface
-} from '@uma/core/contracts/common/interfaces/AddressWhitelistInterface.sol';
-import {
-  AdministrateeInterface
-} from '@uma/core/contracts/oracle/interfaces/AdministrateeInterface.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from '../common/interfaces/ISelfMintingDerivativeDeployment.sol';
-import {
-  OracleInterface
-} from '@uma/core/contracts/oracle/interfaces/OracleInterface.sol';
-import {
-  OracleInterfaces
-} from '@uma/core/contracts/oracle/implementation/Constants.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
@@ -33,9 +19,7 @@ import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {
-  PerpetualPositionManagerMultiPartyLib
-} from './PerpetualPositionManagerMultiPartyLib.sol';
+import {SynthereumCreditLineLib} from './CreditLineLib.sol';
 import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {FeePayerParty} from '../../common/FeePayerParty.sol';
 
@@ -44,16 +28,17 @@ import {FeePayerParty} from '../../common/FeePayerParty.sol';
  * @notice Handles positions for multiple sponsors in an optimistic (i.e., priceless) way without relying
  * on a price feed. On construction, deploys a new ERC20, managed by this contract, that is the synthetic token.
  */
-contract PerpetualPositionManagerMultiParty is
+contract SynthereumCreditLine is
   ISelfMintingDerivativeDeployment,
+  ICreditLineStorage,
   FeePayerParty
 {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
-  using PerpetualPositionManagerMultiPartyLib for PositionData;
-  using PerpetualPositionManagerMultiPartyLib for PositionManagerData;
+  using SynthereumCreditLineLib for ICreditLineStorage.PositionData;
+  using SynthereumCreditLineLib for ICreditLineStorage.PositionManagerData;
   using FeePayerPartyLib for FixedPoint.Unsigned;
 
   /**
@@ -86,51 +71,15 @@ contract PerpetualPositionManagerMultiParty is
     ISynthereumFinder synthereumFinder;
   }
 
-  // Represents a single sponsor's position. All collateral is held by this contract.
-  // This struct acts as bookkeeping for how much of that collateral is allocated to each sponsor.
-  struct PositionData {
-    FixedPoint.Unsigned tokensOutstanding;
-    FixedPoint.Unsigned rawCollateral;
-  }
-
-  struct GlobalPositionData {
-    // Keep track of the total collateral and tokens across all positions to enable calculating the
-    // global collateralization ratio without iterating over all positions.
-    FixedPoint.Unsigned totalTokensOutstanding;
-    // Similar to the rawCollateral in PositionData, this value should not be used directly.
-    //_getFeeAdjustedCollateral(), _addCollateral() and _removeCollateral() must be used to access and adjust.
-    FixedPoint.Unsigned rawTotalPositionCollateral;
-  }
-
-  struct PositionManagerData {
-    // SynthereumFinder contract
-    ISynthereumFinder synthereumFinder;
-    // Synthetic token created by this contract.
-    BaseControlledMintableBurnableERC20 tokenCurrency;
-    // Unique identifier for DVM price feed ticker.
-    bytes32 priceIdentifier;
-    // Overcollateralization percentage
-    FixedPoint.Unsigned overCollateralization;
-    // percentage of collateral liquidated as reward to liquidator
-    FixedPoint.Unsigned liquidatorRewardPct;
-    // Minimum number of tokens in a sponsor's position.
-    FixedPoint.Unsigned minSponsorTokens;
-    // Expiry price pulled from Chainlink in the case of an emergency shutdown.
-    FixedPoint.Unsigned emergencyShutdownPrice;
-    // Timestamp used in case of emergency shutdown.
-    uint256 emergencyShutdownTimestamp;
-    // The excessTokenBeneficiary of any excess tokens added to the contract.
-    address excessTokenBeneficiary;
-    // Version of the self-minting derivative
-    uint8 version;
-  }
-
   //----------------------------------------
   // Storage
   //----------------------------------------
 
   // Maps sponsor addresses to their positions. Each sponsor can have only one position.
   mapping(address => PositionData) public positions;
+
+  // Liquidations are unique by ID per sponsor
+  mapping(address => LiquidationData[]) public liquidations;
 
   GlobalPositionData public globalPositionData;
 
@@ -167,6 +116,14 @@ contract PerpetualPositionManagerMultiParty is
     address indexed caller,
     uint256 indexed collateralReturned,
     uint256 indexed tokensBurned
+  );
+  event Liquidation(
+    address indexed sponsor,
+    address indexed liquidator,
+    uint256 liquidatedTokens,
+    uint256 liquidatedCollateral,
+    uint256 collateralReward,
+    uint256 liquidationTime
   );
 
   //----------------------------------------
@@ -417,8 +374,7 @@ contract PerpetualPositionManagerMultiParty is
       msg.sender ==
         positionManagerData.synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.Manager
-        ) ||
-        msg.sender == _getFinancialContractsAdminAddress(),
+        ),
       'Caller must be a Synthereum manager or the UMA governor'
     );
     // store timestamp and last price
@@ -442,8 +398,87 @@ contract PerpetualPositionManagerMultiParty is
     );
   }
 
-  /** @notice Remargin function
+  function liquidate(
+    address sponsor,
+    FixedPoint.Unsigned calldata maxTokensToLiquidate
+  )
+    external
+    fees()
+    notEmergencyShutdown()
+    nonReentrant()
+    returns (
+      uint256 tokensLiquidated,
+      uint256 collateralLiquidated,
+      uint256 collateralReward
+    )
+  {
+    // Retrieve Position data for sponsor
+    PositionData storage positionToLiquidate = _getPositionData(sponsor);
+
+    // try to liquidate it - reverts if is properly collateralised
+    (
+      collateralLiquidated,
+      tokensLiquidated,
+      collateralReward
+    ) = positionToLiquidate.liquidate(
+      positionManagerData,
+      globalPositionData,
+      feePayerData,
+      sponsor,
+      maxTokensToLiquidate
+    );
+
+    // store new liquidation
+    liquidations[sponsor].push(
+      LiquidationData(
+        sponsor,
+        msg.sender,
+        getCurrentTime(),
+        tokensLiquidated,
+        collateralLiquidated
+      )
+    );
+
+    emit Liquidation(
+      sponsor,
+      msg.sender,
+      collateralLiquidated,
+      tokensLiquidated,
+      collateralReward,
+      getCurrentTime()
+    );
+  }
+
+  /**
+   * @notice Gets an array of liquidations performed on a token sponsor
+   * @param sponsor address of the TokenSponsor.
+   * @return liquidationData An array of data for all liquidations performed on a token sponsor
    */
+  function getLiquidations(address sponsor)
+    external
+    view
+    nonReentrantView()
+    returns (LiquidationData[] memory liquidationData)
+  {
+    return liquidations[sponsor];
+  }
+
+  /** @notice A helper function for getLiquidationData function
+   */
+  function getLiquidationData(address sponsor, uint256 liquidationId)
+    external
+    view
+    nonReentrantView()
+    returns (LiquidationData memory liquidation)
+  {
+    LiquidationData[] memory liquidationArray = liquidations[sponsor];
+    // Revert if the caller is attempting to access an invalid liquidation
+    // (one that has never been created or one has never been initialized).
+    require(liquidationId < liquidationArray.length, 'Invalid liquidation ID');
+    return liquidationArray[liquidationId];
+  }
+
+  // TODO remove with removal of fee payer
   function remargin() external override {
     return;
   }
@@ -689,38 +724,6 @@ contract PerpetualPositionManagerMultiParty is
     return positions[sponsor];
   }
 
-  /** @notice Get a whitelisted price feed implementation from the Finder contract for a self-minting derivative
-   * @return IdentifierWhitelistInterface Address of the whitelisted identifier
-   */
-  function _getIdentifierWhitelist()
-    internal
-    view
-    returns (IdentifierWhitelistInterface)
-  {
-    return
-      IdentifierWhitelistInterface(
-        feePayerData.finder.getImplementationAddress(
-          OracleInterfaces.IdentifierWhitelist
-        )
-      );
-  }
-
-  /** @notice Get a whitelisted collateralCurrency address from the Finder contract for a self-minting derivative
-   * @return AddressWhitelistInterface Address of the whitelisted collateralCurrency
-   */
-  function _getCollateralWhitelist()
-    internal
-    view
-    returns (AddressWhitelistInterface)
-  {
-    return
-      AddressWhitelistInterface(
-        feePayerData.finder.getImplementationAddress(
-          OracleInterfaces.CollateralWhitelist
-        )
-      );
-  }
-
   /** @notice Get the collateral for a position of a token sponsor on a self-minting derivative if any
    * or return that this token sponsor does not have such a position
    * @param sponsor Address of the token sponsor to check
@@ -751,18 +754,5 @@ contract PerpetualPositionManagerMultiParty is
       positionManagerData.emergencyShutdownTimestamp != 0,
       'Contract not emergency shutdown'
     );
-  }
-
-  /** @notice Gets the financial contract admin address
-   */
-  function _getFinancialContractsAdminAddress()
-    internal
-    view
-    returns (address)
-  {
-    return
-      feePayerData.finder.getImplementationAddress(
-        OracleInterfaces.FinancialContractsAdmin
-      );
   }
 }

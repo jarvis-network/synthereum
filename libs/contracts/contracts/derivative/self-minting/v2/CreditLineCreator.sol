@@ -10,19 +10,10 @@ import {
 } from '../common/interfaces/ISelfMintingController.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
-  FinderInterface
-} from '@uma/core/contracts/oracle/interfaces/FinderInterface.sol';
-import {
-  IdentifierWhitelistInterface
-} from '@uma/core/contracts/oracle/interfaces/IdentifierWhitelistInterface.sol';
-import {
-  OracleInterfaces
-} from '@uma/core/contracts/oracle/implementation/Constants.sol';
-import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {PerpetualMultiPartyLib} from './PerpetualMultiPartyLib.sol';
-import {PerpetualMultiParty} from './PerpetualMultiParty.sol';
+import {SynthereumCreditLineLib} from './CreditLineLib.sol';
+import {SynthereumCreditLine} from './CreditLine.sol';
 import {Testable} from '@uma/core/contracts/common/implementation/Testable.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
@@ -36,7 +27,7 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
  * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
   we can enforce deployment configurations here.
  */
-contract PerpetutalMultiPartyCreator is Testable, Lockable {
+contract SynthereumCreditLineCreator is Testable, Lockable {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
@@ -125,7 +116,8 @@ contract PerpetutalMultiPartyCreator is Testable, Lockable {
       tokenCurrency.decimals() == uint8(18),
       'Decimals of synthetic token must be 18'
     );
-    derivative = PerpetualMultiPartyLib.deploy(_convertParams(params));
+    derivative = address(new SynthereumCreditLine(_convertParams(params)));
+    // derivative = PerpetualMultiPartyLib.deploy(_convertParams(params));
 
     _setControllerValues(derivative, params.daoFee, params.capMintAmount);
 
@@ -142,12 +134,14 @@ contract PerpetutalMultiPartyCreator is Testable, Lockable {
   function _convertParams(Params calldata params)
     internal
     view
-    returns (PerpetualMultiParty.ConstructorParams memory constructorParams)
+    returns (
+      SynthereumCreditLine.PositionManagerParams memory constructorParams
+    )
   {
     // Known from creator deployment.
 
-    constructorParams.positionManagerParams.synthereumFinder = synthereumFinder;
-    constructorParams.positionManagerParams.timerAddress = timerAddress;
+    constructorParams.synthereumFinder = synthereumFinder;
+    constructorParams.timerAddress = timerAddress;
 
     // Enforce configuration constraints.
     require(
@@ -160,21 +154,14 @@ contract PerpetutalMultiPartyCreator is Testable, Lockable {
     );
 
     // Input from function call.
-    constructorParams.positionManagerParams.tokenAddress = params
-      .syntheticToken;
-    constructorParams.positionManagerParams.collateralAddress = params
-      .collateralAddress;
-    constructorParams.positionManagerParams.priceFeedIdentifier = params
-      .priceFeedIdentifier;
-    constructorParams.positionManagerParams.overCollateralization = params
-      .overCollateralization;
-    constructorParams.positionManagerParams.liquidatorRewardPct = params
-      .liquidatorRewardPct;
-    constructorParams.positionManagerParams.minSponsorTokens = params
-      .minSponsorTokens;
-    constructorParams.positionManagerParams.excessTokenBeneficiary = params
-      .excessTokenBeneficiary;
-    constructorParams.positionManagerParams.version = params.version;
+    constructorParams.tokenAddress = params.syntheticToken;
+    constructorParams.collateralAddress = params.collateralAddress;
+    constructorParams.priceFeedIdentifier = params.priceFeedIdentifier;
+    constructorParams.overCollateralization = params.overCollateralization;
+    constructorParams.liquidatorRewardPct = params.liquidatorRewardPct;
+    constructorParams.minSponsorTokens = params.minSponsorTokens;
+    constructorParams.excessTokenBeneficiary = params.excessTokenBeneficiary;
+    constructorParams.version = params.version;
   }
 
   /** @notice Sets the controller values for a self-minting derivative

@@ -6,12 +6,12 @@ import {
   IDeploymentSignature
 } from '../../../core/interfaces/IDeploymentSignature.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
-import {PerpetutalMultiPartyCreator} from './PerpetutalMultiPartyCreator.sol';
+import {SynthereumCreditLineCreator} from './CreditLineCreator.sol';
 
 /** @title Contract factory of self-minting derivatives
  */
-contract DerivativeFactory is
-  PerpetutalMultiPartyCreator,
+contract CreditLineFactory is
+  SynthereumCreditLineCreator,
   IDeploymentSignature
 {
   //----------------------------------------
@@ -30,7 +30,7 @@ contract DerivativeFactory is
    * @param _timerAddress Contract that stores the current time in a testing environment.
    */
   constructor(address _synthereumFinder, address _timerAddress)
-    PerpetutalMultiPartyCreator(_synthereumFinder, _timerAddress)
+    SynthereumCreditLineCreator(_synthereumFinder, _timerAddress)
   {
     deploymentSignature = this.createPerpetual.selector;
   }
