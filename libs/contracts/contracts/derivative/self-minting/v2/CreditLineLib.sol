@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
+import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
@@ -12,12 +13,6 @@ import {
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
-  OracleInterface
-} from '@uma/core/contracts/oracle/interfaces/OracleInterface.sol';
-import {
-  OracleInterfaces
-} from '@uma/core/contracts/oracle/implementation/Constants.sol';
-import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
@@ -26,22 +21,20 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
 import {FeePayerParty} from '../../common/FeePayerParty.sol';
-import {
-  PerpetualPositionManagerMultiParty
-} from './PerpetualPositionManagerMultiParty.sol';
+import {SynthereumCreditLine} from './CreditLine.sol';
 import {
   ISynthereumPriceFeed
 } from '../../../oracle/common/interfaces/IPriceFeed.sol';
 
-library PerpetualPositionManagerMultiPartyLib {
+library SynthereumCreditLineLib {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
-  using PerpetualPositionManagerMultiPartyLib for PerpetualPositionManagerMultiParty.PositionData;
-  using PerpetualPositionManagerMultiPartyLib for PerpetualPositionManagerMultiParty.PositionManagerData;
-  using PerpetualPositionManagerMultiPartyLib for FeePayerParty.FeePayerData;
-  using PerpetualPositionManagerMultiPartyLib for FixedPoint.Unsigned;
+  using SynthereumCreditLineLib for ICreditLineStorage.PositionData;
+  using SynthereumCreditLineLib for ICreditLineStorage.PositionManagerData;
+  using SynthereumCreditLineLib for FeePayerParty.FeePayerData;
+  using SynthereumCreditLineLib for FixedPoint.Unsigned;
   using FeePayerPartyLib for FixedPoint.Unsigned;
 
   //----------------------------------------
@@ -82,11 +75,9 @@ library PerpetualPositionManagerMultiPartyLib {
   //----------------------------------------
 
   function depositTo(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
@@ -110,11 +101,9 @@ library PerpetualPositionManagerMultiPartyLib {
   }
 
   function withdraw(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
@@ -143,11 +132,9 @@ library PerpetualPositionManagerMultiPartyLib {
   }
 
   function create(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory feePercentage,
@@ -236,11 +223,9 @@ library PerpetualPositionManagerMultiPartyLib {
   }
 
   function redeeem(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory feePercentage,
     FeePayerParty.FeePayerData storage feePayerData,
@@ -332,11 +317,9 @@ library PerpetualPositionManagerMultiPartyLib {
   }
 
   function repay(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory feePercentage,
     FeePayerParty.FeePayerData storage feePayerData
@@ -397,12 +380,69 @@ library PerpetualPositionManagerMultiPartyLib {
     positionManagerData.tokenCurrency.burn(numTokens.rawValue);
   }
 
+  function liquidate(
+    ICreditLineStorage.PositionData storage positionToLiquidate,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    FeePayerParty.FeePayerData storage feePayerData,
+    address sponsor,
+    FixedPoint.Unsigned calldata numSynthTokens
+  )
+    external
+    returns (
+      uint256,
+      uint256,
+      uint256
+    )
+  {
+    // make sure position is undercollateralised
+    (bool isCollateralised, FixedPoint.Unsigned memory maxTokensLiquidatable) =
+      positionManagerData._checkCollateralization(
+        positionToLiquidate.rawCollateral,
+        positionToLiquidate.tokensOutstanding
+      );
+    require(!isCollateralised, 'Position is properly collateralised');
+
+    // reduce LP position and global position
+    FixedPoint.Unsigned memory tokensToLiquidate =
+      maxTokensLiquidatable.isGreaterThan(numSynthTokens)
+        ? numSynthTokens
+        : maxTokensLiquidatable;
+
+    FixedPoint.Unsigned memory collateralLiquidated =
+      positionToLiquidate._reducePosition(
+        globalPositionData,
+        tokensToLiquidate
+      );
+
+    FixedPoint.Unsigned memory liquidatorReward =
+      collateralLiquidated.mul(positionManagerData.liquidatorRewardPct);
+
+    // transfer tokens from liquidator to here and burn them
+    _burnLiquidatedTokens(
+      positionManagerData,
+      msg.sender,
+      tokensToLiquidate.rawValue
+    );
+
+    // pay sender with collateral unlocked + rewards
+    feePayerData.collateralCurrency.safeTransfer(
+      msg.sender,
+      collateralLiquidated.add(liquidatorReward).rawValue
+    );
+
+    // return values
+    return (
+      collateralLiquidated.rawValue,
+      tokensToLiquidate.rawValue,
+      liquidatorReward.rawValue
+    );
+  }
+
   function settleEmergencyShutdown(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FeePayerParty.FeePayerData storage feePayerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     // Get caller's tokens balance and calculate amount of underlying entitled to them.
@@ -443,9 +483,7 @@ library PerpetualPositionManagerMultiPartyLib {
         positionRedeemableCollateral
       );
 
-      PerpetualPositionManagerMultiParty(address(this)).deleteSponsorPosition(
-        msg.sender
-      );
+      SynthereumCreditLine(address(this)).deleteSponsorPosition(msg.sender);
       emit EndedSponsorPosition(msg.sender);
     }
 
@@ -487,8 +525,7 @@ library PerpetualPositionManagerMultiPartyLib {
   }
 
   function trimExcess(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     IERC20 token,
     FixedPoint.Unsigned memory pfcAmount,
     FeePayerParty.FeePayerData storage feePayerData
@@ -513,11 +550,9 @@ library PerpetualPositionManagerMultiPartyLib {
   // Reduces a sponsor's position and global counters by the specified parameters. Handles deleting the entire
   // position if the entire position is being removed. Does not make any external transfers.
   function reduceSponsorPosition(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory tokensToRemove,
     FixedPoint.Unsigned memory collateralToRemove,
     FixedPoint.Unsigned memory withdrawalAmountToRemove,
@@ -574,10 +609,8 @@ library PerpetualPositionManagerMultiPartyLib {
 
   //Call to the internal one (see _calculateDaoFee)
   function calculateDaoFee(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
     FixedPoint.Unsigned memory numTokens,
     FeePayerParty.FeePayerData storage feePayerData
   ) external view returns (FixedPoint.Unsigned memory) {
@@ -592,8 +625,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   //Call to the internal ones (see _getDaoFeePercentage and _getDaoFeeRecipient)
   function daoFee(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   )
     external
     view
@@ -605,8 +637,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   //Call to the internal one (see _getCapMintAmount)
   function capMintAmount(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) external view returns (FixedPoint.Unsigned memory capMint) {
     capMint = positionManagerData._getCapMintAmount();
   }
@@ -614,10 +645,22 @@ library PerpetualPositionManagerMultiPartyLib {
   //----------------------------------------
   // Internal functions
   //----------------------------------------
+  function _burnLiquidatedTokens(
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
+    address liquidator,
+    uint256 amount
+  ) internal {
+    positionManagerData.tokenCurrency.safeTransferFrom(
+      liquidator,
+      address(this),
+      amount
+    );
+    positionManagerData.tokenCurrency.burn(amount);
+  }
+
   function _incrementCollateralBalances(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData memory feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
@@ -638,9 +681,8 @@ library PerpetualPositionManagerMultiPartyLib {
   // position's collateral, because we need to maintain the invariant that the global collateral is always
   // <= the collateral owned by the contract to avoid reverts on withdrawals. The amount returned = amount withdrawn.
   function _decrementCollateralBalances(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData storage feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
@@ -656,11 +698,9 @@ library PerpetualPositionManagerMultiPartyLib {
   }
 
   function _decrementCollateralBalancesCheckCR(
-    PerpetualPositionManagerMultiParty.PositionData storage positionData,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionData storage positionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FeePayerParty.FeePayerData storage feePayerData
   ) internal returns (FixedPoint.Unsigned memory) {
@@ -690,9 +730,8 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Deletes a sponsor's position and updates global counters. Does not make any external transfers.
   function _deleteSponsorPosition(
-    PerpetualPositionManagerMultiParty.PositionData storage positionToLiquidate,
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
+    ICreditLineStorage.PositionData storage positionToLiquidate,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
     FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) internal returns (FixedPoint.Unsigned memory) {
@@ -709,9 +748,7 @@ library PerpetualPositionManagerMultiPartyLib {
       .totalTokensOutstanding
       .sub(positionToLiquidate.tokensOutstanding);
 
-    PerpetualPositionManagerMultiParty(address(this)).deleteSponsorPosition(
-      sponsor
-    );
+    SynthereumCreditLine(address(this)).deleteSponsorPosition(sponsor);
 
     emit EndedSponsorPosition(sponsor);
 
@@ -724,9 +761,35 @@ library PerpetualPositionManagerMultiPartyLib {
       );
   }
 
+  function _reducePosition(
+    ICreditLineStorage.PositionData storage positionToLiquidate,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    FixedPoint.Unsigned memory tokensToLiquidate
+  ) internal returns (FixedPoint.Unsigned memory collateralUnlocked) {
+    // calculate collateral to unlock
+    FixedPoint.Unsigned memory fraction =
+      tokensToLiquidate.div(positionToLiquidate.tokensOutstanding);
+    collateralUnlocked = positionToLiquidate.rawCollateral.mul(fraction);
+
+    // reduce position
+    positionToLiquidate.tokensOutstanding = positionToLiquidate
+      .tokensOutstanding
+      .sub(tokensToLiquidate);
+    positionToLiquidate.rawCollateral = positionToLiquidate.rawCollateral.sub(
+      collateralUnlocked
+    );
+
+    // update global position data
+    globalPositionData.totalTokensOutstanding = globalPositionData
+      .totalTokensOutstanding
+      .sub(tokensToLiquidate);
+    globalPositionData.rawTotalPositionCollateral = globalPositionData
+      .rawTotalPositionCollateral
+      .sub(collateralUnlocked);
+  }
+
   function _checkCollateralization(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateral,
     FixedPoint.Unsigned memory numTokens
   ) internal view returns (bool, FixedPoint.Unsigned memory) {
@@ -755,10 +818,8 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Check new total number of tokens does not overcome mint limit
   function checkMintLimit(
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view {
     require(
       globalPositionData.totalTokensOutstanding.isLessThanOrEqual(
@@ -770,10 +831,8 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Check the fee percentage doesn not overcome max fee of user and calculate DAO fee using GCR
   function _checkAndCalculateDaoFee(
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory feePercentage,
     FeePayerParty.FeePayerData storage feePayerData
@@ -795,8 +854,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Calculate Dao fee using GCR
   function _calculateDaoFee(
-    PerpetualPositionManagerMultiParty.GlobalPositionData
-      storage globalPositionData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory actualFeePercentage,
     FeePayerParty.FeePayerData storage feePayerData
@@ -839,8 +897,7 @@ library PerpetualPositionManagerMultiPartyLib {
    * @return priceRate Latest rate of the pair
    */
   function _getOraclePrice(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     ISynthereumFinder finder,
     bytes32 priceIdentifier
   ) internal view returns (FixedPoint.Unsigned memory priceRate) {
@@ -854,7 +911,7 @@ library PerpetualPositionManagerMultiPartyLib {
   // TODO i guess this can be
   // Fetches a resolved Oracle price from the Oracle. Reverts if the Oracle hasn't resolved for this request.
   // function _getOracleEmergencyShutdownPrice(
-  //   PerpetualPositionManagerMultiParty.PositionManagerData
+  //   ICreditLineStorage.PositionManagerData
   //     storage positionManagerData,
   //   FeePayerParty.FeePayerData storage feePayerData
   // ) internal view returns (FixedPoint.Unsigned memory) {
@@ -875,8 +932,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Get mint amount limit
   function _getCapMintAmount(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (FixedPoint.Unsigned memory capMint) {
     capMint = FixedPoint.Unsigned(
       positionManagerData.getSelfMintingController().getCapMintAmount(
@@ -887,8 +943,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Get Dao fee percentage
   function _getDaoFeePercentage(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (FixedPoint.Unsigned memory feePercentage) {
     feePercentage = FixedPoint.Unsigned(
       positionManagerData.getSelfMintingController().getDaoFeePercentage(
@@ -899,8 +954,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Get Dao fee recipients
   function _getDaoFeeRecipient(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (address recipient) {
     recipient = positionManagerData
       .getSelfMintingController()
@@ -909,8 +963,7 @@ library PerpetualPositionManagerMultiPartyLib {
 
   // Get self-minting controller instance
   function getSelfMintingController(
-    PerpetualPositionManagerMultiParty.PositionManagerData
-      storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (ISelfMintingController selfMintingController) {
     selfMintingController = ISelfMintingController(
       positionManagerData.synthereumFinder.getImplementationAddress(
