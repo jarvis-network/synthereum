@@ -168,6 +168,10 @@ contract('LiquidityPool', function (accounts) {
     );
     await collateralInstance.allocateTo(firstUser, initialUserAllocation);
     await collateralInstance.allocateTo(secondUser, initialUserAllocation);
+    await collateralInstance.allocateTo(
+      liquidityProvider,
+      initialUserAllocation,
+    );
     priceFeedInstance = await SynthereumChainlinkPriceFeed.deployed();
     aggregatorInstance = await MockAggregator.new(
       8,
@@ -1652,6 +1656,85 @@ contract('LiquidityPool', function (accounts) {
       await truffleAssert.reverts(
         liquidityPoolInstance.exchange(exchangeOperation, {
           from: secondUser,
+        }),
+      );
+    });
+  });
+
+  describe('Should withdraw liquidity from the pool', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can withdraw liquidity from the pool by the LP', async () => {
+      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const lpBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const withdrawAmount = web3Utils.toWei('150', 'mwei');
+      const remainingLiquidity = web3Utils
+        .toBN(unusedCollateral)
+        .sub(web3Utils.toBN(withdrawAmount))
+        .toString();
+      const withdrawTx = await liquidityPoolInstance.withdrawLiquidity(
+        withdrawAmount,
+        { from: liquidityProvider },
+      );
+      truffleAssert.eventEmitted(withdrawTx, 'WithdrawLiquidity', ev => {
+        return (
+          ev.lp == liquidityProvider &&
+          ev.liquidityWithdrawn == withdrawAmount &&
+          ev.remainingLiquidity == remainingLiquidity
+        );
+      });
+      assert.equal(
+        (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+        web3Utils
+          .toBN(unusedCollateral)
+          .sub(web3Utils.toBN(withdrawAmount))
+          .toString(),
+        'Wrong withdraw amount',
+      );
+      assert.equal(
+        (await collateralInstance.balanceOf.call(liquidityProvider)).toString(),
+        web3Utils
+          .toBN(lpBalance)
+          .add(web3Utils.toBN(withdrawAmount))
+          .toString(),
+        'Wrong LP balance after withdraw',
+      );
+    });
+    it('Can revert if sender is not LP', async () => {
+      const withdrawAmount = web3Utils.toWei('150', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.withdrawLiquidity(withdrawAmount, {
+          from: firstUser,
+        }),
+        'Sender must be the liquidity provider',
+      );
+    });
+    it('Can revert if trying to withdraw more than available liquidity', async () => {
+      const withdrawAmount = web3Utils.toWei('1000', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.withdrawLiquidity(withdrawAmount, {
+          from: liquidityProvider,
         }),
       );
     });
