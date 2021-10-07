@@ -105,12 +105,14 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   /**
    * @notice Increase collaterallization of Lp position
    * @notice Only a sender with LP role can call this function
-   * @param collateralAmount Collateral to add
+   * @param collateralToTransfer Collateral to be transferred before increase collateral in the position
+   * @param collateralToIncrease Collateral to be added to the position
    * @return newTotalCollateral New total collateral amount
    */
-  function increaseCollateral(uint256 collateralAmount)
-    external
-    returns (uint256 newTotalCollateral);
+  function increaseCollateral(
+    uint256 collateralToTransfer,
+    uint256 collateralToIncrease
+  ) external returns (uint256 newTotalCollateral);
 
   /**
    * @notice Decrease collaterallization of Lp position
