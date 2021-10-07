@@ -2079,4 +2079,119 @@ contract('LiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should claim fees', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can claim fees', async () => {
+      const actualLpBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualDaoBalance = await collateralInstance.balanceOf.call(DAO);
+      const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
+      const lpFee = await liquidityPoolInstance.userFee.call(liquidityProvider);
+      const daoFee = await liquidityPoolInstance.userFee.call(DAO);
+      const poolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      const claimLpFeeTx = await liquidityPoolInstance.claimFee({
+        from: liquidityProvider,
+      });
+      truffleAssert.eventEmitted(claimLpFeeTx, 'ClaimFee', ev => {
+        return (
+          ev.claimer == liquidityProvider &&
+          ev.feeAmount == lpFee.toString() &&
+          ev.totalRemainingFees == daoFee.toString()
+        );
+      });
+      assert.equal(
+        (await collateralInstance.balanceOf.call(liquidityProvider)).toString(),
+        web3Utils.toBN(actualLpBalance).add(web3Utils.toBN(lpFee)).toString(),
+        'Wrong Lp balance after LP claim fee',
+      );
+      assert.equal(
+        (
+          await collateralInstance.balanceOf.call(liquidityPoolAddress)
+        ).toString(),
+        web3Utils.toBN(poolBalance).sub(web3Utils.toBN(lpFee)).toString(),
+        'Wrong pool balance after Lp claim fee',
+      );
+      assert.equal(
+        (await collateralInstance.balanceOf.call(DAO)).toString(),
+        actualDaoBalance.toString(),
+        'Wrong Dao balance after LP claim fee',
+      );
+      assert.equal(
+        (
+          await liquidityPoolInstance.userFee.call(liquidityProvider)
+        ).toString(),
+        '0',
+        'Wrong Lp fee in the pool',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.userFee.call(DAO)).toString(),
+        daoFee.toString(),
+        'Wrong Dao fee in the pool',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalFeeAmount.call()).toString(),
+        web3Utils.toBN(totalFeeAmount).sub(web3Utils.toBN(lpFee)).toString(),
+        'Wrong total fee in the pool',
+      );
+      const claimDaoFeeTx = await liquidityPoolInstance.claimFee({
+        from: DAO,
+      });
+      assert.equal(
+        (await collateralInstance.balanceOf.call(DAO)).toString(),
+        web3Utils.toBN(actualDaoBalance).add(web3Utils.toBN(daoFee)).toString(),
+        'Wrong Dao balance after Dao claim fee',
+      );
+      assert.equal(
+        (
+          await collateralInstance.balanceOf.call(liquidityPoolAddress)
+        ).toString(),
+        web3Utils
+          .toBN(poolBalance)
+          .sub(web3Utils.toBN(lpFee))
+          .sub(web3Utils.toBN(daoFee))
+          .toString(),
+        'Wrong pool balance after Dao claim fee',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.userFee.call(DAO)).toString(),
+        '0',
+        'Wrong Dao fee in the pool',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalFeeAmount.call()).toString(),
+        '0',
+        'Wrong total fee in the pool',
+      );
+    });
+    it('Can revert if no fees to claim', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.claimFee({ from: firstUser }),
+        'No fee to claim',
+      );
+    });
+  });
 });
