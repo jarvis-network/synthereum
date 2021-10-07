@@ -9,5 +9,11 @@ export const getEtherscanTransactionURL = (
   networkId: NetworkId,
 ): string =>
   `https://${
-    networkId === Network.mainnet ? '' : `${networkIdToName[networkId]}.`
-  }etherscan.io/tx/${txHash}`;
+    networkId === Network.mainnet || networkId === Network.polygon
+      ? ''
+      : `${networkIdToName[networkId]}.`
+  }${
+    networkId === Network.polygon || networkId === Network.mumbai
+      ? 'polygonscan.com'
+      : 'etherscan.io'
+  }/tx/${txHash}`;
