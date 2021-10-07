@@ -1739,4 +1739,177 @@ contract('LiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should increase collateralization in the position', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can increase collateralization without deposit by the LP', async () => {
+      const collateralToAdd = web3Utils.toWei('50', 'mwei');
+      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const increaseCollateralTx = await liquidityPoolInstance.increaseCollateral(
+        0,
+        collateralToAdd,
+        { from: liquidityProvider },
+      );
+      const newTotalCollateral = web3Utils
+        .toBN(actualPositionCollateral)
+        .add(web3Utils.toBN(collateralToAdd))
+        .toString();
+      truffleAssert.eventEmitted(
+        increaseCollateralTx,
+        'IncreaseCollateral',
+        ev => {
+          return (
+            ev.lp == liquidityProvider &&
+            ev.collateralAdded == collateralToAdd &&
+            ev.newTotalCollateral == newTotalCollateral
+          );
+        },
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+        web3Utils
+          .toBN(unusedCollateral)
+          .sub(web3Utils.toBN(collateralToAdd))
+          .toString(),
+        'Wrong liquidity after increasing collateral',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalCollateralAmount.call()).toString(),
+        web3Utils
+          .toBN(actualPositionCollateral)
+          .add(web3Utils.toBN(collateralToAdd))
+          .toString(),
+        'Wrong increase collateral amount',
+      );
+    });
+    it('Can increase collateralization with deposit by the LP', async () => {
+      const collateralToTransfer = web3Utils.toWei('30', 'mwei');
+      const collateralToAdd = initialPoolAllocation;
+      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const actualUserBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        collateralToTransfer,
+        { from: liquidityProvider },
+      );
+      const increaseCollateralTx = await liquidityPoolInstance.increaseCollateral(
+        collateralToTransfer,
+        collateralToAdd,
+        { from: liquidityProvider },
+      );
+      const newTotalCollateral = web3Utils
+        .toBN(actualPositionCollateral)
+        .add(web3Utils.toBN(collateralToAdd))
+        .toString();
+      truffleAssert.eventEmitted(
+        increaseCollateralTx,
+        'IncreaseCollateral',
+        ev => {
+          return (
+            ev.lp == liquidityProvider &&
+            ev.collateralAdded == collateralToAdd &&
+            ev.newTotalCollateral == newTotalCollateral
+          );
+        },
+      );
+      assert.equal(
+        (await collateralInstance.balanceOf.call(liquidityProvider)).toString(),
+        web3Utils
+          .toBN(actualUserBalance)
+          .sub(web3Utils.toBN(collateralToTransfer))
+          .toString(),
+        'Wrong liquidity provider balance after increasing collateral',
+      );
+      assert.equal(
+        (
+          await collateralInstance.balanceOf.call(liquidityPoolAddress)
+        ).toString(),
+        web3Utils
+          .toBN(actualPoolBalance)
+          .add(web3Utils.toBN(collateralToTransfer))
+          .toString(),
+        'Wrong pool balance after increasing collateral',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+        web3Utils
+          .toBN(unusedCollateral)
+          .add(web3Utils.toBN(collateralToTransfer))
+          .sub(web3Utils.toBN(collateralToAdd))
+          .toString(),
+        'Wrong liquidity after increasing collateral',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalCollateralAmount.call()).toString(),
+        web3Utils
+          .toBN(actualPositionCollateral)
+          .add(web3Utils.toBN(collateralToAdd))
+          .toString(),
+        'Wrong increase collateral amount',
+      );
+    });
+    it('Can revert if sender is not LP', async () => {
+      const collateralToAdd = web3Utils.toWei('50', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.increaseCollateral(0, collateralToAdd, {
+          from: firstUser,
+        }),
+        'Sender must be the liquidity provider',
+      );
+    });
+    it('Can revert if no collateral is requested to be increased', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.increaseCollateral(0, 0, {
+          from: liquidityProvider,
+        }),
+        'No collateral to be increased',
+      );
+    });
+    it('Can revert if trying to increase more than available liquidity', async () => {
+      const collateralToTransfer = web3Utils.toWei('29', 'mwei');
+      const collateralToAdd = web3Utils.toWei('1000', 'mwei');
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        collateralToTransfer,
+        { from: liquidityProvider },
+      );
+      await truffleAssert.reverts(
+        liquidityPoolInstance.increaseCollateral(
+          collateralToTransfer,
+          collateralToAdd,
+          {
+            from: liquidityProvider,
+          },
+        ),
+        'No enough liquidity for increasing collateral',
+      );
+    });
+  });
 });
