@@ -222,6 +222,10 @@ contract SynthereumLiquidityPool is
     );
   }
 
+  //----------------------------------------
+  // External functions
+  //----------------------------------------
+
   /**
    * @notice Mint synthetic tokens using fixed amount of collateral
    * @notice This calculate the price using on chain price feed
@@ -359,10 +363,14 @@ contract SynthereumLiquidityPool is
    * @notice Decrease collaterallization of Lp position
    * @notice Check that final poosition is not undercollateralized
    * @notice Only a sender with LP role can call this function
-   * @param collateralAmount Collateral to add
+   * @param collateralToDecrease Collateral to decreased from the position
+   * @param collateralToWithdraw Collateral to be transferred to the LP
    * @return newTotalCollateral New total collateral amount
    */
-  function decreaseCollateral(uint256 collateralAmount)
+  function decreaseCollateral(
+    uint256 collateralToDecrease,
+    uint256 collateralToWithdraw
+  )
     external
     override
     onlyLiquidityProvider
@@ -373,7 +381,9 @@ contract SynthereumLiquidityPool is
     newTotalCollateral = poolStorage.decreaseCollateral(
       lpPosition,
       liquidationData,
-      FixedPoint.Unsigned(collateralAmount)
+      feeStatus,
+      FixedPoint.Unsigned(collateralToDecrease),
+      FixedPoint.Unsigned(collateralToWithdraw)
     );
   }
 

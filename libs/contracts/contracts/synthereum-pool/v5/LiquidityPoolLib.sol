@@ -184,7 +184,7 @@ library SynthereumLiquidityPoolLib {
   event SetLiquidationReward(uint256 liquidationReward);
 
   //----------------------------------------
-  // External function
+  // External functions
   //----------------------------------------
 
   /**
@@ -474,23 +474,11 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata collateralAmount
   ) external returns (uint256 remainingLiquidity) {
-    // Collateral available
-    FixedPoint.Unsigned memory unusedCollateral =
-      self.calculateUnusedCollateral(
-        lpPosition.totalCollateralAmount,
-        feeStatus.totalFeeAmount,
-        FixedPoint.Unsigned(0)
-      );
-
-    // Check that available collateral is bigger than collateral to be withdrawn and returns the difference
-    remainingLiquidity = (unusedCollateral.sub(collateralAmount)).rawValue;
-
-    // Transfer amount to the Lp
-    uint256 _collateralAmount = collateralAmount.rawValue;
-
-    self.collateralToken.safeTransfer(msg.sender, _collateralAmount);
-
-    emit WithdrawLiquidity(msg.sender, _collateralAmount, remainingLiquidity);
+    remainingLiquidity = self._withdrawLiquidity(
+      lpPosition,
+      feeStatus,
+      collateralAmount
+    );
   }
 
   /**
@@ -554,18 +542,25 @@ library SynthereumLiquidityPoolLib {
    * @param self Data type the library is attached to
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param liquidationData Liquidation info (see LiquidationData struct)
-   * @param collateralAmount Collateral to add
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param collateralToDecrease Collateral to decreased from the position
+   * @param collateralToWithdraw Collateral to be transferred to the LP
    * @return newTotalCollateral New total collateral amount
    */
   function decreaseCollateral(
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
-    FixedPoint.Unsigned calldata collateralAmount
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    FixedPoint.Unsigned calldata collateralToDecrease,
+    FixedPoint.Unsigned calldata collateralToWithdraw
   ) external returns (uint256 newTotalCollateral) {
+    // Check that collateral to be decreased is not 0
+    require(collateralToDecrease.rawValue > 0, 'No collateral to be decreased');
+
     // Resulting total collateral amount
     FixedPoint.Unsigned memory _newTotalCollateral =
-      lpPosition.totalCollateralAmount.sub(collateralAmount);
+      lpPosition.totalCollateralAmount.sub(collateralToDecrease);
 
     // Check that position doesn't become undercollateralized
     (bool _isOverCollateralized_, ) =
@@ -584,9 +579,13 @@ library SynthereumLiquidityPoolLib {
 
     emit DecreaseCollateral(
       msg.sender,
-      collateralAmount.rawValue,
+      collateralToDecrease.rawValue,
       newTotalCollateral
     );
+
+    if (collateralToWithdraw.rawValue > 0) {
+      self._withdrawLiquidity(lpPosition, feeStatus, collateralToWithdraw);
+    }
   }
 
   /**
@@ -945,6 +944,10 @@ library SynthereumLiquidityPoolLib {
     emit SetLiquidationReward(_liquidationReward.rawValue);
   }
 
+  //----------------------------------------
+  // External view functions
+  //----------------------------------------
+
   /**
    * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
    * @param self Data type the library is attached to
@@ -1268,6 +1271,39 @@ library SynthereumLiquidityPoolLib {
       executeExchangeParams.feeAmount.rawValue,
       executeExchangeParams.recipient
     );
+  }
+
+  /**
+   * @notice Withdraw unused deposited collateral by the LP
+   * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param collateralAmount Collateral to be withdrawn
+   * @return remainingLiquidity Remaining unused collateral in the pool
+   */
+  function _withdrawLiquidity(
+    ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    FixedPoint.Unsigned memory collateralAmount
+  ) internal returns (uint256 remainingLiquidity) {
+    // Collateral available
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.calculateUnusedCollateral(
+        lpPosition.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      );
+
+    // Check that available collateral is bigger than collateral to be withdrawn and returns the difference
+    remainingLiquidity = (unusedCollateral.sub(collateralAmount)).rawValue;
+
+    // Transfer amount to the Lp
+    uint256 _collateralAmount = collateralAmount.rawValue;
+
+    self.collateralToken.safeTransfer(msg.sender, _collateralAmount);
+
+    emit WithdrawLiquidity(msg.sender, _collateralAmount, remainingLiquidity);
   }
 
   /**
