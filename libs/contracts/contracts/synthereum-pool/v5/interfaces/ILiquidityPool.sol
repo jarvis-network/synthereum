@@ -118,12 +118,14 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
    * @notice Decrease collaterallization of Lp position
    * @notice Check that final poosition is not undercollateralized
    * @notice Only a sender with LP role can call this function
-   * @param collateralAmount Collateral to add
+   * @param collateralToDecrease Collateral to decreased from the position
+   * @param collateralToWithdraw Collateral to be transferred to the LP
    * @return newTotalCollateral New total collateral amount
    */
-  function decreaseCollateral(uint256 collateralAmount)
-    external
-    returns (uint256 newTotalCollateral);
+  function decreaseCollateral(
+    uint256 collateralToDecrease,
+    uint256 collateralToWithdraw
+  ) external returns (uint256 newTotalCollateral);
 
   /**
    * @notice Withdraw fees gained by the sender
