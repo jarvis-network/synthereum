@@ -499,15 +499,25 @@ library SynthereumLiquidityPoolLib {
    * @param self Data type the library is attached to
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
-   * @param collateralAmount Collateral to add
+   * @param collateralToTransfer Collateral to be transferred before increase collateral in the position
+   * @param collateralToIncrease Collateral to be added to the position
    * @return newTotalCollateral New total collateral amount
    */
   function increaseCollateral(
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    FixedPoint.Unsigned calldata collateralAmount
+    FixedPoint.Unsigned calldata collateralToTransfer,
+    FixedPoint.Unsigned calldata collateralToIncrease
   ) external returns (uint256 newTotalCollateral) {
+    // Check the collateral to be increased is not 0
+    require(collateralToIncrease.rawValue > 0, 'No collateral to be increased');
+
+    // Deposit collateral in the pool
+    if (collateralToTransfer.rawValue > 0) {
+      self.pullCollateral(msg.sender, collateralToTransfer);
+    }
+
     // Collateral available
     FixedPoint.Unsigned memory unusedCollateral =
       self.calculateUnusedCollateral(
@@ -518,13 +528,13 @@ library SynthereumLiquidityPoolLib {
 
     // Check that there is enoush availabe collateral deposited in the pool
     require(
-      unusedCollateral.isGreaterThanOrEqual(collateralAmount),
+      unusedCollateral.isGreaterThanOrEqual(collateralToIncrease),
       'No enough liquidity for increasing collateral'
     );
 
     // Update new total collateral amount
     FixedPoint.Unsigned memory _newTotalCollateral =
-      lpPosition.totalCollateralAmount.add(collateralAmount);
+      lpPosition.totalCollateralAmount.add(collateralToIncrease);
 
     lpPosition.totalCollateralAmount = _newTotalCollateral;
 
@@ -532,7 +542,7 @@ library SynthereumLiquidityPoolLib {
 
     emit IncreaseCollateral(
       msg.sender,
-      collateralAmount.rawValue,
+      collateralToIncrease.rawValue,
       newTotalCollateral
     );
   }
