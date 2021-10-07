@@ -603,7 +603,7 @@ library SynthereumLiquidityPoolLib {
     feeClaimed = _feeClaimed.rawValue;
 
     // Check that fee is available
-    require(_feeClaimed.isGreaterThanOrEqual(0), 'No fee to claim');
+    require(feeClaimed > 0, 'No fee to claim');
 
     // Update fee status
     delete feeStatus.feeGained[msg.sender];
@@ -614,7 +614,6 @@ library SynthereumLiquidityPoolLib {
     feeStatus.totalFeeAmount = _totalRemainingFees;
 
     // Transfer amount to the sender
-
     self.collateralToken.safeTransfer(msg.sender, feeClaimed);
 
     emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
