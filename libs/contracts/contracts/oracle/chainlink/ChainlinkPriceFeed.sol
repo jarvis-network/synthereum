@@ -318,7 +318,7 @@ contract SynthereumChainlinkPriceFeed is
     pure
     returns (uint256 price)
   {
-    require(uncovertedPrice > 0, 'Negative value');
+    require(uncovertedPrice >= 0, 'Negative value');
     price = uint256(uncovertedPrice);
   }
 

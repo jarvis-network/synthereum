@@ -428,11 +428,6 @@ contract('Synthereum chainlink price feed', function (accounts) {
         priceFeedInstance.getLatestPrice.call(priceFeedId),
         'Negative value',
       );
-      newAnswer = web3Utils.toWei('0', 'mwei');
-      await truffleAssert.reverts(
-        priceFeedInstance.getLatestPrice.call(priceFeedId),
-        'Negative value',
-      );
     });
   });
 });
