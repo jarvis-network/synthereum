@@ -429,7 +429,10 @@ library SynthereumLiquidityPoolLib {
     self.checkPool(ISynthereumLiquidityPoolGeneral(msg.sender));
 
     // Sending amount must be different from 0
-    require(collateralAmount.rawValue > 0, 'Sending amount is equal to 0');
+    require(
+      collateralAmount.rawValue > 0,
+      'Sending collateral amount is equal to 0'
+    );
 
     // Collateral available
     FixedPoint.Unsigned memory unusedCollateral =
@@ -1203,7 +1206,7 @@ library SynthereumLiquidityPoolLib {
     // Sending amount must be different from 0
     require(
       executeExchangeParams.numTokens.rawValue > 0,
-      'Sending amount is equal to 0'
+      'Sending tokens amount is equal to 0'
     );
 
     FixedPoint.Unsigned memory collateralRedeemed =

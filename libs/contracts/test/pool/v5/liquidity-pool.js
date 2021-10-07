@@ -1224,5 +1224,436 @@ contract('LiquidityPool', function (accounts) {
         'Wrong destination synthetic balance',
       );
     });
+    it('Can revert if too much slippage for the destination tokens received', async () => {
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .add(web3Utils.toBN('1'));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Number of destination tokens less than minimum limit',
+      );
+    });
+    it('Can revert if too much slippage for the fee percentage', async () => {
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const wrongFeePercentageValue = web3Utils.toWei('0.0019');
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: wrongFeePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'User fee percentage less than actual one',
+      );
+    });
+    it('Can revert if transaction is expired', async () => {
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp - 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Transaction expired',
+      );
+    });
+    it('Can revert if no synthetic tokens are sent', async () => {
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: 0,
+        minDestNumTokens: 0,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Sending tokens amount is equal to 0',
+      );
+    });
+    it('Can revert if position becomes undercapitalized', async () => {
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('160', 'mwei'));
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Position undercapitalized',
+      );
+    });
+    it('Can revert if source and destination pools are the same', async () => {
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate = Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: liquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Same source and destination pool',
+      );
+    });
+    it('Can revert if the source and destination pools have different collateral', async () => {
+      const wrongCollateralInstance = await TestnetERC20.new(
+        'Test Token',
+        'USDC',
+        18,
+      );
+      const wrongCollateralAddress = wrongCollateralInstance.address;
+      const wrongCollateraLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        finderAddress,
+        version,
+        wrongCollateralAddress,
+        destSynthTokenAddress,
+        roles,
+        destOverCollateralization,
+        fee,
+        destPriceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+      );
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: wrongCollateraLiquidityPoolInstance.address,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Collateral tokens do not match',
+      );
+    });
+    it('Can revert if the source and destination pools have different finder', async () => {
+      const wrongFinderAddress = accounts[7];
+      const wrongFinderLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        wrongFinderAddress,
+        version,
+        collateralAddress,
+        destSynthTokenAddress,
+        roles,
+        destOverCollateralization,
+        fee,
+        destPriceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+      );
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: wrongFinderLiquidityPoolInstance.address,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Finders do not match',
+      );
+    });
+    it('Can revert if the destination pool is not registered', async () => {
+      const wrongLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        finderAddress,
+        version,
+        collateralAddress,
+        destSynthTokenAddress,
+        roles,
+        destOverCollateralization,
+        fee,
+        destPriceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+      );
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: wrongLiquidityPoolInstance.address,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Destination pool not registered',
+      );
+    });
+    it('Can revert if no collateral is sent to the destination pool', async () => {
+      await aggregatorInstance.updateAnswer('0');
+      const synthTokens = web3Utils.toWei('50');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: 0,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'Sending collateral amount is equal to 0',
+      );
+    });
+    it('Can revert if there is no enough liquidity in the destination pool', async () => {
+      const underCapitalizedPoolInstance = await SynthereumLiquidityPool.new(
+        finderAddress,
+        version,
+        collateralAddress,
+        destSynthTokenAddress,
+        roles,
+        destOverCollateralization,
+        fee,
+        destPriceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+      );
+      await destSynthTokenInstance.addMinter(
+        underCapitalizedPoolInstance.address,
+        { from: admin },
+      );
+      await destSynthTokenInstance.addBurner(
+        underCapitalizedPoolInstance.address,
+        { from: admin },
+      );
+      await poolRegistryInstance.register(
+        destSynthTokenSymbol,
+        collateralAddress,
+        version,
+        underCapitalizedPoolInstance.address,
+      );
+      await collateralInstance.allocateTo(
+        underCapitalizedPoolInstance.address,
+        web3Utils.toWei('5', 'mwei'),
+      );
+      const synthTokens = web3Utils.toWei('50');
+      const netSynthTokens = web3Utils.toWei('49.9');
+      const exchangeRate =
+        Decimal(sourceRate.toString())
+          .div(Decimal(destRate.toString()))
+          .toFixed(8) * Math.pow(10, 18);
+      const destNumTokens = web3Utils
+        .toBN(netSynthTokens)
+        .mul(web3Utils.toBN(exchangeRate))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: underCapitalizedPoolInstance.address,
+        numTokens: synthTokens,
+        minDestNumTokens: destNumTokens.toString(),
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: firstUser,
+        }),
+        'No enough liquidity for cover mint operation',
+      );
+    });
+    it('Can revert if exchange-mint is not called by a pool', async () => {
+      const collateralAmount = web3Utils.toWei('12', 'mwei');
+      const synthTokens = web3Utils.toWei('10');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchangeMint(
+          collateralAmount,
+          synthTokens,
+          firstUser,
+          {
+            from: firstUser,
+          },
+        ),
+      );
+    });
+    it('Can revert if trying to exchange more token than ones generated by the pool', async () => {
+      const synthTokens = web3Utils.toWei('200');
+      await synthTokenInstance.addMinter(admin, { from: admin });
+      await synthTokenInstance.mint(secondUser, synthTokens, { from: admin });
+      await synthTokenInstance.renounceMinter({ from: admin });
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: destLiquidityPoolAddress,
+        numTokens: synthTokens,
+        minDestNumTokens: '0',
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: secondUser,
+      };
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: secondUser,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, {
+          from: secondUser,
+        }),
+      );
+    });
   });
 });
