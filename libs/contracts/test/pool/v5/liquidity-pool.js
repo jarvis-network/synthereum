@@ -1912,4 +1912,171 @@ contract('LiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should decrease collateralization in the position', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can decrease collateralization without withdraw by the LP', async () => {
+      const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
+      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const decreaseCollateralTx = await liquidityPoolInstance.decreaseCollateral(
+        collateralToRemove,
+        0,
+        { from: liquidityProvider },
+      );
+      const newTotalCollateral = web3Utils
+        .toBN(actualPositionCollateral)
+        .sub(web3Utils.toBN(collateralToRemove))
+        .toString();
+      truffleAssert.eventEmitted(
+        decreaseCollateralTx,
+        'DecreaseCollateral',
+        ev => {
+          return (
+            ev.lp == liquidityProvider &&
+            ev.collateralRemoved == collateralToRemove &&
+            ev.newTotalCollateral == newTotalCollateral
+          );
+        },
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+        web3Utils
+          .toBN(unusedCollateral)
+          .add(web3Utils.toBN(collateralToRemove))
+          .toString(),
+        'Wrong liquidity after decreasing collateral',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalCollateralAmount.call()).toString(),
+        web3Utils
+          .toBN(actualPositionCollateral)
+          .sub(web3Utils.toBN(collateralToRemove))
+          .toString(),
+        'Wrong decrease collateral amount',
+      );
+    });
+    it('Can decrease collateralization with withdraw by the LP', async () => {
+      const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
+      const collateralToWithdraw = web3Utils
+        .toBN(collateralToRemove)
+        .add(web3Utils.toBN(web3Utils.toWei('900', 'mwei')));
+      const unusedCollateral = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const actualPositionCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
+      const actualUserBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      const decreaseCollateralTx = await liquidityPoolInstance.decreaseCollateral(
+        collateralToRemove,
+        collateralToWithdraw,
+        { from: liquidityProvider },
+      );
+      const newTotalCollateral = web3Utils
+        .toBN(actualPositionCollateral)
+        .sub(web3Utils.toBN(collateralToRemove))
+        .toString();
+      truffleAssert.eventEmitted(
+        decreaseCollateralTx,
+        'DecreaseCollateral',
+        ev => {
+          return (
+            ev.lp == liquidityProvider &&
+            ev.collateralRemoved == collateralToRemove &&
+            ev.newTotalCollateral == newTotalCollateral
+          );
+        },
+      );
+      assert.equal(
+        (await collateralInstance.balanceOf.call(liquidityProvider)).toString(),
+        web3Utils.toBN(actualUserBalance).add(collateralToWithdraw).toString(),
+        'Wrong liquidity provider balance after decreasing collateral',
+      );
+      assert.equal(
+        (
+          await collateralInstance.balanceOf.call(liquidityPoolAddress)
+        ).toString(),
+        web3Utils.toBN(actualPoolBalance).sub(collateralToWithdraw).toString(),
+        'Wrong pool balance after decreasing collateral',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+        web3Utils
+          .toBN(unusedCollateral)
+          .add(web3Utils.toBN(collateralToRemove))
+          .sub(collateralToWithdraw)
+          .toString(),
+        'Wrong liquidity after decreasing collateral',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalCollateralAmount.call()).toString(),
+        web3Utils
+          .toBN(actualPositionCollateral)
+          .sub(web3Utils.toBN(collateralToRemove))
+          .toString(),
+        'Wrong increase collateral amount',
+      );
+    });
+    it('Can revert if sender is not LP', async () => {
+      const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.decreaseCollateral(collateralToRemove, 0, {
+          from: firstUser,
+        }),
+        'Sender must be the liquidity provider',
+      );
+    });
+    it('Can revert if no collateral is requested to be decreased', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.decreaseCollateral(0, 0, {
+          from: liquidityProvider,
+        }),
+        'No collateral to be decreased',
+      );
+    });
+    it('Can revert if trying to decrease more than liquidation limit', async () => {
+      const collateralToRemove = web3Utils.toWei('24', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.decreaseCollateral(collateralToRemove, 0, {
+          from: liquidityProvider,
+        }),
+        'Position undercollateralized',
+      );
+    });
+    it('Can revert if trying to withdraw more than available liquidity after decrease', async () => {
+      const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
+      const collateralToWithdraw = initialPoolAllocation;
+      await truffleAssert.reverts(
+        liquidityPoolInstance.decreaseCollateral(
+          collateralToRemove,
+          collateralToWithdraw,
+          {
+            from: liquidityProvider,
+          },
+        ),
+      );
+    });
+  });
 });
