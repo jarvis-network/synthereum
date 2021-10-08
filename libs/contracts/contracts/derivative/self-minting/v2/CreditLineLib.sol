@@ -30,9 +30,11 @@ library SynthereumCreditLineLib {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
+  using SafeERC20 for IStandardERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
   using SynthereumCreditLineLib for ICreditLineStorage.PositionData;
   using SynthereumCreditLineLib for ICreditLineStorage.PositionManagerData;
+  using SynthereumCreditLineLib for ICreditLineStorage.FeeStatus;
   using SynthereumCreditLineLib for FeePayerParty.FeePayerData;
   using SynthereumCreditLineLib for FixedPoint.Unsigned;
   using FeePayerPartyLib for FixedPoint.Unsigned;
@@ -57,6 +59,13 @@ library SynthereumCreditLineLib {
     uint256 indexed tokenAmount,
     uint256 feeAmount
   );
+
+  event ClaimFee(
+    address indexed claimer,
+    uint256 feeAmount,
+    uint256 totalRemainingFees
+  );
+
   event Repay(
     address indexed sponsor,
     uint256 indexed numTokensRepaid,
@@ -70,6 +79,9 @@ library SynthereumCreditLineLib {
     uint256 indexed tokensBurned
   );
 
+  event SetFeePercentage(uint256 feePercentage);
+  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
+
   //----------------------------------------
   // External functions
   //----------------------------------------
@@ -79,7 +91,6 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
-    FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) external {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
@@ -87,13 +98,12 @@ library SynthereumCreditLineLib {
     // Increase the position and global collateral balance by collateral amount.
     positionData._incrementCollateralBalances(
       globalPositionData,
-      collateralAmount,
-      feePayerData
+      collateralAmount
     );
 
     emit Deposit(sponsor, collateralAmount.rawValue);
 
-    feePayerData.collateralCurrency.safeTransferFrom(
+    positionManagerData.collateralToken.safeTransferFrom(
       msg.sender,
       address(this),
       collateralAmount.rawValue
@@ -104,31 +114,28 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FixedPoint.Unsigned memory collateralAmount,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
+    FixedPoint.Unsigned memory collateralAmount
+  ) external returns (FixedPoint.Unsigned memory) {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
 
     // Decrement the sponsor's collateral and global collateral amounts.
     // Reverts if the resulting position is not properly collateralized
-    amountWithdrawn = _decrementCollateralBalancesCheckCR(
+    _decrementCollateralBalancesCheckCR(
       positionData,
       globalPositionData,
       positionManagerData,
-      collateralAmount,
-      feePayerData
+      collateralAmount
     );
 
-    emit Withdrawal(msg.sender, amountWithdrawn.rawValue);
+    emit Withdrawal(msg.sender, collateralAmount.rawValue);
 
     // Move collateral currency from contract to sender.
-    // Note: that we move the amount of collateral that is decreased from rawCollateral (inclusive of fees)
-    // instead of the user requested amount. This eliminates precision loss that could occur
-    // where the user withdraws more collateral than rawCollateral is decremented by.
-    feePayerData.collateralCurrency.safeTransfer(
+    positionManagerData.collateralToken.safeTransfer(
       msg.sender,
-      amountWithdrawn.rawValue
+      collateralAmount.rawValue
     );
+
+    return collateralAmount;
   }
 
   function create(
@@ -137,17 +144,12 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage,
-    FeePayerParty.FeePayerData storage feePayerData
+    ICreditLineStorage.FeeStatus storage feeStatus
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
-    // TODO feeStatus
-    feeAmount = _checkAndCalculateDaoFee(
-      globalPositionData,
-      positionManagerData,
-      numTokens,
-      feePercentage,
-      feePayerData
-    );
+    // Update fees status
+    feeAmount = collateralAmount.mul(positionManagerData.fee.feePercentage);
+    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+
     FixedPoint.Unsigned memory netCollateralAmount =
       collateralAmount.sub(feeAmount);
 
@@ -170,24 +172,19 @@ library SynthereumCreditLineLib {
       (bool isCollateralised, ) =
         _checkCollateralization(
           positionManagerData,
-          positionData
-            .rawCollateral
-            .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-            .add(netCollateralAmount),
+          positionData.rawCollateral.add(netCollateralAmount),
           positionData.tokensOutstanding.add(numTokens)
         );
       require(isCollateralised, 'Insufficient Collateral');
     }
 
     // Increase the position and global collateral balance by collateral amount.
-    _incrementCollateralBalances(
-      positionData,
+    positionData._incrementCollateralBalances(
       globalPositionData,
-      netCollateralAmount,
-      feePayerData
+      netCollateralAmount
     );
 
-    // Add the number of tokens created to the position's outstanding tokens.
+    // Add the number of tokens created to the position's outstanding tokens and global.
     positionData.tokensOutstanding = positionData.tokensOutstanding.add(
       numTokens
     );
@@ -198,27 +195,17 @@ library SynthereumCreditLineLib {
 
     checkMintLimit(globalPositionData, positionManagerData);
 
-    emit PositionCreated(
-      msg.sender,
-      collateralAmount.rawValue,
-      numTokens.rawValue,
-      feeAmount.rawValue
-    );
+    // pull collateral
+    IERC20 collateralCurrency = positionManagerData.collateralToken;
 
-    IERC20 collateralCurrency = feePayerData.collateralCurrency;
-
+    // Transfer tokens into the contract from caller
     collateralCurrency.safeTransferFrom(
       msg.sender,
       address(this),
       (collateralAmount).rawValue
     );
 
-    // Transfer tokens into the contract from caller and mint corresponding synthetic tokens to the caller's address.
-    collateralCurrency.safeTransfer(
-      positionManagerData._getDaoFeeRecipient(),
-      feeAmount.rawValue
-    );
-
+    // mint corresponding synthetic tokens to the caller's address.
     positionManagerData.tokenCurrency.mint(msg.sender, numTokens.rawValue);
   }
 
@@ -228,7 +215,7 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory feePercentage,
-    FeePayerParty.FeePayerData storage feePayerData,
+    ICreditLineStorage.FeeStatus storage feeStatus,
     address sponsor
   )
     external
@@ -244,33 +231,26 @@ library SynthereumCreditLineLib {
 
     FixedPoint.Unsigned memory fractionRedeemed =
       numTokens.div(positionData.tokensOutstanding);
+
     FixedPoint.Unsigned memory collateralRedeemed =
-      fractionRedeemed.mul(
-        positionData.rawCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        )
-      );
-    feeAmount = _checkAndCalculateDaoFee(
-      globalPositionData,
-      positionManagerData,
-      numTokens,
-      feePercentage,
-      feePayerData
-    );
+      fractionRedeemed.mul(positionData.rawCollateral);
+
+    // Update fee status
+    feeAmount = collateralRedeemed.mul(positionManagerData.fee.feePercentage);
+    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+
     FixedPoint.Unsigned memory totAmountWithdrawn;
     // If redemption returns all tokens the sponsor has then we can delete their position. Else, downsize.
     if (positionData.tokensOutstanding.isEqual(numTokens)) {
       totAmountWithdrawn = positionData._deleteSponsorPosition(
         globalPositionData,
-        feePayerData,
         sponsor
       );
     } else {
       // Decrement the sponsor's collateral and global collateral amounts.
-      totAmountWithdrawn = positionData._decrementCollateralBalances(
+      positionData._decrementCollateralBalances(
         globalPositionData,
-        collateralRedeemed,
-        feePayerData
+        collateralRedeemed
       );
 
       // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
@@ -289,24 +269,16 @@ library SynthereumCreditLineLib {
         .sub(numTokens);
     }
 
+    // adjust the fees from collateral withdrawn
     amountWithdrawn = totAmountWithdrawn.sub(feeAmount);
 
-    emit Redeem(
-      msg.sender,
-      amountWithdrawn.rawValue,
-      numTokens.rawValue,
-      feeAmount.rawValue
-    );
-
-    IERC20 collateralCurrency = feePayerData.collateralCurrency;
+    // transfer collateral to user
+    IERC20 collateralCurrency = positionManagerData.collateralToken;
 
     {
       collateralCurrency.safeTransfer(msg.sender, amountWithdrawn.rawValue);
-      collateralCurrency.safeTransfer(
-        positionManagerData._getDaoFeeRecipient(),
-        feeAmount.rawValue
-      );
-      // Transfer collateral from contract to caller and burn callers synthetic tokens.
+
+      // Pull and burn callers synthetic tokens.
       positionManagerData.tokenCurrency.safeTransferFrom(
         msg.sender,
         address(this),
@@ -314,6 +286,13 @@ library SynthereumCreditLineLib {
       );
       positionManagerData.tokenCurrency.burn(numTokens.rawValue);
     }
+
+    emit Redeem(
+      msg.sender,
+      amountWithdrawn.rawValue,
+      numTokens.rawValue,
+      feeAmount.rawValue
+    );
   }
 
   function repay(
@@ -321,8 +300,7 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage,
-    FeePayerParty.FeePayerData storage feePayerData
+    ICreditLineStorage.FeeStatus storage feeStatus
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     require(
       numTokens.isLessThanOrEqual(positionData.tokensOutstanding),
@@ -337,39 +315,23 @@ library SynthereumCreditLineLib {
       'Below minimum sponsor position'
     );
 
-    FixedPoint.Unsigned memory feeToWithdraw =
-      _checkAndCalculateDaoFee(
-        globalPositionData,
-        positionManagerData,
-        numTokens,
-        feePercentage,
-        feePayerData
-      );
+    FixedPoint.Unsigned memory fractionRedeemed = numTokens.div(newTokenCount);
 
+    // calculate the 'free' collateral from the repay amount
+    FixedPoint.Unsigned memory collateralUnlocked =
+      fractionRedeemed.mul(positionData.rawCollateral);
+
+    // Update fee status
+    feeAmount = collateralUnlocked.mul(positionManagerData.fee.feePercentage);
+    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+
+    // update position
     positionData.tokensOutstanding = newTokenCount;
 
     // Update the totalTokensOutstanding after redemption.
     globalPositionData.totalTokensOutstanding = globalPositionData
       .totalTokensOutstanding
       .sub(numTokens);
-
-    feeAmount = positionData._decrementCollateralBalances(
-      globalPositionData,
-      feeToWithdraw,
-      feePayerData
-    );
-
-    emit Repay(
-      msg.sender,
-      numTokens.rawValue,
-      newTokenCount.rawValue,
-      feeAmount.rawValue
-    );
-
-    feePayerData.collateralCurrency.safeTransfer(
-      positionManagerData._getDaoFeeRecipient(),
-      feeAmount.rawValue
-    );
 
     // Transfer the tokens back from the sponsor and burn them.
     positionManagerData.tokenCurrency.safeTransferFrom(
@@ -378,14 +340,20 @@ library SynthereumCreditLineLib {
       numTokens.rawValue
     );
     positionManagerData.tokenCurrency.burn(numTokens.rawValue);
+
+    emit Repay(
+      msg.sender,
+      numTokens.rawValue,
+      newTokenCount.rawValue,
+      feeAmount.rawValue
+    );
   }
 
   function liquidate(
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FeePayerParty.FeePayerData storage feePayerData,
-    address sponsor,
+    ICreditLineStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata numSynthTokens
   )
     external
@@ -412,6 +380,7 @@ library SynthereumCreditLineLib {
     FixedPoint.Unsigned memory collateralLiquidated =
       positionToLiquidate._reducePosition(
         globalPositionData,
+        positionManagerData,
         tokensToLiquidate
       );
 
@@ -425,105 +394,221 @@ library SynthereumCreditLineLib {
       tokensToLiquidate.rawValue
     );
 
+    // Update fee status
+    FixedPoint.Unsigned memory feeAmount =
+      collateralLiquidated.mul(positionManagerData.fee.feePercentage);
+    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+
     // pay sender with collateral unlocked + rewards
-    feePayerData.collateralCurrency.safeTransfer(
+    positionManagerData.collateralToken.safeTransfer(
       msg.sender,
-      collateralLiquidated.add(liquidatorReward).rawValue
+      collateralLiquidated.sub(feeAmount).add(liquidatorReward).rawValue
     );
 
     // return values
     return (
-      collateralLiquidated.rawValue,
+      collateralLiquidated.sub(feeAmount).rawValue,
       tokensToLiquidate.rawValue,
       liquidatorReward.rawValue
     );
   }
 
+  // todo
   function settleEmergencyShutdown(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FeePayerParty.FeePayerData storage feePayerData
+    ICreditLineStorage.FeeStatus storage feeStatus
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
-    // Get caller's tokens balance and calculate amount of underlying entitled to them.
-    FixedPoint.Unsigned memory tokensToRedeem =
-      FixedPoint.Unsigned(
-        positionManagerData.tokenCurrency.balanceOf(msg.sender)
-      );
+    // // Get caller's tokens balance and calculate amount of underlying entitled to them.
+    // FixedPoint.Unsigned memory tokensToRedeem =
+    //   FixedPoint.Unsigned(
+    //     positionManagerData.tokenCurrency.balanceOf(msg.sender)
+    //   );
 
-    FixedPoint.Unsigned memory totalRedeemableCollateral =
-      tokensToRedeem.mul(positionManagerData.emergencyShutdownPrice);
+    // FixedPoint.Unsigned memory totalRedeemableCollateral =
+    //   tokensToRedeem.mul(positionManagerData.emergencyShutdownPrice);
 
-    // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
-    if (
-      positionData
-        .rawCollateral
-        .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-        .isGreaterThan(0)
-    ) {
-      // Calculate the underlying entitled to a token sponsor. This is collateral - debt in underlying with
-      // the funding rate applied to the outstanding token debt.
-      FixedPoint.Unsigned memory tokenDebtValueInCollateral =
-        positionData.tokensOutstanding.mul(
-          positionManagerData.emergencyShutdownPrice
-        );
-      FixedPoint.Unsigned memory positionCollateral =
-        positionData.rawCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        );
+    // // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
+    // if (
+    //   positionData
+    //     .rawCollateral
+    //     .isGreaterThan(0)
+    // ) {
+    //   // Calculate the underlying entitled to a token sponsor. This is collateral - debt in underlying with
+    //   // the funding rate applied to the outstanding token debt.
+    //   FixedPoint.Unsigned memory tokenDebtValueInCollateral =
+    //     positionData.tokensOutstanding.mul(
+    //       positionManagerData.emergencyShutdownPrice
+    //     );
 
-      // If the debt is greater than the remaining collateral, they cannot redeem anything.
-      FixedPoint.Unsigned memory positionRedeemableCollateral =
-        tokenDebtValueInCollateral.isLessThan(positionCollateral)
-          ? positionCollateral.sub(tokenDebtValueInCollateral)
-          : FixedPoint.Unsigned(0);
+    //   require(tokenDebtValueInCollateral.isLessThan(positionData.rawCollateral), 'You dont have free collateral to withdraw');
 
-      // Add the number of redeemable tokens for the sponsor to their total redeemable collateral.
-      totalRedeemableCollateral = totalRedeemableCollateral.add(
-        positionRedeemableCollateral
-      );
+    //   // Add the number of redeemable tokens for the sponsor to their total redeemable collateral.
+    //   totalRedeemableCollateral = totalRedeemableCollateral.add(
+    //     positionData.rawCollateral.sub(tokenDebtValueInCollateral)
+    //   );
 
-      SynthereumCreditLine(address(this)).deleteSponsorPosition(msg.sender);
-      emit EndedSponsorPosition(msg.sender);
-    }
+    //   SynthereumCreditLine(address(this)).deleteSponsorPosition(msg.sender);
+    //   emit EndedSponsorPosition(msg.sender);
+    // }
 
-    // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
-    // the caller will get as much collateral as the contract can pay out.
-    FixedPoint.Unsigned memory payout =
-      FixedPoint.min(
-        globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
-        totalRedeemableCollateral
-      );
+    // // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
+    // // the caller will get as much collateral as the contract can pay out.
+    // FixedPoint.Unsigned memory payout =
+    //   FixedPoint.min(
+    //     globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
+    //       feePayerData.cumulativeFeeMultiplier
+    //     ),
+    //     totalRedeemableCollateral
+    //   );
 
-    // Decrement total contract collateral and outstanding debt.
-    amountWithdrawn = globalPositionData
-      .rawTotalPositionCollateral
-      .removeCollateral(payout, feePayerData.cumulativeFeeMultiplier);
-    globalPositionData.totalTokensOutstanding = globalPositionData
-      .totalTokensOutstanding
-      .sub(tokensToRedeem);
+    // // Decrement total contract collateral and outstanding debt.
+    // amountWithdrawn = globalPositionData
+    //   .rawTotalPositionCollateral
+    //   .removeCollateral(payout, feePayerData.cumulativeFeeMultiplier);
+    // globalPositionData.totalTokensOutstanding = globalPositionData
+    //   .totalTokensOutstanding
+    //   .sub(tokensToRedeem);
 
-    emit SettleEmergencyShutdown(
-      msg.sender,
-      amountWithdrawn.rawValue,
-      tokensToRedeem.rawValue
-    );
+    // emit SettleEmergencyShutdown(
+    //   msg.sender,
+    //   amountWithdrawn.rawValue,
+    //   tokensToRedeem.rawValue
+    // );
 
-    // Transfer tokens & collateral and burn the redeemed tokens.
-    feePayerData.collateralCurrency.safeTransfer(
-      msg.sender,
-      amountWithdrawn.rawValue
-    );
-    positionManagerData.tokenCurrency.safeTransferFrom(
-      msg.sender,
-      address(this),
-      tokensToRedeem.rawValue
-    );
-    positionManagerData.tokenCurrency.burn(tokensToRedeem.rawValue);
+    // // Transfer tokens & collateral and burn the redeemed tokens.
+    // positionManagerData.collateralToken.safeTransfer(
+    //   msg.sender,
+    //   amountWithdrawn.rawValue
+    // );
+    // positionManagerData.tokenCurrency.safeTransferFrom(
+    //   msg.sender,
+    //   address(this),
+    //   tokensToRedeem.rawValue
+    // );
+    // positionManagerData.tokenCurrency.burn(tokensToRedeem.rawValue);
+    return FixedPoint.Unsigned(0);
   }
 
+  /**
+   * @notice Update the fee percentage
+   * @param self Data type the library is attached to
+   * @param _feePercentage The new fee percentage
+   */
+  function setFeePercentage(
+    ICreditLineStorage.PositionManagerData storage self,
+    FixedPoint.Unsigned calldata _feePercentage
+  ) external {
+    require(
+      _feePercentage.rawValue < 10**(18),
+      'Fee Percentage must be less than 100%'
+    );
+
+    self.fee.feePercentage = _feePercentage;
+
+    emit SetFeePercentage(_feePercentage.rawValue);
+  }
+
+  /**
+   * @notice Withdraw fees gained by the sender
+   * @param self Data type the library is attached to
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @return feeClaimed Amount of fee claimed
+   */
+  function claimFee(
+    ICreditLineStorage.PositionManagerData storage self,
+    ICreditLineStorage.FeeStatus storage feeStatus
+  ) external returns (uint256 feeClaimed) {
+    // Fee to claim
+    FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msg.sender];
+
+    // Check that fee is available
+    require(_feeClaimed.isGreaterThanOrEqual(0), 'No fee to claim');
+
+    // Update fee status
+    delete feeStatus.feeGained[msg.sender];
+
+    FixedPoint.Unsigned memory _totalRemainingFees =
+      feeStatus.totalFeeAmount.sub(_feeClaimed);
+
+    feeStatus.totalFeeAmount = _totalRemainingFees;
+
+    // Transfer amount to the sender
+    feeClaimed = _feeClaimed.rawValue;
+
+    self.collateralToken.safeTransfer(msg.sender, _feeClaimed.rawValue);
+
+    emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
+  }
+
+  /**
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @param self Data type the library is attached to
+   * @param _feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param _feeProportions An array of the proportions of fees generated each recipient will receive
+   */
+  function setFeeRecipients(
+    ICreditLineStorage.PositionManagerData storage self,
+    address[] calldata _feeRecipients,
+    uint32[] calldata _feeProportions
+  ) external {
+    require(
+      _feeRecipients.length == _feeProportions.length,
+      'Fee recipients and fee proportions do not match'
+    );
+
+    uint256 totalActualFeeProportions;
+
+    // Store the sum of all proportions
+    for (uint256 i = 0; i < _feeProportions.length; i++) {
+      totalActualFeeProportions += _feeProportions[i];
+    }
+
+    self.fee.feeRecipients = _feeRecipients;
+    self.fee.feeProportions = _feeProportions;
+    self.fee.totalFeeProportions = totalActualFeeProportions;
+
+    emit SetFeeRecipients(_feeRecipients, _feeProportions);
+  }
+
+  /**
+   * @notice Update fee gained by the fee recipients
+   * @param feeStatus Actual status of fee gained to be withdrawn
+   * @param feeInfo Actual status of fee recipients and their proportions
+   * @param feeAmount Collateral fee charged
+   */
+  function updateFees(
+    ICreditLineStorage.FeeStatus storage feeStatus,
+    ICreditLineStorage.Fee storage feeInfo,
+    FixedPoint.Unsigned memory feeAmount
+  ) internal {
+    FixedPoint.Unsigned memory feeCharged;
+
+    uint256 numberOfRecipients = feeInfo.feeRecipients.length;
+
+    for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
+      address feeRecipient = feeInfo.feeRecipients[i];
+      FixedPoint.Unsigned memory feeReceived =
+        feeAmount.mul(feeInfo.feeProportions[i]).div(
+          feeInfo.totalFeeProportions
+        );
+      feeStatus.feeGained[feeRecipient] = feeStatus.feeGained[feeRecipient].add(
+        feeReceived
+      );
+      feeCharged = feeCharged.add(feeReceived);
+    }
+
+    address lastRecipient = feeInfo.feeRecipients[numberOfRecipients - 1];
+
+    feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient]
+      .add(feeAmount)
+      .sub(feeCharged);
+
+    feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
+  }
+
+  // TODO
   function trimExcess(
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     IERC20 token,
@@ -532,7 +617,7 @@ library SynthereumCreditLineLib {
   ) external returns (FixedPoint.Unsigned memory amount) {
     FixedPoint.Unsigned memory balance =
       FixedPoint.Unsigned(token.balanceOf(address(this)));
-    if (address(token) == address(feePayerData.collateralCurrency)) {
+    if (address(token) == address(positionManagerData.collateralToken)) {
       // If it is the collateral currency, send only the amount that the contract is not tracking.
       // Note: this could be due to rounding error or balance-changing tokens, like aTokens.
       amount = balance.sub(pfcAmount);
@@ -546,7 +631,7 @@ library SynthereumCreditLineLib {
     );
   }
 
-  // TODO what's the difference with repay?
+  /* TODO what's the difference with repay?
   // Reduces a sponsor's position and global counters by the specified parameters. Handles deleting the entire
   // position if the entire position is being removed. Does not make any external transfers.
   function reduceSponsorPosition(
@@ -569,7 +654,6 @@ library SynthereumCreditLineLib {
     ) {
       positionData._deleteSponsorPosition(
         globalPositionData,
-        feePayerData,
         sponsor
       );
       return;
@@ -598,43 +682,7 @@ library SynthereumCreditLineLib {
       .totalTokensOutstanding
       .sub(tokensToRemove);
   }
-
-  //Call to the internal one (see _decimalsScalingFactor)
-  function decimalsScalingFactor(
-    FixedPoint.Unsigned memory oraclePrice,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) external view returns (FixedPoint.Unsigned memory scaledPrice) {
-    return _decimalsScalingFactor(oraclePrice, feePayerData);
-  }
-
-  //Call to the internal one (see _calculateDaoFee)
-  function calculateDaoFee(
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
-    ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FixedPoint.Unsigned memory numTokens,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) external view returns (FixedPoint.Unsigned memory) {
-    return
-      _calculateDaoFee(
-        globalPositionData,
-        numTokens,
-        positionManagerData._getDaoFeePercentage(),
-        feePayerData
-      );
-  }
-
-  //Call to the internal ones (see _getDaoFeePercentage and _getDaoFeeRecipient)
-  function daoFee(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  )
-    external
-    view
-    returns (FixedPoint.Unsigned memory percentage, address recipient)
-  {
-    percentage = positionManagerData._getDaoFeePercentage();
-    recipient = positionManagerData._getDaoFeeRecipient();
-  }
-
+  */
   //Call to the internal one (see _getCapMintAmount)
   function capMintAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData
@@ -661,85 +709,57 @@ library SynthereumCreditLineLib {
   function _incrementCollateralBalances(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FixedPoint.Unsigned memory collateralAmount,
-    FeePayerParty.FeePayerData memory feePayerData
-  ) internal returns (FixedPoint.Unsigned memory) {
-    positionData.rawCollateral.addCollateral(
-      collateralAmount,
-      feePayerData.cumulativeFeeMultiplier
+    FixedPoint.Unsigned memory collateralAmount
+  ) internal {
+    positionData.rawCollateral = positionData.rawCollateral.add(
+      collateralAmount
     );
-
-    return
-      globalPositionData.rawTotalPositionCollateral.addCollateral(
-        collateralAmount,
-        feePayerData.cumulativeFeeMultiplier
-      );
+    globalPositionData.rawTotalPositionCollateral = globalPositionData
+      .rawTotalPositionCollateral
+      .add(collateralAmount);
   }
 
-  // Ensure individual and global consistency when decrementing collateral balances. Returns the change to the
-  // position. We elect to return the amount that the global collateral is decreased by, rather than the individual
-  // position's collateral, because we need to maintain the invariant that the global collateral is always
-  // <= the collateral owned by the contract to avoid reverts on withdrawals. The amount returned = amount withdrawn.
   function _decrementCollateralBalances(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FixedPoint.Unsigned memory collateralAmount,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal returns (FixedPoint.Unsigned memory) {
-    positionData.rawCollateral.removeCollateral(
-      collateralAmount,
-      feePayerData.cumulativeFeeMultiplier
+    FixedPoint.Unsigned memory collateralAmount
+  ) internal {
+    positionData.rawCollateral = positionData.rawCollateral.sub(
+      collateralAmount
     );
-    return
-      globalPositionData.rawTotalPositionCollateral.removeCollateral(
-        collateralAmount,
-        feePayerData.cumulativeFeeMultiplier
-      );
+    globalPositionData.rawTotalPositionCollateral = globalPositionData
+      .rawTotalPositionCollateral
+      .sub(collateralAmount);
   }
 
+  //remove the withdrawn collateral from the position and then check its CR
   function _decrementCollateralBalancesCheckCR(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FixedPoint.Unsigned memory collateralAmount,
-    FeePayerParty.FeePayerData storage feePayerData
+    FixedPoint.Unsigned memory collateralAmount
   ) internal returns (FixedPoint.Unsigned memory) {
-    //remove the withdrawn collateral from the position and then check its CR
-    positionData.rawCollateral.removeCollateral(
-      collateralAmount,
-      feePayerData.cumulativeFeeMultiplier
-    );
+    positionData.rawCollateral.sub(collateralAmount);
+
     (bool isCollateralised, ) =
       _checkCollateralization(
         positionManagerData,
-        positionData.rawCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
+        positionData.rawCollateral,
         positionData.tokensOutstanding
       );
     require(
       isCollateralised,
       'CR is not sufficiently high after the withdraw - try less amount'
     );
-    return
-      globalPositionData.rawTotalPositionCollateral.removeCollateral(
-        collateralAmount,
-        feePayerData.cumulativeFeeMultiplier
-      );
+    return globalPositionData.rawTotalPositionCollateral.sub(collateralAmount);
   }
 
   // Deletes a sponsor's position and updates global counters. Does not make any external transfers.
   function _deleteSponsorPosition(
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FeePayerParty.FeePayerData storage feePayerData,
     address sponsor
   ) internal returns (FixedPoint.Unsigned memory) {
-    FixedPoint.Unsigned memory startingGlobalCollateral =
-      globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-        feePayerData.cumulativeFeeMultiplier
-      );
-
     // Remove the collateral and outstanding from the overall total position.
     globalPositionData.rawTotalPositionCollateral = globalPositionData
       .rawTotalPositionCollateral
@@ -748,28 +768,25 @@ library SynthereumCreditLineLib {
       .totalTokensOutstanding
       .sub(positionToLiquidate.tokensOutstanding);
 
+    // delete position entry from storage
     SynthereumCreditLine(address(this)).deleteSponsorPosition(sponsor);
 
     emit EndedSponsorPosition(sponsor);
 
-    // Return fee-adjusted amount of collateral deleted from position.
-    return
-      startingGlobalCollateral.sub(
-        globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        )
-      );
+    // Return unlocked amount of collateral
+    return positionToLiquidate.rawCollateral;
   }
 
   function _reducePosition(
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory tokensToLiquidate
   ) internal returns (FixedPoint.Unsigned memory collateralUnlocked) {
-    // calculate collateral to unlock
-    FixedPoint.Unsigned memory fraction =
-      tokensToLiquidate.div(positionToLiquidate.tokensOutstanding);
-    collateralUnlocked = positionToLiquidate.rawCollateral.mul(fraction);
+    // calculate collateral to unlock using on-chain price
+    collateralUnlocked = tokensToLiquidate.mul(
+      _getOraclePrice(positionManagerData)
+    );
 
     // reduce position
     positionToLiquidate.tokensOutstanding = positionToLiquidate
@@ -795,11 +812,8 @@ library SynthereumCreditLineLib {
   ) internal view returns (bool, FixedPoint.Unsigned memory) {
     // get oracle price
     FixedPoint.Unsigned memory oraclePrice =
-      _getOraclePrice(
-        positionManagerData,
-        positionManagerData.synthereumFinder,
-        positionManagerData.priceIdentifier
-      );
+      _getOraclePrice(positionManagerData);
+
     // calculate the min collateral of numTokens with chainlink
     FixedPoint.Unsigned memory thresholdValue = numTokens.mul(oraclePrice);
     thresholdValue = thresholdValue.mul(
@@ -829,104 +843,21 @@ library SynthereumCreditLineLib {
     );
   }
 
-  // Check the fee percentage doesn not overcome max fee of user and calculate DAO fee using GCR
-  function _checkAndCalculateDaoFee(
-    ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (FixedPoint.Unsigned memory) {
-    FixedPoint.Unsigned memory actualFeePercentage =
-      positionManagerData._getDaoFeePercentage();
-    require(
-      actualFeePercentage.isLessThanOrEqual(feePercentage),
-      'User fees are not enough for paying DAO'
-    );
-    return
-      _calculateDaoFee(
-        globalPositionData,
-        numTokens,
-        actualFeePercentage,
-        feePayerData
-      );
-  }
-
-  // Calculate Dao fee using GCR
-  function _calculateDaoFee(
-    ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory actualFeePercentage,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (FixedPoint.Unsigned memory) {
-    FixedPoint.Unsigned memory globalCollateralizationRatio =
-      _getCollateralizationRatio(
-        globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-          feePayerData.cumulativeFeeMultiplier
-        ),
-        globalPositionData.totalTokensOutstanding
-      );
-    return numTokens.mul(globalCollateralizationRatio).mul(actualFeePercentage);
-  }
-
-  /**
-   * @notice Calculate synthetic token amount starting from an amount of collateral, using on-chain oracle
-   * @param finder Synthereum finder
-   * @param collateralToken Collateral token contract
-   * @param priceIdentifier Identifier of price pair
-   * @param numTokens Amount of collateral from which you want to calculate synthetic token amount
-   * @return numTokens Amount of tokens after on-chain oracle conversion
-   */
-  // function _calculateNumberOfTokens(
-  //   ISynthereumFinder finder,
-  //   IStandardERC20 collateralToken,
-  //   bytes32 priceIdentifier,
-  //   FixedPoint.Unsigned memory collateralAmount
-  // ) internal view returns (FixedPoint.Unsigned memory numTokens) {
-  //   FixedPoint.Unsigned memory priceRate =
-  //     _getOraclePrice(finder, priceIdentifier);
-  //   numTokens = collateralAmount.mul(10**(18 - collateralToken.decimals())).div(
-  //     priceRate
-  //   );
-  // }
-
   /**
    * @notice Retrun the on-chain oracle price for a pair
-   * @param finder Synthereum finder
-   * @param priceIdentifier Identifier of price pair
    * @return priceRate Latest rate of the pair
    */
   function _getOraclePrice(
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
-    ISynthereumFinder finder,
-    bytes32 priceIdentifier
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (FixedPoint.Unsigned memory priceRate) {
     ISynthereumPriceFeed priceFeed =
       ISynthereumPriceFeed(
-        finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+        positionManagerData.synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.PriceFeed
+        )
       );
-    priceRate = FixedPoint.Unsigned(priceFeed.getLatestPrice(priceIdentifier));
-  }
-
-  // TODO i guess this can be
-  // Fetches a resolved Oracle price from the Oracle. Reverts if the Oracle hasn't resolved for this request.
-  // function _getOracleEmergencyShutdownPrice(
-  //   ICreditLineStorage.PositionManagerData
-  //     storage positionManagerData,
-  //   FeePayerParty.FeePayerData storage feePayerData
-  // ) internal view returns (FixedPoint.Unsigned memory) {
-  //   return getOraclePrice(positionManagerData, requestedTime, feePayerData);
-  // }
-
-  // Reduce orcale price according to the decimals of the collateral
-  function _decimalsScalingFactor(
-    FixedPoint.Unsigned memory oraclePrice,
-    FeePayerParty.FeePayerData storage feePayerData
-  ) internal view returns (FixedPoint.Unsigned memory scaledPrice) {
-    uint8 collateralDecimalsNumber =
-      IStandardERC20(address(feePayerData.collateralCurrency)).decimals();
-    scaledPrice = oraclePrice.div(
-      (10**(uint256(18)).sub(collateralDecimalsNumber))
+    priceRate = FixedPoint.Unsigned(
+      priceFeed.getLatestPrice(positionManagerData.priceIdentifier)
     );
   }
 
@@ -941,26 +872,6 @@ library SynthereumCreditLineLib {
     );
   }
 
-  // Get Dao fee percentage
-  function _getDaoFeePercentage(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) internal view returns (FixedPoint.Unsigned memory feePercentage) {
-    feePercentage = FixedPoint.Unsigned(
-      positionManagerData.getSelfMintingController().getDaoFeePercentage(
-        address(this)
-      )
-    );
-  }
-
-  // Get Dao fee recipients
-  function _getDaoFeeRecipient(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) internal view returns (address recipient) {
-    recipient = positionManagerData
-      .getSelfMintingController()
-      .getDaoFeeRecipient(address(this));
-  }
-
   // Get self-minting controller instance
   function getSelfMintingController(
     ICreditLineStorage.PositionManagerData storage positionManagerData
@@ -970,16 +881,5 @@ library SynthereumCreditLineLib {
         SynthereumInterfaces.SelfMintingController
       )
     );
-  }
-
-  // Calculate colltaeralization ratio
-  function _getCollateralizationRatio(
-    FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory numTokens
-  ) internal pure returns (FixedPoint.Unsigned memory ratio) {
-    return
-      numTokens.isLessThanOrEqual(0)
-        ? FixedPoint.fromUnscaledUint(0)
-        : collateral.div(numTokens);
   }
 }
