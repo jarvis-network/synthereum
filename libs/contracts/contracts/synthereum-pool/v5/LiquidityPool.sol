@@ -737,31 +737,17 @@ contract SynthereumLiquidityPool is
   }
 
   /**
-   * @notice Check if collateral is enough to collateralize the position
-   * @return True if position is overcollaterlized, otherwise false
-   */
-  function isOverCollateralized()
-    external
-    view
-    override
-    nonReentrantView
-    returns (bool)
-  {
-    return poolStorage.isOverCollateralized(lpPosition, liquidationData);
-  }
-
-  /**
-   * @notice Returns percentage of coverage of the collateral according to the last price
-   * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
+   * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
+   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
   function collateralCoverage()
     external
     view
     override
     nonReentrantView
-    returns (uint256)
+    returns (bool, uint256)
   {
-    return poolStorage.collateralCoverage(lpPosition);
+    return poolStorage.collateralCoverage(lpPosition, liquidationData);
   }
 
   /**
