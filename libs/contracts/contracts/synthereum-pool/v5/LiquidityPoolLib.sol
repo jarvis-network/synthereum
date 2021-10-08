@@ -563,14 +563,14 @@ library SynthereumLiquidityPoolLib {
       lpPosition.totalCollateralAmount.sub(collateralToDecrease);
 
     // Check that position doesn't become undercollateralized
-    (bool _isOverCollateralized_, ) =
-      self._isOverCollateralized(
+    (bool _isOverCollateralized, ) =
+      self.isOverCollateralized(
         lpPosition,
         liquidationData,
         _newTotalCollateral
       );
 
-    require(_isOverCollateralized_, 'Position undercollateralized');
+    require(_isOverCollateralized, 'Position undercollateralized');
 
     // Update new total collateral amount
     lpPosition.totalCollateralAmount = _newTotalCollateral;
@@ -643,17 +643,17 @@ library SynthereumLiquidityPoolLib {
 
     // Collateral value of the synthetic token passed
     (
-      bool _isOverCollaterlized_,
+      bool _isOverCollaterlized,
       FixedPoint.Unsigned memory _collateralReceived
     ) =
-      self._isOverCollateralized(
+      self.isOverCollateralized(
         lpPosition,
         liquidationData,
         collateralInLiquidation
       );
 
     // Revert if position is not undercollataralized
-    require(!_isOverCollaterlized_, 'Position is not undercollataralized');
+    require(!_isOverCollaterlized, 'Position is not undercollataralized');
 
     // Burn synthetic tokens to be liquidated
     self.burnSyntheticTokens(numSynthTokens.rawValue);
@@ -972,43 +972,30 @@ library SynthereumLiquidityPoolLib {
   }
 
   /**
-   * @notice Check if collateral is enough to collateralize the position
+   * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
    * @param self Data type the library is attached to
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param liquidationData Liquidation info (see LiquidationData struct)
-   * @return _isOverCollateralized_ True if position is overcollaterlized, otherwise false
-   */
-  function isOverCollateralized(
-    ISynthereumLiquidityPoolStorage.Storage storage self,
-    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
-    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData
-  ) external view returns (bool _isOverCollateralized_) {
-    (_isOverCollateralized_, ) = self._isOverCollateralized(
-      lpPosition,
-      liquidationData,
-      lpPosition.totalCollateralAmount
-    );
-  }
-
-  /**
-   * @notice Returns percentage of coverage of the collateral according to the last price
-   * @param self Data type the library is attached to
-   * @param lpPosition Position of the LP (see LPPosition struct)
-   * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
+   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
   function collateralCoverage(
     ISynthereumLiquidityPoolStorage.Storage storage self,
-    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition
-  ) external view returns (uint256) {
-    return
-      lpPosition
-        .totalCollateralAmount
-        .div(
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData
+  ) external view returns (bool, uint256) {
+    (bool _isOverCollateralized, ) =
+      self.isOverCollateralized(
+        lpPosition,
+        liquidationData,
+        lpPosition.totalCollateralAmount
+      );
+    FixedPoint.Unsigned memory _collateralCoverage =
+      lpPosition.totalCollateralAmount.div(
         lpPosition.tokensCollateralized.mul(
           getPriceFeedRate(self.finder, self.priceIdentifier)
         )
-      )
-        .rawValue;
+      );
+    return (_isOverCollateralized, _collateralCoverage.rawValue);
   }
 
   /**
@@ -1607,10 +1594,10 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param collateralToCompare collateral used for checking the overcollaterlization
-   * @return _isOverCollateralized_ True if position is overcollaterlized, otherwise false
+   * @return _isOverCollateralized True if position is overcollaterlized, otherwise false
    * @return collateralValue Collateral amount equal to the value of tokens passed
    */
-  function _isOverCollateralized(
+  function isOverCollateralized(
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
@@ -1619,7 +1606,7 @@ library SynthereumLiquidityPoolLib {
     internal
     view
     returns (
-      bool _isOverCollateralized_,
+      bool _isOverCollateralized,
       FixedPoint.Unsigned memory collateralValue
     )
   {
@@ -1630,7 +1617,7 @@ library SynthereumLiquidityPoolLib {
       lpPosition.tokensCollateralized
     );
 
-    _isOverCollateralized_ = collateralToCompare.isGreaterThanOrEqual(
+    _isOverCollateralized = collateralToCompare.isGreaterThanOrEqual(
       collateralValue.mul(liquidationData.collateralRequirement)
     );
   }

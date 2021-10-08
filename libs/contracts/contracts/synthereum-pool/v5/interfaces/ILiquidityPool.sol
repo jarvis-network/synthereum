@@ -284,16 +284,10 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   function emergencyShutdownTimestamp() external view returns (uint256);
 
   /**
-   * @notice Check if collateral is enough to collateralize the position
-   * @return True if position is overcollaterlized, otherwise false
+   * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
+   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
-  function isOverCollateralized() external view returns (bool);
-
-  /**
-   * @notice Returns percentage of coverage of the collateral according to the last price
-   * @return Percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
-   */
-  function collateralCoverage() external view returns (uint256);
+  function collateralCoverage() external returns (bool, uint256);
 
   /**
    * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
