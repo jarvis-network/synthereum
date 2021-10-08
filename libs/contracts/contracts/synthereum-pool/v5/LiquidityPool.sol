@@ -704,7 +704,7 @@ contract SynthereumLiquidityPool is
    * @notice Returns the price of the pair at the moment of the shutdown
    * @return Price of the pair
    */
-  function emergencyShutdoenPrice() external view override returns (uint256) {
+  function emergencyShutdownPrice() external view override returns (uint256) {
     return emergencyShutdownData.price.rawValue;
   }
 
@@ -712,7 +712,7 @@ contract SynthereumLiquidityPool is
    * @notice Returns the timestamp (unix time) at the moment of the shutdown
    * @return Timestamp
    */
-  function emergencyShutdoenTimestamp()
+  function emergencyShutdownTimestamp()
     external
     view
     override

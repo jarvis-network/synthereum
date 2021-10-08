@@ -271,13 +271,13 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
    * @notice Returns the price of the pair at the moment of the shutdown
    * @return Price of the pair
    */
-  function emergencyShutdoenPrice() external view returns (uint256);
+  function emergencyShutdownPrice() external view returns (uint256);
 
   /**
    * @notice Returns the timestamp (unix time) at the moment of the shutdown
    * @return Timestamp
    */
-  function emergencyShutdoenTimestamp() external view returns (uint256);
+  function emergencyShutdownTimestamp() external view returns (uint256);
 
   /**
    * @notice Check if collateral is enough to collateralize the position
