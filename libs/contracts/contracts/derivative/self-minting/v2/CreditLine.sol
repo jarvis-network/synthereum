@@ -20,8 +20,7 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {SynthereumCreditLineLib} from './CreditLineLib.sol';
-import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
-import {FeePayerParty} from '../../common/FeePayerParty.sol';
+import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
  * @title Financial contract with priceless position management.
@@ -31,15 +30,14 @@ import {FeePayerParty} from '../../common/FeePayerParty.sol';
 contract SynthereumCreditLine is
   ISelfMintingDerivativeDeployment,
   ICreditLineStorage,
-  FeePayerParty
+  Lockable
 {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
-  using SynthereumCreditLineLib for ICreditLineStorage.PositionData;
-  using SynthereumCreditLineLib for ICreditLineStorage.PositionManagerData;
-  using FeePayerPartyLib for FixedPoint.Unsigned;
+  using SynthereumCreditLineLib for PositionData;
+  using SynthereumCreditLineLib for PositionManagerData;
 
   /**
    * @notice Construct the PerpetualPositionManager.
@@ -68,6 +66,7 @@ contract SynthereumCreditLine is
     address timerAddress;
     address excessTokenBeneficiary;
     uint8 version;
+    Fee fees;
     ISynthereumFinder synthereumFinder;
   }
 
@@ -84,6 +83,8 @@ contract SynthereumCreditLine is
   GlobalPositionData public globalPositionData;
 
   PositionManagerData public positionManagerData;
+
+  FeeStatus private feeStatus;
 
   //----------------------------------------
   // Events
@@ -111,7 +112,11 @@ contract SynthereumCreditLine is
     uint256 indexed newTokenCount,
     uint256 feeAmount
   );
-  event EmergencyShutdown(address indexed caller, uint256 shutdownTimestamp);
+  event EmergencyShutdown(
+    address indexed caller,
+    uint256 settlementPrice,
+    uint256 shutdowntimestamp
+  );
   event SettleEmergencyShutdown(
     address indexed caller,
     uint256 indexed collateralReturned,
@@ -130,18 +135,19 @@ contract SynthereumCreditLine is
   // Modifiers
   //----------------------------------------
 
-  modifier onlyCollateralizedPosition(address sponsor) {
-    _onlyCollateralizedPosition(sponsor);
-    _;
-  }
-
   modifier notEmergencyShutdown() {
-    _notEmergencyShutdown();
+    require(
+      positionManagerData.emergencyShutdownTimestamp == 0,
+      'Contract emergency shutdown'
+    );
     _;
   }
 
   modifier isEmergencyShutdown() {
-    _isEmergencyShutdown();
+    require(
+      positionManagerData.emergencyShutdownTimestamp != 0,
+      'Contract not emergency shutdown'
+    );
     _;
   }
 
@@ -153,27 +159,7 @@ contract SynthereumCreditLine is
    * @notice Construct the SelfMintingPerpetualPositionManagerMultiParty.
    * @param _positionManagerData Input parameters of PositionManager (see PositionManagerData struct)
    */
-  constructor(PositionManagerParams memory _positionManagerData)
-    FeePayerParty(
-      _positionManagerData.collateralAddress,
-      address(_positionManagerData.synthereumFinder),
-      _positionManagerData.timerAddress
-    )
-    nonReentrant()
-  {
-    // require(
-    //   _getIdentifierWhitelist().isIdentifierSupported(
-    //     _positionManagerData.priceFeedIdentifier
-    //   ),
-    //   'Unsupported price identifier'
-    // );
-    // require(
-    //   _getCollateralWhitelist().isOnWhitelist(
-    //     _positionManagerData.collateralAddress
-    //   ),
-    //   'Collateral not whitelisted'
-    // );
-
+  constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
     require(
       _positionManagerData.overCollateralization.isGreaterThan(1),
       'CR must be higher than 100%'
@@ -181,6 +167,9 @@ contract SynthereumCreditLine is
 
     positionManagerData.synthereumFinder = _positionManagerData
       .synthereumFinder;
+    positionManagerData.collateralToken = IStandardERC20(
+      _positionManagerData.collateralAddress
+    );
     positionManagerData.tokenCurrency = BaseControlledMintableBurnableERC20(
       _positionManagerData.tokenAddress
     );
@@ -195,6 +184,13 @@ contract SynthereumCreditLine is
     positionManagerData.excessTokenBeneficiary = _positionManagerData
       .excessTokenBeneficiary;
     positionManagerData.version = _positionManagerData.version;
+    positionManagerData.setFeePercentage(
+      _positionManagerData.fees.feePercentage
+    );
+    positionManagerData.setFeeRecipients(
+      _positionManagerData.fees.feeRecipients,
+      _positionManagerData.fees.feeProportions
+    );
   }
 
   //----------------------------------------
@@ -202,9 +198,9 @@ contract SynthereumCreditLine is
   //----------------------------------------
 
   /**
-   * @notice Transfers `collateralAmount` of `feePayerData.collateralCurrency` into the caller's position.
+   * @notice Transfers `collateralAmount` into the caller's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
-   * at least `collateralAmount` of `feePayerData.collateralCurrency`.
+   * at least `collateralAmount` of collateral token
    * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
    */
   function deposit(uint256 collateralAmount) external {
@@ -212,17 +208,15 @@ contract SynthereumCreditLine is
   }
 
   /**
-   * @notice Transfers `collateralAmount` of `feePayerData.collateralCurrency` from the sponsor's position to the sponsor.
-   * @dev Reverts if the withdrawal puts this position's collateralization ratio below the global collateralization
-   * ratio. In that case, use `requestWithdrawal`. Might not withdraw the full requested amount to account for precision loss.
+   * @notice Transfers `collateralAmount` from the sponsor's position to the sponsor.
+   * @dev Reverts if the withdrawal puts this position's collateralization ratio below the collateral requirement
    * @param collateralAmount is the amount of collateral to withdraw.
    * @return amountWithdrawn The actual amount of collateral withdrawn.
    */
   function withdraw(uint256 collateralAmount)
     external
     notEmergencyShutdown()
-    fees()
-    nonReentrant()
+    nonReentrant
     returns (uint256 amountWithdrawn)
   {
     PositionData storage positionData = _getPositionData(msg.sender);
@@ -231,8 +225,7 @@ contract SynthereumCreditLine is
       .withdraw(
       globalPositionData,
       positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      feePayerData
+      FixedPoint.Unsigned(collateralAmount)
     )
       .rawValue;
   }
@@ -245,78 +238,69 @@ contract SynthereumCreditLine is
    * `collateralCurrency`.
    * @param collateralAmount is the number of collateral tokens to collateralize the position with
    * @param numTokens is the number of tokens to mint from the position.
-   * @param feePercentage The percentage of fee that is paid in collateralCurrency
    */
-  function create(
-    uint256 collateralAmount,
-    uint256 numTokens,
-    uint256 feePercentage
-  )
+  function create(uint256 collateralAmount, uint256 numTokens)
     external
     notEmergencyShutdown()
-    fees()
-    nonReentrant()
-    returns (uint256 daoFeeAmount)
+    nonReentrant
+    returns (uint256 feeAmount)
   {
     PositionData storage positionData = positions[msg.sender];
-    daoFeeAmount = positionData
+    feeAmount = positionData
       .create(
       globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
       FixedPoint.Unsigned(numTokens),
-      FixedPoint.Unsigned(feePercentage),
-      feePayerData
+      feeStatus
     )
       .rawValue;
   }
 
   /**
-   * @notice Burns `numTokens` of `tokenCurrency` and sends back the proportional amount of `feePayerData.collateralCurrency`.
+   * @notice Burns `numTokens` of `tokenCurrency` and sends back the proportional amount of collateral
    * @dev Can only be called by a token sponsor. Might not redeem the full proportional amount of collateral
    * in order to account for precision loss. This contract must be approved to spend at least `numTokens` of
    * `tokenCurrency`.
    * @param numTokens is the number of tokens to be burnt for a commensurate amount of collateral.
    * @return amountWithdrawn The actual amount of collateral withdrawn.
+   * @return feeAmount incurred fees in collateral token
    */
   function redeem(uint256 numTokens, uint256 feePercentage)
     external
     notEmergencyShutdown()
-    fees()
-    nonReentrant()
-    returns (uint256 amountWithdrawn, uint256 daoFeeAmount)
+    nonReentrant
+    returns (uint256 amountWithdrawn, uint256 feeAmount)
   {
     PositionData storage positionData = _getPositionData(msg.sender);
 
     (
       FixedPoint.Unsigned memory collateralAmount,
-      FixedPoint.Unsigned memory feeAmount
+      FixedPoint.Unsigned memory uFeeAmount
     ) =
       positionData.redeeem(
         globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
         FixedPoint.Unsigned(feePercentage),
-        feePayerData,
+        feeStatus,
         msg.sender
       );
 
     amountWithdrawn = collateralAmount.rawValue;
-    daoFeeAmount = feeAmount.rawValue;
+    feeAmount = uFeeAmount.rawValue;
   }
 
   /**
-   * @notice Burns `numTokens` of `tokenCurrency` to decrease sponsors position size, without sending back `feePayerData.collateralCurrency`.
+   * @notice Burns `numTokens` of `tokenCurrency` to decrease sponsors position size, without sending back collateral.
    * This is done by a sponsor to increase position CR.
    * @dev Can only be called by token sponsor. This contract must be approved to spend `numTokens` of `tokenCurrency`.
    * @param numTokens is the number of tokens to be burnt for a commensurate amount of collateral.
-   * @param feePercentage the fee percentage paid by the token sponsor in collateralCurrency
    */
-  function repay(uint256 numTokens, uint256 feePercentage)
+  function repay(uint256 numTokens)
     external
     notEmergencyShutdown()
-    fees()
-    nonReentrant()
+    nonReentrant
     returns (uint256 daoFeeAmount)
   {
     PositionData storage positionData = _getPositionData(msg.sender);
@@ -325,8 +309,7 @@ contract SynthereumCreditLine is
         globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
-        FixedPoint.Unsigned(feePercentage),
-        feePayerData
+        feeStatus
       )
     )
       .rawValue;
@@ -336,7 +319,7 @@ contract SynthereumCreditLine is
    * @notice If the contract is emergency shutdown then all token holders and sponsor can redeem their tokens or
    * remaining collateral for underlying at the prevailing price defined by a DVM vote.
    * @dev This burns all tokens from the caller of `tokenCurrency` and sends back the resolved settlement value of
-   * `feePayerData.collateralCurrency`. Might not redeem the full proportional amount of collateral in order to account for
+   * collateral. Might not redeem the full proportional amount of collateral in order to account for
    * precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.
    * @dev This contract must have the Burner role for the `tokenCurrency`.
    * @return amountWithdrawn The actual amount of collateral withdrawn.
@@ -344,8 +327,7 @@ contract SynthereumCreditLine is
   function settleEmergencyShutdown()
     external
     isEmergencyShutdown()
-    fees()
-    nonReentrant()
+    nonReentrant
     returns (uint256 amountWithdrawn)
   {
     PositionData storage positionData = positions[msg.sender];
@@ -353,7 +335,7 @@ contract SynthereumCreditLine is
       .settleEmergencyShutdown(
       globalPositionData,
       positionManagerData,
-      feePayerData
+      feeStatus
     )
       .rawValue;
   }
@@ -364,38 +346,38 @@ contract SynthereumCreditLine is
    * Upon emergency shutdown, the contract settlement time is set to the shutdown time. This enables withdrawal
    * to occur via the `settleEmergencyShutdown` function.
    */
-  function emergencyShutdown()
-    external
-    override
-    notEmergencyShutdown()
-    nonReentrant()
-  {
+  function emergencyShutdown() external notEmergencyShutdown() nonReentrant {
     require(
       msg.sender ==
         positionManagerData.synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.Manager
         ),
-      'Caller must be a Synthereum manager or the UMA governor'
+      'Caller must be a Synthereum manager'
     );
     // store timestamp and last price
-    positionManagerData.emergencyShutdownTimestamp = getCurrentTime();
-
-    FixedPoint.Unsigned memory oraclePrice =
-      positionManagerData._getOraclePrice(
-        positionManagerData.synthereumFinder,
-        positionManagerData.priceIdentifier
-      );
+    positionManagerData.emergencyShutdownTimestamp = block.timestamp;
 
     uint8 tokenCurrencyDecimals =
       IStandardERC20(address(positionManagerData.tokenCurrency)).decimals();
     FixedPoint.Unsigned memory scaledPrice =
-      oraclePrice.div((10**(uint256(18)).sub(tokenCurrencyDecimals)));
+      positionManagerData._getOraclePrice().div(
+        (10**(uint256(18)).sub(tokenCurrencyDecimals))
+      );
     positionManagerData.emergencyShutdownPrice = scaledPrice;
 
     emit EmergencyShutdown(
       msg.sender,
+      scaledPrice.rawValue,
       positionManagerData.emergencyShutdownTimestamp
     );
+  }
+
+  /**
+   * @notice Withdraw fees gained by the sender
+   * @return feeClaimed Amount of fee claimed
+   */
+  function claimFee() external nonReentrant returns (uint256 feeClaimed) {
+    feeClaimed = positionManagerData.claimFee(feeStatus);
   }
 
   function liquidate(
@@ -403,9 +385,8 @@ contract SynthereumCreditLine is
     FixedPoint.Unsigned calldata maxTokensToLiquidate
   )
     external
-    fees()
     notEmergencyShutdown()
-    nonReentrant()
+    nonReentrant
     returns (
       uint256 tokensLiquidated,
       uint256 collateralLiquidated,
@@ -423,8 +404,7 @@ contract SynthereumCreditLine is
     ) = positionToLiquidate.liquidate(
       positionManagerData,
       globalPositionData,
-      feePayerData,
-      sponsor,
+      feeStatus,
       maxTokensToLiquidate
     );
 
@@ -433,7 +413,7 @@ contract SynthereumCreditLine is
       LiquidationData(
         sponsor,
         msg.sender,
-        getCurrentTime(),
+        block.timestamp,
         tokensLiquidated,
         collateralLiquidated
       )
@@ -445,7 +425,7 @@ contract SynthereumCreditLine is
       collateralLiquidated,
       tokensLiquidated,
       collateralReward,
-      getCurrentTime()
+      block.timestamp
     );
   }
 
@@ -478,32 +458,32 @@ contract SynthereumCreditLine is
     return liquidationArray[liquidationId];
   }
 
-  // TODO remove with removal of fee payer
-  function remargin() external override {
-    return;
-  }
-
+  // TODO
   /**
    * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
    * @dev This will drain down to the amount of tracked collateral and drain the full balance of any other token.
    * @param token address of the ERC20 token whose excess balance should be drained.
    */
-  function trimExcess(IERC20 token)
-    external
-    nonReentrant()
-    returns (uint256 amount)
-  {
-    FixedPoint.Unsigned memory pfcAmount = _pfc();
-    amount = positionManagerData
-      .trimExcess(token, pfcAmount, feePayerData)
-      .rawValue;
-  }
+  // function trimExcess(IERC20 token)
+  //   external
+  //   nonReentrant
+  //   returns (uint256 amount)
+  // {
+  //   FixedPoint.Unsigned memory pfcAmount = _pfc();
+  //   amount = positionManagerData
+  //     .trimExcess(token, pfcAmount, feePayerData)
+  //     .rawValue;
+  // }
 
   /**
    * @notice Delete a TokenSponsor position (This function can only be called by the contract itself)
    * @param sponsor address of the TokenSponsor.
    */
-  function deleteSponsorPosition(address sponsor) external onlyThisContract {
+  function deleteSponsorPosition(address sponsor) external {
+    require(
+      msg.sender == address(this),
+      'Only the contract can invoke this function'
+    );
     delete positions[sponsor];
   }
 
@@ -514,16 +494,13 @@ contract SynthereumCreditLine is
    * @param sponsor address whose collateral amount is retrieved.
    * @return collateralAmount amount of collateral within a sponsors position.
    */
-  function getCollateral(address sponsor)
+  function getPositionCollateral(address sponsor)
     external
     view
     nonReentrantView()
     returns (FixedPoint.Unsigned memory collateralAmount)
   {
-    return
-      positions[sponsor].rawCollateral.getFeeAdjustedCollateral(
-        feePayerData.cumulativeFeeMultiplier
-      );
+    return positions[sponsor].rawCollateral;
   }
 
   /**
@@ -577,23 +554,6 @@ contract SynthereumCreditLine is
   }
 
   /**
-   * @notice Accessor method for the total collateral stored within the SelfMintingPerpetualPositionManagerMultiParty.
-   * @return totalCollateral amount of all collateral within the position manager.
-   */
-  function totalPositionCollateral()
-    external
-    view
-    nonReentrantView()
-    returns (uint256)
-  {
-    return
-      globalPositionData
-        .rawTotalPositionCollateral
-        .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-        .rawValue;
-  }
-
-  /**
    * @notice Get the currently minted synthetic tokens from all self-minting derivatives
    * @return totalTokens Total amount of synthetic tokens minted
    */
@@ -614,36 +574,6 @@ contract SynthereumCreditLine is
     return positionManagerData.emergencyShutdownPrice.rawValue;
   }
 
-  /** @notice Calculates the DAO fee based on the numTokens parameter
-   * @param numTokens Number of synthetic tokens used in the transaction
-   * @return rawValue The DAO fee to be paid in collateralCurrency
-   */
-  function calculateDaoFee(uint256 numTokens) external view returns (uint256) {
-    return
-      positionManagerData
-        .calculateDaoFee(
-        globalPositionData,
-        FixedPoint.Unsigned(numTokens),
-        feePayerData
-      )
-        .rawValue;
-  }
-
-  /** @notice Checks the currently set fee recipient and fee percentage for the DAO fee
-   * @return feePercentage The percentage set by the DAO to be taken as a fee on each transaction
-   * @return feeRecipient The DAO address that receives the fee
-   */
-  function daoFee()
-    external
-    view
-    returns (uint256 feePercentage, address feeRecipient)
-  {
-    (FixedPoint.Unsigned memory percentage, address recipient) =
-      positionManagerData.daoFee();
-    feePercentage = percentage.rawValue;
-    feeRecipient = recipient;
-  }
-
   /** @notice Check the current cap on self-minting synthetic tokens.
    * A cap mint amount is set in order to avoid depletion of liquidity pools,
    * by self-minting synthetic assets and redeeming collateral from the pools.
@@ -656,17 +586,16 @@ contract SynthereumCreditLine is
   }
 
   /**
-   * @notice Transfers `collateralAmount` of `feePayerData.collateralCurrency` into the specified sponsor's position.
+   * @notice Transfers `collateralAmount` of collateral into the specified sponsor's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
-   * at least `collateralAmount` of `feePayerData.collateralCurrency`.
+   * at least `collateralAmount` of collateral token
    * @param sponsor the sponsor to credit the deposit to.
    * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
    */
   function depositTo(address sponsor, uint256 collateralAmount)
     public
     notEmergencyShutdown()
-    fees()
-    nonReentrant()
+    nonReentrant
   {
     PositionData storage positionData = _getPositionData(sponsor);
 
@@ -674,42 +603,42 @@ contract SynthereumCreditLine is
       globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
-      feePayerData,
       sponsor
     );
   }
 
-  /** @notice Check the collateralCurrency in which fees are paid for a given self-minting derivative
+  /** @notice Check the collateralCurrency for a given self-minting derivative
    * @return collateral The collateral currency
    */
   function collateralCurrency()
     public
     view
-    override(ISelfMintingDerivativeDeployment, FeePayerParty)
+    override(ISelfMintingDerivativeDeployment)
     returns (IERC20 collateral)
   {
-    collateral = FeePayerParty.collateralCurrency();
+    collateral = positionManagerData.collateralToken;
   }
 
   //----------------------------------------
   // Internal functions
   //----------------------------------------
 
-  /** @notice Gets the adjusted collateral after substracting fee
-   * @return adjusted net collateral
-   */
-  function _pfc()
-    internal
-    view
-    virtual
-    override
-    returns (FixedPoint.Unsigned memory)
-  {
-    return
-      globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-        feePayerData.cumulativeFeeMultiplier
-      );
-  }
+  // TODO
+  // /** @notice Gets the adjusted collateral after substracting fee
+  //  * @return adjusted net collateral
+  //  */
+  // function _pfc()
+  //   internal
+  //   view
+  //   virtual
+  //
+  //   returns (FixedPoint.Unsigned memory)
+  // {
+  //   return
+  //     globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
+  //       feePayerData.cumulativeFeeMultiplier
+  //     );
+  // }
 
   /** @notice Gets all data on a given sponsors position for a self-minting derivative
    * @param sponsor Address of the sponsor to check
@@ -718,41 +647,8 @@ contract SynthereumCreditLine is
   function _getPositionData(address sponsor)
     internal
     view
-    onlyCollateralizedPosition(sponsor)
     returns (PositionData storage)
   {
     return positions[sponsor];
-  }
-
-  /** @notice Get the collateral for a position of a token sponsor on a self-minting derivative if any
-   * or return that this token sponsor does not have such a position
-   * @param sponsor Address of the token sponsor to check
-   */
-  function _onlyCollateralizedPosition(address sponsor) internal view {
-    require(
-      positions[sponsor]
-        .rawCollateral
-        .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-        .isGreaterThan(0),
-      'Position has no collateral'
-    );
-  }
-
-  /** @notice Make sure an emergency shutdown is not called on a self-minting derivative
-   */
-  function _notEmergencyShutdown() internal view {
-    require(
-      positionManagerData.emergencyShutdownTimestamp == 0,
-      'Contract emergency shutdown'
-    );
-  }
-
-  /** @notice Make sure an emergency shutdown is called on a self-minting derivative
-   */
-  function _isEmergencyShutdown() internal view {
-    require(
-      positionManagerData.emergencyShutdownTimestamp != 0,
-      'Contract not emergency shutdown'
-    );
   }
 }

@@ -5,11 +5,31 @@ import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {ISynthereumFinder} from '../../../../core/interfaces/IFinder.sol';
+import {IStandardERC20} from '../../../../base/interfaces/IStandardERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 
 interface ICreditLineStorage {
+  // Describe fee structure
+  struct Fee {
+    // Fees charged when a user mints, redeem and exchanges tokens
+    FixedPoint.Unsigned feePercentage;
+    // Recipient receiving fees
+    address[] feeRecipients;
+    // Proportion for each recipient
+    uint32[] feeProportions;
+    // Used with individual proportions to scale values
+    uint256 totalFeeProportions;
+  }
+
+  struct FeeStatus {
+    // Track the fee gained to be withdrawn by an address
+    mapping(address => FixedPoint.Unsigned) feeGained;
+    // Total amount of fees to be withdrawn
+    FixedPoint.Unsigned totalFeeAmount;
+  }
+
   // Represents a single sponsor's position. All collateral is held by this contract.
   // This struct acts as bookkeeping for how much of that collateral is allocated to each sponsor.
   struct PositionData {
@@ -18,8 +38,7 @@ interface ICreditLineStorage {
   }
 
   struct GlobalPositionData {
-    // Keep track of the total collateral and tokens across all positions to enable calculating the
-    // global collateralization ratio without iterating over all positions.
+    // Keep track of the total collateral and tokens across all positions
     FixedPoint.Unsigned totalTokensOutstanding;
     // Similar to the rawCollateral in PositionData, this value should not be used directly.
     //_getFeeAdjustedCollateral(), _addCollateral() and _removeCollateral() must be used to access and adjust.
@@ -29,10 +48,14 @@ interface ICreditLineStorage {
   struct PositionManagerData {
     // SynthereumFinder contract
     ISynthereumFinder synthereumFinder;
+    // Collateral token
+    IStandardERC20 collateralToken;
     // Synthetic token created by this contract.
     BaseControlledMintableBurnableERC20 tokenCurrency;
     // Unique identifier for DVM price feed ticker.
     bytes32 priceIdentifier;
+    // Fees
+    Fee fee;
     // Overcollateralization percentage
     FixedPoint.Unsigned overCollateralization;
     // percentage of collateral liquidated as reward to liquidator
