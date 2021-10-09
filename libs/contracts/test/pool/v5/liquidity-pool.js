@@ -14,6 +14,7 @@ const SynthereumLiquidityPoolLib = artifacts.require(
 const SynthereumChainlinkPriceFeed = artifacts.require(
   'SynthereumChainlinkPriceFeed',
 );
+const SynthereumManager = artifacts.require('SynthereumManager');
 const MockAggregator = artifacts.require('MockAggregator');
 const PoolRegistryMock = artifacts.require('PoolRegistryMock');
 
@@ -33,6 +34,7 @@ contract('LiquidityPool', function (accounts) {
   let poolRegistryAddress;
   let synthereumFinderInstance;
   let priceFeedInstance;
+  let managerInstance;
   const version = 5;
   const admin = accounts[0];
   const maintainer = accounts[1];
@@ -197,6 +199,7 @@ contract('LiquidityPool', function (accounts) {
       version,
       liquidityPoolAddress,
     );
+    managerInstance = await SynthereumManager.deployed();
   });
 
   describe('Should initialize in the constructor', async () => {
@@ -2191,6 +2194,207 @@ contract('LiquidityPool', function (accounts) {
       await truffleAssert.reverts(
         liquidityPoolInstance.claimFee({ from: firstUser }),
         'No fee to claim',
+      );
+    });
+  });
+
+  describe('Should emergency shutdown', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can emergency shutdown', async () => {
+      const emergencyPrice = web3Utils.toWei('115', 'mwei');
+      const emergencyPriceResult = web3Utils.toWei('1.15');
+      await aggregatorInstance.updateAnswer(emergencyPrice);
+      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      const totalCollateralAmount = await liquidityPoolInstance.totalCollateralAmount.call();
+      const finalCollateral = web3Utils
+        .toBN(totalCollateralAmount)
+        .add(web3Utils.toBN(availableLiquidity))
+        .toString();
+      const emergencyTx = await managerInstance.emergencyShutdown(
+        [liquidityPoolAddress],
+        { from: maintainer },
+      );
+      const blockNumber = emergencyTx.receipt.blockNumber;
+      const emergencyTimestamp = (await web3.eth.getBlock(blockNumber))
+        .timestamp;
+      assert.equal(
+        (
+          await liquidityPoolInstance.emergencyShutdownTimestamp.call()
+        ).toString(),
+        emergencyTimestamp.toString(),
+        'Wrong emergency timestamp',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.emergencyShutdownPrice.call()).toString(),
+        emergencyPriceResult.toString(),
+        'Wrong emergency price',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalAvailableLiquidity.call()).toString(),
+        '0',
+        'Still liquidity in the pool',
+      );
+      assert.equal(
+        (await liquidityPoolInstance.totalCollateralAmount.call()).toString(),
+        finalCollateral,
+        'No collateral added',
+      );
+    });
+    it('Can revert is emergency shutdown is not called by the manager', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.emergencyShutdown({ from: maintainer }),
+        'Caller must be the Synthereum manager',
+      );
+    });
+    it('Can revert if mint is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const mintCollateralAmount = web3Utils.toWei('10', 'mwei');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: '0',
+        collateralAmount: mintCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await truffleAssert.reverts(
+        liquidityPoolInstance.mint(mintOperation, { from: firstUser }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if redeem is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const synthTokens = web3Utils.toWei('10', 'mwei');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const redeeemOperation = {
+        numTokens: synthTokens,
+        minCollateral: 0,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await truffleAssert.reverts(
+        liquidityPoolInstance.redeem(redeeemOperation, { from: firstUser }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if exchange is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const synthTokens = web3Utils.toWei('10');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const exchangeOperation = {
+        destPool: DAO,
+        numTokens: synthTokens,
+        minDestNumTokens: 0,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchange(exchangeOperation, { from: firstUser }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if exchange-mint is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const synthTokens = web3Utils.toWei('10');
+      const collateralAmount = web3Utils.toWei('12', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.exchangeMint(
+          collateralAmount,
+          synthTokens,
+          firstUser,
+          {
+            from: firstUser,
+          },
+        ),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if withdraw liquidity is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const collateralAmount = web3Utils.toWei('10', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.withdrawLiquidity(collateralAmount, {
+          from: liquidityProvider,
+        }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if decrease collateral is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const collateralAmount = web3Utils.toWei('10', 'mwei');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.decreaseCollateral(collateralAmount, '0', {
+          from: liquidityProvider,
+        }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if liquidation is called after emergency shutdown', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const synthTokens = web3Utils.toWei('10');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.liquidate(synthTokens, {
+          from: firstUser,
+        }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if emergency shutdown is called again by the manager', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      await truffleAssert.reverts(
+        managerInstance.emergencyShutdown([liquidityPoolAddress], {
+          from: maintainer,
+        }),
+        'Pool emergency shutdown',
+      );
+    });
+    it('Can revert if settlement of emergency shutdown is called without the contract has not been shutdowned', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.settleEmergencyShutdown({
+          from: firstUser,
+        }),
+        'Pool not emergency shutdown',
       );
     });
   });
