@@ -686,9 +686,9 @@ library SynthereumLiquidityPoolLib {
       'Caller must be the Synthereum manager'
     );
 
-    uint256 _timestamp = block.timestamp;
+    timestamp = block.timestamp;
 
-    emergencyShutdownData.timestamp = _timestamp;
+    emergencyShutdownData.timestamp = timestamp;
 
     FixedPoint.Unsigned memory _price =
       getPriceFeedRate(_finder, self.priceIdentifier);
