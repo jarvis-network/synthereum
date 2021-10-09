@@ -751,12 +751,16 @@ library SynthereumLiquidityPoolLib {
     executeSettlement.totalFeeAmount = feeStatus.totalFeeAmount;
     executeSettlement.overCollateral;
 
+    uint256 scalingFactor =
+      10**(18 - getCollateralDecimals(self.collateralToken));
+
     // Add overcollateral and deposited synthetic tokens if the sender is the LP
     if (isLiquidityProvider) {
       FixedPoint.Unsigned memory totalRedeemableCollateral =
-        executeSettlement.tokensCollaterlized.mul(
-          executeSettlement.emergencyPrice
-        );
+        executeSettlement
+          .tokensCollaterlized
+          .mul(executeSettlement.emergencyPrice)
+          .div(scalingFactor);
 
       executeSettlement.overCollateral = executeSettlement
         .totalCollateralAmount
@@ -770,9 +774,10 @@ library SynthereumLiquidityPoolLib {
     }
 
     // Calculate expected and settled collateral
-    executeSettlement.redeemableCollateral = (
-      executeSettlement.userNumTokens.mul(executeSettlement.emergencyPrice)
-    )
+    executeSettlement.redeemableCollateral = executeSettlement
+      .userNumTokens
+      .mul(executeSettlement.emergencyPrice)
+      .div(scalingFactor)
       .add(executeSettlement.overCollateral);
 
     executeSettlement.unusedCollateral = self.calculateUnusedCollateral(
