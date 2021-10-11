@@ -214,7 +214,6 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory feePercentage,
     ICreditLineStorage.FeeStatus storage feeStatus,
     address sponsor
   )
