@@ -63,7 +63,9 @@ contract('AtomicSwap Proxy', accounts => {
 
       truffleAssert.eventEmitted(tx, 'RegisterImplementation', ev => {
         return (
-          ev.id == implementationId1 && ev.implementation == implementationAddr1
+          ev.id == implementationId1 &&
+          ev.implementation == implementationAddr1 &&
+          ev.previous == ZERO_ADDRESS
         );
       });
     });
@@ -86,7 +88,9 @@ contract('AtomicSwap Proxy', accounts => {
 
       truffleAssert.eventEmitted(tx, 'RegisterImplementation', ev => {
         return (
-          ev.id == implementationId1 && ev.implementation == implementationAddr2
+          ev.id == implementationId1 &&
+          ev.implementation == implementationAddr2 &&
+          ev.previous == implementationAddr1
         );
       });
     });

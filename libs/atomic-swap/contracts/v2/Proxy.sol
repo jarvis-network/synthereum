@@ -32,7 +32,12 @@ contract AtomicSwapProxy is AccessControlEnumerable {
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
-  event RegisterImplementation(string id, address implementation, bytes info);
+  event RegisterImplementation(
+    string id,
+    address previous,
+    address implementation,
+    bytes info
+  );
   event RemovedImplementation(string id);
   event Swap(uint256 outputTokens);
 
@@ -62,9 +67,10 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     address implementation,
     bytes memory info
   ) external onlyMaintainers() {
+    address previous = idToAddress[keccak256(abi.encode(identifier))];
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
     dexImplementationInfo[implementation] = info;
-    emit RegisterImplementation(identifier, implementation, info);
+    emit RegisterImplementation(identifier, previous, implementation, info);
   }
 
   function removeImplementation(string calldata identifier)
@@ -72,6 +78,11 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     onlyMaintainers()
   {
     bytes32 bytesId = keccak256(abi.encode(identifier));
+    require(
+      idToAddress[bytesId] != address(0),
+      'Implementation with this id does not exist'
+    );
+
     delete dexImplementationInfo[idToAddress[bytesId]];
     delete idToAddress[bytesId];
     emit RemovedImplementation(identifier);
