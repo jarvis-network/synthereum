@@ -317,7 +317,7 @@ contract SynthereumCreditLine is
 
   /**
    * @notice If the contract is emergency shutdown then all token holders and sponsor can redeem their tokens or
-   * remaining collateral for underlying at the prevailing price defined by a DVM vote.
+   * remaining collateral for underlying at the prevailing price defined by the on-chain oracle
    * @dev This burns all tokens from the caller of `tokenCurrency` and sends back the resolved settlement value of
    * collateral. Might not redeem the full proportional amount of collateral in order to account for
    * precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.
@@ -332,11 +332,7 @@ contract SynthereumCreditLine is
   {
     PositionData storage positionData = positions[msg.sender];
     amountWithdrawn = positionData
-      .settleEmergencyShutdown(
-      globalPositionData,
-      positionManagerData,
-      feeStatus
-    )
+      .settleEmergencyShutdown(globalPositionData, positionManagerData)
       .rawValue;
   }
 
@@ -404,7 +400,6 @@ contract SynthereumCreditLine is
     ) = positionToLiquidate.liquidate(
       positionManagerData,
       globalPositionData,
-      feeStatus,
       maxTokensToLiquidate
     );
 
