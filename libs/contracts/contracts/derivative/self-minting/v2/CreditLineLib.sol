@@ -353,7 +353,6 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata numSynthTokens
   )
     external
@@ -380,7 +379,6 @@ library SynthereumCreditLineLib {
     FixedPoint.Unsigned memory collateralLiquidated =
       positionToLiquidate._reducePosition(
         globalPositionData,
-        positionManagerData,
         tokensToLiquidate
       );
 
@@ -394,101 +392,90 @@ library SynthereumCreditLineLib {
       tokensToLiquidate.rawValue
     );
 
-    // Update fee status
-    FixedPoint.Unsigned memory feeAmount =
-      collateralLiquidated.mul(positionManagerData.fee.feePercentage);
-    feeStatus.updateFees(positionManagerData.fee, feeAmount);
-
     // pay sender with collateral unlocked + rewards
     positionManagerData.collateralToken.safeTransfer(
       msg.sender,
-      collateralLiquidated.sub(feeAmount).add(liquidatorReward).rawValue
+      collateralLiquidated.add(liquidatorReward).rawValue
     );
 
     // return values
     return (
-      collateralLiquidated.sub(feeAmount).rawValue,
+      collateralLiquidated.rawValue,
       tokensToLiquidate.rawValue,
       liquidatorReward.rawValue
     );
   }
 
-  // todo
   function settleEmergencyShutdown(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
-    ICreditLineStorage.FeeStatus storage feeStatus
+    ICreditLineStorage.PositionManagerData storage positionManagerData
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
-    // // Get caller's tokens balance and calculate amount of underlying entitled to them.
-    // FixedPoint.Unsigned memory tokensToRedeem =
-    //   FixedPoint.Unsigned(
-    //     positionManagerData.tokenCurrency.balanceOf(msg.sender)
-    //   );
+    // Get caller's tokens balance
+    FixedPoint.Unsigned memory tokensToRedeem =
+      FixedPoint.Unsigned(
+        positionManagerData.tokenCurrency.balanceOf(msg.sender)
+      );
 
-    // FixedPoint.Unsigned memory totalRedeemableCollateral =
-    //   tokensToRedeem.mul(positionManagerData.emergencyShutdownPrice);
+    // calculate amount of underlying collateral entitled to them, with oracle emergency price
+    FixedPoint.Unsigned memory totalRedeemableCollateral =
+      tokensToRedeem.mul(positionManagerData.emergencyShutdownPrice);
 
-    // // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
-    // if (
-    //   positionData
-    //     .rawCollateral
-    //     .isGreaterThan(0)
-    // ) {
-    //   // Calculate the underlying entitled to a token sponsor. This is collateral - debt in underlying with
-    //   // the funding rate applied to the outstanding token debt.
-    //   FixedPoint.Unsigned memory tokenDebtValueInCollateral =
-    //     positionData.tokensOutstanding.mul(
-    //       positionManagerData.emergencyShutdownPrice
-    //     );
+    // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
+    if (positionData.rawCollateral.isGreaterThan(0)) {
+      // Calculate the underlying entitled to a token sponsor. This is collateral - debt
+      FixedPoint.Unsigned memory tokenDebtValueInCollateral =
+        positionData.tokensOutstanding.mul(
+          positionManagerData.emergencyShutdownPrice
+        );
 
-    //   require(tokenDebtValueInCollateral.isLessThan(positionData.rawCollateral), 'You dont have free collateral to withdraw');
+      require(
+        tokenDebtValueInCollateral.isLessThan(positionData.rawCollateral),
+        'You dont have free collateral to withdraw'
+      );
 
-    //   // Add the number of redeemable tokens for the sponsor to their total redeemable collateral.
-    //   totalRedeemableCollateral = totalRedeemableCollateral.add(
-    //     positionData.rawCollateral.sub(tokenDebtValueInCollateral)
-    //   );
+      // Add the number of redeemable tokens for the sponsor to their total redeemable collateral.
+      totalRedeemableCollateral = totalRedeemableCollateral.add(
+        positionData.rawCollateral.sub(tokenDebtValueInCollateral)
+      );
 
-    //   SynthereumCreditLine(address(this)).deleteSponsorPosition(msg.sender);
-    //   emit EndedSponsorPosition(msg.sender);
-    // }
+      SynthereumCreditLine(address(this)).deleteSponsorPosition(msg.sender);
+      emit EndedSponsorPosition(msg.sender);
+    }
 
-    // // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
-    // // the caller will get as much collateral as the contract can pay out.
-    // FixedPoint.Unsigned memory payout =
-    //   FixedPoint.min(
-    //     globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-    //       feePayerData.cumulativeFeeMultiplier
-    //     ),
-    //     totalRedeemableCollateral
-    //   );
+    // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
+    // the caller will get as much collateral as the contract can pay out.
+    FixedPoint.Unsigned memory payout =
+      FixedPoint.min(
+        globalPositionData.rawTotalPositionCollateral,
+        totalRedeemableCollateral
+      );
 
-    // // Decrement total contract collateral and outstanding debt.
-    // amountWithdrawn = globalPositionData
-    //   .rawTotalPositionCollateral
-    //   .removeCollateral(payout, feePayerData.cumulativeFeeMultiplier);
-    // globalPositionData.totalTokensOutstanding = globalPositionData
-    //   .totalTokensOutstanding
-    //   .sub(tokensToRedeem);
+    // Decrement total contract collateral and outstanding debt.
+    globalPositionData.rawTotalPositionCollateral = globalPositionData
+      .rawTotalPositionCollateral
+      .sub(payout);
+    globalPositionData.totalTokensOutstanding = globalPositionData
+      .totalTokensOutstanding
+      .sub(tokensToRedeem);
 
-    // emit SettleEmergencyShutdown(
-    //   msg.sender,
-    //   amountWithdrawn.rawValue,
-    //   tokensToRedeem.rawValue
-    // );
+    emit SettleEmergencyShutdown(
+      msg.sender,
+      amountWithdrawn.rawValue,
+      tokensToRedeem.rawValue
+    );
 
-    // // Transfer tokens & collateral and burn the redeemed tokens.
-    // positionManagerData.collateralToken.safeTransfer(
-    //   msg.sender,
-    //   amountWithdrawn.rawValue
-    // );
-    // positionManagerData.tokenCurrency.safeTransferFrom(
-    //   msg.sender,
-    //   address(this),
-    //   tokensToRedeem.rawValue
-    // );
-    // positionManagerData.tokenCurrency.burn(tokensToRedeem.rawValue);
-    return FixedPoint.Unsigned(0);
+    // Transfer tokens & collateral and burn the redeemed tokens.
+    positionManagerData.collateralToken.safeTransfer(
+      msg.sender,
+      payout.rawValue
+    );
+    positionManagerData.tokenCurrency.safeTransferFrom(
+      msg.sender,
+      address(this),
+      tokensToRedeem.rawValue
+    );
+    positionManagerData.tokenCurrency.burn(tokensToRedeem.rawValue);
   }
 
   /**
@@ -631,58 +618,6 @@ library SynthereumCreditLineLib {
     );
   }
 
-  /* TODO what's the difference with repay?
-  // Reduces a sponsor's position and global counters by the specified parameters. Handles deleting the entire
-  // position if the entire position is being removed. Does not make any external transfers.
-  function reduceSponsorPosition(
-    ICreditLineStorage.PositionData storage positionData,
-    ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FixedPoint.Unsigned memory tokensToRemove,
-    FixedPoint.Unsigned memory collateralToRemove,
-    FixedPoint.Unsigned memory withdrawalAmountToRemove,
-    FeePayerParty.FeePayerData storage feePayerData,
-    address sponsor
-  ) external {
-    // If the entire position is being removed, delete it instead.
-    if (
-      tokensToRemove.isEqual(positionData.tokensOutstanding) &&
-      positionData
-        .rawCollateral
-        .getFeeAdjustedCollateral(feePayerData.cumulativeFeeMultiplier)
-        .isEqual(collateralToRemove)
-    ) {
-      positionData._deleteSponsorPosition(
-        globalPositionData,
-        sponsor
-      );
-      return;
-    }
-
-    // Decrement the sponsor's collateral and global collateral amounts.
-    positionData._decrementCollateralBalances(
-      globalPositionData,
-      collateralToRemove,
-      feePayerData
-    );
-
-    // Ensure that the sponsor will meet the min position size after the reduction.
-    positionData.tokensOutstanding = positionData.tokensOutstanding.sub(
-      tokensToRemove
-    );
-    require(
-      positionData.tokensOutstanding.isGreaterThanOrEqual(
-        positionManagerData.minSponsorTokens
-      ),
-      'Below minimum sponsor position'
-    );
-
-    // Decrement the total outstanding tokens in the overall contract.
-    globalPositionData.totalTokensOutstanding = globalPositionData
-      .totalTokensOutstanding
-      .sub(tokensToRemove);
-  }
-  */
   //Call to the internal one (see _getCapMintAmount)
   function capMintAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData
@@ -780,12 +715,14 @@ library SynthereumCreditLineLib {
   function _reducePosition(
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory tokensToLiquidate
   ) internal returns (FixedPoint.Unsigned memory collateralUnlocked) {
-    // calculate collateral to unlock using on-chain price
-    collateralUnlocked = tokensToLiquidate.mul(
-      _getOraclePrice(positionManagerData)
+    // calculate collateral to unlock
+    FixedPoint.Unsigned memory fractionRedeemed =
+      tokensToLiquidate.div(positionToLiquidate.tokensOutstanding);
+
+    collateralUnlocked = fractionRedeemed.mul(
+      positionToLiquidate.rawCollateral
     );
 
     // reduce position
