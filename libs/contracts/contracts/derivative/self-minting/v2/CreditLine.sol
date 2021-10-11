@@ -8,9 +8,7 @@ import {
   BaseControlledMintableBurnableERC20
 } from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {
-  ISelfMintingDerivativeDeployment
-} from '../common/interfaces/ISelfMintingDerivativeDeployment.sol';
+import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
@@ -27,11 +25,7 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
  * @notice Handles positions for multiple sponsors in an optimistic (i.e., priceless) way without relying
  * on a price feed. On construction, deploys a new ERC20, managed by this contract, that is the synthetic token.
  */
-contract SynthereumCreditLine is
-  ISelfMintingDerivativeDeployment,
-  ICreditLineStorage,
-  Lockable
-{
+contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
@@ -64,7 +58,7 @@ contract SynthereumCreditLine is
     FixedPoint.Unsigned overCollateralization;
     FixedPoint.Unsigned liquidatorRewardPct;
     address timerAddress;
-    address excessTokenBeneficiary;
+    address excessTokenBeneficiary; // TODO
     uint8 version;
     Fee fees;
     ISynthereumFinder synthereumFinder;
@@ -203,7 +197,7 @@ contract SynthereumCreditLine is
    * at least `collateralAmount` of collateral token
    * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
    */
-  function deposit(uint256 collateralAmount) external {
+  function deposit(uint256 collateralAmount) external override {
     depositTo(msg.sender, collateralAmount);
   }
 
@@ -215,6 +209,7 @@ contract SynthereumCreditLine is
    */
   function withdraw(uint256 collateralAmount)
     external
+    override
     notEmergencyShutdown()
     nonReentrant
     returns (uint256 amountWithdrawn)
@@ -241,6 +236,7 @@ contract SynthereumCreditLine is
    */
   function create(uint256 collateralAmount, uint256 numTokens)
     external
+    override
     notEmergencyShutdown()
     nonReentrant
     returns (uint256 feeAmount)
@@ -266,8 +262,9 @@ contract SynthereumCreditLine is
    * @return amountWithdrawn The actual amount of collateral withdrawn.
    * @return feeAmount incurred fees in collateral token
    */
-  function redeem(uint256 numTokens, uint256 feePercentage)
+  function redeem(uint256 numTokens)
     external
+    override
     notEmergencyShutdown()
     nonReentrant
     returns (uint256 amountWithdrawn, uint256 feeAmount)
@@ -282,7 +279,6 @@ contract SynthereumCreditLine is
         globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
-        FixedPoint.Unsigned(feePercentage),
         feeStatus,
         msg.sender
       );
@@ -299,6 +295,7 @@ contract SynthereumCreditLine is
    */
   function repay(uint256 numTokens)
     external
+    override
     notEmergencyShutdown()
     nonReentrant
     returns (uint256 daoFeeAmount)
@@ -326,6 +323,7 @@ contract SynthereumCreditLine is
    */
   function settleEmergencyShutdown()
     external
+    override
     isEmergencyShutdown()
     nonReentrant
     returns (uint256 amountWithdrawn)
@@ -342,7 +340,12 @@ contract SynthereumCreditLine is
    * Upon emergency shutdown, the contract settlement time is set to the shutdown time. This enables withdrawal
    * to occur via the `settleEmergencyShutdown` function.
    */
-  function emergencyShutdown() external notEmergencyShutdown() nonReentrant {
+  function emergencyShutdown()
+    external
+    override
+    notEmergencyShutdown()
+    nonReentrant
+  {
     require(
       msg.sender ==
         positionManagerData.synthereumFinder.getImplementationAddress(
@@ -372,7 +375,12 @@ contract SynthereumCreditLine is
    * @notice Withdraw fees gained by the sender
    * @return feeClaimed Amount of fee claimed
    */
-  function claimFee() external nonReentrant returns (uint256 feeClaimed) {
+  function claimFee()
+    external
+    override
+    nonReentrant
+    returns (uint256 feeClaimed)
+  {
     feeClaimed = positionManagerData.claimFee(feeStatus);
   }
 
@@ -381,6 +389,7 @@ contract SynthereumCreditLine is
     FixedPoint.Unsigned calldata maxTokensToLiquidate
   )
     external
+    override
     notEmergencyShutdown()
     nonReentrant
     returns (
@@ -432,6 +441,7 @@ contract SynthereumCreditLine is
   function getLiquidations(address sponsor)
     external
     view
+    override
     nonReentrantView()
     returns (LiquidationData[] memory liquidationData)
   {
@@ -474,7 +484,7 @@ contract SynthereumCreditLine is
    * @notice Delete a TokenSponsor position (This function can only be called by the contract itself)
    * @param sponsor address of the TokenSponsor.
    */
-  function deleteSponsorPosition(address sponsor) external {
+  function deleteSponsorPosition(address sponsor) external override {
     require(
       msg.sender == address(this),
       'Only the contract can invoke this function'
@@ -492,6 +502,7 @@ contract SynthereumCreditLine is
   function getPositionCollateral(address sponsor)
     external
     view
+    override
     nonReentrantView()
     returns (FixedPoint.Unsigned memory collateralAmount)
   {
@@ -608,7 +619,7 @@ contract SynthereumCreditLine is
   function collateralCurrency()
     public
     view
-    override(ISelfMintingDerivativeDeployment)
+    override
     returns (IERC20 collateral)
   {
     collateral = positionManagerData.collateralToken;

@@ -9,8 +9,12 @@ import {IStandardERC20} from '../../../../base/interfaces/IStandardERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+import {
+  ICreditLineDerivativeDeployment
+} from './ICreditLineDerivativeDeployment.sol';
+import {ICreditLineStorage} from './ICreditLineStorage.sol';
 
-interface ICreditLine {
+interface ICreditLine is ICreditLineDerivativeDeployment {
   function deposit(uint256 collateralAmount) external;
 
   function withdraw(uint256 collateralAmount)
@@ -21,7 +25,7 @@ interface ICreditLine {
     external
     returns (uint256 feeAmount);
 
-  function redeem(uint256 numTokens, uint256 feePercentage)
+  function redeem(uint256 numTokens)
     external
     returns (uint256 amountWithdrawn, uint256 feeAmount);
 
@@ -33,15 +37,16 @@ interface ICreditLine {
 
   function claimFee() external returns (uint256 feeClaimed);
 
-  function getLiquidations(address sponsor) external;
+  function getLiquidations(address sponsor)
+    external
+    view
+    returns (ICreditLineStorage.LiquidationData[] memory);
 
   function deleteSponsorPosition(address sponsor) external;
 
   function getPositionCollateral(address sponsor)
     external
     returns (FixedPoint.Unsigned memory collateralAmount);
-
-  function synthereumFinder() external returns (ISynthereumFinder finder);
 
   function liquidate(
     address sponsor,
