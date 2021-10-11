@@ -13,8 +13,11 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract AtomicSwapProxy is AccessControlEnumerable {
+  using Address for address;
+
   IAtomicSwapV2 public atomicSwapIface;
 
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
@@ -115,8 +118,8 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     string memory functionSig =
       'swapToCollateralAndMint(bytes,bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address))';
 
-    (bool success, bytes memory result) =
-      implementation.delegatecall(
+    bytes memory result =
+      implementation.functionDelegateCall(
         abi.encodeWithSignature(
           functionSig,
           dexImplementationInfo[implementation],
@@ -128,9 +131,6 @@ contract AtomicSwapProxy is AccessControlEnumerable {
           mintParams
         )
       );
-
-    // checks
-    require(success, 'Delegate call failed');
 
     amounts = abi.decode(result, (uint256[2]));
 
@@ -153,8 +153,8 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     string memory functionSig =
       'redeemCollateralAndSwap(bytes,bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
 
-    (bool success, bytes memory result) =
-      implementation.delegatecall(
+    bytes memory result =
+      implementation.functionDelegateCall(
         abi.encodeWithSignature(
           functionSig,
           dexImplementationInfo[implementation],
@@ -167,9 +167,6 @@ contract AtomicSwapProxy is AccessControlEnumerable {
           recipient
         )
       );
-
-    // checks
-    require(success, 'Delegate call failed');
 
     outputAmount = abi.decode(result, (uint256));
 
