@@ -14,6 +14,8 @@ const { getExistingInstance } = require('../src/migration-utils/deployment');
 module.exports = async function (deployer, network, accounts) {
   const networkId = toNetworkId(network);
   const admin = accounts[0];
+  const maintainer = accounts[1];
+
   const networkFile = require(`@jarvis-network/synthereum-contracts/networks/${networkId}.json`);
 
   const synthereumFinderAddress = networkFile.filter(
@@ -39,5 +41,5 @@ module.exports = async function (deployer, network, accounts) {
 
   await proxyInstance.methods
     .registerImplementation('uniV3', uniV3Instance.options.address, encodedInfo)
-    .send({ from: admin });
+    .send({ from: maintainer });
 };

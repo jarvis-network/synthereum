@@ -10,8 +10,11 @@ import {
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract AtomicSwapProxy {
+contract AtomicSwapProxy is AccessControlEnumerable {
   IAtomicSwapV2 public atomicSwapIface;
 
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
@@ -21,19 +24,34 @@ contract AtomicSwapProxy {
 
   mapping(address => bytes) public dexImplementationInfo;
 
-  address admin;
+  // Role structure
+  struct Roles {
+    address admin;
+    address[] maintainers;
+  }
+
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   event RegisterImplementation(string id, address implementation, bytes info);
   event RemovedImplementation(string id);
   event Swap(uint256 outputTokens);
 
-  modifier onlyAdmin() {
-    require(msg.sender == admin, 'Only admin');
+  modifier onlyMaintainers() {
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Only contract maintainer can call this function'
+    );
     _;
   }
 
-  constructor(address _admin) {
-    admin = _admin;
+  constructor(Roles memory _roles) {
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    for (uint256 i = 0; i < _roles.maintainers.length; i++) {
+      _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);
+    }
   }
 
   receive() external payable {}
@@ -43,7 +61,7 @@ contract AtomicSwapProxy {
     string calldata identifier,
     address implementation,
     bytes memory info
-  ) external onlyAdmin() {
+  ) external onlyMaintainers() {
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
     dexImplementationInfo[implementation] = info;
     emit RegisterImplementation(identifier, implementation, info);
@@ -51,7 +69,7 @@ contract AtomicSwapProxy {
 
   function removeImplementation(string calldata identifier)
     external
-    onlyAdmin()
+    onlyMaintainers()
   {
     bytes32 bytesId = keccak256(abi.encode(identifier));
     delete dexImplementationInfo[idToAddress[bytesId]];

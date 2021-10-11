@@ -10,6 +10,8 @@ const Proxy = artifacts.require('AtomicSwapProxy');
 
 contract('AtomicSwap Proxy', accounts => {
   let admin = accounts[0];
+  let maintainer = accounts[1];
+
   let proxyInstance;
   // actual parameters are not really relevant here
   let implementationInfo = {
@@ -18,6 +20,10 @@ contract('AtomicSwap Proxy', accounts => {
     nativeCryptoAddress: accounts[3],
   };
 
+  let FixedRateRoles = {
+    admin,
+    maintainers: [maintainer],
+  };
   let encodedInfo = web3.eth.abi.encodeParameters(
     ['address', 'address', 'address'],
     [
@@ -33,7 +39,7 @@ contract('AtomicSwap Proxy', accounts => {
 
   describe('Add/Remove Implementation', () => {
     before(async () => {
-      proxyInstance = await Proxy.new(admin);
+      proxyInstance = await Proxy.new(FixedRateRoles);
     });
 
     it('Register a new implementation', async () => {
@@ -41,7 +47,7 @@ contract('AtomicSwap Proxy', accounts => {
         implementationId1,
         implementationAddr1,
         encodedInfo,
-        { from: admin },
+        { from: maintainer },
       );
       let actualInfo = await proxyInstance.dexImplementationInfo.call(
         implementationAddr1,
@@ -66,7 +72,7 @@ contract('AtomicSwap Proxy', accounts => {
         implementationId1,
         implementationAddr2,
         encodedInfo,
-        { from: admin },
+        { from: maintainer },
       );
       let actualInfo = await proxyInstance.dexImplementationInfo.call(
         implementationAddr1,
@@ -86,7 +92,7 @@ contract('AtomicSwap Proxy', accounts => {
     });
     it('Removes an implementation', async () => {
       let tx = await proxyInstance.removeImplementation(implementationId1, {
-        from: admin,
+        from: maintainer,
       });
       let actualInfo = await proxyInstance.dexImplementationInfo.call(
         implementationAddr2,
@@ -110,14 +116,14 @@ contract('AtomicSwap Proxy', accounts => {
           encodedInfo,
           { from: accounts[9] },
         ),
-        'Only admin',
+        'Only contract maintainer can call this function',
       );
 
       await truffleAssert.reverts(
         proxyInstance.removeImplementation(implementationId1, {
           from: accounts[9],
         }),
-        'Only admin',
+        'Only contract maintainer can call this function',
       );
     });
   });
