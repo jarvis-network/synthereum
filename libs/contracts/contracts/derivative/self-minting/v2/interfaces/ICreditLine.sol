@@ -37,6 +37,12 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
 
   function claimFee() external returns (uint256 feeClaimed);
 
+  function getCapMintAmount() external view returns (uint256 capMint);
+
+  function getLiquidationReward() external view returns (uint256);
+
+  function getFeeInfo() external view returns (ICreditLineStorage.Fee memory);
+
   function getLiquidations(address sponsor)
     external
     view

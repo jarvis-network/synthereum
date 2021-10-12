@@ -10,6 +10,7 @@ import {
 import {
   ISelfMintingController
 } from '../common/interfaces/ISelfMintingController.sol';
+import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
@@ -146,9 +147,11 @@ library SynthereumCreditLineLib {
     FixedPoint.Unsigned memory numTokens,
     ICreditLineStorage.FeeStatus storage feeStatus
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
-    // Update fees status
-    feeAmount = collateralAmount.mul(positionManagerData.fee.feePercentage);
-    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+    // Update fees status - percentage is retrieved from Credit Line Controller
+    feeAmount = collateralAmount.mul(
+      positionManagerData._getFeeInfo().feePercentage
+    );
+    positionManagerData.updateFees(feeStatus, feeAmount);
 
     FixedPoint.Unsigned memory netCollateralAmount =
       collateralAmount.sub(feeAmount);
@@ -235,8 +238,10 @@ library SynthereumCreditLineLib {
       fractionRedeemed.mul(positionData.rawCollateral);
 
     // Update fee status
-    feeAmount = collateralRedeemed.mul(positionManagerData.fee.feePercentage);
-    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+    feeAmount = collateralRedeemed.mul(
+      positionManagerData._getFeeInfo().feePercentage
+    );
+    positionManagerData.updateFees(feeStatus, feeAmount);
 
     FixedPoint.Unsigned memory totAmountWithdrawn;
     // If redemption returns all tokens the sponsor has then we can delete their position. Else, downsize.
@@ -321,8 +326,10 @@ library SynthereumCreditLineLib {
       fractionRedeemed.mul(positionData.rawCollateral);
 
     // Update fee status
-    feeAmount = collateralUnlocked.mul(positionManagerData.fee.feePercentage);
-    feeStatus.updateFees(positionManagerData.fee, feeAmount);
+    feeAmount = collateralUnlocked.mul(
+      positionManagerData._getFeeInfo().feePercentage
+    );
+    positionManagerData.updateFees(feeStatus, feeAmount);
 
     // update position
     positionData.tokensOutstanding = newTokenCount;
@@ -478,25 +485,6 @@ library SynthereumCreditLineLib {
   }
 
   /**
-   * @notice Update the fee percentage
-   * @param self Data type the library is attached to
-   * @param _feePercentage The new fee percentage
-   */
-  function setFeePercentage(
-    ICreditLineStorage.PositionManagerData storage self,
-    FixedPoint.Unsigned calldata _feePercentage
-  ) external {
-    require(
-      _feePercentage.rawValue < 10**(18),
-      'Fee Percentage must be less than 100%'
-    );
-
-    self.fee.feePercentage = _feePercentage;
-
-    emit SetFeePercentage(_feePercentage.rawValue);
-  }
-
-  /**
    * @notice Withdraw fees gained by the sender
    * @param self Data type the library is attached to
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
@@ -529,63 +517,33 @@ library SynthereumCreditLineLib {
   }
 
   /**
-   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
-   * @param self Data type the library is attached to
-   * @param _feeRecipients An array of the addresses of recipients that will receive generated fees
-   * @param _feeProportions An array of the proportions of fees generated each recipient will receive
-   */
-  function setFeeRecipients(
-    ICreditLineStorage.PositionManagerData storage self,
-    address[] calldata _feeRecipients,
-    uint32[] calldata _feeProportions
-  ) external {
-    require(
-      _feeRecipients.length == _feeProportions.length,
-      'Fee recipients and fee proportions do not match'
-    );
-
-    uint256 totalActualFeeProportions;
-
-    // Store the sum of all proportions
-    for (uint256 i = 0; i < _feeProportions.length; i++) {
-      totalActualFeeProportions += _feeProportions[i];
-    }
-
-    self.fee.feeRecipients = _feeRecipients;
-    self.fee.feeProportions = _feeProportions;
-    self.fee.totalFeeProportions = totalActualFeeProportions;
-
-    emit SetFeeRecipients(_feeRecipients, _feeProportions);
-  }
-
-  /**
    * @notice Update fee gained by the fee recipients
    * @param feeStatus Actual status of fee gained to be withdrawn
-   * @param feeInfo Actual status of fee recipients and their proportions
    * @param feeAmount Collateral fee charged
    */
   function updateFees(
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
     ICreditLineStorage.FeeStatus storage feeStatus,
-    ICreditLineStorage.Fee storage feeInfo,
     FixedPoint.Unsigned memory feeAmount
   ) internal {
     FixedPoint.Unsigned memory feeCharged;
 
-    uint256 numberOfRecipients = feeInfo.feeRecipients.length;
+    ICreditLineStorage.Fee memory feeStruct = positionManagerData._getFeeInfo();
+    address[] memory feeRecipients = feeStruct.feeRecipients;
+    uint32[] memory feeProportions = feeStruct.feeProportions;
 
-    for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
-      address feeRecipient = feeInfo.feeRecipients[i];
+    for (uint256 i = 0; i < feeRecipients.length - 1; i++) {
       FixedPoint.Unsigned memory feeReceived =
-        feeAmount.mul(feeInfo.feeProportions[i]).div(
-          feeInfo.totalFeeProportions
-        );
-      feeStatus.feeGained[feeRecipient] = feeStatus.feeGained[feeRecipient].add(
-        feeReceived
-      );
+        feeAmount.mul(feeProportions[i]).div(feeStruct.totalFeeProportions);
+
+      feeStatus.feeGained[feeRecipients[i]] = feeStatus.feeGained[
+        feeRecipients[i]
+      ]
+        .add(feeReceived);
       feeCharged = feeCharged.add(feeReceived);
     }
 
-    address lastRecipient = feeInfo.feeRecipients[numberOfRecipients - 1];
+    address lastRecipient = feeRecipients[feeRecipients.length - 1];
 
     feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient]
       .add(feeAmount)
@@ -617,11 +575,23 @@ library SynthereumCreditLineLib {
     );
   }
 
-  //Call to the internal one (see _getCapMintAmount)
+  //Calls to the CreditLine controller
   function capMintAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData
   ) external view returns (FixedPoint.Unsigned memory capMint) {
     capMint = positionManagerData._getCapMintAmount();
+  }
+
+  function liquidationRewardPercentage(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory liqRewardPercentage) {
+    liqRewardPercentage = positionManagerData._getLiquidationReward();
+  }
+
+  function feeInfo(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (ICreditLineStorage.Fee memory fee) {
+    fee = positionManagerData._getFeeInfo();
   }
 
   //----------------------------------------
@@ -797,24 +767,43 @@ library SynthereumCreditLineLib {
     );
   }
 
-  // Get mint amount limit
+  /// @notice calls CreditLineController to retrieve liquidation reward percentage
+  function _getLiquidationReward(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) internal view returns (FixedPoint.Unsigned memory liqRewardPercentage) {
+    liqRewardPercentage = FixedPoint.Unsigned(
+      positionManagerData
+        .getCreditLineController()
+        .getLiquidationRewardPercentage(address(this))
+    );
+  }
+
+  function _getFeeInfo(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) internal view returns (ICreditLineStorage.Fee memory fee) {
+    fee = positionManagerData.getCreditLineController().getFeeInfo(
+      address(this)
+    );
+  }
+
+  // Get mint amount limit from CreditLineController
   function _getCapMintAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData
   ) internal view returns (FixedPoint.Unsigned memory capMint) {
     capMint = FixedPoint.Unsigned(
-      positionManagerData.getSelfMintingController().getCapMintAmount(
+      positionManagerData.getCreditLineController().getCapMintAmount(
         address(this)
       )
     );
   }
 
   // Get self-minting controller instance
-  function getSelfMintingController(
+  function getCreditLineController(
     ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) internal view returns (ISelfMintingController selfMintingController) {
-    selfMintingController = ISelfMintingController(
+  ) internal view returns (ICreditLineController creditLineController) {
+    creditLineController = ICreditLineController(
       positionManagerData.synthereumFinder.getImplementationAddress(
-        SynthereumInterfaces.SelfMintingController
+        SynthereumInterfaces.CreditLineController
       )
     );
   }
