@@ -11,6 +11,12 @@ import {
 } from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 
 interface ICreditLineStorage {
+  // Describe role structure
+  struct Roles {
+    address admin;
+    address[] maintainers;
+  }
+
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and exchanges tokens
@@ -54,8 +60,6 @@ interface ICreditLineStorage {
     BaseControlledMintableBurnableERC20 tokenCurrency;
     // Unique identifier for DVM price feed ticker.
     bytes32 priceIdentifier;
-    // Fees
-    Fee fee;
     // Overcollateralization percentage
     FixedPoint.Unsigned overCollateralization;
     // percentage of collateral liquidated as reward to liquidator

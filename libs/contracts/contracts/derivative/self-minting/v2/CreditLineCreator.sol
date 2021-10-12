@@ -5,9 +5,8 @@ import {
   BaseControlledMintableBurnableERC20
 } from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {
-  ISelfMintingController
-} from '../common/interfaces/ISelfMintingController.sol';
+import {ICreditLineController} from './interfaces/ICreditLineController.sol';
+import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
@@ -36,13 +35,14 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
     string syntheticName;
     string syntheticSymbol;
     address syntheticToken;
+    ICreditLineStorage.Fee fee;
+    ICreditLineStorage.Roles roles;
+    uint256 liquidationPercentage;
+    uint256 capMintAmount;
     FixedPoint.Unsigned overCollateralization;
-    FixedPoint.Unsigned liquidatorRewardPct;
     FixedPoint.Unsigned minSponsorTokens;
     address excessTokenBeneficiary;
     uint8 version;
-    ISelfMintingController.DaoFee daoFee;
-    uint256 capMintAmount;
   }
 
   // Address of Synthereum Finder
@@ -116,10 +116,17 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
       tokenCurrency.decimals() == uint8(18),
       'Decimals of synthetic token must be 18'
     );
-    derivative = address(new SynthereumCreditLine(_convertParams(params)));
-    // derivative = PerpetualMultiPartyLib.deploy(_convertParams(params));
 
-    _setControllerValues(derivative, params.daoFee, params.capMintAmount);
+    derivative = address(
+      new SynthereumCreditLine(_convertParams(params), params.roles)
+    );
+
+    _setControllerValues(
+      derivative,
+      params.fee,
+      params.liquidationPercentage,
+      params.capMintAmount
+    );
 
     emit CreatedPerpetual(address(derivative), msg.sender);
 
@@ -148,17 +155,12 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
       params.excessTokenBeneficiary != address(0),
       'Token Beneficiary cannot be 0x00'
     );
-    require(
-      params.daoFee.feeRecipient != address(0),
-      'Fee recipient cannot be 0x00'
-    );
 
     // Input from function call.
     constructorParams.tokenAddress = params.syntheticToken;
     constructorParams.collateralAddress = params.collateralAddress;
     constructorParams.priceFeedIdentifier = params.priceFeedIdentifier;
     constructorParams.overCollateralization = params.overCollateralization;
-    constructorParams.liquidatorRewardPct = params.liquidatorRewardPct;
     constructorParams.minSponsorTokens = params.minSponsorTokens;
     constructorParams.excessTokenBeneficiary = params.excessTokenBeneficiary;
     constructorParams.version = params.version;
@@ -166,29 +168,56 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
 
   /** @notice Sets the controller values for a self-minting derivative
    * @param derivative Address of the derivative to set controller values
-   * @param daoFee The DAO fee that will be paid when interacting with the self-minting derivative
+   * @param feeStruct The fee config params
    * @param capMintAmount Cap on mint amount. How much synthetic tokens can be minted through a self-minting derivative.
    * This value is updatable
    */
   function _setControllerValues(
     address derivative,
-    ISelfMintingController.DaoFee calldata daoFee,
+    ICreditLineStorage.Fee memory feeStruct,
+    uint256 liquidationRewardPercentage,
     uint256 capMintAmount
   ) internal {
-    ISelfMintingController selfMintingController =
-      ISelfMintingController(
+    ICreditLineController creditLineController =
+      ICreditLineController(
         synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.SelfMintingController
+          SynthereumInterfaces.CreditLineController
         )
       );
-    address[] memory inputAddress = new address[](1);
-    inputAddress[0] = derivative;
-    ISelfMintingController.DaoFee[] memory inuptFee =
-      new ISelfMintingController.DaoFee[](1);
-    inuptFee[0] = daoFee;
-    uint256[] memory inputCapMint = new uint256[](1);
-    inputCapMint[0] = capMintAmount;
-    selfMintingController.setDaoFee(inputAddress, inuptFee);
-    selfMintingController.setCapMintAmount(inputAddress, inputCapMint);
+
+    address[] memory derivatives = new address[](1);
+    derivatives[0] = derivative;
+
+    uint256[] memory capMintAmounts = new uint256[](1);
+    capMintAmounts[0] = capMintAmount;
+
+    FixedPoint.Unsigned[] memory feePercentages = new FixedPoint.Unsigned[](1);
+    feePercentages[0] = feeStruct.feePercentage;
+
+    FixedPoint.Unsigned[] memory liqPercentages = new FixedPoint.Unsigned[](1);
+    liqPercentages[0] = FixedPoint.Unsigned(liquidationRewardPercentage);
+
+    address[][] memory feeRecipients = new address[][](1);
+    feeRecipients[0] = feeStruct.feeRecipients;
+
+    uint32[][] memory feeProportions = new uint32[][](1);
+    feeProportions[0] = feeStruct.feeProportions;
+
+    // set the derivative fee configuration
+    creditLineController.setFeePercentage(derivatives, feePercentages);
+    creditLineController.setFeeRecipients(
+      derivatives,
+      feeRecipients,
+      feeProportions
+    );
+
+    // set the derivative cap mint amount
+    creditLineController.setCapMintAmount(derivatives, capMintAmounts);
+
+    // set the derivative liquidation reward percentage
+    creditLineController.setLiquidationRewardPercentage(
+      derivatives,
+      liqPercentages
+    );
   }
 }

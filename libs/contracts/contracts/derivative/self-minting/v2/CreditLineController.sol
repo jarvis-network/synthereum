@@ -91,6 +91,7 @@ contract CreditLineController is
     _;
   }
 
+  // TODO
   modifier onlyMaintainerOrSelfMintingFactory() {
     if (hasRole(MAINTAINER_ROLE, msg.sender)) {
       _;
@@ -179,14 +180,14 @@ contract CreditLineController is
   }
 
   /**
-   * @notice Allow to set  fee percentages on a list of registered self-minting derivatives
+   * @notice Allow to set fee percentages on a list of registered self-minting derivatives
    * @param selfMintingDerivatives Self-minting derivatives
    * @param feePercentages fee percentages for self-minting derivatives
    */
   function setFeePercentage(
     address[] calldata selfMintingDerivatives,
     FixedPoint.Unsigned[] calldata feePercentages
-  ) external override onlyMaintainer {
+  ) external override onlyMaintainerOrSelfMintingFactory {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
@@ -211,7 +212,7 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     address[][] calldata feeRecipients,
     uint32[][] calldata feeProportions
-  ) external {
+  ) external override onlyMaintainerOrSelfMintingFactory {
     require(
       selfMintingDerivatives.length == feeRecipients.length,
       'Mismatch between derivatives to update and fee recipients'
@@ -247,7 +248,7 @@ contract CreditLineController is
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
     FixedPoint.Unsigned[] calldata _liquidationRewards
-  ) external {
+  ) external override onlyMaintainerOrSelfMintingFactory {
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       checkSelfMintingDerivativeRegistration(
         ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
@@ -271,6 +272,7 @@ contract CreditLineController is
   function getLiquidationRewardPercentage(address selfMintingDerivative)
     external
     view
+    override
     returns (uint256)
   {
     return liquidationReward[selfMintingDerivative].rawValue;
@@ -279,6 +281,7 @@ contract CreditLineController is
   function getFeeInfo(address selfMintingDerivative)
     external
     view
+    override
     returns (ICreditLineStorage.Fee memory)
   {
     return fee[selfMintingDerivative];
@@ -292,6 +295,7 @@ contract CreditLineController is
   function getCapMintAmount(address selfMintingDerivative)
     external
     view
+    override
     returns (uint256 capMintAmount)
   {
     return capMint[selfMintingDerivative];

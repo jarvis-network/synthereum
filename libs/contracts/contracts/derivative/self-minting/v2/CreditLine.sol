@@ -19,13 +19,20 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {SynthereumCreditLineLib} from './CreditLineLib.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
- * @title Financial contract with priceless position management.
- * @notice Handles positions for multiple sponsors in an optimistic (i.e., priceless) way without relying
- * on a price feed. On construction, deploys a new ERC20, managed by this contract, that is the synthetic token.
+ * @title
+ * @notice
  */
-contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
+contract SynthereumCreditLine is
+  AccessControlEnumerable,
+  ICreditLine,
+  ICreditLineStorage,
+  Lockable
+{
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
@@ -55,14 +62,18 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
     address tokenAddress;
     bytes32 priceFeedIdentifier;
     FixedPoint.Unsigned minSponsorTokens;
-    FixedPoint.Unsigned overCollateralization;
-    FixedPoint.Unsigned liquidatorRewardPct;
+    FixedPoint.Unsigned overCollateralization; // TODO in controller
     address timerAddress;
     address excessTokenBeneficiary; // TODO
     uint8 version;
-    Fee fees;
     ISynthereumFinder synthereumFinder;
   }
+
+  //----------------------------------------
+  // Constants
+  //----------------------------------------
+
+  bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //----------------------------------------
   // Storage
@@ -145,6 +156,14 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
     _;
   }
 
+  modifier onlyMaintainer() {
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
+    );
+    _;
+  }
+
   //----------------------------------------
   // Constructor
   //----------------------------------------
@@ -153,11 +172,21 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
    * @notice Construct the SelfMintingPerpetualPositionManagerMultiParty.
    * @param _positionManagerData Input parameters of PositionManager (see PositionManagerData struct)
    */
-  constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
+  constructor(
+    PositionManagerParams memory _positionManagerData,
+    ICreditLineStorage.Roles memory _roles
+  ) nonReentrant {
     require(
       _positionManagerData.overCollateralization.isGreaterThan(1),
       'CR must be higher than 100%'
     );
+
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
+    for (uint256 i = 0; i < _roles.maintainers.length; i++) {
+      _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);
+    }
 
     positionManagerData.synthereumFinder = _positionManagerData
       .synthereumFinder;
@@ -169,8 +198,6 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
     );
     positionManagerData.overCollateralization = _positionManagerData
       .overCollateralization;
-    positionManagerData.liquidatorRewardPct = _positionManagerData
-      .liquidatorRewardPct;
     positionManagerData.minSponsorTokens = _positionManagerData
       .minSponsorTokens;
     positionManagerData.priceIdentifier = _positionManagerData
@@ -178,13 +205,6 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
     positionManagerData.excessTokenBeneficiary = _positionManagerData
       .excessTokenBeneficiary;
     positionManagerData.version = _positionManagerData.version;
-    positionManagerData.setFeePercentage(
-      _positionManagerData.fees.feePercentage
-    );
-    positionManagerData.setFeeRecipients(
-      _positionManagerData.fees.feeRecipients,
-      _positionManagerData.fees.feeProportions
-    );
   }
 
   //----------------------------------------
@@ -463,6 +483,23 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
     return liquidationArray[liquidationId];
   }
 
+  function getCapMintAmount() external view override returns (uint256 capMint) {
+    capMint = positionManagerData.capMintAmount().rawValue;
+  }
+
+  function getFeeInfo()
+    external
+    view
+    override
+    returns (ICreditLineStorage.Fee memory)
+  {
+    return positionManagerData.feeInfo();
+  }
+
+  function getLiquidationReward() external view override returns (uint256) {
+    return positionManagerData.liquidationRewardPercentage().rawValue;
+  }
+
   // TODO
   /**
    * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
@@ -578,17 +615,6 @@ contract SynthereumCreditLine is ICreditLine, ICreditLineStorage, Lockable {
     returns (uint256)
   {
     return positionManagerData.emergencyShutdownPrice.rawValue;
-  }
-
-  /** @notice Check the current cap on self-minting synthetic tokens.
-   * A cap mint amount is set in order to avoid depletion of liquidity pools,
-   * by self-minting synthetic assets and redeeming collateral from the pools.
-   * The cap mint amount is updateable and is based on a percentage of the currently
-   * minted synthetic assets from the liquidity pools.
-   * @return capMint The currently set cap amount for self-minting a synthetic token
-   */
-  function capMintAmount() external view returns (uint256 capMint) {
-    capMint = positionManagerData.capMintAmount().rawValue;
   }
 
   /**
