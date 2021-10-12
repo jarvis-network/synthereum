@@ -33,6 +33,8 @@ contract CreditLineController is
   ICreditLineController,
   AccessControlEnumerable
 {
+  using FixedPoint for FixedPoint.Unsigned;
+
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //Describe role structure
@@ -48,6 +50,8 @@ contract CreditLineController is
   ISynthereumFinder public synthereumFinder;
 
   mapping(address => uint256) private capMint;
+
+  mapping(address => FixedPoint.Unsigned) private liquidationReward;
 
   mapping(address => ICreditLineStorage.Fee) private fee;
 
@@ -67,7 +71,13 @@ contract CreditLineController is
 
   event SetFeeRecipients(
     address indexed selfMintingDerivative,
-    address[] feeRecipient
+    address[] feeRecipient,
+    uint32[] feeProportions
+  );
+
+  event SetLiquidationReward(
+    address indexed selfMintingDerivative,
+    uint256 liquidationReward
   );
 
   //----------------------------------------
@@ -155,7 +165,10 @@ contract CreditLineController is
       selfMintingDerivatives.length == capMintAmounts.length,
       'Number of derivatives and mint cap amounts must be the same'
     );
-    require(hasRole(MAINTAINER_ROLE), msg.sender);
+    require(
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Only maintainer is allowed to do this'
+    );
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       ICreditLineDerivativeDeployment creditLineDerivative =
         ICreditLineDerivativeDeployment(selfMintingDerivatives[j]);
@@ -189,6 +202,120 @@ contract CreditLineController is
   }
 
   /**
+   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @param selfMintingDerivatives Derivatives to update
+   * @param feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param feeProportions An array of the proportions of fees generated each recipient will receive
+   */
+  function setFeeRecipients(
+    address[] calldata selfMintingDerivatives,
+    address[][] calldata feeRecipients,
+    uint32[][] calldata feeProportions
+  ) external {
+    require(
+      selfMintingDerivatives.length == feeRecipients.length,
+      'Mismatch between derivatives to update and fee recipients'
+    );
+    require(
+      selfMintingDerivatives.length == feeProportions.length,
+      'Mismatch between derivatives to update and fee proportions'
+    );
+
+    // update each derivative fee parameters
+    for (uint256 j; j < selfMintingDerivatives.length; j++) {
+      checkSelfMintingDerivativeRegistration(
+        ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
+      );
+      _setFeeRecipients(
+        selfMintingDerivatives[j],
+        feeRecipients[j],
+        feeProportions[j]
+      );
+      emit SetFeeRecipients(
+        selfMintingDerivatives[j],
+        feeRecipients[j],
+        feeProportions[j]
+      );
+    }
+  }
+
+  /**
+   * @notice Update the liquidation reward percentage
+   * @param selfMintingDerivatives Derivatives to update
+   * @param _liquidationRewards Percentage of reward for correct liquidation by a liquidator
+   */
+  function setLiquidationRewardPercentage(
+    address[] calldata selfMintingDerivatives,
+    FixedPoint.Unsigned[] calldata _liquidationRewards
+  ) external {
+    for (uint256 j; j < selfMintingDerivatives.length; j++) {
+      checkSelfMintingDerivativeRegistration(
+        ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
+      );
+      require(
+        _liquidationRewards[j].isGreaterThan(0) &&
+          _liquidationRewards[j].isLessThanOrEqual(
+            FixedPoint.fromUnscaledUint(1)
+          ),
+        'Liquidation reward must be between 0 and 100%'
+      );
+
+      liquidationReward[selfMintingDerivatives[j]] = _liquidationRewards[j];
+      emit SetLiquidationReward(
+        selfMintingDerivatives[j],
+        _liquidationRewards[j].rawValue
+      );
+    }
+  }
+
+  function getLiquidationRewardPercentage(address selfMintingDerivative)
+    external
+    view
+    returns (uint256)
+  {
+    return liquidationReward[selfMintingDerivative].rawValue;
+  }
+
+  function getFeeInfo(address selfMintingDerivative)
+    external
+    view
+    returns (ICreditLineStorage.Fee memory)
+  {
+    return fee[selfMintingDerivative];
+  }
+
+  /**
+   * @notice Gets the set CapMintAmount of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return capMintAmount Limit amount for minting
+   */
+  function getCapMintAmount(address selfMintingDerivative)
+    external
+    view
+    returns (uint256 capMintAmount)
+  {
+    return capMint[selfMintingDerivative];
+  }
+
+  function _setFeeRecipients(
+    address selfMintingDerivative,
+    address[] calldata feeRecipients,
+    uint32[] calldata feeProportions
+  ) internal {
+    uint256 totalActualFeeProportions = 0;
+
+    // Store the sum of all proportions
+    for (uint256 i = 0; i < feeProportions.length; i++) {
+      totalActualFeeProportions += feeProportions[i];
+
+      fee[selfMintingDerivative].feeRecipients = feeRecipients;
+      fee[selfMintingDerivative].feeProportions = feeProportions;
+      fee[selfMintingDerivative]
+        .totalFeeProportions = totalActualFeeProportions;
+    }
+  }
+
+  /**
    * @notice Internal helper function for setFeePercentage function
    */
   function _setFeePercentage(
@@ -196,11 +323,12 @@ contract CreditLineController is
     FixedPoint.Unsigned calldata feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage != feePercentage,
+      fee[selfMintingDerivative].feePercentage.rawValue !=
+        feePercentage.rawValue,
       ' fee percentage is the same'
     );
     fee[selfMintingDerivative].feePercentage = feePercentage;
-    emit SetFeePercentage(selfMintingDerivative, feePercentage);
+    emit SetFeePercentage(selfMintingDerivative, feePercentage.rawValue);
   }
 
   /**
