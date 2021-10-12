@@ -39,7 +39,7 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
     ICreditLineStorage.Roles roles;
     uint256 liquidationPercentage;
     uint256 capMintAmount;
-    FixedPoint.Unsigned overCollateralization;
+    uint256 overCollateralization;
     FixedPoint.Unsigned minSponsorTokens;
     address excessTokenBeneficiary;
     uint8 version;
@@ -125,7 +125,8 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
       derivative,
       params.fee,
       params.liquidationPercentage,
-      params.capMintAmount
+      params.capMintAmount,
+      params.overCollateralization
     );
 
     emit CreatedPerpetual(address(derivative), msg.sender);
@@ -160,7 +161,6 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
     constructorParams.tokenAddress = params.syntheticToken;
     constructorParams.collateralAddress = params.collateralAddress;
     constructorParams.priceFeedIdentifier = params.priceFeedIdentifier;
-    constructorParams.overCollateralization = params.overCollateralization;
     constructorParams.minSponsorTokens = params.minSponsorTokens;
     constructorParams.excessTokenBeneficiary = params.excessTokenBeneficiary;
     constructorParams.version = params.version;
@@ -176,7 +176,8 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
     address derivative,
     ICreditLineStorage.Fee memory feeStruct,
     uint256 liquidationRewardPercentage,
-    uint256 capMintAmount
+    uint256 capMintAmount,
+    uint256 overCollateralization
   ) internal {
     ICreditLineController creditLineController =
       ICreditLineController(
@@ -185,11 +186,15 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
         )
       );
 
+    // prepare function calls args
     address[] memory derivatives = new address[](1);
     derivatives[0] = derivative;
 
     uint256[] memory capMintAmounts = new uint256[](1);
     capMintAmounts[0] = capMintAmount;
+
+    uint256[] memory overCollateralizations = new uint256[](1);
+    overCollateralizations[0] = overCollateralization;
 
     FixedPoint.Unsigned[] memory feePercentages = new FixedPoint.Unsigned[](1);
     feePercentages[0] = feeStruct.feePercentage;
@@ -202,6 +207,12 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
 
     uint32[][] memory feeProportions = new uint32[][](1);
     feeProportions[0] = feeStruct.feeProportions;
+
+    // set the derivative over collateralization percentage
+    creditLineController.setOvercollateralization(
+      derivatives,
+      overCollateralizations
+    );
 
     // set the derivative fee configuration
     creditLineController.setFeePercentage(derivatives, feePercentages);

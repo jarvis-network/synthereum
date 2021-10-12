@@ -60,10 +60,6 @@ interface ICreditLineStorage {
     BaseControlledMintableBurnableERC20 tokenCurrency;
     // Unique identifier for DVM price feed ticker.
     bytes32 priceIdentifier;
-    // Overcollateralization percentage
-    FixedPoint.Unsigned overCollateralization;
-    // percentage of collateral liquidated as reward to liquidator
-    FixedPoint.Unsigned liquidatorRewardPct;
     // Minimum number of tokens in a sponsor's position.
     FixedPoint.Unsigned minSponsorTokens;
     // Expiry price pulled from Chainlink in the case of an emergency shutdown.
