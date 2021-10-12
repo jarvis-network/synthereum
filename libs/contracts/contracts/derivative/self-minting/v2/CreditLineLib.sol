@@ -196,6 +196,7 @@ library SynthereumCreditLineLib {
       .totalTokensOutstanding
       .add(numTokens);
 
+    // TODO
     checkMintLimit(globalPositionData, positionManagerData);
 
     // pull collateral

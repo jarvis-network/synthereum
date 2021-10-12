@@ -21,7 +21,7 @@ interface ICreditLineDerivativeDeployment {
 
   /** @notice Returns the synthetic token symbol
    */
-  function syntheticTokenSymbol() external view returns (string memory symbol);
+  function tokenCurrencySymbol() external view returns (string memory symbol);
 
   /** @notice Returns the version of the deployed self-minting derivative
    */

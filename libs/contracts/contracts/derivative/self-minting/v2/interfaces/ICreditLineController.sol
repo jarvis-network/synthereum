@@ -15,7 +15,6 @@ interface ICreditLineController {
    * @param selfMintingDerivatives Self-minting derivatives
    * @param overcollateralPct Over collateralization percentage for self-minting derivatives
    */
-
   function setOvercollateralization(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata overcollateralPct
@@ -32,7 +31,7 @@ interface ICreditLineController {
   ) external;
 
   /**
-   * @notice Allow to set Dao fee percentages on a list of registered self-minting derivatives
+   * @notice Allow to set fee percentages on a list of registered self-minting derivatives
    * @param selfMintingDerivatives Self-minting derivatives
    * @param feePercentages fee percentages for self-minting derivatives
    */
@@ -42,9 +41,9 @@ interface ICreditLineController {
   ) external;
 
   /**
-   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
+   * @notice Update the addresses and weight of recipients for generated fees
    * @param selfMintingDerivatives Derivatives to update
-   * @param feeRecipients An array of the addresses of recipients that will receive generated fees
+   * @param feeRecipients A two-dimension array containing for each derivative the addresses of fee recipients
    * @param feeProportions An array of the proportions of fees generated each recipient will receive
    */
   function setFeeRecipients(
