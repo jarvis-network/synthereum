@@ -53,6 +53,9 @@ contract CreditLineController is
 
   mapping(address => FixedPoint.Unsigned) private liquidationReward;
 
+  mapping(address => FixedPoint.Unsigned)
+    private overCollateralizationPercentage;
+
   mapping(address => ICreditLineStorage.Fee) private fee;
 
   //----------------------------------------
@@ -78,6 +81,11 @@ contract CreditLineController is
   event SetLiquidationReward(
     address indexed selfMintingDerivative,
     uint256 liquidationReward
+  );
+
+  event SetOvercollateralization(
+    address indexed selfMintingDerivative,
+    uint256 overcollateralizationPercentage
   );
 
   //----------------------------------------
@@ -150,6 +158,36 @@ contract CreditLineController is
   //----------------------------------------
 
   /**
+   * @notice Allow to set overcollateralization percentage on a list of registered self-minting derivatives
+   * @param selfMintingDerivatives Self-minting derivatives
+   * @param overcollateralPct Over collateralization percentage for self-minting derivatives
+   */
+
+  function setOvercollateralization(
+    address[] calldata selfMintingDerivatives,
+    uint256[] calldata overcollateralPct
+  ) external override onlyMaintainerOrSelfMintingFactory {
+    require(
+      selfMintingDerivatives.length > 0,
+      'No self-minting derivatives passed'
+    );
+    require(
+      selfMintingDerivatives.length == overcollateralPct.length,
+      'Number of derivatives and overcollaterals must be the same'
+    );
+
+    for (uint256 j; j < selfMintingDerivatives.length; j++) {
+      checkSelfMintingDerivativeRegistration(
+        ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
+      );
+      _setOvercollateralization(
+        selfMintingDerivatives[j],
+        overcollateralPct[j]
+      );
+    }
+  }
+
+  /**
    * @notice Allow to set capMintAmount on a list of registered self-minting derivatives
    * @param selfMintingDerivatives Self-minting derivatives
    * @param capMintAmounts Mint cap amounts for self-minting derivatives
@@ -165,10 +203,6 @@ contract CreditLineController is
     require(
       selfMintingDerivatives.length == capMintAmounts.length,
       'Number of derivatives and mint cap amounts must be the same'
-    );
-    require(
-      hasRole(MAINTAINER_ROLE, msg.sender),
-      'Only maintainer is allowed to do this'
     );
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       ICreditLineDerivativeDeployment creditLineDerivative =
@@ -269,6 +303,15 @@ contract CreditLineController is
     }
   }
 
+  function getOvercollateralizationPercentage(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return overCollateralizationPercentage[selfMintingDerivative].rawValue;
+  }
+
   function getLiquidationRewardPercentage(address selfMintingDerivative)
     external
     view
@@ -299,6 +342,15 @@ contract CreditLineController is
     returns (uint256 capMintAmount)
   {
     return capMint[selfMintingDerivative];
+  }
+
+  function _setOvercollateralization(
+    address selfMintingDerivative,
+    uint256 percentage
+  ) internal {
+    overCollateralizationPercentage[selfMintingDerivative] = FixedPoint
+      .Unsigned(percentage);
+    emit SetOvercollateralization(selfMintingDerivative, percentage);
   }
 
   function _setFeeRecipients(
