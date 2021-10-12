@@ -43,6 +43,8 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
 
   function getFeeInfo() external view returns (ICreditLineStorage.Fee memory);
 
+  function getOvercollateralization() external view returns (uint256);
+
   function getLiquidations(address sponsor)
     external
     view

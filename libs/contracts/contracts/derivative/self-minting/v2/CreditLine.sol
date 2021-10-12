@@ -62,7 +62,6 @@ contract SynthereumCreditLine is
     address tokenAddress;
     bytes32 priceFeedIdentifier;
     FixedPoint.Unsigned minSponsorTokens;
-    FixedPoint.Unsigned overCollateralization; // TODO in controller
     address timerAddress;
     address excessTokenBeneficiary; // TODO
     uint8 version;
@@ -176,11 +175,6 @@ contract SynthereumCreditLine is
     PositionManagerParams memory _positionManagerData,
     ICreditLineStorage.Roles memory _roles
   ) nonReentrant {
-    require(
-      _positionManagerData.overCollateralization.isGreaterThan(1),
-      'CR must be higher than 100%'
-    );
-
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
@@ -196,8 +190,6 @@ contract SynthereumCreditLine is
     positionManagerData.tokenCurrency = BaseControlledMintableBurnableERC20(
       _positionManagerData.tokenAddress
     );
-    positionManagerData.overCollateralization = _positionManagerData
-      .overCollateralization;
     positionManagerData.minSponsorTokens = _positionManagerData
       .minSponsorTokens;
     positionManagerData.priceIdentifier = _positionManagerData
@@ -498,6 +490,10 @@ contract SynthereumCreditLine is
 
   function getLiquidationReward() external view override returns (uint256) {
     return positionManagerData.liquidationRewardPercentage().rawValue;
+  }
+
+  function getOvercollateralization() external view override returns (uint256) {
+    return positionManagerData.overCollateralization().rawValue;
   }
 
   // TODO

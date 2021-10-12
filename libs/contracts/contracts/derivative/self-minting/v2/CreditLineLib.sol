@@ -389,7 +389,7 @@ library SynthereumCreditLineLib {
       );
 
     FixedPoint.Unsigned memory liquidatorReward =
-      collateralLiquidated.mul(positionManagerData.liquidatorRewardPct);
+      collateralLiquidated.mul(positionManagerData._getLiquidationReward());
 
     // transfer tokens from liquidator to here and burn them
     _burnLiquidatedTokens(
@@ -594,6 +594,12 @@ library SynthereumCreditLineLib {
     fee = positionManagerData._getFeeInfo();
   }
 
+  function overCollateralization(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory percentage) {
+    percentage = positionManagerData._getOverCollateralization();
+  }
+
   //----------------------------------------
   // Internal functions
   //----------------------------------------
@@ -723,7 +729,7 @@ library SynthereumCreditLineLib {
     // calculate the min collateral of numTokens with chainlink
     FixedPoint.Unsigned memory thresholdValue = numTokens.mul(oraclePrice);
     thresholdValue = thresholdValue.mul(
-      positionManagerData.overCollateralization
+      positionManagerData._getOverCollateralization()
     );
 
     // calculate the potential liquidatable portion
@@ -783,6 +789,20 @@ library SynthereumCreditLineLib {
   ) internal view returns (ICreditLineStorage.Fee memory fee) {
     fee = positionManagerData.getCreditLineController().getFeeInfo(
       address(this)
+    );
+  }
+
+  function _getOverCollateralization(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  )
+    internal
+    view
+    returns (FixedPoint.Unsigned memory overCollateralizationPercentage)
+  {
+    overCollateralizationPercentage = FixedPoint.Unsigned(
+      positionManagerData
+        .getCreditLineController()
+        .getOvercollateralizationPercentage(address(this))
     );
   }
 
