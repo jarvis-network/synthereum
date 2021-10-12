@@ -167,13 +167,9 @@ contract SynthereumCreditLine is
   // Constructor
   //----------------------------------------
 
-  /**
-   * @notice Construct the SelfMintingPerpetualPositionManagerMultiParty.
-   * @param _positionManagerData Input parameters of PositionManager (see PositionManagerData struct)
-   */
   constructor(
     PositionManagerParams memory _positionManagerData,
-    ICreditLineStorage.Roles memory _roles
+    Roles memory _roles
   ) nonReentrant {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -203,22 +199,17 @@ contract SynthereumCreditLine is
   // External functions
   //----------------------------------------
 
-  /**
-   * @notice Transfers `collateralAmount` into the caller's position.
-   * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
-   * at least `collateralAmount` of collateral token
-   * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
-   */
   function deposit(uint256 collateralAmount) external override {
-    depositTo(msg.sender, collateralAmount);
+    PositionData storage positionData = _getPositionData(msg.sender);
+
+    positionData.depositTo(
+      globalPositionData,
+      positionManagerData,
+      FixedPoint.Unsigned(collateralAmount),
+      msg.sender
+    );
   }
 
-  /**
-   * @notice Transfers `collateralAmount` from the sponsor's position to the sponsor.
-   * @dev Reverts if the withdrawal puts this position's collateralization ratio below the collateral requirement
-   * @param collateralAmount is the amount of collateral to withdraw.
-   * @return amountWithdrawn The actual amount of collateral withdrawn.
-   */
   function withdraw(uint256 collateralAmount)
     external
     override
@@ -237,15 +228,6 @@ contract SynthereumCreditLine is
       .rawValue;
   }
 
-  /**
-   * @notice Creates tokens by creating a new position or by augmenting an existing position. Pulls `collateralAmount
-   * ` into the sponsor's position and mints `numTokens` of `tokenCurrency`.
-   * @dev Can only be called by a token sponsor. Might not mint the full proportional amount of collateral
-   * in order to account for precision loss. This contract must be approved to spend at least `collateralAmount` of
-   * `collateralCurrency`.
-   * @param collateralAmount is the number of collateral tokens to collateralize the position with
-   * @param numTokens is the number of tokens to mint from the position.
-   */
   function create(uint256 collateralAmount, uint256 numTokens)
     external
     override
@@ -265,15 +247,6 @@ contract SynthereumCreditLine is
       .rawValue;
   }
 
-  /**
-   * @notice Burns `numTokens` of `tokenCurrency` and sends back the proportional amount of collateral
-   * @dev Can only be called by a token sponsor. Might not redeem the full proportional amount of collateral
-   * in order to account for precision loss. This contract must be approved to spend at least `numTokens` of
-   * `tokenCurrency`.
-   * @param numTokens is the number of tokens to be burnt for a commensurate amount of collateral.
-   * @return amountWithdrawn The actual amount of collateral withdrawn.
-   * @return feeAmount incurred fees in collateral token
-   */
   function redeem(uint256 numTokens)
     external
     override
@@ -299,12 +272,6 @@ contract SynthereumCreditLine is
     feeAmount = uFeeAmount.rawValue;
   }
 
-  /**
-   * @notice Burns `numTokens` of `tokenCurrency` to decrease sponsors position size, without sending back collateral.
-   * This is done by a sponsor to increase position CR.
-   * @dev Can only be called by token sponsor. This contract must be approved to spend `numTokens` of `tokenCurrency`.
-   * @param numTokens is the number of tokens to be burnt for a commensurate amount of collateral.
-   */
   function repay(uint256 numTokens)
     external
     override
@@ -322,78 +289,6 @@ contract SynthereumCreditLine is
       )
     )
       .rawValue;
-  }
-
-  /**
-   * @notice If the contract is emergency shutdown then all token holders and sponsor can redeem their tokens or
-   * remaining collateral for underlying at the prevailing price defined by the on-chain oracle
-   * @dev This burns all tokens from the caller of `tokenCurrency` and sends back the resolved settlement value of
-   * collateral. Might not redeem the full proportional amount of collateral in order to account for
-   * precision loss. This contract must be approved to spend `tokenCurrency` at least up to the caller's full balance.
-   * @dev This contract must have the Burner role for the `tokenCurrency`.
-   * @return amountWithdrawn The actual amount of collateral withdrawn.
-   */
-  function settleEmergencyShutdown()
-    external
-    override
-    isEmergencyShutdown()
-    nonReentrant
-    returns (uint256 amountWithdrawn)
-  {
-    PositionData storage positionData = positions[msg.sender];
-    amountWithdrawn = positionData
-      .settleEmergencyShutdown(globalPositionData, positionManagerData)
-      .rawValue;
-  }
-
-  /**
-   * @notice Premature contract settlement under emergency circumstances.
-   * @dev Only the governor can call this function as they are permissioned within the `FinancialContractAdmin`.
-   * Upon emergency shutdown, the contract settlement time is set to the shutdown time. This enables withdrawal
-   * to occur via the `settleEmergencyShutdown` function.
-   */
-  function emergencyShutdown()
-    external
-    override
-    notEmergencyShutdown()
-    nonReentrant
-  {
-    require(
-      msg.sender ==
-        positionManagerData.synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.Manager
-        ),
-      'Caller must be a Synthereum manager'
-    );
-    // store timestamp and last price
-    positionManagerData.emergencyShutdownTimestamp = block.timestamp;
-
-    uint8 tokenCurrencyDecimals =
-      IStandardERC20(address(positionManagerData.tokenCurrency)).decimals();
-    FixedPoint.Unsigned memory scaledPrice =
-      positionManagerData._getOraclePrice().div(
-        (10**(uint256(18)).sub(tokenCurrencyDecimals))
-      );
-    positionManagerData.emergencyShutdownPrice = scaledPrice;
-
-    emit EmergencyShutdown(
-      msg.sender,
-      scaledPrice.rawValue,
-      positionManagerData.emergencyShutdownTimestamp
-    );
-  }
-
-  /**
-   * @notice Withdraw fees gained by the sender
-   * @return feeClaimed Amount of fee claimed
-   */
-  function claimFee()
-    external
-    override
-    nonReentrant
-    returns (uint256 feeClaimed)
-  {
-    feeClaimed = positionManagerData.claimFee(feeStatus);
   }
 
   function liquidate(
@@ -445,11 +340,59 @@ contract SynthereumCreditLine is
     );
   }
 
-  /**
-   * @notice Gets an array of liquidations performed on a token sponsor
-   * @param sponsor address of the TokenSponsor.
-   * @return liquidationData An array of data for all liquidations performed on a token sponsor
-   */
+  function settleEmergencyShutdown()
+    external
+    override
+    isEmergencyShutdown()
+    nonReentrant
+    returns (uint256 amountWithdrawn)
+  {
+    PositionData storage positionData = positions[msg.sender];
+    amountWithdrawn = positionData
+      .settleEmergencyShutdown(globalPositionData, positionManagerData)
+      .rawValue;
+  }
+
+  function emergencyShutdown()
+    external
+    override
+    notEmergencyShutdown()
+    nonReentrant
+  {
+    require(
+      msg.sender ==
+        positionManagerData.synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.Manager
+        ),
+      'Caller must be a Synthereum manager'
+    );
+    // store timestamp and last price
+    positionManagerData.emergencyShutdownTimestamp = block.timestamp;
+
+    uint8 tokenCurrencyDecimals =
+      IStandardERC20(address(positionManagerData.tokenCurrency)).decimals();
+    FixedPoint.Unsigned memory scaledPrice =
+      positionManagerData._getOraclePrice().div(
+        (10**(uint256(18)).sub(tokenCurrencyDecimals))
+      );
+    positionManagerData.emergencyShutdownPrice = scaledPrice;
+
+    emit EmergencyShutdown(
+      msg.sender,
+      scaledPrice.rawValue,
+      positionManagerData.emergencyShutdownTimestamp
+    );
+  }
+
+  function claimFee()
+    external
+    override
+    nonReentrant
+    returns (uint256 feeClaimed)
+  {
+    feeClaimed = positionManagerData.claimFee(feeStatus);
+  }
+
   function getLiquidations(address sponsor)
     external
     view
@@ -457,14 +400,13 @@ contract SynthereumCreditLine is
     nonReentrantView()
     returns (LiquidationData[] memory liquidationData)
   {
-    return liquidations[sponsor];
+    liquidationData = liquidations[sponsor];
   }
 
-  /** @notice A helper function for getLiquidationData function
-   */
   function getLiquidationData(address sponsor, uint256 liquidationId)
     external
     view
+    override
     nonReentrantView()
     returns (LiquidationData memory liquidation)
   {
@@ -472,36 +414,43 @@ contract SynthereumCreditLine is
     // Revert if the caller is attempting to access an invalid liquidation
     // (one that has never been created or one has never been initialized).
     require(liquidationId < liquidationArray.length, 'Invalid liquidation ID');
-    return liquidationArray[liquidationId];
+    liquidation = liquidationArray[liquidationId];
   }
 
   function getCapMintAmount() external view override returns (uint256 capMint) {
     capMint = positionManagerData.capMintAmount().rawValue;
   }
 
-  function getFeeInfo()
+  function getFeeInfo() external view override returns (Fee memory fee) {
+    fee = positionManagerData.feeInfo();
+  }
+
+  function getLiquidationReward()
     external
     view
     override
-    returns (ICreditLineStorage.Fee memory)
+    returns (uint256 rewardPct)
   {
-    return positionManagerData.feeInfo();
+    rewardPct = positionManagerData.liquidationRewardPercentage().rawValue;
   }
 
-  function getLiquidationReward() external view override returns (uint256) {
-    return positionManagerData.liquidationRewardPercentage().rawValue;
-  }
-
-  function getOvercollateralization() external view override returns (uint256) {
-    return positionManagerData.overCollateralization().rawValue;
+  function getOvercollateralization()
+    external
+    view
+    override
+    returns (uint256 overcollateralizationPct)
+  {
+    overcollateralizationPct = positionManagerData
+      .overCollateralization()
+      .rawValue;
   }
 
   // TODO
-  /**
-   * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
-   * @dev This will drain down to the amount of tracked collateral and drain the full balance of any other token.
-   * @param token address of the ERC20 token whose excess balance should be drained.
-   */
+  // /**
+  //  * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
+  //  * @dev This will drain down to the amount of tracked collateral and drain the full balance of any other token.
+  //  * @param token address of the ERC20 token whose excess balance should be drained.
+  //  */
   // function trimExcess(IERC20 token)
   //   external
   //   nonReentrant
@@ -513,10 +462,6 @@ contract SynthereumCreditLine is
   //     .rawValue;
   // }
 
-  /**
-   * @notice Delete a TokenSponsor position (This function can only be called by the contract itself)
-   * @param sponsor address of the TokenSponsor.
-   */
   function deleteSponsorPosition(address sponsor) external override {
     require(
       msg.sender == address(this),
@@ -525,13 +470,6 @@ contract SynthereumCreditLine is
     delete positions[sponsor];
   }
 
-  /**
-   * @notice Accessor method for a sponsor's collateral.
-   * @dev This is necessary because the struct returned by the positions() method shows
-   * rawCollateral, which isn't a user-readable value.
-   * @param sponsor address whose collateral amount is retrieved.
-   * @return collateralAmount amount of collateral within a sponsors position.
-   */
   function getPositionCollateral(address sponsor)
     external
     view
@@ -542,10 +480,6 @@ contract SynthereumCreditLine is
     return positions[sponsor].rawCollateral;
   }
 
-  /**
-   * @notice Get SynthereumFinder contract address
-   * @return finder SynthereumFinder contract
-   */
   function synthereumFinder()
     external
     view
@@ -555,19 +489,20 @@ contract SynthereumCreditLine is
     finder = positionManagerData.synthereumFinder;
   }
 
-  /**
-   * @notice Get synthetic token currency
-   * @return synthToken Synthetic token
-   */
   function tokenCurrency() external view override returns (IERC20 synthToken) {
     synthToken = positionManagerData.tokenCurrency;
   }
 
-  /**
-   * @notice Get synthetic token symbol
-   * @return symbol Synthetic token symbol
-   */
-  function syntheticTokenSymbol()
+  function collateralCurrency()
+    public
+    view
+    override
+    returns (IERC20 collateral)
+  {
+    collateral = positionManagerData.collateralToken;
+  }
+
+  function tokenCurrencySymbol()
     external
     view
     override
@@ -577,74 +512,36 @@ contract SynthereumCreditLine is
       .symbol();
   }
 
-  /** @notice Get the version of a self minting derivative
-   * @return contractVersion Contract version
-   */
   function version() external view override returns (uint8 contractVersion) {
     contractVersion = positionManagerData.version;
   }
 
-  /**
-   * @notice Get synthetic token price identifier registered with UMA DVM
-   * @return identifier Synthetic token price identifier
-   */
-  function priceIdentifier() external view returns (bytes32 identifier) {
+  function priceIdentifier()
+    external
+    view
+    override
+    returns (bytes32 identifier)
+  {
     identifier = positionManagerData.priceIdentifier;
   }
 
-  /**
-   * @notice Get the currently minted synthetic tokens from all self-minting derivatives
-   * @return totalTokens Total amount of synthetic tokens minted
-   */
-  function totalTokensOutstanding() external view returns (uint256) {
-    return globalPositionData.totalTokensOutstanding.rawValue;
+  function totalTokensOutstanding()
+    external
+    view
+    override
+    returns (uint256 totalTokens)
+  {
+    totalTokens = globalPositionData.totalTokensOutstanding.rawValue;
   }
 
-  /**
-   * @notice Get the price of synthetic token set by DVM after emergencyShutdown call
-   * @return Price of synthetic token
-   */
   function emergencyShutdownPrice()
     external
     view
-    isEmergencyShutdown()
-    returns (uint256)
-  {
-    return positionManagerData.emergencyShutdownPrice.rawValue;
-  }
-
-  /**
-   * @notice Transfers `collateralAmount` of collateral into the specified sponsor's position.
-   * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
-   * at least `collateralAmount` of collateral token
-   * @param sponsor the sponsor to credit the deposit to.
-   * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
-   */
-  function depositTo(address sponsor, uint256 collateralAmount)
-    public
-    notEmergencyShutdown()
-    nonReentrant
-  {
-    PositionData storage positionData = _getPositionData(sponsor);
-
-    positionData.depositTo(
-      globalPositionData,
-      positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      sponsor
-    );
-  }
-
-  /** @notice Check the collateralCurrency for a given self-minting derivative
-   * @return collateral The collateral currency
-   */
-  function collateralCurrency()
-    public
-    view
     override
-    returns (IERC20 collateral)
+    isEmergencyShutdown()
+    returns (uint256 price)
   {
-    collateral = positionManagerData.collateralToken;
+    price = positionManagerData.emergencyShutdownPrice.rawValue;
   }
 
   //----------------------------------------
@@ -668,10 +565,6 @@ contract SynthereumCreditLine is
   //     );
   // }
 
-  /** @notice Gets all data on a given sponsors position for a self-minting derivative
-   * @param sponsor Address of the sponsor to check
-   * @return A struct of information on a tokens sponsor position
-   */
   function _getPositionData(address sponsor)
     internal
     view

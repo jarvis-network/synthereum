@@ -40,7 +40,7 @@ contract CreditLineController is
   //Describe role structure
   struct Roles {
     address admin;
-    address maintainers;
+    address[] maintainers;
   }
 
   //----------------------------------------
@@ -150,19 +150,14 @@ contract CreditLineController is
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    _setupRole(MAINTAINER_ROLE, _roles.maintainers);
+    for (uint256 i = 0; i < _roles.maintainers.length; i++) {
+      _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);
+    }
   }
 
   //----------------------------------------
   // External functions
   //----------------------------------------
-
-  /**
-   * @notice Allow to set overcollateralization percentage on a list of registered self-minting derivatives
-   * @param selfMintingDerivatives Self-minting derivatives
-   * @param overcollateralPct Over collateralization percentage for self-minting derivatives
-   */
-
   function setOvercollateralization(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata overcollateralPct
@@ -187,11 +182,6 @@ contract CreditLineController is
     }
   }
 
-  /**
-   * @notice Allow to set capMintAmount on a list of registered self-minting derivatives
-   * @param selfMintingDerivatives Self-minting derivatives
-   * @param capMintAmounts Mint cap amounts for self-minting derivatives
-   */
   function setCapMintAmount(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capMintAmounts
@@ -213,11 +203,6 @@ contract CreditLineController is
     }
   }
 
-  /**
-   * @notice Allow to set fee percentages on a list of registered self-minting derivatives
-   * @param selfMintingDerivatives Self-minting derivatives
-   * @param feePercentages fee percentages for self-minting derivatives
-   */
   function setFeePercentage(
     address[] calldata selfMintingDerivatives,
     FixedPoint.Unsigned[] calldata feePercentages
@@ -236,12 +221,6 @@ contract CreditLineController is
     }
   }
 
-  /**
-   * @notice Update the addresses of recipients for generated fees and proportions of fees each address will receive
-   * @param selfMintingDerivatives Derivatives to update
-   * @param feeRecipients An array of the addresses of recipients that will receive generated fees
-   * @param feeProportions An array of the proportions of fees generated each recipient will receive
-   */
   function setFeeRecipients(
     address[] calldata selfMintingDerivatives,
     address[][] calldata feeRecipients,
@@ -274,11 +253,6 @@ contract CreditLineController is
     }
   }
 
-  /**
-   * @notice Update the liquidation reward percentage
-   * @param selfMintingDerivatives Derivatives to update
-   * @param _liquidationRewards Percentage of reward for correct liquidation by a liquidator
-   */
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
     FixedPoint.Unsigned[] calldata _liquidationRewards
@@ -330,11 +304,6 @@ contract CreditLineController is
     return fee[selfMintingDerivative];
   }
 
-  /**
-   * @notice Gets the set CapMintAmount of a self-minting derivative
-   * @param selfMintingDerivative Self-minting derivative
-   * @return capMintAmount Limit amount for minting
-   */
   function getCapMintAmount(address selfMintingDerivative)
     external
     view
@@ -343,6 +312,10 @@ contract CreditLineController is
   {
     return capMint[selfMintingDerivative];
   }
+
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
 
   function _setOvercollateralization(
     address selfMintingDerivative,
@@ -371,9 +344,6 @@ contract CreditLineController is
     }
   }
 
-  /**
-   * @notice Internal helper function for setFeePercentage function
-   */
   function _setFeePercentage(
     address selfMintingDerivative,
     FixedPoint.Unsigned calldata feePercentage
@@ -387,9 +357,6 @@ contract CreditLineController is
     emit SetFeePercentage(selfMintingDerivative, feePercentage.rawValue);
   }
 
-  /**
-   * @notice Internal helper function for setCapMintAmount function
-   */
   function _setCapMintAmount(
     address selfMintingDerivative,
     uint256 capMintAmount
@@ -417,7 +384,7 @@ contract CreditLineController is
       );
     require(
       selfMintingRegistry.isDeployed(
-        selfMintingDerivative.syntheticTokenSymbol(),
+        selfMintingDerivative.tokenCurrencySymbol(),
         selfMintingDerivative.collateralCurrency(),
         selfMintingDerivative.version(),
         address(selfMintingDerivative)
