@@ -21,6 +21,18 @@ interface SelfMintingFee {
   feeRecipient: string;
 }
 
+interface CreditLineRoles {
+  admin: string;
+  maintainers: string[];
+}
+
+interface CreditLineFees {
+  feePercentage: { rawValue: string };
+  feeRecipients: string[];
+  feeProportions: number[];
+  totalFeeProportion: number;
+}
+
 function encodeDerivative(
   collAddress: string,
   priceFeedIdentifier: string,
@@ -260,8 +272,81 @@ function encodeSelfMintingDerivative(
   return selfMintingDerivativePayload;
 }
 
+function encodeCreditLineDerivative(
+  collateralAddress: string,
+  priceFeedIdentifier: string,
+  syntheticName: string,
+  syntheticSymbol: string,
+  syntheticTokenAddress: string,
+  collateralRequirement: string,
+  minSponsorTokens: string,
+  excessTokenBeneficiary: string,
+  version: number,
+  fee: CreditLineFees,
+  liquidationRewardPct: string,
+  roles: CreditLineRoles,
+  capMintAmount: string,
+) {
+  const CreditLineDerivativePayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+    [
+      {
+        params: {
+          collateralAddress: 'address',
+          priceFeedIdentifier: 'bytes32',
+          syntheticName: 'string',
+          syntheticSymbol: 'string',
+          syntheticToken: 'address',
+          fee: {
+            feePercentage: { rawValue: 'uint256' },
+            feeRecipients: 'address[]',
+            feeProportions: 'uint32[]',
+            totalFeeProportions: 'uint256',
+          },
+          roles: {
+            admin: 'address',
+            maintainers: 'address[]',
+          },
+          liquidationPercentage: 'uint256',
+          capMintAmount: 'uint256',
+          overCollateralization: 'uint256',
+          minSponsorTokens: {
+            rawValue: 'uint256',
+          },
+          excessTokenBeneficiary: 'address',
+          version: 'uint8',
+        },
+      },
+    ],
+    [
+      collateralAddress,
+      web3Utils.padRight(web3Utils.toHex(priceFeedIdentifier), 64),
+      syntheticName,
+      syntheticSymbol,
+      syntheticTokenAddress,
+      {
+        feePercentage: fee.feePercentage,
+        feeRecipients: fee.feeRecipients,
+        feeProportions: fee.feeProportions,
+        totalFeeProportions: fee.totalFeeProportion,
+      },
+      {
+        admin: roles.admin,
+        maintainers: roles.maintainers,
+      },
+      liquidationRewardPct,
+      capMintAmount,
+      collateralRequirement,
+      { rawValue: minSponsorTokens },
+      excessTokenBeneficiary,
+      version,
+    ],
+  );
+  return CreditLineDerivativePayload;
+}
+
 module.exports = {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
   encodeSelfMintingDerivative,
+  encodeCreditLineDerivative,
 };
