@@ -21,7 +21,7 @@ const {
 } = require('@jarvis-network/core-utils/dist/eth/contracts/print-tx');
 const { log } = require('@jarvis-network/core-utils/dist/logging');
 const {
-  encodeSelfMintingDerivative,
+  encodeCreditLineDerivative,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
@@ -34,58 +34,58 @@ module.exports = async function (deployer, network, accounts) {
   const synthereumDeployer = await getExistingInstance(
     web3,
     SynthereumDeployer,
-    '@jarvis-network/synthereum-contracts',
   );
 
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
+  const roles = {
+    admin: rolesConfig[networkId]?.admin ?? accounts[0],
+    maintainers: [maintainer],
+  };
+
   let txData = [];
 
   if (deployment[networkId].isEnabled === true) {
     assets[networkId].map(async asset => {
-      let selfMintingDerivativeVersion = '';
-      let selfMintingDerivativePayload = '';
+      let creditLineDerivativeVersion = '';
+      let creditLineDerivativePayload = '';
       if (deployment[networkId].SelfMintingDerivative === 1) {
-        selfMintingDerivativeVersion = selfMintingData[networkId][0].version;
-        selfMintingDerivativePayload = encodeSelfMintingDerivative(
-          selfMintingData[networkId][0].collateralAddress,
+        creditLineDerivativeVersion = selfMintingData[networkId][1].version;
+        creditLineDerivativePayload = encodeCreditLineDerivative(
+          selfMintingData[networkId][1].collateralAddress,
           asset.priceFeedIdentifier,
           asset.syntheticName,
           asset.syntheticSymbol,
           deployment[networkId].SyntheticTokenAddress[asset.syntheticSymbol],
-          asset.collateralRequirement,
-          umaConfig[networkId].disputeBondPct,
-          umaConfig[networkId].sponsorDisputeRewardPct,
-          umaConfig[networkId].disputerDisputeRewardPct,
-          asset.minSponsorTokens,
-          umaConfig[networkId].withdrawalLiveness,
-          umaConfig[networkId].liquidationLiveness,
-          umaConfig[networkId].excessTokenBeneficiary,
-          selfMintingDerivativeVersion,
-          selfMintingData[networkId][0].daoFee,
+          selfMintingData[networkId][1].fee,
+          roles,
+          selfMintingData[networkId][1].liquidationPct,
           asset.capMintAmount,
-          asset.capDepositRatio,
+          asset.collateralRequirement,
+          asset.minSponsorTokens,
+          umaConfig[networkId].excessTokenBeneficiary,
+          creditLineDerivativeVersion,
         );
       }
       txData.push({
         asset: asset.syntheticSymbol,
-        selfMintingDerivativeVersion,
-        selfMintingDerivativePayload,
+        creditLineDerivativeVersion,
+        creditLineDerivativePayload,
       });
     });
     for (let j = 0; j < txData.length; j++) {
-      log(`   Deploying '${txData[j].asset} Self Minting Derivative'`);
+      log(`   Deploying '${txData[j].asset} Credit Line Derivative'`);
       log('   -------------------------------------');
       const gasEstimation = await synthereumDeployer.methods
         .deployOnlySelfMintingDerivative(
-          txData[j].selfMintingDerivativeVersion,
-          txData[j].selfMintingDerivativePayload,
+          txData[j].creditLineDerivativeVersion,
+          txData[j].creditLineDerivativePayload,
         )
         .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
         const tx = await synthereumDeployer.methods
           .deployOnlySelfMintingDerivative(
-            txData[j].selfMintingDerivativeVersion,
-            txData[j].selfMintingDerivativePayload,
+            txData[j].creditLineDerivativeVersion,
+            txData[j].creditLineDerivativePayload,
           )
           .send({ from: maintainer, gasPrice });
         const { transactionHash } = tx;
@@ -94,7 +94,7 @@ module.exports = async function (deployer, network, accounts) {
           web3,
           txhash: transactionHash,
           contractName: txData[j].asset,
-          txSummaryText: 'deploySelfMintingDerivative',
+          txSummaryText: 'deployCreditLineDerivative',
         });
       }
     }

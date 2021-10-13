@@ -3,11 +3,19 @@
     "SelfMintingDerivativeFactory": {
       "version": 1,
       "isEnabled": true
+    },
+    "CreditLineFactory": {
+      "version": 2,
+      "isEnabled": true
     }
   },
   "4": {
     "SelfMintingDerivativeFactory": {
       "version": 1,
+      "isEnabled": true
+    },
+    "CreditLineFactory": {
+      "version": 2,
       "isEnabled": true
     }
   },
@@ -15,11 +23,19 @@
     "SelfMintingDerivativeFactory": {
       "version": 1,
       "isEnabled": true
+    },
+    "CreditLineFactory": {
+      "version": 2,
+      "isEnabled": true
     }
   },
   "80001": {
     "SelfMintingDerivativeFactory": {
       "version": 1,
+      "isEnabled": true
+    },
+    "CreditLineFactory": {
+      "version": 2,
       "isEnabled": true
     }
   }
