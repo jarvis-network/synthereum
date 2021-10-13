@@ -170,7 +170,11 @@ library SynthereumLiquidityPoolLib {
     uint256 rewardReceived
   );
 
-  event EmergencyShutdown(uint256 timestamp, uint256 price);
+  event EmergencyShutdown(
+    uint256 timestamp,
+    uint256 price,
+    uint256 finalCollateral
+  );
 
   event Settlement(
     address indexed account,
@@ -695,12 +699,16 @@ library SynthereumLiquidityPoolLib {
    * @notice Shutdown the pool in case of emergency
    * @notice Only Synthereum manager contract can call this function
    * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param emergencyShutdownData Emergency shutdown info (see Shutdown struct)
    * @return timestamp Timestamp of emergency shutdown transaction
    * @return price Price of the pair at the moment of shutdown execution
    */
   function emergencyShutdown(
     ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     ISynthereumLiquidityPoolStorage.Shutdown storage emergencyShutdownData
   ) external returns (uint256 timestamp, uint256 price) {
     ISynthereumFinder _finder = self.finder;
@@ -722,7 +730,23 @@ library SynthereumLiquidityPoolLib {
 
     price = _price.rawValue;
 
-    emit EmergencyShutdown(timestamp, price);
+    // Move available liquidity in the position
+    FixedPoint.Unsigned memory totalCollateral =
+      lpPosition.totalCollateralAmount;
+
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.calculateUnusedCollateral(
+        totalCollateral,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      );
+
+    FixedPoint.Unsigned memory finalCollateral =
+      totalCollateral.add(unusedCollateral);
+
+    lpPosition.totalCollateralAmount = finalCollateral;
+
+    emit EmergencyShutdown(timestamp, price, finalCollateral.rawValue);
   }
 
   /**
@@ -813,9 +837,7 @@ library SynthereumLiquidityPoolLib {
 
     executeSettlement.transferableCollateral = FixedPoint.min(
       executeSettlement.redeemableCollateral,
-      executeSettlement.totalCollateralAmount.add(
-        executeSettlement.unusedCollateral
-      )
+      executeSettlement.totalCollateralAmount
     );
 
     // Update Lp position

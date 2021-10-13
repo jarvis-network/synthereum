@@ -123,7 +123,11 @@ contract SynthereumLiquidityPool is
     uint256 rewardReceived
   );
 
-  event EmergencyShutdown(uint256 timestamp, uint256 price);
+  event EmergencyShutdown(
+    uint256 timestamp,
+    uint256 price,
+    uint256 finalCollateral
+  );
 
   event Settlement(
     address indexed account,
@@ -435,7 +439,11 @@ contract SynthereumLiquidityPool is
     nonReentrant
     returns (uint256 timestamp, uint256 price)
   {
-    (timestamp, price) = poolStorage.emergencyShutdown(emergencyShutdownData);
+    (timestamp, price) = poolStorage.emergencyShutdown(
+      lpPosition,
+      feeStatus,
+      emergencyShutdownData
+    );
   }
 
   /**
