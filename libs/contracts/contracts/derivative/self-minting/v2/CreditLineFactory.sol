@@ -27,10 +27,9 @@ contract CreditLineFactory is
   /**
    * @notice Constructs the SelfMintingDerivativeFactory contract
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
-   * @param _timerAddress Contract that stores the current time in a testing environment.
    */
-  constructor(address _synthereumFinder, address _timerAddress)
-    SynthereumCreditLineCreator(_synthereumFinder, _timerAddress)
+  constructor(address _synthereumFinder)
+    SynthereumCreditLineCreator(_synthereumFinder)
   {
     deploymentSignature = this.createPerpetual.selector;
   }
