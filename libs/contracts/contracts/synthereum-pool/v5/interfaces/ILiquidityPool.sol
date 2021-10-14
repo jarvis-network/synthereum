@@ -157,11 +157,11 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   /**
    * @notice Redeem tokens after emergency shutdown
    * @return synthTokensSettled Amount of synthetic tokens liquidated
-   * @return amountSettled Amount of collateral withdrawn after emergency shutdown
+   * @return collateralSettled Amount of collateral withdrawn after emergency shutdown
    */
   function settleEmergencyShutdown()
     external
-    returns (uint256 synthTokensSettled, uint256 amountSettled);
+    returns (uint256 synthTokensSettled, uint256 collateralSettled);
 
   /**
    * @notice Update the fee percentage, recipients and recipient proportions

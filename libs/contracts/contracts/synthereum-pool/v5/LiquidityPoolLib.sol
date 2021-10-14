@@ -106,6 +106,23 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned transferableCollateral;
   }
 
+  struct ExecuteLiquidation {
+    // Total amount of collateral in the Lp position
+    FixedPoint.Unsigned totalCollateralAmount;
+    // Total number of tokens collateralized in the Lp position
+    FixedPoint.Unsigned tokensCollateralized;
+    // Amount of collateral used to collateralize user's tokens
+    FixedPoint.Unsigned userCollateralization;
+    // Available liquidity in the pool
+    FixedPoint.Unsigned unusedCollateral;
+    // Expected collateral received by the user according to the actual price
+    FixedPoint.Unsigned expectedCollateral;
+    // Collateral amount receieved by the user
+    FixedPoint.Unsigned settledCollateral;
+    // Reward amount received by the user
+    FixedPoint.Unsigned rewardAmount;
+  }
+
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -166,6 +183,7 @@ library SynthereumLiquidityPoolLib {
   event Liquidate(
     address indexed liquidator,
     uint256 tokensLiquidated,
+    uint256 collateralExpected,
     uint256 collateralReceived,
     uint256 rewardReceived
   );
@@ -568,9 +586,10 @@ library SynthereumLiquidityPoolLib {
 
     // Check that position doesn't become undercollateralized
     (bool _isOverCollateralized, ) =
-      self.isOverCollateralized(
-        lpPosition,
+      lpPosition.isOverCollateralized(
         liquidationData,
+        getPriceFeedRate(self.finder, self.priceIdentifier),
+        getCollateralDecimals(self.collateralToken),
         _newTotalCollateral
       );
 
@@ -641,55 +660,101 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata numSynthTokens
   ) external returns (uint256 collateralReceived, uint256 rewardAmount) {
-    // Collateral to liquidate
-    FixedPoint.Unsigned memory collateralInLiquidation =
-      lpPosition.updateLpPositionInRedeem(numSynthTokens);
+    // Memory struct for saving local varibales
+    ExecuteLiquidation memory executeLiquidation;
+
+    FixedPoint.Unsigned memory priceRate =
+      getPriceFeedRate(self.finder, self.priceIdentifier);
+
+    uint8 collateralDecimals = getCollateralDecimals(self.collateralToken);
+
+    executeLiquidation.totalCollateralAmount = lpPosition.totalCollateralAmount;
 
     // Collateral value of the synthetic token passed
-    (
-      bool _isOverCollaterlized,
-      FixedPoint.Unsigned memory _collateralReceived
-    ) =
-      self.isOverCollateralized(
-        lpPosition,
+    (bool _isOverCollaterlized, ) =
+      lpPosition.isOverCollateralized(
         liquidationData,
-        collateralInLiquidation
+        priceRate,
+        collateralDecimals,
+        executeLiquidation.totalCollateralAmount
       );
 
     // Revert if position is not undercollataralized
     require(!_isOverCollaterlized, 'Position is not undercollataralized');
 
+    IStandardERC20 _collateralToken = self.collateralToken;
+
+    executeLiquidation.expectedCollateral = calculateCollateralAmount(
+      priceRate,
+      collateralDecimals,
+      numSynthTokens
+    );
+
+    executeLiquidation.tokensCollateralized = lpPosition.tokensCollateralized;
+
+    executeLiquidation.userCollateralization = numSynthTokens
+      .div(executeLiquidation.tokensCollateralized)
+      .mul(executeLiquidation.totalCollateralAmount);
+
+    executeLiquidation.settledCollateral;
+    executeLiquidation.rewardAmount;
+
+    if (
+      executeLiquidation.userCollateralization.isGreaterThan(
+        executeLiquidation.expectedCollateral
+      )
+    ) {
+      executeLiquidation.settledCollateral = executeLiquidation
+        .expectedCollateral;
+      executeLiquidation.rewardAmount = executeLiquidation
+        .userCollateralization
+        .sub(executeLiquidation.expectedCollateral)
+        .mul(liquidationData.liquidationReward);
+    } else {
+      executeLiquidation.unusedCollateral = self.calculateUnusedCollateral(
+        executeLiquidation.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      );
+      executeLiquidation.settledCollateral = FixedPoint.min(
+        executeLiquidation.expectedCollateral,
+        executeLiquidation.totalCollateralAmount.add(
+          executeLiquidation.unusedCollateral
+        )
+      );
+    }
+
+    // Update Lp position
+    lpPosition.totalCollateralAmount = executeLiquidation
+      .totalCollateralAmount
+      .isGreaterThan(executeLiquidation.expectedCollateral)
+      ? executeLiquidation
+        .totalCollateralAmount
+        .sub(executeLiquidation.expectedCollateral)
+        .sub(executeLiquidation.rewardAmount)
+      : FixedPoint.Unsigned(0);
+
+    lpPosition.tokensCollateralized = executeLiquidation
+      .tokensCollateralized
+      .sub(numSynthTokens);
+
+    collateralReceived = executeLiquidation.settledCollateral.rawValue;
+
+    rewardAmount = executeLiquidation.rewardAmount.rawValue;
+
     // Burn synthetic tokens to be liquidated
     self.burnSyntheticTokens(numSynthTokens.rawValue);
 
-    // Check that in case of undercapitalization there is enough unused liquidity
-    if (collateralInLiquidation.isGreaterThan(_collateralReceived)) {
-      rewardAmount = (collateralInLiquidation.sub(_collateralReceived))
-        .mul(liquidationData.liquidationReward)
-        .rawValue;
-    } else if (
-      _collateralReceived.sub(collateralInLiquidation).isGreaterThan(
-        self.calculateUnusedCollateral(
-          lpPosition.totalCollateralAmount,
-          feeStatus.totalFeeAmount,
-          FixedPoint.Unsigned(0)
-        )
-      )
-    ) {
-      revert('Not enough liquidity for liquidation');
-    }
-
-    //Send net amount of collateral to the user that submitted the redeem request
-    self.collateralToken.safeTransfer(
+    // Transfer liquidated collateral and reward to the user
+    _collateralToken.safeTransfer(
       msg.sender,
-      (_collateralReceived.add(rewardAmount)).rawValue
+      collateralReceived + rewardAmount
     );
-
-    collateralReceived = _collateralReceived.rawValue;
 
     emit Liquidate(
       msg.sender,
       numSynthTokens.rawValue,
+      executeLiquidation.expectedCollateral.rawValue,
       collateralReceived,
       rewardAmount
     );
@@ -757,7 +822,7 @@ library SynthereumLiquidityPoolLib {
    * @param emergencyShutdownData Emergency shutdown info (see Shutdown struct)
    * @param isLiquidityProvider True if the sender is an LP, otherwise false
    * @return synthTokensSettled Amount of synthetic tokens liquidated
-   * @return amountSettled Amount of collateral withdrawn after emergency shutdown
+   * @return collateralSettled Amount of collateral withdrawn after emergency shutdown
    */
   function settleEmergencyShutdown(
     ISynthereumLiquidityPoolStorage.Storage storage self,
@@ -765,7 +830,7 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     ISynthereumLiquidityPoolStorage.Shutdown storage emergencyShutdownData,
     bool isLiquidityProvider
-  ) external returns (uint256 synthTokensSettled, uint256 amountSettled) {
+  ) external returns (uint256 synthTokensSettled, uint256 collateralSettled) {
     // Memory struct for saving local varibales
     ExecuteSettlement memory executeSettlement;
 
@@ -800,16 +865,18 @@ library SynthereumLiquidityPoolLib {
     executeSettlement.totalFeeAmount = feeStatus.totalFeeAmount;
     executeSettlement.overCollateral;
 
-    uint256 scalingFactor =
-      10**(18 - getCollateralDecimals(self.collateralToken));
+    IStandardERC20 _collateralToken = self.collateralToken;
+
+    uint8 collateralDecimals = getCollateralDecimals(_collateralToken);
 
     // Add overcollateral and deposited synthetic tokens if the sender is the LP
     if (isLiquidityProvider) {
       FixedPoint.Unsigned memory totalRedeemableCollateral =
-        executeSettlement
-          .tokensCollaterlized
-          .mul(executeSettlement.emergencyPrice)
-          .div(scalingFactor);
+        calculateCollateralAmount(
+          executeSettlement.emergencyPrice,
+          collateralDecimals,
+          executeSettlement.tokensCollaterlized
+        );
 
       executeSettlement.overCollateral = executeSettlement
         .totalCollateralAmount
@@ -823,10 +890,13 @@ library SynthereumLiquidityPoolLib {
     }
 
     // Calculate expected and settled collateral
-    executeSettlement.redeemableCollateral = executeSettlement
-      .userNumTokens
-      .mul(executeSettlement.emergencyPrice)
-      .div(scalingFactor)
+    executeSettlement.redeemableCollateral = calculateCollateralAmount(
+      executeSettlement
+        .emergencyPrice,
+      collateralDecimals,
+      executeSettlement
+        .userNumTokens
+    )
       .add(executeSettlement.overCollateral);
 
     executeSettlement.unusedCollateral = self.calculateUnusedCollateral(
@@ -855,19 +925,19 @@ library SynthereumLiquidityPoolLib {
 
     synthTokensSettled = executeSettlement.userNumTokens.rawValue;
 
-    amountSettled = executeSettlement.transferableCollateral.rawValue;
+    collateralSettled = executeSettlement.transferableCollateral.rawValue;
 
     // Burn synthetic tokens
     syntheticToken.burn(synthTokensSettled);
 
-    // Redeem the collateral for the underlying asset and transfer to the user
-    self.collateralToken.safeTransfer(msg.sender, amountSettled);
+    // Transfer settled collateral to the user
+    _collateralToken.safeTransfer(msg.sender, collateralSettled);
 
     emit Settlement(
       msg.sender,
       synthTokensSettled,
       executeSettlement.redeemableCollateral.rawValue,
-      amountSettled
+      collateralSettled
     );
   }
 
@@ -1005,18 +1075,22 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData
   ) external view returns (bool, uint256) {
+    FixedPoint.Unsigned memory priceRate =
+      getPriceFeedRate(self.finder, self.priceIdentifier);
+
     (bool _isOverCollateralized, ) =
-      self.isOverCollateralized(
-        lpPosition,
+      lpPosition.isOverCollateralized(
         liquidationData,
+        priceRate,
+        getCollateralDecimals(self.collateralToken),
         lpPosition.totalCollateralAmount
       );
+
     FixedPoint.Unsigned memory _collateralCoverage =
       lpPosition.totalCollateralAmount.div(
-        lpPosition.tokensCollateralized.mul(
-          getPriceFeedRate(self.finder, self.priceIdentifier)
-        )
+        lpPosition.tokensCollateralized.mul(priceRate)
       );
+
     return (_isOverCollateralized, _collateralCoverage.rawValue);
   }
 
@@ -1474,9 +1548,8 @@ library SynthereumLiquidityPoolLib {
     collateralAmount = totCollateralAmount.sub(feeAmount);
 
     numTokens = calculateNumberOfTokens(
-      self.finder,
-      self.collateralToken,
-      self.priceIdentifier,
+      getPriceFeedRate(self.finder, self.priceIdentifier),
+      getCollateralDecimals(self.collateralToken),
       collateralAmount
     );
   }
@@ -1502,9 +1575,8 @@ library SynthereumLiquidityPoolLib {
     )
   {
     totCollateralAmount = calculateCollateralAmount(
-      self.finder,
-      self.collateralToken,
-      self.priceIdentifier,
+      getPriceFeedRate(self.finder, self.priceIdentifier),
+      getCollateralDecimals(self.collateralToken),
       numTokens
     );
 
@@ -1537,10 +1609,15 @@ library SynthereumLiquidityPoolLib {
       FixedPoint.Unsigned memory destNumTokens
     )
   {
+    ISynthereumFinder _finder = self.finder;
+
+    IStandardERC20 _collateralToken = self.collateralToken;
+
+    uint8 collateralDecimals = getCollateralDecimals(_collateralToken);
+
     totCollateralAmount = calculateCollateralAmount(
-      self.finder,
-      self.collateralToken,
-      self.priceIdentifier,
+      getPriceFeedRate(_finder, self.priceIdentifier),
+      collateralDecimals,
       numTokens
     );
 
@@ -1549,9 +1626,8 @@ library SynthereumLiquidityPoolLib {
     collateralAmount = totCollateralAmount.sub(feeAmount);
 
     destNumTokens = calculateNumberOfTokens(
-      self.finder,
-      self.collateralToken,
-      destinationPool.getPriceFeedIdentifier(),
+      getPriceFeedRate(_finder, destinationPool.getPriceFeedIdentifier()),
+      collateralDecimals,
       collateralAmount
     );
   }
@@ -1612,17 +1688,19 @@ library SynthereumLiquidityPoolLib {
 
   /**
    * @notice Check if an amount of collateral is enough to collateralize the position
-   * @param self Data type the library is attached to
    * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param priceRate Price rate of the pair
+   * @param collateralDecimals Number of decimals of the collateral
    * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param collateralToCompare collateral used for checking the overcollaterlization
    * @return _isOverCollateralized True if position is overcollaterlized, otherwise false
-   * @return collateralValue Collateral amount equal to the value of tokens passed
+   * @return collateralValue Collateral amount equal to the value of tokens
    */
   function isOverCollateralized(
-    ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
+    FixedPoint.Unsigned memory priceRate,
+    uint8 collateralDecimals,
     FixedPoint.Unsigned memory collateralToCompare
   )
     internal
@@ -1633,9 +1711,8 @@ library SynthereumLiquidityPoolLib {
     )
   {
     collateralValue = calculateCollateralAmount(
-      self.finder,
-      self.collateralToken,
-      self.priceIdentifier,
+      priceRate,
+      collateralDecimals,
       lpPosition.tokensCollateralized
     );
 
@@ -1667,54 +1744,6 @@ library SynthereumLiquidityPoolLib {
   }
 
   /**
-   * @notice Calculate synthetic token amount starting from an amount of collateral, using on-chain oracle
-   * @param finder Synthereum finder
-   * @param collateralToken Collateral token contract
-   * @param priceIdentifier Identifier of price pair
-   * @param numTokens Amount of collateral from which you want to calculate synthetic token amount
-   * @return numTokens Amount of tokens after on-chain oracle conversion
-   */
-  function calculateNumberOfTokens(
-    ISynthereumFinder finder,
-    IStandardERC20 collateralToken,
-    bytes32 priceIdentifier,
-    FixedPoint.Unsigned memory collateralAmount
-  ) internal view returns (FixedPoint.Unsigned memory numTokens) {
-    FixedPoint.Unsigned memory priceRate =
-      getPriceFeedRate(finder, priceIdentifier);
-
-    uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
-
-    numTokens = collateralAmount.mul(10**(18 - decimalsOfCollateral)).div(
-      priceRate
-    );
-  }
-
-  /**
-   * @notice Calculate collateral amount starting from an amount of synthtic token, using on-chain oracle
-   * @param finder Synthereum finder
-   * @param collateralToken Collateral token contract
-   * @param priceIdentifier Identifier of price pair
-   * @param numTokens Amount of synthetic tokens from which you want to calculate collateral amount
-   * @return collateralAmount Amount of collateral after on-chain oracle conversion
-   */
-  function calculateCollateralAmount(
-    ISynthereumFinder finder,
-    IStandardERC20 collateralToken,
-    bytes32 priceIdentifier,
-    FixedPoint.Unsigned memory numTokens
-  ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
-    FixedPoint.Unsigned memory priceRate =
-      getPriceFeedRate(finder, priceIdentifier);
-
-    uint256 decimalsOfCollateral = getCollateralDecimals(collateralToken);
-
-    collateralAmount = numTokens.mul(priceRate).div(
-      10**(18 - decimalsOfCollateral)
-    );
-  }
-
-  /**
    * @notice Retrun the on-chain oracle price for a pair
    * @param finder Synthereum finder
    * @param priceIdentifier Identifier of price pair
@@ -1741,8 +1770,42 @@ library SynthereumLiquidityPoolLib {
   function getCollateralDecimals(IStandardERC20 collateralToken)
     internal
     view
-    returns (uint256 decimals)
+    returns (uint8 decimals)
   {
     decimals = collateralToken.decimals();
+  }
+
+  /**
+   * @notice Calculate synthetic token amount starting from an amount of collateral
+   * @param priceRate Price rate of the pair
+   * @param collateralDecimals Number of decimals of the collateral
+   * @param numTokens Amount of collateral from which you want to calculate synthetic token amount
+   * @return numTokens Amount of tokens after on-chain oracle conversion
+   */
+  function calculateNumberOfTokens(
+    FixedPoint.Unsigned memory priceRate,
+    uint8 collateralDecimals,
+    FixedPoint.Unsigned memory collateralAmount
+  ) internal pure returns (FixedPoint.Unsigned memory numTokens) {
+    numTokens = collateralAmount.mul(10**(18 - collateralDecimals)).div(
+      priceRate
+    );
+  }
+
+  /**
+   * @notice Calculate collateral amount starting from an amount of synthtic token
+   * @param priceRate Price rate of the pair
+   * @param collateralDecimals Number of decimals of the collateral
+   * @param numTokens Amount of synthetic tokens from which you want to calculate collateral amount
+   * @return collateralAmount Amount of collateral after on-chain oracle conversion
+   */
+  function calculateCollateralAmount(
+    FixedPoint.Unsigned memory priceRate,
+    uint8 collateralDecimals,
+    FixedPoint.Unsigned memory numTokens
+  ) internal pure returns (FixedPoint.Unsigned memory collateralAmount) {
+    collateralAmount = numTokens.mul(priceRate).div(
+      10**(18 - collateralDecimals)
+    );
   }
 }
