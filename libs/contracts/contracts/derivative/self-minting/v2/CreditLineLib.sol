@@ -251,18 +251,20 @@ library SynthereumCreditLineLib {
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
 
-    FixedPoint.Unsigned memory totAmountWithdrawn;
     // If redemption returns all tokens the sponsor has then we can delete their position. Else, downsize.
     if (positionData.tokensOutstanding.isEqual(numTokens)) {
-      totAmountWithdrawn = positionData._deleteSponsorPosition(
+      amountWithdrawn = positionData._deleteSponsorPosition(
         globalPositionData,
         sponsor
       );
     } else {
+      // adjust the fees from collateral withdrawn
+      amountWithdrawn = collateralRedeemed.sub(feeAmount);
+
       // Decrement the sponsor's collateral and global collateral amounts.
       positionData._decrementCollateralBalances(
         globalPositionData,
-        collateralRedeemed
+        amountWithdrawn
       );
 
       // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
@@ -280,9 +282,6 @@ library SynthereumCreditLineLib {
         .totalTokensOutstanding
         .sub(numTokens);
     }
-
-    // adjust the fees from collateral withdrawn
-    amountWithdrawn = totAmountWithdrawn.sub(feeAmount);
 
     // transfer collateral to user
     IERC20 collateralCurrency = positionManagerData.collateralToken;
@@ -656,8 +655,13 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount
-  ) internal returns (FixedPoint.Unsigned memory) {
-    positionData.rawCollateral.sub(collateralAmount);
+  ) internal {
+    positionData.rawCollateral = positionData.rawCollateral.sub(
+      collateralAmount
+    );
+    globalPositionData.rawTotalPositionCollateral = globalPositionData
+      .rawTotalPositionCollateral
+      .sub(collateralAmount);
 
     (bool isCollateralised, ) =
       _checkCollateralization(
@@ -669,7 +673,6 @@ library SynthereumCreditLineLib {
       isCollateralised,
       'CR is not sufficiently high after the withdraw - try less amount'
     );
-    return globalPositionData.rawTotalPositionCollateral.sub(collateralAmount);
   }
 
   // Deletes a sponsor's position and updates global counters. Does not make any external transfers.
