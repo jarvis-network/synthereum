@@ -13,7 +13,6 @@ import {
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {SynthereumCreditLineLib} from './CreditLineLib.sol';
 import {SynthereumCreditLine} from './CreditLine.sol';
-import {Testable} from '@uma/core/contracts/common/implementation/Testable.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
@@ -26,7 +25,7 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
  * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
   we can enforce deployment configurations here.
  */
-contract SynthereumCreditLineCreator is Testable, Lockable {
+contract SynthereumCreditLineCreator is Lockable {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
@@ -63,12 +62,8 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
   /**
    * @notice Constructs the Perpetual contract.
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
-   * @param _timerAddress Contract that stores the current time in a testing environment.
    */
-  constructor(address _synthereumFinder, address _timerAddress)
-    Testable(_timerAddress)
-    nonReentrant()
-  {
+  constructor(address _synthereumFinder) nonReentrant() {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
@@ -149,7 +144,6 @@ contract SynthereumCreditLineCreator is Testable, Lockable {
     // Known from creator deployment.
 
     constructorParams.synthereumFinder = synthereumFinder;
-    constructorParams.timerAddress = timerAddress;
 
     // Enforce configuration constraints.
     require(
