@@ -119,6 +119,7 @@ contract SynthereumLiquidityPool is
   event Liquidate(
     address indexed liquidator,
     uint256 tokensLiquidated,
+    uint256 collateralExpected,
     uint256 collateralReceived,
     uint256 rewardReceived
   );
@@ -449,17 +450,18 @@ contract SynthereumLiquidityPool is
   /**
    * @notice Redeem tokens after emergency shutdown
    * @return synthTokensSettled Amount of synthetic tokens liquidated
-   * @return amountSettled Amount of collateral withdrawn after emergency shutdown
+   * @return collateralSettled Amount of collateral withdrawn after emergency shutdown
    */
   function settleEmergencyShutdown()
     external
     override
     isEmergencyShutdown
     nonReentrant
-    returns (uint256 synthTokensSettled, uint256 amountSettled)
+    returns (uint256 synthTokensSettled, uint256 collateralSettled)
   {
     bool isLiquidityProvider = hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender);
-    (synthTokensSettled, amountSettled) = poolStorage.settleEmergencyShutdown(
+    (synthTokensSettled, collateralSettled) = poolStorage
+      .settleEmergencyShutdown(
       lpPosition,
       feeStatus,
       emergencyShutdownData,
