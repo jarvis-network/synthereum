@@ -72,6 +72,33 @@ interface ICreditLineStorage {
     uint8 version;
   }
 
+  /**
+   * @notice Construct the PerpetualPositionManager.
+   * @dev Deployer of this contract should consider carefully which parties have ability to mint and burn
+   * the synthetic tokens referenced by `_tokenAddress`. This contract's security assumes that no external accounts
+   * can mint new tokens, which could be used to steal all of this contract's locked collateral.
+   * We recommend to only use synthetic token contracts whose sole Owner role (the role capable of adding & removing roles)
+   * is assigned to this contract, whose sole Minter role is assigned to this contract, and whose
+   * total supply is 0 prior to construction of this contract.
+   * @param collateralAddress ERC20 token used as collateral for all positions.
+   * @param tokenAddress ERC20 token used as synthetic token.
+   * @param priceFeedIdentifier registered in the ChainLink Oracle for the synthetic.
+   * @param minSponsorTokens minimum amount of collateral that must exist at any time in a position.
+   * @param timerAddress Contract that stores the current time in a testing environment. Set to 0x0 for production.
+   * @param excessTokenBeneficiary Beneficiary to send all excess token balances that accrue in the contract.
+   * @param version Version of the self-minting derivative
+   * @param synthereumFinder The SynthereumFinder contract
+   */
+  struct PositionManagerParams {
+    address collateralAddress;
+    address tokenAddress;
+    bytes32 priceFeedIdentifier;
+    FixedPoint.Unsigned minSponsorTokens;
+    address excessTokenBeneficiary; // TODO
+    uint8 version;
+    ISynthereumFinder synthereumFinder;
+  }
+
   struct LiquidationData {
     address sponsor;
     address liquidator;
