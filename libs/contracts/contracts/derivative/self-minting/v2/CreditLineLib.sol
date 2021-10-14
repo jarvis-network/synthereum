@@ -264,7 +264,7 @@ library SynthereumCreditLineLib {
       // Decrement the sponsor's collateral and global collateral amounts.
       positionData._decrementCollateralBalances(
         globalPositionData,
-        amountWithdrawn
+        collateralRedeemed
       );
 
       // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
