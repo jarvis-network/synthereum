@@ -13,6 +13,7 @@ import '../test/MockRandomAggregator.sol';
 import '../test/TestnetSelfMintingERC20.sol';
 import '../test/SelfMintingControllerMock.sol';
 import '../test/CreditLineControllerMock.sol';
+import '../test/MockOnChainOracle.sol';
 import '../test/PriceFeedGetter.sol';
 import '../test/UtilsMock.sol';
 import '../test/DerivativeMock.sol';

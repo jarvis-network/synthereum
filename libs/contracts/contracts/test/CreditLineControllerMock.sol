@@ -87,7 +87,7 @@ contract CreditLineControllerMock {
 
   function setFeePercentage(
     address[] calldata selfMintingDerivatives,
-    FixedPoint.Unsigned[] calldata feePercentages
+    uint256[] calldata feePercentages
   ) external {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
@@ -126,18 +126,17 @@ contract CreditLineControllerMock {
 
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
-    FixedPoint.Unsigned[] calldata _liquidationRewards
+    uint256[] calldata _liquidationRewards
   ) external {
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       require(
-        _liquidationRewards[j].isGreaterThan(0) &&
-          _liquidationRewards[j].isLessThanOrEqual(
-            FixedPoint.fromUnscaledUint(1)
-          ),
+        _liquidationRewards[j] > 0 && _liquidationRewards[j] < 1,
         'Liquidation reward must be between 0 and 100%'
       );
 
-      liquidationReward[selfMintingDerivatives[j]] = _liquidationRewards[j];
+      liquidationReward[selfMintingDerivatives[j]] = FixedPoint.Unsigned(
+        _liquidationRewards[j]
+      );
     }
   }
 
@@ -205,14 +204,15 @@ contract CreditLineControllerMock {
 
   function _setFeePercentage(
     address selfMintingDerivative,
-    FixedPoint.Unsigned calldata feePercentage
+    uint256 feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage.rawValue !=
-        feePercentage.rawValue,
+      fee[selfMintingDerivative].feePercentage.rawValue != feePercentage,
       ' fee percentage is the same'
     );
-    fee[selfMintingDerivative].feePercentage = feePercentage;
+    fee[selfMintingDerivative].feePercentage = FixedPoint.Unsigned(
+      feePercentage
+    );
   }
 
   function _setCapMintAmount(
