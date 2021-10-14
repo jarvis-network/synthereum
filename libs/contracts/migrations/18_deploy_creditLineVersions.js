@@ -97,7 +97,7 @@ async function migrate(deployer, network, accounts) {
     await synthereumFactoryVersioning.methods
       .setFactory(
         factoryInterface,
-        selfMintingVersions[networkId]?.CreditLineFactory?.version ?? 1,
+        selfMintingVersions[networkId]?.CreditLineFactory?.version ?? 2,
         creditLineFactory.options.address,
       )
       .send({ from: maintainer });
