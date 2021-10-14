@@ -211,6 +211,13 @@ library SynthereumCreditLineLib {
 
     // mint corresponding synthetic tokens to the caller's address.
     positionManagerData.tokenCurrency.mint(msg.sender, numTokens.rawValue);
+
+    emit PositionCreated(
+      msg.sender,
+      netCollateralAmount.rawValue,
+      numTokens.rawValue,
+      feeAmount.rawValue
+    );
   }
 
   function redeeem(
@@ -727,8 +734,13 @@ library SynthereumCreditLineLib {
     FixedPoint.Unsigned memory oraclePrice =
       _getOraclePrice(positionManagerData);
 
+    uint256 collateralDecimals =
+      getCollateralDecimals(positionManagerData.collateralToken);
+
     // calculate the min collateral of numTokens with chainlink
-    FixedPoint.Unsigned memory thresholdValue = numTokens.mul(oraclePrice);
+    FixedPoint.Unsigned memory thresholdValue =
+      numTokens.mul(oraclePrice).div(10**(18 - collateralDecimals));
+
     thresholdValue = thresholdValue.mul(
       positionManagerData._getOverCollateralization()
     );
@@ -736,8 +748,10 @@ library SynthereumCreditLineLib {
     // calculate the potential liquidatable portion
     // if the minimum collateral is greaater than position collateral then the position is undercollateralized
     FixedPoint.Unsigned memory liquidatableTokens =
-      thresholdValue.sub(collateral).isGreaterThan(0)
-        ? thresholdValue.sub(collateral).div(oraclePrice)
+      thresholdValue.isGreaterThan(collateral)
+        ? thresholdValue.sub(collateral).div(oraclePrice).mul(
+          10**(18 - collateralDecimals)
+        )
         : FixedPoint.fromUnscaledUint(0);
 
     return (collateral.isGreaterThan(thresholdValue), liquidatableTokens);
@@ -827,5 +841,13 @@ library SynthereumCreditLineLib {
         SynthereumInterfaces.CreditLineController
       )
     );
+  }
+
+  function getCollateralDecimals(IStandardERC20 collateralToken)
+    internal
+    view
+    returns (uint256 decimals)
+  {
+    decimals = collateralToken.decimals();
   }
 }
