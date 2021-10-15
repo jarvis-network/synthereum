@@ -239,11 +239,13 @@ library SynthereumCreditLineLib {
       'Invalid token amount'
     );
 
-    FixedPoint.Unsigned memory fractionRedeemed =
-      numTokens.div(positionData.tokensOutstanding);
+    // FixedPoint.Unsigned memory fractionRedeemed =
+    //   numTokens.div(positionData.tokensOutstanding);
 
     FixedPoint.Unsigned memory collateralRedeemed =
-      fractionRedeemed.mul(positionData.rawCollateral);
+      positionData.rawCollateral.mul(numTokens).div(
+        positionData.tokensOutstanding
+      );
 
     // Update fee status
     feeAmount = collateralRedeemed.mul(
@@ -314,6 +316,9 @@ library SynthereumCreditLineLib {
       'Invalid token amount'
     );
 
+    FixedPoint.Unsigned memory fractionRedeemed =
+      numTokens.div(positionData.tokensOutstanding);
+
     // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
     FixedPoint.Unsigned memory newTokenCount =
       positionData.tokensOutstanding.sub(numTokens);
@@ -321,8 +326,6 @@ library SynthereumCreditLineLib {
       newTokenCount.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
       'Below minimum sponsor position'
     );
-
-    FixedPoint.Unsigned memory fractionRedeemed = numTokens.div(newTokenCount);
 
     // calculate the 'free' collateral from the repay amount
     FixedPoint.Unsigned memory collateralUnlocked =
@@ -336,6 +339,7 @@ library SynthereumCreditLineLib {
 
     // update position
     positionData.tokensOutstanding = newTokenCount;
+    _decrementCollateralBalances(positionData, globalPositionData, feeAmount);
 
     // Update the totalTokensOutstanding after redemption.
     globalPositionData.totalTokensOutstanding = globalPositionData
