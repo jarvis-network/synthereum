@@ -152,10 +152,6 @@ library SynthereumLiquidityPoolLib {
     address recipient
   );
 
-  event SetFeePercentage(uint256 feePercentage);
-
-  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
-
   event WithdrawLiquidity(
     address indexed lp,
     uint256 liquidityWithdrawn,
@@ -195,12 +191,16 @@ library SynthereumLiquidityPoolLib {
     uint256 finalCollateral
   );
 
-  event Settlement(
+  event Settle(
     address indexed account,
     uint256 numTokensSettled,
     uint256 collateralExpected,
     uint256 collateralSettled
   );
+
+  event SetFeePercentage(uint256 feePercentage);
+
+  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
 
   event SetOverCollateralization(uint256 overCollateralization);
 
@@ -935,7 +935,7 @@ library SynthereumLiquidityPoolLib {
     // Transfer settled collateral to the user
     _collateralToken.safeTransfer(msg.sender, collateralSettled);
 
-    emit Settlement(
+    emit Settle(
       msg.sender,
       synthTokensSettled,
       executeSettlement.redeemableCollateral.rawValue,
@@ -1080,17 +1080,23 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned memory priceRate =
       getPriceFeedRate(self.finder, self.priceIdentifier);
 
+    uint8 collateralDecimals = getCollateralDecimals(self.collateralToken);
+
     (bool _isOverCollateralized, ) =
       lpPosition.isOverCollateralized(
         liquidationData,
         priceRate,
-        getCollateralDecimals(self.collateralToken),
+        collateralDecimals,
         lpPosition.totalCollateralAmount
       );
 
     FixedPoint.Unsigned memory _collateralCoverage =
       lpPosition.totalCollateralAmount.div(
-        lpPosition.tokensCollateralized.mul(priceRate)
+        calculateCollateralAmount(
+          priceRate,
+          collateralDecimals,
+          lpPosition.tokensCollateralized
+        )
       );
 
     return (_isOverCollateralized, _collateralCoverage.rawValue);

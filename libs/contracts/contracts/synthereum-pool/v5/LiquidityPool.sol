@@ -88,10 +88,6 @@ contract SynthereumLiquidityPool is
     address recipient
   );
 
-  event SetFeePercentage(uint256 feePercentage);
-
-  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
-
   event WithdrawLiquidity(
     address indexed lp,
     uint256 liquidityWithdrawn,
@@ -131,12 +127,16 @@ contract SynthereumLiquidityPool is
     uint256 finalCollateral
   );
 
-  event Settlement(
+  event Settle(
     address indexed account,
     uint256 numTokensSettled,
     uint256 collateralExpected,
     uint256 collateralSettled
   );
+
+  event SetFeePercentage(uint256 feePercentage);
+
+  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
 
   event SetOverCollateralization(uint256 overCollateralization);
 

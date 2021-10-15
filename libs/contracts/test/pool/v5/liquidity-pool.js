@@ -2792,7 +2792,7 @@ contract('LiquidityPool', function (accounts) {
       const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: liquidityProvider,
       });
-      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(lpSettleTx, 'Settle', ev => {
         return (
           ev.account == liquidityProvider &&
           ev.numTokensSettled == '0' &&
@@ -2840,7 +2840,7 @@ contract('LiquidityPool', function (accounts) {
       const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: firstUser,
       });
-      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(settleTx, 'Settle', ev => {
         return (
           ev.account == firstUser &&
           ev.numTokensSettled == synthTokens &&
@@ -2878,7 +2878,7 @@ contract('LiquidityPool', function (accounts) {
           from: liquidityProvider,
         },
       );
-      truffleAssert.eventEmitted(finalLpSettleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(finalLpSettleTx, 'Settle', ev => {
         return (
           ev.account == liquidityProvider &&
           ev.numTokensSettled == '0' &&
@@ -2955,7 +2955,7 @@ contract('LiquidityPool', function (accounts) {
       const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: firstUser,
       });
-      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(settleTx, 'Settle', ev => {
         return (
           ev.account == firstUser &&
           ev.numTokensSettled == synthTokens &&
@@ -2995,7 +2995,7 @@ contract('LiquidityPool', function (accounts) {
       const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: liquidityProvider,
       });
-      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(lpSettleTx, 'Settle', ev => {
         return (
           ev.account == liquidityProvider &&
           ev.numTokensSettled == totalLpSynthTokens.toString() &&
@@ -3079,7 +3079,7 @@ contract('LiquidityPool', function (accounts) {
       const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: firstUser,
       });
-      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(settleTx, 'Settle', ev => {
         return (
           ev.account == firstUser &&
           ev.numTokensSettled == firstUserSynthTokens &&
@@ -3116,7 +3116,7 @@ contract('LiquidityPool', function (accounts) {
       const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: liquidityProvider,
       });
-      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(lpSettleTx, 'Settle', ev => {
         return (
           ev.account == liquidityProvider &&
           ev.numTokensSettled == '0' &&
@@ -3159,7 +3159,7 @@ contract('LiquidityPool', function (accounts) {
           from: secondUser,
         },
       );
-      truffleAssert.eventEmitted(secondSettleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(secondSettleTx, 'Settle', ev => {
         return (
           ev.account == secondUser &&
           ev.numTokensSettled == secondUserSynthTokens &&
@@ -3239,7 +3239,7 @@ contract('LiquidityPool', function (accounts) {
       const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: liquidityProvider,
       });
-      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(lpSettleTx, 'Settle', ev => {
         return (
           ev.account == liquidityProvider &&
           ev.numTokensSettled == totalLpSynthTokens.toString() &&
@@ -3279,7 +3279,7 @@ contract('LiquidityPool', function (accounts) {
       const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: firstUser,
       });
-      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+      truffleAssert.eventEmitted(settleTx, 'Settle', ev => {
         return (
           ev.account == firstUser &&
           ev.numTokensSettled == synthTokens &&
