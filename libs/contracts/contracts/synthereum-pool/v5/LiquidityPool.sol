@@ -119,6 +119,7 @@ contract SynthereumLiquidityPool is
   event Liquidate(
     address indexed liquidator,
     uint256 tokensLiquidated,
+    uint256 price,
     uint256 collateralExpected,
     uint256 collateralReceived,
     uint256 rewardReceived

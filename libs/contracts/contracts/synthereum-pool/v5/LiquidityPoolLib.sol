@@ -183,6 +183,7 @@ library SynthereumLiquidityPoolLib {
   event Liquidate(
     address indexed liquidator,
     uint256 tokensLiquidated,
+    uint256 price,
     uint256 collateralExpected,
     uint256 collateralReceived,
     uint256 rewardReceived
@@ -680,7 +681,7 @@ library SynthereumLiquidityPoolLib {
       );
 
     // Revert if position is not undercollataralized
-    require(!_isOverCollaterlized, 'Position is not undercollataralized');
+    require(!_isOverCollaterlized, 'Position is overcollateralized');
 
     IStandardERC20 _collateralToken = self.collateralToken;
 
@@ -754,6 +755,7 @@ library SynthereumLiquidityPoolLib {
     emit Liquidate(
       msg.sender,
       numSynthTokens.rawValue,
+      priceRate.rawValue,
       executeLiquidation.expectedCollateral.rawValue,
       collateralReceived,
       rewardAmount
