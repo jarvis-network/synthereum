@@ -253,14 +253,8 @@ library SynthereumCreditLineLib {
 
     // If redemption returns all tokens the sponsor has then we can delete their position. Else, downsize.
     if (positionData.tokensOutstanding.isEqual(numTokens)) {
-      amountWithdrawn = positionData._deleteSponsorPosition(
-        globalPositionData,
-        sponsor
-      );
+      positionData._deleteSponsorPosition(globalPositionData, sponsor);
     } else {
-      // adjust the fees from collateral withdrawn
-      amountWithdrawn = collateralRedeemed.sub(feeAmount);
-
       // Decrement the sponsor's collateral and global collateral amounts.
       positionData._decrementCollateralBalances(
         globalPositionData,
@@ -282,6 +276,8 @@ library SynthereumCreditLineLib {
         .totalTokensOutstanding
         .sub(numTokens);
     }
+    // adjust the fees from collateral to withdraws
+    amountWithdrawn = collateralRedeemed.sub(feeAmount);
 
     // transfer collateral to user
     IERC20 collateralCurrency = positionManagerData.collateralToken;
