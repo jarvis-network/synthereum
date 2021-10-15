@@ -200,6 +200,22 @@ contract SynthereumCreditLine is
       .rawValue;
   }
 
+  function depositTo(address sponsor, uint256 collateralAmount)
+    external
+    override
+    notEmergencyShutdown()
+    nonReentrant()
+  {
+    PositionData storage positionData = _getPositionData(sponsor);
+
+    positionData.depositTo(
+      globalPositionData,
+      positionManagerData,
+      FixedPoint.Unsigned(collateralAmount),
+      sponsor
+    );
+  }
+
   function create(uint256 collateralAmount, uint256 numTokens)
     external
     override
