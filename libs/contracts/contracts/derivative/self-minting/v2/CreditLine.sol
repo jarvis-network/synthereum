@@ -352,7 +352,6 @@ contract SynthereumCreditLine is
   function emergencyShutdown()
     external
     override
-    onlyMaintainer
     notEmergencyShutdown()
     nonReentrant
   {
