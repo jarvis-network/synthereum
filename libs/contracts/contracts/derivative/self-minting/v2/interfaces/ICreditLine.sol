@@ -24,6 +24,15 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
   function deposit(uint256 collateralAmount) external;
 
   /**
+   * @notice Transfers `collateralAmount` into the specified sponsor's position.
+   * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
+   * at least `collateralAmount` of `feePayerData.collateralCurrency`.
+   * @param sponsor the sponsor to credit the deposit to.
+   * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
+   */
+  function depositTo(address sponsor, uint256 collateralAmount) external;
+
+  /**
    * @notice Transfers `collateralAmount` from the sponsor's position to the sponsor.
    * @dev Reverts if the withdrawal puts this position's collateralization ratio below the collateral requirement
    * @param collateralAmount is the amount of collateral to withdraw.
