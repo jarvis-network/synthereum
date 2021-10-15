@@ -362,20 +362,15 @@ contract SynthereumCreditLine is
         ),
       'Caller must be a Synthereum manager'
     );
+
     // store timestamp and last price
     positionManagerData.emergencyShutdownTimestamp = block.timestamp;
-
-    uint8 tokenCurrencyDecimals =
-      IStandardERC20(address(positionManagerData.tokenCurrency)).decimals();
-    FixedPoint.Unsigned memory scaledPrice =
-      positionManagerData._getOraclePrice().div(
-        (10**(uint256(18)).sub(tokenCurrencyDecimals))
-      );
-    positionManagerData.emergencyShutdownPrice = scaledPrice;
+    positionManagerData.emergencyShutdownPrice = positionManagerData
+      ._getOraclePrice();
 
     emit EmergencyShutdown(
       msg.sender,
-      scaledPrice.rawValue,
+      positionManagerData.emergencyShutdownPrice.rawValue,
       positionManagerData.emergencyShutdownTimestamp
     );
   }
