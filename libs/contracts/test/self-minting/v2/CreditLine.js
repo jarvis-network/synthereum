@@ -69,7 +69,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   const startTimestamp = Math.floor(Date.now() / 1000);
   const priceFeedIdentifier = web3.utils.padRight(utf8ToHex('JRT/EUR'), 64);
   const startingPrice = toBN(toWei('1.02'));
-  const minSponsorTokens = '5';
+  const minSponsorTokens = toWei('5');
 
   // Conveniently asserts expected collateral and token balances, assuming that
   // there is only one synthetic token holder, the sponsor. Also assumes no
@@ -163,15 +163,17 @@ contract('Synthereum CreditLine ', function (accounts) {
   //   return totalNetCollateral.mul(toBN(Math.pow(10, 18))).div(totalTokens);
   // };
 
-  const calculateFeeAmount = async collateralAmount => {
+  const calculateFeeAmount = collateralAmount => {
     const feeAmount = collateralAmount
       .mul(Fee.feePercentage)
       .div(toBN(Math.pow(10, 18)));
     return feeAmount;
   };
 
-  before(async function () {
-    store = await Store.deployed();
+  before(async () => {
+    // deploy and link library
+    creditLineLib = await CreditLineLib.deployed();
+    await CreditLine.link(creditLineLib);
   });
 
   beforeEach(async function () {
@@ -198,10 +200,6 @@ contract('Synthereum CreditLine ', function (accounts) {
         from: contractDeployer,
       },
     );
-
-    // Force each test to start with a simulated time that's synced to the startTimestamp.
-    timer = await Timer.deployed();
-    await timer.setCurrentTime(startTimestamp);
 
     // Create identifier whitelist and register the price tracking ticker with it.
     identifierWhitelist = await IdentifierWhitelist.deployed();
@@ -237,9 +235,6 @@ contract('Synthereum CreditLine ', function (accounts) {
     };
 
     synthereumManagerInstance = await SynthereumManager.deployed();
-    creditLineLib = await CreditLineLib.deployed();
-    // Create the instance of the creditLine to test against.
-    await CreditLine.link(creditLineLib);
 
     creditLine = await CreditLine.new(creditLineParams, roles, {
       from: contractDeployer,
@@ -320,12 +315,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Lifecycle', async function () {
+  it('Lifecycle', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
     let expectedSponsorTokens = toBN(createTokens);
-    let feeAmount = toBN(await calculateFeeAmount(createCollateral));
+    let feeAmount = calculateFeeAmount(createCollateral);
     let expectedSponsorCollateral = createCollateral.sub(feeAmount);
 
     // Fails without approving collateral.
@@ -447,9 +442,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
 
     // Check redeem return value and event.
-    expectedFeeAmount = toBN(
-      await calculateFeeAmount(expectedSponsorCollateral),
-    );
+    expectedFeeAmount = calculateFeeAmount(expectedSponsorCollateral);
 
     const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
     let amountWithdrawn = res.amountWithdrawn;
@@ -489,19 +482,14 @@ contract('Synthereum CreditLine ', function (accounts) {
       redeemFee,
     );
     await checkFeeRecipients(redeemFee);
-    return;
 
     // Periodic check for no excess collateral.
-    await expectNoExcessCollateralToTrim();
+    // await expectNoExcessCollateralToTrim();
 
     // Create additional.
     const createAdditionalTokens = toBN(toWei('10'));
     const createAdditionalCollateral = toBN(toWei('110'));
-    feeAmount = await calculateFeeAmount(
-      creditLine,
-      createAdditionalTokens,
-      Fee.feePercentage,
-    );
+    feeAmount = calculateFeeAmount(createAdditionalCollateral);
     expectedSponsorTokens = expectedSponsorTokens.add(
       toBN(createAdditionalTokens),
     );
@@ -515,30 +503,28 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.create(
       createAdditionalCollateral,
       createAdditionalTokens,
-      Fee.feePercentage,
       { from: sponsor },
     );
-    await checkBalances(expectedSponsorTokens, expectedSponsorCollateral);
+    await checkBalances(
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
+      feeAmount,
+    );
+    await checkFeeRecipients(feeAmount);
 
     // Periodic check for no excess collateral.
-    await expectNoExcessCollateralToTrim();
+    // await expectNoExcessCollateralToTrim();
 
     // Redeem full.
     const redeemRemainingTokens = toBN(toWei('60'));
-    feeAmount = await calculateFeeAmount(
-      creditLine,
-      redeemRemainingTokens,
-      Fee.feePercentage,
-    );
+    feeAmount = calculateFeeAmount(expectedSponsorCollateral);
     await tokenCurrency.approve(creditLine.address, redeemRemainingTokens, {
       from: sponsor,
     });
     sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
-    redemptionResult = await creditLine.redeem(
-      redeemRemainingTokens,
-      Fee.feePercentage,
-      { from: sponsor },
-    );
+    redemptionResult = await creditLine.redeem(redeemRemainingTokens, {
+      from: sponsor,
+    });
     expectedNetSponsorCollateral = expectedSponsorCollateral.sub(feeAmount);
     truffleAssert.eventEmitted(redemptionResult, 'Redeem', ev => {
       return (
@@ -557,405 +543,34 @@ contract('Synthereum CreditLine ', function (accounts) {
       sponsorFinalBalance.sub(sponsorInitialBalance).toString(),
       expectedNetSponsorCollateral.toString(),
     );
-    await checkBalances(toBN('0'), toBN('0'));
+    await checkBalances(toBN('0'), toBN('0'), feeAmount);
+    await checkFeeRecipients(feeAmount);
 
     // Periodic check for no excess collateral.
-    await expectNoExcessCollateralToTrim();
-
-    // Contract state should not have changed.
-    assert.equal(
-      (await creditLine.creditLineData.call()).emergencyShutdownTimestamp,
-      0,
-    );
-    assert.equal(
-      (
-        await creditLine.creditLineData.call()
-      ).emergencyShutdownPrice.toString(),
-      0,
-    );
+    // await expectNoExcessCollateralToTrim();
   });
 
-  it('Cannot instantly withdraw all of the collateral in the position', async function () {
-    // Create an initial large and lowly collateralized creditLine so that we can call `withdraw()`.
-    await collateral.approve(creditLine.address, initialPositionCollateral, {
-      from: other,
-    });
-    await creditLine.create(
-      initialPositionCollateral,
-      initialPositionTokens,
-      Fee.feePercentage,
-      { from: other },
-    );
-
+  it('Cannot withdraw collateral if position gets undercollateralised', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
-    const feeAmount = await calculateFeeAmount(
-      creditLine,
-      createTokens,
-      Fee.feePercentage,
-    );
+
     await collateral.approve(creditLine.address, createCollateral, {
       from: sponsor,
     });
-    await creditLine.create(createCollateral, createTokens, Fee.feePercentage, {
+    await creditLine.create(createCollateral, createTokens, {
       from: sponsor,
     });
 
-    // Cannot withdraw full collateral because the GCR check will always fail.
+    let feeAmount = calculateFeeAmount(createCollateral);
+
+    // Cannot withdraw full collateral because the position would go under collateralized
     await truffleAssert.reverts(
       creditLine.withdraw(createCollateral.sub(feeAmount), {
         from: sponsor,
       }),
-      'CR below GCR',
+      'CR is not sufficiently high after the withdraw - try less amount',
     );
-  });
-
-  it('Withdrawal request', async function () {
-    // Create an initial large and lowly collateralized creditLine.
-    await collateral.approve(creditLine.address, initialPositionCollateral, {
-      from: other,
-    });
-    await creditLine.create(
-      initialPositionCollateral.toString(),
-      initialPositionTokens.toString(),
-      Fee.feePercentage,
-      { from: other },
-    );
-
-    const startTime = await creditLine.getCurrentTime();
-    // Approve large amounts of token and collateral currencies: this test case isn't checking for that.
-    await collateral.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-    await tokenCurrency.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-
-    // Create the initial creditLine.
-    const initialSponsorTokens = toBN(toWei('100'));
-    const initialSponsorCollateral = toBN(toWei('150'));
-    const feeAmount = await calculateFeeAmount(
-      creditLine,
-      initialSponsorTokens,
-      Fee.feePercentage,
-    );
-    await creditLine.create(
-      initialSponsorCollateral,
-      initialSponsorTokens,
-      Fee.feePercentage,
-      { from: sponsor },
-    );
-
-    // Must request greater than 0 and less than full position's collateral.
-    await truffleAssert.reverts(
-      creditLine.requestWithdrawal('0', { from: sponsor }),
-      'Invalid collateral amount',
-    );
-    await truffleAssert.reverts(
-      creditLine.requestWithdrawal(toWei('151'), { from: sponsor }),
-      'Invalid collateral amount',
-    );
-
-    // Cannot execute withdrawal request before a request is made.
-    await truffleAssert.reverts(
-      creditLine.withdrawPassedRequest({ from: sponsor }),
-      'Invalid withdraw request',
-    );
-
-    // Request withdrawal. Check event is emitted
-    const resultRequestWithdrawal = await creditLine.requestWithdrawal(
-      toWei('100'),
-      { from: sponsor },
-    );
-    truffleAssert.eventEmitted(
-      resultRequestWithdrawal,
-      'RequestWithdrawal',
-      ev => {
-        return (
-          ev.sponsor == sponsor &&
-          ev.collateralAmount == toWei('100').toString()
-        );
-      },
-    );
-
-    // All other actions are locked.
-    await truffleAssert.reverts(
-      creditLine.deposit(toWei('1'), { from: sponsor }),
-      'Pending withdrawal',
-    );
-    await truffleAssert.reverts(
-      creditLine.withdraw(toWei('1'), { from: sponsor }),
-      'Pending withdrawal',
-    );
-    await truffleAssert.reverts(
-      creditLine.create(toWei('1'), toWei('1'), Fee.feePercentage, {
-        from: sponsor,
-      }),
-      'Pending withdrawal',
-    );
-    await truffleAssert.reverts(
-      creditLine.redeem(toWei('1'), Fee.feePercentage, { from: sponsor }),
-      'Pending withdrawal',
-    );
-    await truffleAssert.reverts(
-      creditLine.requestWithdrawal(toWei('1'), { from: sponsor }),
-      'Pending withdrawal',
-    );
-
-    // Can't withdraw before time is up.
-    await creditLine.setCurrentTime(
-      startTime.toNumber() + withdrawalLiveness - 1,
-    );
-    await truffleAssert.reverts(
-      creditLine.withdrawPassedRequest({ from: sponsor }),
-      'Invalid withdraw request',
-    );
-
-    // The price moved against the sponsor, and they need to cancel. Ensure event is emitted.
-    const resultCancelWithdrawal = await creditLine.cancelWithdrawal({
-      from: sponsor,
-    });
-    truffleAssert.eventEmitted(
-      resultCancelWithdrawal,
-      'RequestWithdrawalCanceled',
-      ev => {
-        return (
-          ev.sponsor == sponsor &&
-          ev.collateralAmount == toWei('100').toString()
-        );
-      },
-    );
-
-    // They can now request again.
-    const withdrawalAmount = toWei('25');
-    const expectedSponsorCollateral = toBN(initialSponsorCollateral)
-      .sub(feeAmount)
-      .sub(toBN(withdrawalAmount));
-    await creditLine.requestWithdrawal(withdrawalAmount, {
-      from: sponsor,
-    });
-
-    // After time is up, execute the withdrawal request. Check event is emitted and return value is correct.
-    await creditLine.setCurrentTime(
-      (await creditLine.getCurrentTime.call()).toNumber() + withdrawalLiveness,
-    );
-    const sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
-    const expectedSponsorFinalBalance = sponsorInitialBalance.add(
-      toBN(withdrawalAmount),
-    );
-    const withdrawPassedRequest = creditLine.withdrawPassedRequest;
-    let amountWithdrawn = await withdrawPassedRequest.call({
-      from: sponsor,
-    });
-    assert.equal(amountWithdrawn.toString(), withdrawalAmount.toString());
-    let resultWithdrawPassedRequest = await withdrawPassedRequest({
-      from: sponsor,
-    });
-    truffleAssert.eventEmitted(
-      resultWithdrawPassedRequest,
-      'RequestWithdrawalExecuted',
-      ev => {
-        return (
-          ev.sponsor == sponsor &&
-          ev.collateralAmount == withdrawalAmount.toString()
-        );
-      },
-    );
-
-    // Check that withdrawal-request related parameters in creditLine are reset
-    const positionData = await creditLine.positions.call(sponsor);
-    assert.equal(positionData.withdrawalRequestPassTimestamp.toString(), 0);
-    assert.equal(positionData.withdrawalRequestAmount.toString(), 0);
-
-    // Verify state of creditLine post-withdrawal.
-    await checkBalances(toBN(initialSponsorTokens), expectedSponsorCollateral);
-    const sponsorFinalBalance = await collateral.balanceOf.call(sponsor);
-    assert.equal(
-      sponsorFinalBalance.toString(),
-      expectedSponsorFinalBalance.toString(),
-    );
-
-    // Methods are now unlocked again.
-    await creditLine.deposit(toWei('1'), { from: sponsor });
-
-    // First withdrawal that should pass. Ensure event is emitted and return value is correct.
-    const withdraw = creditLine.withdraw;
-    amountWithdrawn = await withdraw.call(toWei('1'), { from: sponsor });
-    assert.equal(amountWithdrawn.toString(), toWei('1'));
-    const resultWithdraw = await withdraw(toWei('1'), { from: sponsor });
-    truffleAssert.eventEmitted(resultWithdraw, 'Withdrawal', ev => {
-      return (
-        ev.sponsor == sponsor && ev.collateralAmount.toString() == toWei('1')
-      );
-    });
-    const newFeeAmount = await calculateFeeAmount(
-      creditLine,
-      toBN(toWei('100')),
-      Fee.feePercentage,
-    );
-    await creditLine.create(
-      toBN(toWei('125')).add(newFeeAmount),
-      toWei('100'),
-      Fee.feePercentage,
-      { from: sponsor },
-    );
-    await creditLine.redeem(toWei('100'), Fee.feePercentage, {
-      from: sponsor,
-    });
-    const newExpectedSponsorCollateral = expectedSponsorCollateral
-      .add(toBN(toWei('125')))
-      .div(toBN('2'));
-    await checkBalances(
-      toBN(initialSponsorTokens),
-      newExpectedSponsorCollateral,
-    );
-
-    // Can't cancel if no withdrawals pending.
-    await truffleAssert.reverts(
-      creditLine.cancelWithdrawal({ from: sponsor }),
-      'No pending withdrawal',
-    );
-
-    // Request to withdraw remaining collateral. Post-fees, this amount should get reduced to the remaining collateral.
-    await creditLine.requestWithdrawal(newExpectedSponsorCollateral, {
-      from: sponsor,
-    });
-    // Setting fees to 0.00001 per second will charge (0.00001 * 1000) = 0.01 or 1 % of the collateral.
-    await store.setFixedOracleFeePerSecondPerPfc({
-      rawValue: toWei('0.00001'),
-    });
-    const expectedWithdrawAmount = newExpectedSponsorCollateral
-      .mul(toBN('99'))
-      .div(toBN('100'));
-    await creditLine.setCurrentTime(
-      (await creditLine.getCurrentTime.call()).toNumber() + withdrawalLiveness,
-    );
-    resultWithdrawPassedRequest = await creditLine.withdrawPassedRequest({
-      from: sponsor,
-    });
-    truffleAssert.eventEmitted(
-      resultWithdrawPassedRequest,
-      'RequestWithdrawalExecuted',
-      ev => {
-        return (
-          ev.sponsor == sponsor &&
-          ev.collateralAmount == expectedWithdrawAmount.toString()
-        );
-      },
-    );
-    // @dev: Can't easily call `checkBalances(initialSponsorTokens, 0)` here because of the fee charged, which is also
-    // charged on the lowly-collateralized collateral (whose sponsor is `other`).
-
-    // Contract state should not have changed.
-    assert.equal(
-      (await creditLine.creditLineData.call()).emergencyShutdownTimestamp,
-      0,
-    );
-    assert.equal(
-      (
-        await creditLine.creditLineData.call()
-      ).emergencyShutdownPrice.toString(),
-      0,
-    );
-
-    // Reset store state.
-    await store.setFixedOracleFeePerSecondPerPfc({ rawValue: '0' });
-  });
-
-  it('Global collateralization ratio checks', async function () {
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: '0',
-      feeRecipient: daoFeeRecipient,
-    });
-    await collateral.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-    await collateral.approve(creditLine.address, toWei('100000'), {
-      from: other,
-    });
-
-    // Create the initial creditLine, with a 150% collateralization ratio.
-    await creditLine.create(toWei('150'), toWei('100'), Fee.feePercentage, {
-      from: sponsor,
-    });
-
-    // Any withdrawal requests should fail, because withdrawals would reduce the global collateralization ratio.
-    await truffleAssert.reverts(
-      creditLine.withdraw(toWei('1'), { from: sponsor }),
-      'CR below GCR',
-    );
-
-    // Because there is only 1 sponsor, neither the sponsor nor potential new sponsors can create below the global ratio.
-    await truffleAssert.reverts(
-      creditLine.create(toWei('150'), toWei('101'), Fee.feePercentage, {
-        from: sponsor,
-      }),
-      'Insufficient collateral',
-    );
-    await truffleAssert.reverts(
-      creditLine.create(toWei('150'), toWei('101'), Fee.feePercentage, {
-        from: other,
-      }),
-      'Insufficient collateral',
-    );
-
-    // Because there is only 1 sponsor, both the sponsor and potential new sponsors must create equal to or above the global ratio.
-    await creditLine.create(toWei('15'), toWei('10'), Fee.feePercentage, {
-      from: sponsor,
-    });
-    await creditLine.create(toWei('25'), toWei('10'), Fee.feePercentage, {
-      from: other,
-    });
-
-    // At this point the GCR is (150 + 15 + 25) / (100 + 10 + 10) = 158.3%.
-
-    // Since the smaller sponsor is well above the GCR at 250%, they can create new tokens with 0 collateral. Let's say they want
-    // to create 5 tokens with 0 collateral. Their new position CR will be 25/10+5 = 166.7%.
-    // Therefore, their resultant CR > GCR and this creation is valid. However, if they instead created 6 tokens with 0 collateral, then their
-    // resultant CR would be 25/10+6 = 156.3%.
-    await truffleAssert.reverts(
-      creditLine.create(toWei('0'), toWei('6'), Fee.feePercentage, {
-        from: other,
-      }),
-      'Insufficient collateral',
-    );
-    await creditLine.create(toWei('0'), toWei('5'), Fee.feePercentage, {
-      from: other,
-    });
-
-    // The new GCR is (190 / 120+5) = 152%. The large sponsor's CR is (165/110) = 150%, so they cannot withdraw
-    // any tokens.
-    await truffleAssert.reverts(
-      creditLine.withdraw(toWei('1'), { from: sponsor }),
-      'CR below GCR',
-    );
-
-    // Additionally, the large sponsor cannot create any tokens UNLESS their created tokens to deposited collateral ratio > GCR.
-    // If the large sponsor wants to create 0.1 more tokens, then they would need to deposit at least 0.152 collateral.
-    // This would make their position CR (165+0.152/110+0.1) slightly > 150%, still below the GCR, but the new create ratio > GCR
-    await truffleAssert.reverts(
-      creditLine.create(toWei('0.151'), toWei('0.1'), Fee.feePercentage, {
-        from: sponsor,
-      }),
-      'Insufficient collateral',
-    );
-    await creditLine.create(toWei('0.152'), toWei('0.1'), Fee.feePercentage, {
-      from: sponsor,
-    });
-
-    // For the "other" Position:
-    // global collateralization ratio = (190.152) / (125.1) = 1.52
-    // To maintain 15 tokens, need at least 22.8 collateral => e.g. can withdraw from 25 down to 23 but not to 22.
-    await truffleAssert.reverts(
-      creditLine.withdraw(toWei('3'), { from: other }),
-      'CR below GCR',
-    );
-    await creditLine.withdraw(toWei('2'), { from: other });
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: Fee.feePercentage.toString(),
-      feeRecipient: daoFeeRecipient,
-    });
   });
 
   it('Non sponsor can use depositTo', async function () {
@@ -967,34 +582,32 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     const numTokens = toWei('1');
+    const collateralAmount = toWei('2');
 
-    await creditLine.create(toWei('1'), numTokens, Fee.feePercentage, {
+    await creditLine.create(collateralAmount, numTokens, {
       from: sponsor,
     });
 
+    let feeAmount = calculateFeeAmount(toBN(collateralAmount));
+
     // Other makes a deposit to the sponsor's account.
-    await creditLine.depositTo(sponsor, toWei('1'), { from: other });
+    let depositCollateral = toWei('1');
+    await creditLine.depositTo(sponsor, depositCollateral, { from: other });
 
     assert.equal(
-      (await creditLine.getCollateral.call(sponsor)).toString(),
-      toWei('2'),
+      (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
+      toBN(depositCollateral)
+        .add(toBN(collateralAmount))
+        .sub(feeAmount)
+        .toString(),
     );
-    assert.equal((await creditLine.getCollateral.call(other)).toString(), '0');
+    assert.equal(
+      (await creditLine.positions.call(other)).rawCollateral.toString(),
+      '0',
+    );
   });
 
-  it("Non sponsor can't deposit, redeem, or withdraw", async function () {
-    // Create an initial large and lowly collateralized creditLine.
-    await collateral.approve(creditLine.address, initialPositionCollateral, {
-      from: other,
-    });
-
-    await creditLine.create(
-      initialPositionCollateral.toString(),
-      initialPositionTokens.toString(),
-      Fee.feePercentage,
-      { from: other },
-    );
-
+  it("Non sponsor can't deposit, redeem, repay, or withdraw", async function () {
     await tokenCurrency.approve(creditLine.address, toWei('100000'), {
       from: sponsor,
     });
@@ -1010,23 +623,31 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Can't request a withdrawal without first creating a creditLine.
     await truffleAssert.reverts(
-      creditLine.requestWithdrawal(toWei('0'), { from: sponsor }),
+      creditLine.withdraw(toWei('1'), { from: sponsor }),
+      'Position has no collateral',
+    );
+
+    // can't repay without first creating a creditLine
+    await truffleAssert.reverts(
+      creditLine.repay(toWei('1'), { from: sponsor }),
       'Position has no collateral',
     );
 
     // Even if the "sponsor" acquires a token somehow, they can't redeem.
+    await collateral.approve(creditLine.address, toWei('1000'), {
+      from: other,
+    });
+    await creditLine.create(toWei('10'), toWei('5'), {
+      from: other,
+    });
     await tokenCurrency.transfer(sponsor, toWei('1'), { from: other });
     await truffleAssert.reverts(
-      creditLine.redeem(toWei('1'), Fee.feePercentage, { from: sponsor }),
+      creditLine.redeem(toWei('1'), { from: sponsor }),
       'Position has no collateral',
     );
   });
 
   it("Can't redeem more than position size", async function () {
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: '0',
-      feeRecipient: daoFeeRecipient,
-    });
     await tokenCurrency.approve(creditLine.address, toWei('1000'), {
       from: sponsor,
     });
@@ -1037,41 +658,37 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    const numTokens = toWei('1');
-    const numCombinedTokens = toWei('2');
-    await creditLine.create(toWei('1'), numTokens, Fee.feePercentage, {
+    const numTokens = toWei('0.7');
+    const numCombinedTokens = toWei('1.4');
+    await creditLine.create(toWei('1'), numTokens, {
       from: other,
     });
-    await creditLine.create(toWei('1'), numTokens, Fee.feePercentage, {
+    await creditLine.create(toWei('1'), numTokens, {
       from: sponsor,
     });
 
     await tokenCurrency.transfer(sponsor, numTokens, { from: other });
     await truffleAssert.reverts(
-      creditLine.redeem(numCombinedTokens, Fee.feePercentage, {
+      creditLine.redeem(numCombinedTokens, {
         from: sponsor,
       }),
       'Invalid token amount',
     );
-    await creditLine.redeem(numTokens, Fee.feePercentage, {
+    await creditLine.redeem(numTokens, {
       from: sponsor,
     });
     await truffleAssert.reverts(
-      creditLine.redeem(numTokens, Fee.feePercentage, { from: sponsor }),
+      creditLine.redeem(numTokens, { from: sponsor }),
       'Position has no collateral',
     );
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: Fee.feePercentage.toString(),
-      feeRecipient: daoFeeRecipient,
-    });
   });
 
   it('Existing sponsor can use depositTo on other account', async function () {
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: '0',
-      feeRecipient: daoFeeRecipient,
-    });
-
+    await creditLineControllerInstance.setFeePercentage(
+      [creditLine.address],
+      [toWei('0')],
+      { from: maintainers },
+    );
     await collateral.approve(creditLine.address, toWei('1000'), {
       from: other,
     });
@@ -1079,11 +696,11 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    const numTokens = toWei('1');
-    await creditLine.create(toWei('1'), numTokens, Fee.feePercentage, {
+    const numTokens = toWei('0.7');
+    await creditLine.create(toWei('1'), numTokens, {
       from: other,
     });
-    await creditLine.create(toWei('1'), numTokens, Fee.feePercentage, {
+    await creditLine.create(toWei('1'), numTokens, {
       from: sponsor,
     });
 
@@ -1091,31 +708,27 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.depositTo(sponsor, toWei('1'), { from: other });
 
     assert.equal(
-      (await creditLine.getCollateral(sponsor)).toString(),
+      (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
       toWei('2'),
     );
     assert.equal(
-      (await creditLine.getCollateral(other)).toString(),
+      (await creditLine.positions.call(other)).rawCollateral.toString(),
       toWei('1'),
     );
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: Fee.feePercentage.toString(),
-      feeRecipient: daoFeeRecipient,
-    });
   });
 
   it('Sponsor use depositTo on own account', async function () {
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: '0',
-      feeRecipient: daoFeeRecipient,
-    });
-
+    await creditLineControllerInstance.setFeePercentage(
+      [creditLine.address],
+      [toWei('0')],
+      { from: maintainers },
+    );
     await collateral.approve(creditLine.address, toWei('1000'), {
       from: sponsor,
     });
 
-    const numTokens = toWei('1');
-    await creditLine.create(toWei('1'), numTokens, Fee.feePercentage, {
+    const numTokens = toWei('0.7');
+    await creditLine.create(toWei('1'), numTokens, {
       from: sponsor,
     });
 
@@ -1123,21 +736,17 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.depositTo(sponsor, toWei('1'), { from: sponsor });
 
     assert.equal(
-      (await creditLine.getCollateral(sponsor)).toString(),
+      (await creditLine.positions(sponsor)).rawCollateral.toString(),
       toWei('2'),
     );
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: Fee.feePercentage.toString(),
-      feeRecipient: daoFeeRecipient,
-    });
+    await creditLineControllerInstance.setFeePercentage(
+      [creditLine.address],
+      [Fee.feePercentage],
+      { from: maintainers },
+    );
   });
 
-  it('Sponsor can use repay to decrease their debt', async function () {
-    await creditLineControllerInstance.setCapDepositRatio(
-      creditLine.address,
-      toBN(toWei(toWei('1'))),
-    );
-
+  it.only('Sponsor can use repay to decrease their debt', async function () {
     await collateral.approve(creditLine.address, toWei('1000'), {
       from: sponsor,
     });
@@ -1145,9 +754,12 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    await creditLine.create(toWei('1'), toWei('100'), Fee.feePercentage, {
+    let inputCollateral = toWei('20');
+    let outputTokens = toWei('12');
+    await creditLine.create(inputCollateral, outputTokens, {
       from: sponsor,
     });
+    let feeAmount = calculateFeeAmount(toBN(inputCollateral));
 
     const initialSponsorTokens = await tokenCurrency.balanceOf.call(sponsor);
     const initialSponsorTokenDebt = toBN(
@@ -1157,31 +769,32 @@ contract('Synthereum CreditLine ', function (accounts) {
       (await creditLine.globalPositionData.call()).totalTokensOutstanding
         .rawValue,
     );
-    const feeAmount = await calculateFeeAmount(
-      creditLine,
-      toBN(toWei('40')),
-      Fee.feePercentage,
-    );
-    const expectedFeeRecipientBalance = toBN(
-      await collateral.balanceOf.call(daoFeeRecipient),
-    ).add(feeAmount);
-    const repayResult = await creditLine.repay(toWei('40'), Fee.feePercentage, {
+
+    let repayTokens = toWei('6');
+    let unlockedCollateral = toBN(toWei('20')).sub(feeAmount).divn(2);
+
+    const repayResult = await creditLine.repay(repayTokens, {
       from: sponsor,
     });
+    let repayFeeAmount = calculateFeeAmount(unlockedCollateral);
+
     // Event is correctly emitted.
     truffleAssert.eventEmitted(repayResult, 'Repay', ev => {
       return (
         ev.sponsor == sponsor &&
-        ev.numTokensRepaid == toWei('40') &&
-        ev.newTokenCount == toWei('60') &&
-        ev.feeAmount == feeAmount.toString()
+        ev.numTokensRepaid.toString() == repayTokens &&
+        ev.newTokenCount.toString() ==
+          toBN(outputTokens).sub(toBN(repayTokens)).toString() &&
+        ev.feeAmount.toString() == repayFeeAmount.toString()
       );
     });
-    await checkDaoRecipientBalance(expectedFeeRecipientBalance);
-    const expectedCollAmount = toBN(toWei('1')).sub(feeAmount);
+
+    const expectedCollAmount = toBN(inputCollateral)
+      .sub(feeAmount)
+      .sub(repayFeeAmount);
     assert.equal(
       expectedCollAmount.toString(),
-      (await creditLine.totalPositionCollateral.call()).toString(),
+      (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
       'Wrong collateral result',
     );
     const tokensPaid = initialSponsorTokens.sub(
@@ -1200,39 +813,31 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     // Tokens paid back to contract,the token debt decrease and decrease in outstanding should all equal 40 tokens.
-    assert.equal(tokensPaid.toString(), toWei('40'));
-    assert.equal(tokenDebtDecreased.toString(), toWei('40'));
-    assert.equal(totalTokensOutstandingDecreased.toString(), toWei('40'));
+    assert.equal(tokensPaid.toString(), repayTokens);
+    assert.equal(tokenDebtDecreased.toString(), repayTokens);
+    assert.equal(totalTokensOutstandingDecreased.toString(), repayTokens);
 
-    // Can not request to repay more than their token balance. Sponsor has remaining 60. max they can repay is 60
+    // Can not request to repay more than their token balance.
     assert.equal(
       (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
-      toWei('60'),
+      toBN(outputTokens).sub(toBN(repayTokens)),
     );
     await truffleAssert.reverts(
-      creditLine.repay(toWei('65'), Fee.feePercentage, { from: sponsor }),
+      creditLine.repay(toWei('65'), { from: sponsor }),
       'Invalid token amount',
     );
 
     // Can not repay to position less than minimum sponsor size. Minimum sponsor size is 5 wei. Repaying 60 - 3 wei
     // would leave the position at a size of 2 wei, which is less than acceptable minimum.
     await truffleAssert.reverts(
-      creditLine.repay(
-        toBN(toWei('60')).subn(3).toString(),
-        Fee.feePercentage,
-        {
-          from: sponsor,
-        },
-      ),
+      creditLine.repay(toBN(toWei('2')).toString(), {
+        from: sponsor,
+      }),
       'Below minimum sponsor position',
     );
 
     // Can repay up to the minimum sponsor size
-    await creditLine.repay(
-      toBN(toWei('60')).sub(toBN(minSponsorTokens)).toString(),
-      Fee.feePercentage,
-      { from: sponsor },
-    );
+    await creditLine.repay(toBN(toWei('1')), { from: sponsor });
 
     assert.equal(
       (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
@@ -1241,143 +846,12 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // As at the minimum sponsor size even removing 1 wei wll reverts.
     await truffleAssert.reverts(
-      creditLine.repay('1', Fee.feePercentage, { from: sponsor }),
+      creditLine.repay('1', { from: sponsor }),
       'Below minimum sponsor position',
     );
-    await creditLineControllerInstance.setCapDepositRatio(
-      creditLine.address,
-      capDepositRatio,
-    );
   });
 
-  it('Basic oracle fees', async function () {
-    await creditLineControllerInstance.setCapDepositRatio(
-      creditLine.address,
-      toBN(toWei(toWei('1'))),
-    );
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: '0',
-      feeRecipient: daoFeeRecipient,
-    });
-    // Set up position.
-    await collateral.approve(creditLine.address, toWei('1000'), {
-      from: other,
-    });
-    await collateral.approve(creditLine.address, toWei('1000'), {
-      from: sponsor,
-    });
-
-    // Set up another position that is less collateralized so sponsor can withdraw freely.
-    await creditLine.create(toWei('1'), toWei('100000'), Fee.feePercentage, {
-      from: other,
-    });
-    await creditLine.create(toWei('1'), toWei('1'), Fee.feePercentage, {
-      from: sponsor,
-    });
-
-    // Set store fees to 1% per second.
-    await store.setFixedOracleFeePerSecondPerPfc({ rawValue: toWei('0.01') });
-
-    // Move time in the contract forward by 1 second to capture a 1% fee.
-    const startTime = await creditLine.getCurrentTime();
-    await creditLine.setCurrentTime(startTime.addn(1));
-
-    // Determine the expected store balance by adding 1% of the sponsor balance to the starting store balance.
-    // Multiply by 2 because there are two active positions
-    const expectedStoreBalance = (
-      await collateral.balanceOf(store.address)
-    ).add(toBN(toWei('0.02')));
-
-    // Pay the fees, check the return value, and then check the collateral and the store balance.
-    const payRegularFees = creditLine.payRegularFees;
-    const feesPaid = await payRegularFees.call();
-    assert.equal(feesPaid.toString(), toWei('0.02'));
-    const payFeesResult = await payRegularFees();
-    truffleAssert.eventEmitted(payFeesResult, 'RegularFeesPaid', ev => {
-      return (
-        ev.regularFee.toString() === toWei('0.02') &&
-        ev.lateFee.toString() === '0'
-      );
-    });
-    let collateralAmount = await creditLine.getCollateral(sponsor);
-    assert.equal(collateralAmount.rawValue.toString(), toWei('0.99'));
-    assert.equal(
-      (await collateral.balanceOf(store.address)).toString(),
-      expectedStoreBalance.toString(),
-    );
-
-    // Calling `payRegularFees()` more than once in the same block does not emit a RegularFeesPaid event.
-    const feesPaidRepeat = await payRegularFees.call();
-    assert.equal(feesPaidRepeat.toString(), '0');
-    const payFeesRepeatResult = await payRegularFees();
-    truffleAssert.eventNotEmitted(payFeesRepeatResult, 'RegularFeesPaid');
-
-    // Ensure that fees are not applied to new collateral.
-    // TODO: value chosen specifically to avoid rounding errors -- see #873.
-    await creditLine.deposit(toWei('99'), { from: sponsor });
-    collateralAmount = await creditLine.getCollateral(sponsor);
-    assert.equal(collateralAmount.rawValue.toString(), toWei('99.99'));
-
-    // Ensure that the conversion works correctly for withdrawals.
-    const expectedSponsorBalance = (await collateral.balanceOf(sponsor)).add(
-      toBN(toWei('1')),
-    );
-    await creditLine.withdraw(toWei('1'), { from: sponsor });
-    assert.equal(
-      (await collateral.balanceOf(sponsor)).toString(),
-      expectedSponsorBalance.toString(),
-    );
-    assert.equal(
-      (await creditLine.getCollateral(sponsor)).toString(),
-      toWei('98.99'),
-    );
-
-    // Test that regular fees accrue after an emergency shutdown is triggered.
-    await financialContractsAdmin.callEmergencyShutdown(creditLine.address);
-
-    // Ensure that the maximum fee % of pfc charged is 100%. Advance > 100 seconds from the last payment time to attempt to
-    // pay > 100% fees on the PfC. This should pay a maximum of 100% of the PfC without reverting.
-    const pfc = await creditLine.pfc();
-    const feesOwed = (
-      await store.computeRegularFee(startTime.addn(1), startTime.addn(102), {
-        rawValue: pfc.toString(),
-      })
-    ).regularFee;
-    assert.isTrue(Number(pfc.toString()) < Number(feesOwed.toString()));
-    const farIntoTheFutureSeconds = 502;
-    await creditLine.setCurrentTime(startTime.addn(farIntoTheFutureSeconds));
-    const payTooManyFeesResult = await creditLine.payRegularFees();
-    truffleAssert.eventEmitted(payTooManyFeesResult, 'RegularFeesPaid', ev => {
-      // There should be 98.99 + 0.99 = 99.98 collateral remaining in the contract.
-      return (
-        ev.regularFee.toString() === toWei('99.98') &&
-        ev.lateFee.toString() === '0'
-      );
-    });
-    assert.equal((await creditLine.getCollateral(sponsor)).toString(), '0');
-
-    // TODO: Add unit tests for when the latePenalty > 0 but (latePenalty + regularFee > pfc). The component fees need to be reduced properly.
-
-    // Set the store fees back to 0 to prevent it from affecting other tests.
-    await store.setFixedOracleFeePerSecondPerPfc({ rawValue: '0' });
-
-    // Check that no event is fired if the fees owed are 0.
-    await creditLine.setCurrentTime(
-      startTime.addn(farIntoTheFutureSeconds + 1),
-    );
-    const payZeroFeesResult = await payRegularFees();
-    truffleAssert.eventNotEmitted(payZeroFeesResult, 'RegularFeesPaid');
-    await creditLineControllerInstance.setCapDepositRatio(
-      creditLine.address,
-      capDepositRatio,
-    );
-    await creditLineControllerInstance.setDaoFee(creditLine.address, {
-      feePercentage: Fee.feePercentage.toString(),
-      feeRecipient: daoFeeRecipient,
-    });
-  });
-
-  it('Emergency shutdown: lifecycle', async function () {
+  it.only('Emergency shutdown: lifecycle', async function () {
     // Create one position with 100 synthetic tokens to mint with 150 tokens of collateral. For this test say the
     // collateral is WETH with a value of 1USD and the synthetic is some fictional stock or commodity.
     await collateral.approve(creditLine.address, toWei('100000'), {
@@ -1385,7 +859,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
     const numTokens = toWei('100');
     const amountCollateral = toWei('150');
-    await creditLine.create(amountCollateral, numTokens, Fee.feePercentage, {
+    await creditLine.create(amountCollateral, numTokens, {
       from: sponsor,
     });
 
@@ -1394,10 +868,6 @@ contract('Synthereum CreditLine ', function (accounts) {
     await tokenCurrency.transfer(tokenHolder, tokenHolderTokens, {
       from: sponsor,
     });
-
-    // Some time passes and the UMA token holders decide that Emergency shutdown needs to occur.
-    const shutdownTimestamp = Number(await creditLine.getCurrentTime()) + 1000;
-    await creditLine.setCurrentTime(shutdownTimestamp);
 
     // Before the token sponsor has called emergencyShutdown should be disable settleEmergencyShutdown
     await truffleAssert.reverts(
@@ -1408,21 +878,46 @@ contract('Synthereum CreditLine ', function (accounts) {
     // Should reverts if emergency shutdown initialized by non financial admin or synthereum manager.
     await truffleAssert.reverts(
       creditLine.emergencyShutdown({ from: other }),
-      'Caller must be a Synthereum manager or the UMA governor',
+      'Caller must be a Synthereum manager',
     );
 
-    // Pool can initiate emergency shutdown.
+    // Synthereum manager can initiate emergency shutdown.
+    const emergencyShutdownPrice = await mockOnchainOracle.getLatestPrice(
+      priceFeedIdentifier,
+    );
+    console.log(await creditLine.positionManagerData.call());
     const emergencyShutdownTx = await synthereumManagerInstance.emergencyShutdown(
       [creditLine.address],
       { from: maintainers },
     );
-    assert.equal(
-      (await creditLine.creditLineData.call()).emergencyShutdownTimestamp,
-      shutdownTimestamp,
+    console.log(emergencyShutdownTx);
+    // // check event
+    // let emergencyShutdownTimestamp;
+    // truffleAssert.eventEmitted(
+    //   emergencyShutdownTx,
+    //   'EmergencyShutdown',
+    //   ev => {
+    //     emergencyShutdownTimestamp = ev.shutdownTimestamp;
+    //     return (
+    //       ev.caller == synthereumFinderInstance.address &&
+    //       ev.settlementPrice == emergencyShutdownPrice
+    //     );
+    //   },
+    // );
+
+    // assert.equal(
+    //   (await creditLine.positionManagerData.call()).emergencyShutdownTimestamp,
+    //   emergencyShutdownTimestamp,
+    // );
+    console.log(await creditLine.positionManagerData.call());
+    console.log(
+      await creditLine.positionManagerData
+        .call()
+        .emergencyShutdownPrice.toString(),
     );
     assert.equal(
       (await creditLine.emergencyShutdownPrice.call()).toString(),
-      0,
+      emergencyShutdownPrice.toString(),
     );
 
     // Emergency shutdown should not be able to be called a second time.
@@ -1432,14 +927,9 @@ contract('Synthereum CreditLine ', function (accounts) {
       }),
     );
 
-    // Before the DVM has resolved a price withdrawals should be disabled (as with settlement at maturity).
-    await truffleAssert.reverts(
-      creditLine.settleEmergencyShutdown({ from: sponsor }),
-    );
-
     // All contract functions should also blocked as emergency shutdown.
     await truffleAssert.reverts(
-      creditLine.create(toWei('1'), toWei('1'), Fee.feePercentage, {
+      creditLine.create(toWei('1'), toWei('1'), {
         from: sponsor,
       }),
       'Contract emergency shutdown',
@@ -1453,24 +943,12 @@ contract('Synthereum CreditLine ', function (accounts) {
       'Contract emergency shutdown',
     );
     await truffleAssert.reverts(
-      creditLine.redeem(toWei('1'), Fee.feePercentage, { from: sponsor }),
+      creditLine.redeem(toWei('1'), { from: sponsor }),
       'Contract emergency shutdown',
     );
     await truffleAssert.reverts(
-      creditLine.requestWithdrawal(toWei('1'), { from: sponsor }),
+      creditLine.repay(toWei('2'), { from: sponsor }),
       'Contract emergency shutdown',
-    );
-    await truffleAssert.reverts(
-      creditLine.withdrawPassedRequest({ from: sponsor }),
-      'Contract emergency shutdown',
-    );
-
-    // UMA token holders now vote to resolve of the price request to enable the emergency shutdown to continue.
-    // Say they resolve to a price of 1.1 USD per synthetic token.
-    await mockOracle.pushPrice(
-      priceFeedIdentifier,
-      shutdownTimestamp,
-      toWei('1.1'),
     );
 
     // Token holders (`sponsor` and `tokenHolder`) should now be able to withdraw post emergency shutdown.
@@ -1494,18 +972,17 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     await creditLine.settleEmergencyShutdown({ from: tokenHolder });
-    assert.equal(
-      (await creditLine.emergencyShutdownPrice.call()).toString(),
-      toWei('1.1'),
-    );
+
     const tokenHolderFinalCollateral = await collateral.balanceOf(tokenHolder);
     const tokenHolderFinalSynthetic = await tokenCurrency.balanceOf(
       tokenHolder,
     );
-    const expectedTokenHolderFinalCollateral = toWei('55');
+    const settledCollateral = tokenHolderInitialSynthetic.mul(
+      toBN(emergencyShutdownPrice),
+    );
     assert.equal(
       tokenHolderFinalCollateral.sub(tokenHolderInitialCollateral),
-      expectedTokenHolderFinalCollateral,
+      settledCollateral,
     );
 
     // The token holder should have no synthetic positions left after settlement.
