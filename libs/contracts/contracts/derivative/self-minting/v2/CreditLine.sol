@@ -135,6 +135,14 @@ contract SynthereumCreditLine is
     _;
   }
 
+  modifier onlyCollateralisedPosition(address sponsor) {
+    require(
+      positions[sponsor].rawCollateral.isGreaterThan(0),
+      'Position has no collateral'
+    );
+    _;
+  }
+
   //----------------------------------------
   // Constructor
   //----------------------------------------
@@ -557,6 +565,7 @@ contract SynthereumCreditLine is
   function _getPositionData(address sponsor)
     internal
     view
+    onlyCollateralisedPosition(sponsor)
     returns (PositionData storage)
   {
     return positions[sponsor];
