@@ -3322,4 +3322,264 @@ contract('LiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should set fee', async () => {
+    it('Can set fee percentage', async () => {
+      const newFeePerc = web3Utils.toWei('0.1');
+      const feeTx = await liquidityPoolInstance.setFeePercentage(newFeePerc, {
+        from: maintainer,
+      });
+      truffleAssert.eventEmitted(feeTx, 'SetFeePercentage', ev => {
+        return ev.feePercentage == newFeePerc;
+      });
+      const feeOutput = await liquidityPoolInstance.feePercentage.call();
+      assert.equal(
+        web3Utils.toBN(feeOutput).toString(),
+        web3Utils.toBN(newFeePerc),
+        'Wrong fee percentage',
+      );
+    });
+    it('Can set fee recipients', async () => {
+      const feeTx = await liquidityPoolInstance.setFeeRecipients(
+        [firstUser, secondUser],
+        [40, 80],
+        {
+          from: maintainer,
+        },
+      );
+      truffleAssert.eventEmitted(feeTx, 'SetFeeRecipients', ev => {
+        return (
+          ev.feeRecipients[0] == firstUser &&
+          ev.feeRecipients[1] == secondUser &&
+          ev.feeProportions[0] == 40 &&
+          ev.feeProportions[1] == 80
+        );
+      });
+      const feeOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
+      assert.equal(feeOutput[0][0], firstUser, 'Wrong first user address');
+      assert.equal(feeOutput[0][1], secondUser, 'Wrong second user address');
+      assert.equal(feeOutput[1][0], 40, 'Wrong first proportion');
+      assert.equal(feeOutput[1][1], 80, 'Wrong second proportion');
+      assert.equal(feeOutput[2], 120, 'Wrong total fee proportion');
+    });
+    it('Can set fee', async () => {
+      const newFeePerc = web3Utils.toWei('0.1');
+      const newFee = {
+        feePercentage: {
+          rawValue: newFeePerc,
+        },
+        feeRecipients: [firstUser, secondUser],
+        feeProportions: [30, 70],
+      };
+      await liquidityPoolInstance.setFee(newFee, { from: maintainer });
+      const feePercentageOutput = await liquidityPoolInstance.feePercentage.call();
+      assert.equal(
+        web3Utils.toBN(feePercentageOutput).toString(),
+        web3Utils.toBN(newFeePerc),
+        'Wrong fee percentage',
+      );
+      const feeRecipientsOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
+      assert.equal(
+        feeRecipientsOutput[0][0],
+        firstUser,
+        'Wrong first user address',
+      );
+      assert.equal(
+        feeRecipientsOutput[0][1],
+        secondUser,
+        'Wrong second user address',
+      );
+      assert.equal(feeRecipientsOutput[1][0], 30, 'Wrong first proportion');
+      assert.equal(feeRecipientsOutput[1][1], 70, 'Wrong second proportion');
+      assert.equal(feeRecipientsOutput[2], 100, 'Wrong total fee proportion');
+    });
+    it('Can revert if sender is not the maintainer', async () => {
+      const newFeePerc = web3Utils.toWei('0.1');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setFeePercentage(newFeePerc, { from: firstUser }),
+        'Sender must be the maintainer',
+      );
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setFeeRecipients(
+          [firstUser, secondUser],
+          [40, 80],
+          {
+            from: firstUser,
+          },
+        ),
+        'Sender must be the maintainer',
+      );
+      const newFee = {
+        feePercentage: {
+          rawValue: newFeePerc,
+        },
+        feeRecipients: [firstUser, secondUser],
+        feeProportions: [30, 70],
+      };
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setFee(newFee, { from: firstUser }),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can revert if fee percentage is more than 100%', async () => {
+      const newFeePerc = web3Utils.toWei('1.01');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setFeePercentage(newFeePerc, {
+          from: maintainer,
+        }),
+        'Fee Percentage must be less than 100%',
+      );
+    });
+    it('Can revert if number of recipients and proportions is different', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setFeeRecipients([firstUser, secondUser], [40], {
+          from: maintainer,
+        }),
+        'Fee recipients and fee proportions do not match',
+      );
+    });
+  });
+
+  describe('Should set overcollateralization', async () => {
+    it('Can set overcollateralization parameter', async () => {
+      const overCollateralizationParam = web3Utils.toWei('0.4');
+      const overColllatTx = await liquidityPoolInstance.setOverCollateralization(
+        overCollateralizationParam,
+        { from: maintainer },
+      );
+      truffleAssert.eventEmitted(
+        overColllatTx,
+        'SetOverCollateralization',
+        ev => {
+          return ev.overCollateralization == overCollateralizationParam;
+        },
+      );
+      assert.equal(
+        (await liquidityPoolInstance.overCollateralization.call()).toString(),
+        web3Utils.toBN(overCollateralizationParam).toString(),
+        'Wrong over-collateralization',
+      );
+    });
+    it('Can revert if sender is not the maintainer ', async () => {
+      const overCollateralizationParam = web3Utils.toWei('0.4');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setOverCollateralization(
+          overCollateralizationParam,
+          { from: firstUser },
+        ),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can revert if overcollateralization is less then collateral requirement', async () => {
+      const overCollateralizationParam = web3Utils.toWei('0.049');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setOverCollateralization(
+          overCollateralizationParam,
+          { from: maintainer },
+        ),
+        'Overcollateralization must be bigger than the Lp part of the collateral requirement',
+      );
+    });
+  });
+
+  describe('Should set liquidation reward', async () => {
+    it('Can set liquidation reward parameter', async () => {
+      const liquidationRewardParam = web3Utils.toWei('0.4');
+      const liquidationRewardTx = await liquidityPoolInstance.setLiquidationReward(
+        liquidationRewardParam,
+        { from: maintainer },
+      );
+      truffleAssert.eventEmitted(
+        liquidationRewardTx,
+        'SetLiquidationReward',
+        ev => {
+          return ev.liquidationReward == liquidationRewardParam;
+        },
+      );
+      assert.equal(
+        (await liquidityPoolInstance.liquidationReward.call()).toString(),
+        web3Utils.toBN(liquidationRewardParam).toString(),
+        'Wrong liquidation reward',
+      );
+    });
+    it('Can revert if sender is not the maintainer ', async () => {
+      const liquidationRewardParam = web3Utils.toWei('0.4');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setLiquidationReward(liquidationRewardParam, {
+          from: firstUser,
+        }),
+        'Sender must be the maintainer',
+      );
+    });
+    it('Can revert if liquidation reward is more than 100%', async () => {
+      const liquidationRewardParam = web3Utils.toWei('1.01');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setLiquidationReward(liquidationRewardParam, {
+          from: maintainer,
+        }),
+        'Liquidation reward must be between 0 and 100%',
+      );
+    });
+    it('Can revert if liquidation reward is 0%', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.setLiquidationReward('0', {
+          from: maintainer,
+        }),
+        'Liquidation reward must be between 0 and 100%',
+      );
+    });
+  });
+
+  describe('Should return liquidation info', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can return if is overCollateralized', async () => {
+      let liquidationInfo = await liquidityPoolInstance.collateralCoverage.call();
+      assert.equal(
+        liquidationInfo[0],
+        true,
+        'Position is not overcollateralized',
+      );
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('143', 'mwei'));
+      liquidationInfo = await liquidityPoolInstance.collateralCoverage.call();
+      assert.equal(liquidationInfo[0], false, 'Position is overcollateralized');
+    });
+    it('Can return percentage of collateral coverage ', async () => {
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('125', 'mwei'));
+      let liquidationInfo = await liquidityPoolInstance.collateralCoverage.call();
+      let expectedRatio = web3Utils.toWei('1.2');
+      assert.equal(
+        liquidationInfo[1].toString(),
+        web3Utils.toBN(expectedRatio).toString(),
+        'Wrong collateral ratio in overcollateralization',
+      );
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('150', 'mwei')),
+        (liquidationInfo = await liquidityPoolInstance.collateralCoverage.call());
+      expectedRatio = web3Utils.toWei('1');
+      assert.equal(
+        liquidationInfo[1].toString(),
+        web3Utils.toBN(expectedRatio).toString(),
+        'Wrong collateral ratio in undercollateralization',
+      );
+    });
+  });
 });
