@@ -204,12 +204,6 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   function setLiquidationReward(uint256 _liquidationReward) external;
 
   /**
-   * @notice Return overcollateralization percentage from the storage
-   * @return Overcollateralization percentage
-   */
-  function overCollateralization() external view returns (uint256);
-
-  /**
    * @notice Returns fee percentage set by the maintainer
    * @return Fee percentage
    */
@@ -239,12 +233,6 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
    * @return Total collateral amount
    */
   function totalCollateralAmount() external view returns (uint256);
-
-  /**
-   * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
-   * @return Total available liquidity
-   */
-  function totalAvailableLiquidity() external view returns (uint256);
 
   /**
    * @notice Returns the total amount of fees to be withdrawn

@@ -20,4 +20,16 @@ interface ISynthereumLiquidityPoolInteraction {
    * @return identifier Price identifier
    */
   function getPriceFeedIdentifier() external view returns (bytes32 identifier);
+
+  /**
+   * @notice Return overcollateralization percentage from the storage
+   * @return Overcollateralization percentage
+   */
+  function overCollateralization() external view returns (uint256);
+
+  /**
+   * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
+   * @return Total available liquidity
+   */
+  function totalAvailableLiquidity() external view returns (uint256);
 }
