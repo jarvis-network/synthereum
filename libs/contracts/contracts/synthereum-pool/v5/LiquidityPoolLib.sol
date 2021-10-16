@@ -1106,19 +1106,43 @@ library SynthereumLiquidityPoolLib {
    * @notice Returns the synthetic tokens will be received and fees will be paid in exchange for an input collateral amount
    * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
    * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
+   * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param inputCollateral Input collateral amount to be exchanged
    * @return synthTokensReceived Synthetic tokens will be minted
    * @return feePaid Collateral fee will be paid
    */
   function getMintTradeInfo(
     ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata inputCollateral
   ) external view returns (uint256 synthTokensReceived, uint256 feePaid) {
     (
-      ,
+      FixedPoint.Unsigned memory collateralAmount,
       FixedPoint.Unsigned memory _feePaid,
       FixedPoint.Unsigned memory _synthTokensReceived
     ) = self.mintCalculation(inputCollateral);
+
+    require(
+      collateralAmount.rawValue > 0,
+      'Sending collateral amount is equal to 0'
+    );
+
+    FixedPoint.Unsigned memory overCollateral =
+      collateralAmount.mul(self.overCollateralization);
+
+    FixedPoint.Unsigned memory unusedCollateral =
+      self.calculateUnusedCollateral(
+        lpPosition.totalCollateralAmount,
+        feeStatus.totalFeeAmount,
+        FixedPoint.Unsigned(0)
+      );
+
+    require(
+      unusedCollateral.isGreaterThanOrEqual(overCollateral),
+      'No enough liquidity for covering mint operation'
+    );
 
     synthTokensReceived = _synthTokensReceived.rawValue;
     feePaid = _feePaid.rawValue;
@@ -1128,19 +1152,44 @@ library SynthereumLiquidityPoolLib {
    * @notice Returns the collateral amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
    * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
    * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
    * @param  syntheticTokens Amount of synthetic tokens to be exchanged
    * @return collateralAmountReceived Collateral amount will be received by the user
    * @return feePaid Collateral fee will be paid
    */
   function getRedeemTradeInfo(
     ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     FixedPoint.Unsigned calldata syntheticTokens
   ) external view returns (uint256 collateralAmountReceived, uint256 feePaid) {
+    FixedPoint.Unsigned memory totalActualTokens =
+      lpPosition.tokensCollateralized;
+
+    require(
+      syntheticTokens.rawValue > 0,
+      'Sending tokens amount is equal to 0'
+    );
+
+    require(
+      syntheticTokens.isLessThanOrEqual(totalActualTokens),
+      'Sending tokens amount bigger than amount in the position'
+    );
+
     (
-      ,
+      FixedPoint.Unsigned memory totCollateralAmount,
       FixedPoint.Unsigned memory _feePaid,
       FixedPoint.Unsigned memory _collateralAmountReceived
-    ) = self.mintCalculation(syntheticTokens);
+    ) = self.redeemCalculation(syntheticTokens);
+
+    FixedPoint.Unsigned memory collateralRedeemed =
+      syntheticTokens.div(totalActualTokens).mul(
+        lpPosition.totalCollateralAmount
+      );
+
+    require(
+      collateralRedeemed.isGreaterThanOrEqual(totCollateralAmount),
+      'Position undercapitalized'
+    );
 
     collateralAmountReceived = _collateralAmountReceived.rawValue;
     feePaid = _feePaid.rawValue;
@@ -1150,6 +1199,7 @@ library SynthereumLiquidityPoolLib {
    * @notice Returns the destination synthetic tokens amount will be received and fees will be paid in exchange for an input amount of synthetic tokens
    * @notice This function is only trading-informative, it doesn't check liquidity and collateralization conditions
    * @param self Data type the library is attached to
+   * @param lpPosition Position of the LP (see LPPosition struct)
    * @param  syntheticTokens Amount of synthetic tokens to be exchanged
    * @param  destinationPool Pool in which mint the destination synthetic token
    * @return destSyntheticTokensReceived Synthetic tokens will be received from destination pool
@@ -1157,6 +1207,7 @@ library SynthereumLiquidityPoolLib {
    */
   function getExchangeTradeInfo(
     ISynthereumLiquidityPoolStorage.Storage storage self,
+    ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     FixedPoint.Unsigned calldata syntheticTokens,
     ISynthereumLiquidityPoolGeneral destinationPool
   )
@@ -1165,12 +1216,59 @@ library SynthereumLiquidityPoolLib {
     returns (uint256 destSyntheticTokensReceived, uint256 feePaid)
   {
     self.checkPool(destinationPool);
+
+    require(
+      address(this) != address(destinationPool),
+      'Same source and destination pool'
+    );
+
+    FixedPoint.Unsigned memory totalActualTokens =
+      lpPosition.tokensCollateralized;
+
+    require(
+      syntheticTokens.rawValue > 0,
+      'Sending tokens amount is equal to 0'
+    );
+
+    require(
+      syntheticTokens.isLessThanOrEqual(totalActualTokens),
+      'Sending tokens amount bigger than amount in the position'
+    );
+
     (
-      ,
+      FixedPoint.Unsigned memory totCollateralAmount,
       FixedPoint.Unsigned memory _feePaid,
-      ,
+      FixedPoint.Unsigned memory collateralAmount,
       FixedPoint.Unsigned memory _destSyntheticTokensReceived
     ) = self.exchangeCalculation(syntheticTokens, destinationPool);
+
+    FixedPoint.Unsigned memory collateralRedeemed =
+      syntheticTokens.div(totalActualTokens).mul(
+        lpPosition.totalCollateralAmount
+      );
+
+    require(
+      collateralRedeemed.isGreaterThanOrEqual(totCollateralAmount),
+      'Position undercapitalized'
+    );
+
+    require(
+      collateralAmount.rawValue > 0,
+      'Sending collateral amount is equal to 0'
+    );
+
+    FixedPoint.Unsigned memory destOverCollateral =
+      collateralAmount.mul(
+        FixedPoint.Unsigned(destinationPool.overCollateralization())
+      );
+
+    FixedPoint.Unsigned memory destUnusedCollateral =
+      FixedPoint.Unsigned(destinationPool.totalAvailableLiquidity());
+
+    require(
+      destUnusedCollateral.isGreaterThanOrEqual(destOverCollateral),
+      'No enough liquidity for covering mint operation'
+    );
 
     destSyntheticTokensReceived = _destSyntheticTokensReceived.rawValue;
     feePaid = _feePaid.rawValue;

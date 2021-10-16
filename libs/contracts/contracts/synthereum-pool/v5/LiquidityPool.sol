@@ -776,6 +776,8 @@ contract SynthereumLiquidityPool is
     returns (uint256 synthTokensReceived, uint256 feePaid)
   {
     (synthTokensReceived, feePaid) = poolStorage.getMintTradeInfo(
+      lpPosition,
+      feeStatus,
       FixedPoint.Unsigned(inputCollateral)
     );
   }
@@ -795,6 +797,7 @@ contract SynthereumLiquidityPool is
     returns (uint256 collateralAmountReceived, uint256 feePaid)
   {
     (collateralAmountReceived, feePaid) = poolStorage.getRedeemTradeInfo(
+      lpPosition,
       FixedPoint.Unsigned(syntheticTokens)
     );
   }
@@ -818,6 +821,7 @@ contract SynthereumLiquidityPool is
     returns (uint256 destSyntheticTokensReceived, uint256 feePaid)
   {
     (destSyntheticTokensReceived, feePaid) = poolStorage.getExchangeTradeInfo(
+      lpPosition,
       FixedPoint.Unsigned(syntheticTokens),
       destinationPool
     );
