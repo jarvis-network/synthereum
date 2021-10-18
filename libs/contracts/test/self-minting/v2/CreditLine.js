@@ -59,11 +59,8 @@ contract('Synthereum CreditLine ', function (accounts) {
   let synthereumManagerInstance;
 
   // Initial constant values
-  const initialPositionTokens = toBN(toWei('1000'));
-  const initialPositionCollateral = toBN(toWei('1'));
-  const initalFeeAmount = initialPositionCollateral
-    .mul(feePercentage)
-    .div(toBN(Math.pow(10, 18)));
+  const initialPositionTokens = toWei('80');
+  const initialPositionCollateral = toWei('100');
   const syntheticName = 'Test Synthetic Token';
   const syntheticSymbol = 'SYNTH';
   const startTimestamp = Math.floor(Date.now() / 1000);
@@ -185,10 +182,10 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Represents WETH or some other token that the sponsor and contracts don't control.
     collateral = await TestnetSelfMintingERC20.deployed();
-    await collateral.allocateTo(sponsor, toWei('1000000'), {
+    await collateral.allocateTo(sponsor, toWei('100000000'), {
       from: collateralOwner,
     });
-    await collateral.allocateTo(other, toWei('1000000'), {
+    await collateral.allocateTo(other, toWei('100000000'), {
       from: collateralOwner,
     });
 
@@ -302,10 +299,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       synthereumFinderInstance.address,
     );
     const returnedFee = await creditLine.getFeeInfo.call();
-    assert.equal(
-      returnedFee.Fee.feePercentage.toString(),
-      Fee.Fee.feePercentage,
-    );
+    assert.equal(returnedFee.feePercentage.toString(), Fee.feePercentage);
     assert.equal(returnedFee.feeRecipients[0], Fee.feeRecipients[0]);
     assert.equal(returnedFee.feeProportions[0], 1);
     assert.equal(returnedFee.totalFeeProportions, 1);
@@ -1068,6 +1062,11 @@ contract('Synthereum CreditLine ', function (accounts) {
   });
 
   it('Oracle swap post shutdown', async function () {
+    await creditLineControllerInstance.setFeePercentage(
+      [creditLine.address],
+      [toWei('0')],
+      { from: maintainers },
+    );
     // Approvals
     await collateral.approve(creditLine.address, toWei('100000'), {
       from: sponsor,
@@ -1083,7 +1082,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     // collateral is WETH with a value of 1USD and the synthetic is some fictional stock or commodity.
     const amountCollateral = toWei('300');
     const numTokens = toWei('200');
-    await creditLine.create(amountCollateral, numTokens, Fee.feePercentage, {
+    await creditLine.create(amountCollateral, numTokens, {
       from: sponsor,
     });
 
@@ -1098,18 +1097,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     // Emergency shutdown contract to enable settlement.
-    const emergencyShutdownTime = await creditLine.getCurrentTime();
     await synthereumManagerInstance.emergencyShutdown([creditLine.address], {
       from: maintainers,
     });
-
-    // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 1.2 Stock/USD for the price
-    // feed. With 200 units of outstanding tokens this results in a token redemption value of: TRV = 200 * 1.2 = 240 USD.
-    await mockOracle.pushPrice(
-      priceFeedIdentifier,
-      emergencyShutdownTime,
-      toWei('1.2'),
-    );
 
     // Token holder should receive 120 collateral tokens for their 100 synthetic tokens.
     let initialCollateral = await collateral.balanceOf.call(tokenHolder);
@@ -1117,53 +1107,66 @@ contract('Synthereum CreditLine ', function (accounts) {
     let collateralPaid = (await collateral.balanceOf.call(tokenHolder)).sub(
       initialCollateral,
     );
-    assert.equal(collateralPaid, toWei('120'));
+
+    let emergencyShutdownPrice = await mockOnchainOracle.getLatestPrice(
+      priceFeedIdentifier,
+    );
+    assert.equal(
+      collateralPaid.toString(),
+      toBN(tokenHolderTokens)
+        .mul(emergencyShutdownPrice)
+        .div(toBN(Math.pow(10, 18)))
+        .toString(),
+    );
 
     // Create new oracle, replace it in the finder, and push a different price to it.
-    const newMockOracle = await MockOracle.new(finder.address, timer.address);
-    const mockOracleInterfaceName = web3.utils.padRight(
-      utf8ToHex(interfaceName.Oracle),
-      64,
-    );
-    await finder.changeImplementationAddress(
-      mockOracleInterfaceName,
+    const newMockOracle = await MockOnchainOracle.new({
+      from: contractDeployer,
+    });
+    await synthereumFinderInstance.changeImplementationAddress(
+      utf8ToHex('PriceFeed'),
       newMockOracle.address,
       {
-        from: contractDeployer,
+        from: maintainers,
       },
     );
 
     // Settle emergency shutdown should still work even if the new oracle has no price.
     initialCollateral = await collateral.balanceOf.call(sponsor);
     await creditLine.settleEmergencyShutdown({ from: sponsor });
-    collateralPaid = (await collateral.balanceOf.call(sponsor)).sub(
+    let collateralPaidSponsor = (await collateral.balanceOf.call(sponsor)).sub(
       initialCollateral,
     );
 
-    // Sponsor should have received 300 - 240 = 60 collateral tokens.
-    assert.equal(collateralPaid, toWei('60'));
+    assert.equal(
+      collateralPaidSponsor.toString(),
+      toBN(amountCollateral)
+        .sub(
+          toBN(numTokens)
+            .mul(emergencyShutdownPrice)
+            .div(toBN(Math.pow(10, 18))),
+        )
+        .toString(),
+    );
 
-    // Push a different price to the new oracle to ensure the contract still uses the old price.
-    await newMockOracle.requestPrice(
-      priceFeedIdentifier,
-      emergencyShutdownTime,
-    );
-    await newMockOracle.pushPrice(
-      priceFeedIdentifier,
-      emergencyShutdownTime,
-      toWei('0.8'),
-    );
+    // set new oracle price
+    await newMockOracle.setPrice(priceFeedIdentifier, toWei('1.1'));
 
     // Second token holder should receive the same payout as the first despite the oracle price being changed.
     initialCollateral = await collateral.balanceOf.call(other);
     await creditLine.settleEmergencyShutdown({ from: other });
-    collateralPaid = (await collateral.balanceOf.call(other)).sub(
+    let collateralPaidSecond = (await collateral.balanceOf.call(other)).sub(
       initialCollateral,
     );
-    assert.equal(collateralPaid, toWei('120'));
+    assert.equal(collateralPaid.toString(), collateralPaidSecond.toString());
   });
 
   it('Oracle price can resolve to 0', async function () {
+    await creditLineControllerInstance.setFeePercentage(
+      [creditLine.address],
+      [toWei('0')],
+      { from: maintainers },
+    );
     await collateral.approve(creditLine.address, toWei('100000'), {
       from: sponsor,
     });
@@ -1175,26 +1178,20 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     // For the price to resolve to 0 the outcome is likely a binary event (1 for true, 0 for false.)
-    await creditLine.create(toWei('300'), toWei('200'), Fee.feePercentage, {
+    await creditLine.create(toWei('300'), toWei('200'), {
       from: sponsor,
     });
     await tokenCurrency.transfer(tokenHolder, toWei('100'), {
       from: sponsor,
     });
 
-    // Emergency shutdown contract to enable settlement.
-    const emergencyShutdownTime = await creditLine.getCurrentTime();
+    // Push a settlement price into the mock oracle, say price is 0. This means that
+    // each token debt is worth 0 and the sponsor should get back their full collateral, even though they dont have all
+    // the tokens. The token holder should get nothing.
+    await mockOnchainOracle.setPrice(priceFeedIdentifier, toWei('0'));
     await synthereumManagerInstance.emergencyShutdown([creditLine.address], {
       from: maintainers,
     });
-    // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 0. This means that
-    // each token debt is worth 0 and the sponsor should get back their full collateral, even though they dont have all
-    // the tokens. The token holder should get nothing.
-    await mockOracle.pushPrice(
-      priceFeedIdentifier,
-      emergencyShutdownTime,
-      toWei('0'),
-    );
 
     // Token holder should receive 0 collateral tokens for their 100 synthetic tokens as the price is 0.
     let initialCollateral = await collateral.balanceOf.call(tokenHolder);
@@ -1202,7 +1199,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     let collateralPaid = (await collateral.balanceOf(tokenHolder)).sub(
       initialCollateral,
     );
-    assert.equal(collateralPaid, toWei('0'));
+    assert.equal(collateralPaid.toString(), toWei('0'));
 
     // Settle emergency from the sponsor should give them back all their collateral, as token debt is worth 0.
     initialCollateral = await collateral.balanceOf.call(sponsor);
@@ -1210,59 +1207,10 @@ contract('Synthereum CreditLine ', function (accounts) {
     collateralPaid = (await collateral.balanceOf.call(sponsor)).sub(
       initialCollateral,
     );
-    assert.equal(collateralPaid, toWei('300'));
+    assert.equal(collateralPaid.toString(), toWei('300'));
   });
 
-  it('Oracle price can resolve less than 0', async function () {
-    await collateral.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-    await tokenCurrency.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-    await tokenCurrency.approve(creditLine.address, toWei('100000'), {
-      from: tokenHolder,
-    });
-
-    // For the price to resolve to 0 the outcome is likely a binary event (1 for true, 0 for false.)
-    await creditLine.create(toWei('300'), toWei('200'), Fee.feePercentage, {
-      from: sponsor,
-    });
-    await tokenCurrency.transfer(tokenHolder, toWei('100'), {
-      from: sponsor,
-    });
-
-    // Emergency shutdown contract to enable settlement.
-    const emergencyShutdownTime = await creditLine.getCurrentTime();
-    await synthereumManagerInstance.emergencyShutdown([creditLine.address], {
-      from: maintainers,
-    });
-    // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at valu eless than 0. This means that
-    // each token debt is worth 0 and the sponsor should get back their full collateral, even though they dont have all
-    // the tokens. The token holder should get nothing.
-    await mockOracle.pushPrice(
-      priceFeedIdentifier,
-      emergencyShutdownTime,
-      toWei('-0.1'),
-    );
-
-    // Token holder should receive 0 collateral tokens for their 100 synthetic tokens as the price is 0.
-    let initialCollateral = await collateral.balanceOf.call(tokenHolder);
-    await creditLine.settleEmergencyShutdown({ from: tokenHolder });
-    let collateralPaid = (await collateral.balanceOf(tokenHolder)).sub(
-      initialCollateral,
-    );
-    assert.equal(collateralPaid, toWei('0'));
-
-    // Settle emergency from the sponsor should give them back all their collateral, as token debt is worth 0.
-    initialCollateral = await collateral.balanceOf.call(sponsor);
-    await creditLine.settleEmergencyShutdown({ from: sponsor });
-    collateralPaid = (await collateral.balanceOf.call(sponsor)).sub(
-      initialCollateral,
-    );
-    assert.equal(collateralPaid, toWei('300'));
-  });
-
+  /*
   it('Undercapitalized contract', async function () {
     await creditLineControllerInstance.setDaoFee(creditLine.address, {
       feePercentage: '0',
@@ -1345,7 +1293,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       feeRecipient: daoFeeRecipient,
     });
   });
-
+  */
   it('Cannot create position smaller than min sponsor size', async function () {
     // Attempt to create position smaller than 5 wei tokens (the min sponsor position size)
     await collateral.approve(creditLine.address, toWei('100000'), {
@@ -1353,7 +1301,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
 
     await truffleAssert.reverts(
-      creditLine.create('40', '4', Fee.feePercentage, { from: sponsor }),
+      creditLine.create('40', '4', { from: sponsor }),
       'Below minimum sponsor position',
     );
   });
@@ -1365,303 +1313,59 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    await creditLine.create('40', '20', Fee.feePercentage, {
+    await creditLine.create(toWei('40'), toWei('20'), {
       from: sponsor,
     });
 
     await truffleAssert.reverts(
-      creditLine.redeem('16', Fee.feePercentage, { from: sponsor }),
+      creditLine.redeem(toWei('16'), { from: sponsor }),
       'Below minimum sponsor position',
     );
   });
 
-  it('Can withdraw excess collateral', async function () {
-    // Attempt to redeem a position smaller s.t. the resulting position is less than 5 wei tokens (the min sponsor
-    // position size)
-    await collateral.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-    await tokenCurrency.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
+  // it('Can withdraw excess collateral', async function () {
+  //   // Attempt to redeem a position smaller s.t. the resulting position is less than 5 wei tokens (the min sponsor
+  //   // position size)
+  //   await collateral.approve(creditLine.address, toWei('100000'), {
+  //     from: sponsor,
+  //   });
+  //   await tokenCurrency.approve(creditLine.address, toWei('100000'), {
+  //     from: sponsor,
+  //   });
 
-    await creditLine.create('40', '20', Fee.feePercentage, {
-      from: sponsor,
-    });
+  //   await creditLine.create('40', '20', Fee.feePercentage, {
+  //     from: sponsor,
+  //   });
 
-    // Transfer extra collateral in.
-    await collateral.transfer(creditLine.address, toWei('10'), {
-      from: sponsor,
-    });
-    let excessCollateral = await creditLine.trimExcess.call(collateral.address);
-    await creditLine.trimExcess(collateral.address);
-    let beneficiaryCollateralBalance = await collateral.balanceOf.call(
-      beneficiary,
-    );
-    assert.equal(excessCollateral.toString(), toWei('10'));
-    assert.equal(beneficiaryCollateralBalance.toString(), toWei('10'));
-    await collateral.transfer(sponsor, toWei('10'), { from: beneficiary });
+  //   // Transfer extra collateral in.
+  //   await collateral.transfer(creditLine.address, toWei('10'), {
+  //     from: sponsor,
+  //   });
+  //   let excessCollateral = await creditLine.trimExcess.call(collateral.address);
+  //   await creditLine.trimExcess(collateral.address);
+  //   let beneficiaryCollateralBalance = await collateral.balanceOf.call(
+  //     beneficiary,
+  //   );
+  //   assert.equal(excessCollateral.toString(), toWei('10'));
+  //   assert.equal(beneficiaryCollateralBalance.toString(), toWei('10'));
+  //   await collateral.transfer(sponsor, toWei('10'), { from: beneficiary });
 
-    // Transfer extra tokens in.
-    await tokenCurrency.transfer(creditLine.address, '10', {
-      from: sponsor,
-    });
-    let excessTokens = await creditLine.trimExcess.call(tokenCurrency.address);
-    await creditLine.trimExcess(tokenCurrency.address);
-    let beneficiaryTokenBalance = await tokenCurrency.balanceOf.call(
-      beneficiary,
-    );
-    assert.equal(excessTokens.toString(), '10');
-    assert.equal(beneficiaryTokenBalance.toString(), '10');
+  //   // Transfer extra tokens in.
+  //   await tokenCurrency.transfer(creditLine.address, '10', {
+  //     from: sponsor,
+  //   });
+  //   let excessTokens = await creditLine.trimExcess.call(tokenCurrency.address);
+  //   await creditLine.trimExcess(tokenCurrency.address);
+  //   let beneficiaryTokenBalance = await tokenCurrency.balanceOf.call(
+  //     beneficiary,
+  //   );
+  //   assert.equal(excessTokens.toString(), '10');
+  //   assert.equal(beneficiaryTokenBalance.toString(), '10');
 
-    // Redeem still succeeds.
-    await tokenCurrency.transfer(sponsor, '10', { from: beneficiary });
-    await creditLine.redeem('20', Fee.feePercentage, { from: sponsor });
-  });
-
-  it('Non-standard ERC20 delimitation', async function () {
-    // To test non-standard ERC20 token delimitation a new ERC20 token is created which has 6 decimal points of precision.
-    // A new priceless position manager is then created and and set to use this token as collateral. To generate values
-    // which represent the appropriate scaling for USDC, .muln(1e6) is used over toWei as the latter scaled by 1e18.
-
-    // Create a test net token with non-standard delimitation like USDC (6 decimals) and mint tokens.
-    const USDCToken = await TestnetERC20.new('USDC', 'USDC', 6);
-    // await addressWhitelistInstance.addToWhitelist(USDCToken.address);
-    await USDCToken.allocateTo(sponsor, toWei('100'));
-
-    const nonStandardToken = await SyntheticToken.new(
-      syntheticName,
-      syntheticSymbol,
-      18,
-    );
-
-    let newcreditLineData = creditLineParams;
-    newcreditLineData.collateralAddress = USDCToken.address;
-    newcreditLineData.tokenAddress = nonStandardToken.address;
-
-    let customcreditLine = await SelfMintingPerpetualcreditLineMultiParty.new(
-      newcreditLineData,
-    );
-    await creditLineControllerInstance.setCapMintAmount(
-      customcreditLine.address,
-      capMintAmount,
-    );
-    await creditLineControllerInstance.setCapDepositRatio(
-      customcreditLine.address,
-      capDepositRatio,
-    );
-    await creditLineControllerInstance.setDaoFee(customcreditLine.address, {
-      feePercentage: Fee.feePercentage.toString(),
-      feeRecipient: daoFeeRecipient,
-    });
-    tokenCurrency = await SyntheticToken.at(
-      await customcreditLine.tokenCurrency.call(),
-    );
-    await nonStandardToken.addMinter(customcreditLine.address);
-    await nonStandardToken.addBurner(customcreditLine.address);
-
-    // Token currency and collateral have same # of decimals.
-    assert.equal((await tokenCurrency.decimals()).toString(), 18);
-
-    // Create the initial custom creditLine position. 100 synthetics backed by 150 collat
-    const createTokens = toWei('100').toString();
-    // The collateral is delimited by the same number of decimals. 150 * 1e6
-    const createCollateral = toBN('150').muln(1000000).toString();
-    let expectedSponsorTokens = toBN(createTokens);
-    let expectedContractCollateral = toBN(createCollateral);
-
-    await USDCToken.approve(customcreditLine.address, createCollateral, {
-      from: sponsor,
-    });
-    await customcreditLine.create(
-      createCollateral,
-      createTokens,
-      Fee.feePercentage,
-      { from: sponsor },
-    );
-
-    // The balances minted should equal that expected from the create function.
-    assert.equal(
-      (await USDCToken.balanceOf(customcreditLine.address)).toString(),
-      expectedContractCollateral.toString(),
-    );
-    assert.equal(
-      (await tokenCurrency.balanceOf(sponsor)).toString(),
-      expectedSponsorTokens.toString(),
-    );
-
-    // Deposit an additional 50 USDC to the position. Sponsor now has 200 USDC as collateral.
-    const depositCollateral = toBN('50').muln(1000000).toString();
-    expectedContractCollateral = expectedContractCollateral.add(
-      toBN(depositCollateral),
-    );
-    await USDCToken.approve(customcreditLine.address, depositCollateral, {
-      from: sponsor,
-    });
-    await customcreditLine.deposit(depositCollateral, { from: sponsor });
-
-    // The balances should reflect the additional collateral added.
-    assert.equal(
-      (await USDCToken.balanceOf.call(customcreditLine.address)).toString(),
-      expectedContractCollateral.toString(),
-    );
-    assert.equal(
-      (await tokenCurrency.balanceOf.call(sponsor)).toString(),
-      expectedSponsorTokens.toString(),
-    );
-    assert.equal(
-      (await customcreditLine.getCollateral.call(sponsor)).toString(),
-      expectedContractCollateral.toString(),
-    );
-    assert.equal(
-      (
-        await customcreditLine.positions.call(sponsor)
-      ).tokensOutstanding.toString(),
-      expectedSponsorTokens.toString(),
-    );
-    assert.equal(
-      (await customcreditLine.totalPositionCollateral()).toString(),
-      expectedContractCollateral.toString(),
-    );
-    assert.equal(
-      (
-        await customcreditLine.globalPositionData.call()
-      ).totalTokensOutstanding.rawValue.toString(),
-      expectedSponsorTokens.toString(),
-    );
-
-    // By matching collateral and synthetic precision, we can assume that oracle price requests will always resolve to 18 decimals.
-    // The two cases that need to be tested are responding to dispute requests and settlement.
-    // Dispute and liquidation is tested in `Liquidatable.js`. Here we test settlement.
-
-    // Transfer half the tokens from the sponsor to a tokenHolder. IRL this happens through the sponsor selling tokens.
-    // Sponsor now has 50 synthetics and 200 collateral. Note that synthetic tokens are still represented with 1e18 base.
-    const tokenHolderTokens = toWei('50').toString();
-    await tokenCurrency.transfer(tokenHolder, tokenHolderTokens, {
-      from: sponsor,
-    });
-
-    // To settle positions the DVM needs to be to be queried to get the price at the settlement time.
-    const emergencyShutdownTime = await creditLine.getCurrentTime.call();
-    await synthereumManagerInstance.emergencyShutdown(
-      [customcreditLine.address],
-      { from: maintainers },
-    );
-    // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 1.2 Stock/USD for the price
-    // feed. With 100 units of outstanding tokens this results in a token redemption value of: TRV = 100 * 1.2 = 120 USD.
-    const redemptionPrice = toBN(toWei('1.2')); // 1.2*1e18
-    await mockOracle.pushPrice(
-      priceFeedIdentifier,
-      emergencyShutdownTime,
-      redemptionPrice.toString(),
-    );
-
-    // From the token holders, they are entitled to the value of their tokens, notated in the underlying.
-    // They have 50 tokens settled at a price of 1.2 should yield 60 units of underling (or 60 USD as underlying is WETH).
-    const tokenHolderInitialCollateral = await USDCToken.balanceOf.call(
-      tokenHolder,
-    );
-    const tokenHolderInitialSynthetic = await tokenCurrency.balanceOf.call(
-      tokenHolder,
-    );
-    assert.equal(tokenHolderInitialSynthetic, tokenHolderTokens);
-
-    // Approve the tokens to be moved by the contract and execute the settlement.
-    await tokenCurrency.approve(
-      customcreditLine.address,
-      tokenHolderInitialSynthetic,
-      {
-        from: tokenHolder,
-      },
-    );
-
-    let settleEmergencyShutdownResult = await customcreditLine.settleEmergencyShutdown(
-      {
-        from: tokenHolder,
-      },
-    );
-    const tokenHolderFinalCollateral = await USDCToken.balanceOf(tokenHolder);
-    const tokenHolderFinalSynthetic = await tokenCurrency.balanceOf(
-      tokenHolder,
-    );
-
-    // The token holder should gain the value of their synthetic tokens in underlying.
-    // The value in underlying is the number of tokens they held in the beginning * settlement price as TRV
-    // When redeeming 50 tokens at a price of 1.2 we expect to receive 60 collateral tokens (50 * 1.2)
-    // This should be denominated in units of USDC and as such again scaled by 1e6
-    const expectedTokenHolderFinalCollateral = toBN('60').muln(1e6);
-    assert.equal(
-      tokenHolderFinalCollateral.sub(tokenHolderInitialCollateral).toString(),
-      expectedTokenHolderFinalCollateral.toString(),
-    );
-
-    // The token holder should have no synthetic positions left after settlement.
-    assert.equal(tokenHolderFinalSynthetic, 0);
-
-    // Check the event returned the correct values
-    truffleAssert.eventEmitted(
-      settleEmergencyShutdownResult,
-      'SettleEmergencyShutdown',
-      ev => {
-        return (
-          ev.caller == tokenHolder &&
-          ev.collateralReturned ==
-            tokenHolderFinalCollateral
-              .sub(tokenHolderInitialCollateral)
-              .toString() &&
-          ev.tokensBurned == tokenHolderInitialSynthetic.toString()
-        );
-      },
-    );
-
-    // For the sponsor, they are entitled to the underlying value of their remaining synthetic tokens + the excess collateral
-    // in their position at time of settlement. The sponsor had 200 units of collateral in their position and the final TRV
-    // of their synthetics they drew is 120 (100*1.2). Their redeemed amount for this excess collateral is the difference between the two.
-    // The sponsor also has 50 synthetic tokens that they did not sell valued at 1.2 per token.
-    // This makes their expected redemption = 200 (collat) - 100 * 1.2 (debt) + 50 * 1.2 (synth returned) = 140 in e16 USDC
-    const sponsorInitialCollateral = await USDCToken.balanceOf(sponsor);
-    const sponsorInitialSynthetic = await tokenCurrency.balanceOf(sponsor);
-
-    // Approve tokens to be moved by the contract and execute the settlement.
-    await tokenCurrency.approve(
-      customcreditLine.address,
-      sponsorInitialSynthetic,
-      {
-        from: sponsor,
-      },
-    );
-    await customcreditLine.settleEmergencyShutdown({ from: sponsor });
-    const sponsorFinalCollateral = await USDCToken.balanceOf(sponsor);
-    const sponsorFinalSynthetic = await tokenCurrency.balanceOf(sponsor);
-
-    // The token Sponsor should gain the value of their synthetics in underlying
-    // + their excess collateral from the over collateralization in their position
-    // Excess collateral = 200 - 100 * 1.2 = 80
-    const expectedSponsorCollateralUnderlying = toBN('80').muln(1e6);
-    // Value of remaining synthetic tokens = 50 * 1.2 = 60
-    const expectedSponsorCollateralSynthetic = toBN('60').muln(1e6);
-    const expectedTotalSponsorCollateralReturned = expectedSponsorCollateralUnderlying.add(
-      expectedSponsorCollateralSynthetic,
-    );
-    assert.equal(
-      sponsorFinalCollateral.sub(sponsorInitialCollateral).toString(),
-      expectedTotalSponsorCollateralReturned.toString(),
-    );
-
-    // The token Sponsor should have no synthetic positions left after settlement.
-    assert.equal(sponsorFinalSynthetic, 0);
-
-    // Last check is that after redemption the position in the positions mapping has been removed.
-    const sponsorsPosition = await customcreditLine.positions.call(sponsor);
-    assert.equal(sponsorsPosition.rawCollateral.rawValue, 0);
-    assert.equal(sponsorsPosition.tokensOutstanding.rawValue, 0);
-    assert.equal(sponsorsPosition.withdrawalRequestPassTimestamp.toString(), 0);
-    assert.equal(sponsorsPosition.withdrawalRequestAmount.rawValue, 0);
-  });
-
-  it('Existing void remargin function', async function () {
-    await creditLine.remargin();
-  });
+  //   // Redeem still succeeds.
+  //   await tokenCurrency.transfer(sponsor, '10', { from: beneficiary });
+  //   await creditLine.redeem('20', Fee.feePercentage, { from: sponsor });
+  // });
 
   it('Can not delete a sponsor position externally', async () => {
     await collateral.approve(creditLine.address, initialPositionCollateral, {
@@ -1670,44 +1374,25 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.create(
       initialPositionCollateral.toString(),
       initialPositionTokens.toString(),
-      Fee.feePercentage,
       { from: sponsor },
     );
     await truffleAssert.reverts(
       creditLine.deleteSponsorPosition(sponsor, { from: other }),
-      'Caller is not this contract',
-    );
-  });
-
-  it('Revert if overcome deposit limit', async () => {
-    await collateral.approve(creditLine.address, toWei('100'), {
-      from: sponsor,
-    });
-    await truffleAssert.reverts(
-      creditLine.create(toWei('100'), toWei('10'), Fee.feePercentage, {
-        from: sponsor,
-      }),
-      'Position overcomes deposit limit',
-    );
-    await creditLine.create(toWei('10'), toWei('10'), Fee.feePercentage, {
-      from: sponsor,
-    });
-    await truffleAssert.reverts(
-      creditLine.repay(toWei('9'), Fee.feePercentage, { from: sponsor }),
-      'Position overcomes deposit limit',
+      'Only the contract can invoke this function',
     );
   });
 
   it('Revert if overcome mint limit', async () => {
     await creditLineControllerInstance.setCapMintAmount(
-      creditLine.address,
-      toWei('90'),
+      [creditLine.address],
+      [toWei('50')],
+      { from: maintainers },
     );
     await collateral.approve(creditLine.address, toWei('100'), {
       from: sponsor,
     });
     await truffleAssert.reverts(
-      creditLine.create(toWei('100'), toWei('100'), Fee.feePercentage, {
+      creditLine.create(toWei('100'), toWei('80'), {
         from: sponsor,
       }),
       'Total amount minted overcomes mint limit',
