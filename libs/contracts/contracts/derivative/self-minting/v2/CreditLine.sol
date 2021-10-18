@@ -441,22 +441,20 @@ contract SynthereumCreditLine is
       .rawValue;
   }
 
-  // TODO
   // /**
   //  * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
   //  * @dev This will drain down to the amount of tracked collateral and drain the full balance of any other token.
   //  * @param token address of the ERC20 token whose excess balance should be drained.
   //  */
-  // function trimExcess(IERC20 token)
-  //   external
-  //   nonReentrant
-  //   returns (uint256 amount)
-  // {
-  //   FixedPoint.Unsigned memory pfcAmount = _pfc();
-  //   amount = positionManagerData
-  //     .trimExcess(token, pfcAmount, feePayerData)
-  //     .rawValue;
-  // }
+  function trimExcess(IERC20 token)
+    external
+    nonReentrant
+    returns (uint256 amount)
+  {
+    amount = positionManagerData
+      .trimExcess(globalPositionData, feeStatus, token)
+      .rawValue;
+  }
 
   function deleteSponsorPosition(address sponsor) external override {
     require(
