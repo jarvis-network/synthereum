@@ -14,11 +14,6 @@ contract AerariumSanctius is Ownable {
   using SafeERC20 for Aureus;
   using SafeERC20 for IERC20;
 
-  struct TokenHoldings {
-    IERC20 token; // The address of the ERC20 token that is held in the contract
-    uint256 amount; // The amount of ERC20 token that is held in the contract
-  }
-
   // The reward token that will be used to redeem rewards at the end of the farming program
   Aureus public immutable rwdToken;
   // The endBlock after which rewards can be redeemable
@@ -26,7 +21,10 @@ contract AerariumSanctius is Ownable {
   // A timeout for withdraw after which the owner can withdraw any excess tokens left in the contract
   uint256 public immutable withdrawTimeout;
   // An array of structs holding information on each token that is deposited in the contract and will be distributed as reward at the end of the program
-  TokenHoldings[] public tokensHeld;
+  IERC20[] public tokensHeld;
+  // A mapping to track token amounts stored in the contract for each token in tokensHeld array
+  mapping(IERC20 => uint256) public tokenAmounts;
+
   // A withdraw event emited on withdraw of rewards after the end of the program
   event Withdraw(address user, address token, uint256 amount);
 
@@ -57,12 +55,11 @@ contract AerariumSanctius is Ownable {
       'The end time of the program is reached!'
     );
     _token.safeTransferFrom(msg.sender, address(this), _amount);
-    (bool check, uint256 index) = checkTokenAvailability(_token);
-    if (check == true) {
-      uint256 amount = tokensHeld[index].amount.add(_amount);
-      tokensHeld[index].amount = amount;
+    if (tokenAmounts[_token] == 0) {
+      tokensHeld.push(_token);
+      tokenAmounts[_token] = _amount;
     } else {
-      tokensHeld.push(TokenHoldings({token: _token, amount: _amount}));
+      tokenAmounts[_token] = tokenAmounts[_token].add(_amount);
     }
   }
 
@@ -89,8 +86,10 @@ contract AerariumSanctius is Ownable {
       'The current withdraw period has not finished'
     );
     for (uint256 i = 0; i < tokensHeld.length; i++) {
-      uint256 amount = tokensHeld[i].amount;
-      tokensHeld[i].token.safeTransfer(_receiver, amount);
+      tokensHeld[i].safeTransfer(
+        _receiver,
+        tokensHeld[i].balanceOf(address(this))
+      );
     }
   }
 
@@ -106,28 +105,10 @@ contract AerariumSanctius is Ownable {
    */
   function _withdraw(uint256 _percentage) internal {
     for (uint256 i = 0; i < tokensHeld.length; i++) {
-      uint256 currentAmount = tokensHeld[i].amount;
+      uint256 currentAmount = tokenAmounts[tokensHeld[i]];
       uint256 _amount = currentAmount.mul(_percentage).div(1e18);
-      tokensHeld[i].token.safeTransfer(msg.sender, _amount);
-      emit Withdraw(msg.sender, address(tokensHeld[i].token), _amount);
-    }
-  }
-
-  /** @dev - An internal view function to check if a token that the owner wants to deposit already exists in a struct
-   * The function is called within the addTokens function automatically on each deposit.
-   * @param _token - The ERC20 token address which the owner wants to deposit to this contract
-   * return - True if token exists in the array and the index of the token in the array
-   */
-  function checkTokenAvailability(IERC20 _token)
-    internal
-    view
-    returns (bool check, uint256 index)
-  {
-    for (uint256 i = 0; i < tokensHeld.length; i++) {
-      if (tokensHeld[i].token == _token) {
-        index = i;
-        check = true;
-      }
+      tokensHeld[i].safeTransfer(msg.sender, _amount);
+      emit Withdraw(msg.sender, address(tokensHeld[i]), _amount);
     }
   }
 }
