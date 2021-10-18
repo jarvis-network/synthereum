@@ -458,16 +458,15 @@ library SynthereumCreditLineLib {
 
     // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
     // the caller will get as much collateral as the contract can pay out.
-    FixedPoint.Unsigned memory payout =
-      FixedPoint.min(
-        globalPositionData.rawTotalPositionCollateral,
-        totalRedeemableCollateral
-      );
+    amountWithdrawn = FixedPoint.min(
+      globalPositionData.rawTotalPositionCollateral,
+      totalRedeemableCollateral
+    );
 
     // Decrement total contract collateral and outstanding debt.
     globalPositionData.rawTotalPositionCollateral = globalPositionData
       .rawTotalPositionCollateral
-      .sub(payout);
+      .sub(amountWithdrawn);
     globalPositionData.totalTokensOutstanding = globalPositionData
       .totalTokensOutstanding
       .sub(tokensToRedeem);
@@ -481,7 +480,7 @@ library SynthereumCreditLineLib {
     // Transfer tokens & collateral and burn the redeemed tokens.
     positionManagerData.collateralToken.safeTransfer(
       msg.sender,
-      payout.rawValue
+      amountWithdrawn.rawValue
     );
     positionManagerData.tokenCurrency.safeTransferFrom(
       msg.sender,

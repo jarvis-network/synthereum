@@ -52,6 +52,7 @@ contract SynthereumCreditLine is
 
   // Maps sponsor addresses to their positions. Each sponsor can have only one position.
   mapping(address => PositionData) public positions;
+  // uint256 tokenSponsorsCount; // each new token sponsor will be identified with an incremental uint
 
   // Liquidations are unique by ID per sponsor
   mapping(address => LiquidationData[]) public liquidations;
@@ -179,7 +180,11 @@ contract SynthereumCreditLine is
   // External functions
   //----------------------------------------
 
-  function deposit(uint256 collateralAmount) external override {
+  function deposit(uint256 collateralAmount)
+    external
+    override
+    notEmergencyShutdown
+  {
     PositionData storage positionData = _getPositionData(msg.sender);
 
     positionData.depositTo(
@@ -193,7 +198,7 @@ contract SynthereumCreditLine is
   function withdraw(uint256 collateralAmount)
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 amountWithdrawn)
   {
@@ -211,7 +216,7 @@ contract SynthereumCreditLine is
   function depositTo(address sponsor, uint256 collateralAmount)
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant()
   {
     PositionData storage positionData = _getPositionData(sponsor);
@@ -227,7 +232,7 @@ contract SynthereumCreditLine is
   function create(uint256 collateralAmount, uint256 numTokens)
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 feeAmount)
   {
@@ -246,7 +251,7 @@ contract SynthereumCreditLine is
   function redeem(uint256 numTokens)
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 amountWithdrawn, uint256 feeAmount)
   {
@@ -271,7 +276,7 @@ contract SynthereumCreditLine is
   function repay(uint256 numTokens)
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant
     returns (uint256 daoFeeAmount)
   {
@@ -293,7 +298,7 @@ contract SynthereumCreditLine is
   )
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant
     returns (
       uint256 tokensLiquidated,
@@ -352,7 +357,7 @@ contract SynthereumCreditLine is
   function emergencyShutdown()
     external
     override
-    notEmergencyShutdown()
+    notEmergencyShutdown
     nonReentrant
   {
     require(
