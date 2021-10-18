@@ -315,7 +315,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Lifecycle', async function () {
+  it('Lifecycle', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
@@ -550,7 +550,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     // await expectNoExcessCollateralToTrim();
   });
 
-  it.only('Cannot withdraw collateral if position gets undercollateralised', async function () {
+  it('Cannot withdraw collateral if position gets undercollateralised', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
@@ -573,7 +573,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Non sponsor can use depositTo', async function () {
+  it('Non sponsor can use depositTo', async function () {
     await collateral.approve(creditLine.address, toWei('1000'), {
       from: other,
     });
@@ -607,7 +607,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only("Non sponsor can't deposit, redeem, repay, or withdraw", async function () {
+  it("Non sponsor can't deposit, redeem, repay, or withdraw", async function () {
     await tokenCurrency.approve(creditLine.address, toWei('100000'), {
       from: sponsor,
     });
@@ -647,7 +647,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only("Can't redeem more than position size", async function () {
+  it("Can't redeem more than position size", async function () {
     await tokenCurrency.approve(creditLine.address, toWei('1000'), {
       from: sponsor,
     });
@@ -683,7 +683,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Existing sponsor can use depositTo on other account', async function () {
+  it('Existing sponsor can use depositTo on other account', async function () {
     await creditLineControllerInstance.setFeePercentage(
       [creditLine.address],
       [toWei('0')],
@@ -717,7 +717,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Sponsor use depositTo on own account', async function () {
+  it('Sponsor use depositTo on own account', async function () {
     await creditLineControllerInstance.setFeePercentage(
       [creditLine.address],
       [toWei('0')],
@@ -746,7 +746,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Sponsor can use repay to decrease their debt', async function () {
+  it('Sponsor can use repay to decrease their debt', async function () {
     await collateral.approve(creditLine.address, toWei('1000'), {
       from: sponsor,
     });
@@ -851,7 +851,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it.only('Emergency shutdown: lifecycle', async function () {
+  it('Emergency shutdown: lifecycle', async function () {
+    await creditLineControllerInstance.setFeePercentage(
+      [creditLine.address],
+      [toWei('0')],
+      { from: maintainers },
+    );
     // Create one position with 100 synthetic tokens to mint with 150 tokens of collateral. For this test say the
     // collateral is WETH with a value of 1USD and the synthetic is some fictional stock or commodity.
     await collateral.approve(creditLine.address, toWei('100000'), {
@@ -885,13 +890,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     const emergencyShutdownPrice = await mockOnchainOracle.getLatestPrice(
       priceFeedIdentifier,
     );
-    // console.log(await creditLine.positionManagerData.call());
     const emergencyShutdownTx = await synthereumManagerInstance.emergencyShutdown(
       [creditLine.address],
       { from: maintainers },
     );
-    // console.log(emergencyShutdownTx);
-    // // check event
+
+    // // // check event
     // let emergencyShutdownTimestamp;
     // truffleAssert.eventEmitted(
     //   emergencyShutdownTx,
@@ -909,12 +913,6 @@ contract('Synthereum CreditLine ', function (accounts) {
     //   (await creditLine.positionManagerData.call()).emergencyShutdownTimestamp,
     //   emergencyShutdownTimestamp,
     // );
-    console.log(await creditLine.positionManagerData.call());
-    console.log(
-      (
-        await creditLine.positionManagerData.call()
-      ).emergencyShutdownPrice.toString(),
-    );
     assert.equal(
       (await creditLine.emergencyShutdownPrice.call()).toString(),
       emergencyShutdownPrice.toString(),
@@ -925,6 +923,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       synthereumManagerInstance.emergencyShutdown([creditLine.address], {
         from: maintainers,
       }),
+      'Contract emergency shutdown',
     );
 
     // All contract functions should also blocked as emergency shutdown.
@@ -971,18 +970,28 @@ contract('Synthereum CreditLine ', function (accounts) {
       },
     );
 
-    await creditLine.settleEmergencyShutdown({ from: tokenHolder });
+    const settleTx = await creditLine.settleEmergencyShutdown({
+      from: tokenHolder,
+    });
 
     const tokenHolderFinalCollateral = await collateral.balanceOf(tokenHolder);
     const tokenHolderFinalSynthetic = await tokenCurrency.balanceOf(
       tokenHolder,
     );
-    const settledCollateral = tokenHolderInitialSynthetic.mul(
-      toBN(emergencyShutdownPrice),
-    );
+    const settledCollateral = tokenHolderInitialSynthetic
+      .mul(toBN(emergencyShutdownPrice))
+      .div(toBN(Math.pow(10, 18)));
+
+    truffleAssert.eventEmitted(settleTx, 'SettleEmergencyShutdown', ev => {
+      return (
+        ev.caller == tokenHolder &&
+        ev.tokensBurned == tokenHolderTokens.toString() &&
+        ev.collateralReturned == settledCollateral.toString()
+      );
+    });
     assert.equal(
-      tokenHolderFinalCollateral.sub(tokenHolderInitialCollateral),
-      settledCollateral,
+      tokenHolderFinalCollateral.sub(tokenHolderInitialCollateral).toString(),
+      settledCollateral.toString(),
     );
 
     // The token holder should have no synthetic positions left after settlement.
@@ -1037,339 +1046,25 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // The token Sponsor should gain the value of their synthetics in underlying
     // + their excess collateral from the over collateralization in their position
-    // Excess collateral = 150 - 100 * 1.1 = 40
-    const expectedSponsorCollateralUnderlying = toBN(toWei('40'));
-    // Value of remaining synthetic tokens = 50 * 1.1 = 55
-    const expectedSponsorCollateralSynthetic = toBN(toWei('55'));
-    const expectedTotalSponsorCollateralReturned = expectedSponsorCollateralUnderlying.add(
-      expectedSponsorCollateralSynthetic,
-    );
+    let sponsorDebt = toBN(numTokens)
+      .mul(toBN(emergencyShutdownPrice))
+      .div(toBN(Math.pow(10, 18)));
+    let tokensLiquidationRepayAmount = sponsorInitialSynthetic
+      .mul(toBN(emergencyShutdownPrice))
+      .div(toBN(Math.pow(10, 18)));
+    let expectedTotalSponsorCollateralReturned = toBN(amountCollateral)
+      .sub(sponsorDebt)
+      .add(tokensLiquidationRepayAmount);
+
     assert.equal(
-      sponsorFinalCollateral.sub(sponsorInitialCollateral).toString(),
-      expectedTotalSponsorCollateralReturned,
+      sponsorFinalCollateral.toString(),
+      sponsorInitialCollateral
+        .add(expectedTotalSponsorCollateralReturned)
+        .toString(),
     );
 
     // The token Sponsor should have no synthetic positions left after settlement.
     assert.equal(sponsorFinalSynthetic, 0);
-  });
-
-  it('Financial admin can call emergency shutdown', async function () {
-    // Create one position with 100 synthetic tokens to mint with 150 tokens of collateral. For this test say the
-    // collateral is WETH with a value of 1USD and the synthetic is some fictional stock or commodity.
-    await collateral.approve(creditLine.address, toWei('100000'), {
-      from: sponsor,
-    });
-    const numTokens = toWei('100');
-    const amountCollateral = toWei('150');
-    await creditLine.create(amountCollateral, numTokens, {
-      from: sponsor,
-    });
-
-    // Transfer half the tokens from the sponsor to a tokenHolder. IRL this happens through the sponsor selling tokens.
-    const tokenHolderTokens = toWei('50');
-    await tokenCurrency.transfer(tokenHolder, tokenHolderTokens, {
-      from: sponsor,
-    });
-
-    // Some time passes and the UMA token holders decide that Emergency shutdown needs to occur.
-    const shutdownTimestamp = Number(await creditLine.getCurrentTime()) + 1000;
-    await creditLine.setCurrentTime(shutdownTimestamp);
-
-    // Pool can initiate emergency shutdown.
-    await financialContractsAdmin.callEmergencyShutdown(creditLine.address);
-    assert.equal(
-      (await creditLine.creditLineData.call()).emergencyShutdownTimestamp,
-      shutdownTimestamp,
-    );
-    assert.equal(
-      (await creditLine.emergencyShutdownPrice.call()).toString(),
-      0,
-    );
-  });
-
-  describe('Precision loss as a result of regular fees is handled as expected', () => {
-    beforeEach(async () => {
-      // Create a new position with:
-      // - 30 collateral
-      // - 20 synthetic tokens (10 held by token holder, 10 by sponsor)
-      await collateral.approve(creditLine.address, '100000', {
-        from: sponsor,
-      });
-      const numTokens = '20';
-      const amountCollateral = '30';
-      await creditLine.create(amountCollateral, numTokens, Fee.feePercentage, {
-        from: sponsor,
-      });
-      await tokenCurrency.approve(creditLine.address, numTokens, {
-        from: sponsor,
-      });
-
-      // Setting the regular fee to 4 % per second will result in a miscalculated cumulativeFeeMultiplier after 1 second
-      // because of the intermediate calculation in `payRegularFees()` for calculating the `feeAdjustment`: ( fees paid ) / (total collateral)
-      // = 0.033... repeating, which cannot be represented precisely by a fixed point.
-      // --> 0.04 * 30 wei = 1.2 wei, which gets truncated to 1 wei, so 1 wei of fees are paid
-      const regularFee = toWei('0.04');
-      await store.setFixedOracleFeePerSecondPerPfc({ rawValue: regularFee });
-
-      // Advance the contract one second and make the contract pay its regular fees
-      let startTime = await creditLine.getCurrentTime();
-      await creditLine.setCurrentTime(startTime.addn(1));
-      await creditLine.payRegularFees();
-
-      // Set the store fees back to 0 to prevent fee multiplier from changing for remainder of the test.
-      await store.setFixedOracleFeePerSecondPerPfc({ rawValue: '0' });
-    });
-    it('Fee multiplier is set properly with precision loss, and fees are paid as expected', async () => {
-      // Absent any rounding errors, `getCollateral` should return (initial-collateral - final-fees) = 30 wei - 1 wei = 29 wei.
-      // But, because of the use of mul and div in payRegularFees(), getCollateral() will return slightly less
-      // collateral than expected. When calculating the new `feeAdjustment`, we need to calculate the %: (fees paid / pfc), which is
-      // 1/30. However, 1/30 = 0.03333... repeating, which cannot be represented in FixedPoint. Normally div() would floor
-      // this value to 0.033....33, but divCeil sets this to 0.033...34. A higher `feeAdjustment` causes a lower `adjustment` and ultimately
-      // lower `totalPositionCollateral` and `positionAdjustment` values.
-      let collateralAmount = await creditLine.getCollateral(sponsor);
-      assert.isTrue(toBN(collateralAmount.rawValue).lt(toBN('29')));
-      assert.equal(
-        (
-          await creditLine.feePayerData.call()
-        ).cumulativeFeeMultiplier.toString(),
-        toWei('0.966666666666666666').toString(),
-      );
-
-      // The actual amount of fees paid to the store is as expected = 1 wei.
-      // At this point, the store should have +1 wei, the contract should have 29 wei but the position will show 28 wei
-      // because `(30 * 0.966666666666666666 = 28.999...98)`. `30` is the rawCollateral and if the fee multiplier were correct,
-      // then `totalPositionCollateral` would be `(30 * 0.966666666666666666...) = 29`.
-      assert.equal(
-        (await collateral.balanceOf(creditLine.address)).toString(),
-        '29',
-      );
-      assert.equal(
-        (await creditLine.totalPositionCollateral.call()).toString(),
-        '28',
-      );
-      assert.equal(
-        (
-          await creditLine.globalPositionData.call()
-        ).rawTotalPositionCollateral.rawValue.toString(),
-        '30',
-      );
-
-      // Drain excess collateral left because of precesion loss.
-      await expectAndDrainExcessCollateral();
-    });
-    it('settleEmergencyShutdown() returns the same amount of collateral that totalPositionCollateral is decreased by', async () => {
-      // Emergency shutdown the contract
-      const emergencyShutdownTime = await creditLine.getCurrentTime();
-      await synthereumManagerInstance.emergencyShutdown([creditLine.address], {
-        from: maintainers,
-      });
-
-      // Push a settlement price into the mock oracle to simulate a DVM vote. Say settlement occurs at 1.2 Stock/USD for the price
-      // feed. With 20 units of outstanding tokens this results in a token redemption value of: TRV = 20 * 1.2 = 24 USD.
-      const redemptionPrice = 1.2;
-      const redemptionPriceWei = toWei(redemptionPrice.toString());
-      await mockOracle.pushPrice(
-        priceFeedIdentifier,
-        emergencyShutdownTime.toNumber(),
-        redemptionPriceWei,
-      );
-
-      // Transfer half the tokens from the sponsor to a tokenHolder. IRL this happens through the sponsor selling tokens.
-      const tokenHolderTokens = '10';
-      await tokenCurrency.transfer(tokenHolder, tokenHolderTokens, {
-        from: sponsor,
-      });
-      await tokenCurrency.approve(creditLine.address, tokenHolderTokens, {
-        from: tokenHolder,
-      });
-
-      // The token holder is entitled to the value of their tokens, notated in the underlying.
-      // They have 10 tokens settled at a price of 1.2 should yield 12 units of collateral.
-      // So, `rawCollateral` is decreased by (`12 / 0.966666666666666666 ~= 12.4`) which gets truncated to 12.
-      // Before `settleEmergencyShutdown` is called, `totalPositionCollateral = rawCollateral * cumulativeFeeMultiplier = 30 * 0.966666666666666666 = 28`.
-      // After `settleEmergencyShutdown`, `rawCollateral -= 12`, so the new `totalPositionCollateral = `(30-12) * 0.966666666666666666 = 17.4` which is truncated to 17.
-      // So, due to precision loss, `totalPositionCollateral` is only decreased by 11, but it should be 12 without errors.
-      // From the user's POV, they will see their balance decrease by 11, so we should send them 11 collateral not 12.
-
-      const tokenHolderInitialCollateral = await collateral.balanceOf.call(
-        tokenHolder,
-      );
-      await creditLine.settleEmergencyShutdown({ from: tokenHolder });
-      const tokenHolderFinalCollateral = await collateral.balanceOf.call(
-        tokenHolder,
-      );
-      const tokenHolderFinalSynthetic = await tokenCurrency.balanceOf.call(
-        tokenHolder,
-      );
-
-      // The token holder should gain the value of their synthetic tokens in underlying.
-      const expectedTokenHolderFinalCollateral = '11';
-      assert.equal(
-        tokenHolderFinalCollateral.sub(tokenHolderInitialCollateral),
-        expectedTokenHolderFinalCollateral,
-      );
-      assert.equal(
-        (await collateral.balanceOf.call(creditLine.address)).toString(),
-        '18',
-      );
-      assert.equal(
-        (await creditLine.totalPositionCollateral.call()).toString(),
-        '17',
-      );
-      assert.equal(
-        (
-          await creditLine.globalPositionData.call()
-        ).rawTotalPositionCollateral.rawValue.toString(),
-        '18',
-      );
-
-      // The token holder should have no synthetic positions left after settlement.
-      assert.equal(tokenHolderFinalSynthetic, 0);
-
-      // The sponsor is entitled to the underlying value of their remaining synthetic tokens + the excess collateral
-      // in their position at time of settlement - final fees. But we'll see that the "excess" collateral displays error
-      // due to precision loss.
-      const sponsorInitialCollateral = await collateral.balanceOf.call(sponsor);
-      await creditLine.settleEmergencyShutdown({ from: sponsor });
-      const sponsorFinalCollateral = await collateral.balanceOf.call(sponsor);
-      const sponsorFinalSynthetic = await tokenCurrency.balanceOf.call(sponsor);
-
-      // The token Sponsor should gain the value of their synthetics in underlying
-      // + their excess collateral from the over collateralization in their position.
-      // Excess collateral should be = rawCollateral - fees - tokensOutstanding * price = 30 - 1 - (20 * 1.2) = 5
-      // However, recall that `totalPositionCollateral = (30 * 0.966666666666666666 = 28.999...98)` which gets truncated to 28.
-      // So, the excess collateral becomes 28 - (20 * 1.2) = 4
-      // The value of the remaining synthetic tokens = 10 * 1.2 = 12.
-      // So, we will attempt to withdraw (12 + 4) tokens from the contract.
-      // We need to decrease `rawCollateral` by `16 / 0.966666666666666666 ~= 16.5`
-      // which gets truncated to 16.
-      // Recall previously that rawCollateral was last set to 18, so `totalPositionCollateral = (18-16) * 0.966666666666666666 ~= 1.97`
-      // which gets truncated to 1.
-      // The previous totalPositionCollateral was 17, so we will withdraw (17-1) = 16 tokens instead of the 17 as the user expected.
-      assert.equal(
-        (await creditLine.totalPositionCollateral()).toString(),
-        '1',
-      );
-      assert.equal(
-        (
-          await creditLine.globalPositionData.call()
-        ).rawTotalPositionCollateral.rawValue.toString(),
-        '2',
-      );
-      const expectedSponsorCollateralSynthetic = toBN('11');
-      const expectedSponsorCollateralUnderlying = toBN('5');
-      const expectedTotalSponsorCollateralReturned = expectedSponsorCollateralUnderlying.add(
-        expectedSponsorCollateralSynthetic,
-      );
-      assert.equal(
-        sponsorFinalCollateral.sub(sponsorInitialCollateral).toString(),
-        expectedTotalSponsorCollateralReturned.toString(),
-      );
-
-      // The token Sponsor should have no synthetic positions left after settlement.
-      assert.equal(sponsorFinalSynthetic, 0);
-
-      // The contract should have a small remainder of 2 collateral tokens due to rounding errors:
-      // We started with 30, paid 1 in final fees, returned 11 to the token holder, and 16 to the sponsor:
-      // (30 - 1 - 11 - 16 = 2)
-      assert.equal(
-        (await collateral.balanceOf.call(creditLine.address)).toString(),
-        '2',
-      );
-      assert.equal(
-        (await creditLine.totalPositionCollateral.call()).toString(),
-        '1',
-      );
-
-      // Last check is that after redemption the position in the positions mapping is still removed despite leaving collateral dust.
-      const sponsorsPosition = await creditLine.positions.call(sponsor);
-      assert.equal(sponsorsPosition.rawCollateral.rawValue, 0);
-      assert.equal(sponsorsPosition.tokensOutstanding.rawValue, 0);
-      assert.equal(
-        sponsorsPosition.withdrawalRequestPassTimestamp.toString(),
-        0,
-      );
-      assert.equal(sponsorsPosition.withdrawalRequestAmount.rawValue, 0);
-
-      // Drain excess collateral left because of precision loss.
-      await expectAndDrainExcessCollateral();
-    });
-    it('withdraw() returns the same amount of collateral that totalPositionCollateral is decreased by', async () => {
-      // The sponsor requests to withdraw 12 collateral.
-      // So, `rawCollateral` is decreased by (`12 / 0.966666666666666666 ~= 12.4`) which gets truncated to 12.
-      // Before `withdraw` is called, `totalPositionCollateral = rawCollateral * cumulativeFeeMultiplier = 30 * 0.966666666666666666 = 28`.
-      // After `settleEmergencyShutdown`, `rawCollateral -= 12`, so the new `totalPositionCollateral = `(30-12) * 0.966666666666666666 = 17.4` which is truncated to 17.
-      // So, due to precision loss, `totalPositionCollateral` is only decreased by 11, but it should be 12 without errors.
-      // From the user's POV, they will see their balance decrease by 11, so we should send them 11 collateral not 12.
-      const initialCollateral = await collateral.balanceOf.call(sponsor);
-      await creditLine.requestWithdrawal('12', { from: sponsor });
-      let startTime = await creditLine.getCurrentTime();
-      await creditLine.setCurrentTime(startTime.addn(withdrawalLiveness));
-      await creditLine.withdrawPassedRequest({ from: sponsor });
-      const finalCollateral = await collateral.balanceOf.call(sponsor);
-
-      // The sponsor should gain their requested amount minus precision loss.
-      const expectedFinalCollateral = '11';
-      assert.equal(
-        finalCollateral.sub(initialCollateral),
-        expectedFinalCollateral,
-      );
-      assert.equal(
-        (await collateral.balanceOf.call(creditLine.address)).toString(),
-        '18',
-      );
-      assert.equal(
-        (await creditLine.totalPositionCollateral()).toString(),
-        '17',
-      );
-      assert.equal(
-        (
-          await creditLine.globalPositionData.call()
-        ).rawTotalPositionCollateral.toString(),
-        '18',
-      );
-
-      // Drain excess collateral left because of precesion loss.
-      await expectAndDrainExcessCollateral();
-    });
-    it('redeem() returns the same amount of collateral that totalPositionCollateral is decreased by', async () => {
-      // The sponsor requests to redeem 9 tokens. (9/20 = 0.45) tokens should result in a proportional redemption of the totalPositionCollateral,
-      // which as you recall is 28 post-fees. So, we expect to redeem (0.45 * 28 = 12.6) collateral which gets truncated to 12.
-      // So, `rawCollateral` is decreased by (`12 / 0.966666666666666666 ~= 12.4`) which gets truncated to 12.
-      // Before `withdraw` is called, `totalPositionCollateral = rawCollateral * cumulativeFeeMultiplier = 30 * 0.966666666666666666 = 28`.
-      // After `settleEmergencyShutdown`, `rawCollateral -= 12`, so the new `totalPositionCollateral = `(30-12) * 0.966666666666666666 = 17.4` which is truncated to 17.
-      // So, due to precision loss, `totalPositionCollateral` is only decreased by 11, but it should be 12 without errors.
-      // From the user's POV, they will see their balance decrease by 11, so we should send them 11 collateral not 12.
-      const initialCollateral = await collateral.balanceOf.call(sponsor);
-      await creditLine.redeem('9', Fee.feePercentage, { from: sponsor });
-      const finalCollateral = await collateral.balanceOf.call(sponsor);
-
-      // The sponsor should gain their requested amount minus precision loss.
-      assert.equal(finalCollateral.sub(initialCollateral), '11');
-      assert.equal(
-        (await collateral.balanceOf.call(creditLine.address)).toString(),
-        '18',
-      );
-      assert.equal(
-        (await creditLine.totalPositionCollateral()).toString(),
-        '17',
-      );
-      assert.equal(
-        (
-          await creditLine.globalPositionData.call()
-        ).rawTotalPositionCollateral.toString(),
-        '18',
-      );
-
-      // Expected number of synthetic tokens are burned.
-      assert.equal(
-        (await tokenCurrency.balanceOf.call(sponsor)).toString(),
-        '11',
-      );
-
-      // Drain excess collateral left because of precesion loss.
-      await expectAndDrainExcessCollateral();
-    });
   });
 
   it('Oracle swap post shutdown', async function () {
@@ -2016,53 +1711,6 @@ contract('Synthereum CreditLine ', function (accounts) {
         from: sponsor,
       }),
       'Total amount minted overcomes mint limit',
-    );
-  });
-
-  it('Calculation of DAO fee', async () => {
-    await collateral.approve(creditLine.address, toWei('101'), {
-      from: sponsor,
-    });
-    await creditLine.create(toWei('1'), toWei('0.6'), Fee.feePercentage, {
-      from: sponsor,
-    });
-    const tokensAmount = toBN(toWei('50'));
-    const feeAmount = await calculateFeeAmount(
-      creditLine,
-      tokensAmount,
-      Fee.feePercentage,
-    );
-    const outputFeeAmount = await creditLine.create.call(
-      toWei('100'),
-      tokensAmount,
-      Fee.feePercentage,
-      { from: sponsor },
-    );
-    const feeCalculated = await creditLine.calculateDaoFee.call(tokensAmount);
-    assert.equal(
-      feeAmount.toString(),
-      outputFeeAmount.toString(),
-      'Wrong output fee',
-    );
-    assert.equal(
-      feeAmount.toString(),
-      feeCalculated.toString(),
-      'Wrong fee calculation into the smart contract',
-    );
-  });
-
-  it('Revert if fee slippage is overcomed', async () => {
-    await collateral.approve(creditLine.address, toWei('100'), {
-      from: sponsor,
-    });
-    await truffleAssert.reverts(
-      creditLine.create(
-        toWei('100'),
-        toWei('100'),
-        Fee.feePercentage.sub(toBN('1')),
-        { from: sponsor },
-      ),
-      'User fees are not enough for paying DAO',
     );
   });
 });
