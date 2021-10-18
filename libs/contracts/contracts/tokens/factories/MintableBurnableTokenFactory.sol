@@ -81,7 +81,7 @@ abstract contract MintableBurnableTokenFactory is Lockable {
     string memory tokenName,
     string memory tokenSymbol,
     uint8 tokenDecimals
-  ) public virtual returns (MintableBurnableIERC20 newToken) {}
+  ) public virtual returns (MintableBurnableIERC20 newToken);
 
   /**
    * @notice Set admin rol to the token
