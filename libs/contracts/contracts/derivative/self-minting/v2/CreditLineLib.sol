@@ -558,19 +558,20 @@ library SynthereumCreditLineLib {
     feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
   }
 
-  // TODO
   function trimExcess(
     ICreditLineStorage.PositionManagerData storage positionManagerData,
-    IERC20 token,
-    FixedPoint.Unsigned memory pfcAmount,
-    FeePayerParty.FeePayerData storage feePayerData
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.FeeStatus storage feeStatus,
+    IERC20 token
   ) external returns (FixedPoint.Unsigned memory amount) {
     FixedPoint.Unsigned memory balance =
       FixedPoint.Unsigned(token.balanceOf(address(this)));
     if (address(token) == address(positionManagerData.collateralToken)) {
       // If it is the collateral currency, send only the amount that the contract is not tracking.
       // Note: this could be due to rounding error or balance-changing tokens, like aTokens.
-      amount = balance.sub(pfcAmount);
+      amount = balance.sub(globalPositionData.rawTotalPositionCollateral).sub(
+        feeStatus.totalFeeAmount
+      );
     } else {
       // If it's not the collateral currency, send the entire balance.
       amount = balance;
