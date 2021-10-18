@@ -1323,49 +1323,49 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  // it('Can withdraw excess collateral', async function () {
-  //   // Attempt to redeem a position smaller s.t. the resulting position is less than 5 wei tokens (the min sponsor
-  //   // position size)
-  //   await collateral.approve(creditLine.address, toWei('100000'), {
-  //     from: sponsor,
-  //   });
-  //   await tokenCurrency.approve(creditLine.address, toWei('100000'), {
-  //     from: sponsor,
-  //   });
+  it('Can withdraw excess collateral', async function () {
+    // Attempt to redeem a position smaller s.t. the resulting position is less than 5 wei tokens (the min sponsor
+    // position size)
+    await collateral.approve(creditLine.address, toWei('100000'), {
+      from: sponsor,
+    });
+    await tokenCurrency.approve(creditLine.address, toWei('100000'), {
+      from: sponsor,
+    });
 
-  //   await creditLine.create('40', '20', Fee.feePercentage, {
-  //     from: sponsor,
-  //   });
+    await creditLine.create(toWei('40'), toWei('20'), {
+      from: sponsor,
+    });
 
-  //   // Transfer extra collateral in.
-  //   await collateral.transfer(creditLine.address, toWei('10'), {
-  //     from: sponsor,
-  //   });
-  //   let excessCollateral = await creditLine.trimExcess.call(collateral.address);
-  //   await creditLine.trimExcess(collateral.address);
-  //   let beneficiaryCollateralBalance = await collateral.balanceOf.call(
-  //     beneficiary,
-  //   );
-  //   assert.equal(excessCollateral.toString(), toWei('10'));
-  //   assert.equal(beneficiaryCollateralBalance.toString(), toWei('10'));
-  //   await collateral.transfer(sponsor, toWei('10'), { from: beneficiary });
+    // Transfer extra collateral in.
+    await collateral.transfer(creditLine.address, toWei('10'), {
+      from: sponsor,
+    });
+    let excessCollateral = await creditLine.trimExcess.call(collateral.address);
+    await creditLine.trimExcess(collateral.address);
+    let beneficiaryCollateralBalance = await collateral.balanceOf.call(
+      beneficiary,
+    );
+    assert.equal(excessCollateral.toString(), toWei('10'));
+    assert.equal(beneficiaryCollateralBalance.toString(), toWei('10'));
+    await collateral.transfer(sponsor, toWei('10'), { from: beneficiary });
 
-  //   // Transfer extra tokens in.
-  //   await tokenCurrency.transfer(creditLine.address, '10', {
-  //     from: sponsor,
-  //   });
-  //   let excessTokens = await creditLine.trimExcess.call(tokenCurrency.address);
-  //   await creditLine.trimExcess(tokenCurrency.address);
-  //   let beneficiaryTokenBalance = await tokenCurrency.balanceOf.call(
-  //     beneficiary,
-  //   );
-  //   assert.equal(excessTokens.toString(), '10');
-  //   assert.equal(beneficiaryTokenBalance.toString(), '10');
+    // Transfer extra tokens in.
+    await tokenCurrency.transfer(creditLine.address, '10', {
+      from: sponsor,
+    });
+    let excessTokens = await creditLine.trimExcess.call(tokenCurrency.address);
+    await creditLine.trimExcess(tokenCurrency.address);
+    let beneficiaryTokenBalance = await tokenCurrency.balanceOf.call(
+      beneficiary,
+    );
+    assert.equal(excessTokens.toString(), '10');
+    assert.equal(beneficiaryTokenBalance.toString(), '10');
 
-  //   // Redeem still succeeds.
-  //   await tokenCurrency.transfer(sponsor, '10', { from: beneficiary });
-  //   await creditLine.redeem('20', Fee.feePercentage, { from: sponsor });
-  // });
+    // Redeem still succeeds.
+    await tokenCurrency.transfer(sponsor, '10', { from: beneficiary });
+    await creditLine.redeem('20', { from: sponsor });
+  });
 
   it('Can not delete a sponsor position externally', async () => {
     await collateral.approve(creditLine.address, initialPositionCollateral, {
