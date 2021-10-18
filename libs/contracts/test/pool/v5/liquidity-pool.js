@@ -1454,9 +1454,18 @@ contract('LiquidityPool', function (accounts) {
       );
     });
     it('Can revert if the source and destination pools have different finder', async () => {
-      const wrongFinderAddress = accounts[7];
+      const wrongFinderInstance = await SynthereumFinder.new({
+        admin: admin,
+        maintainer: maintainer,
+      });
+      const priceFeedInterface = await web3.utils.stringToHex('PriceFeed');
+      await wrongFinderInstance.changeImplementationAddress(
+        priceFeedInterface,
+        priceFeedInstance.address,
+        { from: maintainer },
+      );
       const wrongFinderLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        wrongFinderAddress,
+        wrongFinderInstance.address,
         version,
         collateralAddress,
         destSynthTokenAddress,
@@ -3579,6 +3588,262 @@ contract('LiquidityPool', function (accounts) {
         liquidationInfo[1].toString(),
         web3Utils.toBN(expectedRatio).toString(),
         'Wrong collateral ratio in undercollateralization',
+      );
+    });
+  });
+
+  describe('Should return trading info in mint operation', async () => {
+    it('Can get mint info', async () => {
+      const inputCollateral = web3Utils.toWei('120', 'mwei');
+      const mintResult = await liquidityPoolInstance.getMintTradeInfo.call(
+        inputCollateral,
+      );
+      assert.equal(
+        web3Utils.toBN(mintResult.synthTokensReceived).toString(),
+        web3Utils.toBN(web3Utils.toWei('99.8')).toString(),
+        'Wrong synthetic tokens',
+      );
+      assert.equal(
+        web3Utils.toBN(mintResult.feePaid).toString(),
+        web3Utils.toBN(web3Utils.toWei('0.24', 'mwei')).toString(),
+        'Wrong fee paid',
+      );
+    });
+    it('Can revert is no collateral amount passed', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getMintTradeInfo.call('0'),
+        'Sending collateral amount is equal to 0',
+      );
+    });
+    it('Can revert is no enough liquidity available', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getMintTradeInfo.call(web3Utils.toWei('4009')),
+        'No enough liquidity for covering mint operation',
+      );
+    });
+  });
+
+  describe('Should return trading info in redeem operation', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can get redeem info', async () => {
+      const inputTokens = web3Utils.toWei('15');
+      const redeemResult = await liquidityPoolInstance.getRedeemTradeInfo.call(
+        inputTokens,
+      );
+      assert.equal(
+        web3Utils.toBN(redeemResult.collateralAmountReceived).toString(),
+        web3Utils.toBN(web3Utils.toWei('17.964', 'mwei')).toString(),
+        'Wrong collateral amount',
+      );
+      assert.equal(
+        web3Utils.toBN(redeemResult.feePaid).toString(),
+        web3Utils.toBN(web3Utils.toWei('0.036', 'mwei')).toString(),
+        'Wrong fee paid',
+      );
+    });
+    it('Can revert is no tokens  passed', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getRedeemTradeInfo.call('0'),
+        'Sending tokens amount is equal to 0',
+      );
+    });
+    it('Can revert is more tokens than ones in positions are passed', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getRedeemTradeInfo.call(web3Utils.toWei('99.9')),
+        'Sending tokens amount bigger than amount in the position',
+      );
+    });
+    it('Can revert is position is undercapitalized', async () => {
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('150.01', 'mwei'));
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getRedeemTradeInfo.call(web3Utils.toWei('10')),
+        'Position undercapitalized',
+      );
+    });
+  });
+
+  describe('Should return trading info in exchange operation', async () => {
+    let destSynthTokenInstance;
+    let destSynthTokenAddress;
+    let destLiquidityPoolInstance;
+    let destLiquidityPoolAddress;
+    let destAggregatorInstance;
+    let destAggregatorAddress;
+    const destSynthTokenSymbol = 'jGBP';
+    const destPriceFeedIdentifier = web3Utils.padRight(
+      web3Utils.toHex('GBP/USD'),
+      64,
+    );
+    const destOverCollateralization = web3Utils.toWei('0.15');
+    const sourceRate = web3Utils.toWei('130', 'mwei');
+    const destRate = web3Utils.toWei('160', 'mwei');
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('240', 'mwei');
+      const totSynthTokens = web3Utils.toWei('199.6');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+      destSynthTokenInstance = await await MintableBurnableSyntheticTokenPermit.new(
+        'Jarvis Synthetic Sterlin',
+        destSynthTokenSymbol,
+        18,
+        { from: admin },
+      );
+      destSynthTokenAddress = destSynthTokenInstance.address;
+      destAggregatorInstance = await MockAggregator.new(8, destRate);
+      destAggregatorAddress = destAggregatorInstance.address;
+      await priceFeedInstance.setAggregator(
+        destPriceFeedIdentifier,
+        destAggregatorAddress,
+        { from: maintainer },
+      );
+      destLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        finderAddress,
+        version,
+        collateralAddress,
+        destSynthTokenAddress,
+        roles,
+        destOverCollateralization,
+        fee,
+        destPriceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+      );
+      destLiquidityPoolAddress = destLiquidityPoolInstance.address;
+      await destSynthTokenInstance.addMinter(destLiquidityPoolAddress, {
+        from: admin,
+      });
+      await destSynthTokenInstance.addBurner(destLiquidityPoolAddress, {
+        from: admin,
+      });
+      await collateralInstance.allocateTo(
+        destLiquidityPoolAddress,
+        initialPoolAllocation,
+      );
+      await poolRegistryInstance.register(
+        destSynthTokenSymbol,
+        collateralAddress,
+        version,
+        destLiquidityPoolAddress,
+      );
+      await aggregatorInstance.updateAnswer(sourceRate);
+    });
+    it('Can get exchange info', async () => {
+      const inputTokens = web3Utils.toWei('100');
+      const exchangeResult = await liquidityPoolInstance.getExchangeTradeInfo.call(
+        inputTokens,
+        destLiquidityPoolAddress,
+      );
+      assert.equal(
+        web3Utils.toBN(exchangeResult.destSyntheticTokensReceived).toString(),
+        web3Utils.toBN(web3Utils.toWei('81.0875')).toString(),
+        'Wrong dest synthetic tokens amount',
+      );
+      assert.equal(
+        web3Utils.toBN(exchangeResult.feePaid).toString(),
+        web3Utils.toBN(web3Utils.toWei('0.26', 'mwei')).toString(),
+        'Wrong fee paid',
+      );
+    });
+    it('Can revert if source and destination pools are the same', async () => {
+      const inputTokens = web3Utils.toWei('100');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getExchangeTradeInfo.call(
+          inputTokens,
+          liquidityPoolAddress,
+        ),
+        'Same source and destination pool',
+      );
+    });
+    it('Can revert is no tokens  passed', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getExchangeTradeInfo.call(
+          '0',
+          destLiquidityPoolAddress,
+        ),
+        'Sending tokens amount is equal to 0',
+      );
+    });
+    it('Can revert is more tokens than ones in positions are passed', async () => {
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getExchangeTradeInfo.call(
+          web3Utils.toWei('200'),
+          destLiquidityPoolAddress,
+        ),
+        'Sending tokens amount bigger than amount in the position',
+      );
+    });
+    it('Can revert is position is undercapitalized', async () => {
+      const inputTokens = web3Utils.toWei('100');
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('150.01', 'mwei'));
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getExchangeTradeInfo.call(
+          inputTokens,
+          destLiquidityPoolAddress,
+        ),
+        'Position undercapitalized',
+      );
+    });
+    it('Can revert if no collateral is sent to the destination pool', async () => {
+      const inputTokens = web3Utils.toWei('100');
+      await aggregatorInstance.updateAnswer('0');
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getExchangeTradeInfo.call(
+          inputTokens,
+          destLiquidityPoolAddress,
+        ),
+        'Sending collateral amount is equal to 0',
+      );
+    });
+    it('Can revert if not enough liquidity to cover mint operation in the destination pool', async () => {
+      const inputTokens = web3Utils.toWei('100');
+      const destAvailableLiquidity = await destLiquidityPoolInstance.totalAvailableLiquidity.call();
+      const withdrawLiquidity = web3Utils
+        .toBN(destAvailableLiquidity)
+        .sub(web3Utils.toBN(web3Utils.toWei('19', 'mwei')));
+      await destLiquidityPoolInstance.withdrawLiquidity(withdrawLiquidity, {
+        from: liquidityProvider,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.getExchangeTradeInfo.call(
+          inputTokens,
+          destLiquidityPoolAddress,
+        ),
+        'No enough liquidity for covering mint operation',
       );
     });
   });
