@@ -315,7 +315,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it('Lifecycle', async function () {
+  it.only('Lifecycle', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
@@ -550,7 +550,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     // await expectNoExcessCollateralToTrim();
   });
 
-  it('Cannot withdraw collateral if position gets undercollateralised', async function () {
+  it.only('Cannot withdraw collateral if position gets undercollateralised', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
@@ -573,7 +573,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it('Non sponsor can use depositTo', async function () {
+  it.only('Non sponsor can use depositTo', async function () {
     await collateral.approve(creditLine.address, toWei('1000'), {
       from: other,
     });
@@ -581,8 +581,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    const numTokens = toWei('1');
-    const collateralAmount = toWei('2');
+    const numTokens = toWei('10');
+    const collateralAmount = toWei('20');
 
     await creditLine.create(collateralAmount, numTokens, {
       from: sponsor,
@@ -607,7 +607,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it("Non sponsor can't deposit, redeem, repay, or withdraw", async function () {
+  it.only("Non sponsor can't deposit, redeem, repay, or withdraw", async function () {
     await tokenCurrency.approve(creditLine.address, toWei('100000'), {
       from: sponsor,
     });
@@ -647,7 +647,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it("Can't redeem more than position size", async function () {
+  it.only("Can't redeem more than position size", async function () {
     await tokenCurrency.approve(creditLine.address, toWei('1000'), {
       from: sponsor,
     });
@@ -658,12 +658,12 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    const numTokens = toWei('0.7');
-    const numCombinedTokens = toWei('1.4');
-    await creditLine.create(toWei('1'), numTokens, {
+    const numTokens = toWei('7');
+    const numCombinedTokens = toWei('14');
+    await creditLine.create(toWei('10'), numTokens, {
       from: other,
     });
-    await creditLine.create(toWei('1'), numTokens, {
+    await creditLine.create(toWei('10'), numTokens, {
       from: sponsor,
     });
 
@@ -683,7 +683,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
-  it('Existing sponsor can use depositTo on other account', async function () {
+  it.only('Existing sponsor can use depositTo on other account', async function () {
     await creditLineControllerInstance.setFeePercentage(
       [creditLine.address],
       [toWei('0')],
@@ -696,11 +696,11 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    const numTokens = toWei('0.7');
-    await creditLine.create(toWei('1'), numTokens, {
+    const numTokens = toWei('7');
+    await creditLine.create(toWei('10'), numTokens, {
       from: other,
     });
-    await creditLine.create(toWei('1'), numTokens, {
+    await creditLine.create(toWei('10'), numTokens, {
       from: sponsor,
     });
 
@@ -709,15 +709,15 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     assert.equal(
       (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
-      toWei('2'),
+      toWei('11'),
     );
     assert.equal(
       (await creditLine.positions.call(other)).rawCollateral.toString(),
-      toWei('1'),
+      toWei('10'),
     );
   });
 
-  it('Sponsor use depositTo on own account', async function () {
+  it.only('Sponsor use depositTo on own account', async function () {
     await creditLineControllerInstance.setFeePercentage(
       [creditLine.address],
       [toWei('0')],
@@ -727,8 +727,8 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    const numTokens = toWei('0.7');
-    await creditLine.create(toWei('1'), numTokens, {
+    const numTokens = toWei('7');
+    await creditLine.create(toWei('10'), numTokens, {
       from: sponsor,
     });
 
@@ -737,7 +737,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     assert.equal(
       (await creditLine.positions(sponsor)).rawCollateral.toString(),
-      toWei('2'),
+      toWei('11'),
     );
     await creditLineControllerInstance.setFeePercentage(
       [creditLine.address],
@@ -885,12 +885,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     const emergencyShutdownPrice = await mockOnchainOracle.getLatestPrice(
       priceFeedIdentifier,
     );
-    console.log(await creditLine.positionManagerData.call());
+    // console.log(await creditLine.positionManagerData.call());
     const emergencyShutdownTx = await synthereumManagerInstance.emergencyShutdown(
       [creditLine.address],
       { from: maintainers },
     );
-    console.log(emergencyShutdownTx);
+    // console.log(emergencyShutdownTx);
     // // check event
     // let emergencyShutdownTimestamp;
     // truffleAssert.eventEmitted(
@@ -911,9 +911,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     // );
     console.log(await creditLine.positionManagerData.call());
     console.log(
-      await creditLine.positionManagerData
-        .call()
-        .emergencyShutdownPrice.toString(),
+      (
+        await creditLine.positionManagerData.call()
+      ).emergencyShutdownPrice.toString(),
     );
     assert.equal(
       (await creditLine.emergencyShutdownPrice.call()).toString(),
@@ -1061,7 +1061,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     });
     const numTokens = toWei('100');
     const amountCollateral = toWei('150');
-    await creditLine.create(amountCollateral, numTokens, Fee.feePercentage, {
+    await creditLine.create(amountCollateral, numTokens, {
       from: sponsor,
     });
 
