@@ -127,38 +127,18 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   };
 
-  // const expectNoExcessCollateralToTrim = async () => {
-  //   let collateralTrimAmount = await creditLine.trimExcess.call(
-  //     collateral.address,
-  //   );
-  //   await creditLine.trimExcess(collateral.address);
-  //   let beneficiaryCollateralBalance = await collateral.balanceOf.call(
-  //     beneficiary,
-  //   );
+  const expectNoExcessCollateralToTrim = async () => {
+    let collateralTrimAmount = await creditLine.trimExcess.call(
+      collateral.address,
+    );
+    await creditLine.trimExcess(collateral.address);
+    let beneficiaryCollateralBalance = await collateral.balanceOf.call(
+      beneficiary,
+    );
 
-  //   assert.equal(collateralTrimAmount.toString(), '0');
-  //   assert.equal(beneficiaryCollateralBalance.toString(), '0');
-  // };
-
-  // const expectAndDrainExcessCollateral = async () => {
-  //   // Drains the collateral from the contract and transfers it all back to the sponsor account to leave the beneficiary empty.
-  //   await creditLine.trimExcess(collateral.address);
-  //   let beneficiaryCollateralBalance = await collateral.balanceOf.call(
-  //     beneficiary,
-  //   );
-  //   collateral.transfer(sponsor, beneficiaryCollateralBalance.toString(), {
-  //     from: beneficiary,
-  //   });
-
-  //   // Assert that nonzero collateral was drained.
-  //   assert.notEqual(beneficiaryCollateralBalance.toString(), '0');
-  // };
-
-  // const getGCR = async contract => {
-  //   const totalTokens = await contract.totalTokensOutstanding.call();
-  //   const totalNetCollateral = await contract.totalPositionCollateral.call();
-  //   return totalNetCollateral.mul(toBN(Math.pow(10, 18))).div(totalTokens);
-  // };
+    assert.equal(collateralTrimAmount.toString(), '0');
+    assert.equal(beneficiaryCollateralBalance.toString(), '0');
+  };
 
   const calculateFeeAmount = collateralAmount => {
     const feeAmount = collateralAmount
@@ -268,10 +248,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     await tokenCurrency.addBurner(creditLine.address);
   });
 
-  // TODO
-  // afterEach(async () => {
-  //   await expectNoExcessCollateralToTrim();
-  // });
+  afterEach(async () => {
+    await expectNoExcessCollateralToTrim();
+  });
 
   it('Correct deployment and variable assignment', async function () {
     // PricelessPosition variables
@@ -361,7 +340,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await checkFeeRecipients(feeAmount);
 
     // Periodic check for no excess collateral.
-    // await expectNoExcessCollateralToTrim();
+    await expectNoExcessCollateralToTrim();
 
     // Deposit.
     const depositCollateral = toWei('50');
@@ -389,7 +368,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     // Periodic check for no excess collateral.
-    // await expectNoExcessCollateralToTrim();
+    await expectNoExcessCollateralToTrim();
 
     // Withdraw.
     const withdrawCollateral = toWei('20');
@@ -419,7 +398,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     // Periodic check for no excess collateral.
-    // await expectNoExcessCollateralToTrim();
+    await expectNoExcessCollateralToTrim();
 
     // Redeem 50% of the tokens for 50% of the collateral.
     const redeemTokens = toBN(toWei('50'));
@@ -478,7 +457,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await checkFeeRecipients(redeemFee);
 
     // Periodic check for no excess collateral.
-    // await expectNoExcessCollateralToTrim();
+    await expectNoExcessCollateralToTrim();
 
     // Create additional.
     const createAdditionalTokens = toBN(toWei('10'));
@@ -507,7 +486,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await checkFeeRecipients(feeAmount);
 
     // Periodic check for no excess collateral.
-    // await expectNoExcessCollateralToTrim();
+    await expectNoExcessCollateralToTrim();
 
     // Redeem full.
     const redeemRemainingTokens = toBN(toWei('60'));
@@ -541,7 +520,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await checkFeeRecipients(feeAmount);
 
     // Periodic check for no excess collateral.
-    // await expectNoExcessCollateralToTrim();
+    await expectNoExcessCollateralToTrim();
   });
 
   it('Cannot withdraw collateral if position gets undercollateralised', async function () {
