@@ -178,7 +178,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256) {
+  ) external returns (uint256[2] memory amounts) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -219,6 +219,10 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       );
     }
 
+    // store first return value
+    amounts[0] = redeemParams.numTokens;
+
+    // redeem to collateral and approve swap
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
@@ -279,8 +283,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       }
     }
 
-    // return output token amount
-    return amountsOut[tokenSwapPath.length - 1];
+    // store second return value - output token amount
+    amounts[1] = amountsOut[tokenSwapPath.length - 1];
   }
 
   function decodeImplementationInfo(bytes calldata info)

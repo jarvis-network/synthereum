@@ -42,9 +42,17 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     bytes info
   );
   event RemovedImplementation(string id);
-  event Swap(uint256 outputTokens);
-
-  modifier onlyMaintainers() {
+  event SwapAndMint(
+    uint256 inputAmount,
+    uint256 outputAmount,
+    address dexImplementationAddress
+  );
+  event RedeemAndSwap(
+    uint256 inputAmount,
+    uint256 outputAmount,
+    address dexImplementationAddress
+  );
+  modifier onlyMaintainer() {
     require(
       hasRole(MAINTAINER_ROLE, msg.sender),
       'Only contract maintainer can call this function'
@@ -69,7 +77,7 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     string calldata identifier,
     address implementation,
     bytes memory info
-  ) external onlyMaintainers() {
+  ) external onlyMaintainer() {
     address previous = idToAddress[keccak256(abi.encode(identifier))];
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
     dexImplementationInfo[implementation] = info;
@@ -78,7 +86,7 @@ contract AtomicSwapProxy is AccessControlEnumerable {
 
   function removeImplementation(string calldata identifier)
     external
-    onlyMaintainers()
+    onlyMaintainer()
   {
     bytes32 bytesId = keccak256(abi.encode(identifier));
     require(
@@ -134,7 +142,7 @@ contract AtomicSwapProxy is AccessControlEnumerable {
 
     amounts = abi.decode(result, (uint256[2]));
 
-    emit Swap(amounts[1]);
+    emit SwapAndMint(amounts[0], amounts[1], implementation);
   }
 
   function redeemCollateralAndSwap(
@@ -146,7 +154,7 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256 outputAmount) {
+  ) external returns (uint256[2] memory amounts) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -168,8 +176,8 @@ contract AtomicSwapProxy is AccessControlEnumerable {
         )
       );
 
-    outputAmount = abi.decode(result, (uint256));
+    amounts = abi.decode(result, (uint256[2]));
 
-    emit Swap(outputAmount);
+    emit RedeemAndSwap(amounts[0], amounts[1], implementation);
   }
 }

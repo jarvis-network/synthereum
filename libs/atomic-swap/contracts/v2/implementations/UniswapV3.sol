@@ -167,7 +167,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256) {
+  ) external returns (uint256[2] memory amounts) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -200,6 +200,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         redeemParams.numTokens
       );
 
+      // store first return value
+      amounts[0] = redeemParams.numTokens;
       redeemParams.recipient = address(this);
       isExactInput
         ? (exactAmount, ) = synthereumPool.redeem(redeemParams)
@@ -223,8 +225,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           minOutOrMaxIn
         );
 
-      return
-        IUniswapV3Router(implementationInfo.routerAddress).exactInput(params);
+      amounts[1] = IUniswapV3Router(implementationInfo.routerAddress)
+        .exactInput(params);
     } else {
       // collateralOut as maxInput
       // swap to erc20 token into recipient wallet
@@ -248,7 +250,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         );
       }
 
-      return exactAmount;
+      amounts[1] = exactAmount;
     }
   }
 

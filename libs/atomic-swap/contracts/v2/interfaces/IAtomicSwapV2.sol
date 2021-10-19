@@ -27,7 +27,7 @@ interface IAtomicSwapV2 {
   /// @param extraParams: dynamic-size bytes to encode extra parameters
   /// @param synthereumPool: synthereum pool address used to mint with collateral
   /// @param mintParams: struct to mint from synthereum pool with collateral taken from swap
-  /// @return amountOut amount of received jSynths
+  /// @return amounts array containing input amount and output amount tokens involved in the swap
   function swapToCollateralAndMint(
     ImplementationInfo memory info,
     bool isExactInput,
@@ -36,7 +36,7 @@ interface IAtomicSwapV2 {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256 amountOut);
+  ) external payable returns (uint256[2] memory amounts);
 
   /// @param info: ImplementationInfo related to this implementation
   /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
@@ -46,7 +46,7 @@ interface IAtomicSwapV2 {
   /// @param synthereumPool: synthereum pool address used to redeem collateral with jSynths
   /// @param redeemParams: struct to redeem collateral from synthereum pool with input jSynth
   /// @param recipient: recipient of the output tokens
-  /// @return amountOut amount of received ERC20
+  /// @return amounts array containing input amount and output amount tokens involved in the swap
   function redeemCollateralAndSwap(
     ImplementationInfo memory info,
     bool isExactInput,
@@ -56,5 +56,5 @@ interface IAtomicSwapV2 {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address payable recipient
-  ) external returns (uint256);
+  ) external returns (uint256[2] memory amounts);
 }

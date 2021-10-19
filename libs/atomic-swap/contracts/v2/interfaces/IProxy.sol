@@ -24,5 +24,5 @@ interface IAtomicSwapProxy {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256);
+  ) external returns (uint256[2] memory);
 }
