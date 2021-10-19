@@ -818,6 +818,7 @@ function useExchangeValues() {
     outputAmount: trade?.outputAmount.toFixed().replace('.', ''),
     path: trade?.route.path,
     maxMint,
+    slippage,
   };
 }
 

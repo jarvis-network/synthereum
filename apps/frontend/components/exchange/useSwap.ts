@@ -459,6 +459,7 @@ async function ensureSufficientAllowanceFor<Net extends NetworkName>({
   return true;
 }
 
+const oneHundred = new FPN(100);
 const oneGwei = 1000 * 1000 * 1000;
 const estimationIsNotSupportedRejection = handledPromiseReject(
   'Estimation is not supported',
@@ -494,6 +495,7 @@ export const useSwap = () => {
     maximumSentValue,
     minimumSynthReceiveValue,
     maximumSynthSentValue,
+    slippage,
   } = useExchangeContext();
   const transactionSpeedContext = useTransactionSpeed();
   const gasPrice = transactionSpeedContext
@@ -754,7 +756,9 @@ export const useSwap = () => {
         if (estimate) throw new Error('Estimation is not supported');
         const collateral = weiFromFPN(payValue!);
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        const outputAmount = weiFromFPN(receiveValue!);
+        const outputAmount = weiFromFPN(
+          receiveValue!.mul(FPN.ONE.sub(new FPN(slippage).div(oneHundred))),
+        );
         const outputSynth = receiveSymbol as SyntheticSymbol;
         const {
           allowancePromise,
@@ -788,7 +792,9 @@ export const useSwap = () => {
       // redeem
       return (estimate?: FPN | null) => {
         if (estimate) throw new Error('Estimation is not supported');
-        const collateral = weiFromFPN(receiveValue!);
+        const collateral = weiFromFPN(
+          receiveValue!.mul(FPN.ONE.sub(new FPN(slippage).div(oneHundred))),
+        );
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const inputAmount = weiFromFPN(payValue!);
         const inputSynth = paySymbol as SyntheticSymbol;
@@ -827,7 +833,9 @@ export const useSwap = () => {
       const inputAmount = weiFromFPN(payValue!);
       const inputSynth = paySymbol as SyntheticSymbol;
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      const outputAmount = weiFromFPN(receiveValue!);
+      const outputAmount = weiFromFPN(
+        receiveValue!.mul(FPN.ONE.sub(new FPN(slippage).div(oneHundred))),
+      );
       const outputSynth = receiveSymbol as SyntheticSymbol;
       const {
         allowancePromise,
