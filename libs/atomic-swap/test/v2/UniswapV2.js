@@ -168,9 +168,13 @@ contract('UniswapV2', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        jSynthOut = ev.outputTokens;
-        return ev.outputTokens > 0;
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+        jSynthOut = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() == tokenAmountIn &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
       });
 
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
@@ -229,11 +233,14 @@ contract('UniswapV2', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        jSynthOut = ev.outputTokens;
-        return ev.outputTokens > 0;
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+        jSynthOut = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() <= maxTokenAmountIn.toString() &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
       });
-
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
@@ -285,9 +292,13 @@ contract('UniswapV2', async accounts => {
       );
 
       let WBTCOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        WBTCOut = ev.outputTokens;
-        return ev.outputTokens > 0;
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
+        WBTCOut = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
       });
 
       let WBTCBalanceAfter = await WBTCInstance.balanceOf.call(user);
@@ -338,9 +349,13 @@ contract('UniswapV2', async accounts => {
       );
 
       let collateralUsed;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        collateralUsed = ev.outputTokens;
-        return ev.outputTokens > 0;
+      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
+        collateralUsed = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
       });
 
       let USDTBalanceAfter = await USDTInstance.balanceOf.call(user);
@@ -561,9 +576,13 @@ contract('UniswapV2', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        jSynthOut = ev.outputTokens;
-        return ev.outputTokens > 0;
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+        jSynthOut = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() == tokenAmountIn &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
       });
 
       let EthBalanceAfter = await web3.eth.getBalance(user);
@@ -622,9 +641,16 @@ contract('UniswapV2', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        jSynthOut = ev.outputTokens;
-        return ev.outputTokens > 0;
+      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+        jSynthOut = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          web3Utils
+            .toBN(maxTokenAmountIn)
+            .sub(ev.inputAmount)
+            .gte(web3Utils.toBN(0)) &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
       });
 
       let EthBalanceAfter = await web3.eth.getBalance(user);
