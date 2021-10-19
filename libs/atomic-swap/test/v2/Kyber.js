@@ -237,7 +237,10 @@ contract('KyberDMM', async accounts => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
-          ev.inputAmount.toString() <= maxTokenAmountIn.toString() &&
+          web3Utils
+            .toBN(maxTokenAmountIn)
+            .sub(ev.inputAmount)
+            .gte(web3Utils.toBN(0)) &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
