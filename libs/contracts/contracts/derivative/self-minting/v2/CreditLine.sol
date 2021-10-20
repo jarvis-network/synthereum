@@ -292,10 +292,7 @@ contract SynthereumCreditLine is
       .rawValue;
   }
 
-  function liquidate(
-    address sponsor,
-    FixedPoint.Unsigned calldata maxTokensToLiquidate
-  )
+  function liquidate(address sponsor, uint256 maxTokensToLiquidate)
     external
     override
     notEmergencyShutdown
@@ -317,7 +314,7 @@ contract SynthereumCreditLine is
     ) = positionToLiquidate.liquidate(
       positionManagerData,
       globalPositionData,
-      maxTokensToLiquidate
+      FixedPoint.Unsigned(maxTokensToLiquidate)
     );
 
     // store new liquidation
@@ -334,8 +331,8 @@ contract SynthereumCreditLine is
     emit Liquidation(
       sponsor,
       msg.sender,
-      collateralLiquidated,
       tokensLiquidated,
+      collateralLiquidated,
       collateralReward,
       block.timestamp
     );
