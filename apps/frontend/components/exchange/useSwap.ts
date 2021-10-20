@@ -1,5 +1,6 @@
 import {
   Amount,
+  weiFromBN,
   weiFromFPN,
 } from '@jarvis-network/core-utils/dist/base/big-number';
 import { useExchangeContext } from '@/utils/ExchangeContext';
@@ -33,6 +34,7 @@ import { ERC20_Abi } from '@jarvis-network/synthereum-contracts/dist/contracts/a
 import { getContract } from '@jarvis-network/core-utils/dist/eth/contracts/get-contract';
 import { TokenInfo } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { useMemo } from 'react';
+import BN from 'bn.js';
 
 const noop = () => undefined;
 
@@ -459,7 +461,7 @@ async function ensureSufficientAllowanceFor<Net extends NetworkName>({
   return true;
 }
 
-const oneHundred = new FPN(100);
+const zero = weiFromBN(new BN(0));
 const oneGwei = 1000 * 1000 * 1000;
 const estimationIsNotSupportedRejection = handledPromiseReject(
   'Estimation is not supported',
@@ -495,7 +497,6 @@ export const useSwap = () => {
     maximumSentValue,
     minimumSynthReceiveValue,
     maximumSynthSentValue,
-    slippage,
   } = useExchangeContext();
   const transactionSpeedContext = useTransactionSpeed();
   const gasPrice = transactionSpeedContext
@@ -755,10 +756,6 @@ export const useSwap = () => {
       return (estimate?: FPN | null) => {
         if (estimate) throw new Error('Estimation is not supported');
         const collateral = weiFromFPN(payValue!);
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const outputAmount = weiFromFPN(
-          receiveValue!.mul(FPN.ONE.sub(new FPN(slippage).div(oneHundred))),
-        );
         const outputSynth = receiveSymbol as SyntheticSymbol;
         const {
           allowancePromise,
@@ -766,7 +763,7 @@ export const useSwap = () => {
           sendTx: sendTxPromise,
         } = agent.mint({
           collateral,
-          outputAmount,
+          outputAmount: zero,
           outputSynth,
           expiration: getExpiration(deadline),
           txOptions: { gasPrice, gasLimit },
@@ -781,7 +778,7 @@ export const useSwap = () => {
           estimatePromise: estimationIsNotSupportedRejection,
           payValue: collateral.toString(),
           paySymbol: paySymbol as SyntheticSymbol,
-          receiveValue: outputAmount.toString(),
+          receiveValue: receiveValue!.toString(),
           receiveSymbol: outputSynth,
           type: 'mint' as SynthereumTransactionType,
           networkId: agent.realm.netId,
@@ -792,9 +789,6 @@ export const useSwap = () => {
       // redeem
       return (estimate?: FPN | null) => {
         if (estimate) throw new Error('Estimation is not supported');
-        const collateral = weiFromFPN(
-          receiveValue!.mul(FPN.ONE.sub(new FPN(slippage).div(oneHundred))),
-        );
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const inputAmount = weiFromFPN(payValue!);
         const inputSynth = paySymbol as SyntheticSymbol;
@@ -803,7 +797,7 @@ export const useSwap = () => {
           txPromise,
           sendTx: sendTxPromise,
         } = agent.redeem({
-          collateral,
+          collateral: zero,
           inputAmount,
           inputSynth,
           expiration: getExpiration(deadline),
@@ -819,7 +813,7 @@ export const useSwap = () => {
           estimatePromise: estimationIsNotSupportedRejection,
           payValue: inputAmount.toString(),
           paySymbol: inputSynth,
-          receiveValue: collateral.toString(),
+          receiveValue: receiveValue!.toString(),
           receiveSymbol: receiveSymbol as SyntheticSymbol,
           type: 'redeem' as SynthereumTransactionType,
           networkId: agent.realm.netId,
@@ -832,10 +826,6 @@ export const useSwap = () => {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       const inputAmount = weiFromFPN(payValue!);
       const inputSynth = paySymbol as SyntheticSymbol;
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const outputAmount = weiFromFPN(
-        receiveValue!.mul(FPN.ONE.sub(new FPN(slippage).div(oneHundred))),
-      );
       const outputSynth = receiveSymbol as SyntheticSymbol;
       const {
         allowancePromise,
@@ -844,7 +834,7 @@ export const useSwap = () => {
       } = agent.exchange({
         inputAmount,
         inputSynth,
-        outputAmount,
+        outputAmount: zero,
         outputSynth,
         expiration: getExpiration(deadline),
         txOptions: { gasPrice, gasLimit },
@@ -859,7 +849,7 @@ export const useSwap = () => {
         estimatePromise: estimationIsNotSupportedRejection,
         payValue: inputAmount.toString(),
         paySymbol: inputSynth,
-        receiveValue: outputAmount.toString(),
+        receiveValue: receiveValue!.toString(),
         receiveSymbol: outputSynth,
         type: 'exchange' as SynthereumTransactionType,
         networkId: agent.realm.netId,
