@@ -571,6 +571,7 @@ async function gatherFiles(
   dir: string,
   moduleName?: string,
   gathered: string[] = [contractPath],
+  importedFrom = '',
 ) {
   const contractDir = dirname(resolve(contractPath));
   const contractCopyPath = moduleName
@@ -581,7 +582,7 @@ async function gatherFiles(
       )
     : join(dir, relative(dirname(dir), contractDir), basename(contractPath));
 
-  let mainContractContent = await fs.readFile(contractPath, 'utf-8');
+  let mainContractContent = await readContracts(contractPath, importedFrom);
 
   await fs.mkdir(dirname(contractCopyPath), { recursive: true });
 
@@ -620,7 +621,13 @@ async function gatherFiles(
       if (!gathered.includes(abosolutePath)) {
         gathered.push(abosolutePath);
         // eslint-disable-next-line no-await-in-loop
-        await gatherFiles(abosolutePath, dir, externalModule, gathered);
+        await gatherFiles(
+          abosolutePath,
+          dir,
+          externalModule,
+          gathered,
+          contractPath,
+        );
       }
     }
   }
@@ -639,6 +646,16 @@ async function gatherFiles(
   });
 
   return contractCopyPath;
+}
+
+async function readContracts(contractPath: string, importedPath: string) {
+  try {
+    return await fs.readFile(contractPath, 'utf-8');
+  } catch {
+    throw new Error(
+      `Could not read ${contractPath} which was imported from ${importedPath}`,
+    );
+  }
 }
 
 async function getMigrationScriptPath(
