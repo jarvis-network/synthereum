@@ -28,7 +28,11 @@ async function migrate(deployer, network, accounts) {
   } = require('@jarvis-network/core-utils/dist/eth/networks');
 
   const networkId = await toNetworkId(network);
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
@@ -48,6 +52,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumChainlinkPriceFeed = await getExistingInstance(
     web3,
     SynthereumChainlinkPriceFeed,
+    '@jarvis-network/synthereum-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(
@@ -61,7 +66,11 @@ async function migrate(deployer, network, accounts) {
     await deploy(web3, deployer, network, MockAggregator, 8, 120000000, {
       from: keys.deployer,
     });
-    const mockAggregator = await getExistingInstance(web3, MockAggregator);
+    const mockAggregator = await getExistingInstance(
+      web3,
+      MockAggregator,
+      '@jarvis-network/synthereum-contracts',
+    );
     const pair = 'EUR/USD';
     const identifierBytes = web3.utils.utf8ToHex(pair);
     await synthereumChainlinkPriceFeed.methods
@@ -86,6 +95,7 @@ async function migrate(deployer, network, accounts) {
       const mockRandomAggregator = await getExistingInstance(
         web3,
         MockRandomAggregator,
+        '@jarvis-network/synthereum-contracts',
       );
 
       aggregatorsData.push({

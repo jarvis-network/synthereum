@@ -20,7 +20,11 @@ async function migrate(deployer, network, accounts) {
   } = require('@jarvis-network/core-utils/dist/eth/networks');
 
   const networkId = toNetworkId(network);
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
@@ -35,7 +39,11 @@ async function migrate(deployer, network, accounts) {
     { from: keys.deployer },
   );
   const managerInterface = await web3.utils.stringToHex('Manager');
-  const synthereumManager = await getExistingInstance(web3, SynthereumManager);
+  const synthereumManager = await getExistingInstance(
+    web3,
+    SynthereumManager,
+    '@jarvis-network/synthereum-contracts',
+  );
   await synthereumFinder.methods
     .changeImplementationAddress(
       managerInterface,

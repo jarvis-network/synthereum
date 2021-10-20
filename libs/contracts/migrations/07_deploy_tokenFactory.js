@@ -27,7 +27,11 @@ async function migrate(deployer, network, accounts) {
 
   const networkId = toNetworkId(network);
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
   const keys = getKeysForNetwork(network, accounts);
   let tokenFactory;
   if (!isPublicNetwork(network) || networkId == 80001 || networkId === 137) {
@@ -42,6 +46,7 @@ async function migrate(deployer, network, accounts) {
     tokenFactory = await getExistingInstance(
       web3,
       SynthereumSyntheticTokenPermitFactory,
+      '@jarvis-network/synthereum-contracts',
     );
   } else {
     await deploy(
@@ -55,6 +60,7 @@ async function migrate(deployer, network, accounts) {
     tokenFactory = await getExistingInstance(
       web3,
       SynthereumSyntheticTokenFactory,
+      '@jarvis-network/synthereum-contracts',
     );
   }
   const tokenFactoryInterface = await web3.utils.stringToHex('TokenFactory');

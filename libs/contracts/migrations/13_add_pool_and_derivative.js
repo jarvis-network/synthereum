@@ -38,8 +38,13 @@ module.exports = async function (deployer, network, accounts) {
   const synthereumDeployer = await getExistingInstance(
     web3,
     SynthereumDeployer,
+    '@jarvis-network/synthereum-contracts',
   );
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
 
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
@@ -49,7 +54,13 @@ module.exports = async function (deployer, network, accounts) {
   let txData = [];
   collAddress =
     umaContracts[networkId]?.collateralAddress ??
-    (await getExistingInstance(web3, TestnetERC20)).options.address;
+    (
+      await getExistingInstance(
+        web3,
+        TestnetERC20,
+        '@jarvis-network/synthereum-contracts',
+      )
+    ).options.address;
 
   if (deployment[networkId].isEnabled === true) {
     assets[networkId].map(async asset => {

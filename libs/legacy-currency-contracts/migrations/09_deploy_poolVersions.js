@@ -7,7 +7,9 @@ module.exports = require('../../contracts/utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../../contracts/data/roles.json');
-  const { getExistingInstance } = require('../src/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const {
     SynthereumFinder,
     SynthereumFactoryVersioning,
@@ -28,6 +30,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
     SynthereumFactoryVersioning,
+    '@jarvis-network/legacy-currency-contracts',
   );
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];

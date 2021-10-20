@@ -7,7 +7,9 @@ module.exports = require('../../contracts/utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../../contracts/data/roles.json');
-  const { getExistingInstance } = require('../src/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const aggregators = require('../../contracts/data/aggregators.json');
   const randomOracleConfig = require('../../contracts/data/test/randomAggregator.json');
   const {
@@ -46,6 +48,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumChainlinkPriceFeed = await getExistingInstance(
     web3,
     SynthereumChainlinkPriceFeed,
+    '@jarvis-network/legacy-currency-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(
@@ -59,7 +62,11 @@ async function migrate(deployer, network, accounts) {
     await deploy(web3, deployer, network, MockAggregator, 8, 120000000, {
       from: keys.deployer,
     });
-    const mockAggregator = await getExistingInstance(web3, MockAggregator);
+    const mockAggregator = await getExistingInstance(
+      web3,
+      MockAggregator,
+      '@jarvis-network/legacy-currency-contracts',
+    );
     const pair = 'EUR/USD';
     const identifierBytes = web3.utils.utf8ToHex(pair);
     await synthereumChainlinkPriceFeed.methods
@@ -84,6 +91,7 @@ async function migrate(deployer, network, accounts) {
       const mockRandomAggregator = await getExistingInstance(
         web3,
         MockRandomAggregator,
+        '@jarvis-network/legacy-currency-contracts',
       );
 
       aggregatorsData.push({

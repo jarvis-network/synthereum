@@ -5,7 +5,9 @@ module.exports = require('../../contracts/utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../../contracts/data/roles.json');
-  const { getExistingInstance } = require('../src/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const { SynthereumFinder, SynthereumDeployer } = migrate.getContracts(
     artifacts,
   );
@@ -18,7 +20,11 @@ async function migrate(deployer, network, accounts) {
   } = require('@jarvis-network/core-utils/dist/eth/networks');
 
   const networkId = toNetworkId(network);
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/legacy-currency-contracts',
+  );
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const roles = { admin: admin, maintainer: maintainer };
@@ -36,6 +42,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumDeployer = await getExistingInstance(
     web3,
     SynthereumDeployer,
+    '@jarvis-network/legacy-currency-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(

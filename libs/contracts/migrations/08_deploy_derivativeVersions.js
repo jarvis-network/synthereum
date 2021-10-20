@@ -58,8 +58,13 @@ async function migrate(deployer, network, accounts) {
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
     SynthereumFactoryVersioning,
+    '@jarvis-network/synthereum-contracts',
   );
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
   const umaDeployment = parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE);
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   if (derivativeVersions[networkId]?.DerivativeFactory?.isEnabled ?? true) {
@@ -72,10 +77,15 @@ async function migrate(deployer, network, accounts) {
       const collateralWhitelist = await getExistingInstance(
         web3,
         AddressWhitelist,
+        '@jarvis-network/synthereum-contracts',
       );
 
       // Add CollateralWhitelist to finder.
-      const umaFinder = await getExistingInstance(web3, UmaFinder);
+      const umaFinder = await getExistingInstance(
+        web3,
+        UmaFinder,
+        '@jarvis-network/synthereum-contracts',
+      );
       await umaFinder.methods
         .changeImplementationAddress(
           web3.utils.utf8ToHex(interfaceName.CollateralWhitelist),
@@ -98,7 +108,11 @@ async function migrate(deployer, network, accounts) {
           from: keys.deployer,
         },
       );
-      const collateralToken = await getExistingInstance(web3, TestnetERC20);
+      const collateralToken = await getExistingInstance(
+        web3,
+        TestnetERC20,
+        '@jarvis-network/synthereum-contracts',
+      );
       await collateralWhitelist.methods
         .addToWhitelist(collateralToken.options.address)
         .send({
@@ -109,6 +123,7 @@ async function migrate(deployer, network, accounts) {
       const identifierWhitelist = await getExistingInstance(
         web3,
         IdentifierWhitelist,
+        '@jarvis-network/synthereum-contracts',
       );
       const identifierBytes = web3.utils.utf8ToHex('EUR/USD');
       await identifierWhitelist.methods
@@ -244,11 +259,23 @@ async function migrate(deployer, network, accounts) {
       network,
       SynthereumDerivativeFactory,
       umaDeployment
-        ? (await getExistingInstance(web3, UmaFinder)).options.address
+        ? (
+            await getExistingInstance(
+              web3,
+              UmaFinder,
+              '@jarvis-network/synthereum-contracts',
+            )
+          ).options.address
         : umaContracts[networkId].finderAddress,
       synthereumFinder.options.address,
       umaDeployment
-        ? (await getExistingInstance(web3, Timer)).options.address
+        ? (
+            await getExistingInstance(
+              web3,
+              Timer,
+              '@jarvis-network/synthereum-contracts',
+            )
+          ).options.address
         : ZERO_ADDRESS,
       { from: keys.deployer },
     );
@@ -256,6 +283,7 @@ async function migrate(deployer, network, accounts) {
     const derivativeFactory = await getExistingInstance(
       web3,
       SynthereumDerivativeFactory,
+      '@jarvis-network/synthereum-contracts',
     );
     const factoryInterface = await web3.utils.stringToHex('DerivativeFactory');
     await synthereumFactoryVersioning.methods
@@ -267,7 +295,11 @@ async function migrate(deployer, network, accounts) {
       .send({ from: maintainer });
     console.log('DerivativeFactory adeed to synthereumFactoryVersioning');
     if (umaDeployment == true) {
-      const registry = await getExistingInstance(web3, Registry);
+      const registry = await getExistingInstance(
+        web3,
+        Registry,
+        '@jarvis-network/synthereum-contracts',
+      );
       await registry.methods
         .addMember(
           RegistryRolesEnum.CONTRACT_CREATOR,

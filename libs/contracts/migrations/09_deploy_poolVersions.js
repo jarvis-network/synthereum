@@ -31,7 +31,11 @@ async function migrate(deployer, network, accounts) {
     web3,
     SynthereumFactoryVersioning,
   );
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const keys = getKeysForNetwork(network, accounts);
   if (poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.isEnabled ?? true) {
@@ -76,6 +80,7 @@ async function migrate(deployer, network, accounts) {
     const synthereumPoolOnChainPriceFeedFactory = await getExistingInstance(
       web3,
       SynthereumPoolOnChainPriceFeedFactory,
+      '@jarvis-network/synthereum-contracts',
     );
     const factoryInterface = await web3.utils.stringToHex('PoolFactory');
     await synthereumFactoryVersioning.methods

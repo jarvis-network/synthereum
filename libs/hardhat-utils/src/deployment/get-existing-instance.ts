@@ -7,6 +7,7 @@ import type { Contract } from 'web3-eth-contract';
 export async function getExistingInstance(
   web3: Web3,
   artifact: any,
+  projectPath: string,
 ): Promise<Contract> {
   const networkId = await web3.eth.net.getId();
   let address: string;
@@ -16,7 +17,7 @@ export async function getExistingInstance(
   } catch (e) {
     const { contractName } = artifact;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const networks = require(`../../networks/${networkId}.json`);
+    const networks = require(`${projectPath}/networks/${networkId}.json`);
     address = last(
       networks.filter(
         (contract: any) => contract.contractName === contractName,

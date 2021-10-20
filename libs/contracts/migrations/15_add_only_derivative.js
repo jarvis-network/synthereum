@@ -36,6 +36,7 @@ module.exports = async function (deployer, network, accounts) {
   const synthereumDeployer = await getExistingInstance(
     web3,
     SynthereumDeployer,
+    '@jarvis-network/synthereum-contracts',
   );
 
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];

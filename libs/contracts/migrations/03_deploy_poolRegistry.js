@@ -37,6 +37,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumPoolRegistry = await getExistingInstance(
     web3,
     SynthereumPoolRegistry,
+    '@jarvis-network/synthereum-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(

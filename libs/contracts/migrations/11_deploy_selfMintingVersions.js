@@ -57,8 +57,13 @@ async function migrate(deployer, network, accounts) {
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
     SynthereumFactoryVersioning,
+    '@jarvis-network/synthereum-contracts',
   );
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/synthereum-contracts',
+  );
   const umaDeployment = parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE);
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   if (
@@ -70,6 +75,7 @@ async function migrate(deployer, network, accounts) {
       const collateralWhitelist = await getExistingInstance(
         web3,
         AddressWhitelist,
+        '@jarvis-network/synthereum-contracts',
       );
       // Add the testnet ERC20 as the default collateral currency (USDC for our use case)
       await deploy(
@@ -87,6 +93,7 @@ async function migrate(deployer, network, accounts) {
       const collateralToken = await getExistingInstance(
         web3,
         TestnetSelfMintingERC20,
+        '@jarvis-network/synthereum-contracts',
       );
       await collateralWhitelist.methods
         .addToWhitelist(collateralToken.options.address)
@@ -97,6 +104,7 @@ async function migrate(deployer, network, accounts) {
       const identifierWhitelist = await getExistingInstance(
         web3,
         IdentifierWhitelist,
+        '@jarvis-network/synthereum-contracts',
       );
       const identifierBytes = web3.utils.utf8ToHex('EUR/JRT');
       await identifierWhitelist.methods
@@ -106,7 +114,13 @@ async function migrate(deployer, network, accounts) {
     //hardat
     if (FeePayerPartyLib.setAsDeployed) {
       const feePayerPartyLib = await FeePayerPartyLib.at(
-        (await getExistingInstance(web3, FeePayerPartyLib)).options.address,
+        (
+          await getExistingInstance(
+            web3,
+            FeePayerPartyLib,
+            '@jarvis-network/synthereum-contracts',
+          )
+        ).options.address,
       );
 
       // Due to how truffle-plugin works, it statefully links it
@@ -252,11 +266,23 @@ async function migrate(deployer, network, accounts) {
       network,
       SelfMintingDerivativeFactory,
       umaDeployment
-        ? (await getExistingInstance(web3, UmaFinder)).options.address
+        ? (
+            await getExistingInstance(
+              web3,
+              UmaFinder,
+              '@jarvis-network/synthereum-contracts',
+            )
+          ).options.address
         : umaContracts[networkId].finderAddress,
       synthereumFinder.options.address,
       umaDeployment
-        ? (await getExistingInstance(web3, Timer)).options.address
+        ? (
+            await getExistingInstance(
+              web3,
+              Timer,
+              '@jarvis-network/synthereum-contracts',
+            )
+          ).options.address
         : ZERO_ADDRESS,
       { from: keys.deployer },
     );
@@ -264,6 +290,7 @@ async function migrate(deployer, network, accounts) {
     const selfMintingDerivativeFactory = await getExistingInstance(
       web3,
       SelfMintingDerivativeFactory,
+      '@jarvis-network/synthereum-contracts',
     );
     const factoryInterface = await web3.utils.stringToHex('SelfMintingFactory');
     await synthereumFactoryVersioning.methods
@@ -278,7 +305,11 @@ async function migrate(deployer, network, accounts) {
       'SelfMintingDerivativeFactory added to synthereumFactoryVersioning',
     );
     if (umaDeployment == true) {
-      const registry = await getExistingInstance(web3, Registry);
+      const registry = await getExistingInstance(
+        web3,
+        Registry,
+        '@jarvis-network/synthereum-contracts',
+      );
       await registry.methods
         .addMember(
           RegistryRolesEnum.CONTRACT_CREATOR,

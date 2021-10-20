@@ -39,6 +39,7 @@ async function migrate(deployer, network, accounts) {
   const selfMintingRegistry = await getExistingInstance(
     web3,
     SelfMintingRegistry,
+    '@jarvis-network/synthereum-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(

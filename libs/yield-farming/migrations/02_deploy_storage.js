@@ -13,7 +13,11 @@ const storageData = require('../data/storage.json');
 module.exports = async function (deployer, network, accounts) {
   const networkId = toNetworkId(network);
   const storage = storageData[networkId];
-  const ElysianFieldsInstance = await getExistingInstance(web3, ElysianFields);
+  const ElysianFieldsInstance = await getExistingInstance(
+    web3,
+    ElysianFields,
+    '@jarvis-network/yield-farming',
+  );
   const instance = await deploy(
     web3,
     deployer,

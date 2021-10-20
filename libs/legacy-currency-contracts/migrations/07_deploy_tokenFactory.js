@@ -6,7 +6,9 @@ module.exports = require('../../contracts/utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../../contracts/data/roles.json');
-  const { getExistingInstance } = require('../src/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const {
     SynthereumFinder,
     SynthereumSyntheticTokenFactory,
@@ -25,7 +27,11 @@ async function migrate(deployer, network, accounts) {
 
   const networkId = toNetworkId(network);
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
+  const synthereumFinder = await getExistingInstance(
+    web3,
+    SynthereumFinder,
+    '@jarvis-network/legacy-currency-contracts',
+  );
   const keys = getKeysForNetwork(network, accounts);
   let tokenFactory;
   if (!isPublicNetwork(network) || networkId == 80001 || networkId === 137) {
@@ -40,6 +46,7 @@ async function migrate(deployer, network, accounts) {
     tokenFactory = await getExistingInstance(
       web3,
       SynthereumSyntheticTokenPermitFactory,
+      '@jarvis-network/legacy-currency-contracts',
     );
   } else {
     await deploy(
@@ -53,6 +60,7 @@ async function migrate(deployer, network, accounts) {
     tokenFactory = await getExistingInstance(
       web3,
       SynthereumSyntheticTokenFactory,
+      '@jarvis-network/legacy-currency-contracts',
     );
   }
   const tokenFactoryInterface = await web3.utils.stringToHex('TokenFactory');

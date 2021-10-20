@@ -20,7 +20,9 @@ async function migrate(deployer, network, accounts) {
     parseBoolean,
   } = require('@jarvis-network/core-utils/dist/base/asserts');
   const rolesConfig = require('../../contracts/data/roles.json');
-  const { getExistingInstance } = require('../src/migration-utils/deployment');
+  const {
+    getExistingInstance,
+  } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
   const umaContracts = require('../../contracts/data/uma-contract-dependencies.json');
   const {
     ZERO_ADDRESS,
@@ -56,6 +58,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
     SynthereumFactoryVersioning,
+    '@jarvis-network/legacy-currency-contracts',
   );
   const synthereumFinder = await getExistingInstance(web3, SynthereumFinder);
   const umaDeployment = parseBoolean(process.env.NEW_UMA_INFRASTRUCTURE);
@@ -70,10 +73,15 @@ async function migrate(deployer, network, accounts) {
       const collateralWhitelist = await getExistingInstance(
         web3,
         AddressWhitelist,
+        '@jarvis-network/legacy-currency-contracts',
       );
 
       // Add CollateralWhitelist to finder.
-      const umaFinder = await getExistingInstance(web3, UmaFinder);
+      const umaFinder = await getExistingInstance(
+        web3,
+        UmaFinder,
+        '@jarvis-network/legacy-currency-contracts',
+      );
       await umaFinder.methods
         .changeImplementationAddress(
           web3.utils.utf8ToHex(interfaceName.CollateralWhitelist),
@@ -96,7 +104,11 @@ async function migrate(deployer, network, accounts) {
           from: keys.deployer,
         },
       );
-      const collateralToken = await getExistingInstance(web3, TestnetERC20);
+      const collateralToken = await getExistingInstance(
+        web3,
+        TestnetERC20,
+        '@jarvis-network/legacy-currency-contracts',
+      );
       await collateralWhitelist.methods
         .addToWhitelist(collateralToken.options.address)
         .send({
@@ -107,6 +119,7 @@ async function migrate(deployer, network, accounts) {
       const identifierWhitelist = await getExistingInstance(
         web3,
         IdentifierWhitelist,
+        '@jarvis-network/legacy-currency-contracts',
       );
       const identifierBytes = web3.utils.utf8ToHex('EUR/USD');
       await identifierWhitelist.methods
@@ -242,11 +255,23 @@ async function migrate(deployer, network, accounts) {
       network,
       SynthereumDerivativeFactory,
       umaDeployment
-        ? (await getExistingInstance(web3, UmaFinder)).options.address
+        ? (
+            await getExistingInstance(
+              web3,
+              UmaFinder,
+              '@jarvis-network/legacy-currency-contracts',
+            )
+          ).options.address
         : umaContracts[networkId].finderAddress,
       synthereumFinder.options.address,
       umaDeployment
-        ? (await getExistingInstance(web3, Timer)).options.address
+        ? (
+            await getExistingInstance(
+              web3,
+              Timer,
+              '@jarvis-network/legacy-currency-contracts',
+            )
+          ).options.address
         : ZERO_ADDRESS,
       { from: keys.deployer },
     );
@@ -254,6 +279,7 @@ async function migrate(deployer, network, accounts) {
     const derivativeFactory = await getExistingInstance(
       web3,
       SynthereumDerivativeFactory,
+      '@jarvis-network/legacy-currency-contracts',
     );
     const factoryInterface = await web3.utils.stringToHex('DerivativeFactory');
     await synthereumFactoryVersioning.methods
@@ -265,7 +291,11 @@ async function migrate(deployer, network, accounts) {
       .send({ from: maintainer });
     console.log('DerivativeFactory adeed to synthereumFactoryVersioning');
     if (umaDeployment == true) {
-      const registry = await getExistingInstance(web3, Registry);
+      const registry = await getExistingInstance(
+        web3,
+        Registry,
+        '@jarvis-network/legacy-currency-contracts',
+      );
       await registry.methods
         .addMember(
           RegistryRolesEnum.CONTRACT_CREATOR,
