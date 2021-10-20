@@ -567,11 +567,16 @@ library SynthereumCreditLineLib {
     FixedPoint.Unsigned memory balance =
       FixedPoint.Unsigned(token.balanceOf(address(this)));
     if (address(token) == address(positionManagerData.collateralToken)) {
-      // If it is the collateral currency, send only the amount that the contract is not tracking.
-      // Note: this could be due to rounding error or balance-changing tokens, like aTokens.
-      amount = balance.sub(globalPositionData.rawTotalPositionCollateral).sub(
-        feeStatus.totalFeeAmount
-      );
+      // If it is the collateral currency, send only the amount that the contract is not tracking (ie minus fees and positions)
+      balance.isGreaterThan(
+        globalPositionData.rawTotalPositionCollateral.sub(
+          feeStatus.totalFeeAmount
+        )
+      )
+        ? amount = balance
+          .sub(globalPositionData.rawTotalPositionCollateral)
+          .sub(feeStatus.totalFeeAmount)
+        : amount = FixedPoint.Unsigned(0);
     } else {
       // If it's not the collateral currency, send the entire balance.
       amount = balance;
@@ -749,11 +754,11 @@ library SynthereumCreditLineLib {
     );
 
     // calculate the potential liquidatable portion
-    // if the minimum collateral is greaater than position collateral then the position is undercollateralized
+    // if the minimum collateral is greaater than position collateral then the position is undercollateralize
     FixedPoint.Unsigned memory liquidatableTokens =
       thresholdValue.isGreaterThan(collateral)
-        ? thresholdValue.sub(collateral).div(oraclePrice).mul(
-          10**(18 - collateralDecimals)
+        ? thresholdValue.sub(collateral).mul(10**(18 - collateralDecimals)).div(
+          oraclePrice
         )
         : FixedPoint.fromUnscaledUint(0);
 

@@ -83,10 +83,7 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
    * @return collateralLiquidated Amount of received collateral equal to the value of tokens liquidated
    * @return collateralReward Amount of received collateral as reward for the liquidation
    */
-  function liquidate(
-    address sponsor,
-    FixedPoint.Unsigned calldata maxTokensToLiquidate
-  )
+  function liquidate(address sponsor, uint256 maxTokensToLiquidate)
     external
     returns (
       uint256 tokensLiquidated,
