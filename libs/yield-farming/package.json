@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "format": "NODE_OPTIONS=--max-old-space-size=8192 prettier --write .",
+    "format:check": "prettier --check .",
     "format:sol": "prettier --write './contracts/**/*.sol'",
-    "build": "yarn build:solidity && yarn build:tsc && yarn build:nx-necessary",
+    "build": "yarn build:solidity && yarn build:nx-necessary",
     "build:solidity": "hardhat compile",
-    "build:tsc": "tsc -p ./tsconfig.lib.json",
     "build:nx-necessary": "cp ./package.json ./dist/",
     "compile": "hardhat compile",
     "migrate-elysianfields": "MIGRATION_TYPE=elysianfields hardhat test ./test/correct-migration.js",

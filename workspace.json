@@ -505,9 +505,11 @@
       "generators": {},
       "targets": {
         "lint": {
-          "executor": "@nrwl/linter:eslint",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "lintFilePatterns": ["libs/yield-farming/src/**/*.ts"]
+            "command": "yarn format:check",
+            "cwd": "libs/yield-farming",
+            "color": true
           }
         },
         "test": {
