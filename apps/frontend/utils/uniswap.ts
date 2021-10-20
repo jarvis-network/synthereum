@@ -26,6 +26,7 @@ import { useDispatch } from 'react-redux';
 import { addToAddressIsContractCache } from '@/state/slices/cache';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 import { addresses } from '@/data/addresses';
+import { useMemoOne } from 'use-memo-one';
 
 const quickswapFactoryAddress = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
 
@@ -511,6 +512,9 @@ export function useV2Pairs(
   );
   const dispatch = useDispatch();
   const calls = useRef<Record<string, number>>({});
+  useMemoOne(() => {
+    calls.current = {};
+  }, [networkId]);
   useEffect(() => {
     if (!web3 || !networkId) return;
 
@@ -520,7 +524,7 @@ export function useV2Pairs(
         Object.prototype.hasOwnProperty.call(addressIsContractCache, address) ||
         calls.current[address] === networkId
       )
-        return;
+        continue;
 
       calls.current[address] = networkId;
 
@@ -813,7 +817,13 @@ const ADDITIONAL_BASES: {
 
 const CUSTOM_BASES: {
   [chainId: number]: { [tokenAddress: string]: Token[] };
-} = {};
+} = {
+  '137': {
+    [addresses[137].JRT]: [
+      new Token(137, addresses[137].ETH, 18, 'ETH', 'Ether'),
+    ],
+  },
+};
 
 export function useAllCurrencyCombinations(
   currencyA?: Currency,
