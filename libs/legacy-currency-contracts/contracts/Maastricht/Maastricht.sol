@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import '../FixedRateWrapper.sol';
+import '../fixed-rate-currency/FixedRateWrapper.sol';
 
 contract Maastricht is FixedRateWrapper {
   /** @notice - The Maastricht contract inherits from the FixedRateWrapper and

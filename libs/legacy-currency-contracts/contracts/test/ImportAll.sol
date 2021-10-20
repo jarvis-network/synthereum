@@ -66,7 +66,6 @@ import {
 import {
   MockRandomAggregator
 } from '@jarvis-network/synthereum-contracts/contracts/test/MockRandomAggregator.sol';
-
 import {FixedRateWrapper} from '../fixed-rate-currency/FixedRateWrapper.sol';
 import {FixedRateCurrency} from '../fixed-rate-currency/FixedRateCurrency.sol';
 import {

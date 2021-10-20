@@ -66,10 +66,13 @@ createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
 modifiyGetMinimumBuild();
 modifiyVerifyMinimumBuild();
 modifyCompile(
-  require.resolve('./contracts/test/Import.sol'),
+  require.resolve('./contracts/test/ImportAll.sol'),
   resolve('./deploy'),
 );
-modifyTest(require.resolve('./contracts/test/Import.sol'), resolve('./deploy'));
+modifyTest(
+  require.resolve('./contracts/test/ImportAll.sol'),
+  resolve('./deploy'),
+);
 modifyAccounts();
 modifyDeploy(resolve('.'));
 compile();
