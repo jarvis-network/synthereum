@@ -11,16 +11,11 @@ const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
 const CreditLine = artifacts.require('SynthereumCreditLine');
 const CreditLineLib = artifacts.require('SynthereumCreditLineLib');
 
-// Other UMA related contracts and mocks
-const Store = artifacts.require('Store');
-const MockOracle = artifacts.require('MockOracle');
 const MockOnchainOracle = artifacts.require('MockOnChainOracle');
 const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
-const TestnetERC20 = artifacts.require('TestnetERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const SynthereumManager = artifacts.require('SynthereumManager');
-const Timer = artifacts.require('Timer');
 
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineControllerMock = artifacts.require('CreditLineControllerMock');
@@ -322,8 +317,8 @@ contract('Synthereum CreditLine ', function (accounts) {
     truffleAssert.eventEmitted(tx, 'PositionCreated', ev => {
       return (
         ev.sponsor == sponsor &&
-          ev.collateralAmount == createCollateral.toString() &&
-          ev.tokenAmount == createTokens.toString(),
+        ev.collateralAmount == createCollateral.toString() &&
+        ev.tokenAmount == createTokens.toString() &&
         ev.feeAmount == feeAmount.toString()
       );
     });
@@ -1189,6 +1184,153 @@ contract('Synthereum CreditLine ', function (accounts) {
     assert.equal(collateralPaid.toString(), toWei('300'));
   });
 
+  describe.only('Liquidation', () => {
+    let liquidationRewardPct = toBN(toWei('0.1'));
+    let createTokens, createCollateral;
+    let liquidatorCollateral, liquidatorTokens;
+
+    beforeEach(async () => {
+      await creditLineControllerInstance.setFeePercentage(
+        [creditLine.address],
+        [toWei('0')],
+        { from: maintainers },
+      );
+
+      // Create the initial creditLine.
+      createTokens = toBN(toWei('100'));
+      createCollateral = toBN(toWei('120'));
+
+      await collateral.approve(creditLine.address, createCollateral, {
+        from: sponsor,
+      });
+      await creditLine.create(createCollateral, createTokens, {
+        from: sponsor,
+      });
+
+      // create liquidator position to have tokens
+      liquidatorCollateral = toBN(toWei('100000'));
+      liquidatorTokens = toBN(toWei('100'));
+
+      await collateral.approve(creditLine.address, liquidatorCollateral, {
+        from: other,
+      });
+      await creditLine.create(liquidatorCollateral, liquidatorTokens, {
+        from: other,
+      });
+
+      // set liquidator percentage
+      await creditLineControllerInstance.setLiquidationRewardPercentage(
+        [creditLine.address],
+        [{ rawValue: liquidationRewardPct.toString() }],
+        { from: maintainers },
+      );
+    });
+
+    it('Correctly liquidates an undercollateralised amount', async () => {
+      // change price
+      const updatedPrice = toBN(toWei('1.25'));
+      await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
+
+      const collateralRequirement = createTokens
+        .mul(updatedPrice)
+        .div(toBN(Math.pow(10, 18)))
+        .mul(overCollateralizationFactor)
+        .div(toBN(Math.pow(10, 18)));
+      assert.equal(
+        collateralRequirement.sub(createCollateral) > 0,
+        true,
+        'Not undercollateralised',
+      );
+
+      // let inversePrice = toBN(toWei('1')).div(updatedPrice);
+      let deltaCollateral = collateralRequirement.sub(createCollateral);
+      const maxLiquidatableTokens = deltaCollateral
+        .mul(toBN(Math.pow(10, 18)))
+        .div(updatedPrice);
+      const expectedLiquidatedCollateral = deltaCollateral;
+      let expectedLiquidatorReward = expectedLiquidatedCollateral
+        .mul(liquidationRewardPct)
+        .div(toBN(Math.pow(10, 18)));
+
+      let liquidatorCollateralBalanceBefore = await collateral.balanceOf.call(
+        other,
+      );
+      let liquidatorTokenBalanceBefore = await tokenCurrency.balanceOf.call(
+        other,
+      );
+
+      // someone liquidates
+      await tokenCurrency.approve(creditLine.address, maxLiquidatableTokens, {
+        from: other,
+      });
+      let tx = await creditLine.liquidate(sponsor, maxLiquidatableTokens, {
+        from: other,
+      });
+
+      // check event
+      truffleAssert.eventEmitted(tx, 'Liquidation', ev => {
+        return (
+          ev.sponsor == sponsor &&
+          ev.liquidator == other &&
+          ev.liquidatedTokens.toString() == maxLiquidatableTokens.toString() &&
+          ev.liquidatedCollateral.toString() ==
+            expectedLiquidatedCollateral.toString() &&
+          ev.collateralReward.toString() == expectedLiquidatorReward.toString()
+        );
+      });
+
+      // check balances
+      let liquidatorCollateralBalanceAfter = await collateral.balanceOf.call(
+        other,
+      );
+      let liquidatorTokenBalanceAfter = await tokenCurrency.balanceOf.call(
+        other,
+      );
+
+      assert.equal(
+        liquidatorCollateralBalanceAfter.toString(),
+        liquidatorCollateralBalanceBefore
+          .add(expectedLiquidatedCollateral)
+          .add(expectedLiquidatorReward)
+          .toString(),
+      );
+      assert.equal(
+        liquidatorTokenBalanceAfter.toString(),
+        liquidatorTokenBalanceBefore.sub(maxLiquidatableTokens).toString(),
+      );
+
+      // check sponsor position
+      let {
+        tokensOutstanding,
+        rawCollateral,
+      } = await creditLine.positions.call(sponsor);
+      tokensOutstanding = toBN(tokensOutstanding.rawValue);
+      rawCollateral = toBN(rawCollateral.rawValue);
+      assert.equal(
+        tokensOutstanding.toString(),
+        createTokens.sub(maxLiquidatableTokens).toString(),
+      );
+      assert.equal(
+        rawCollateral.toString(),
+        createCollateral.sub(expectedLiquidatedCollateral).toString(),
+      );
+
+      const collateralRequirementNewPosition = tokensOutstanding
+        .mul(updatedPrice)
+        .div(toBN(Math.pow(10, 18)))
+        .mul(overCollateralizationFactor)
+        .div(toBN(Math.pow(10, 18)));
+      console.log(
+        rawCollateral.toString(),
+        collateralRequirementNewPosition.toString(),
+      );
+      assert.equal(
+        rawCollateral.sub(collateralRequirementNewPosition).gte(toBN(0)),
+        true,
+        'Not collateralised',
+      );
+    });
+  });
   /*
   it('Undercapitalized contract', async function () {
     await creditLineControllerInstance.setDaoFee(creditLine.address, {
