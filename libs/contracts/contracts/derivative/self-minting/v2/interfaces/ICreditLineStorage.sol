@@ -106,4 +106,11 @@ interface ICreditLineStorage {
     uint256 numTokensBurnt;
     uint256 liquidatedCollateral;
   }
+
+  struct ExecuteLiquidationData {
+    FixedPoint.Unsigned tokensToLiquidate;
+    FixedPoint.Unsigned collateralValueLiquidatedTokens;
+    FixedPoint.Unsigned collateralLiquidated;
+    FixedPoint.Unsigned liquidatorReward;
+  }
 }
