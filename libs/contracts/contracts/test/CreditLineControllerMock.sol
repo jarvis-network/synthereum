@@ -126,17 +126,18 @@ contract CreditLineControllerMock {
 
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
-    uint256[] calldata _liquidationRewards
+    FixedPoint.Unsigned[] calldata _liquidationRewards
   ) external {
-    for (uint256 j; j < selfMintingDerivatives.length; j++) {
+    for (uint256 j = 0; j < selfMintingDerivatives.length; j++) {
       require(
-        _liquidationRewards[j] > 0 && _liquidationRewards[j] < 1,
-        'Liquidation reward must be between 0 and 100%'
+        _liquidationRewards[j].isGreaterThan(0) &&
+          _liquidationRewards[j].isLessThanOrEqual(
+            FixedPoint.fromUnscaledUint(1)
+          ),
+        'Liquidation reward must be between 0 and 1 (100%)'
       );
 
-      liquidationReward[selfMintingDerivatives[j]] = FixedPoint.Unsigned(
-        _liquidationRewards[j]
-      );
+      liquidationReward[selfMintingDerivatives[j]] = _liquidationRewards[j];
     }
   }
 
