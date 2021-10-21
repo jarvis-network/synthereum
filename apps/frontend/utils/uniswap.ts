@@ -926,3 +926,25 @@ export function isTradeBetter(
     .multiply(minimumDelta.add(ONE_HUNDRED_PERCENT))
     .lessThan(tradeB.executionPrice);
 }
+
+export const BIPS_BASE = JSBI.BigInt(10000);
+const IMPACT_TIERS = [
+  new Percent(JSBI.BigInt(1500), BIPS_BASE), // 15%
+  new Percent(JSBI.BigInt(500), BIPS_BASE), // 5%
+  new Percent(JSBI.BigInt(300), BIPS_BASE), // 3%
+  new Percent(JSBI.BigInt(100), BIPS_BASE), // 1%
+];
+
+type WarningSeverity = 0 | 1 | 2 | 3 | 4;
+
+export function warningSeverity(
+  priceImpact: Percent | undefined,
+): WarningSeverity {
+  if (!priceImpact) return 4;
+  let impact: WarningSeverity = IMPACT_TIERS.length as WarningSeverity;
+  for (const impactLevel of IMPACT_TIERS) {
+    if (impactLevel.lessThan(priceImpact)) return impact;
+    impact--;
+  }
+  return 0;
+}

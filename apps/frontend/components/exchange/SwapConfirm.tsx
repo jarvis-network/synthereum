@@ -15,11 +15,13 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 
 import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
 
+import { useAssets } from '@/utils/useAssets';
+import { assetsPolygon } from '@/data/assets';
+import { warningSeverity } from '@/utils/uniswap';
+
 import { Loader } from '../Loader';
 
 import { Fees } from './Fees';
-import { useAssets } from '@/utils/useAssets';
-import { assetsPolygon } from '@/data/assets';
 
 interface SwapConfirmProps {
   onConfim: () => void;
@@ -108,6 +110,17 @@ const TokenValue = styled.span`
 
 const CustomFees = styled(Fees)``;
 
+const PriceImpact = styled(Value)<{ severity: 0 | 1 | 2 | 3 | 4 }>`
+  color: ${props =>
+    props.severity === 0 || props.severity === 1
+      ? 'unset'
+      : props.severity === 2
+      ? '#ffd166'
+      : '#ff3838'};
+  font-weight: ${props =>
+    props.severity > 2 ? '600' : props.severity > 0 ? '500' : 'normal'};
+`;
+
 type HasSymbol = { symbol: string };
 
 export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
@@ -126,6 +139,7 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
     maximumSynthSentValue,
     shouldSwapAndMint,
     path,
+    priceImpact,
   } = useExchangeContext();
 
   const minReceiveValue = minimumSynthReceiveValue || minimumReceiveValue;
@@ -241,6 +255,14 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
                   </React.Fragment>
                 ))}
             </Value>
+          </Line>
+        )}
+        {priceImpact && (
+          <Line>
+            <Key>Price Impact:</Key>
+            <PriceImpact severity={warningSeverity(priceImpact)}>
+              {priceImpact.toFixed(2)}%
+            </PriceImpact>
           </Line>
         )}
         <OnMobile>

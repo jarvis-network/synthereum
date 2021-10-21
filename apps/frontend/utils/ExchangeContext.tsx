@@ -817,6 +817,7 @@ function useExchangeValues() {
     inputAmount: trade?.inputAmount.toFixed().replace('.', ''),
     outputAmount: trade?.outputAmount.toFixed().replace('.', ''),
     path: trade?.route.path,
+    priceImpact: trade?.priceImpact,
     maxMint,
     slippage,
   };
