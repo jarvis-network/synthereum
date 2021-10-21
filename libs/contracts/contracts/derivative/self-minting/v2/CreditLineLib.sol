@@ -196,7 +196,6 @@ library SynthereumCreditLineLib {
       .totalTokensOutstanding
       .add(numTokens);
 
-    // TODO
     checkMintLimit(globalPositionData, positionManagerData);
 
     // pull collateral
@@ -375,6 +374,9 @@ library SynthereumCreditLineLib {
       uint256
     )
   {
+    // to avoid stack too deep
+    ICreditLineStorage.ExecuteLiquidationData memory executeLiquidationData;
+
     // make sure position is undercollateralised
     (bool isCollateralised, FixedPoint.Unsigned memory maxTokensLiquidatable) =
       positionManagerData._checkCollateralization(
@@ -383,39 +385,73 @@ library SynthereumCreditLineLib {
       );
     require(!isCollateralised, 'Position is properly collateralised');
 
-    // reduce LP position and global position
-    FixedPoint.Unsigned memory tokensToLiquidate =
-      maxTokensLiquidatable.isGreaterThan(numSynthTokens)
-        ? numSynthTokens
-        : maxTokensLiquidatable;
+    // calculate tokens to liquidate
+    executeLiquidationData.tokensToLiquidate = maxTokensLiquidatable
+      .isGreaterThan(numSynthTokens)
+      ? numSynthTokens
+      : maxTokensLiquidatable;
 
-    FixedPoint.Unsigned memory collateralLiquidated =
-      positionToLiquidate._reducePosition(
-        globalPositionData,
-        tokensToLiquidate
+    // calculate collateral value of those tokens
+    executeLiquidationData.collateralValueLiquidatedTokens = positionManagerData
+      .calculateCollateralAmount(executeLiquidationData.tokensToLiquidate);
+
+    // calculate proportion of collateral liquidated from position
+    executeLiquidationData.collateralLiquidated = executeLiquidationData
+      .tokensToLiquidate
+      .div(positionToLiquidate.tokensOutstanding)
+      .mul(positionToLiquidate.rawCollateral);
+
+    // compute final liquidation outcome
+    FixedPoint.Unsigned memory liquidatorReward;
+    if (
+      executeLiquidationData.collateralLiquidated.isGreaterThan(
+        executeLiquidationData.collateralValueLiquidatedTokens
+      )
+    ) {
+      // position is still capitalised - liquidator profits
+      executeLiquidationData.liquidatorReward = (
+        executeLiquidationData.collateralLiquidated.sub(
+          executeLiquidationData.collateralValueLiquidatedTokens
+        )
+      )
+        .mul(positionManagerData._getLiquidationReward());
+      executeLiquidationData.collateralLiquidated = executeLiquidationData
+        .collateralValueLiquidatedTokens
+        .add(liquidatorReward);
+    } else {
+      // undercapitalised - take min between position total collateral and value of burned tokens - liquidator don't make profit
+      executeLiquidationData.collateralLiquidated = FixedPoint.min(
+        executeLiquidationData.collateralValueLiquidatedTokens,
+        positionToLiquidate.rawCollateral
       );
+      executeLiquidationData.liquidatorReward = FixedPoint.Unsigned(0);
+    }
 
-    FixedPoint.Unsigned memory liquidatorReward =
-      collateralLiquidated.mul(positionManagerData._getLiquidationReward());
+    // reduce position
+    positionToLiquidate._reducePosition(
+      globalPositionData,
+      executeLiquidationData.tokensToLiquidate,
+      executeLiquidationData.collateralLiquidated
+    );
 
     // transfer tokens from liquidator to here and burn them
     _burnLiquidatedTokens(
       positionManagerData,
       msg.sender,
-      tokensToLiquidate.rawValue
+      executeLiquidationData.tokensToLiquidate.rawValue
     );
 
     // pay sender with collateral unlocked + rewards
     positionManagerData.collateralToken.safeTransfer(
       msg.sender,
-      collateralLiquidated.add(liquidatorReward).rawValue
+      executeLiquidationData.collateralLiquidated.rawValue
     );
 
     // return values
     return (
-      collateralLiquidated.rawValue,
-      tokensToLiquidate.rawValue,
-      liquidatorReward.rawValue
+      executeLiquidationData.collateralLiquidated.rawValue,
+      executeLiquidationData.tokensToLiquidate.rawValue,
+      executeLiquidationData.liquidatorReward.rawValue
     );
   }
 
@@ -706,22 +742,15 @@ library SynthereumCreditLineLib {
   function _reducePosition(
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FixedPoint.Unsigned memory tokensToLiquidate
-  ) internal returns (FixedPoint.Unsigned memory collateralUnlocked) {
-    // calculate collateral to unlock
-    FixedPoint.Unsigned memory fractionRedeemed =
-      tokensToLiquidate.div(positionToLiquidate.tokensOutstanding);
-
-    collateralUnlocked = fractionRedeemed.mul(
-      positionToLiquidate.rawCollateral
-    );
-
+    FixedPoint.Unsigned memory tokensToLiquidate,
+    FixedPoint.Unsigned memory collateralToLiquidate
+  ) internal {
     // reduce position
     positionToLiquidate.tokensOutstanding = positionToLiquidate
       .tokensOutstanding
       .sub(tokensToLiquidate);
     positionToLiquidate.rawCollateral = positionToLiquidate.rawCollateral.sub(
-      collateralUnlocked
+      collateralToLiquidate
     );
 
     // update global position data
@@ -730,7 +759,7 @@ library SynthereumCreditLineLib {
       .sub(tokensToLiquidate);
     globalPositionData.rawTotalPositionCollateral = globalPositionData
       .rawTotalPositionCollateral
-      .sub(collateralUnlocked);
+      .sub(collateralToLiquidate);
   }
 
   function _checkCollateralization(
@@ -754,7 +783,7 @@ library SynthereumCreditLineLib {
     );
 
     // calculate the potential liquidatable portion
-    // if the minimum collateral is greaater than position collateral then the position is undercollateralize
+    // if the minimum collateral is greaater than position collateral then the position is undercollateralizej
     FixedPoint.Unsigned memory liquidatableTokens =
       thresholdValue.isGreaterThan(collateral)
         ? thresholdValue.sub(collateral).mul(10**(18 - collateralDecimals)).div(
@@ -857,5 +886,19 @@ library SynthereumCreditLineLib {
     returns (uint256 decimals)
   {
     decimals = collateralToken.decimals();
+  }
+
+  /**
+   * @notice Calculate collateral amount starting from an amount of synthtic token
+   * @param numTokens Amount of synthetic tokens from which you want to calculate collateral amount
+   * @return collateralAmount Amount of collateral after on-chain oracle conversion
+   */
+  function calculateCollateralAmount(
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
+    FixedPoint.Unsigned memory numTokens
+  ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
+    collateralAmount = numTokens.mul(_getOraclePrice(positionManagerData)).div(
+      10**(18 - getCollateralDecimals(positionManagerData.collateralToken))
+    );
   }
 }
