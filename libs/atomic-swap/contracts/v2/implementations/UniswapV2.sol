@@ -96,9 +96,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
         // refund eventual eth leftover
         if (minOutOrMaxIn > amountsOut[0]) {
-          (bool success, ) =
-            msg.sender.call{value: minOutOrMaxIn.sub(amountsOut[0])}('');
-          require(success, 'Refund eth failed');
+          payable(msg.sender).transfer(minOutOrMaxIn.sub(amountsOut[0]));
         }
       } else {
         //swapTokensForExactTokens

@@ -133,8 +133,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           // take leftover eth from the router
           router.refundETH();
           //send it to user
-          (bool success, ) = msg.sender.call{value: address(this).balance}('');
-          require(success, 'Refund eth failed');
+          payable(msg.sender).transfer(address(this).balance);
         } else {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
