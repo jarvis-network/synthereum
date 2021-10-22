@@ -14,8 +14,9 @@ import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
+import {IAtomicSwapProxy} from './interfaces/IProxy.sol';
 
-contract AtomicSwapProxy is AccessControlEnumerable {
+contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
   using Address for address;
 
   IAtomicSwapV2 public atomicSwapIface;
@@ -118,7 +119,7 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     bytes memory extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256[2] memory amounts) {
+  ) external payable override returns (uint256[2] memory amounts) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -154,7 +155,7 @@ contract AtomicSwapProxy is AccessControlEnumerable {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256[2] memory amounts) {
+  ) external override returns (uint256[2] memory amounts) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
