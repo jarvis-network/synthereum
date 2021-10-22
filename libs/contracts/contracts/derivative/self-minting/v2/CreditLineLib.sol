@@ -20,8 +20,6 @@ import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {FeePayerPartyLib} from '../../common/FeePayerPartyLib.sol';
-import {FeePayerParty} from '../../common/FeePayerParty.sol';
 import {SynthereumCreditLine} from './CreditLine.sol';
 import {
   ISynthereumPriceFeed
@@ -36,9 +34,7 @@ library SynthereumCreditLineLib {
   using SynthereumCreditLineLib for ICreditLineStorage.PositionData;
   using SynthereumCreditLineLib for ICreditLineStorage.PositionManagerData;
   using SynthereumCreditLineLib for ICreditLineStorage.FeeStatus;
-  using SynthereumCreditLineLib for FeePayerParty.FeePayerData;
   using SynthereumCreditLineLib for FixedPoint.Unsigned;
-  using FeePayerPartyLib for FixedPoint.Unsigned;
 
   //----------------------------------------
   // Events

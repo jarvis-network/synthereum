@@ -554,24 +554,6 @@ contract SynthereumCreditLine is
   //----------------------------------------
   // Internal functions
   //----------------------------------------
-
-  // TODO
-  // /** @notice Gets the adjusted collateral after substracting fee
-  //  * @return adjusted net collateral
-  //  */
-  // function _pfc()
-  //   internal
-  //   view
-  //   virtual
-  //
-  //   returns (FixedPoint.Unsigned memory)
-  // {
-  //   return
-  //     globalPositionData.rawTotalPositionCollateral.getFeeAdjustedCollateral(
-  //       feePayerData.cumulativeFeeMultiplier
-  //     );
-  // }
-
   function _getPositionData(address sponsor)
     internal
     view
