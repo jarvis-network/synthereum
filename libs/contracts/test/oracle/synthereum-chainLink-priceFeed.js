@@ -122,9 +122,19 @@ contract('Synthereum chainlink price feed', function (accounts) {
           ev.aggregator == newAggregatorAddress
         );
       });
+      assert.equal(
+        await priceFeedInstance.isPriceSupported.call(newAggregatorIdentifier),
+        true,
+        'Price identifier not supported',
+      );
       await priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
         from: maintainer,
       });
+      assert.equal(
+        await priceFeedInstance.isPriceSupported.call(newAggregatorIdentifier),
+        false,
+        'Price identifier supported',
+      );
     });
     it('Update aggregator', async () => {
       await priceFeedInstance.setAggregator(
@@ -411,7 +421,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
       );
       assert.equal(prevData.decimals, 8, 'Wrong previous decimals');
     });
-    it('Revert if oracle price of aggregator is negative or null', async () => {
+    it('Revert if oracle price of aggregator is negative', async () => {
       let newAnswer = web3Utils.toWei('-140', 'mwei');
       const updateTx = await aggregator.updateAnswer(newAnswer);
       await truffleAssert.reverts(

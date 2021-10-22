@@ -239,6 +239,16 @@ library SynthereumLiquidityPoolLib {
       'Synthetic token has more or less than 18 decimals'
     );
 
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+      );
+
+    require(
+      priceFeed.isPriceSupported(_priceIdentifier),
+      'Price identifier not supported'
+    );
+
     self.finder = _finder;
     self.version = _version;
     self.collateralToken = _collateralToken;

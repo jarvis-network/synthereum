@@ -224,6 +224,22 @@ contract SynthereumChainlinkPriceFeed is
     );
   }
 
+  /**
+   * @notice Return if price identifier is supported
+   * @param priceIdentifier Price feed identifier
+   * @return isSupported True if price is supported otherwise false
+   */
+  function isPriceSupported(bytes32 priceIdentifier)
+    external
+    view
+    override
+    returns (bool isSupported)
+  {
+    isSupported = address(aggregators[priceIdentifier]) != address(0)
+      ? true
+      : false;
+  }
+
   //----------------------------------------
   // Internal view functions
   //----------------------------------------
