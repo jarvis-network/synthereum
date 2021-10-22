@@ -5,6 +5,7 @@ import '../BaseAtomicSwap.sol';
 import {
   IUniswapV2Router02
 } from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
+import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
 
 contract UniV2AtomicSwap is BaseAtomicSwap {
   using SafeERC20 for IERC20;
@@ -28,7 +29,11 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256[2] memory amounts) {
+  )
+    external
+    payable
+    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+  {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -52,8 +57,11 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       );
     }
 
+    returnValues.inputToken = tokenSwapPath[0];
+    returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
+
     if (isExactInput) {
-      amounts[0] = msg.value > 0 ? msg.value : exactAmount;
+      returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
       if (msg.value > 0) {
         //swapExactETHForTokens into this wallet
         mintParams.collateralAmount = router.swapExactETHForTokens{
@@ -130,7 +138,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       }
 
       //return value
-      amounts[0] = amountsOut[0];
+      returnValues.inputAmount = amountsOut[0];
       mintParams.collateralAmount = amountsOut[tokenSwapPath.length - 1];
     }
 
@@ -140,7 +148,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       mintParams.collateralAmount
     );
 
-    (amounts[1], ) = synthereumPool.mint(mintParams);
+    (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
@@ -153,7 +161,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256[2] memory amounts) {
+  ) external returns (IAtomicSwapProxy.ReturnValues memory returnValues) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -186,10 +194,12 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         address(synthereumPool),
         redeemParams.numTokens
       );
+
+      returnValues.inputToken = address(synthTokenInstance);
     }
 
-    // store first return value
-    amounts[0] = redeemParams.numTokens;
+    returnValues.outputToken = outputTokenAddress;
+    returnValues.inputAmount = redeemParams.numTokens;
 
     // redeem to collateral and approve swap
     redeemParams.recipient = address(this);
@@ -246,7 +256,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     }
 
     // store second return value - output token amount
-    amounts[1] = amountsOut[tokenSwapPath.length - 1];
+    returnValues.outputAmount = amountsOut[tokenSwapPath.length - 1];
   }
 
   function decodeImplementationInfo(bytes calldata info)

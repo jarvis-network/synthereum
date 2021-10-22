@@ -5,6 +5,20 @@ import {
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
 interface IAtomicSwapProxy {
+  // Role structure
+  struct Roles {
+    address admin;
+    address[] maintainers;
+  }
+
+  // return values from delegate call
+  struct ReturnValues {
+    address inputToken;
+    address outputToken;
+    uint256 inputAmount;
+    uint256 outputAmount;
+  }
+
   function swapAndMint(
     string calldata implementationId,
     bool isExactInput,

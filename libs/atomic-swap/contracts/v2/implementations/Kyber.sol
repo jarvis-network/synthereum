@@ -5,6 +5,7 @@ pragma abicoder v2;
 
 import '../BaseAtomicSwap.sol';
 import '../interfaces/IKyberRouter.sol';
+import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
 
 contract KyberAtomicSwap is BaseAtomicSwap {
   using SafeMath for uint256;
@@ -21,7 +22,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   receive() external payable {}
 
   /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
-  /// @return amounts = [inputAmount, outputAmount]
+  /// @return returnValues = [inputToken, outputToken, inputAmount, outputAmount]
   function swapToCollateralAndMint(
     bytes calldata info,
     bool isExactInput,
@@ -30,7 +31,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256[2] memory amounts) {
+  )
+    external
+    payable
+    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+  {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -58,10 +63,12 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         'Wrong collateral instance'
       );
     }
+    returnValues.inputToken = address(tokenSwapPath[0]);
+    returnValues.outputToken = address(tokenSwapPath[tokenSwapPath.length - 1]);
 
     // swap to collateral token (exact[input/output][ETH/ERC20])
     if (isExactInput) {
-      amounts[0] = msg.value > 0 ? msg.value : exactAmount;
+      returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
       if (msg.value > 0) {
         // swapExactETHForTokens
         mintParams.collateralAmount = kyberRouter.swapExactETHForTokens{
@@ -150,7 +157,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       }
 
       //return value
-      amounts[0] = amountsOut[0];
+      returnValues.inputAmount = amountsOut[0];
       mintParams.collateralAmount = amountsOut[tokenSwapPath.length - 1];
     }
 
@@ -162,7 +169,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     // mint jSynth to mintParams.recipient (supposedly msg.sender)
     // returns the output amount
-    (amounts[1], ) = synthereumPool.mint(mintParams);
+    (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
@@ -172,18 +179,14 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256[2] memory amounts) {
+  ) external returns (IAtomicSwapProxy.ReturnValues memory returnValues) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
-
-    // insantiate router
-    IDMMExchangeRouter kyberRouter =
-      IDMMExchangeRouter(implementationInfo.routerAddress);
 
     // unpack the extraParams
     (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
@@ -202,6 +205,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       'Wrong collateral instance'
     );
 
+    address outputTokenAddress =
+      address(tokenSwapPath[tokenSwapPath.length - 1]);
     {
       IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
@@ -215,10 +220,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         address(synthereumPool),
         redeemParams.numTokens
       );
-    }
 
-    // store first return value
-    amounts[0] = redeemParams.numTokens;
+      returnValues.inputToken = address(synthTokenInstance);
+      returnValues.outputToken = outputTokenAddress;
+      returnValues.inputAmount = redeemParams.numTokens;
+    }
 
     // redeem to collateral and approve swap
     redeemParams.recipient = address(this);
@@ -232,9 +238,12 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     uint256[] memory amountsOut;
     if (isExactInput) {
+      // insantiate router
+      IDMMExchangeRouter kyberRouter =
+        IDMMExchangeRouter(implementationInfo.routerAddress);
+
       // collateralOut as exactInput
-      address(tokenSwapPath[tokenSwapPath.length - 1]) ==
-        implementationInfo.nativeCryptoAddress
+      outputTokenAddress == implementationInfo.nativeCryptoAddress
         ? amountsOut = kyberRouter.swapExactTokensForETH(
           collateralOut,
           minOutOrMaxIn,
@@ -252,9 +261,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         redeemParams.expiration
       );
     } else {
+      // insantiate router
+      IDMMExchangeRouter kyberRouter =
+        IDMMExchangeRouter(implementationInfo.routerAddress);
       // collateralOut as maxInput
-      address(tokenSwapPath[tokenSwapPath.length - 1]) ==
-        implementationInfo.nativeCryptoAddress
+      outputTokenAddress == implementationInfo.nativeCryptoAddress
         ? amountsOut = kyberRouter.swapTokensForExactETH(
           exactAmount,
           collateralOut,
@@ -282,7 +293,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     }
 
     // store second return value - output token amount
-    amounts[1] = amountsOut[tokenSwapPath.length - 1];
+    returnValues.outputAmount = amountsOut[tokenSwapPath.length - 1];
   }
 
   function decodeImplementationInfo(bytes calldata info)

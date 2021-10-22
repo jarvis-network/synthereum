@@ -5,6 +5,7 @@ pragma abicoder v2;
 
 import '../BaseAtomicSwap.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
+import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
 
 interface IUniswapV3Router is ISwapRouter {
   function refundETH() external payable;
@@ -32,7 +33,11 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable returns (uint256[2] memory amounts) {
+  )
+    external
+    payable
+    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+  {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -52,8 +57,11 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       'Wrong collateral instance'
     );
 
+    returnValues.inputToken = tokenSwapPath[0];
+    returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
+
     if (isExactInput) {
-      amounts[0] = msg.value > 0 ? msg.value : exactAmount;
+      returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
       if (msg.value > 0) {
         // eth as input
         exactAmount = msg.value;
@@ -93,7 +101,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
-      (amounts[1], ) = synthereumPool.mint(mintParams);
+      (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
     } else {
       // exact output (collateral)
       if (msg.value > 0) {
@@ -125,10 +133,10 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           amountInMaximum: minOutOrMaxIn
         });
 
-      amounts[0] = router.exactOutput{value: msg.value}(params);
+      returnValues.inputAmount = router.exactOutput{value: msg.value}(params);
 
       // refund leftover tokens
-      if (minOutOrMaxIn > amounts[0]) {
+      if (minOutOrMaxIn > returnValues.inputAmount) {
         if (msg.value > 0) {
           // take leftover eth from the router
           router.refundETH();
@@ -138,7 +146,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
             msg.sender,
-            minOutOrMaxIn.sub(amounts[0])
+            minOutOrMaxIn.sub(returnValues.inputAmount)
           );
         }
       }
@@ -152,7 +160,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
       mintParams.collateralAmount = exactAmount;
-      (amounts[1], ) = synthereumPool.mint(mintParams);
+      (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
     }
   }
 
@@ -166,7 +174,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (uint256[2] memory amounts) {
+  ) external returns (IAtomicSwapProxy.ReturnValues memory returnValues) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -199,8 +207,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         redeemParams.numTokens
       );
 
-      // store first return value
-      amounts[0] = redeemParams.numTokens;
+      // store return values
+      returnValues.inputToken = address(synthTokenInstance);
+      returnValues.inputAmount = redeemParams.numTokens;
       redeemParams.recipient = address(this);
       isExactInput
         ? (exactAmount, ) = synthereumPool.redeem(redeemParams)
@@ -224,7 +233,10 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           minOutOrMaxIn
         );
 
-      amounts[1] = IUniswapV3Router(implementationInfo.routerAddress)
+      returnValues.outputAmount = IUniswapV3Router(
+        implementationInfo
+          .routerAddress
+      )
         .exactInput(params);
     } else {
       // collateralOut as maxInput
@@ -249,7 +261,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         );
       }
 
-      amounts[1] = exactAmount;
+      returnValues.outputAmount = exactAmount;
     }
   }
 

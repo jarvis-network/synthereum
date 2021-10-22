@@ -28,12 +28,6 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
 
   mapping(address => bytes) public dexImplementationInfo;
 
-  // Role structure
-  struct Roles {
-    address admin;
-    address[] maintainers;
-  }
-
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   event RegisterImplementation(
@@ -43,12 +37,9 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     bytes info
   );
   event RemovedImplementation(string id);
-  event SwapAndMint(
-    uint256 inputAmount,
-    uint256 outputAmount,
-    address dexImplementationAddress
-  );
-  event RedeemAndSwap(
+  event Swap(
+    address inputToken,
+    address outputToken,
     uint256 inputAmount,
     uint256 outputAmount,
     address dexImplementationAddress
@@ -141,9 +132,17 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
         )
       );
 
-    amounts = abi.decode(result, (uint256[2]));
+    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
+    amounts[0] = returnValues.inputAmount;
+    amounts[1] = returnValues.outputAmount;
 
-    emit SwapAndMint(amounts[0], amounts[1], implementation);
+    emit Swap(
+      returnValues.inputToken,
+      returnValues.outputToken,
+      returnValues.inputAmount,
+      returnValues.outputAmount,
+      implementation
+    );
   }
 
   function redeemCollateralAndSwap(
@@ -177,8 +176,16 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
         )
       );
 
-    amounts = abi.decode(result, (uint256[2]));
+    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
+    amounts[0] = returnValues.inputAmount;
+    amounts[1] = returnValues.outputAmount;
 
-    emit RedeemAndSwap(amounts[0], amounts[1], implementation);
+    emit Swap(
+      returnValues.inputToken,
+      returnValues.outputToken,
+      returnValues.inputAmount,
+      returnValues.outputAmount,
+      implementation
+    );
   }
 }
