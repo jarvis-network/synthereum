@@ -386,6 +386,22 @@ contract SynthereumCreditLine is
     feeClaimed = positionManagerData.claimFee(feeStatus);
   }
 
+  function isCollateralised(address sponsor)
+    external
+    view
+    override
+    nonReentrantView
+    returns (bool)
+  {
+    PositionData storage positionData = positions[sponsor];
+
+    return
+      positionManagerData._checkCollateralization(
+        positionData.rawCollateral,
+        positionData.tokensOutstanding
+      );
+  }
+
   function getLiquidations(address sponsor)
     external
     view

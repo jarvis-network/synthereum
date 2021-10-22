@@ -1207,6 +1207,9 @@ contract('Synthereum CreditLine ', function (accounts) {
         from: sponsor,
       });
 
+      // check collateralisation from view function
+      assert.equal(await creditLine.isCollateralised.call(sponsor), true);
+
       // create liquidator position to have tokens
       liquidatorCollateral = toBN(toWei('10000'));
       liquidatorTokens = toBN(toWei('2000'));
@@ -1230,6 +1233,9 @@ contract('Synthereum CreditLine ', function (accounts) {
       // change price - position is under collateral requirement but still cover the debt
       const updatedPrice = toBN(toWei('1.1'));
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
+
+      // check collateralisation from view function
+      assert.equal(await creditLine.isCollateralised.call(sponsor), false);
 
       const collateralRequirement = createTokens
         .mul(updatedPrice)
@@ -1337,6 +1343,9 @@ contract('Synthereum CreditLine ', function (accounts) {
       // change price - position is under collateral requirement but still cover the debt
       const updatedPrice = toBN(toWei('1.1'));
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
+
+      // check collateralisation from view function
+      assert.equal(await creditLine.isCollateralised.call(sponsor), false);
 
       const collateralRequirement = createTokens
         .mul(updatedPrice)
