@@ -234,6 +234,11 @@ library SynthereumLiquidityPoolLib {
       'Collateral has more than 18 decimals'
     );
 
+    require(
+      _syntheticToken.decimals() == 18,
+      'Synthetic token has more or less than 18 decimals'
+    );
+
     self.finder = _finder;
     self.version = _version;
     self.collateralToken = _collateralToken;

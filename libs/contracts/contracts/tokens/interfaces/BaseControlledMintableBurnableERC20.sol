@@ -11,6 +11,22 @@ abstract contract BaseControlledMintableBurnableERC20 is
   ERC20,
   IMintableBurnableERC20
 {
+  uint8 private _decimals;
+
+  /**
+   * @notice Constructs the ERC20 token contract
+   * @param _tokenName Name of the token
+   * @param _tokenSymbol Token symbol
+   * @param _tokenDecimals Number of decimals for token
+   */
+  constructor(
+    string memory _tokenName,
+    string memory _tokenSymbol,
+    uint8 _tokenDecimals
+  ) ERC20(_tokenName, _tokenSymbol) {
+    _setupDecimals(_tokenDecimals);
+  }
+
   /**
    * @notice Add Minter role to an account
    * @param account Address to which Minter role will be added
@@ -58,4 +74,28 @@ abstract contract BaseControlledMintableBurnableERC20 is
    * @notice Self renounce the address calling the function from admin, minter and burner role
    */
   function renounceAdminAndMinterAndBurner() external virtual;
+
+  /**
+   * @notice Returns the number of decimals used to get its user representation.
+   */
+  function decimals()
+    public
+    view
+    virtual
+    override(ERC20, IMintableBurnableERC20)
+    returns (uint8)
+  {
+    return _decimals;
+  }
+
+  /**
+   * @dev Sets {decimals} to a value other than the default one of 18.
+   *
+   * WARNING: This function should only be called from the constructor. Most
+   * applications that interact with token contracts will not expect
+   * {decimals} to ever change, and may work incorrectly if it does.
+   */
+  function _setupDecimals(uint8 decimals_) internal {
+    _decimals = decimals_;
+  }
 }

@@ -1,27 +1,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from './interfaces/BaseControlledMintableBurnableERC20.sol';
+import {
+  AccessControlEnumerable
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title ERC20 token contract
  */
 contract MintableBurnableERC20 is
-  ERC20,
   BaseControlledMintableBurnableERC20,
   AccessControlEnumerable
 {
   bytes32 public constant MINTER_ROLE = keccak256('Minter');
 
   bytes32 public constant BURNER_ROLE = keccak256('Burner');
-
-  uint8 private _decimals;
 
   //----------------------------------------
   // Modifiers
@@ -51,7 +47,13 @@ contract MintableBurnableERC20 is
     string memory _tokenName,
     string memory _tokenSymbol,
     uint8 _tokenDecimals
-  ) ERC20(_tokenName, _tokenSymbol) {
+  )
+    BaseControlledMintableBurnableERC20(
+      _tokenName,
+      _tokenSymbol,
+      _tokenDecimals
+    )
+  {
     _setupDecimals(_tokenDecimals);
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
@@ -148,23 +150,5 @@ contract MintableBurnableERC20 is
     renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
     renounceRole(MINTER_ROLE, msg.sender);
     renounceRole(BURNER_ROLE, msg.sender);
-  }
-
-  /**
-   * @notice Returns the number of decimals used
-   */
-  function decimals() public view virtual override returns (uint8) {
-    return _decimals;
-  }
-
-  /**
-   * @dev Sets {decimals} to a value other than the default one of 18.
-   *
-   * WARNING: This function should only be called from the constructor. Most
-   * applications that interact with token contracts will not expect
-   * {decimals} to ever change, and may work incorrectly if it does.
-   */
-  function _setupDecimals(uint8 decimals_) internal {
-    _decimals = decimals_;
   }
 }

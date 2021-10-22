@@ -18,4 +18,9 @@ interface IMintableBurnableERC20 is IERC20 {
    * @dev This method should be permissioned to only allow designated parties to mint tokens.
    */
   function mint(address to, uint256 value) external returns (bool);
+
+  /**
+   * @notice Returns the number of decimals used to get its user representation.
+   */
+  function decimals() external view returns (uint8);
 }
