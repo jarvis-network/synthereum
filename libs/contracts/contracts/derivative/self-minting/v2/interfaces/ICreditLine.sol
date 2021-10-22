@@ -117,6 +117,13 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
   function claimFee() external returns (uint256 feeClaimed);
 
   /**
+   * @notice Checks if a sponsor position is collateralised, according to latest on-chain price
+   * @param sponsor address of the TokenSponsor to check
+   * @return true if position is collateralised, false if not
+   */
+  function isCollateralised(address sponsor) external view returns (bool);
+
+  /**
    * @notice Gets an array of liquidations performed on a token sponsor
    * @param sponsor address of the TokenSponsor.
    * @return liquidationData An array of data for all liquidations performed on a token sponsor
