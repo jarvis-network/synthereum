@@ -2,7 +2,9 @@ pragma solidity ^0.8.4;
 pragma abicoder v2;
 
 import '../BaseAtomicSwap.sol';
-import {IUniswapV2Router02} from '../interfaces/IUniswapV2Router02.sol';
+import {
+  IUniswapV2Router02
+} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 
 contract UniV2AtomicSwap is BaseAtomicSwap {
   using SafeERC20 for IERC20;
