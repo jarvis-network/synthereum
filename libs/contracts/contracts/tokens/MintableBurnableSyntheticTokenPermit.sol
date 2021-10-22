@@ -8,6 +8,9 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
 import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import {MintableBurnableERC20} from './MintableBurnableERC20.sol';
+import {
+  BaseControlledMintableBurnableERC20
+} from './interfaces/BaseControlledMintableBurnableERC20.sol';
 
 /**
  * @title Synthetic token contract
@@ -33,9 +36,9 @@ contract MintableBurnableSyntheticTokenPermit is
     public
     view
     virtual
-    override(ERC20, MintableBurnableERC20)
+    override(ERC20, BaseControlledMintableBurnableERC20)
     returns (uint8)
   {
-    return MintableBurnableERC20.decimals();
+    return BaseControlledMintableBurnableERC20.decimals();
   }
 }
