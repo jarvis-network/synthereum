@@ -157,28 +157,28 @@ library SynthereumCreditLineLib {
       collateralAmount.sub(feeAmount);
 
     if (positionData.tokensOutstanding.isEqual(0)) {
-      // new position check is collateralized
-      (bool isCollateralised, ) =
+      require(
         _checkCollateralization(
           positionManagerData,
           netCollateralAmount,
           numTokens
-        );
-      require(isCollateralised, 'Insufficient Collateral');
+        ),
+        'Insufficient Collateral'
+      );
       require(
         numTokens.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
         'Below minimum sponsor position'
       );
       emit NewSponsor(msg.sender);
     } else {
-      // not a new position, check CR on updated position
-      (bool isCollateralised, ) =
+      require(
         _checkCollateralization(
           positionManagerData,
           positionData.rawCollateral.add(netCollateralAmount),
           positionData.tokensOutstanding.add(numTokens)
-        );
-      require(isCollateralised, 'Insufficient Collateral');
+        ),
+        'Insufficient Collateral'
+      );
     }
 
     // Increase the position and global collateral balance by collateral amount.
@@ -378,18 +378,20 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.ExecuteLiquidationData memory executeLiquidationData;
 
     // make sure position is undercollateralised
-    (bool isCollateralised, FixedPoint.Unsigned memory maxTokensLiquidatable) =
-      positionManagerData._checkCollateralization(
+    require(
+      !positionManagerData._checkCollateralization(
         positionToLiquidate.rawCollateral,
         positionToLiquidate.tokensOutstanding
-      );
-    require(!isCollateralised, 'Position is properly collateralised');
+      ),
+      'Position is properly collateralised'
+    );
 
     // calculate tokens to liquidate
-    executeLiquidationData.tokensToLiquidate = maxTokensLiquidatable
+    executeLiquidationData.tokensToLiquidate.rawValue = positionToLiquidate
+      .tokensOutstanding
       .isGreaterThan(numSynthTokens)
-      ? numSynthTokens
-      : maxTokensLiquidatable;
+      ? numSynthTokens.rawValue
+      : positionToLiquidate.tokensOutstanding.rawValue;
 
     // calculate collateral value of those tokens
     executeLiquidationData.collateralValueLiquidatedTokens = positionManagerData
@@ -704,14 +706,12 @@ library SynthereumCreditLineLib {
       .rawTotalPositionCollateral
       .sub(collateralAmount);
 
-    (bool isCollateralised, ) =
+    require(
       _checkCollateralization(
         positionManagerData,
         positionData.rawCollateral,
         positionData.tokensOutstanding
-      );
-    require(
-      isCollateralised,
+      ),
       'CR is not sufficiently high after the withdraw - try less amount'
     );
   }
@@ -766,7 +766,7 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateral,
     FixedPoint.Unsigned memory numTokens
-  ) internal view returns (bool, FixedPoint.Unsigned memory) {
+  ) internal view returns (bool) {
     // get oracle price
     FixedPoint.Unsigned memory oraclePrice =
       _getOraclePrice(positionManagerData);
@@ -782,16 +782,7 @@ library SynthereumCreditLineLib {
       positionManagerData._getOverCollateralization()
     );
 
-    // calculate the potential liquidatable portion
-    // if the minimum collateral is greaater than position collateral then the position is undercollateralizej
-    FixedPoint.Unsigned memory liquidatableTokens =
-      thresholdValue.isGreaterThan(collateral)
-        ? thresholdValue.sub(collateral).mul(10**(18 - collateralDecimals)).div(
-          oraclePrice
-        )
-        : FixedPoint.fromUnscaledUint(0);
-
-    return (collateral.isGreaterThan(thresholdValue), liquidatableTokens);
+    return collateral.isGreaterThan(thresholdValue);
   }
 
   // Check new total number of tokens does not overcome mint limit
