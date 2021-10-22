@@ -26,7 +26,7 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
   /**
    * @notice Transfers `collateralAmount` into the specified sponsor's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
-   * at least `collateralAmount` of `feePayerData.collateralCurrency`.
+   * at least `collateralAmount` of collateralCurrency.
    * @param sponsor the sponsor to credit the deposit to.
    * @param collateralAmount total amount of collateral tokens to be sent to the sponsor's position.
    */
