@@ -2398,4 +2398,590 @@ contract('LiquidityPool', function (accounts) {
       );
     });
   });
+
+  describe('Should settle after emergency shutdown', async () => {
+    beforeEach(async () => {
+      const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
+      const totSynthTokens = web3Utils.toWei('99.8');
+      const expirationTime = (expiration =
+        (await web3.eth.getBlock('latest')).timestamp + 60);
+      const mintOperation = {
+        minNumTokens: totSynthTokens,
+        collateralAmount: totalCollateralAmount,
+        feePercentage: feePercentageValue,
+        expiration: expirationTime,
+        recipient: firstUser,
+      };
+      await collateralInstance.approve(
+        liquidityPoolAddress,
+        totalCollateralAmount,
+        { from: firstUser },
+      );
+      await liquidityPoolInstance.mint(mintOperation, {
+        from: firstUser,
+      });
+    });
+    it('Can settle in case the position is capitalized and LP is a not token holder', async () => {
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('115', 'mwei'));
+      const synthTokens = web3Utils.toWei('99.8');
+      const collateralAmount = web3Utils.toWei('114.77', 'mwei');
+      const totalCollateralPosition = (
+        await liquidityPoolInstance.totalCollateralAmount.call()
+      ).add(await liquidityPoolInstance.totalAvailableLiquidity.call());
+      const expectedLpAmount = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(web3Utils.toBN(collateralAmount));
+      const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
+      const actualUserCollBalance = await collateralInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualLpCollBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: liquidityProvider,
+      });
+      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+        return (
+          ev.account == liquidityProvider &&
+          ev.numTokensSettled == '0' &&
+          ev.collateralExpected == expectedLpAmount.toString() &&
+          ev.collateralSettled == expectedLpAmount.toString()
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        liquidityProvider,
+        web3Utils
+          .toBN(actualLpCollBalance)
+          .add(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+        '0',
+        '0',
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .sub(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+        web3Utils.toBN(totalSynthTokensInPool).toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+      );
+      const addedLiquidity = web3Utils.toWei('40', 'mwei');
+      await collateralInstance.approve(liquidityPoolAddress, addedLiquidity, {
+        from: liquidityProvider,
+      });
+      await liquidityPoolInstance.increaseCollateral(
+        addedLiquidity,
+        addedLiquidity,
+        {
+          from: liquidityProvider,
+        },
+      );
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: firstUser,
+      });
+      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+        return (
+          ev.account == firstUser &&
+          ev.numTokensSettled == synthTokens &&
+          ev.collateralExpected == collateralAmount &&
+          ev.collateralSettled == collateralAmount
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        firstUser,
+        web3Utils
+          .toBN(actualUserCollBalance)
+          .add(web3Utils.toBN(collateralAmount))
+          .toString(),
+        '0',
+        '0',
+        web3Utils.toBN(addedLiquidity).toString(),
+        '0',
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(addedLiquidity)
+          .add(web3Utils.toBN(totalFeeAmount))
+          .toString(),
+      );
+      assert.equal(
+        await synthTokenInstance.totalSupply.call(),
+        '0',
+        'Wrong null total supply',
+      );
+      const finalLpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown(
+        {
+          from: liquidityProvider,
+        },
+      );
+      truffleAssert.eventEmitted(finalLpSettleTx, 'Settlement', ev => {
+        return (
+          ev.account == liquidityProvider &&
+          ev.numTokensSettled == '0' &&
+          ev.collateralExpected == addedLiquidity.toString() &&
+          ev.collateralSettled == addedLiquidity.toString()
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        liquidityProvider,
+        web3Utils
+          .toBN(actualLpCollBalance)
+          .add(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+        '0',
+        '0',
+        '0',
+        '0',
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+      );
+    });
+    it('Can settle in case the position is capitalized and LP is a token holder', async () => {
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('115', 'mwei'));
+      const synthTokens = web3Utils.toWei('60');
+      const lpSynthTokens = web3Utils.toWei('30');
+      const depositedSynthTokens = web3Utils.toWei('9.8');
+      const totalLpSynthTokens = web3Utils
+        .toBN(lpSynthTokens)
+        .add(web3Utils.toBN(depositedSynthTokens));
+      await synthTokenInstance.transfer(liquidityProvider, lpSynthTokens, {
+        from: firstUser,
+      });
+      await synthTokenInstance.transfer(
+        liquidityPoolAddress,
+        depositedSynthTokens,
+        {
+          from: firstUser,
+        },
+      );
+      const collateralAmount = web3Utils.toWei('69', 'mwei');
+      const totalCollateralPosition = (
+        await liquidityPoolInstance.totalCollateralAmount.call()
+      ).add(await liquidityPoolInstance.totalAvailableLiquidity.call());
+      const expectedLpAmount = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(web3Utils.toBN(collateralAmount));
+      const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
+      const actualUserCollBalance = await collateralInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualLpCollBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: firstUser,
+      });
+      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+        return (
+          ev.account == firstUser &&
+          ev.numTokensSettled == synthTokens &&
+          ev.collateralExpected == collateralAmount &&
+          ev.collateralSettled == collateralAmount
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        firstUser,
+        web3Utils
+          .toBN(actualUserCollBalance)
+          .add(web3Utils.toBN(collateralAmount))
+          .toString(),
+        '0',
+        '0',
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .sub(web3Utils.toBN(collateralAmount))
+          .toString(),
+        web3Utils
+          .toBN(totalSynthTokensInPool)
+          .sub(web3Utils.toBN(synthTokens))
+          .toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(collateralAmount))
+          .toString(),
+      );
+      await synthTokenInstance.approve(liquidityPoolAddress, lpSynthTokens, {
+        from: liquidityProvider,
+      });
+      const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: liquidityProvider,
+      });
+      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+        return (
+          ev.account == liquidityProvider &&
+          ev.numTokensSettled == totalLpSynthTokens.toString() &&
+          ev.collateralExpected == expectedLpAmount.toString() &&
+          ev.collateralSettled == expectedLpAmount.toString()
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        liquidityProvider,
+        web3Utils
+          .toBN(actualLpCollBalance)
+          .add(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+        '0',
+        '0',
+        '0',
+        '0',
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+      );
+      assert.equal(
+        await synthTokenInstance.totalSupply.call(),
+        '0',
+        'Wrong null total supply',
+      );
+    });
+    it('Can settle in case the position is under-capitalized and LP is not a token holder', async () => {
+      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      await liquidityPoolInstance.withdrawLiquidity(availableLiquidity, {
+        from: liquidityProvider,
+      });
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('170', 'mwei'));
+      const firstUserSynthTokens = web3Utils.toWei('79.8');
+      const secondUserSynthTokens = web3Utils.toWei('20');
+      await synthTokenInstance.transfer(secondUser, secondUserSynthTokens, {
+        from: firstUser,
+      });
+      const firstUserCollateralAmount = web3Utils.toWei('135.66', 'mwei');
+      const secondUserCollateralAmount = web3Utils.toWei('34', 'mwei');
+      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      const netSecondUserCollateralAmount = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(web3Utils.toBN(firstUserCollateralAmount));
+      const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
+      const actualFirstUserCollBalance = await collateralInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualFirstUserSynthBalance = await synthTokenInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualSecondUserCollBalance = await collateralInstance.balanceOf.call(
+        secondUser,
+      );
+      const actualSecondUserSynthBalance = await synthTokenInstance.balanceOf.call(
+        secondUser,
+      );
+      const actualLpCollBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      await synthTokenInstance.approve(
+        liquidityPoolAddress,
+        firstUserSynthTokens,
+        {
+          from: firstUser,
+        },
+      );
+      const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: firstUser,
+      });
+      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+        return (
+          ev.account == firstUser &&
+          ev.numTokensSettled == firstUserSynthTokens &&
+          ev.collateralExpected == firstUserCollateralAmount &&
+          ev.collateralSettled == firstUserCollateralAmount
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        firstUser,
+        web3Utils
+          .toBN(actualFirstUserCollBalance)
+          .add(web3Utils.toBN(firstUserCollateralAmount))
+          .toString(),
+        '0',
+        '0',
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .sub(web3Utils.toBN(firstUserCollateralAmount))
+          .toString(),
+        web3Utils
+          .toBN(totalSynthTokensInPool)
+          .sub(web3Utils.toBN(firstUserSynthTokens))
+          .toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(firstUserCollateralAmount))
+          .toString(),
+      );
+      const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: liquidityProvider,
+      });
+      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+        return (
+          ev.account == liquidityProvider &&
+          ev.numTokensSettled == '0' &&
+          ev.collateralExpected == '0' &&
+          ev.collateralSettled == '0'
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        liquidityProvider,
+        web3Utils.toBN(actualLpCollBalance).toString(),
+        '0',
+        '0',
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .sub(web3Utils.toBN(firstUserCollateralAmount))
+          .toString(),
+        web3Utils
+          .toBN(totalSynthTokensInPool)
+          .sub(web3Utils.toBN(firstUserSynthTokens))
+          .toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(firstUserCollateralAmount))
+          .toString(),
+      );
+      await synthTokenInstance.approve(
+        liquidityPoolAddress,
+        secondUserSynthTokens,
+        {
+          from: secondUser,
+        },
+      );
+      const secondSettleTx = await liquidityPoolInstance.settleEmergencyShutdown(
+        {
+          from: secondUser,
+        },
+      );
+      truffleAssert.eventEmitted(secondSettleTx, 'Settlement', ev => {
+        return (
+          ev.account == secondUser &&
+          ev.numTokensSettled == secondUserSynthTokens &&
+          ev.collateralExpected == secondUserCollateralAmount &&
+          ev.collateralSettled == netSecondUserCollateralAmount.toString()
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        secondUser,
+        web3Utils
+          .toBN(actualSecondUserCollBalance)
+          .add(netSecondUserCollateralAmount)
+          .toString(),
+        '0',
+        '0',
+        '0',
+        '0',
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+      );
+    });
+    it('Can settle in case the position is under-capitalized and LP is a token holder', async () => {
+      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      await liquidityPoolInstance.withdrawLiquidity(availableLiquidity, {
+        from: liquidityProvider,
+      });
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('170', 'mwei'));
+      const synthTokens = web3Utils.toWei('60');
+      const lpSynthTokens = web3Utils.toWei('30');
+      const depositedSynthTokens = web3Utils.toWei('9.8');
+      const totalLpSynthTokens = web3Utils
+        .toBN(lpSynthTokens)
+        .add(web3Utils.toBN(depositedSynthTokens));
+      const expectedLpAmount = web3Utils.toWei('67.66', 'mwei');
+      const totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      const collateralAmount = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(web3Utils.toBN(expectedLpAmount));
+      const expectedCollateralAmount = web3Utils.toWei('102', 'mwei');
+      await synthTokenInstance.transfer(liquidityProvider, lpSynthTokens, {
+        from: firstUser,
+      });
+      await synthTokenInstance.transfer(
+        liquidityPoolAddress,
+        depositedSynthTokens,
+        {
+          from: firstUser,
+        },
+      );
+      const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
+      const actualUserCollBalance = await collateralInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualUserSynthBalance = await synthTokenInstance.balanceOf.call(
+        firstUser,
+      );
+      const actualLpCollBalance = await collateralInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const actualLpSynthBalance = await synthTokenInstance.balanceOf.call(
+        liquidityProvider,
+      );
+      const totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      const totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      await synthTokenInstance.approve(liquidityPoolAddress, lpSynthTokens, {
+        from: liquidityProvider,
+      });
+      const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: liquidityProvider,
+      });
+      truffleAssert.eventEmitted(lpSettleTx, 'Settlement', ev => {
+        return (
+          ev.account == liquidityProvider &&
+          ev.numTokensSettled == totalLpSynthTokens.toString() &&
+          ev.collateralExpected == expectedLpAmount &&
+          ev.collateralSettled == expectedLpAmount
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        liquidityProvider,
+        web3Utils
+          .toBN(actualLpCollBalance)
+          .add(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+        '0',
+        '0',
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .sub(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+        web3Utils
+          .toBN(totalSynthTokensInPool)
+          .sub(web3Utils.toBN(totalLpSynthTokens))
+          .toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(expectedLpAmount))
+          .toString(),
+      );
+      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
+        from: firstUser,
+      });
+      const settleTx = await liquidityPoolInstance.settleEmergencyShutdown({
+        from: firstUser,
+      });
+      truffleAssert.eventEmitted(settleTx, 'Settlement', ev => {
+        return (
+          ev.account == firstUser &&
+          ev.numTokensSettled == synthTokens &&
+          ev.collateralExpected == expectedCollateralAmount &&
+          ev.collateralSettled == collateralAmount.toString()
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        firstUser,
+        web3Utils
+          .toBN(actualUserCollBalance)
+          .add(web3Utils.toBN(collateralAmount))
+          .toString(),
+        '0',
+        '0',
+        '0',
+        '0',
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+      );
+      assert.equal(
+        await synthTokenInstance.totalSupply.call(),
+        '0',
+        'Wrong null total supply',
+      );
+    });
+    it('Can revert if the sender is not a token holder or the liquidity provider', async () => {
+      await managerInstance.emergencyShutdown([liquidityPoolAddress], {
+        from: maintainer,
+      });
+      await truffleAssert.reverts(
+        liquidityPoolInstance.settleEmergencyShutdown({
+          from: thirdUser,
+        }),
+        'Sender has nothing to settle',
+      );
+    });
+  });
 });

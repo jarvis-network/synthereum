@@ -782,7 +782,7 @@ library SynthereumLiquidityPoolLib {
 
     require(
       _userNumTokens > 0 || isLiquidityProvider,
-      'Account has nothing to settle'
+      'Sender has nothing to settle'
     );
 
     if (_userNumTokens > 0) {
