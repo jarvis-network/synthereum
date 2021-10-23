@@ -174,7 +174,7 @@ contract SynthereumLiquidityPool is
   //----------------------------------------
 
   /**
-   * @notice `_overCollateralization should be greater than 0
+   * @notice Constructor of liquidity pool
    * @param _finder The Synthereum finder
    * @param _version Synthereum version
    * @param _collateralToken ERC20 collateral token

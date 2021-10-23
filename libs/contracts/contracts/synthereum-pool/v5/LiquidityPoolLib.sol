@@ -188,8 +188,7 @@ library SynthereumLiquidityPoolLib {
   //----------------------------------------
 
   /**
-   * @notice Initializes a fresh on chain pool
-   * @notice `_overCollateralization should be greater than 0
+   * @notice Initializes a liquidity pool
    * @param self Data type the library is attached to
    * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param _finder The Synthereum finder
