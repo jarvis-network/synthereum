@@ -11,6 +11,13 @@ import {
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ISynthereumLiquidityPoolStorage {
+  // Describe role structure
+  struct Roles {
+    address admin;
+    address maintainer;
+    address liquidityProvider;
+  }
+
   // Describe fee data structure
   struct FeeData {
     // Fees charged when a user mints, redeem and exchanges tokens
