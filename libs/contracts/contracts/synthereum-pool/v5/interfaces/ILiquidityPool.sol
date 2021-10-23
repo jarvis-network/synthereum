@@ -8,13 +8,6 @@ import {ISynthereumLiquidityPoolStorage} from './ILiquidityPoolStorage.sol';
  * @title Token Issuer Contract Interface
  */
 interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
-  // Describe role structure
-  struct Roles {
-    address admin;
-    address maintainer;
-    address liquidityProvider;
-  }
-
   struct MintParams {
     // Minimum amount of synthetic tokens that a user wants to mint using collateral (anti-slippage)
     uint256 minNumTokens;
