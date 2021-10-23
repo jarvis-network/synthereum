@@ -1,22 +1,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+import {
+  IMintableBurnableERC20
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
-  ISynthereumPoolOnChainPriceFeed
-} from './interfaces/IPoolOnChainPriceFeed.sol';
-import {SynthereumPoolOnChainPriceFeed} from './PoolOnChainPriceFeed.sol';
-import {SynthereumInterfaces} from '../../core/Constants.sol';
+  ISynthereumLiquidityPoolStorage
+} from './interfaces/ILiquidityPoolStorage.sol';
 import {
   IDeploymentSignature
 } from '../../core/interfaces/IDeploymentSignature.sol';
-import {
-  SynthereumPoolOnChainPriceFeedCreator
-} from './PoolOnChainPriceFeedCreator.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {SynthereumLiquidityPoolCreator} from './LiquidityPoolCreator.sol';
+import {SynthereumLiquidityPool} from './LiquidityPool.sol';
 
-contract SynthereumPoolOnChainPriceFeedFactory is
-  SynthereumPoolOnChainPriceFeedCreator,
+contract SynthereumLiquidityPoolFactory is
+  SynthereumLiquidityPoolCreator,
   IDeploymentSignature
 {
   //----------------------------------------
@@ -44,40 +45,47 @@ contract SynthereumPoolOnChainPriceFeedFactory is
   //----------------------------------------
 
   /**
-   * @notice The derivative's collateral currency must be an ERC20
-   * @notice The validator will generally be an address owned by the LP
-   * @notice `startingCollateralization should be greater than the expected asset price multiplied
-   *      by the collateral requirement. The degree to which it is greater should be based on
-   *      the expected asset volatility.
-   * @notice Only Synthereum deployer can deploy a pool
-   * @param derivative The perpetual derivative
+   * @notice Deploy new liquidity pool
    * @param finder The Synthereum finder
    * @param version Synthereum version
-   * @param roles The addresses of admin, maintainer, liquidity provider
-   * @param startingCollateralization Collateralization ratio to use before a global one is set
-   * @param fee The fee structure
-   * @return poolDeployed Pool contract deployed
+   * @param collateralToken ERC20 collateral token
+   * @param syntheticToken ERC20 synthetic token
+   * @param roles The addresses of admin, maintainer, liquidity provider and validator
+   * @param overCollateralization Overcollateralization percentage
+   * @param feeData The feeData structure
+   * @param priceIdentifier Identifier of price to be used in the price feed
+   * @param collateralRequirement Percentage of overcollateralization to which a liquidation can triggered
+   * @param liquidationReward Percentage of reward for correct liquidation by a liquidator
+   * @return poolDeployed Liquidity pool contract deployed
    */
   function createPool(
-    IDerivative derivative,
     ISynthereumFinder finder,
     uint8 version,
-    ISynthereumPoolOnChainPriceFeed.Roles memory roles,
-    uint256 startingCollateralization,
-    ISynthereumPoolOnChainPriceFeed.Fee memory fee
-  ) public override returns (SynthereumPoolOnChainPriceFeed poolDeployed) {
+    IStandardERC20 collateralToken,
+    IMintableBurnableERC20 syntheticToken,
+    ISynthereumLiquidityPoolStorage.Roles calldata roles,
+    uint256 overCollateralization,
+    ISynthereumLiquidityPoolStorage.FeeData calldata feeData,
+    bytes32 priceIdentifier,
+    uint256 collateralRequirement,
+    uint256 liquidationReward
+  ) public override returns (SynthereumLiquidityPool poolDeployed) {
     address deployer =
       ISynthereumFinder(synthereumFinder).getImplementationAddress(
         SynthereumInterfaces.Deployer
       );
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
     poolDeployed = super.createPool(
-      derivative,
       finder,
       version,
+      collateralToken,
+      syntheticToken,
       roles,
-      startingCollateralization,
-      fee
+      overCollateralization,
+      feeData,
+      priceIdentifier,
+      collateralRequirement,
+      liquidationReward
     );
   }
 }
