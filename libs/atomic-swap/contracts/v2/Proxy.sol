@@ -3,7 +3,6 @@
 pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
-import './interfaces/IAtomicSwapV2.sol';
 import {
   ISynthereumPoolOnChainPriceFeed
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
@@ -18,8 +17,6 @@ import {IAtomicSwapProxy} from './interfaces/IProxy.sol';
 
 contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
   using Address for address;
-
-  IAtomicSwapV2 public atomicSwapIface;
 
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
   // that means only one implementation for each specific dex can exist
@@ -68,7 +65,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
   function registerImplementation(
     string calldata identifier,
     address implementation,
-    bytes memory info
+    bytes calldata info
   ) external onlyMaintainer() {
     address previous = idToAddress[keccak256(abi.encode(identifier))];
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
@@ -107,7 +104,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     bool isExactInput,
     uint256 exactAmount,
     uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable override returns (uint256[2] memory amounts) {
