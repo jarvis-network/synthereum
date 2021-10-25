@@ -96,9 +96,6 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     return idToAddress[keccak256(abi.encode(identifier))];
   }
 
-  // delegate calls to atomic swap implementations
-  // will run implementers code in this context (storage, msg.value, msg.sender and so on)
-  /// @return amounts = [inputAmount, outputAmount]
   function swapAndMint(
     string calldata implementationId,
     bool isExactInput,
@@ -107,7 +104,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     bytes calldata extraParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable override returns (uint256[2] memory amounts) {
+  ) external payable override returns (ReturnValues memory returnValues) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -129,9 +126,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
         )
       );
 
-    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
-    amounts[0] = returnValues.inputAmount;
-    amounts[1] = returnValues.outputAmount;
+    returnValues = abi.decode(result, (ReturnValues));
 
     emit Swap(
       returnValues.inputToken,
@@ -148,7 +143,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external override returns (uint256[2] memory amounts) {
+  ) external override returns (ReturnValues memory returnValues) {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -167,9 +162,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
         )
       );
 
-    ReturnValues memory returnValues = abi.decode(result, (ReturnValues));
-    amounts[0] = returnValues.inputAmount;
-    amounts[1] = returnValues.outputAmount;
+    returnValues = abi.decode(result, (ReturnValues));
 
     emit Swap(
       returnValues.inputToken,
