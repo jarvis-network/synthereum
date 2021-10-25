@@ -167,11 +167,13 @@ contract('KyberDMM', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
+          ev.inputToken == WBTCAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -233,7 +235,7 @@ contract('KyberDMM', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -241,6 +243,8 @@ contract('KyberDMM', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
+          ev.inputToken == WBTCAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -284,13 +288,18 @@ contract('KyberDMM', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // tx through proxy
       const tx = await ProxyInstance.redeemCollateralAndSwap(
         implementationID,
-        true,
-        0,
-        0,
-        extraParams,
+        inputParams,
         pool,
         redeemParams,
         user,
@@ -298,11 +307,13 @@ contract('KyberDMM', async accounts => {
       );
 
       let WBTCOut;
-      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         WBTCOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.inputToken == jEURAddress &&
+          ev.outputToken == WBTCAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -332,7 +343,7 @@ contract('KyberDMM', async accounts => {
         from: user,
       });
 
-      const expectedOutput = web3Utils.toBN(2);
+      const expectedOutput = web3Utils.toBN('2');
       const redeemParams = {
         derivative: derivative,
         numTokens: jEURInput.toString(),
@@ -342,13 +353,18 @@ contract('KyberDMM', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: false,
+        unwrapToETH: false,
+        exactAmount: expectedOutput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // tx through proxy
       const tx = await ProxyInstance.redeemCollateralAndSwap(
         implementationID,
-        false,
-        expectedOutput,
-        0,
-        extraParams,
+        inputParams,
         pool,
         redeemParams,
         user,
@@ -356,11 +372,13 @@ contract('KyberDMM', async accounts => {
       );
 
       let collateralUsed;
-      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         collateralUsed = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == USDTAddress.toLowerCase() &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -448,14 +466,19 @@ contract('KyberDMM', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: jEURInput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
           encodedInfo,
-          true,
-          jEURInput.toString(),
-          0,
-          extraParams,
+          inputParams,
           poolMockInstance.address,
           redeemParams,
           user,
@@ -525,14 +548,19 @@ contract('KyberDMM', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: jEURInput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
           encodedInfo,
-          true,
-          jEURInput.toString(),
-          0,
-          extraParams,
+          inputParams,
           pool,
           redeemParams,
           user,
@@ -587,11 +615,13 @@ contract('KyberDMM', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
+          ev.inputToken == WETHAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -653,7 +683,7 @@ contract('KyberDMM', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -661,6 +691,8 @@ contract('KyberDMM', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
+          ev.inputToken == WETHAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });

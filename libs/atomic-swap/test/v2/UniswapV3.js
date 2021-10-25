@@ -168,11 +168,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
+          ev.inputToken == WBTCAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -234,7 +236,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -242,6 +244,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
+          ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -284,13 +288,18 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // tx through proxy
       const tx = await ProxyInstance.redeemCollateralAndSwap(
         implementationID,
-        true,
-        0,
-        0,
-        extraParams,
+        inputParams,
         pool,
         redeemParams,
         user,
@@ -298,12 +307,15 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let WBTCOut;
-      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         WBTCOut = ev.outputAmount;
         return (
-          ev.outputAmount > 0 &&
+          ev.outputAmount > web3Utils.toBN(0) &&
           ev.inputAmount.toString() == jEURInput.toString() &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -342,13 +354,18 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: false,
+        unwrapToETH: false,
+        exactAmount: expectedOutput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // tx through proxy
       const tx = await ProxyInstance.redeemCollateralAndSwap(
         implementationID,
-        false,
-        expectedOutput,
-        0,
-        extraParams,
+        inputParams,
         pool,
         redeemParams,
         user,
@@ -356,12 +373,15 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let collateralUsed;
-      truffleAssert.eventEmitted(tx, 'RedeemAndSwap', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         collateralUsed = ev.outputAmount;
         return (
-          ev.outputAmount > 0 &&
+          ev.outputAmount.toString() == expectedOutput.toString() &&
           ev.inputAmount.toString() == jEURInput.toString() &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == USDTAddress.toLowerCase() &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -449,14 +469,19 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: jEURInput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
           encodedInfo,
-          true,
-          jEURInput.toString(),
-          0,
-          extraParams,
+          inputParams,
           poolMockInstance.address,
           redeemParams,
           user,
@@ -526,14 +551,19 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: jEURInput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.redeemCollateralAndSwap(
           encodedInfo,
-          true,
-          jEURInput.toString(),
-          0,
-          extraParams,
+          inputParams,
           pool,
           redeemParams,
           user,
@@ -588,11 +618,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
+          ev.inputToken == WETHAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -654,7 +686,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const txFee = await getTxFee(tx);
 
       let jSynthOut;
-      truffleAssert.eventEmitted(tx, 'SwapAndMint', ev => {
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
@@ -662,6 +694,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
+          ev.inputToken == WETHAddress &&
+          ev.outputToken == jEURAddress &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
