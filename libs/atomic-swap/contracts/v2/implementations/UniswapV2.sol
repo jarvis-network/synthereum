@@ -32,6 +32,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
   )
     external
     payable
+    override
     returns (IAtomicSwapProxy.ReturnValues memory returnValues)
   {
     // decode implementation info
@@ -60,9 +61,10 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     returnValues.inputToken = tokenSwapPath[0];
     returnValues.outputToken = address(synthereumPool.syntheticToken());
 
+    bool isEthInput = msg.value > 0;
     if (isExactInput) {
-      returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
-      if (msg.value > 0) {
+      returnValues.inputAmount = isEthInput ? msg.value : exactAmount;
+      if (isEthInput) {
         //swapExactETHForTokens into this wallet
         mintParams.collateralAmount = router.swapExactETHForTokens{
           value: msg.value
@@ -92,7 +94,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     } else {
       uint256[] memory amountsOut;
 
-      if (msg.value > 0) {
+      if (isEthInput) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
 
@@ -158,7 +160,11 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (IAtomicSwapProxy.ReturnValues memory returnValues) {
+  )
+    external
+    override
+    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+  {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);

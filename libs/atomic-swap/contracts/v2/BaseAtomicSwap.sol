@@ -22,7 +22,7 @@ import {
 
 import './interfaces/IAtomicSwapV2.sol';
 
-contract BaseAtomicSwap {
+abstract contract BaseAtomicSwap is IAtomicSwapV2 {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 

@@ -35,6 +35,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
   )
     external
     payable
+    override
     returns (IAtomicSwapProxy.ReturnValues memory returnValues)
   {
     // decode implementation info
@@ -169,7 +170,11 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (IAtomicSwapProxy.ReturnValues memory returnValues) {
+  )
+    external
+    override
+    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+  {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);

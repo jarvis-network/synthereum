@@ -34,6 +34,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   )
     external
     payable
+    override
     returns (IAtomicSwapProxy.ReturnValues memory returnValues)
   {
     // decode implementation info
@@ -66,10 +67,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     returnValues.inputToken = address(tokenSwapPath[0]);
     returnValues.outputToken = address(synthereumPool.syntheticToken());
 
+    bool isEthInput = msg.value > 0;
     // swap to collateral token (exact[input/output][ETH/ERC20])
     if (isExactInput) {
-      returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
-      if (msg.value > 0) {
+      returnValues.inputAmount = isEthInput ? msg.value : exactAmount;
+      if (isEthInput) {
         // swapExactETHForTokens
         mintParams.collateralAmount = kyberRouter.swapExactETHForTokens{
           value: msg.value
@@ -107,7 +109,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     } else {
       uint256[] memory amountsOut;
 
-      if (msg.value > 0) {
+      if (isEthInput) {
         //swapETHForExactTokens
         minOutOrMaxIn = msg.value;
 
@@ -179,7 +181,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (IAtomicSwapProxy.ReturnValues memory) {
+  ) external override returns (IAtomicSwapProxy.ReturnValues memory) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
