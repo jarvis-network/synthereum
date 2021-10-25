@@ -147,10 +147,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
 
   function redeemCollateralAndSwap(
     string calldata implementationId,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
@@ -159,17 +156,14 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
     string memory functionSig =
-      'redeemCollateralAndSwap(bytes,bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address),address)';
+      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address),address)';
 
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
           functionSig,
           dexImplementationInfo[implementation],
-          isExactInput,
-          exactAmount,
-          minOutOrMaxIn,
-          extraParams,
+          inputParams,
           synthereumPool,
           redeemParams,
           recipient

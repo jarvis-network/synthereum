@@ -64,7 +64,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       );
     }
     returnValues.inputToken = address(tokenSwapPath[0]);
-    returnValues.outputToken = address(tokenSwapPath[tokenSwapPath.length - 1]);
+    returnValues.outputToken = address(synthereumPool.syntheticToken());
 
     // swap to collateral token (exact[input/output][ETH/ERC20])
     if (isExactInput) {
@@ -173,24 +173,20 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
-  /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
   function redeemCollateralAndSwap(
     bytes calldata info,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes calldata extraParams,
+    IAtomicSwapProxy.RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (IAtomicSwapProxy.ReturnValues memory returnValues) {
+  ) external returns (IAtomicSwapProxy.ReturnValues memory) {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
 
     // unpack the extraParams
     (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
-      decodeExtraParams(extraParams);
+      decodeExtraParams(inputParams.extraParams);
 
     // checks
     require(
@@ -205,8 +201,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       'Wrong collateral instance'
     );
 
-    address outputTokenAddress =
-      address(tokenSwapPath[tokenSwapPath.length - 1]);
     {
       IERC20 synthTokenInstance = synthereumPool.syntheticToken();
 
@@ -220,10 +214,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         address(synthereumPool),
         redeemParams.numTokens
       );
-
-      returnValues.inputToken = address(synthTokenInstance);
-      returnValues.outputToken = outputTokenAddress;
-      returnValues.inputAmount = redeemParams.numTokens;
     }
 
     // redeem to collateral and approve swap
@@ -237,16 +227,16 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     );
 
     uint256[] memory amountsOut;
-    if (isExactInput) {
+    if (inputParams.isExactInput) {
       // insantiate router
       IDMMExchangeRouter kyberRouter =
         IDMMExchangeRouter(implementationInfo.routerAddress);
 
       // collateralOut as exactInput
-      outputTokenAddress == implementationInfo.nativeCryptoAddress
+      inputParams.unwrapToETH
         ? amountsOut = kyberRouter.swapExactTokensForETH(
           collateralOut,
-          minOutOrMaxIn,
+          inputParams.minOutOrMaxIn,
           poolsPath,
           tokenSwapPath,
           recipient,
@@ -254,7 +244,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         )
         : amountsOut = kyberRouter.swapExactTokensForTokens(
         collateralOut,
-        minOutOrMaxIn,
+        inputParams.minOutOrMaxIn,
         poolsPath,
         tokenSwapPath,
         recipient,
@@ -265,9 +255,9 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       IDMMExchangeRouter kyberRouter =
         IDMMExchangeRouter(implementationInfo.routerAddress);
       // collateralOut as maxInput
-      outputTokenAddress == implementationInfo.nativeCryptoAddress
+      inputParams.unwrapToETH
         ? amountsOut = kyberRouter.swapTokensForExactETH(
-          exactAmount,
+          inputParams.exactAmount,
           collateralOut,
           poolsPath,
           tokenSwapPath,
@@ -275,7 +265,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
           redeemParams.expiration
         )
         : amountsOut = kyberRouter.swapTokensForExactTokens(
-        exactAmount,
+        inputParams.exactAmount,
         collateralOut,
         poolsPath,
         tokenSwapPath,
@@ -292,8 +282,14 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       }
     }
 
+    return
+      IAtomicSwapProxy.ReturnValues(
+        address(synthereumPool.syntheticToken()),
+        address(tokenSwapPath[tokenSwapPath.length - 1]),
+        redeemParams.numTokens,
+        amountsOut[tokenSwapPath.length - 1]
+      );
     // store second return value - output token amount
-    returnValues.outputAmount = amountsOut[tokenSwapPath.length - 1];
   }
 
   function decodeImplementationInfo(bytes calldata info)

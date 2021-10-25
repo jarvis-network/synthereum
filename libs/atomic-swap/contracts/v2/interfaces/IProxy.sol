@@ -19,6 +19,15 @@ interface IAtomicSwapProxy {
     uint256 outputAmount;
   }
 
+  // input values for implementation
+  struct RedeemSwapParams {
+    bool isExactInput;
+    bool unwrapToETH;
+    uint256 exactAmount;
+    uint256 minOutOrMaxIn;
+    bytes extraParams;
+  }
+
   function swapAndMint(
     string calldata implementationId,
     bool isExactInput,
@@ -31,10 +40,7 @@ interface IAtomicSwapProxy {
 
   function redeemCollateralAndSwap(
     string calldata implementationId,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient

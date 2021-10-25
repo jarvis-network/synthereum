@@ -24,7 +24,6 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   receive() external payable {}
 
-  /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function swapToCollateralAndMint(
     bytes calldata info,
     bool isExactInput,
@@ -58,7 +57,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     );
 
     returnValues.inputToken = tokenSwapPath[0];
-    returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
+    returnValues.outputToken = address(synthereumPool.syntheticToken());
 
     if (isExactInput) {
       returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
@@ -164,13 +163,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     }
   }
 
-  /// @param extraParams is in this case [] of fees of the pools to swap through (abi-encoded)
   function redeemCollateralAndSwap(
     bytes calldata info,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes calldata extraParams,
+    IAtomicSwapProxy.RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
@@ -181,7 +176,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
     // unpack the extraParams
     (uint24[] memory fees, address[] memory tokenSwapPath) =
-      decodeExtraParams(extraParams);
+      decodeExtraParams(inputParams.extraParams);
 
     {
       require(
@@ -209,28 +204,32 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       // store return values
       returnValues.inputToken = address(synthTokenInstance);
+      returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
       returnValues.inputAmount = redeemParams.numTokens;
+
       redeemParams.recipient = address(this);
-      isExactInput
-        ? (exactAmount, ) = synthereumPool.redeem(redeemParams)
-        : (minOutOrMaxIn, ) = synthereumPool.redeem(redeemParams);
+      inputParams.isExactInput
+        ? (inputParams.exactAmount, ) = synthereumPool.redeem(redeemParams)
+        : (inputParams.minOutOrMaxIn, ) = synthereumPool.redeem(redeemParams);
 
       IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
         implementationInfo.routerAddress,
-        isExactInput ? exactAmount : minOutOrMaxIn
+        inputParams.isExactInput
+          ? inputParams.exactAmount
+          : inputParams.minOutOrMaxIn
       );
     }
 
-    if (isExactInput) {
+    if (inputParams.isExactInput) {
       // collateral as exact input
       // swap to erc20 token into recipient wallet
       ISwapRouter.ExactInputParams memory params =
         ISwapRouter.ExactInputParams(
-          encodeAddresses(isExactInput, tokenSwapPath, fees),
+          encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
           recipient,
           redeemParams.expiration,
-          exactAmount,
-          minOutOrMaxIn
+          inputParams.exactAmount,
+          inputParams.minOutOrMaxIn
         );
 
       returnValues.outputAmount = IUniswapV3Router(
@@ -243,25 +242,25 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // swap to erc20 token into recipient wallet
       ISwapRouter.ExactOutputParams memory params =
         ISwapRouter.ExactOutputParams(
-          encodeAddresses(isExactInput, tokenSwapPath, fees),
+          encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
           recipient,
           redeemParams.expiration,
-          exactAmount,
-          minOutOrMaxIn
+          inputParams.exactAmount,
+          inputParams.minOutOrMaxIn
         );
 
       uint256 inputTokensUsed =
         IUniswapV3Router(implementationInfo.routerAddress).exactOutput(params);
 
       // refund leftover input (collateral) tokens
-      if (minOutOrMaxIn > inputTokensUsed) {
+      if (inputParams.minOutOrMaxIn > inputTokensUsed) {
         IERC20(tokenSwapPath[0]).safeTransfer(
           msg.sender,
-          minOutOrMaxIn.sub(inputTokensUsed)
+          inputParams.minOutOrMaxIn.sub(inputTokensUsed)
         );
       }
 
-      returnValues.outputAmount = exactAmount;
+      returnValues.outputAmount = inputParams.exactAmount;
     }
   }
 

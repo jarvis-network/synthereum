@@ -58,7 +58,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     }
 
     returnValues.inputToken = tokenSwapPath[0];
-    returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
+    returnValues.outputToken = address(synthereumPool.syntheticToken());
 
     if (isExactInput) {
       returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
@@ -154,10 +154,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
   // redeem jSynth into collateral and use that to swap into erc20/eth
   function redeemCollateralAndSwap(
     bytes calldata info,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    IAtomicSwapProxy.RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
@@ -171,7 +168,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       IUniswapV2Router02(implementationInfo.routerAddress);
 
     // unpack tokenSwapPath from extraParams
-    address[] memory tokenSwapPath = decodeExtraParams(extraParams);
+    address[] memory tokenSwapPath = decodeExtraParams(inputParams.extraParams);
 
     // check pool
     require(
@@ -211,19 +208,19 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     );
     uint256[] memory amountsOut;
 
-    if (isExactInput) {
+    if (inputParams.isExactInput) {
       // collateralOut as exactInput
-      outputTokenAddress == implementationInfo.nativeCryptoAddress
+      inputParams.unwrapToETH
         ? amountsOut = router.swapExactTokensForETH(
           collateralOut,
-          minOutOrMaxIn,
+          inputParams.minOutOrMaxIn,
           tokenSwapPath,
           recipient,
           redeemParams.expiration
         )
         : amountsOut = router.swapExactTokensForTokens(
         collateralOut,
-        minOutOrMaxIn,
+        inputParams.minOutOrMaxIn,
         tokenSwapPath,
         recipient,
         redeemParams.expiration
@@ -232,14 +229,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
       // collateralOut as maxInput
       outputTokenAddress == implementationInfo.nativeCryptoAddress
         ? amountsOut = router.swapTokensForExactETH(
-          exactAmount,
+          inputParams.exactAmount,
           collateralOut,
           tokenSwapPath,
           recipient,
           redeemParams.expiration
         )
         : amountsOut = router.swapTokensForExactTokens(
-        exactAmount,
+        inputParams.exactAmount,
         collateralOut,
         tokenSwapPath,
         recipient,
