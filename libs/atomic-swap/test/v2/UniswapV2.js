@@ -193,6 +193,21 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await WBTCInstance.allowance(
+            ProxyInstance.address,
+            UniV2Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
 
     it('mint jSynth from ERC20 - exact output - multihop', async () => {
@@ -265,6 +280,21 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await WBTCInstance.allowance(
+            ProxyInstance.address,
+            UniV2Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
 
     it('burn jSynth and swaps for ERC20 - exact input - single-hop', async () => {
@@ -328,6 +358,21 @@ contract('UniswapV2', async accounts => {
 
       assert.equal(WBTCBalanceAfter.eq(WBTCBalanceBefore.add(WBTCOut)), true);
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV2Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
 
     it('burn jSynth and swaps for ERC20 - exact output- single-hop', async () => {
@@ -395,6 +440,21 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV2Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
 
     it('mintFromERC20 - Rejects with a not registered pool', async function () {
@@ -650,7 +710,13 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
+
     it('mint jSynth from ETH - exact output - single hop', async () => {
       const maxTokenAmountIn = web3Utils.toWei('1', 'ether');
       const exactTokensOut = 100;
@@ -724,6 +790,11 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
+
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
     it('burn jSynth and swaps for ETH - exact input - single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
@@ -790,6 +861,21 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV2Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
     it('burn jSynth and swaps for ETH - exact output- single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
@@ -857,6 +943,21 @@ contract('UniswapV2', async accounts => {
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV2Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
     });
   });
 });

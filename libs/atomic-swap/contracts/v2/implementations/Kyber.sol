@@ -50,15 +50,17 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       'Pools and tokens length mismatch'
     );
 
+    IERC20 collateralToken = tokenSwapPath[tokenSwapPath.length - 1];
     {
       require(
         checkSynthereumPool(
           implementationInfo.synthereumFinder,
           synthereumPool
-        ) == tokenSwapPath[tokenSwapPath.length - 1],
+        ) == collateralToken,
         'Wrong collateral instance'
       );
     }
+
     returnValues.inputToken = address(tokenSwapPath[0]);
     returnValues.outputToken = address(synthereumPool.syntheticToken());
 
@@ -155,6 +157,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
             inputParams.minOutOrMaxIn.sub(amountsOut[0])
           );
         }
+        // reset allowance
+        tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
       }
 
       //return value
@@ -163,7 +167,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     }
 
     // approve synthereum to pull collateral
-    tokenSwapPath[tokenSwapPath.length - 1].safeIncreaseAllowance(
+    collateralToken.safeIncreaseAllowance(
       address(synthereumPool),
       mintParams.collateralAmount
     );
@@ -171,6 +175,9 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     // mint jSynth to mintParams.recipient (supposedly msg.sender)
     // returns the output amount
     (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
+
+    // reset allowance
+    collateralToken.safeApprove(address(synthereumPool), 0);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
@@ -216,12 +223,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         redeemParams.numTokens
       );
     }
-
     // redeem to collateral and approve swap
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
 
-    // approve kyber proxy to swap tokens
+    // approve kyber router to swap tokens
     tokenSwapPath[0].safeIncreaseAllowance(
       implementationInfo.routerAddress,
       collateralOut
@@ -282,6 +288,12 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         );
       }
     }
+
+    // reset router allowance
+    tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
+
+    // reset pool allowance
+    synthereumPool.syntheticToken().safeApprove(address(synthereumPool), 0);
 
     return
       IAtomicSwapProxy.ReturnValues(

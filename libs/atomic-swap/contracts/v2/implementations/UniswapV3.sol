@@ -47,12 +47,16 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     (uint24[] memory fees, address[] memory tokenSwapPath) =
       decodeExtraParams(inputParams.extraParams);
 
-    require(
-      address(
-        checkSynthereumPool(implementationInfo.synthereumFinder, synthereumPool)
-      ) == tokenSwapPath[tokenSwapPath.length - 1],
-      'Wrong collateral instance'
-    );
+    IERC20 collateralToken = IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
+    {
+      require(
+        checkSynthereumPool(
+          implementationInfo.synthereumFinder,
+          synthereumPool
+        ) == collateralToken,
+        'Wrong collateral instance'
+      );
+    }
 
     returnValues.inputToken = tokenSwapPath[0];
     returnValues.outputToken = address(synthereumPool.syntheticToken());
@@ -93,7 +97,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       mintParams.collateralAmount = router.exactInput{value: msg.value}(params);
 
       // approve synthereum to pull collateral
-      IERC20(tokenSwapPath[tokenSwapPath.length - 1]).safeIncreaseAllowance(
+      collateralToken.safeIncreaseAllowance(
         address(synthereumPool),
         mintParams.collateralAmount
       );
@@ -134,6 +138,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       returnValues.inputAmount = router.exactOutput{value: msg.value}(params);
 
+      // reset router allowance
+      IERC20(tokenSwapPath[0]).safeApprove(implementationInfo.routerAddress, 0);
+
       // refund leftover tokens
       if (inputParams.minOutOrMaxIn > returnValues.inputAmount) {
         if (msg.value > 0) {
@@ -151,7 +158,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       }
 
       // approve synthereum to pull collateral
-      IERC20(tokenSwapPath[tokenSwapPath.length - 1]).safeIncreaseAllowance(
+      collateralToken.safeIncreaseAllowance(
         address(synthereumPool),
         inputParams.exactAmount
       );
@@ -161,6 +168,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       mintParams.collateralAmount = inputParams.exactAmount;
       (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
     }
+
+    // reset pool allowance
+    collateralToken.safeApprove(address(synthereumPool), 0);
   }
 
   function redeemCollateralAndSwap(
@@ -182,19 +192,16 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     (uint24[] memory fees, address[] memory tokenSwapPath) =
       decodeExtraParams(inputParams.extraParams);
 
+    IERC20 synthTokenInstance = synthereumPool.syntheticToken();
+    IERC20 collateralInstance = IERC20(tokenSwapPath[0]);
     {
       require(
-        address(
-          checkSynthereumPool(
-            implementationInfo.synthereumFinder,
-            synthereumPool
-          )
-        ) == tokenSwapPath[0],
+        checkSynthereumPool(
+          implementationInfo.synthereumFinder,
+          synthereumPool
+        ) == collateralInstance,
         'Wrong collateral instance'
       );
-
-      IERC20 synthTokenInstance = synthereumPool.syntheticToken();
-
       // redeem USDC with jSynth into this contract
       synthTokenInstance.safeTransferFrom(
         msg.sender,
@@ -216,7 +223,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         ? (inputParams.exactAmount, ) = synthereumPool.redeem(redeemParams)
         : (inputParams.minOutOrMaxIn, ) = synthereumPool.redeem(redeemParams);
 
-      IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
+      collateralInstance.safeIncreaseAllowance(
         implementationInfo.routerAddress,
         inputParams.isExactInput
           ? inputParams.exactAmount
@@ -256,6 +263,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       uint256 inputTokensUsed =
         IUniswapV3Router(implementationInfo.routerAddress).exactOutput(params);
 
+      // reset router allowance
+      collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+
       // refund leftover input (collateral) tokens
       if (inputParams.minOutOrMaxIn > inputTokensUsed) {
         IERC20(tokenSwapPath[0]).safeTransfer(
@@ -266,6 +276,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       returnValues.outputAmount = inputParams.exactAmount;
     }
+    // reset pool allowance
+    synthTokenInstance.safeApprove(address(synthereumPool), 0);
   }
 
   function decodeImplementationInfo(bytes calldata info)
