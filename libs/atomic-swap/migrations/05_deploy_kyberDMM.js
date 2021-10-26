@@ -31,16 +31,11 @@ module.exports = async function (deployer, network, accounts) {
   let KyberInfo = {
     routerAddress: kyberData[networkId].DMMRouter,
     synthereumFinder: synthereumFinderAddress,
-    nativeCryptoAddress: tokens[networkId].WETH,
   };
 
   let encodedInfo = web3.eth.abi.encodeParameters(
-    ['address', 'address', 'address'],
-    [
-      KyberInfo.routerAddress,
-      KyberInfo.synthereumFinder,
-      KyberInfo.nativeCryptoAddress,
-    ],
+    ['address', 'address'],
+    [KyberInfo.routerAddress, KyberInfo.synthereumFinder],
   );
 
   await proxyInstance.methods

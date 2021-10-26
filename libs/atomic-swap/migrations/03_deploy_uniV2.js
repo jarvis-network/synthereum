@@ -31,16 +31,11 @@ module.exports = async function (deployer, network, accounts) {
   let UniV2Info = {
     routerAddress: uniswapData[networkId].router,
     synthereumFinder: synthereumFinderAddress,
-    nativeCryptoAddress: tokens[networkId].WETH,
   };
 
   let encodedInfo = web3.eth.abi.encodeParameters(
-    ['address', 'address', 'address'],
-    [
-      UniV2Info.routerAddress,
-      UniV2Info.synthereumFinder,
-      UniV2Info.nativeCryptoAddress,
-    ],
+    ['address', 'address'],
+    [UniV2Info.routerAddress, UniV2Info.synthereumFinder],
   );
 
   let tx = await proxyInstance.methods
