@@ -43,7 +43,7 @@ interface IAtomicSwapProxy {
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (ReturnValues memory returnValues);
 
-  function redeemCollateralAndSwap(
+  function redeemAndSwap(
     string calldata implementationId,
     RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,

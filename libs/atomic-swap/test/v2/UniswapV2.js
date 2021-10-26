@@ -332,7 +332,7 @@ contract('UniswapV2', async accounts => {
       };
 
       // tx through proxy
-      const tx = await ProxyInstance.redeemCollateralAndSwap(
+      const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
         pool,
@@ -411,7 +411,7 @@ contract('UniswapV2', async accounts => {
       };
 
       // tx through proxy
-      const tx = await ProxyInstance.redeemCollateralAndSwap(
+      const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
         pool,
@@ -831,7 +831,7 @@ contract('UniswapV2', async accounts => {
       // tx through proxy
       let EthBalanceBefore = web3Utils.toBN(await web3.eth.getBalance(user));
 
-      const tx = await ProxyInstance.redeemCollateralAndSwap(
+      const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
         pool,
@@ -913,7 +913,7 @@ contract('UniswapV2', async accounts => {
 
       // tx through proxy
       let EthBalanceBefore = web3Utils.toBN(await web3.eth.getBalance(user));
-      const tx = await ProxyInstance.redeemCollateralAndSwap(
+      const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
         pool,

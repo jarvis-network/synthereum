@@ -131,7 +131,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     );
   }
 
-  function redeemCollateralAndSwap(
+  function redeemAndSwap(
     string calldata implementationId,
     RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,

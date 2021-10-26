@@ -335,7 +335,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       // tx through proxy
-      const tx = await ProxyInstance.redeemCollateralAndSwap(
+      const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
         pool,
@@ -416,7 +416,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       // tx through proxy
-      const tx = await ProxyInstance.redeemCollateralAndSwap(
+      const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
         pool,
