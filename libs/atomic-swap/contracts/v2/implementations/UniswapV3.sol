@@ -138,9 +138,6 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       returnValues.inputAmount = router.exactOutput{value: msg.value}(params);
 
-      // reset router allowance
-      IERC20(tokenSwapPath[0]).safeApprove(implementationInfo.routerAddress, 0);
-
       // refund leftover tokens
       if (inputParams.minOutOrMaxIn > returnValues.inputAmount) {
         if (msg.value > 0) {
@@ -153,6 +150,12 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           IERC20(tokenSwapPath[0]).safeTransfer(
             msg.sender,
             inputParams.minOutOrMaxIn.sub(returnValues.inputAmount)
+          );
+
+          // reset router allowance
+          IERC20(tokenSwapPath[0]).safeApprove(
+            implementationInfo.routerAddress,
+            0
           );
         }
       }
@@ -168,9 +171,6 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       mintParams.collateralAmount = inputParams.exactAmount;
       (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
     }
-
-    // reset pool allowance
-    collateralToken.safeApprove(address(synthereumPool), 0);
   }
 
   function redeemCollateralAndSwap(
@@ -263,21 +263,19 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       uint256 inputTokensUsed =
         IUniswapV3Router(implementationInfo.routerAddress).exactOutput(params);
 
-      // reset router allowance
-      collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
-
       // refund leftover input (collateral) tokens
       if (inputParams.minOutOrMaxIn > inputTokensUsed) {
         IERC20(tokenSwapPath[0]).safeTransfer(
           msg.sender,
           inputParams.minOutOrMaxIn.sub(inputTokensUsed)
         );
+
+        // reset router allowance
+        collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
       }
 
       returnValues.outputAmount = inputParams.exactAmount;
     }
-    // reset pool allowance
-    synthTokenInstance.safeApprove(address(synthereumPool), 0);
   }
 
   function decodeImplementationInfo(bytes calldata info)

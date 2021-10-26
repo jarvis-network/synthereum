@@ -138,10 +138,10 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
             msg.sender,
             inputParams.minOutOrMaxIn.sub(amountsOut[0])
           );
-        }
 
-        // reset allowance
-        inputTokenInstance.safeApprove(implementationInfo.routerAddress, 0);
+          // reset allowance
+          inputTokenInstance.safeApprove(implementationInfo.routerAddress, 0);
+        }
       }
 
       //return value
@@ -156,9 +156,6 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     );
 
     (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
-
-    // reset allowance
-    collateralToken.safeApprove(address(synthereumPool), 0);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
@@ -262,14 +259,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
           msg.sender,
           collateralOut.sub(amountsOut[0])
         );
+
+        // reset router allowance
+        IERC20(tokenSwapPath[0]).safeApprove(
+          implementationInfo.routerAddress,
+          0
+        );
       }
     }
-
-    // reset router allowance
-    IERC20(tokenSwapPath[0]).safeApprove(implementationInfo.routerAddress, 0);
-
-    // reset pool allowance
-    synthTokenInstance.safeApprove(address(synthereumPool), 0);
 
     // store second return value - output token amount
     returnValues.outputAmount = amountsOut[tokenSwapPath.length - 1];

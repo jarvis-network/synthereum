@@ -156,9 +156,10 @@ contract KyberAtomicSwap is BaseAtomicSwap {
             msg.sender,
             inputParams.minOutOrMaxIn.sub(amountsOut[0])
           );
+
+          // reset allowance
+          tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
         }
-        // reset allowance
-        tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
       }
 
       //return value
@@ -175,9 +176,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     // mint jSynth to mintParams.recipient (supposedly msg.sender)
     // returns the output amount
     (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
-
-    // reset allowance
-    collateralToken.safeApprove(address(synthereumPool), 0);
   }
 
   // redeem jSynth into collateral and use that to swap into erc20/eth
@@ -286,14 +284,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
           msg.sender,
           collateralOut.sub(amountsOut[0])
         );
+
+        // reset router allowance
+        tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
       }
     }
-
-    // reset router allowance
-    tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
-
-    // reset pool allowance
-    synthereumPool.syntheticToken().safeApprove(address(synthereumPool), 0);
 
     return
       IAtomicSwapProxy.ReturnValues(
@@ -302,7 +297,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         redeemParams.numTokens,
         amountsOut[tokenSwapPath.length - 1]
       );
-    // store second return value - output token amount
   }
 
   function decodeImplementationInfo(bytes calldata info)
