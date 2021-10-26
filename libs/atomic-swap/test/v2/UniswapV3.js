@@ -147,6 +147,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
@@ -158,10 +165,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
         implementationID,
-        true,
-        tokenAmountIn,
-        0,
-        extraParams,
+        inputParams,
         pool,
         mintParams,
         { from: user },
@@ -223,13 +227,17 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         from: user,
       });
 
+      const inputParams = {
+        isExactInput: false,
+        exactAmount: exactTokensOut,
+        minOutOrMaxIn: maxTokenAmountIn.toString(),
+        extraParams,
+      };
+
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
         implementationID,
-        false,
-        exactTokensOut,
-        maxTokenAmountIn,
-        extraParams,
+        inputParams,
         pool,
         mintParams,
         { from: user },
@@ -424,14 +432,18 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
           encodedInfo,
-          true,
-          tokenAmountIn,
-          0,
-          extraParams,
+          inputParams,
           poolMockInstance.address,
           mintParams,
           { from: user },
@@ -513,14 +525,18 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         AtomicSwapInstance.swapToCollateralAndMint(
           encodedInfo,
-          true,
-          tokenAmountIn,
-          0,
-          extraParams,
+          inputParams,
           pool,
           mintParams,
           { from: user },
@@ -595,6 +611,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
       // approve proxy to pull tokens
       await WETHInstance.approve(ProxyInstance.address, tokenAmountIn, {
         from: user,
@@ -606,10 +629,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
         implementationID,
-        true,
-        tokenAmountIn,
-        0,
-        extraParams,
+        inputParams,
         pool,
         mintParams,
         { from: user, value: tokenAmountIn },
@@ -663,6 +683,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         recipient: user,
       };
 
+      const inputParams = {
+        isExactInput: false,
+        exactAmount: exactTokensOut,
+        minOutOrMaxIn: maxTokenAmountIn,
+        extraParams,
+      };
+
       // approve proxy to pull tokens
       await WETHInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
         from: user,
@@ -674,10 +701,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
         implementationID,
-        false,
-        exactTokensOut,
-        maxTokenAmountIn,
-        extraParams,
+        inputParams,
         pool,
         mintParams,
         { from: user, value: maxTokenAmountIn },
