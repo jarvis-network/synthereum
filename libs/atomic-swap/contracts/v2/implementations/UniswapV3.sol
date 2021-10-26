@@ -26,10 +26,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   function swapToCollateralAndMint(
     bytes calldata info,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes calldata extraParams,
+    IAtomicSwapProxy.SwapMintParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   )
@@ -48,7 +45,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
     // unpack the extraParams
     (uint24[] memory fees, address[] memory tokenSwapPath) =
-      decodeExtraParams(extraParams);
+      decodeExtraParams(inputParams.extraParams);
 
     require(
       address(
@@ -60,35 +57,37 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     returnValues.inputToken = tokenSwapPath[0];
     returnValues.outputToken = address(synthereumPool.syntheticToken());
 
-    if (isExactInput) {
-      returnValues.inputAmount = msg.value > 0 ? msg.value : exactAmount;
+    if (inputParams.isExactInput) {
+      returnValues.inputAmount = msg.value > 0
+        ? msg.value
+        : inputParams.exactAmount;
       if (msg.value > 0) {
         // eth as input
-        exactAmount = msg.value;
+        inputParams.exactAmount = msg.value;
       } else {
         // erc20 as input
         // get input funds from caller
         IERC20(tokenSwapPath[0]).safeTransferFrom(
           msg.sender,
           address(this),
-          exactAmount
+          inputParams.exactAmount
         );
 
         //approve router to swap tokens
         IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
           implementationInfo.routerAddress,
-          exactAmount
+          inputParams.exactAmount
         );
       }
 
       // swap to collateral token into this wallet
       ISwapRouter.ExactInputParams memory params =
         ISwapRouter.ExactInputParams({
-          path: encodeAddresses(isExactInput, tokenSwapPath, fees),
+          path: encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
           recipient: address(this),
           deadline: mintParams.expiration,
-          amountIn: exactAmount,
-          amountOutMinimum: minOutOrMaxIn
+          amountIn: inputParams.exactAmount,
+          amountOutMinimum: inputParams.minOutOrMaxIn
         });
 
       mintParams.collateralAmount = router.exactInput{value: msg.value}(params);
@@ -106,37 +105,37 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // exact output (collateral)
       if (msg.value > 0) {
         // max eth as input
-        minOutOrMaxIn = msg.value;
+        inputParams.minOutOrMaxIn = msg.value;
       } else {
         // max erc20 as input
         // pull the max input tokens allowed to spend
         IERC20(tokenSwapPath[0]).safeTransferFrom(
           msg.sender,
           address(this),
-          minOutOrMaxIn
+          inputParams.minOutOrMaxIn
         );
 
         // approve router to swap tokens
         IERC20(tokenSwapPath[0]).safeIncreaseAllowance(
           implementationInfo.routerAddress,
-          minOutOrMaxIn
+          inputParams.minOutOrMaxIn
         );
       }
 
       // swap to collateral token into this wallet
       ISwapRouter.ExactOutputParams memory params =
         ISwapRouter.ExactOutputParams({
-          path: encodeAddresses(isExactInput, tokenSwapPath, fees),
+          path: encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
           recipient: address(this),
           deadline: mintParams.expiration,
-          amountOut: exactAmount,
-          amountInMaximum: minOutOrMaxIn
+          amountOut: inputParams.exactAmount,
+          amountInMaximum: inputParams.minOutOrMaxIn
         });
 
       returnValues.inputAmount = router.exactOutput{value: msg.value}(params);
 
       // refund leftover tokens
-      if (minOutOrMaxIn > returnValues.inputAmount) {
+      if (inputParams.minOutOrMaxIn > returnValues.inputAmount) {
         if (msg.value > 0) {
           // take leftover eth from the router
           router.refundETH();
@@ -146,7 +145,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
             msg.sender,
-            minOutOrMaxIn.sub(returnValues.inputAmount)
+            inputParams.minOutOrMaxIn.sub(returnValues.inputAmount)
           );
         }
       }
@@ -154,12 +153,12 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // approve synthereum to pull collateral
       IERC20(tokenSwapPath[tokenSwapPath.length - 1]).safeIncreaseAllowance(
         address(synthereumPool),
-        exactAmount
+        inputParams.exactAmount
       );
 
       // mint jSynth to mintParams.recipient (supposedly msg.sender)
       // returns the output amount
-      mintParams.collateralAmount = exactAmount;
+      mintParams.collateralAmount = inputParams.exactAmount;
       (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
     }
   }

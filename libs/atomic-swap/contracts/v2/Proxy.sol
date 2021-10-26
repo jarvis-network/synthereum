@@ -98,10 +98,7 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
 
   function swapAndMint(
     string calldata implementationId,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes calldata extraParams,
+    SwapMintParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable override returns (ReturnValues memory returnValues) {
@@ -110,17 +107,14 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint(bytes,bool,uint256,uint256,bytes,address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address))';
 
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
           functionSig,
           dexImplementationInfo[implementation],
-          isExactInput,
-          exactAmount,
-          minOutOrMaxIn,
-          extraParams,
+          inputParams,
           synthereumPool,
           mintParams
         )

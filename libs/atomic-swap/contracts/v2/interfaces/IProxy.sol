@@ -28,12 +28,17 @@ interface IAtomicSwapProxy {
     bytes extraParams;
   }
 
+  // input values for implementation
+  struct SwapMintParams {
+    bool isExactInput;
+    uint256 exactAmount;
+    uint256 minOutOrMaxIn;
+    bytes extraParams;
+  }
+
   function swapAndMint(
     string calldata implementationId,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    SwapMintParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (ReturnValues memory returnValues);

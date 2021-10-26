@@ -14,21 +14,16 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   struct ImplementationInfo {
     address routerAddress;
     address synthereumFinder;
-    address nativeCryptoAddress;
   }
 
   constructor() BaseAtomicSwap() {}
 
   receive() external payable {}
 
-  /// @param extraParams is in this case pools addresses to swap through (abi-encoded)
   /// @return returnValues = [inputToken, outputToken, inputAmount, outputAmount]
   function swapToCollateralAndMint(
     bytes calldata info,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes calldata extraParams,
+    IAtomicSwapProxy.SwapMintParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   )
@@ -47,7 +42,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     // unpack the extraParams
     (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
-      decodeExtraParams(extraParams);
+      decodeExtraParams(inputParams.extraParams);
 
     // checks
     require(
@@ -69,14 +64,16 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     bool isEthInput = msg.value > 0;
     // swap to collateral token (exact[input/output][ETH/ERC20])
-    if (isExactInput) {
-      returnValues.inputAmount = isEthInput ? msg.value : exactAmount;
+    if (inputParams.isExactInput) {
+      returnValues.inputAmount = isEthInput
+        ? msg.value
+        : inputParams.exactAmount;
       if (isEthInput) {
         // swapExactETHForTokens
         mintParams.collateralAmount = kyberRouter.swapExactETHForTokens{
           value: msg.value
         }(
-          minOutOrMaxIn,
+          inputParams.minOutOrMaxIn,
           poolsPath,
           tokenSwapPath,
           address(this),
@@ -88,18 +85,18 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         tokenSwapPath[0].safeTransferFrom(
           msg.sender,
           address(this),
-          exactAmount
+          inputParams.exactAmount
         );
         //approve kyber router to swap
         tokenSwapPath[0].safeIncreaseAllowance(
           implementationInfo.routerAddress,
-          exactAmount
+          inputParams.exactAmount
         );
 
         // swap to collateral token into this wallet
         mintParams.collateralAmount = kyberRouter.swapExactTokensForTokens(
-          exactAmount,
-          minOutOrMaxIn,
+          inputParams.exactAmount,
+          inputParams.minOutOrMaxIn,
           poolsPath,
           tokenSwapPath,
           address(this),
@@ -111,19 +108,21 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
       if (isEthInput) {
         //swapETHForExactTokens
-        minOutOrMaxIn = msg.value;
+        inputParams.minOutOrMaxIn = msg.value;
 
         // swap to exact collateral and refund leftover
         amountsOut = kyberRouter.swapETHForExactTokens{value: msg.value}(
-          exactAmount,
+          inputParams.exactAmount,
           poolsPath,
           tokenSwapPath,
           address(this),
           mintParams.expiration
         );
 
-        if (minOutOrMaxIn > amountsOut[0]) {
-          payable(msg.sender).transfer(minOutOrMaxIn.sub(amountsOut[0]));
+        if (inputParams.minOutOrMaxIn > amountsOut[0]) {
+          payable(msg.sender).transfer(
+            inputParams.minOutOrMaxIn.sub(amountsOut[0])
+          );
         }
       } else {
         //swapTokensForExactTokens
@@ -131,29 +130,29 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         tokenSwapPath[0].safeTransferFrom(
           msg.sender,
           address(this),
-          minOutOrMaxIn
+          inputParams.minOutOrMaxIn
         );
         //approve kyber router to swap s
         tokenSwapPath[0].safeIncreaseAllowance(
           implementationInfo.routerAddress,
-          minOutOrMaxIn
+          inputParams.minOutOrMaxIn
         );
 
         // swap to collateral token into this wallet
         amountsOut = kyberRouter.swapTokensForExactTokens(
-          exactAmount,
-          minOutOrMaxIn,
+          inputParams.exactAmount,
+          inputParams.minOutOrMaxIn,
           poolsPath,
           tokenSwapPath,
           address(this),
           mintParams.expiration
         );
 
-        if (minOutOrMaxIn > amountsOut[0]) {
+        if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           // refund leftover input erc20
           tokenSwapPath[0].safeTransfer(
             msg.sender,
-            minOutOrMaxIn.sub(amountsOut[0])
+            inputParams.minOutOrMaxIn.sub(amountsOut[0])
           );
         }
       }

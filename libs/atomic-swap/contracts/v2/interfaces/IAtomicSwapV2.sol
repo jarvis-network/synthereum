@@ -13,19 +13,13 @@ import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
 /// @notice in order to be callable through the proxy pattern
 interface IAtomicSwapV2 {
   /// @param info: ImplementationInfo related to this implementation
-  /// @param isExactInput: determine if exactAmount is to be treated as exactInput (true) or exactOutput (false)
-  /// @param exactAmount: exact input or exact output based on boolean
-  /// @param minOutOrMaxIn: anti-slippage - minimum amount out or max amount in based on boolean
-  /// @param extraParams: dynamic-size bytes to encode extra parameters
+  /// @param inputParams: see atomicSwapProxy.MintSwapParams struct
   /// @param synthereumPool: synthereum pool address used to mint with collateral
   /// @param mintParams: struct to mint from synthereum pool with collateral taken from swap
   /// @return returnValues see atomicSwapProxy.ReturnValues struct
   function swapToCollateralAndMint(
     bytes calldata info,
-    bool isExactInput,
-    uint256 exactAmount,
-    uint256 minOutOrMaxIn,
-    bytes memory extraParams,
+    IAtomicSwapProxy.SwapMintParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   )
@@ -33,6 +27,7 @@ interface IAtomicSwapV2 {
     payable
     returns (IAtomicSwapProxy.ReturnValues memory returnValues);
 
+  /// @param info: ImplementationInfo related to this implementation
   /// @param inputParams: see atomicSwapProxy.RedeemSwapParams struct
   /// @param synthereumPool: synthereum pool address used to redeem collateral with jSynths
   /// @param redeemParams: struct to redeem collateral from synthereum pool with input jSynth
