@@ -61,13 +61,12 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     returnValues.inputToken = tokenSwapPath[0];
     returnValues.outputToken = address(synthereumPool.syntheticToken());
 
+    bool isEthInput = msg.value > 0;
     if (inputParams.isExactInput) {
-      returnValues.inputAmount = msg.value > 0
-        ? msg.value
-        : inputParams.exactAmount;
-      if (msg.value > 0) {
+      if (isEthInput) {
         // eth as input
         inputParams.exactAmount = msg.value;
+        returnValues.inputAmount = msg.value;
       } else {
         // erc20 as input
         // get input funds from caller
@@ -82,6 +81,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           implementationInfo.routerAddress,
           inputParams.exactAmount
         );
+        returnValues.inputAmount = inputParams.exactAmount;
       }
 
       // swap to collateral token into this wallet
@@ -107,7 +107,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       (returnValues.outputAmount, ) = synthereumPool.mint(mintParams);
     } else {
       // exact output (collateral)
-      if (msg.value > 0) {
+      if (isEthInput) {
         // max eth as input
         inputParams.minOutOrMaxIn = msg.value;
       } else {
@@ -140,7 +140,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       // refund leftover tokens
       if (inputParams.minOutOrMaxIn > returnValues.inputAmount) {
-        if (msg.value > 0) {
+        if (isEthInput) {
           // take leftover eth from the router
           router.refundETH();
           //send it to user
