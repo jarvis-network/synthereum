@@ -780,7 +780,7 @@ library SynthereumCreditLineLib {
       positionManagerData._getOverCollateralization()
     );
 
-    return collateral.isGreaterThan(thresholdValue);
+    return collateral.isGreaterThanOrEqual(thresholdValue);
   }
 
   // Check new total number of tokens does not overcome mint limit
