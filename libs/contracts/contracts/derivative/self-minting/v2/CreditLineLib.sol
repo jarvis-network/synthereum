@@ -234,9 +234,6 @@ library SynthereumCreditLineLib {
       'Invalid token amount'
     );
 
-    // FixedPoint.Unsigned memory fractionRedeemed =
-    //   numTokens.div(positionData.tokensOutstanding);
-
     FixedPoint.Unsigned memory collateralRedeemed =
       positionData.rawCollateral.mul(numTokens).div(
         positionData.tokensOutstanding
