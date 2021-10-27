@@ -179,6 +179,8 @@ contract('UniswapV2', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn &&
           ev.inputToken == WBTCAddress &&
           ev.outputToken == jEURAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -268,6 +270,8 @@ contract('UniswapV2', async accounts => {
             .gte(web3Utils.toBN(0)) &&
           ev.inputToken == WBTCAddress &&
           ev.outputToken == jEURAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -349,6 +353,8 @@ contract('UniswapV2', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken == jEURAddress &&
           ev.outputToken == WBTCAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -428,6 +434,8 @@ contract('UniswapV2', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == USDTAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -694,6 +702,8 @@ contract('UniswapV2', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn &&
           ev.inputToken == WETHAddress &&
           ev.outputToken == jEURAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -774,6 +784,8 @@ contract('UniswapV2', async accounts => {
             .gte(web3Utils.toBN(0)) &&
           ev.inputToken.toLowerCase() == WETHAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -849,6 +861,8 @@ contract('UniswapV2', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken == jEURAddress &&
           ev.outputToken == WETHAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -931,6 +945,8 @@ contract('UniswapV2', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });

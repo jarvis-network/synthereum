@@ -179,6 +179,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn &&
           ev.inputToken == WBTCAddress &&
           ev.outputToken == jEURAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -269,6 +271,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
             .gte(web3Utils.toBN(0)) &&
           ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -352,6 +356,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             AtomicSwapInstance.address.toLowerCase()
         );
@@ -433,6 +439,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == USDTAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
           ev.dexImplementationAddress.toLowerCase() ==
             AtomicSwapInstance.address.toLowerCase()
         );
@@ -705,6 +713,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn &&
           ev.inputToken == WETHAddress &&
           ev.outputToken == jEURAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -786,6 +796,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
             .gte(web3Utils.toBN(0)) &&
           ev.inputToken == WETHAddress &&
           ev.outputToken == jEURAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -862,6 +874,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken == jEURAddress &&
           ev.outputToken == WETHAddress &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
@@ -908,7 +922,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         from: user,
       });
 
-      const expectedOutput = web3Utils.toBN(2);
+      const expectedOutput = web3Utils.toBN(web3Utils.toWei('1', 'gwei'));
       const redeemParams = {
         derivative: derivative,
         numTokens: jEURInput.toString(),
@@ -946,6 +960,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
         );
       });
