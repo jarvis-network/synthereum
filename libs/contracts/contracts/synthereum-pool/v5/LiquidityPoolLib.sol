@@ -1561,29 +1561,30 @@ library SynthereumLiquidityPoolLib {
   ) internal {
     FixedPoint.Unsigned memory feeCharged;
 
-    ISynthereumLiquidityPoolStorage.FeeData memory _feeData = feeInfo.feeData;
+    address[] storage feeRecipients = feeInfo.feeData.feeRecipients;
 
-    uint256 _totalFeeProportions = feeInfo.totalFeeProportions;
+    uint32[] storage feeProportions = feeInfo.feeData.feeProportions;
 
-    uint256 numberOfRecipients = _feeData.feeRecipients.length;
+    uint256 totalFeeProportions = feeInfo.totalFeeProportions;
 
-    mapping(address => FixedPoint.Unsigned) storage _feeGained =
+    uint256 numberOfRecipients = feeRecipients.length;
+
+    mapping(address => FixedPoint.Unsigned) storage feeGained =
       feeStatus.feeGained;
 
     for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
-      address feeRecipient = _feeData.feeRecipients[i];
+      address feeRecipient = feeRecipients[i];
       FixedPoint.Unsigned memory feeReceived =
         FixedPoint.Unsigned(
-          (feeAmount.rawValue * _feeData.feeProportions[i]) /
-            _totalFeeProportions
+          (feeAmount.rawValue * feeProportions[i]) / totalFeeProportions
         );
-      _feeGained[feeRecipient] = _feeGained[feeRecipient].add(feeReceived);
+      feeGained[feeRecipient] = feeGained[feeRecipient].add(feeReceived);
       feeCharged = feeCharged.add(feeReceived);
     }
 
-    address lastRecipient = _feeData.feeRecipients[numberOfRecipients - 1];
+    address lastRecipient = feeRecipients[numberOfRecipients - 1];
 
-    _feeGained[lastRecipient] = _feeGained[lastRecipient].add(feeAmount).sub(
+    feeGained[lastRecipient] = feeGained[lastRecipient].add(feeAmount).sub(
       feeCharged
     );
 
