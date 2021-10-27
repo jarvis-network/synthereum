@@ -5,10 +5,13 @@ pragma abicoder v2;
 
 import '../BaseAtomicSwap.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
+import '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
+
 import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
 
-interface IUniswapV3Router is ISwapRouter {
-  function refundETH() external payable;
+// group the two univ3 interfaces for convenience
+interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {
+
 }
 
 contract UniV3AtomicSwap is BaseAtomicSwap {
@@ -231,50 +234,113 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       );
     }
 
-    if (inputParams.isExactInput) {
-      // collateral as exact input
-      // swap to erc20 token into recipient wallet
-      ISwapRouter.ExactInputParams memory params =
-        ISwapRouter.ExactInputParams(
-          encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
-          recipient,
-          redeemParams.expiration,
+    if (inputParams.unwrapToETH) {
+      if (inputParams.isExactInput) {
+        // collateral as exact input - eth as output
+        // swap to erc20 token into router wallet and then unwrap to eth to the user
+        ISwapRouter.ExactInputParams memory params =
+          ISwapRouter.ExactInputParams(
+            encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+            implementationInfo.routerAddress,
+            redeemParams.expiration,
+            inputParams.exactAmount,
+            inputParams.minOutOrMaxIn
+          );
+
+        returnValues.outputAmount = IUniswapV3Router(
+          implementationInfo
+            .routerAddress
+        )
+          .exactInput(params);
+
+        // unwrap to ETH
+        IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
+          returnValues.outputAmount,
+          recipient
+        );
+      } else {
+        // swap to erc20 token into router wallet and then unwrap to eth to the user
+        ISwapRouter.ExactOutputParams memory params =
+          ISwapRouter.ExactOutputParams(
+            encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+            implementationInfo.routerAddress,
+            redeemParams.expiration,
+            inputParams.exactAmount,
+            inputParams.minOutOrMaxIn
+          );
+
+        uint256 inputTokensUsed =
+          IUniswapV3Router(implementationInfo.routerAddress).exactOutput(
+            params
+          );
+
+        // refund leftover input (collateral) tokens
+        if (inputParams.minOutOrMaxIn > inputTokensUsed) {
+          IERC20(tokenSwapPath[0]).safeTransfer(
+            msg.sender,
+            inputParams.minOutOrMaxIn.sub(inputTokensUsed)
+          );
+
+          // reset router allowance
+          collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+        }
+
+        //unwrap to eth
+        IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
           inputParams.exactAmount,
-          inputParams.minOutOrMaxIn
+          recipient
         );
 
-      returnValues.outputAmount = IUniswapV3Router(
-        implementationInfo
-          .routerAddress
-      )
-        .exactInput(params);
-    } else {
-      // collateralOut as maxInput
-      // swap to erc20 token into recipient wallet
-      ISwapRouter.ExactOutputParams memory params =
-        ISwapRouter.ExactOutputParams(
-          encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
-          recipient,
-          redeemParams.expiration,
-          inputParams.exactAmount,
-          inputParams.minOutOrMaxIn
-        );
-
-      uint256 inputTokensUsed =
-        IUniswapV3Router(implementationInfo.routerAddress).exactOutput(params);
-
-      // refund leftover input (collateral) tokens
-      if (inputParams.minOutOrMaxIn > inputTokensUsed) {
-        IERC20(tokenSwapPath[0]).safeTransfer(
-          msg.sender,
-          inputParams.minOutOrMaxIn.sub(inputTokensUsed)
-        );
-
-        // reset router allowance
-        collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+        returnValues.outputAmount = inputParams.exactAmount;
       }
+    } else {
+      if (inputParams.isExactInput) {
+        // collateral as exact input
+        // swap to erc20 token into recipient wallet
+        ISwapRouter.ExactInputParams memory params =
+          ISwapRouter.ExactInputParams(
+            encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+            recipient,
+            redeemParams.expiration,
+            inputParams.exactAmount,
+            inputParams.minOutOrMaxIn
+          );
 
-      returnValues.outputAmount = inputParams.exactAmount;
+        returnValues.outputAmount = IUniswapV3Router(
+          implementationInfo
+            .routerAddress
+        )
+          .exactInput(params);
+      } else {
+        // collateralOut as maxInput
+        // swap to erc20 token into recipient wallet
+        ISwapRouter.ExactOutputParams memory params =
+          ISwapRouter.ExactOutputParams(
+            encodeAddresses(inputParams.isExactInput, tokenSwapPath, fees),
+            recipient,
+            redeemParams.expiration,
+            inputParams.exactAmount,
+            inputParams.minOutOrMaxIn
+          );
+
+        uint256 inputTokensUsed =
+          IUniswapV3Router(implementationInfo.routerAddress).exactOutput(
+            params
+          );
+
+        // refund leftover input (collateral) tokens
+        if (inputParams.minOutOrMaxIn > inputTokensUsed) {
+          IERC20(tokenSwapPath[0]).safeTransfer(
+            msg.sender,
+            inputParams.minOutOrMaxIn.sub(inputTokensUsed)
+          );
+
+          // reset router allowance
+          collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+        }
+
+        returnValues.outputAmount = inputParams.exactAmount;
+      }
     }
   }
 

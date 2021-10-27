@@ -807,5 +807,172 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         '0',
       );
     });
+
+    it('burn jSynth and swaps for ETH - exact input - single-hop', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+      const fees = [3000];
+
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+      await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
+        from: user,
+      });
+
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: true,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      // tx through proxy
+      let EthBalanceBefore = web3Utils.toBN(await web3.eth.getBalance(user));
+
+      const tx = await ProxyInstance.redeemAndSwap(
+        implementationID,
+        inputParams,
+        pool,
+        redeemParams,
+        user,
+        { from: user },
+      );
+      const ethFee = await getTxFee(tx);
+
+      let EthOutput;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        EthOutput = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.inputToken == jEURAddress &&
+          ev.outputToken == WETHAddress &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
+      });
+
+      let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      assert.equal(
+        EthBalanceAfter.eq(EthBalanceBefore.add(EthOutput).sub(ethFee)),
+        true,
+      );
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV3Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
+    it('burn jSynth and swaps for ETH - exact output- single-hop', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+
+      const fees = [3000];
+
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+      await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
+        from: user,
+      });
+
+      const expectedOutput = web3Utils.toBN(2);
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: false,
+        unwrapToETH: true,
+        exactAmount: expectedOutput.toString(),
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      // tx through proxy
+      let EthBalanceBefore = web3Utils.toBN(await web3.eth.getBalance(user));
+      const tx = await ProxyInstance.redeemAndSwap(
+        implementationID,
+        inputParams,
+        pool,
+        redeemParams,
+        user,
+        { from: user },
+      );
+      const ethFee = await getTxFee(tx);
+
+      let collateralUsed;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        collateralUsed = ev.outputAmount;
+        return (
+          ev.outputAmount.toString() == expectedOutput.toString() &&
+          ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
+          ev.dexImplementationAddress == AtomicSwapInstance.address
+        );
+      });
+
+      let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      assert.equal(
+        EthBalanceAfter.eq(EthBalanceBefore.add(expectedOutput).sub(ethFee)),
+        true,
+      );
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV3Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
   });
 });
