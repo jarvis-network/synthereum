@@ -37,8 +37,10 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
   event Swap(
     address inputToken,
     address outputToken,
+    address collateralToken,
     uint256 inputAmount,
     uint256 outputAmount,
+    uint256 collateralAmountRefunded,
     address dexImplementationAddress
   );
   modifier onlyMaintainer() {
@@ -125,8 +127,10 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     emit Swap(
       returnValues.inputToken,
       returnValues.outputToken,
+      returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
+      returnValues.collateralAmountRefunded,
       implementation
     );
   }
@@ -161,8 +165,10 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     emit Swap(
       returnValues.inputToken,
       returnValues.outputToken,
+      returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
+      returnValues.collateralAmountRefunded,
       implementation
     );
   }

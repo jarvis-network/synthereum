@@ -63,6 +63,7 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     returnValues.inputToken = address(tokenSwapPath[0]);
     returnValues.outputToken = address(synthereumPool.syntheticToken());
+    returnValues.collateralToken = address(collateralToken);
 
     bool isEthInput = msg.value > 0;
     // swap to collateral token (exact[input/output][ETH/ERC20])
@@ -185,7 +186,11 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external override returns (IAtomicSwapProxy.ReturnValues memory) {
+  )
+    external
+    override
+    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+  {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
       decodeImplementationInfo(info);
@@ -220,7 +225,14 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         address(synthereumPool),
         redeemParams.numTokens
       );
+
+      returnValues.inputToken = address(synthTokenInstance);
     }
+
+    returnValues.outputToken = address(tokenSwapPath[tokenSwapPath.length - 1]);
+    returnValues.collateralToken = address(tokenSwapPath[0]);
+    returnValues.inputAmount = redeemParams.numTokens;
+
     // redeem to collateral and approve swap
     redeemParams.recipient = address(this);
     (uint256 collateralOut, ) = synthereumPool.redeem(redeemParams);
@@ -280,23 +292,20 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
-        tokenSwapPath[0].safeTransfer(
-          msg.sender,
-          collateralOut.sub(amountsOut[0])
-        );
+        uint256 collateralRefund = collateralOut.sub(amountsOut[0]);
+
+        tokenSwapPath[0].safeTransfer(msg.sender, collateralRefund);
 
         // reset router allowance
         tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);
+
+        // return value
+        returnValues.collateralAmountRefunded = collateralRefund;
       }
     }
 
-    return
-      IAtomicSwapProxy.ReturnValues(
-        address(synthereumPool.syntheticToken()),
-        address(tokenSwapPath[tokenSwapPath.length - 1]),
-        redeemParams.numTokens,
-        amountsOut[tokenSwapPath.length - 1]
-      );
+    // return value
+    returnValues.outputAmount = amountsOut[tokenSwapPath.length - 1];
   }
 
   function decodeImplementationInfo(bytes calldata info)

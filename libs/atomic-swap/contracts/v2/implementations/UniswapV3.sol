@@ -63,6 +63,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
     returnValues.inputToken = tokenSwapPath[0];
     returnValues.outputToken = address(synthereumPool.syntheticToken());
+    returnValues.collateralToken = address(collateralToken);
 
     bool isEthInput = msg.value > 0;
     if (inputParams.isExactInput) {
@@ -219,6 +220,7 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
       // store return values
       returnValues.inputToken = address(synthTokenInstance);
       returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
+      returnValues.collateralToken = tokenSwapPath[0];
       returnValues.inputAmount = redeemParams.numTokens;
 
       redeemParams.recipient = address(this);
@@ -276,13 +278,16 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
         // refund leftover input (collateral) tokens
         if (inputParams.minOutOrMaxIn > inputTokensUsed) {
-          IERC20(tokenSwapPath[0]).safeTransfer(
-            msg.sender,
-            inputParams.minOutOrMaxIn.sub(inputTokensUsed)
-          );
+          uint256 collateralRefund =
+            inputParams.minOutOrMaxIn.sub(inputTokensUsed);
+
+          IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
 
           // reset router allowance
           collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+
+          // return value
+          returnValues.collateralAmountRefunded = collateralRefund;
         }
 
         //unwrap to eth
@@ -330,13 +335,16 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
         // refund leftover input (collateral) tokens
         if (inputParams.minOutOrMaxIn > inputTokensUsed) {
-          IERC20(tokenSwapPath[0]).safeTransfer(
-            msg.sender,
-            inputParams.minOutOrMaxIn.sub(inputTokensUsed)
-          );
+          uint256 collateralRefund =
+            inputParams.minOutOrMaxIn.sub(inputTokensUsed);
+
+          IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
 
           // reset router allowance
           collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+
+          // return value
+          returnValues.collateralAmountRefunded = collateralRefund;
         }
 
         returnValues.outputAmount = inputParams.exactAmount;

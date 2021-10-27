@@ -56,6 +56,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
     returnValues.inputToken = address(inputTokenInstance);
     returnValues.outputToken = address(synthereumPool.syntheticToken());
+    returnValues.collateralToken = address(collateralToken);
 
     bool isEthInput = msg.value > 0;
 
@@ -205,6 +206,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
     returnValues.inputToken = address(synthTokenInstance);
     returnValues.outputToken = outputTokenAddress;
+    returnValues.collateralToken = tokenSwapPath[0];
     returnValues.inputAmount = redeemParams.numTokens;
 
     // redeem to collateral and approve swap
@@ -255,16 +257,18 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
-        IERC20(tokenSwapPath[0]).safeTransfer(
-          msg.sender,
-          collateralOut.sub(amountsOut[0])
-        );
+        uint256 collateralRefund = collateralOut.sub(amountsOut[0]);
+
+        IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
 
         // reset router allowance
         IERC20(tokenSwapPath[0]).safeApprove(
           implementationInfo.routerAddress,
           0
         );
+
+        // return value
+        returnValues.collateralAmountRefunded = collateralRefund;
       }
     }
 

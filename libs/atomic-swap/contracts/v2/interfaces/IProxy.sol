@@ -15,8 +15,10 @@ interface IAtomicSwapProxy {
   struct ReturnValues {
     address inputToken;
     address outputToken;
+    address collateralToken;
     uint256 inputAmount;
     uint256 outputAmount;
+    uint256 collateralAmountRefunded;
   }
 
   // input values for implementation
