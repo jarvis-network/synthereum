@@ -571,23 +571,26 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.Fee memory feeStruct = positionManagerData._getFeeInfo();
     address[] memory feeRecipients = feeStruct.feeRecipients;
     uint32[] memory feeProportions = feeStruct.feeProportions;
+    uint256 totalFeeProportions = feeStruct.totalFeeProportions;
+    uint256 numberOfRecipients = feeRecipients.length;
+    mapping(address => FixedPoint.Unsigned) storage feeGained =
+      feeStatus.feeGained;
 
-    for (uint256 i = 0; i < feeRecipients.length - 1; i++) {
+    for (uint256 i = 0; i < numberOfRecipients - 1; i++) {
+      address feeRecipient = feeRecipients[i];
       FixedPoint.Unsigned memory feeReceived =
-        feeAmount.mul(feeProportions[i]).div(feeStruct.totalFeeProportions);
-
-      feeStatus.feeGained[feeRecipients[i]] = feeStatus.feeGained[
-        feeRecipients[i]
-      ]
-        .add(feeReceived);
+        FixedPoint.Unsigned(
+          (feeAmount.rawValue * feeProportions[i]) / totalFeeProportions
+        );
+      feeGained[feeRecipient] = feeGained[feeRecipient].add(feeReceived);
       feeCharged = feeCharged.add(feeReceived);
     }
 
-    address lastRecipient = feeRecipients[feeRecipients.length - 1];
+    address lastRecipient = feeRecipients[numberOfRecipients - 1];
 
-    feeStatus.feeGained[lastRecipient] = feeStatus.feeGained[lastRecipient]
-      .add(feeAmount)
-      .sub(feeCharged);
+    feeGained[lastRecipient] = feeGained[lastRecipient].add(feeAmount).sub(
+      feeCharged
+    );
 
     feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
   }
