@@ -695,9 +695,11 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount
   ) internal {
-    positionData.rawCollateral = positionData.rawCollateral.sub(
-      collateralAmount
-    );
+    FixedPoint.Unsigned memory newRawCollateral =
+      positionData.rawCollateral.sub(collateralAmount);
+
+    positionData.rawCollateral = newRawCollateral;
+
     globalPositionData.rawTotalPositionCollateral = globalPositionData
       .rawTotalPositionCollateral
       .sub(collateralAmount);
@@ -705,7 +707,7 @@ library SynthereumCreditLineLib {
     require(
       _checkCollateralization(
         positionManagerData,
-        positionData.rawCollateral,
+        newRawCollateral,
         positionData.tokensOutstanding
       ),
       'CR is not sufficiently high after the withdraw - try less amount'
