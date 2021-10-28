@@ -148,7 +148,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -246,7 +245,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       });
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
@@ -333,7 +331,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: 0,
@@ -417,7 +414,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         unwrapToETH: false,
         exactAmount: expectedOutput.toString(),
@@ -505,7 +501,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -554,7 +549,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -598,7 +592,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -640,7 +633,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -684,7 +676,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -765,7 +756,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn,
@@ -852,7 +842,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: true,
         exactAmount: 0,
@@ -940,7 +929,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         unwrapToETH: true,
         exactAmount: expectedOutput.toString(),

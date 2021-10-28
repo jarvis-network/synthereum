@@ -114,17 +114,18 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint(bytes,(address,bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes),(address,address,(address,uint256,uint256,uint256,uint256,address)))';
 
-    inputParams.synthereumFinder = synthereumFinder;
+    SynthereumMintParams memory synthereumParams =
+      SynthereumMintParams(synthereumFinder, synthereumPool, mintParams);
+
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
           functionSig,
           dexImplementationInfo[implementation],
           inputParams,
-          synthereumPool,
-          mintParams
+          synthereumParams
         )
       );
 
@@ -152,17 +153,18 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
     string memory functionSig =
-      'redeemCollateralAndSwap(bytes,(address,bool,bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address),address)';
+      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes),(address,address,(address,uint256,uint256,uint256,uint256,address)),address)';
 
-    inputParams.synthereumFinder = synthereumFinder;
+    SynthereumRedeemParams memory synthereumParams =
+      SynthereumRedeemParams(synthereumFinder, synthereumPool, redeemParams);
+
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
           functionSig,
           dexImplementationInfo[implementation],
           inputParams,
-          synthereumPool,
-          redeemParams,
+          synthereumParams,
           recipient
         )
       );

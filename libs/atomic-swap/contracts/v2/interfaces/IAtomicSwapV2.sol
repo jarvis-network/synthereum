@@ -14,14 +14,12 @@ import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
 interface IAtomicSwapV2 {
   /// @param info: ImplementationInfo related to this implementation
   /// @param inputParams: see atomicSwapProxy.MintSwapParams struct
-  /// @param synthereumPool: synthereum pool address used to mint with collateral
-  /// @param mintParams: struct to mint from synthereum pool with collateral taken from swap
+  /// @param synthereumParams: params to interact with synthereum
   /// @return returnValues see atomicSwapProxy.ReturnValues struct
   function swapToCollateralAndMint(
     bytes calldata info,
     IAtomicSwapProxy.SwapMintParams memory inputParams,
-    ISynthereumPoolOnChainPriceFeed synthereumPool,
-    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
+    IAtomicSwapProxy.SynthereumMintParams memory synthereumParams
   )
     external
     payable
@@ -29,15 +27,13 @@ interface IAtomicSwapV2 {
 
   /// @param info: ImplementationInfo related to this implementation
   /// @param inputParams: see atomicSwapProxy.RedeemSwapParams struct
-  /// @param synthereumPool: synthereum pool address used to redeem collateral with jSynths
-  /// @param redeemParams: struct to redeem collateral from synthereum pool with input jSynth
+  /// @param synthereumParams: params to interact with synthereum
   /// @param recipient: recipient of the output tokens
   /// @return returnValues see atomicSwapProxy.ReturnValues struct
   function redeemCollateralAndSwap(
     bytes calldata info,
     IAtomicSwapProxy.RedeemSwapParams memory inputParams,
-    ISynthereumPoolOnChainPriceFeed synthereumPool,
-    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    IAtomicSwapProxy.SynthereumRedeemParams memory synthereumParams,
     address recipient
   ) external returns (IAtomicSwapProxy.ReturnValues memory);
 }

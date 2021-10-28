@@ -27,7 +27,6 @@ interface IAtomicSwapProxy {
 
   // input values for implementation
   struct RedeemSwapParams {
-    ISynthereumFinder synthereumFinder;
     bool isExactInput;
     bool unwrapToETH;
     uint256 exactAmount;
@@ -37,11 +36,24 @@ interface IAtomicSwapProxy {
 
   // input values for implementation
   struct SwapMintParams {
-    ISynthereumFinder synthereumFinder;
     bool isExactInput;
     uint256 exactAmount;
     uint256 minOutOrMaxIn;
     bytes extraParams;
+  }
+
+  // synthereum variables
+  struct SynthereumMintParams {
+    ISynthereumFinder synthereumFinder;
+    ISynthereumPoolOnChainPriceFeed synthereumPool;
+    ISynthereumPoolOnChainPriceFeed.MintParams mintParams;
+  }
+
+  // synthereum variables
+  struct SynthereumRedeemParams {
+    ISynthereumFinder synthereumFinder;
+    ISynthereumPoolOnChainPriceFeed synthereumPool;
+    ISynthereumPoolOnChainPriceFeed.RedeemParams redeemParams;
   }
 
   function swapAndMint(

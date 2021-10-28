@@ -148,7 +148,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -240,7 +239,6 @@ contract('UniswapV2', async accounts => {
       const maxTokenAmountIn = WBTCbalanceBefore.div(web3Utils.toBN(10));
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
@@ -330,7 +328,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: 0,
@@ -412,7 +409,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         unwrapToETH: false,
         exactAmount: expectedOutput.toString(),
@@ -498,7 +494,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -546,7 +541,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -589,7 +583,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -630,7 +623,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -673,7 +665,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -753,7 +744,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn,
@@ -839,7 +829,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: true,
         exactAmount: 0,
@@ -925,7 +914,6 @@ contract('UniswapV2', async accounts => {
       };
 
       const inputParams = {
-        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         unwrapToETH: true,
         exactAmount: expectedOutput.toString(),
