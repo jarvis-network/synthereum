@@ -19,7 +19,7 @@ import {
   setAuthModalVisible,
   setExchangeConfirmationVisible,
 } from '@/state/slices/app';
-import { Asset as AssetType } from '@/data/assets';
+import { Asset as AssetType, polygonOnlyAssets } from '@/data/assets';
 
 import {
   ExchangeRate,
@@ -200,10 +200,8 @@ export const MainForm: React.FC = () => {
   useEffect(() => {
     if (networkId !== networkNameToId.polygon) {
       if (
-        payAsset === 'jPHP' ||
-        payAsset === 'jSGD' ||
-        receiveAsset === 'jPHP' ||
-        receiveAsset === 'jSGD'
+        polygonOnlyAssets.includes(payAsset as 'jPHP') ||
+        polygonOnlyAssets.includes(receiveAsset as 'jPHP')
       ) {
         setTimeout(() => {
           dispatch(resetAssetsIfUnsupported());

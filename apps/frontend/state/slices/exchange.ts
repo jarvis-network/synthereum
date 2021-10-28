@@ -12,6 +12,7 @@ import {
   State,
 } from '@/state/initialState';
 import { resetSwapAction } from '@/state/actions';
+import { polygonOnlyAssets } from '@/data/assets';
 
 interface SetChooseAssetAction {
   payload: State['exchange']['chooseAssetActive'];
@@ -148,13 +149,13 @@ const exchangeSlice = createSlice({
 function resetAssetsIfUnsupportedReducer(
   state: typeof initialAppState.exchange,
 ) {
-  if (state.payAsset === 'jPHP' || state.payAsset === 'jSGD') {
+  if (polygonOnlyAssets.includes(state.payAsset as 'jPHP')) {
     state.payAsset = DEFAULT_PAY_ASSET;
     if (state.receiveAsset === DEFAULT_PAY_ASSET) {
       state.receiveAsset = DEFAULT_RECEIVE_ASSET;
     }
   }
-  if (state.receiveAsset === 'jPHP' || state.receiveAsset === 'jSGD') {
+  if (polygonOnlyAssets.includes(state.receiveAsset as 'jPHP')) {
     state.receiveAsset = DEFAULT_RECEIVE_ASSET;
     if (state.payAsset === DEFAULT_RECEIVE_ASSET) {
       state.payAsset = DEFAULT_PAY_ASSET;

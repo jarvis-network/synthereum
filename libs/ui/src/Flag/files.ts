@@ -1,4 +1,5 @@
 import jchf from './icons/jchf.svg';
+import jcad from './icons/jcad.svg';
 import jeur from './icons/jeur.svg';
 import jgbp from './icons/jgbp.svg';
 import jphp from './icons/jphp.svg';
@@ -10,6 +11,7 @@ export { default as questionMark } from './icons/question-mark.svg';
 
 export const files = {
   jchf,
+  jcad,
   jeur,
   jgbp,
   jphp,

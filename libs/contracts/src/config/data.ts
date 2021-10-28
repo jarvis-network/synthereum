@@ -28,6 +28,7 @@ export const priceFeed = typeCheck<PriceFeed>()({
   jXAG: 'XAGUSD',
   jPHP: 'PHPUSD',
   jSGD: 'SGDUSD',
+  jCAD: 'CADUSD',
 } as const);
 
 export const reversedPriceFeedPairs: string[] = [priceFeed.jCHF];
@@ -124,6 +125,18 @@ const jSGD = typeCheck<SyntheticTokenConfig<SyntheticSymbol>>()({
   chainlinkPriceFeedIdentifier: 'SGDUSD',
   collateralRequirement: '1050000000000000000',
   startingCollateralization: '920375',
+  minSponsorTokens: '0',
+  isContractAllowed: true,
+} as const);
+
+const jCAD = typeCheck<SyntheticTokenConfig<SyntheticSymbol>>()({
+  syntheticName: 'Jarvis Synthetic Canadian Dollar',
+  syntheticSymbol: 'jCAD',
+  umaPriceFeedIdentifier: 'CADUSD',
+  jarvisPriceFeedIdentifier: 'CADUSD',
+  chainlinkPriceFeedIdentifier: 'CADUSD',
+  collateralRequirement: '1025000000000000000',
+  startingCollateralization: '889900',
   minSponsorTokens: '0',
   isContractAllowed: true,
 } as const);
@@ -307,7 +320,12 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       },
       v4: {
         version: 4,
-        syntheticTokens: { ...syntheticTokensMainnet, jPHP, jSGD } as const,
+        syntheticTokens: {
+          ...syntheticTokensMainnet,
+          jPHP,
+          jSGD,
+          jCAD,
+        } as const,
       },
     },
   },

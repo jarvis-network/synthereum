@@ -19,6 +19,7 @@ import BN from 'bn.js';
 
 type Token =
   | keyof typeof synthereumConfig[SupportedNetworkId]['perVersionConfig']['v4']['syntheticTokens']
+  | 'jCAD'
   | 'jPHP'
   | 'jSGD';
 
@@ -36,6 +37,7 @@ export class ChainlinkPriceFeed {
     jGBP: new BehaviorSubject<$>(null),
     jPHP: new BehaviorSubject<$>(null),
     jSGD: new BehaviorSubject<$>(null),
+    jCAD: new BehaviorSubject<$>(null),
   });
 
   private multicallIds: { [key: string]: Token } = {};
@@ -46,6 +48,7 @@ export class ChainlinkPriceFeed {
     jCHF: '',
     jPHP: '',
     jSGD: '',
+    jCAD: '',
   };
 
   private lastResultsSubscription?: RxSubscription;
@@ -108,6 +111,7 @@ export class ChainlinkPriceFeed {
         jCHF: -1,
         jPHP: -1,
         jSGD: -1,
+        jCAD: -1,
       };
 
       // eslint-disable-next-line guard-for-in

@@ -29,6 +29,7 @@ export const chainlinkAddresses = Object.freeze({
     XAUUSD: '0x0C466540B2ee1a31b441671eac0ca886e051E410' as AddressOn<'polygon'>,
     PHPUSD: '0x218231089Bebb2A31970c3b77E96eCfb3BA006D1' as AddressOn<'polygon'>,
     SGDUSD: '0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299' as AddressOn<'polygon'>,
+    CADUSD: '0xACA44ABb8B04D07D883202F99FA5E3c53ed57Fb5' as AddressOn<'polygon'>,
   }),
   mumbai: Object.freeze({
     EURUSD: '0x876e7aa32a6f71405bd3ba5151cc6a43d15bffe6' as AddressOn<'mumbai'>,

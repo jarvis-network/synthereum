@@ -2,6 +2,7 @@ import {
   collateralSymbol,
   PerAsset,
   synthereumConfig,
+  allSyntheticSymbols,
 } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
@@ -55,6 +56,7 @@ const assetIconMap: PerAsset<string | null> = {
   jSPX: null,
   jPHP: 'jphp',
   jSGD: 'jsgd',
+  jCAD: 'jcad',
 } as const;
 
 type SynthereumConfig = typeof synthereumConfig;
@@ -186,4 +188,10 @@ export const assetsPolygon: Asset[] = [
     type: 'crypto',
     wrappedNative: true,
   } as Asset,
+];
+
+export const polygonOnlyAssets: typeof allSyntheticSymbols[number][] = [
+  'jPHP',
+  'jSGD',
+  'jCAD',
 ];
