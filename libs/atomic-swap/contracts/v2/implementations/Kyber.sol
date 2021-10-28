@@ -13,7 +13,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
   struct ImplementationInfo {
     address routerAddress;
-    address synthereumFinder;
   }
 
   constructor() BaseAtomicSwap() {}
@@ -53,10 +52,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     IERC20 collateralToken = tokenSwapPath[tokenSwapPath.length - 1];
     {
       require(
-        checkSynthereumPool(
-          implementationInfo.synthereumFinder,
-          synthereumPool
-        ) == collateralToken,
+        checkSynthereumPool(inputParams.synthereumFinder, synthereumPool) ==
+          collateralToken,
         'Wrong collateral instance'
       );
     }
@@ -205,10 +202,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       'Pools and tokens length mismatch'
     );
     require(
-      checkSynthereumPool(
-        implementationInfo.synthereumFinder,
-        synthereumPool
-      ) == tokenSwapPath[0],
+      checkSynthereumPool(inputParams.synthereumFinder, synthereumPool) ==
+        tokenSwapPath[0],
       'Wrong collateral instance'
     );
 

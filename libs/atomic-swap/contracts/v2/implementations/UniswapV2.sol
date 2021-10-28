@@ -13,7 +13,6 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
 
   struct ImplementationInfo {
     address routerAddress;
-    address synthereumFinder;
   }
 
   constructor() BaseAtomicSwap() {}
@@ -46,10 +45,8 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     IERC20 inputTokenInstance = IERC20(tokenSwapPath[0]);
     {
       require(
-        checkSynthereumPool(
-          implementationInfo.synthereumFinder,
-          synthereumPool
-        ) == collateralToken,
+        checkSynthereumPool(inputParams.synthereumFinder, synthereumPool) ==
+          collateralToken,
         'Wrong collateral instance'
       );
     }
@@ -185,7 +182,7 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     // check pool
     require(
       address(
-        checkSynthereumPool(implementationInfo.synthereumFinder, synthereumPool)
+        checkSynthereumPool(inputParams.synthereumFinder, synthereumPool)
       ) == tokenSwapPath[0],
       'Wrong collateral instance'
     );

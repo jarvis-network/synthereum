@@ -20,7 +20,6 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   struct ImplementationInfo {
     address routerAddress;
-    address synthereumFinder;
   }
 
   constructor() BaseAtomicSwap() {}
@@ -53,10 +52,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     IERC20 collateralToken = IERC20(tokenSwapPath[tokenSwapPath.length - 1]);
     {
       require(
-        checkSynthereumPool(
-          implementationInfo.synthereumFinder,
-          synthereumPool
-        ) == collateralToken,
+        checkSynthereumPool(inputParams.synthereumFinder, synthereumPool) ==
+          collateralToken,
         'Wrong collateral instance'
       );
     }
@@ -200,10 +197,8 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     IERC20 collateralInstance = IERC20(tokenSwapPath[0]);
     {
       require(
-        checkSynthereumPool(
-          implementationInfo.synthereumFinder,
-          synthereumPool
-        ) == collateralInstance,
+        checkSynthereumPool(inputParams.synthereumFinder, synthereumPool) ==
+          collateralInstance,
         'Wrong collateral instance'
       );
       // redeem USDC with jSynth into this contract
@@ -272,30 +267,33 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
           inputParams.exactAmount,
           inputParams.minOutOrMaxIn
         );
+      {
+        uint256 inputTokensUsed =
+          IUniswapV3Router(implementationInfo.routerAddress).exactOutput(
+            params
+          );
 
-      uint256 inputTokensUsed =
-        IUniswapV3Router(implementationInfo.routerAddress).exactOutput(params);
+        // refund leftover input (collateral) tokens
+        if (inputParams.minOutOrMaxIn > inputTokensUsed) {
+          uint256 collateralRefund =
+            inputParams.minOutOrMaxIn.sub(inputTokensUsed);
 
-      // refund leftover input (collateral) tokens
-      if (inputParams.minOutOrMaxIn > inputTokensUsed) {
-        uint256 collateralRefund =
-          inputParams.minOutOrMaxIn.sub(inputTokensUsed);
+          IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
 
-        IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
+          // reset router allowance
+          collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
 
-        // reset router allowance
-        collateralInstance.safeApprove(implementationInfo.routerAddress, 0);
+          // return value
+          returnValues.collateralAmountRefunded = collateralRefund;
+        }
 
-        // return value
-        returnValues.collateralAmountRefunded = collateralRefund;
-      }
-
-      if (inputParams.unwrapToETH) {
-        //unwrap to eth
-        IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
-          inputParams.exactAmount,
-          recipient
-        );
+        if (inputParams.unwrapToETH) {
+          //unwrap to eth
+          IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
+            inputParams.exactAmount,
+            recipient
+          );
+        }
       }
 
       returnValues.outputAmount = inputParams.exactAmount;

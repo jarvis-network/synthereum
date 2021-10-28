@@ -29,11 +29,9 @@ abstract contract BaseAtomicSwap is IAtomicSwapV2 {
   constructor() {}
 
   function checkSynthereumPool(
-    address synthereumFinderAddress,
+    ISynthereumFinder synthereumFinder,
     ISynthereumPoolOnChainPriceFeed synthereumPool
   ) internal view returns (IERC20 collateralInstance) {
-    ISynthereumFinder synthereumFinder =
-      ISynthereumFinder(synthereumFinderAddress);
     ISynthereumRegistry poolRegistry =
       ISynthereumRegistry(
         synthereumFinder.getImplementationAddress(

@@ -9,6 +9,7 @@ import {
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -26,6 +27,8 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
   mapping(address => bytes) public dexImplementationInfo;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
+
+  ISynthereumFinder immutable synthereumFinder;
 
   event RegisterImplementation(
     string id,
@@ -51,7 +54,9 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     _;
   }
 
-  constructor(Roles memory _roles) {
+  constructor(Roles memory _roles, address _synthereumFinderAddress) {
+    synthereumFinder = ISynthereumFinder(_synthereumFinderAddress);
+
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
 
@@ -109,8 +114,9 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address))';
+      'swapToCollateralAndMint(bytes,(address,bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address))';
 
+    inputParams.synthereumFinder = synthereumFinder;
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(
@@ -146,8 +152,9 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
     string memory functionSig =
-      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address),address)';
+      'redeemCollateralAndSwap(bytes,(address,bool,bool,uint256,uint256,bytes),address,(address,uint256,uint256,uint256,uint256,address),address)';
 
+    inputParams.synthereumFinder = synthereumFinder;
     bytes memory result =
       implementation.functionDelegateCall(
         abi.encodeWithSignature(

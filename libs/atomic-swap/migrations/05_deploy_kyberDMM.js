@@ -15,11 +15,6 @@ module.exports = async function (deployer, network, accounts) {
   const networkId = toNetworkId(network);
   const admin = accounts[0];
   const maintainer = accounts[1];
-  const networkFile = require(`@jarvis-network/synthereum-contracts/networks/${networkId}.json`);
-
-  const synthereumFinderAddress = networkFile.filter(
-    elem => elem.contractName === 'SynthereumFinder',
-  )[0].address;
 
   // get proxy instance
   const proxyInstance = await getExistingInstance(web3, AtomicSwapProxy);
@@ -30,12 +25,11 @@ module.exports = async function (deployer, network, accounts) {
 
   let KyberInfo = {
     routerAddress: kyberData[networkId].DMMRouter,
-    synthereumFinder: synthereumFinderAddress,
   };
 
   let encodedInfo = web3.eth.abi.encodeParameters(
-    ['address', 'address'],
-    [KyberInfo.routerAddress, KyberInfo.synthereumFinder],
+    ['address'],
+    [KyberInfo.routerAddress],
   );
 
   await proxyInstance.methods

@@ -4,6 +4,10 @@ import {
   ISynthereumPoolOnChainPriceFeed
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
+import {
+  ISynthereumFinder
+} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+
 interface IAtomicSwapProxy {
   // Role structure
   struct Roles {
@@ -23,6 +27,7 @@ interface IAtomicSwapProxy {
 
   // input values for implementation
   struct RedeemSwapParams {
+    ISynthereumFinder synthereumFinder;
     bool isExactInput;
     bool unwrapToETH;
     uint256 exactAmount;
@@ -32,6 +37,7 @@ interface IAtomicSwapProxy {
 
   // input values for implementation
   struct SwapMintParams {
+    ISynthereumFinder synthereumFinder;
     bool isExactInput;
     uint256 exactAmount;
     uint256 minOutOrMaxIn;

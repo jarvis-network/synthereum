@@ -14,10 +14,10 @@ contract('AtomicSwap Proxy', accounts => {
 
   let proxyInstance;
   // actual parameters are not really relevant here
+  let synthereumFinder = accounts[0];
+
   let implementationInfo = {
     routerAddress: accounts[1],
-    synthereumFinder: accounts[2],
-    nativeCryptoAddress: accounts[3],
   };
 
   let FixedRateRoles = {
@@ -25,12 +25,8 @@ contract('AtomicSwap Proxy', accounts => {
     maintainers: [maintainer],
   };
   let encodedInfo = web3.eth.abi.encodeParameters(
-    ['address', 'address', 'address'],
-    [
-      implementationInfo.routerAddress,
-      implementationInfo.synthereumFinder,
-      implementationInfo.nativeCryptoAddress,
-    ],
+    ['address'],
+    [implementationInfo.routerAddress],
   );
 
   let implementationId1 = 'sushiSwap';
@@ -39,7 +35,7 @@ contract('AtomicSwap Proxy', accounts => {
 
   describe('Add/Remove Implementation', () => {
     before(async () => {
-      proxyInstance = await Proxy.new(FixedRateRoles);
+      proxyInstance = await Proxy.new(FixedRateRoles, synthereumFinder);
     });
 
     it('Register a new implementation', async () => {

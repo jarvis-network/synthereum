@@ -148,6 +148,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -245,6 +246,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       });
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
@@ -331,6 +333,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: 0,
@@ -414,6 +417,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         unwrapToETH: false,
         exactAmount: expectedOutput.toString(),
@@ -501,16 +505,16 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
       };
 
-      // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
-        AtomicSwapInstance.swapToCollateralAndMint(
-          encodedInfo,
+        ProxyInstance.swapAndMint(
+          implementationID,
           inputParams,
           poolMockInstance.address,
           mintParams,
@@ -550,6 +554,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -557,10 +562,9 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         extraParams,
       };
 
-      // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
-        AtomicSwapInstance.redeemCollateralAndSwap(
-          encodedInfo,
+        ProxyInstance.redeemAndSwap(
+          implementationID,
           inputParams,
           poolMockInstance.address,
           redeemParams,
@@ -594,16 +598,16 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
       };
 
-      // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
-        AtomicSwapInstance.swapToCollateralAndMint(
-          encodedInfo,
+        ProxyInstance.swapAndMint(
+          implementationID,
           inputParams,
           pool,
           mintParams,
@@ -636,6 +640,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -643,10 +648,9 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         extraParams,
       };
 
-      // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
-        AtomicSwapInstance.redeemCollateralAndSwap(
-          encodedInfo,
+        ProxyInstance.redeemAndSwap(
+          implementationID,
           inputParams,
           pool,
           redeemParams,
@@ -680,6 +684,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -760,6 +765,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn,
@@ -846,6 +852,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: true,
         unwrapToETH: true,
         exactAmount: 0,
@@ -933,6 +940,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       const inputParams = {
+        synthereumFinder: ZERO_ADDRESS,
         isExactInput: false,
         unwrapToETH: true,
         exactAmount: expectedOutput.toString(),
