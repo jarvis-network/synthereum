@@ -254,8 +254,10 @@ contract('UniswapV2', async accounts => {
       );
 
       let jSynthOut;
+      let inputAmount;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
+        inputAmount = ev.inputAmount;
         return (
           ev.outputAmount > 0 &&
           web3Utils
@@ -272,9 +274,8 @@ contract('UniswapV2', async accounts => {
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-      // some WBTC may have been refunded
       assert.equal(
-        WBTCbalanceAfter.gt(WBTCbalanceBefore.sub(maxTokenAmountIn)),
+        WBTCbalanceAfter.eq(WBTCbalanceBefore.sub(inputAmount)),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
