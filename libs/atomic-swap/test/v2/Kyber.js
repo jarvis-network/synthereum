@@ -55,16 +55,10 @@ contract('KyberDMM', async accounts => {
     kyberPools = kyber[networkId].pools;
     KyberInfo = {
       routerAddress: kyber[networkId].DMMRouter,
-      synthereumFinder: '0xD451dE78E297b496ee8a4f06dCF991C17580B452',
-      nativeCryptoAddress: tokens[networkId].WETH,
     };
     encodedInfo = web3.eth.abi.encodeParameters(
-      ['address', 'address', 'address'],
-      [
-        KyberInfo.routerAddress,
-        KyberInfo.synthereumFinder,
-        KyberInfo.nativeCryptoAddress,
-      ],
+      ['address'],
+      [KyberInfo.routerAddress],
     );
 
     kyberInstance = await IKyberRouter.at(kyber[networkId].DMMRouter);

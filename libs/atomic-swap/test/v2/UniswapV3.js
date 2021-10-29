@@ -99,13 +99,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
     UniV3Info = {
       routerAddress: uniswap[networkId].routerV3,
-      synthereumFinder: '0xD451dE78E297b496ee8a4f06dCF991C17580B452',
-      nativeCryptoAddress: tokens[networkId].WETH,
     };
 
     encodedInfo = web3.eth.abi.encodeParameters(
-      ['address', 'address'],
-      [UniV3Info.routerAddress, UniV3Info.synthereumFinder],
+      ['address'],
+      [UniV3Info.routerAddress],
     );
 
     // init uniswap

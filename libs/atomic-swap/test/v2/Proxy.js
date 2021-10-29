@@ -108,6 +108,19 @@ contract('AtomicSwap Proxy', accounts => {
         return ev.id == implementationId1;
       });
     });
+    it('Rejects if removing an implementation not existing', async () => {
+      await truffleAssert.reverts(
+        proxyInstance.removeImplementation('mockID', { from: maintainer }),
+        'Implementation with this id does not exist',
+      );
+
+      await truffleAssert.reverts(
+        proxyInstance.removeImplementation(implementationId1, {
+          from: accounts[9],
+        }),
+        'Only contract maintainer can call this function',
+      );
+    });
     it('Rejects if caller is not the admin', async () => {
       await truffleAssert.reverts(
         proxyInstance.registerImplementation(
