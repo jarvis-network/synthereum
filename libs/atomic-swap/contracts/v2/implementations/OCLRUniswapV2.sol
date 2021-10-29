@@ -113,9 +113,11 @@ contract OCLRUniswapV2 is BaseOCLR {
 
         // refund eventual eth leftover
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
-          payable(msg.sender).transfer(
-            inputParams.minOutOrMaxIn.sub(amountsOut[0])
-          );
+          (bool success, ) =
+            msg.sender.call{
+              value: inputParams.minOutOrMaxIn.sub(amountsOut[0])
+            }('');
+          require(success, 'Failed eth refund');
         }
       } else {
         //swapTokensForExactTokens

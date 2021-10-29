@@ -13,6 +13,10 @@ import {
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {
   IOnChainLiquidityRouter
@@ -20,7 +24,8 @@ import {
 
 contract OnChainLiquidityRouter is
   IOnChainLiquidityRouter,
-  AccessControlEnumerable
+  AccessControlEnumerable,
+  ReentrancyGuard
 {
   using Address for address;
 
@@ -123,7 +128,13 @@ contract OnChainLiquidityRouter is
     SwapMintParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
-  ) external payable override returns (ReturnValues memory returnValues) {
+  )
+    external
+    payable
+    override
+    nonReentrant()
+    returns (ReturnValues memory returnValues)
+  {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
@@ -163,7 +174,12 @@ contract OnChainLiquidityRouter is
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external override returns (ReturnValues memory returnValues) {
+  )
+    external
+    override
+    nonReentrant()
+    returns (ReturnValues memory returnValues)
+  {
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');

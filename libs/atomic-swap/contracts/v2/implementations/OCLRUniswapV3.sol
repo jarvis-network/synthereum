@@ -156,7 +156,8 @@ contract OCLRUniswapV3 is BaseOCLR {
           // take leftover eth from the router
           router.refundETH();
           //send it to user
-          payable(msg.sender).transfer(address(this).balance);
+          (bool success, ) = msg.sender.call{value: address(this).balance}('');
+          require(success, 'Failed eth refund');
         } else {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
