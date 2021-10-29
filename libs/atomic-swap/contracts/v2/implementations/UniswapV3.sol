@@ -58,14 +58,15 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
         'Wrong collateral instance'
       );
     }
-
-    returnValues.inputToken = tokenSwapPath[0];
+    bool isEthInput = msg.value > 0;
+    returnValues.inputToken = isEthInput
+      ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+      : tokenSwapPath[0];
     returnValues.outputToken = address(
       synthereumParams.synthereumPool.syntheticToken()
     );
     returnValues.collateralToken = address(collateralToken);
 
-    bool isEthInput = msg.value > 0;
     if (inputParams.isExactInput) {
       if (isEthInput) {
         // eth as input

@@ -51,14 +51,14 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
         'Wrong collateral instance'
       );
     }
-
-    returnValues.inputToken = address(inputTokenInstance);
+    bool isEthInput = msg.value > 0;
+    returnValues.inputToken = isEthInput
+      ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+      : address(inputTokenInstance);
     returnValues.outputToken = address(
       synthereumParams.synthereumPool.syntheticToken()
     );
     returnValues.collateralToken = address(collateralToken);
-
-    bool isEthInput = msg.value > 0;
 
     if (inputParams.isExactInput) {
       returnValues.inputAmount = isEthInput

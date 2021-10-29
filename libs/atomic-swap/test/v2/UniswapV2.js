@@ -696,7 +696,7 @@ contract('UniswapV2', async accounts => {
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
-          ev.inputToken == WETHAddress &&
+          ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.outputToken == jEURAddress &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
@@ -778,7 +778,7 @@ contract('UniswapV2', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
-          ev.inputToken.toLowerCase() == WETHAddress.toLowerCase() &&
+          ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&

@@ -58,14 +58,15 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         'Wrong collateral instance'
       );
     }
-
-    returnValues.inputToken = address(tokenSwapPath[0]);
+    bool isEthInput = msg.value > 0;
+    returnValues.inputToken = isEthInput
+      ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+      : address(tokenSwapPath[0]);
     returnValues.outputToken = address(
       synthereumParams.synthereumPool.syntheticToken()
     );
     returnValues.collateralToken = address(collateralToken);
 
-    bool isEthInput = msg.value > 0;
     // swap to collateral token (exact[input/output][ETH/ERC20])
     if (inputParams.isExactInput) {
       returnValues.inputAmount = isEthInput
