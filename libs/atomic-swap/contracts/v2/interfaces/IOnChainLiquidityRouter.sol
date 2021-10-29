@@ -8,7 +8,7 @@ import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 
-interface IAtomicSwapProxy {
+interface IOnChainLiquidityRouter {
   // Role structure
   struct Roles {
     address admin;

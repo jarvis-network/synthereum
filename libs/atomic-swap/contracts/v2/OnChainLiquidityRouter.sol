@@ -14,9 +14,14 @@ import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {IAtomicSwapProxy} from './interfaces/IProxy.sol';
+import {
+  IOnChainLiquidityRouter
+} from './interfaces/IOnChainLiquidityRouter.sol';
 
-contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
+contract OnChainLiquidityRouter is
+  IOnChainLiquidityRouter,
+  AccessControlEnumerable
+{
   using Address for address;
 
   // id is sha3(stringID) ie sha3('sushi'), sha3('uniV2') and so on
@@ -59,7 +64,6 @@ contract AtomicSwapProxy is IAtomicSwapProxy, AccessControlEnumerable {
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
     for (uint256 i = 0; i < _roles.maintainers.length; i++) {
       _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);

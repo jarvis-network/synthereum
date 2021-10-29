@@ -8,8 +8,8 @@ const {
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
-const Proxy = artifacts.require('AtomicSwapProxy');
-const UniV3AtomicSwap = artifacts.require('UniV3AtomicSwap');
+const Proxy = artifacts.require('OnChainLiquidityRouter');
+const UniV3AtomicSwap = artifacts.require('OCLRUniswapV3');
 const ISwapRouter = artifacts.require('ISwapRouter');
 const PoolMock = artifacts.require('PoolMock');
 

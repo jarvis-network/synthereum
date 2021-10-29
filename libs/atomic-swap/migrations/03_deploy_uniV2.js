@@ -1,5 +1,5 @@
-const AtomicSwapProxy = artifacts.require('AtomicSwapProxy');
-const UniV2AtomicSwap = artifacts.require('UniV2AtomicSwap');
+const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouter');
+const UniV2AtomicSwap = artifacts.require('OCLRUniswapV2');
 
 const uniswapData = require('../data/test/uniswap.json');
 const tokens = require('../data/test/tokens.json');
@@ -17,7 +17,7 @@ module.exports = async function (deployer, network, accounts) {
   const maintainer = accounts[1];
 
   // get proxy instance
-  const proxyInstance = await getExistingInstance(web3, AtomicSwapProxy);
+  const proxyInstance = await getExistingInstance(web3, OnChainLiquidityRouter);
 
   // deploy UniV2 and register implementation
   await deploy(web3, deployer, network, UniV2AtomicSwap, { from: admin });

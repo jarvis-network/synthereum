@@ -3,11 +3,13 @@
 pragma solidity ^0.8.4;
 pragma abicoder v2;
 
-import '../BaseAtomicSwap.sol';
-import '../interfaces/IKyberRouter.sol';
-import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
+import '../BaseOCLR.sol';
+import './interfaces/IKyberRouter.sol';
+import {
+  IOnChainLiquidityRouter
+} from '../interfaces/IOnChainLiquidityRouter.sol';
 
-contract KyberAtomicSwap is BaseAtomicSwap {
+contract OCLRKyber is BaseOCLR {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -15,20 +17,20 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     address routerAddress;
   }
 
-  constructor() BaseAtomicSwap() {}
+  constructor() BaseOCLR() {}
 
   receive() external payable {}
 
   /// @return returnValues = [inputToken, outputToken, inputAmount, outputAmount]
   function swapToCollateralAndMint(
     bytes calldata info,
-    IAtomicSwapProxy.SwapMintParams memory inputParams,
-    IAtomicSwapProxy.SynthereumMintParams memory synthereumParams
+    IOnChainLiquidityRouter.SwapMintParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumMintParams memory synthereumParams
   )
     external
     payable
     override
-    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
@@ -187,13 +189,13 @@ contract KyberAtomicSwap is BaseAtomicSwap {
   // redeem jSynth into collateral and use that to swap into erc20/eth
   function redeemCollateralAndSwap(
     bytes calldata info,
-    IAtomicSwapProxy.RedeemSwapParams memory inputParams,
-    IAtomicSwapProxy.SynthereumRedeemParams memory synthereumParams,
+    IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumRedeemParams memory synthereumParams,
     address recipient
   )
     external
     override
-    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
@@ -321,9 +323,8 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     return abi.decode(info, (ImplementationInfo));
   }
 
-  // generic function that each AtomicSwap implementation can implement
+  // generic function that each OCLR implementation can implement
   // in order to receive extra params
-  // extra params are in here the poolsPaths
   function decodeExtraParams(bytes memory params)
     internal
     pure

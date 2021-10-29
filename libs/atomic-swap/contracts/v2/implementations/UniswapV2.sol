@@ -1,13 +1,15 @@
 pragma solidity ^0.8.4;
 pragma abicoder v2;
 
-import '../BaseAtomicSwap.sol';
+import '../BaseOCLR.sol';
 import {
   IUniswapV2Router02
 } from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
-import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
+import {
+  IOnChainLiquidityRouter
+} from '../interfaces/IOnChainLiquidityRouter.sol';
 
-contract UniV2AtomicSwap is BaseAtomicSwap {
+contract OCLRUniswapV2 is BaseOCLR {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
@@ -15,19 +17,19 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
     address routerAddress;
   }
 
-  constructor() BaseAtomicSwap() {}
+  constructor() IOCLRBase() {}
 
   receive() external payable {}
 
   function swapToCollateralAndMint(
     bytes calldata info,
-    IAtomicSwapProxy.SwapMintParams memory inputParams,
-    IAtomicSwapProxy.SynthereumMintParams memory synthereumParams
+    IOnChainLiquidityRouter.SwapMintParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumMintParams memory synthereumParams
   )
     external
     payable
     override
-    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
@@ -166,13 +168,13 @@ contract UniV2AtomicSwap is BaseAtomicSwap {
   // redeem jSynth into collateral and use that to swap into erc20/eth
   function redeemCollateralAndSwap(
     bytes calldata info,
-    IAtomicSwapProxy.RedeemSwapParams memory inputParams,
-    IAtomicSwapProxy.SynthereumRedeemParams memory synthereumParams,
+    IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumRedeemParams memory synthereumParams,
     address recipient
   )
     external
     override
-    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =

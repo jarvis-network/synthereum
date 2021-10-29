@@ -6,7 +6,7 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const Web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
 
-const Proxy = artifacts.require('AtomicSwapProxy');
+const Proxy = artifacts.require('OnChainLiquidityRouter');
 
 contract('AtomicSwap Proxy', accounts => {
   let admin = accounts[0];

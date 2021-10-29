@@ -1,4 +1,4 @@
-const AtomicSwapProxy = artifacts.require('AtomicSwapProxy');
+const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouter');
 
 const {
   deploy,
@@ -25,7 +25,7 @@ module.exports = async function (deployer, network, accounts) {
     web3,
     deployer,
     network,
-    AtomicSwapProxy,
+    OnChainLiquidityRouter,
     FixedRateRoles,
     synthereumFinderAddress,
     {

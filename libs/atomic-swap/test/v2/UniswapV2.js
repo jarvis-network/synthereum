@@ -8,8 +8,8 @@ const {
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
-const Proxy = artifacts.require('AtomicSwapProxy');
-const UniV2AtomicSwap = artifacts.require('UniV2AtomicSwap');
+const Proxy = artifacts.require('OnChainLiquidityRouter');
+const UniV2AtomicSwap = artifacts.require('OCLRUniswapV2');
 const IUniswapRouter = artifacts.require(
   '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
 );

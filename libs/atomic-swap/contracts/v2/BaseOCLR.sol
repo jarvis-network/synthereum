@@ -20,9 +20,9 @@ import {
   SynthereumInterfaces
 } from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
 
-import './interfaces/IAtomicSwapV2.sol';
+import './interfaces/IBase.sol';
 
-abstract contract BaseAtomicSwap is IAtomicSwapV2 {
+abstract contract BaseOCLR is IOCLRBase {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 

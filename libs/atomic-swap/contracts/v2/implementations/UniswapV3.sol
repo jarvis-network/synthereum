@@ -3,18 +3,20 @@
 pragma solidity ^0.8.4;
 pragma abicoder v2;
 
-import '../BaseAtomicSwap.sol';
+import '../BaseOCLR.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
 
-import {IAtomicSwapProxy} from '../interfaces/IProxy.sol';
+import {
+  IOnChainLiquidityRouter
+} from '../interfaces/IOnChainLiquidityRouter.sol';
 
 // group the two univ3 interfaces for convenience
 interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {
 
 }
 
-contract UniV3AtomicSwap is BaseAtomicSwap {
+contract OCLRUniswapV3 is BaseOCLR {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
@@ -22,19 +24,19 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
     address routerAddress;
   }
 
-  constructor() BaseAtomicSwap() {}
+  constructor() IOCLRBase() {}
 
   receive() external payable {}
 
   function swapToCollateralAndMint(
     bytes calldata info,
-    IAtomicSwapProxy.SwapMintParams memory inputParams,
-    IAtomicSwapProxy.SynthereumMintParams memory synthereumParams
+    IOnChainLiquidityRouter.SwapMintParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumMintParams memory synthereumParams
   )
     external
     payable
     override
-    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
@@ -186,13 +188,13 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
   function redeemCollateralAndSwap(
     bytes calldata info,
-    IAtomicSwapProxy.RedeemSwapParams memory inputParams,
-    IAtomicSwapProxy.SynthereumRedeemParams memory synthereumParams,
+    IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumRedeemParams memory synthereumParams,
     address recipient
   )
     external
     override
-    returns (IAtomicSwapProxy.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =

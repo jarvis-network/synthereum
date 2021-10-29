@@ -1,5 +1,5 @@
-const AtomicSwapProxy = artifacts.require('AtomicSwapProxy');
-const KyberAtomicSwap = artifacts.require('KyberAtomicSwap');
+const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouter');
+const KyberAtomicSwap = artifacts.require('OCLRKyber');
 
 const kyberData = require('../data/test/kyber.json');
 const tokens = require('../data/test/tokens.json');
@@ -17,7 +17,7 @@ module.exports = async function (deployer, network, accounts) {
   const maintainer = accounts[1];
 
   // get proxy instance
-  const proxyInstance = await getExistingInstance(web3, AtomicSwapProxy);
+  const proxyInstance = await getExistingInstance(web3, OnChainLiquidityRouter);
 
   // deploy Kyber and register implementation
   await deploy(web3, deployer, network, KyberAtomicSwap, { from: admin });
