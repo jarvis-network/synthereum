@@ -56,6 +56,12 @@ interface IOnChainLiquidityRouter {
     ISynthereumPoolOnChainPriceFeed.RedeemParams redeemParams;
   }
 
+  /// @notice Performs a ERC20 swap through an OCLR implementation and a mint of a jSynth on a synthereum pool
+  /// @param implementationId: identifier of the OCLR implementation to call
+  /// @param inputParams: params involving the swap - see RedeemSwapParams struct
+  /// @param synthereumPool: synthereum pool address to perform the mint
+  /// @param mintParams: params to perform the mint on synthereum
+  /// @return returnValues see ReturnValues struct
   function swapAndMint(
     string calldata implementationId,
     SwapMintParams memory inputParams,
@@ -63,11 +69,18 @@ interface IOnChainLiquidityRouter {
     ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
   ) external payable returns (ReturnValues memory returnValues);
 
+  /// @notice Performs a synthereum redeem of jSynth into collateral and then a swap through an OCLR implementation
+  /// @param implementationId: identifier of the OCLR implementation to call
+  /// @param inputParams: params involving the swap - see RedeemSwapParams struct
+  /// @param synthereumPool: synthereum pool address to perform the mint
+  /// @param redeemParams: params to perform the mint on synthereum
+  /// @param recipient: recipient address of output tokens
+  /// @return returnValues see ReturnValues struct
   function redeemAndSwap(
     string calldata implementationId,
     RedeemSwapParams memory inputParams,
     ISynthereumPoolOnChainPriceFeed synthereumPool,
     ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
     address recipient
-  ) external returns (ReturnValues memory returnValue);
+  ) external returns (ReturnValues memory returnValues);
 }

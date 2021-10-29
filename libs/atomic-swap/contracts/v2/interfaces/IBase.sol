@@ -15,8 +15,8 @@ import {
 /// @notice in order to be callable through the proxy pattern
 interface IOCLRBase {
   /// @param info: ImplementationInfo related to this implementation
-  /// @param inputParams: see IOnChainLiquidityRouter.MintSwapParams struct
-  /// @param synthereumParams: params to interact with synthereum
+  /// @param inputParams: params involving the swap - see IOnChainLiquidityRouter.MintSwapParams struct
+  /// @param synthereumParams: params to interact with synthereum - see IOnChainLiquidityRouter.SynthereumMintParams struct
   /// @return returnValues see IOnChainLiquidityRouter.ReturnValues struct
   function swapToCollateralAndMint(
     bytes calldata info,
@@ -28,8 +28,8 @@ interface IOCLRBase {
     returns (IOnChainLiquidityRouter.ReturnValues memory returnValues);
 
   /// @param info: ImplementationInfo related to this implementation
-  /// @param inputParams: see IOnChainLiquidityRouter.RedeemSwapParams struct
-  /// @param synthereumParams: params to interact with synthereum
+  /// @param inputParams: params involving the swap - see IOnChainLiquidityRouter.RedeemSwapParams struct
+  /// @param synthereumParams: params to interact with synthereum - see IOnChainLiquidityRouter.SynthereumRedeemParams struct
   /// @param recipient: recipient of the output tokens
   /// @return returnValues see IOnChainLiquidityRouter.ReturnValues struct
   function redeemCollateralAndSwap(

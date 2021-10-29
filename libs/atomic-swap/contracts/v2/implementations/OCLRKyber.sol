@@ -21,7 +21,7 @@ contract OCLRKyber is BaseOCLR {
 
   receive() external payable {}
 
-  /// @return returnValues = [inputToken, outputToken, inputAmount, outputAmount]
+  /// see IBase.sol
   function swapToCollateralAndMint(
     bytes calldata info,
     IOnChainLiquidityRouter.SwapMintParams memory inputParams,
@@ -186,7 +186,7 @@ contract OCLRKyber is BaseOCLR {
     );
   }
 
-  // redeem jSynth into collateral and use that to swap into erc20/eth
+  /// see IBase.sol
   function redeemCollateralAndSwap(
     bytes calldata info,
     IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,

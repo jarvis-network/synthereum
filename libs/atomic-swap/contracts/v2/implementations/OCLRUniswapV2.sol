@@ -21,6 +21,7 @@ contract OCLRUniswapV2 is BaseOCLR {
 
   receive() external payable {}
 
+  /// see IBase.sol
   function swapToCollateralAndMint(
     bytes calldata info,
     IOnChainLiquidityRouter.SwapMintParams memory inputParams,
@@ -165,7 +166,7 @@ contract OCLRUniswapV2 is BaseOCLR {
     );
   }
 
-  // redeem jSynth into collateral and use that to swap into erc20/eth
+  /// see IBase.sol
   function redeemCollateralAndSwap(
     bytes calldata info,
     IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,

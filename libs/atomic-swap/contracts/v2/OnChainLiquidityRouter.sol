@@ -72,7 +72,10 @@ contract OnChainLiquidityRouter is
 
   receive() external payable {}
 
-  // overrides any current implementation with same identifier
+  /// @notice Stores information abount an OCLR implementation under an id
+  /// @param identifier: string identifier of the OCLR implementation. Registering an existing id will result in an overwrite.
+  /// @param implementation: address of the OCLR implementation smart contract.
+  /// @param info: bytes encoded info useful when calling the OCLR implementation.
   function registerImplementation(
     string calldata identifier,
     address implementation,
@@ -81,9 +84,12 @@ contract OnChainLiquidityRouter is
     address previous = idToAddress[keccak256(abi.encode(identifier))];
     idToAddress[keccak256(abi.encode(identifier))] = implementation;
     dexImplementationInfo[implementation] = info;
+
     emit RegisterImplementation(identifier, previous, implementation, info);
   }
 
+  /// @notice Removes information abount an OCLR implementation under an id
+  /// @param identifier: string identifier of the OCLR implementation.
   function removeImplementation(string calldata identifier)
     external
     onlyMaintainer()
@@ -96,9 +102,13 @@ contract OnChainLiquidityRouter is
 
     delete dexImplementationInfo[idToAddress[bytesId]];
     delete idToAddress[bytesId];
+
     emit RemovedImplementation(identifier);
   }
 
+  /// @notice Gets the OCLR implementation address stored under an id
+  /// @param identifier: string identifier of the OCLR implementation.
+  /// @return address of the implementation
   function getImplementationAddress(string calldata identifier)
     external
     view
@@ -107,6 +117,7 @@ contract OnChainLiquidityRouter is
     return idToAddress[keccak256(abi.encode(identifier))];
   }
 
+  // see IOnChainLiquidityRouter.sol
   function swapAndMint(
     string calldata implementationId,
     SwapMintParams memory inputParams,
@@ -119,7 +130,6 @@ contract OnChainLiquidityRouter is
 
     string memory functionSig =
       'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes),(address,address,(address,uint256,uint256,uint256,uint256,address)))';
-
     SynthereumMintParams memory synthereumParams =
       SynthereumMintParams(synthereumFinder, synthereumPool, mintParams);
 
@@ -146,6 +156,7 @@ contract OnChainLiquidityRouter is
     );
   }
 
+  // see IOnChainLiquidityRouter.sol
   function redeemAndSwap(
     string calldata implementationId,
     RedeemSwapParams memory inputParams,
@@ -156,9 +167,9 @@ contract OnChainLiquidityRouter is
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
+
     string memory functionSig =
       'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes),(address,address,(address,uint256,uint256,uint256,uint256,address)),address)';
-
     SynthereumRedeemParams memory synthereumParams =
       SynthereumRedeemParams(synthereumFinder, synthereumPool, redeemParams);
 

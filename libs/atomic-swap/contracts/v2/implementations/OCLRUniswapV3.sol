@@ -28,6 +28,7 @@ contract OCLRUniswapV3 is BaseOCLR {
 
   receive() external payable {}
 
+  /// see IBase.sol
   function swapToCollateralAndMint(
     bytes calldata info,
     IOnChainLiquidityRouter.SwapMintParams memory inputParams,
@@ -186,6 +187,7 @@ contract OCLRUniswapV3 is BaseOCLR {
     }
   }
 
+  /// see IBase.sol
   function redeemCollateralAndSwap(
     bytes calldata info,
     IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
