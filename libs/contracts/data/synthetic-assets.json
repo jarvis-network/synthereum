@@ -135,6 +135,16 @@
       "minSponsorTokens": "0",
       "capMintAmount": "",
       "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Canadian Dollar",
+      "syntheticSymbol": "jCAD",
+      "priceFeedIdentifier": "CADUSD",
+      "collateralRequirement": "1025000000000000000",
+      "startingCollateralization": "889900",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
     }
   ]
 }
