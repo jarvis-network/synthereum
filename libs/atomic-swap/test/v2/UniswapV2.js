@@ -856,7 +856,7 @@ contract('UniswapV2', async accounts => {
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken == jEURAddress &&
-          ev.outputToken == WETHAddress &&
+          ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress == AtomicSwapInstance.address
@@ -940,7 +940,7 @@ contract('UniswapV2', async accounts => {
           ev.outputAmount.toString() == expectedOutput.toString() &&
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
+          ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
           ev.dexImplementationAddress == AtomicSwapInstance.address

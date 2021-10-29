@@ -225,7 +225,9 @@ contract UniV3AtomicSwap is BaseAtomicSwap {
 
       // store return values
       returnValues.inputToken = address(synthTokenInstance);
-      returnValues.outputToken = tokenSwapPath[tokenSwapPath.length - 1];
+      returnValues.outputToken = inputParams.unwrapToETH
+        ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+        : tokenSwapPath[tokenSwapPath.length - 1];
       returnValues.collateralToken = tokenSwapPath[0];
       returnValues.inputAmount = synthereumParams.redeemParams.numTokens;
 

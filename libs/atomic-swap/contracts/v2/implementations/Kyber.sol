@@ -202,6 +202,10 @@ contract KyberAtomicSwap is BaseAtomicSwap {
     (address[] memory poolsPath, IERC20[] memory tokenSwapPath) =
       decodeExtraParams(inputParams.extraParams);
 
+    // insantiate router
+    IDMMExchangeRouter kyberRouter =
+      IDMMExchangeRouter(implementationInfo.routerAddress);
+
     // checks
     require(
       poolsPath.length == tokenSwapPath.length - 1,
@@ -233,7 +237,9 @@ contract KyberAtomicSwap is BaseAtomicSwap {
       returnValues.inputToken = address(synthTokenInstance);
     }
 
-    returnValues.outputToken = address(tokenSwapPath[tokenSwapPath.length - 1]);
+    returnValues.outputToken = inputParams.unwrapToETH
+      ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+      : address(tokenSwapPath[tokenSwapPath.length - 1]);
     returnValues.collateralToken = address(tokenSwapPath[0]);
     returnValues.inputAmount = synthereumParams.redeemParams.numTokens;
 
@@ -250,10 +256,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
 
     uint256[] memory amountsOut;
     if (inputParams.isExactInput) {
-      // insantiate router
-      IDMMExchangeRouter kyberRouter =
-        IDMMExchangeRouter(implementationInfo.routerAddress);
-
       // collateralOut as exactInput
       inputParams.unwrapToETH
         ? amountsOut = kyberRouter.swapExactTokensForETH(
@@ -273,9 +275,6 @@ contract KyberAtomicSwap is BaseAtomicSwap {
         synthereumParams.redeemParams.expiration
       );
     } else {
-      // insantiate router
-      IDMMExchangeRouter kyberRouter =
-        IDMMExchangeRouter(implementationInfo.routerAddress);
       // collateralOut as maxInput
       inputParams.unwrapToETH
         ? amountsOut = kyberRouter.swapTokensForExactETH(
