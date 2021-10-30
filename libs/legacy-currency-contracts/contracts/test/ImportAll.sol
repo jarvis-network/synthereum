@@ -70,6 +70,8 @@ import {FixedRateWrapper} from '../fixed-rate-currency/FixedRateWrapper.sol';
 import {FixedRateCurrency} from '../fixed-rate-currency/FixedRateCurrency.sol';
 import {
   IAtomicSwap
-} from '@jarvis-network/atomic-swap/contracts/interfaces/IAtomicSwap.sol';
-import {AtomicSwap} from '@jarvis-network/atomic-swap/contracts/AtomicSwap.sol';
+} from '@jarvis-network/atomic-swap/contracts/v1/interfaces/IAtomicSwap.sol';
+import {
+  AtomicSwap
+} from '@jarvis-network/atomic-swap/contracts/v1/AtomicSwap.sol';
 import {Maastricht} from '../Maastricht/Maastricht.sol';

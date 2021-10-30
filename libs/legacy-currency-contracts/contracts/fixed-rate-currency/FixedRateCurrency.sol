@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import './FixedRateWrapper.sol';
-import '@jarvis-network/atomic-swap/contracts/interfaces/IAtomicSwap.sol';
+import '@jarvis-network/atomic-swap/contracts/v1/interfaces/IAtomicSwap.sol';
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
@@ -198,7 +198,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   /**
-    @notice Mints fixed rate currency from a synthereum synthetic asset 
+    @notice Mints fixed rate currency from a synthereum synthetic asset
    */
   function mintFromSynth(
     IERC20 inputSynthAddress,
@@ -235,7 +235,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   /**
-    @notice Burns fixed rate currency and swap the peg synth with any other synthereum asset 
+    @notice Burns fixed rate currency and swap the peg synth with any other synthereum asset
    */
   function swapForSynth(
     uint256 _fixedSynthAmount,
@@ -260,7 +260,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   /**
-    @notice Leverages the OCLR to do ERC20 -> USDC -> jEUR -> fixedSynth 
+    @notice Leverages the OCLR to do ERC20 -> USDC -> jEUR -> fixedSynth
    */
   function mintFromERC20(
     uint256 amountTokensIn,
@@ -306,7 +306,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   /**
-    @notice Leverages the OCLR to do ETH -> USDC -> jEUR -> fixedSynth 
+    @notice Leverages the OCLR to do ETH -> USDC -> jEUR -> fixedSynth
    */
   function mintFromETH(
     uint256 collateralAmountOutMin,
@@ -330,7 +330,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   /**
-    @notice Leverages the OCLR to do fixedSynth -> jEur (peg) -> USDC -> ERC20 
+    @notice Leverages the OCLR to do fixedSynth -> jEur (peg) -> USDC -> ERC20
    */
   function swapToERC20(
     uint256 fixedSynthAmountIn,
@@ -366,7 +366,7 @@ contract FixedRateCurrency is FixedRateWrapper {
   }
 
   /**
-    @notice Leverages the OCLR to do fixedSynth -> jEur (peg) -> USDC -> ETH 
+    @notice Leverages the OCLR to do fixedSynth -> jEur (peg) -> USDC -> ETH
    */
   function swapToETH(
     uint256 fixedSynthAmountIn,
