@@ -261,7 +261,7 @@ contract SynthereumCreditLine is
       FixedPoint.Unsigned memory collateralAmount,
       FixedPoint.Unsigned memory uFeeAmount
     ) =
-      positionData.redeeem(
+      positionData.redeem(
         globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
@@ -278,10 +278,10 @@ contract SynthereumCreditLine is
     override
     notEmergencyShutdown
     nonReentrant
-    returns (uint256 daoFeeAmount)
+    returns (uint256 feeAmount)
   {
     PositionData storage positionData = _getPositionData(msg.sender);
-    daoFeeAmount = (
+    feeAmount = (
       positionData.repay(
         globalPositionData,
         positionManagerData,

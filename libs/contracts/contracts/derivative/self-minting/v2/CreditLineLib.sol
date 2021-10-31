@@ -215,7 +215,7 @@ library SynthereumCreditLineLib {
     );
   }
 
-  function redeeem(
+  function redeem(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
