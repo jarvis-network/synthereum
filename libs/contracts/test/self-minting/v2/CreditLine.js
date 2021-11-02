@@ -142,6 +142,10 @@ contract('Synthereum CreditLine ', function (accounts) {
     return feeAmount;
   };
 
+  const calculateCollateralValue = (numTokens, price) => {
+    return numTokens.mul(price).div(toBN(Math.pow(10, 18)));
+  };
+
   before(async () => {
     // deploy and link library
     creditLineLib = await CreditLineLib.deployed();
@@ -288,7 +292,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
     let expectedSponsorTokens = toBN(createTokens);
-    let feeAmount = calculateFeeAmount(createCollateral);
+    let feeAmount = calculateFeeAmount(
+      calculateCollateralValue(createTokens, startingPrice),
+    );
     let expectedSponsorCollateral = createCollateral.sub(feeAmount);
 
     // Fails without approving collateral.
@@ -457,7 +463,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     // Create additional.
     const createAdditionalTokens = toBN(toWei('10'));
     const createAdditionalCollateral = toBN(toWei('110'));
-    feeAmount = calculateFeeAmount(createAdditionalCollateral);
+    feeAmount = calculateFeeAmount(
+      calculateCollateralValue(createAdditionalTokens, startingPrice),
+    );
     expectedSponsorTokens = expectedSponsorTokens.add(
       toBN(createAdditionalTokens),
     );
@@ -530,7 +538,9 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    let feeAmount = calculateFeeAmount(createCollateral);
+    let feeAmount = calculateFeeAmount(
+      calculateCollateralValue(createTokens, startingPrice),
+    );
 
     // Cannot withdraw full collateral because the position would go under collateralized
     await truffleAssert.reverts(
@@ -556,7 +566,9 @@ contract('Synthereum CreditLine ', function (accounts) {
       from: sponsor,
     });
 
-    let feeAmount = calculateFeeAmount(toBN(collateralAmount));
+    let feeAmount = calculateFeeAmount(
+      calculateCollateralValue(toBN(numTokens), startingPrice),
+    );
 
     // Other makes a deposit to the sponsor's account.
     let depositCollateral = toWei('1');
@@ -727,7 +739,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.create(inputCollateral, outputTokens, {
       from: sponsor,
     });
-    let feeAmount = calculateFeeAmount(toBN(inputCollateral));
+    let feeAmount = calculateFeeAmount(
+      calculateCollateralValue(toBN(outputTokens), startingPrice),
+    );
 
     const initialSponsorTokens = await tokenCurrency.balanceOf.call(sponsor);
     const initialSponsorTokenDebt = toBN(
@@ -739,12 +753,13 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     let repayTokens = toWei('6');
-    let unlockedCollateral = toBN(toWei('20')).sub(feeAmount).divn(2);
 
     const repayResult = await creditLine.repay(repayTokens, {
       from: sponsor,
     });
-    let repayFeeAmount = calculateFeeAmount(unlockedCollateral);
+    let repayFeeAmount = calculateFeeAmount(
+      calculateCollateralValue(toBN(repayTokens), startingPrice),
+    );
 
     // Event is correctly emitted.
     truffleAssert.eventEmitted(repayResult, 'Repay', ev => {
