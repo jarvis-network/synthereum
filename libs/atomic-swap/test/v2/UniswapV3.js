@@ -387,6 +387,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     it('burn jSynth and swaps for ERC20 - exact output- single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
       let USDTBalanceBefore = await USDTInstance.balanceOf.call(user);
+      let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
@@ -430,9 +431,9 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         { from: user },
       );
 
-      let collateralUsed;
+      let collateralRefunded;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        collateralUsed = ev.outputAmount;
+        collateralRefunded = ev.collateralAmountRefunded;
         return (
           ev.outputAmount.toString() == expectedOutput.toString() &&
           ev.inputAmount.toString() == jEURInput.toString() &&
@@ -447,12 +448,17 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       let USDTBalanceAfter = await USDTInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+      let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
 
       assert.equal(
         USDTBalanceAfter.eq(USDTBalanceBefore.add(expectedOutput)),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+      assert.equal(
+        USDCBalanceAfter.eq(USDCBalanceBefore.add(collateralRefunded)),
+        true,
+      );
 
       // check allowance is set to 0 after the tx
       assert.equal(
@@ -780,9 +786,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       const txFee = await getTxFee(tx);
 
-      let jSynthOut;
+      let jSynthOut, ethInput;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jSynthOut = ev.outputAmount;
+        ethInput = ev.inputAmount;
         return (
           ev.outputAmount > 0 &&
           web3Utils
@@ -799,12 +806,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let EthBalanceAfter = await web3.eth.getBalance(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-      const minExpectedEthBalance = web3Utils
+      const expectedEthBalance = web3Utils
         .toBN(EthBalanceBefore)
         .sub(txFee)
-        .sub(web3Utils.toBN(maxTokenAmountIn));
+        .sub(web3Utils.toBN(ethInput));
       assert.equal(
-        web3Utils.toBN(EthBalanceAfter).gt(minExpectedEthBalance),
+        web3Utils.toBN(EthBalanceAfter).eq(expectedEthBalance),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
@@ -901,6 +908,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     });
     it('burn jSynth and swaps for ETH - exact output- single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+      let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
@@ -947,9 +955,9 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
       const ethFee = await getTxFee(tx);
 
-      let collateralUsed;
+      let collateralRefunded;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        collateralUsed = ev.outputAmount;
+        collateralRefunded = ev.collateralAmountRefunded;
         return (
           ev.outputAmount.toString() == expectedOutput.toString() &&
           ev.inputAmount.toString() == jEURInput.toString() &&
@@ -963,12 +971,17 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+      let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
 
       assert.equal(
         EthBalanceAfter.eq(EthBalanceBefore.add(expectedOutput).sub(ethFee)),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+      assert.equal(
+        USDCBalanceAfter.eq(USDCBalanceBefore.add(collateralRefunded)),
+        true,
+      );
 
       // check allowance is set to 0 after the tx
       assert.equal(
