@@ -822,6 +822,9 @@ const CUSTOM_BASES: {
     [addresses[137].JRT]: [
       new Token(137, addresses[137].ETH, 18, 'ETH', 'Ether'),
     ],
+    [addresses[137].PolyDoge]: [
+      new Token(137, addresses[137].QUICK, 18, 'QUICK', 'Quickswap'),
+    ],
   },
 };
 
