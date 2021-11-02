@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.4;
 
 import {
   ISynthereumPoolOnChainPriceFeed
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
-
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';

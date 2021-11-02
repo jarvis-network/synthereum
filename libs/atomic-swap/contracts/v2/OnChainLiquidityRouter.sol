@@ -9,18 +9,16 @@ import {
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
-
+import {
+  IOnChainLiquidityRouter
+} from './interfaces/IOnChainLiquidityRouter.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  IOnChainLiquidityRouter
-} from './interfaces/IOnChainLiquidityRouter.sol';
 
 contract OnChainLiquidityRouter is
   IOnChainLiquidityRouter,

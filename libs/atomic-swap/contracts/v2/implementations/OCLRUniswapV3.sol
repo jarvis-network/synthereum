@@ -3,13 +3,12 @@
 pragma solidity ^0.8.4;
 pragma abicoder v2;
 
-import '../BaseOCLR.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
-
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
+import '../BaseOCLR.sol';
 
 // group the two univ3 interfaces for convenience
 interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {

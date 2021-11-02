@@ -6,7 +6,6 @@ pragma experimental ABIEncoderV2;
 import {
   ISynthereumPoolOnChainPriceFeed
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
-
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';

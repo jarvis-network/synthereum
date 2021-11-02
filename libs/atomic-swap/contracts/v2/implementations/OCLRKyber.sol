@@ -3,11 +3,11 @@
 pragma solidity ^0.8.4;
 pragma abicoder v2;
 
-import '../BaseOCLR.sol';
 import './interfaces/IKyberRouter.sol';
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
+import '../BaseOCLR.sol';
 
 contract OCLRKyber is BaseOCLR {
   using SafeMath for uint256;
