@@ -11,9 +11,12 @@
     "build:nx-necessary": "cp ./package.json ./dist/",
     "compile": "hardhat compile",
     "migrate-atomic-swap": "MIGRATION_TYPE=atomic_swap hardhat test ./test/correct-migration.js",
+    "migrate-OCLR": "MIGRATION_TYPE=OCLR hardhat test ./test/correct-migration.js",
     "start:local-fork": "../../scripts/local-fork.sh",
-    "test": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat  --network mainnet_fork test ./test/atomic-swap.js --no-compile",
-    "test:v2": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat  --network mainnet_fork test ./test/v2/*",
+    "test": "yarn run test:v1 && yarn run test:v2",
+    "test:v1": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat --network mainnet_fork test ./test/v1/atomic-swap.js --no-compile",
+    "test:v2": "MIGRATION_TYPE=OCLR NODE_OPTIONS=--max-old-space-size=8192 hardhat test --network mainnet_fork ./test/v2/*",
+    "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat --network mainnet_fork coverage --solcoverjs ./test/.solcover.js",
     "verify": "hardhat verify"
   },
   "devDependencies": {
