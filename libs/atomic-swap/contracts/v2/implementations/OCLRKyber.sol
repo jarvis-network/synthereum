@@ -7,9 +7,9 @@ import './interfaces/IKyberRouter.sol';
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
-import '../BaseOCLR.sol';
+import '../OCLRBase.sol';
 
-contract OCLRKyber is BaseOCLR {
+contract OCLRKyber is OCLRBase {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -17,7 +17,7 @@ contract OCLRKyber is BaseOCLR {
     address routerAddress;
   }
 
-  constructor() BaseOCLR() {}
+  constructor() OCLRBase() {}
 
   receive() external payable {}
 

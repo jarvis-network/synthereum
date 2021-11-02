@@ -9,9 +9,9 @@ import {
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
-import '../BaseOCLR.sol';
+import '../OCLRBase.sol';
 
-contract OCLRUniswapV2 is BaseOCLR {
+contract OCLRUniswapV2 is OCLRBase {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
@@ -19,7 +19,7 @@ contract OCLRUniswapV2 is BaseOCLR {
     address routerAddress;
   }
 
-  constructor() IOCLRBase() {}
+  constructor() OCLRBase() {}
 
   receive() external payable {}
 

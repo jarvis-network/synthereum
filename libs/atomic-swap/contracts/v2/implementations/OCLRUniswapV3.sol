@@ -8,14 +8,14 @@ import '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
-import '../BaseOCLR.sol';
+import '../OCLRBase.sol';
 
 // group the two univ3 interfaces for convenience
 interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {
 
 }
 
-contract OCLRUniswapV3 is BaseOCLR {
+contract OCLRUniswapV3 is OCLRBase {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
@@ -23,7 +23,7 @@ contract OCLRUniswapV3 is BaseOCLR {
     address routerAddress;
   }
 
-  constructor() IOCLRBase() {}
+  constructor() OCLRBase() {}
 
   receive() external payable {}
 
