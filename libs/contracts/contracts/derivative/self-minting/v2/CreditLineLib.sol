@@ -144,7 +144,7 @@ library SynthereumCreditLineLib {
     ICreditLineStorage.FeeStatus storage feeStatus
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     // Update fees status - percentage is retrieved from Credit Line Controller
-    feeAmount = collateralAmount.mul(
+    feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
       positionManagerData._getFeeInfo().feePercentage
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
@@ -308,9 +308,6 @@ library SynthereumCreditLineLib {
       'Invalid token amount'
     );
 
-    FixedPoint.Unsigned memory fractionRedeemed =
-      numTokens.div(positionData.tokensOutstanding);
-
     // Decrease the sponsors position tokens size. Ensure it is above the min sponsor size.
     FixedPoint.Unsigned memory newTokenCount =
       positionData.tokensOutstanding.sub(numTokens);
@@ -319,12 +316,8 @@ library SynthereumCreditLineLib {
       'Below minimum sponsor position'
     );
 
-    // calculate the 'free' collateral from the repay amount
-    FixedPoint.Unsigned memory collateralUnlocked =
-      fractionRedeemed.mul(positionData.rawCollateral);
-
     // Update fee status
-    feeAmount = collateralUnlocked.mul(
+    feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
       positionManagerData._getFeeInfo().feePercentage
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
