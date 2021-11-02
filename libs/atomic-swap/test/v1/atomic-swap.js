@@ -3,7 +3,7 @@ const AtomicSwap = artifacts.require('AtomicSwap');
 
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const IUniswapV2Router02 = artifacts.require(
-  'contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
+  'contracts/v1/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
 );
 const IUniswapV2Factory = artifacts.require('IUniswapV2Factory');
 const web3Utils = require('web3-utils');
@@ -19,9 +19,9 @@ const {
   deploy,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
-const tokens = require('../data/test/tokens.json');
-const uniswap = require('../data/test/uniswap.json');
-const synthereum = require('../data/test/synthereum.json');
+const tokens = require('../../data/test/tokens.json');
+const uniswap = require('../../data/test/uniswap.json');
+const synthereum = require('../../data/test/synthereum.json');
 
 //pour start kovan local fork
 //yarn start:local-fork kovan
