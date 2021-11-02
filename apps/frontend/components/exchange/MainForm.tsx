@@ -58,7 +58,7 @@ const AssetSelect = styled.div<{ error?: boolean; invisibleBorder?: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 10px 10px 10px;
+  padding: 0 10px;
   height: ${props => props.theme.sizes.row};
   box-sizing: border-box;
   margin-top: 3px;
@@ -91,7 +91,6 @@ const SkeletonAmount = styled.input`
   grid-area: amount;
   font-size: ${props => props.theme.font.sizes.l};
   height: 100%;
-  margin-top: 5px;
   position: relative;
 
   > .MuiSkeleton-text {

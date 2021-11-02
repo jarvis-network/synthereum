@@ -188,10 +188,13 @@ export const assetsPolygon: Asset[] = [
     type: 'crypto',
     wrappedNative: true,
   } as Asset,
+  {
+    name: 'PolyDoge',
+    symbol: 'PolyDoge',
+    icon: 'polydoge',
+    decimals: 18,
+    type: 'crypto',
+  },
 ];
 
-export const polygonOnlyAssets: typeof allSyntheticSymbols[number][] = [
-  'jPHP',
-  'jSGD',
-  'jCAD',
-];
+export const polygonOnlyAssets = ['jPHP', 'jSGD', 'jCAD', 'PolyDoge'] as const;

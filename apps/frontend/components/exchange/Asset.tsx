@@ -11,13 +11,14 @@ import { useAssets } from '@/utils/useAssets';
 const Container = styled.div`
   grid-area: asset;
   justify-self: end;
-  margin-top: 5px;
   font-size: ${props => props.theme.font.sizes.m};
   width: 100px;
+  display: flex;
 
   img {
     width: 22px;
     height: 22px;
+    margin-right: 4px;
     object-fit: contain;
     vertical-align: middle;
   }
@@ -33,15 +34,24 @@ const Container = styled.div`
     height: 11px;
   }
 
-  .assetName {
-    display: inline-flex;
-    justify-content: space-between;
+  .symbol {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  i,
+  .symbol {
     vertical-align: middle;
-    width: 65px;
-    margin-left: 8px;
     font-size: ${props => props.theme.font.sizes.l};
     font-family: Krub;
     font-weight: 300;
+  }
+
+  .spacer-1 {
+    flex-grow: 1;
+  }
+  .spacer-3 {
+    flex-grow: 3;
   }
 `;
 
@@ -53,6 +63,9 @@ const AssetChangeButton = styled.button<{ display?: 'flex' | 'inline-block' }>`
   cursor: pointer;
   outline: none !important;
   color: ${props => props.theme.text.primary};
+  display: flex;
+  width: 100%;
+  align-items: center;
 `;
 
 const AssetSelectButton = styled.button`
@@ -114,9 +127,10 @@ export const Asset: React.FC<Props> = ({ type }) => {
       <Container>
         <AssetChangeButton onClick={handleChooseAsset}>
           {flag}
-          <div className="assetName">
-            {asset.symbol} <Icon icon="BsChevronDown" />
-          </div>
+          <div className="spacer-1" />
+          <div className="symbol">{asset.symbol}</div>
+          <div className="spacer-3" />
+          <Icon icon="BsChevronDown" />
         </AssetChangeButton>
       </Container>
     );

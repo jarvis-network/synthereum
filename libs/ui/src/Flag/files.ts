@@ -37,4 +37,5 @@ export const files = {
     'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
   uma:
     'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828/logo.png',
+  polydoge: 'https://s2.coinmarketcap.com/static/img/coins/64x64/10088.png',
 };

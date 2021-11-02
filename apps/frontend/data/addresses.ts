@@ -14,6 +14,7 @@ export const addresses = {
     LINK: A<1>('0x514910771af9ca656af840dff83e8264ecf986ca'),
     QUICK: A<1>('0x6c28aef8977c9b773996d0e8376d2ee379446f2f'),
     SUSHI: A<1>('0x6b3595068778dd592e39a122f4f5a5cf09c90fe2'),
+    PolyDoge: A<1>('0x0000000000000000000000000000000000000000'),
   },
   [Network.kovan]: {
     // USDC: A('0xe22da380ee6B445bb8273C81944ADEB6E8450422'),
@@ -26,6 +27,7 @@ export const addresses = {
     LINK: A<42>('0xad5ce863ae3e4e9394ab43d4ba0d80f419f61789'),
     QUICK: A<42>('0x61e4cae3da7fd189e52a4879c7b8067d7c2cc0fa'),
     SUSHI: A<42>('0x738dc6380157429e957d223e6333dc385c85fec7'),
+    PolyDoge: A<42>('0x0000000000000000000000000000000000000000'),
   },
   [Network.polygon]: {
     WBTC: A<137>('0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6'),
@@ -37,5 +39,6 @@ export const addresses = {
     LINK: A<137>('0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39'),
     QUICK: A<137>('0x831753dd7087cac61ab5644b308642cc1c33dc13'),
     SUSHI: A<137>('0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a'),
+    PolyDoge: A<137>('0x8A953CfE442c5E8855cc6c61b1293FA648BAE472'),
   },
 } as const;
