@@ -531,15 +531,7 @@ export const useSwap = () => {
         const synthereumPool = pool.address;
         const mintParams = {
           derivative: pool.derivative.address,
-          minNumTokens: estimate
-            ? 0
-            : isBasePay
-            ? minimumSynthReceiveValue!
-                .format(pool.syntheticToken.decimals)
-                .replace('.', '')
-            : receiveValue!
-                .format(pool.syntheticToken.decimals)
-                .replace('.', ''),
+          minNumTokens: 0,
           collateralAmount: 0,
           feePercentage: `0x${new FPN(0.002).toString('hex')}`,
           expiration: getExpiration(deadline),
@@ -679,7 +671,7 @@ export const useSwap = () => {
         const redeemParams = {
           derivative: pool.derivative.address,
           numTokens: tokenAmountIn,
-          minCollateral: isBasePay ? inputAmount : 0,
+          minCollateral: 0,
           feePercentage: `0x${new FPN(0.002).toString('hex')}`,
           expiration: getExpiration(deadline),
           recipient: '0x0000000000000000000000000000000000000000',
