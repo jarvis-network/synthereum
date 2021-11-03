@@ -8,6 +8,7 @@ const {
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
+const MockContractUser = artifacts.require('MockContractUser');
 const Proxy = artifacts.require('OnChainLiquidityRouter');
 const UniV2AtomicSwap = artifacts.require('OCLRUniswapV2');
 const IUniswapRouter = artifacts.require(
@@ -751,11 +752,6 @@ contract('UniswapV2', async accounts => {
         extraParams,
       };
 
-      // approve proxy to pull tokens
-      await WETHInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
-        from: user,
-      });
-
       let EthBalanceBefore = await web3.eth.getBalance(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
@@ -978,6 +974,51 @@ contract('UniswapV2', async accounts => {
       assert.equal(
         (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
         '0',
+      );
+    });
+    it('Rejects if user cant receive eth refund', async () => {
+      const mockContractUser = await MockContractUser.new();
+      await mockContractUser.getEth({
+        value: web3Utils.toWei('1', 'ether'),
+        from: user,
+      });
+
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const maxTokenAmountIn = web3Utils.toWei('0.8', 'ether');
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]'],
+        [tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: false,
+        exactAmount: 100,
+        minOutOrMaxIn: maxTokenAmountIn,
+        extraParams,
+      };
+
+      // tx through proxy
+      await truffleAssert.reverts(
+        mockContractUser.swapAndMint(
+          ProxyInstance.address,
+          implementationID,
+          inputParams,
+          pool,
+          mintParams,
+          { from: user, value: maxTokenAmountIn },
+        ),
+        'Failed eth refund',
       );
     });
   });

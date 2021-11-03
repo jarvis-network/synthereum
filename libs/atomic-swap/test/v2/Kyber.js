@@ -12,7 +12,7 @@ const Proxy = artifacts.require('OnChainLiquidityRouter');
 const KyberAtomicSwap = artifacts.require('OCLRKyber');
 const IKyberRouter = artifacts.require('IDMMExchangeRouter');
 const PoolMock = artifacts.require('PoolMock');
-
+const MockContractUser = artifacts.require('MockContractUser');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumPoolOnChainPriceFeed = artifacts.require(
   'SynthereumPoolOnChainPriceFeed',
@@ -505,7 +505,6 @@ contract('KyberDMM', async accounts => {
         extraParams,
       };
 
-      // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         ProxyInstance.swapAndMint(
           implementationID,
@@ -639,7 +638,6 @@ contract('KyberDMM', async accounts => {
         extraParams,
       };
 
-      // caalling the implementation directly to being able to read revert message
       await truffleAssert.reverts(
         ProxyInstance.redeemAndSwap(
           implementationID,
@@ -650,6 +648,84 @@ contract('KyberDMM', async accounts => {
           { from: user },
         ),
         'Wrong collateral instance',
+      );
+    });
+
+    it('swapToERC20 - Rejects with mismatch between pools and tokens', async () => {
+      const tokenPathSwap = [USDTAddress, WBTCAddress, USDCAddress];
+      const poolsPath = [kyberPools.WBTCUSDT];
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+
+      const redeemParams = {
+        derivative: derivative,
+        numTokens: 1,
+        minCollateral: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 1,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      await truffleAssert.reverts(
+        ProxyInstance.redeemAndSwap(
+          implementationID,
+          inputParams,
+          pool,
+          redeemParams,
+          user,
+          { from: user },
+        ),
+        'Pools and tokens length mismatch',
+      );
+    });
+
+    it('mintFromERC20 - Rejects with mismatch between pools and tokens', async function () {
+      const tokenAmountIn = 10000;
+      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const poolsPath = [kyberPools.WBTCUSDT];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      await truffleAssert.reverts(
+        ProxyInstance.swapAndMint(
+          implementationID,
+          inputParams,
+          pool,
+          mintParams,
+          { from: user },
+        ),
+        'Pools and tokens length mismatch',
       );
     });
   });
@@ -770,11 +846,6 @@ contract('KyberDMM', async accounts => {
         minOutOrMaxIn: maxTokenAmountIn.toString(),
         extraParams,
       };
-
-      // approve proxy to pull tokens
-      await WETHInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
-        from: user,
-      });
 
       let EthBalanceBefore = await web3.eth.getBalance(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
@@ -1012,6 +1083,53 @@ contract('KyberDMM', async accounts => {
       assert.equal(
         (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
         '0',
+      );
+    });
+    it('Rejects if user cant receive eth refund', async () => {
+      const mockContractUser = await MockContractUser.new();
+      await mockContractUser.getEth({
+        value: web3Utils.toWei('1', 'ether'),
+        from: user,
+      });
+
+      const maxTokenAmountIn = web3Utils.toWei('0.8', 'ether');
+      const exactTokensOut = 1;
+      const tokenPathSwap = [WETHAddress, USDTAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHUSDT, kyberPools.USDCUSDT];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+
+      const mintParams = {
+        derivative: derivative,
+        minNumTokens: 0,
+        collateralAmount: 0,
+        feePercentage: feePercentage,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: false,
+        exactAmount: exactTokensOut,
+        minOutOrMaxIn: maxTokenAmountIn.toString(),
+        extraParams,
+      };
+
+      // tx through proxy
+      await truffleAssert.reverts(
+        mockContractUser.swapAndMint(
+          ProxyInstance.address,
+          implementationID,
+          inputParams,
+          pool,
+          mintParams,
+          { from: user, value: maxTokenAmountIn },
+        ),
+        'Failed eth refund',
       );
     });
   });

@@ -8,6 +8,7 @@ const {
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
+const MockContractUser = artifacts.require('MockContractUser');
 const Proxy = artifacts.require('OnChainLiquidityRouter');
 const UniV3AtomicSwap = artifacts.require('OCLRUniswapV3');
 const ISwapRouter = artifacts.require('ISwapRouter');
@@ -998,5 +999,51 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         '0',
       );
     });
+  });
+  it('Rejects if user cant receive eth refund', async () => {
+    const mockContractUser = await MockContractUser.new();
+    await mockContractUser.getEth({
+      value: web3Utils.toWei('1', 'ether'),
+      from: user,
+    });
+
+    const tokenPathSwap = [WETHAddress, USDCAddress];
+    const fees = [3000];
+    const maxTokenAmountIn = web3Utils.toWei('0.8', 'ether');
+
+    //encode in extra params
+    let extraParams = web3.eth.abi.encodeParameters(
+      ['uint24[]', 'address[]'],
+      [fees, tokenPathSwap],
+    );
+
+    const mintParams = {
+      derivative: derivative,
+      minNumTokens: 0,
+      collateralAmount: 0,
+      feePercentage: feePercentage,
+      expiration: deadline,
+      recipient: user,
+    };
+
+    const inputParams = {
+      isExactInput: false,
+      exactAmount: 100,
+      minOutOrMaxIn: maxTokenAmountIn,
+      extraParams,
+    };
+
+    // tx through proxy
+    await truffleAssert.reverts(
+      mockContractUser.swapAndMint(
+        ProxyInstance.address,
+        implementationID,
+        inputParams,
+        pool,
+        mintParams,
+        { from: user, value: maxTokenAmountIn },
+      ),
+      'Failed eth refund',
+    );
   });
 });

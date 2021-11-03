@@ -108,6 +108,7 @@ contract('AtomicSwap Proxy', accounts => {
         return ev.id == implementationId1;
       });
     });
+
     it('Rejects if removing an implementation not existing', async () => {
       await truffleAssert.reverts(
         proxyInstance.removeImplementation('mockID', { from: maintainer }),
@@ -137,6 +138,62 @@ contract('AtomicSwap Proxy', accounts => {
           from: accounts[9],
         }),
         'Only contract maintainer can call this function',
+      );
+    });
+
+    it('swapAndMint - Rejects if implementation id is not registered', async () => {
+      const mintParams = {
+        derivative: accounts[9],
+        minNumTokens: 0,
+        collateralAmount: 1,
+        feePercentage: 1,
+        expiration: 1,
+        recipient: accounts[2],
+      };
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 1,
+        minOutOrMaxIn: 0,
+        extraParams: '0x00',
+      };
+      await truffleAssert.reverts(
+        proxyInstance.swapAndMint(
+          implementationId1,
+          inputParams,
+          accounts[3],
+          mintParams,
+          { from: accounts[9] },
+        ),
+        'Implementation id not registered',
+      );
+    });
+    it('swapAndMint - Rejects if implementation id is not registered', async () => {
+      const redeemParams = {
+        derivative: accounts[3],
+        numTokens: 1,
+        minCollateral: 0,
+        feePercentage: 0,
+        expiration: 1,
+        recipient: accounts[2],
+      };
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 1,
+        minOutOrMaxIn: 0,
+        extraParams: '0x00',
+      };
+      await truffleAssert.reverts(
+        proxyInstance.redeemAndSwap(
+          implementationId1,
+          inputParams,
+          accounts[3],
+          redeemParams,
+          accounts[2],
+          { from: accounts[9] },
+        ),
+        'Implementation id not registered',
       );
     });
   });
