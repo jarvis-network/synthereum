@@ -312,7 +312,7 @@ library SynthereumLiquidityPoolLib {
       'Number of tokens less than minimum limit'
     );
 
-    checkParams(self, mintParams.feePercentage, mintParams.expiration);
+    checkExpiration(mintParams.expiration);
 
     self.executeMint(
       lpPosition,
@@ -361,7 +361,7 @@ library SynthereumLiquidityPoolLib {
       'Collateral amount less than minimum limit'
     );
 
-    checkParams(self, redeemParams.feePercentage, redeemParams.expiration);
+    checkExpiration(redeemParams.expiration);
 
     self.executeRedeem(
       lpPosition,
@@ -411,7 +411,7 @@ library SynthereumLiquidityPoolLib {
       'Number of destination tokens less than minimum limit'
     );
 
-    checkParams(self, exchangeParams.feePercentage, exchangeParams.expiration);
+    checkExpiration(exchangeParams.expiration);
 
     self.executeExchange(
       lpPosition,
@@ -1740,22 +1740,11 @@ library SynthereumLiquidityPoolLib {
   }
 
   /**
-   * @notice Check fee percentage and expiration of mint, redeem and exchange transaction
-   * @param self Data type the library is attached tfo
-   * @param feePercentage Maximum percentage of fee that a user want to pay
+   * @notice Check expiration of mint, redeem and exchange transaction
    * @param expiration Expiration time of the transaction
    */
-  function checkParams(
-    ISynthereumLiquidityPoolStorage.Storage storage self,
-    uint256 feePercentage,
-    uint256 expiration
-  ) internal view {
+  function checkExpiration(uint256 expiration) internal view {
     require(block.timestamp <= expiration, 'Transaction expired');
-
-    require(
-      self.fee.feeData.feePercentage.rawValue <= feePercentage,
-      'User fee percentage less than actual one'
-    );
   }
 
   /**

@@ -13,8 +13,6 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
     uint256 minNumTokens;
     // Amount of collateral that a user wants to spend for minting
     uint256 collateralAmount;
-    // Maximum amount of fees in percentage that user is willing to pay
-    uint256 feePercentage;
     // Expiration time of the transaction
     uint256 expiration;
     // Address to which send synthetic tokens minted
@@ -26,8 +24,6 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
     uint256 numTokens;
     // Minimium amount of collateral that user wants to redeem (anti-slippage)
     uint256 minCollateral;
-    // Maximum amount of fees in percentage that user is willing to pay
-    uint256 feePercentage;
     // Expiration time of the transaction
     uint256 expiration;
     // Address to which send collateral tokens redeemed
@@ -41,8 +37,6 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
     uint256 numTokens;
     // Minimum Amount of destination synthetic tokens that user wants to receive (anti-slippage)
     uint256 minDestNumTokens;
-    // Maximum amount of fees in percentage that user is willing to pay
-    uint256 feePercentage;
     // Expiration time of the transaction
     uint256 expiration;
     // Address to which send synthetic tokens exchanged

@@ -453,7 +453,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: synthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -527,7 +526,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: synthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -556,7 +554,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: minNumberOfTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -572,31 +569,6 @@ contract('LiquidityPool', function (accounts) {
         'Number of tokens less than minimum limit',
       );
     });
-    it('Can revert if too much slippage for the fee percentage', async () => {
-      const totalCollateralAmount = web3Utils.toWei('120.24048', 'mwei');
-      const minNumberOfTokens = web3Utils.toWei('100');
-      const expirationTime = (expiration =
-        (await web3.eth.getBlock('latest')).timestamp + 60);
-      const wrongFeePercentageValue = web3Utils.toWei('0.00199');
-      const mintOperation = {
-        minNumTokens: minNumberOfTokens,
-        collateralAmount: totalCollateralAmount,
-        feePercentage: wrongFeePercentageValue,
-        expiration: expirationTime,
-        recipient: firstUser,
-      };
-      await collateralInstance.approve(
-        liquidityPoolAddress,
-        totalCollateralAmount,
-        { from: firstUser },
-      );
-      await truffleAssert.reverts(
-        liquidityPoolInstance.mint(mintOperation, {
-          from: firstUser,
-        }),
-        'User fee percentage less than actual one',
-      );
-    });
     it('Can revert if transaction is expired', async () => {
       const totalCollateralAmount = web3Utils.toWei('120.24048', 'mwei');
       const minNumberOfTokens = web3Utils.toWei('100');
@@ -605,7 +577,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: minNumberOfTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -627,7 +598,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -647,7 +617,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: minNumberOfTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -674,7 +643,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -729,7 +697,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -791,7 +758,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: thirdUser,
       };
@@ -820,7 +786,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -834,29 +799,6 @@ contract('LiquidityPool', function (accounts) {
         'Collateral amount less than minimum limit',
       );
     });
-    it('Can revert if too much slippage for the fee percentage', async () => {
-      const synthTokens = web3Utils.toWei('50');
-      const collateralAmount = web3Utils.toWei('59.88', 'mwei');
-      const expirationTime = (expiration =
-        (await web3.eth.getBlock('latest')).timestamp + 60);
-      const wrongFeePercentageValue = web3Utils.toWei('0.018', 'mwei');
-      const redeeemOperation = {
-        numTokens: synthTokens,
-        minCollateral: collateralAmount,
-        feePercentage: wrongFeePercentageValue,
-        expiration: expirationTime,
-        recipient: secondUser,
-      };
-      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
-        from: secondUser,
-      });
-      await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, {
-          from: secondUser,
-        }),
-        'User fee percentage less than actual one',
-      );
-    });
     it('Can revert if transaction is expired', async () => {
       const synthTokens = web3Utils.toWei('50');
       const collateralAmount = web3Utils.toWei('59.88', 'mwei');
@@ -865,7 +807,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -885,7 +826,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: 0,
         minCollateral: 0,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -905,7 +845,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -930,7 +869,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -968,7 +906,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1093,7 +1030,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1212,7 +1148,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -1249,7 +1184,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1261,38 +1195,6 @@ contract('LiquidityPool', function (accounts) {
           from: firstUser,
         }),
         'Number of destination tokens less than minimum limit',
-      );
-    });
-    it('Can revert if too much slippage for the fee percentage', async () => {
-      const synthTokens = web3Utils.toWei('50');
-      const netSynthTokens = web3Utils.toWei('49.9');
-      const exchangeRate =
-        Decimal(sourceRate.toString())
-          .div(Decimal(destRate.toString()))
-          .toFixed(8) * Math.pow(10, 18);
-      const destNumTokens = web3Utils
-        .toBN(netSynthTokens)
-        .mul(web3Utils.toBN(exchangeRate))
-        .div(web3Utils.toBN(Math.pow(10, 18)));
-      const expirationTime = (expiration =
-        (await web3.eth.getBlock('latest')).timestamp + 60);
-      const wrongFeePercentageValue = web3Utils.toWei('0.0019');
-      const exchangeOperation = {
-        destPool: destLiquidityPoolAddress,
-        numTokens: synthTokens,
-        minDestNumTokens: destNumTokens.toString(),
-        feePercentage: wrongFeePercentageValue,
-        expiration: expirationTime,
-        recipient: firstUser,
-      };
-      await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
-        from: firstUser,
-      });
-      await truffleAssert.reverts(
-        liquidityPoolInstance.exchange(exchangeOperation, {
-          from: firstUser,
-        }),
-        'User fee percentage less than actual one',
       );
     });
     it('Can revert if transaction is expired', async () => {
@@ -1312,7 +1214,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1333,7 +1234,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: 0,
         minDestNumTokens: 0,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1362,7 +1262,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1390,7 +1289,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: liquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1439,7 +1337,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: wrongCollateraLiquidityPoolInstance.address,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1492,7 +1389,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: wrongFinderLiquidityPoolInstance.address,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1535,7 +1431,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: wrongLiquidityPoolInstance.address,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1558,7 +1453,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: 0,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1619,7 +1513,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: underCapitalizedPoolInstance.address,
         numTokens: synthTokens,
         minDestNumTokens: destNumTokens.toString(),
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1658,7 +1551,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: destLiquidityPoolAddress,
         numTokens: synthTokens,
         minDestNumTokens: '0',
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: secondUser,
       };
@@ -1682,7 +1574,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1761,7 +1652,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -1934,7 +1824,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2101,7 +1990,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2216,7 +2104,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2554,7 +2441,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2623,7 +2509,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: '0',
         collateralAmount: mintCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2642,7 +2527,6 @@ contract('LiquidityPool', function (accounts) {
       const redeeemOperation = {
         numTokens: synthTokens,
         minCollateral: 0,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2662,7 +2546,6 @@ contract('LiquidityPool', function (accounts) {
         destPool: DAO,
         numTokens: synthTokens,
         minDestNumTokens: 0,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -2755,7 +2638,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -3548,7 +3430,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -3632,7 +3513,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
@@ -3705,7 +3585,6 @@ contract('LiquidityPool', function (accounts) {
       const mintOperation = {
         minNumTokens: totSynthTokens,
         collateralAmount: totalCollateralAmount,
-        feePercentage: feePercentageValue,
         expiration: expirationTime,
         recipient: firstUser,
       };
