@@ -149,8 +149,11 @@ library SynthereumCreditLineLib {
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
 
+    bool hasExtraCollateral = collateralAmount.isGreaterThan(feeAmount);
     FixedPoint.Unsigned memory netCollateralAmount =
-      collateralAmount.sub(feeAmount);
+      hasExtraCollateral
+        ? collateralAmount.sub(feeAmount)
+        : FixedPoint.Unsigned(0);
 
     if (positionData.tokensOutstanding.isEqual(0)) {
       require(
@@ -170,18 +173,25 @@ library SynthereumCreditLineLib {
       require(
         _checkCollateralization(
           positionManagerData,
-          positionData.rawCollateral.add(netCollateralAmount),
+          hasExtraCollateral
+            ? positionData.rawCollateral.add(netCollateralAmount)
+            : positionData.rawCollateral.sub(feeAmount),
           positionData.tokensOutstanding.add(numTokens)
         ),
         'Insufficient Collateral'
       );
     }
 
-    // Increase the position and global collateral balance by collateral amount.
-    positionData._incrementCollateralBalances(
-      globalPositionData,
-      netCollateralAmount
-    );
+    // Increase or decrease the position and global collateral balance by collateral amount or fee amount.
+    hasExtraCollateral
+      ? positionData._incrementCollateralBalances(
+        globalPositionData,
+        netCollateralAmount
+      )
+      : positionData._decrementCollateralBalances(
+        globalPositionData,
+        feeAmount
+      );
 
     // Add the number of tokens created to the position's outstanding tokens and global.
     positionData.tokensOutstanding = positionData.tokensOutstanding.add(
@@ -194,15 +204,17 @@ library SynthereumCreditLineLib {
 
     checkMintLimit(globalPositionData, positionManagerData);
 
-    // pull collateral
-    IERC20 collateralCurrency = positionManagerData.collateralToken;
+    if (hasExtraCollateral) {
+      // pull collateral
+      IERC20 collateralCurrency = positionManagerData.collateralToken;
 
-    // Transfer tokens into the contract from caller
-    collateralCurrency.safeTransferFrom(
-      msg.sender,
-      address(this),
-      (collateralAmount).rawValue
-    );
+      // Transfer tokens into the contract from caller
+      collateralCurrency.safeTransferFrom(
+        msg.sender,
+        address(this),
+        (collateralAmount).rawValue
+      );
+    }
 
     // mint corresponding synthetic tokens to the caller's address.
     positionManagerData.tokenCurrency.mint(msg.sender, numTokens.rawValue);
