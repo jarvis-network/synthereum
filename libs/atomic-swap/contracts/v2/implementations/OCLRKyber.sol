@@ -10,7 +10,6 @@ import {
 import '../OCLRBase.sol';
 
 contract OCLRKyber is OCLRBase {
-  using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
   struct ImplementationInfo {
@@ -127,9 +126,9 @@ contract OCLRKyber is OCLRBase {
 
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           (bool success, ) =
-            msg.sender.call{
-              value: inputParams.minOutOrMaxIn.sub(amountsOut[0])
-            }('');
+            msg.sender.call{value: inputParams.minOutOrMaxIn - amountsOut[0]}(
+              ''
+            );
           require(success, 'Failed eth refund');
         }
       } else {
@@ -160,7 +159,7 @@ contract OCLRKyber is OCLRBase {
           // refund leftover input erc20
           tokenSwapPath[0].safeTransfer(
             msg.sender,
-            inputParams.minOutOrMaxIn.sub(amountsOut[0])
+            inputParams.minOutOrMaxIn - amountsOut[0]
           );
 
           // reset allowance
@@ -301,7 +300,7 @@ contract OCLRKyber is OCLRBase {
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
-        uint256 collateralRefund = collateralOut.sub(amountsOut[0]);
+        uint256 collateralRefund = collateralOut - amountsOut[0];
 
         tokenSwapPath[0].safeTransfer(msg.sender, collateralRefund);
 

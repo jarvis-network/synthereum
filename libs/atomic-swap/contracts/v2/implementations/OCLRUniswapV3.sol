@@ -17,7 +17,6 @@ interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {
 
 contract OCLRUniswapV3 is OCLRBase {
   using SafeERC20 for IERC20;
-  using SafeMath for uint256;
 
   struct ImplementationInfo {
     address routerAddress;
@@ -161,7 +160,7 @@ contract OCLRUniswapV3 is OCLRBase {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
             msg.sender,
-            inputParams.minOutOrMaxIn.sub(returnValues.inputAmount)
+            inputParams.minOutOrMaxIn - returnValues.inputAmount
           );
 
           // reset router allowance
@@ -298,7 +297,7 @@ contract OCLRUniswapV3 is OCLRBase {
         // refund leftover input (collateral) tokens
         if (inputParams.minOutOrMaxIn > inputTokensUsed) {
           uint256 collateralRefund =
-            inputParams.minOutOrMaxIn.sub(inputTokensUsed);
+            inputParams.minOutOrMaxIn - inputTokensUsed;
 
           IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
 

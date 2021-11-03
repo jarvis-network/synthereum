@@ -13,7 +13,6 @@ import '../OCLRBase.sol';
 
 contract OCLRUniswapV2 is OCLRBase {
   using SafeERC20 for IERC20;
-  using SafeMath for uint256;
 
   struct ImplementationInfo {
     address routerAddress;
@@ -116,9 +115,9 @@ contract OCLRUniswapV2 is OCLRBase {
         // refund eventual eth leftover
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           (bool success, ) =
-            msg.sender.call{
-              value: inputParams.minOutOrMaxIn.sub(amountsOut[0])
-            }('');
+            msg.sender.call{value: inputParams.minOutOrMaxIn - amountsOut[0]}(
+              ''
+            );
           require(success, 'Failed eth refund');
         }
       } else {
@@ -144,7 +143,7 @@ contract OCLRUniswapV2 is OCLRBase {
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           inputTokenInstance.safeTransfer(
             msg.sender,
-            inputParams.minOutOrMaxIn.sub(amountsOut[0])
+            inputParams.minOutOrMaxIn - amountsOut[0]
           );
 
           // reset allowance
@@ -274,7 +273,7 @@ contract OCLRUniswapV2 is OCLRBase {
 
       // eventual collateral refund
       if (collateralOut > amountsOut[0]) {
-        uint256 collateralRefund = collateralOut.sub(amountsOut[0]);
+        uint256 collateralRefund = collateralOut - amountsOut[0];
 
         IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
 

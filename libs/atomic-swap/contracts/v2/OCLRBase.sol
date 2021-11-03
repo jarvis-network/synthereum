@@ -16,13 +16,11 @@ import {
 } from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
 import './interfaces/IOCLRBase.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 abstract contract OCLRBase is IOCLRBase {
-  using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
   constructor() {}
