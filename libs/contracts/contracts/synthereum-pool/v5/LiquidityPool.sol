@@ -409,7 +409,8 @@ contract SynthereumLiquidityPool is
   /**
    * @notice Liquidate Lp position for an amount of synthetic tokens undercollateralized
    * @notice Revert if position is not undercollateralized
-   * @param numSynthTokens Number of synthetic tokens to be liquidated
+   * @param numSynthTokens Number of synthetic tokens that user wants to liquidate
+   * @return synthTokensLiquidated Amount of synthetic tokens liquidated
    * @return collateralReceived Amount of received collateral equal to the value of tokens liquidated
    * @return rewardAmount Amount of received collateral as reward for the liquidation
    */
@@ -418,9 +419,14 @@ contract SynthereumLiquidityPool is
     override
     notEmergencyShutdown
     nonReentrant
-    returns (uint256 collateralReceived, uint256 rewardAmount)
+    returns (
+      uint256 synthTokensLiquidated,
+      uint256 collateralReceived,
+      uint256 rewardAmount
+    )
   {
-    (collateralReceived, rewardAmount) = poolStorage.liquidate(
+    (synthTokensLiquidated, collateralReceived, rewardAmount) = poolStorage
+      .liquidate(
       lpPosition,
       liquidationData,
       feeStatus,

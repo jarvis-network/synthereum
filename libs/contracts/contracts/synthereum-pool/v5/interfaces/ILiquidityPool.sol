@@ -123,13 +123,18 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
   /**
    * @notice Liquidate Lp position for an amount of synthetic tokens undercollateralized
    * @notice Revert if position is not undercollateralized
-   * @param numSynthTokens Number of synthetic tokens to be liquidated
+   * @param numSynthTokens Number of synthetic tokens that user wants to liquidate
+   * @return synthTokensLiquidated Amount of synthetic tokens liquidated
    * @return collateralReceived Amount of received collateral equal to the value of tokens liquidated
    * @return rewardAmount Amount of received collateral as reward for the liquidation
    */
   function liquidate(uint256 numSynthTokens)
     external
-    returns (uint256 collateralReceived, uint256 rewardAmount);
+    returns (
+      uint256 synthTokensLiquidated,
+      uint256 collateralReceived,
+      uint256 rewardAmount
+    );
 
   /**
    * @notice Shutdown the pool in case of emergency
