@@ -14,7 +14,7 @@ import {
 import {
   SynthereumInterfaces
 } from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
-import './interfaces/IOCLRBase.sol';
+import {IOCLRBase} from './interfaces/IOCLRBase.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
   SafeERC20

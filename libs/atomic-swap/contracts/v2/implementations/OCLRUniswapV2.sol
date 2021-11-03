@@ -9,7 +9,7 @@ import {
 import {
   IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
-import '../OCLRBase.sol';
+import {OCLRBase, SafeERC20, IERC20} from '../OCLRBase.sol';
 
 contract OCLRUniswapV2 is OCLRBase {
   using SafeERC20 for IERC20;
