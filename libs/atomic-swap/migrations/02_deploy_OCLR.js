@@ -43,37 +43,43 @@ module.exports = async function (deployer, network, accounts) {
   const proxyInstance = await getExistingInstance(web3, OnChainLiquidityRouter);
 
   // deploy UniV2
-  await deployUniV2(
-    web3,
-    proxyInstance,
-    deployer,
-    network,
-    networkId,
-    admin,
-    maintainer,
-  );
+  uniswapData[networkId].deployV2
+    ? await deployUniV2(
+        web3,
+        proxyInstance,
+        deployer,
+        network,
+        networkId,
+        admin,
+        maintainer,
+      )
+    : null;
 
   // deploy UniV3
-  await deployUniV3(
-    web3,
-    proxyInstance,
-    deployer,
-    network,
-    networkId,
-    admin,
-    maintainer,
-  );
+  uniswapData[networkId].deployV3
+    ? await deployUniV3(
+        web3,
+        proxyInstance,
+        deployer,
+        network,
+        networkId,
+        admin,
+        maintainer,
+      )
+    : null;
 
   // deploy KyberDMM
-  await deployKyberDMM(
-    web3,
-    proxyInstance,
-    deployer,
-    network,
-    networkId,
-    admin,
-    maintainer,
-  );
+  kyberData[networkId].deploy
+    ? await deployKyberDMM(
+        web3,
+        proxyInstance,
+        deployer,
+        network,
+        networkId,
+        admin,
+        maintainer,
+      )
+    : null;
 };
 
 const deployUniV2 = async (

@@ -2,11 +2,14 @@
   "42": {
     "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
-    "routerV3": "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+    "routerV3": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+    "deploy": true
   },
   "1": {
     "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
-    "routerV3": "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+    "routerV3": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+    "deployV2": true,
+    "deployV3": true
   }
 }

@@ -1,6 +1,7 @@
 {
   "42": {
-    "DMMRouter": ""
+    "DMMRouter": "",
+    "deploy": true
   },
   "1": {
     "DMMRouter": "0x1c87257F5e8609940Bc751a07BB085Bb7f8cDBE6",
@@ -9,6 +10,7 @@
       "WETHWBTC": "0x1cf68Bbc2b6D3C6CfE1BD3590CF0E10b06a05F17",
       "WBTCUSDT": "0xD343d5dba2FBa55EEF58189619c05e33CAB95cA1",
       "USDCUSDT": "0x306121f1344ac5F84760998484c0176d7BFB7134"
-    }
+    },
+    "deploy": true
   }
 }
