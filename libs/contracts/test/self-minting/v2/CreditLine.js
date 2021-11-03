@@ -416,7 +416,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
 
     // Check redeem return value and event.
-    expectedFeeAmount = calculateFeeAmount(expectedSponsorCollateral);
+    expectedFeeAmount = calculateFeeAmount(
+      calculateCollateralValue(redeemTokens, startingPrice),
+    );
 
     const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
     let amountWithdrawn = res.amountWithdrawn;
@@ -493,7 +495,9 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Redeem full.
     const redeemRemainingTokens = toBN(toWei('60'));
-    feeAmount = calculateFeeAmount(expectedSponsorCollateral);
+    feeAmount = calculateFeeAmount(
+      calculateCollateralValue(redeemRemainingTokens, startingPrice),
+    );
     await tokenCurrency.approve(creditLine.address, redeemRemainingTokens, {
       from: sponsor,
     });

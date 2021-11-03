@@ -240,7 +240,7 @@ library SynthereumCreditLineLib {
       );
 
     // Update fee status
-    feeAmount = collateralRedeemed.mul(
+    feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
       positionManagerData._getFeeInfo().feePercentage
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
