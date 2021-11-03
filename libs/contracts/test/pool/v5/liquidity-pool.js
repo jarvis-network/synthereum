@@ -2302,6 +2302,7 @@ contract('LiquidityPool', function (accounts) {
       await aggregatorInstance.updateAnswer(emergencyPrice);
       const firstUserSynthTokens = web3Utils.toWei('79.8');
       const secondUserSynthTokens = web3Utils.toWei('20');
+      const secondUserSynthTokensExceeding = web3Utils.toWei('21');
       await synthTokenInstance.transfer(secondUser, secondUserSynthTokens, {
         from: firstUser,
       });
@@ -2379,7 +2380,7 @@ contract('LiquidityPool', function (accounts) {
         { from: secondUser },
       );
       const secondLiquidationTx = await liquidityPoolInstance.liquidate(
-        secondUserSynthTokens,
+        secondUserSynthTokensExceeding,
         { from: secondUser },
       );
       truffleAssert.eventEmitted(secondLiquidationTx, 'Liquidate', ev => {
