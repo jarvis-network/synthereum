@@ -28,14 +28,9 @@ before_script:
 🧪:
   parallel:
     matrix:
-      - TARGET: [contracts, yield-farming, legacy-currency-contracts, jrt-investors]
+      - TARGET: [contracts, atomic-swap, yield-farming, legacy-currency-contracts, jrt-investors]
   script:
     - yarn test \$TARGET
-
-🧪 atomic-swap:
-  allow_failure: true # TODO: Add ganache-cli service to provide a mainnet fork
-  script:
-    - yarn test atomic-swap
 
 🧱 cli:build:
   script:
