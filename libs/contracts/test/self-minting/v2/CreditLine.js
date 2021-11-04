@@ -364,9 +364,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     // check balances and fee distribution is ok
+    expectedSponsorTokens = expectedSponsorTokens.add(toBN(toWei('2')));
+    expectedSponsorCollateral = expectedSponsorCollateral.sub(createFeeAmount);
+
     await checkBalances(
-      toBN(toWei('2')),
-      expectedSponsorCollateral.sub(createFeeAmount).sub(feeAmount),
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
       createFeeAmount,
     );
     await checkFeeRecipients(createFeeAmount);
@@ -433,7 +436,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await expectNoExcessCollateralToTrim();
 
     // Redeem 50% of the tokens for 50% of the collateral.
-    const redeemTokens = toBN(toWei('50'));
+    const redeemTokens = expectedSponsorTokens.divn(2);
     expectedSponsorTokens = expectedSponsorTokens.sub(toBN(redeemTokens));
     expectedSponsorCollateral = expectedSponsorCollateral.divn(2);
     // Fails without approving token.
@@ -455,9 +458,11 @@ contract('Synthereum CreditLine ', function (accounts) {
     let amountWithdrawn = res.amountWithdrawn;
     let redeemFee = res.feeAmount;
 
-    let expectedWithdrawAmount = expectedSponsorCollateral.sub(redeemFee);
+    let expectedWithdrawAmount = expectedSponsorCollateral.sub(
+      expectedFeeAmount,
+    );
     assert.equal(
-      amountWithdrawn,
+      amountWithdrawn.toString(),
       expectedWithdrawAmount.toString(),
       'Wrong redeemed output collateral',
     );
@@ -525,7 +530,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await expectNoExcessCollateralToTrim();
 
     // Redeem full.
-    const redeemRemainingTokens = toBN(toWei('60'));
+    const redeemRemainingTokens = expectedSponsorTokens;
     feeAmount = calculateFeeAmount(
       calculateCollateralValue(redeemRemainingTokens, startingPrice),
     );
