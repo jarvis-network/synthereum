@@ -16,13 +16,8 @@ import {
 } from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
 import {IOCLRBase} from './interfaces/IOCLRBase.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 abstract contract OCLRBase is IOCLRBase {
-  using SafeERC20 for IERC20;
-
   constructor() {}
 
   function checkSynthereumPool(
