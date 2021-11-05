@@ -11,17 +11,7 @@ import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-etherscan';
 
-import { TASK_TEST } from 'hardhat/builtin-tasks/task-names';
-import { task as createOrModifyHardhatTask, types } from 'hardhat/config';
-
 require('dotenv').config();
-
-createOrModifyHardhatTask(TASK_TEST)
-  .addOptionalParam('forkchainid', 'Fork a chain', 0, types.int)
-  .setAction((taskArgs, hre, runSuper) => {
-    setForkingUrl(hre.config.networks, taskArgs.forkchainid);
-    return runSuper();
-  });
 
 const config = {
   solidity: {
@@ -54,6 +44,11 @@ const config = {
     apiKey: process.env.POLYGONSCAN_API_KEY,
   },
 };
+
+// set hardat forking
+if (process.env.FORKCHAINID !== undefined) {
+  setForkingUrl(config, parseInt(process.env.FORKCHAINID, 10));
+}
 
 addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);

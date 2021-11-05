@@ -86,10 +86,8 @@ export function modifyCompile(contractsPath: string, deployPath: string): void {
 export function modifyTest(contractsPath: string, deployPath: string): void {
   createOrModifyHardhatTask(TASK_TEST)
     .addFlag('debug', 'Compile without optimizer')
-    .addOptionalParam('forkchainid', 'Fork a chain', 0, types.int)
     .setAction(async (taskArgs, hre, runSuper) => {
       const { debug } = taskArgs;
-      setForkingUrl(hre.config.networks, taskArgs.forkchainid);
       const prepare =
         ((hre as unknown) as { fromDeployScript?: boolean })
           .fromDeployScript !== true;

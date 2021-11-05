@@ -7,7 +7,6 @@ import {
 } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
-import { NetworksConfig } from 'hardhat/types';
 
 export function addPublicNetwork(
   config: HardhatUserConfig,
@@ -54,7 +53,10 @@ export function addPublicNetwork(
 }
 
 // set hardhat default network to a forking url if the env is specified
-export function setForkingUrl(networks: NetworksConfig, chainId: number): void {
+export function setForkingUrl(
+  config: HardhatUserConfig,
+  chainId: number,
+): void {
   if (!chainId || !isNetworkId(chainId)) {
     // User didn't specify a (valid) networkId, so
     // we won't specify a forking URL
@@ -64,8 +66,10 @@ export function setForkingUrl(networks: NetworksConfig, chainId: number): void {
   const gitlabForkEnvVariable = `ETHEREUM_${networkName.toUpperCase()}_RPC`;
 
   const forkEnvVariable = process.env[gitlabForkEnvVariable] ?? undefined;
-
   if (forkEnvVariable !== undefined) {
-    networks.hardhat.forking = { url: forkEnvVariable, enabled: true };
+    config.networks ??= {};
+    config.networks.hardhat ??= {};
+    config.networks.hardhat.forking = { url: forkEnvVariable, enabled: true };
+    config.networks.hardhat.chainId = chainId;
   }
 }

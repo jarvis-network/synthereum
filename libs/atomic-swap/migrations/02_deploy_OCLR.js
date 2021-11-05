@@ -14,13 +14,15 @@ const { getExistingInstance } = require('../src/migration-utils/deployment');
 module.exports = async function (deployer, network, accounts) {
   const admin = accounts[0];
   const maintainer = accounts[1];
-  const networkId = toNetworkId(network);
+  const networkId = process.env.FORKCHAINID
+    ? process.env.FORKCHAINID
+    : toNetworkId(network);
   const networkFile = require(`@jarvis-network/synthereum-contracts/networks/${networkId}.json`);
-
   let FixedRateRoles = {
     admin,
     maintainers: [maintainer],
   };
+  console.log(networkId, network);
 
   const synthereumFinderAddress = networkFile.filter(
     elem => elem.contractName === 'SynthereumFinder',
