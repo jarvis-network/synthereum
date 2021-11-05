@@ -12,7 +12,7 @@
     "migrate-maastricht": "MIGRATION_TYPE=maastricht hardhat test ./test/correct-migration.js",
     "test": "yarn test:fixed-rate &&  yarn test:fixed-rate-oclr",
     "test:fixed-rate": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 hardhat test ./test/fixed-rate/FixedRateCurrency.js",
-    "test:fixed-rate-oclr": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 hardhat test --forkchainid 42 ./test/fixed-rate/OCLR.js",
+    "test:fixed-rate-oclr": "MIGRATION_TYPE=all NODE_OPTIONS==--max-old-space-size=8192 FORKCHAINID=42 hardhat test ./test/fixed-rate/OCLR.js",
     "deploy:fixed-rate": "hardhat deploy_fixed_rate_currency",
     "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"

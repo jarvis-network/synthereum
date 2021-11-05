@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { resolve } from 'path';
 
-import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
+import {
+  addPublicNetwork,
+  setForkingUrl,
+} from '@jarvis-network/hardhat-utils/dist/networks';
 
 import '@nomiclabs/hardhat-truffle5';
 import 'solidity-coverage';
@@ -108,6 +111,11 @@ const config = {
     apiKey: process.env.POLYGONSCAN_API_KEY,
   },
 };
+
+// set hardat forking
+if (process.env.FORKCHAINID !== undefined) {
+  setForkingUrl(config, parseInt(process.env.FORKCHAINID, 10));
+}
 
 addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);
