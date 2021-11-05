@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
+import {
+  addPublicNetwork,
+  setForkingUrl,
+} from '@jarvis-network/hardhat-utils/dist/networks';
 
 import '@nomiclabs/hardhat-truffle5';
 import 'solidity-coverage';
@@ -8,7 +11,17 @@ import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
 import '@nomiclabs/hardhat-etherscan';
 
+import { TASK_TEST } from 'hardhat/builtin-tasks/task-names';
+import { task as createOrModifyHardhatTask, types } from 'hardhat/config';
+
 require('dotenv').config();
+
+createOrModifyHardhatTask(TASK_TEST)
+  .addOptionalParam('forkchainid', 'Fork a chain', 0, types.int)
+  .setAction((taskArgs, hre, runSuper) => {
+    setForkingUrl(hre.config.networks, taskArgs.forkchainid);
+    return runSuper();
+  });
 
 const config = {
   solidity: {
