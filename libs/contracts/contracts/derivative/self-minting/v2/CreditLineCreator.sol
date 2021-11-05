@@ -74,13 +74,13 @@ contract SynthereumCreditLineCreator is Lockable {
   /**
    * @notice Creates an instance of perpetual and registers it within the registry.
    * @param params is a `ConstructorParams` object from Perpetual.
-   * @return address of the deployed contract.
+   * @return creditLine address of the deployed contract.
    */
   function createPerpetual(Params calldata params)
     public
     virtual
     nonReentrant()
-    returns (address)
+    returns (address creditLine)
   {
     // Create a new synthetic token using the params.
     require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
@@ -92,9 +92,7 @@ contract SynthereumCreditLineCreator is Lockable {
       params.syntheticToken != address(0),
       'Synthetic token address cannot be 0x00'
     );
-    address derivative;
-    // If the collateral token does not have a `decimals()` method,
-    // then a default precision of 18 will be applied to the newly created synthetic token.
+
     BaseControlledMintableBurnableERC20 tokenCurrency =
       BaseControlledMintableBurnableERC20(params.syntheticToken);
     require(
@@ -112,21 +110,19 @@ contract SynthereumCreditLineCreator is Lockable {
       'Decimals of synthetic token must be 18'
     );
 
-    derivative = address(
+    creditLine = address(
       new SynthereumCreditLine(_convertParams(params), params.roles)
     );
 
     _setControllerValues(
-      derivative,
+      creditLine,
       params.fee,
       params.liquidationPercentage,
       params.capMintAmount,
       params.overCollateralization
     );
 
-    emit CreatedPerpetual(address(derivative), msg.sender);
-
-    return address(derivative);
+    emit CreatedPerpetual(creditLine, msg.sender);
   }
 
   //----------------------------------------
