@@ -546,11 +546,7 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": [
-              "echo FIXME",
-              "yarn test ",
-              "../../scripts/cleanup_contracts_test.bash"
-            ],
+            "commands": ["yarn test "],
             "cwd": "libs/atomic-swap",
             "color": true
           }
