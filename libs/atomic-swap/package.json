@@ -14,7 +14,7 @@
     "migrate-OCLR": "MIGRATION_TYPE=OCLR hardhat test ./test/correct-migration.js",
     "start:local-fork": "../../scripts/local-fork.sh",
     "test": "yarn run test:v1 && yarn run test:v2",
-    "test:v1": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat --forkchainid 1 test ./test/v1/atomic-swap.js",
+    "test:v1": "MIGRATION_TYPE=atomic_swap NODE_OPTIONS=--max-old-space-size=8192 hardhat test --forkchainid 1 ./test/v1/atomic-swap.js",
     "test:v2": "MIGRATION_TYPE=OCLR NODE_OPTIONS=--max-old-space-size=8192 hardhat test --forkchainid 1 ./test/v2/*",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat --network mainnet_fork coverage --solcoverjs ./test/.solcover.js",
     "verify": "hardhat verify"
