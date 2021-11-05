@@ -22,7 +22,7 @@ import {
   TASK_VERIFY_GET_MINIMUM_BUILD,
   TASK_VERIFY_VERIFY_MINIMUM_BUILD,
 } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
-import { task, task as createOrModifyHardhatTask, types } from 'hardhat/config';
+import { task, task as createOrModifyHardhatTask } from 'hardhat/config';
 
 import {
   NetworkName,
@@ -46,8 +46,6 @@ import {
 } from '@jarvis-network/core-utils/dist/base/asserts';
 
 import fse from 'fs-extra';
-
-import { setForkingUrl } from './networks';
 
 const TASK_DEPLOY = 'deploy';
 
