@@ -37,18 +37,18 @@ contract CreditLineFactory is
   /**
    * @notice Check if the sender is the deployer and deploy a perpetual self-minting derivative
    * @param params input parameters of perpetual self-minting derivative
-   * @return derivative Address of the self-minting derivative contract
+   * @return creditLine Address of the self-minting derivative contract
    */
   function createPerpetual(Params calldata params)
     public
     override
-    returns (address derivative)
+    returns (address creditLine)
   {
     address deployer =
       ISynthereumFinder(synthereumFinder).getImplementationAddress(
         SynthereumInterfaces.Deployer
       );
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
-    derivative = super.createPerpetual(params);
+    creditLine = super.createPerpetual(params);
   }
 }
