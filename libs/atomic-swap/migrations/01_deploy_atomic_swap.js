@@ -6,7 +6,7 @@ const {
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 
 module.exports = async function (deployer, network, accounts) {
-  const networkId = proces.env.FORKCHAINID
+  const networkId = process.env.FORKCHAINID
     ? process.env.FORKCHAINID
     : toNetworkId(network);
   const networkFile = require(`@jarvis-network/synthereum-contracts/networks/${networkId}.json`);
