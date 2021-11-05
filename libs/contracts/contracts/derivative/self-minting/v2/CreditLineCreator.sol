@@ -11,8 +11,8 @@ import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {SynthereumCreditLineLib} from './CreditLineLib.sol';
-import {SynthereumCreditLine} from './CreditLine.sol';
+import {CreditLineLib} from './CreditLineLib.sol';
+import {CreditLine} from './CreditLine.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
@@ -25,7 +25,7 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
  * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
   we can enforce deployment configurations here.
  */
-contract SynthereumCreditLineCreator is Lockable {
+contract CreditLineCreator is Lockable {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
@@ -110,9 +110,7 @@ contract SynthereumCreditLineCreator is Lockable {
       'Decimals of synthetic token must be 18'
     );
 
-    creditLine = address(
-      new SynthereumCreditLine(_convertParams(params), params.roles)
-    );
+    creditLine = address(new CreditLine(_convertParams(params), params.roles));
 
     _setControllerValues(
       creditLine,
@@ -133,9 +131,7 @@ contract SynthereumCreditLineCreator is Lockable {
   function _convertParams(Params calldata params)
     internal
     view
-    returns (
-      SynthereumCreditLine.PositionManagerParams memory constructorParams
-    )
+    returns (CreditLine.PositionManagerParams memory constructorParams)
   {
     // Known from creator deployment.
 

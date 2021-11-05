@@ -17,7 +17,7 @@ import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {SynthereumCreditLineLib} from './CreditLineLib.sol';
+import {CreditLineLib} from './CreditLineLib.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 import {
   AccessControlEnumerable
@@ -27,7 +27,7 @@ import {
  * @title
  * @notice
  */
-contract SynthereumCreditLine is
+contract CreditLine is
   AccessControlEnumerable,
   ICreditLine,
   ICreditLineStorage,
@@ -37,8 +37,8 @@ contract SynthereumCreditLine is
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
-  using SynthereumCreditLineLib for PositionData;
-  using SynthereumCreditLineLib for PositionManagerData;
+  using CreditLineLib for PositionData;
+  using CreditLineLib for PositionManagerData;
 
   //----------------------------------------
   // Constants

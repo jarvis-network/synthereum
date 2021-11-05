@@ -6,14 +6,11 @@ import {
   IDeploymentSignature
 } from '../../../core/interfaces/IDeploymentSignature.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
-import {SynthereumCreditLineCreator} from './CreditLineCreator.sol';
+import {CreditLineCreator} from './CreditLineCreator.sol';
 
 /** @title Contract factory of self-minting derivatives
  */
-contract CreditLineFactory is
-  SynthereumCreditLineCreator,
-  IDeploymentSignature
-{
+contract CreditLineFactory is CreditLineCreator, IDeploymentSignature {
   //----------------------------------------
   // Storage
   //----------------------------------------
@@ -28,9 +25,7 @@ contract CreditLineFactory is
    * @notice Constructs the SelfMintingDerivativeFactory contract
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
    */
-  constructor(address _synthereumFinder)
-    SynthereumCreditLineCreator(_synthereumFinder)
-  {
+  constructor(address _synthereumFinder) CreditLineCreator(_synthereumFinder) {
     deploymentSignature = this.createPerpetual.selector;
   }
 

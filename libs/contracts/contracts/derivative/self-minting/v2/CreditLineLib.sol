@@ -20,21 +20,21 @@ import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import {SynthereumCreditLine} from './CreditLine.sol';
+import {CreditLine} from './CreditLine.sol';
 import {
   ISynthereumPriceFeed
 } from '../../../oracle/common/interfaces/IPriceFeed.sol';
 
-library SynthereumCreditLineLib {
+library CreditLineLib {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for IStandardERC20;
   using SafeERC20 for BaseControlledMintableBurnableERC20;
-  using SynthereumCreditLineLib for ICreditLineStorage.PositionData;
-  using SynthereumCreditLineLib for ICreditLineStorage.PositionManagerData;
-  using SynthereumCreditLineLib for ICreditLineStorage.FeeStatus;
-  using SynthereumCreditLineLib for FixedPoint.Unsigned;
+  using CreditLineLib for ICreditLineStorage.PositionData;
+  using CreditLineLib for ICreditLineStorage.PositionManagerData;
+  using CreditLineLib for ICreditLineStorage.FeeStatus;
+  using CreditLineLib for FixedPoint.Unsigned;
 
   //----------------------------------------
   // Events
@@ -488,7 +488,7 @@ library SynthereumCreditLineLib {
         positionData.rawCollateral.sub(tokenDebtValueInCollateral)
       );
 
-      SynthereumCreditLine(address(this)).deleteSponsorPosition(msg.sender);
+      CreditLine(address(this)).deleteSponsorPosition(msg.sender);
       emit EndedSponsorPosition(msg.sender);
     }
 
@@ -734,7 +734,7 @@ library SynthereumCreditLineLib {
       .sub(positionToLiquidate.tokensOutstanding);
 
     // delete position entry from storage
-    SynthereumCreditLine(address(this)).deleteSponsorPosition(sponsor);
+    CreditLine(address(this)).deleteSponsorPosition(sponsor);
 
     emit EndedSponsorPosition(sponsor);
 
