@@ -1,8 +1,8 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
   'SynthereumFactoryVersioning',
-  'SynthereumPoolOnChainPriceFeedLib',
-  'SynthereumPoolOnChainPriceFeedFactory',
+  'SynthereumLiquidityPoolLib',
+  'SynthereumLiquidityPoolFactory',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -13,8 +13,8 @@ async function migrate(deployer, network, accounts) {
   const {
     SynthereumFinder,
     SynthereumFactoryVersioning,
-    SynthereumPoolOnChainPriceFeedLib,
-    SynthereumPoolOnChainPriceFeedFactory,
+    SynthereumLiquidityPoolLib,
+    SynthereumLiquidityPoolFactory,
   } = migrate.getContracts(artifacts);
 
   const poolVersions = require('../data/pool-versions.json');
@@ -38,13 +38,13 @@ async function migrate(deployer, network, accounts) {
   );
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const keys = getKeysForNetwork(network, accounts);
-  if (poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.isEnabled ?? true) {
-    if (SynthereumPoolOnChainPriceFeedLib.setAsDeployed) {
-      const { contract: synthereumPoolOnChainPriceFeedLib } = await deploy(
+  if (poolVersions[networkId]?.LiquidityPoolFactory?.isEnabled ?? true) {
+    if (SynthereumLiquidityPoolLib.setAsDeployed) {
+      const { contract: synthereumLiquidityPoolLib } = await deploy(
         web3,
         deployer,
         network,
-        SynthereumPoolOnChainPriceFeedLib,
+        SynthereumLiquidityPoolLib,
         {
           from: keys.deployer,
         },
@@ -53,45 +53,41 @@ async function migrate(deployer, network, accounts) {
       // Due to how truffle-plugin works, it statefully links it
       // and throws an error if its already linked. So we'll just ignore it...
       try {
-        await SynthereumPoolOnChainPriceFeedFactory.link(
-          synthereumPoolOnChainPriceFeedLib,
-        );
+        await SynthereumLiquidityPoolFactory.link(synthereumLiquidityPoolLib);
       } catch (e) {
         // Allow this to fail in the Buidler case.
       }
     } else {
       // Truffle
-      await deploy(web3, deployer, network, SynthereumPoolOnChainPriceFeedLib, {
+      await deploy(web3, deployer, network, SynthereumLiquidityPoolLib, {
         from: keys.deployer,
       });
       await deployer.link(
-        SynthereumPoolOnChainPriceFeedLib,
-        SynthereumPoolOnChainPriceFeedFactory,
+        SynthereumLiquidityPoolLib,
+        SynthereumLiquidityPoolFactory,
       );
     }
     await deploy(
       web3,
       deployer,
       network,
-      SynthereumPoolOnChainPriceFeedFactory,
+      SynthereumLiquidityPoolFactory,
       synthereumFinder.options.address,
       { from: keys.deployer },
     );
-    const synthereumPoolOnChainPriceFeedFactory = await getExistingInstance(
+    const synthereumLiquidityPoolFactory = await getExistingInstance(
       web3,
-      SynthereumPoolOnChainPriceFeedFactory,
+      SynthereumLiquidityPoolFactory,
       '@jarvis-network/synthereum-contracts',
     );
     const factoryInterface = await web3.utils.stringToHex('PoolFactory');
     await synthereumFactoryVersioning.methods
       .setFactory(
         factoryInterface,
-        poolVersions[networkId]?.PoolOnChainPriceFeedFactory?.version ?? 4,
-        synthereumPoolOnChainPriceFeedFactory.options.address,
+        poolVersions[networkId]?.LiquidityPoolFactory?.version ?? 5,
+        synthereumLiquidityPoolFactory.options.address,
       )
       .send({ from: maintainer });
-    console.log(
-      'PoolOnChainPriceFeedFactory added to SynthereumFactoryVersioning',
-    );
+    console.log('LiquidityPoolFactory added to SynthereumFactoryVersioning');
   }
 }

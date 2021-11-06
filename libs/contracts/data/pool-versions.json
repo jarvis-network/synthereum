@@ -1,31 +1,31 @@
 {
   "42": {
-    "PoolOnChainPriceFeedFactory": {
-      "version": 4,
+    "LiquidityPoolFactory": {
+      "version": 5,
       "isEnabled": true
     }
   },
   "4": {
-    "PoolOnChainPriceFeedFactory": {
-      "version": 4,
+    "LiquidityPoolFactory": {
+      "version": 5,
       "isEnabled": true
     }
   },
   "1": {
-    "PoolOnChainPriceFeedFactory": {
-      "version": 4,
+    "LiquidityPoolFactory": {
+      "version": 5,
       "isEnabled": true
     }
   },
   "80001": {
-    "PoolOnChainPriceFeedFactory": {
-      "version": 4,
+    "LiquidityPoolFactory": {
+      "version": 5,
       "isEnabled": true
     }
   },
   "137": {
-    "PoolOnChainPriceFeedFactory": {
-      "version": 4,
+    "LiquidityPoolFactory": {
+      "version": 5,
       "isEnabled": true
     }
   }
