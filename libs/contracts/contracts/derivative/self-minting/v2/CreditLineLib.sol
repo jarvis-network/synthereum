@@ -7,9 +7,6 @@ import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
 } from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
-import {
-  ISelfMintingController
-} from '../common/interfaces/ISelfMintingController.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';

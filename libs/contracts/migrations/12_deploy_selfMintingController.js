@@ -1,6 +1,6 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
-  'SelfMintingController',
+  'CreditLineController',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -8,7 +8,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { SynthereumFinder, SelfMintingController } = migrate.getContracts(
+  const { SynthereumFinder, CreditLineController } = migrate.getContracts(
     artifacts,
   );
   const {
@@ -27,30 +27,30 @@ async function migrate(deployer, network, accounts) {
   );
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const roles = { admin: admin, maintainer: maintainer };
+  const roles = { admin: admin, maintainers: [maintainer] };
   const keys = getKeysForNetwork(network, accounts);
   await deploy(
     web3,
     deployer,
     network,
-    SelfMintingController,
+    CreditLineController,
     synthereumFinder.options.address,
     roles,
     { from: keys.deployer },
   );
   const controllerInterface = await web3.utils.stringToHex(
-    'SelfMintingController',
+    'CreditLineController',
   );
-  const selfMintingController = await getExistingInstance(
+  const creditLineController = await getExistingInstance(
     web3,
-    SelfMintingController,
+    CreditLineController,
     '@jarvis-network/synthereum-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(
       controllerInterface,
-      selfMintingController.options.address,
+      creditLineController.options.address,
     )
     .send({ from: maintainer });
-  console.log('SelfMintingController added to SynthereumFinder');
+  console.log('CreditLineController added to SynthereumFinder');
 }

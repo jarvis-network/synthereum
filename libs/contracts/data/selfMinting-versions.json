@@ -1,39 +1,23 @@
 {
   "42": {
-    "SelfMintingDerivativeFactory": {
-      "version": 1,
-      "isEnabled": true
-    },
     "CreditLineFactory": {
       "version": 2,
       "isEnabled": true
     }
   },
   "4": {
-    "SelfMintingDerivativeFactory": {
-      "version": 1,
-      "isEnabled": true
-    },
     "CreditLineFactory": {
       "version": 2,
       "isEnabled": true
     }
   },
   "1": {
-    "SelfMintingDerivativeFactory": {
-      "version": 1,
-      "isEnabled": true
-    },
     "CreditLineFactory": {
       "version": 2,
       "isEnabled": true
     }
   },
   "80001": {
-    "SelfMintingDerivativeFactory": {
-      "version": 1,
-      "isEnabled": true
-    },
     "CreditLineFactory": {
       "version": 2,
       "isEnabled": true

@@ -22,7 +22,7 @@ contract CreditLineFactory is CreditLineCreator, IDeploymentSignature {
   //----------------------------------------
 
   /**
-   * @notice Constructs the SelfMintingDerivativeFactory contract
+   * @notice Constructs the CreditLineFactory contract
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
    */
   constructor(address _synthereumFinder) CreditLineCreator(_synthereumFinder) {
