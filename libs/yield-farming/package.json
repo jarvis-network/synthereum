@@ -7,7 +7,7 @@
     "format:sol": "prettier --write './contracts/**/*.sol'",
     "build": "yarn build:solidity && yarn build:nx-necessary",
     "build:solidity": "hardhat compile",
-    "build:nx-necessary": "cp ./package.json ./dist/",
+    "build:nx-necessary": "mkdir ./dist && cp ./package.json ./dist/",
     "compile": "hardhat compile",
     "migrate-elysianfields": "MIGRATION_TYPE=elysianfields hardhat test ./test/correct-migration.js",
     "migrate-storage": "MIGRATION_TYPE=storage hardhat test ./test/correct-migration.js",
