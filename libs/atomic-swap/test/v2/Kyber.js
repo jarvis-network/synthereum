@@ -10,7 +10,9 @@ const {
 
 const Proxy = artifacts.require('OnChainLiquidityRouter');
 const KyberAtomicSwap = artifacts.require('OCLRKyber');
-const IKyberRouter = artifacts.require('IDMMExchangeRouter');
+const IKyberRouter = artifacts.require(
+  'contracts/v2/implementations/interfaces/IKyberRouter.sol:IDMMExchangeRouter',
+);
 const PoolMock = artifacts.require('PoolMock');
 const MockContractUser = artifacts.require('MockContractUser');
 const TestnetERC20 = artifacts.require('TestnetERC20');
