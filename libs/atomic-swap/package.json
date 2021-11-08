@@ -16,6 +16,7 @@
     "test": "yarn run test:v1 && yarn run test:v2",
     "test:v1": "MIGRATION_TYPE=atomic_swap FORKCHAINID=1 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v1/atomic-swap.js",
     "test:v2": "MIGRATION_TYPE=OCLR FORKCHAINID=1 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v2/*",
+    "test:v3": "MIGRATION_TYPE=OCLR_poolV5 FORKCHAINID=1 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v3/*",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat --network mainnet_fork coverage --solcoverjs ./test/.solcover.js",
     "verify": "hardhat verify"
   },
