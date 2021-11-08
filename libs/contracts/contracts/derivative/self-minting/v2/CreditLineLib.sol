@@ -150,7 +150,7 @@ library CreditLineLib {
     FixedPoint.Unsigned memory netCollateralAmount =
       hasExtraCollateral
         ? collateralAmount.sub(feeAmount)
-        : FixedPoint.Unsigned(0);
+        : feeAmount.sub(collateralAmount);
 
     if (positionData.tokensOutstanding.isEqual(0)) {
       require(
@@ -172,7 +172,7 @@ library CreditLineLib {
           positionManagerData,
           hasExtraCollateral
             ? positionData.rawCollateral.add(netCollateralAmount)
-            : positionData.rawCollateral.sub(feeAmount),
+            : positionData.rawCollateral.sub(netCollateralAmount),
           positionData.tokensOutstanding.add(numTokens)
         ),
         'Insufficient Collateral'
@@ -187,7 +187,7 @@ library CreditLineLib {
       )
       : positionData._decrementCollateralBalances(
         globalPositionData,
-        feeAmount
+        netCollateralAmount
       );
 
     // Add the number of tokens created to the position's outstanding tokens and global.
@@ -201,7 +201,7 @@ library CreditLineLib {
 
     checkMintLimit(globalPositionData, positionManagerData);
 
-    if (hasExtraCollateral) {
+    if (collateralAmount.isGreaterThan(FixedPoint.Unsigned(0))) {
       // pull collateral
       IERC20 collateralCurrency = positionManagerData.collateralToken;
 

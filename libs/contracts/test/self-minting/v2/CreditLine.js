@@ -374,6 +374,47 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
     await checkFeeRecipients(createFeeAmount);
 
+    // can create other tokens passing a bit of collateral (less than fee amount) staying above cr
+    let collateralPassed = toBN(toWei('1'));
+    await collateral.approve(creditLine.address, collateralPassed, {
+      from: sponsor,
+    });
+    collateralBefore = (await creditLine.positions.call(sponsor)).rawCollateral;
+    opfee = await creditLine.create.call(collateralPassed, toBN(toWei('10')), {
+      from: sponsor,
+    });
+    await creditLine.create(collateralPassed, toBN(toWei('10')), {
+      from: sponsor,
+    });
+
+    createFeeAmount = calculateFeeAmount(
+      calculateCollateralValue(toBN(toWei('10')), startingPrice),
+    );
+    assert.equal(opfee.toString(), createFeeAmount.toString());
+
+    // position data should be reduced by fee amount
+    position = await creditLine.positions.call(sponsor);
+    assert.equal(
+      position.rawCollateral.toString(),
+      toBN(collateralBefore.toString())
+        .sub(createFeeAmount)
+        .add(collateralPassed)
+        .toString(),
+    );
+
+    // check balances and fee distribution is ok
+    expectedSponsorTokens = expectedSponsorTokens.add(toBN(toWei('10')));
+    expectedSponsorCollateral = expectedSponsorCollateral
+      .sub(createFeeAmount)
+      .add(collateralPassed);
+
+    await checkBalances(
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
+      createFeeAmount,
+    );
+    await checkFeeRecipients(createFeeAmount);
+
     // Periodic check for no excess collateral.
     await expectNoExcessCollateralToTrim();
 
