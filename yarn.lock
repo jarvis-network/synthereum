@@ -5377,7 +5377,6 @@ __metadata:
     "@jarvis-network/synthereum-contracts": "*"
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
-    "@openzeppelin/contracts": 4.1.0
     hardhat-gas-reporter: ^1.0.4
   languageName: unknown
   linkType: soft
@@ -5549,7 +5548,6 @@ __metadata:
   dependencies:
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
-    "@openzeppelin/contracts": 4.1.0
     hardhat-gas-reporter: ^1.0.4
   languageName: unknown
   linkType: soft
@@ -5560,7 +5558,6 @@ __metadata:
   dependencies:
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
-    "@openzeppelin/contracts": 4.1.0
     "@uma/core": 2.7.0
     hardhat-gas-reporter: ^1.0.4
   languageName: unknown
@@ -5616,7 +5613,6 @@ __metadata:
     "@jarvis-network/sol2ts-code-gen": "*"
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
-    "@openzeppelin/contracts": 4.1.0
     "@solidity-parser/parser": ^0.13.2
     "@types/child-process-promise": ^2.2.1
     "@types/fs-extra": ^9.0.11
@@ -5697,6 +5693,7 @@ __metadata:
     "@nrwl/tao": 12.3.4
     "@nrwl/web": 12.3.4
     "@nrwl/workspace": 12.3.4
+    "@openzeppelin/contracts": "*"
     "@testing-library/react": 11.2.6
     "@types/bunyan": ^1.8.6
     "@types/chai": ^4.2.14
@@ -5815,7 +5812,6 @@ __metadata:
   dependencies:
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
-    "@openzeppelin/contracts": 4.1.0
     hardhat-gas-reporter: ^1.0.4
   languageName: unknown
   linkType: soft
@@ -7554,24 +7550,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts@npm:3.4.1-solc-0.7-2":
-  version: 3.4.1-solc-0.7-2
-  resolution: "@openzeppelin/contracts@npm:3.4.1-solc-0.7-2"
-  checksum: 3608a4065f65946117caa543ef72477ce637bd5cc4f4853303b5f5b6c26516f8b50898ea3a8486e2877689cae81453ce22c72c8624c77c363c63f019b4086ffa
-  languageName: node
-  linkType: hard
-
-"@openzeppelin/contracts@npm:4.1.0":
-  version: 4.1.0
-  resolution: "@openzeppelin/contracts@npm:4.1.0"
-  checksum: ee8291afce058d35279613a80b716e637d01beb1df495dfbaa658fd5b41b69ccc024f22004afbd1b60dec5b701a69ca6defb515b4fddc2e5cb108e371af66d8b
-  languageName: node
-  linkType: hard
-
-"@openzeppelin/contracts@npm:^3.3.0":
-  version: 3.4.2
-  resolution: "@openzeppelin/contracts@npm:3.4.2"
-  checksum: 0c90f029fe50a49643588e4c8670dae3bbf31795133a6ddce9bdcbc258486332700bb732287baabf7bf807f39182fe8ea2ffa19aa5caf359b1b9c0f083280748
+"@openzeppelin/contracts@npm:4.3.2":
+  version: 4.3.2
+  resolution: "@openzeppelin/contracts@npm:4.3.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40openzeppelin%2Fcontracts%2F-%2Fcontracts-4.3.2.tgz"
+  checksum: 9032453eef3e10b6453b667c7edd3381292665083b855ca8a8b5f64b473e768eacb53516865fb3ce1e493deadbb977069e483cce5650c42807a742ab59a18695
   languageName: node
   linkType: hard
 
