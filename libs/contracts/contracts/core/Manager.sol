@@ -3,8 +3,10 @@ pragma solidity ^0.8.4;
 
 import {ISynthereumFinder} from './interfaces/IFinder.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
-import {IDerivative} from '../derivative/common/interfaces/IDerivative.sol';
-import {IRole} from '../base/interfaces/IRole.sol';
+import {
+  IAccessControlEnumerable
+} from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
+import {IEmergencyShutdown} from '../common/interfaces/IEmergencyShutdown.sol';
 import {SynthereumInterfaces} from './Constants.sol';
 import {
   AccessControlEnumerable
@@ -92,7 +94,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
       'Number of roles and contracts must be the same'
     );
     for (uint256 i; i < rolesCount; i++) {
-      IRole(contracts[i]).grantRole(roles[i], accounts[i]);
+      IAccessControlEnumerable(contracts[i]).grantRole(roles[i], accounts[i]);
     }
   }
 
@@ -118,7 +120,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
       'Number of roles and contracts must be the same'
     );
     for (uint256 i; i < rolesCount; i++) {
-      IRole(contracts[i]).revokeRole(roles[i], accounts[i]);
+      IAccessControlEnumerable(contracts[i]).revokeRole(roles[i], accounts[i]);
     }
   }
 
@@ -138,22 +140,25 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
       'Number of roles and contracts must be the same'
     );
     for (uint256 i; i < rolesCount; i++) {
-      IRole(contracts[i]).renounceRole(roles[i], address(this));
+      IAccessControlEnumerable(contracts[i]).renounceRole(
+        roles[i],
+        address(this)
+      );
     }
   }
 
   /**
-   * @notice Allow to call emergency shutdown in derivative contracts
-   * @param derivatives Derivate contracts to shutdown
+   * @notice Allow to call emergency shutdown in a pool or self-minting derivative
+   * @param contracts Contracts to shutdown
    */
-  function emergencyShutdown(IDerivative[] calldata derivatives)
+  function emergencyShutdown(IEmergencyShutdown[] calldata contracts)
     external
     override
     onlyMaintainer
   {
-    require(derivatives.length > 0, 'No Derivative passed');
-    for (uint256 i; i < derivatives.length; i++) {
-      derivatives[i].emergencyShutdown();
+    require(contracts.length > 0, 'No Derivative passed');
+    for (uint256 i; i < contracts.length; i++) {
+      contracts[i].emergencyShutdown();
     }
   }
 }

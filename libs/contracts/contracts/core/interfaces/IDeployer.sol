@@ -3,70 +3,33 @@ pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
-  ISynthereumPoolWithDerivativeDeployment
-} from '../../synthereum-pool/common/interfaces/IPoolWithDerivativeDeployment.sol';
-import {
-  IDerivativeDeployment
-} from '../../derivative/common/interfaces/IDerivativeDeployment.sol';
+  ISynthereumPoolDeployment
+} from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';
 import {
   ISelfMintingDerivativeDeployment
 } from '../../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
 /**
  * @title Provides interface with functions of Synthereum deployer
  */
 interface ISynthereumDeployer {
   /**
-   * @notice Deploys derivative and pool linking the contracts together
-   * @param derivativeVersion Version of derivative contract
+   * @notice Deploy a new pool
    * @param poolVersion Version of the pool contract
-   * @param derivativeParamsData Input params of derivative constructor
    * @param poolParamsData Input params of pool constructor
-   * @return derivative Derivative contract deployed
    * @return pool Pool contract deployed
    */
-  function deployPoolAndDerivative(
-    uint8 derivativeVersion,
-    uint8 poolVersion,
-    bytes calldata derivativeParamsData,
-    bytes calldata poolParamsData
-  )
+  function deployPool(uint8 poolVersion, bytes calldata poolParamsData)
     external
-    returns (
-      IDerivativeDeployment derivative,
-      ISynthereumPoolWithDerivativeDeployment pool
-    );
+    returns (ISynthereumPoolDeployment pool);
 
   /**
-   * @notice Deploys a pool and links it with an already existing derivative
-   * @param poolVersion Version of the pool contract
-   * @param poolParamsData Input params of pool constructor
-   * @param derivative Existing derivative contract to link with the new pool
-   * @return pool Pool contract deployed
+   * @notice Deploy a new self minting derivative contract
+   * @param selfMintingDerVersion Version of the self minting derivative contract
+   * @param selfMintingDerParamsData Input params of self minting derivative constructor
+   * @return selfMintingDerivative Self minting derivative contract deployed
    */
-  function deployOnlyPool(
-    uint8 poolVersion,
-    bytes calldata poolParamsData,
-    IDerivativeDeployment derivative
-  ) external returns (ISynthereumPoolWithDerivativeDeployment pool);
-
-  /**
-   * @notice Deploys a derivative and option to links it with an already existing pool
-   * @param derivativeVersion Version of the derivative contract
-   * @param derivativeParamsData Input params of derivative constructor
-   * @param pool Existing pool contract to link with the new derivative
-   * @return derivative Derivative contract deployed
-   */
-  function deployOnlyDerivative(
-    uint8 derivativeVersion,
-    bytes calldata derivativeParamsData,
-    ISynthereumPoolWithDerivativeDeployment pool
-  ) external returns (IDerivativeDeployment derivative);
-
-  function deployOnlySelfMintingDerivative(
+  function deploySelfMintingDerivative(
     uint8 selfMintingDerVersion,
     bytes calldata selfMintingDerParamsData
   ) external returns (ISelfMintingDerivativeDeployment selfMintingDerivative);

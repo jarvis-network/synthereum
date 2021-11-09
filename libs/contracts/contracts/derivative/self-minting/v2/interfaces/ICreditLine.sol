@@ -12,9 +12,12 @@ import {
 import {
   ICreditLineDerivativeDeployment
 } from './ICreditLineDerivativeDeployment.sol';
+import {
+  IEmergencyShutdown
+} from '../../../../common/interfaces/IEmergencyShutdown.sol';
 import {ICreditLineStorage} from './ICreditLineStorage.sol';
 
-interface ICreditLine is ICreditLineDerivativeDeployment {
+interface ICreditLine is IEmergencyShutdown, ICreditLineDerivativeDeployment {
   /**
    * @notice Transfers `collateralAmount` into the caller's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
@@ -90,14 +93,6 @@ interface ICreditLine is ICreditLineDerivativeDeployment {
       uint256 collateralLiquidated,
       uint256 collateralReward
     );
-
-  /**
-   * @notice Premature contract settlement under emergency circumstances.
-   * @dev Only the synthereum manager can call this function.
-   * Upon emergency shutdown, the contract settlement time and oracle price is set to the shutdown time. This enables withdrawal
-   * to occur via the `settleEmergencyShutdown` function.
-   */
-  function emergencyShutdown() external;
 
   /**
    * @notice When in emergency shutdown state all token holders and sponsor can redeem their tokens and

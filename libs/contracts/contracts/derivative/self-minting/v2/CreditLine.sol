@@ -356,6 +356,7 @@ contract CreditLine is
     override
     notEmergencyShutdown
     nonReentrant
+    returns (uint256 timestamp, uint256 price)
   {
     require(
       msg.sender ==
@@ -365,16 +366,16 @@ contract CreditLine is
       'Caller must be a Synthereum manager'
     );
 
-    // store timestamp and last price
-    positionManagerData.emergencyShutdownTimestamp = block.timestamp;
-    positionManagerData.emergencyShutdownPrice = positionManagerData
-      ._getOraclePrice();
+    timestamp = block.timestamp;
+    FixedPoint.Unsigned memory _price = positionManagerData._getOraclePrice();
 
-    emit EmergencyShutdown(
-      msg.sender,
-      positionManagerData.emergencyShutdownPrice.rawValue,
-      positionManagerData.emergencyShutdownTimestamp
-    );
+    // store timestamp and last price
+    positionManagerData.emergencyShutdownTimestamp = timestamp;
+    positionManagerData.emergencyShutdownPrice = _price;
+
+    price = _price.rawValue;
+
+    emit EmergencyShutdown(msg.sender, price, timestamp);
   }
 
   function claimFee()
