@@ -128,14 +128,6 @@ contract CreditLine is
     _;
   }
 
-  modifier onlyMaintainer() {
-    require(
-      hasRole(MAINTAINER_ROLE, msg.sender),
-      'Sender must be the maintainer'
-    );
-    _;
-  }
-
   modifier onlyCollateralisedPosition(address sponsor) {
     require(
       positions[sponsor].rawCollateral.isGreaterThan(0),
