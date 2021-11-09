@@ -340,7 +340,7 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
-   * @return collateralRedeemed Amount of collateral redeeem by user
+   * @return collateralRedeemed Amount of collateral redeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
   function redeem(

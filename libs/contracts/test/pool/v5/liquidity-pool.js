@@ -658,7 +658,7 @@ contract('LiquidityPool', function (accounts) {
         from: firstUser,
       });
     });
-    it('Can redeeem in the correct way', async () => {
+    it('Can redeem in the correct way', async () => {
       await aggregatorInstance.updateAnswer(web3Utils.toWei('115', 'mwei'));
       const synthTokens = web3Utils.toWei('50');
       const totalCollateralAmount = web3Utils.toWei('57.5', 'mwei');
@@ -694,7 +694,7 @@ contract('LiquidityPool', function (accounts) {
       );
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
         expiration: expirationTime,
@@ -703,7 +703,7 @@ contract('LiquidityPool', function (accounts) {
       await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
         from: secondUser,
       });
-      const redeemTx = await liquidityPoolInstance.redeem(redeeemOperation, {
+      const redeemTx = await liquidityPoolInstance.redeem(redeemOperation, {
         from: secondUser,
       });
       console.log('Gas used for standard redeem: ' + redeemTx.receipt.gasUsed);
@@ -755,7 +755,7 @@ contract('LiquidityPool', function (accounts) {
       const collateralAmount = web3Utils.toWei('59.88', 'mwei');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
         expiration: expirationTime,
@@ -767,7 +767,7 @@ contract('LiquidityPool', function (accounts) {
       await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
         from: secondUser,
       });
-      await liquidityPoolInstance.redeem(redeeemOperation, {
+      await liquidityPoolInstance.redeem(redeemOperation, {
         from: secondUser,
       });
       assert.equal(
@@ -783,7 +783,7 @@ contract('LiquidityPool', function (accounts) {
       const collateralAmount = web3Utils.toWei('59.9', 'mwei');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
         expiration: expirationTime,
@@ -793,7 +793,7 @@ contract('LiquidityPool', function (accounts) {
         from: secondUser,
       });
       await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, {
+        liquidityPoolInstance.redeem(redeemOperation, {
           from: secondUser,
         }),
         'Collateral amount less than minimum limit',
@@ -804,7 +804,7 @@ contract('LiquidityPool', function (accounts) {
       const collateralAmount = web3Utils.toWei('59.88', 'mwei');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp - 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
         expiration: expirationTime,
@@ -814,7 +814,7 @@ contract('LiquidityPool', function (accounts) {
         from: secondUser,
       });
       await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, {
+        liquidityPoolInstance.redeem(redeemOperation, {
           from: secondUser,
         }),
         'Transaction expired',
@@ -823,14 +823,14 @@ contract('LiquidityPool', function (accounts) {
     it('Can revert if no synthetic tokens are sent', async () => {
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: 0,
         minCollateral: 0,
         expiration: expirationTime,
         recipient: secondUser,
       };
       await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, {
+        liquidityPoolInstance.redeem(redeemOperation, {
           from: secondUser,
         }),
         'Sending tokens amount is equal to 0',
@@ -842,7 +842,7 @@ contract('LiquidityPool', function (accounts) {
       const collateralAmount = web3Utils.toWei('79.84', 'mwei');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
         expiration: expirationTime,
@@ -852,7 +852,7 @@ contract('LiquidityPool', function (accounts) {
         from: secondUser,
       });
       await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, {
+        liquidityPoolInstance.redeem(redeemOperation, {
           from: secondUser,
         }),
         'Position undercapitalized',
@@ -866,7 +866,7 @@ contract('LiquidityPool', function (accounts) {
       const collateralAmount = web3Utils.toWei('179.64', 'mwei');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: collateralAmount,
         expiration: expirationTime,
@@ -876,7 +876,7 @@ contract('LiquidityPool', function (accounts) {
         from: secondUser,
       });
       await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, {
+        liquidityPoolInstance.redeem(redeemOperation, {
           from: secondUser,
         }),
       );
@@ -2525,14 +2525,14 @@ contract('LiquidityPool', function (accounts) {
       const synthTokens = web3Utils.toWei('10', 'mwei');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
-      const redeeemOperation = {
+      const redeemOperation = {
         numTokens: synthTokens,
         minCollateral: 0,
         expiration: expirationTime,
         recipient: firstUser,
       };
       await truffleAssert.reverts(
-        liquidityPoolInstance.redeem(redeeemOperation, { from: firstUser }),
+        liquidityPoolInstance.redeem(redeemOperation, { from: firstUser }),
         'Pool emergency shutdown',
       );
     });

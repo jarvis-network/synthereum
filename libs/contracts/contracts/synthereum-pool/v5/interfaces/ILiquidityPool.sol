@@ -66,7 +66,7 @@ interface ISynthereumLiquidityPool is
    * @notice This calculate the price using on chain price feed
    * @notice User must approve synthetic token transfer for the redeem request to succeed
    * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
-   * @return collateralRedeemed Amount of collateral redeeem by user
+   * @return collateralRedeemed Amount of collateral redeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
   function redeem(RedeemParams calldata redeemParams)
@@ -78,7 +78,7 @@ interface ISynthereumLiquidityPool is
    * @notice This calculate the price using on chain price feed
    * @notice User must approve synthetic token transfer for the redeem request to succeed
    * @param exchangeParams Input parameters for exchanging (see ExchangeParams struct)
-   * @return destNumTokensMinted Amount of collateral redeeem by user
+   * @return destNumTokensMinted Amount of collateral redeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
   function exchange(ExchangeParams calldata exchangeParams)
