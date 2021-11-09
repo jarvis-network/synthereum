@@ -262,7 +262,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       hexToUtf8(await creditLine.priceIdentifier.call()),
       hexToUtf8(priceFeedIdentifier),
     );
-
+    assert.equal(
+      (await creditLine.getOvercollateralization.call()).toString(),
+      overCollateralizationFactor.toString(),
+    );
     // Synthetic token and synthereum parameters
     assert.equal(await tokenCurrency.name.call(), syntheticName);
     assert.equal(await tokenCurrency.symbol.call(), syntheticSymbol);
@@ -332,6 +335,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       return ev.sponsor == sponsor;
     });
 
+    (await creditLine.getPositionCollateral.call(sponsor)).rawValue.toString(),
+      createCollateral.sub(actualFee).toString();
+    (await creditLine.totalTokensOutstanding.call()).toString(),
+      createTokens.toString();
     // check balances and fee distribution is ok
     await checkBalances(
       expectedSponsorTokens,
@@ -1332,6 +1339,10 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // check collateralisation from view function
       assert.equal(await creditLine.isCollateralised.call(sponsor), false);
+      assert.equal(
+        (await creditLine.getLiquidationReward.call()).toString(),
+        liquidationRewardPct.toString(),
+      );
 
       const collateralRequirement = createTokens
         .mul(updatedPrice)
@@ -1396,6 +1407,29 @@ contract('Synthereum CreditLine ', function (accounts) {
         );
       });
 
+      // liquidation data struct check
+      let liqData = await creditLine.getLiquidationData.call(
+        sponsor,
+        toBN(toWei('0')),
+      );
+      assert.equal(liqData.sponsor, sponsor);
+      assert.equal(liqData.liquidator, other);
+      assert.equal(
+        liqData.numTokensBurnt.toString(),
+        liquidationTokens.toString(),
+      );
+      assert.equal(
+        liqData.liquidatedCollateral.toString(),
+        expectedLiquidatedCollateral.toString(),
+      );
+
+      let liqDataArr = await creditLine.getLiquidations.call(sponsor);
+      assert.deepEqual(liqData, liqDataArr[0]);
+
+      await truffleAssert.reverts(
+        creditLine.getLiquidationData.call(sponsor, toBN(toWei('2'))),
+        'Invalid liquidation ID',
+      );
       // check balances
       let liquidatorCollateralBalanceAfter = await collateral.balanceOf.call(
         other,
