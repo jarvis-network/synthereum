@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {IDerivative} from '../../derivative/common/interfaces/IDerivative.sol';
+import {
+  IEmergencyShutdown
+} from '../../common/interfaces/IEmergencyShutdown.sol';
 
 interface ISynthereumManager {
   /**
@@ -39,8 +41,8 @@ interface ISynthereumManager {
   ) external;
 
   /**
-   * @notice Allow to call emergency shutdown in derivative contracts
-   * @param derivatives Derivate contracts to shutdown
+   * @notice Allow to call emergency shutdown in a pool or self-minting derivative
+   * @param contracts Contracts to shutdown
    */
-  function emergencyShutdown(IDerivative[] calldata derivatives) external;
+  function emergencyShutdown(IEmergencyShutdown[] calldata contracts) external;
 }

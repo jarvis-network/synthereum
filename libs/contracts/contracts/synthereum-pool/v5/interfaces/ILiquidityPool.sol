@@ -1,13 +1,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
+import {
+  IEmergencyShutdown
+} from '../../../common/interfaces/IEmergencyShutdown.sol';
 import {ISynthereumLiquidityPoolGeneral} from './ILiquidityPoolGeneral.sol';
 import {ISynthereumLiquidityPoolStorage} from './ILiquidityPoolStorage.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
-interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
+interface ISynthereumLiquidityPool is
+  IEmergencyShutdown,
+  ISynthereumLiquidityPoolGeneral
+{
   struct MintParams {
     // Minimum amount of synthetic tokens that a user wants to mint using collateral (anti-slippage)
     uint256 minNumTokens;
@@ -135,16 +141,6 @@ interface ISynthereumLiquidityPool is ISynthereumLiquidityPoolGeneral {
       uint256 collateralReceived,
       uint256 rewardAmount
     );
-
-  /**
-   * @notice Shutdown the pool in case of emergency
-   * @notice Only Synthereum manager contract can call this function
-   * @return timestamp Timestamp of emergency shutdown transaction
-   * @return price Price of the pair at the moment of shutdown execution
-   */
-  function emergencyShutdown()
-    external
-    returns (uint256 timestamp, uint256 price);
 
   /**
    * @notice Redeem tokens after emergency shutdown
