@@ -48,6 +48,7 @@
     ]
   },
   "resolutions": {
+    "**/@openzeppelin/contracts": "4.3.2",
     "**/@truffle/hdwallet-provider": "^1.2.1",
     "**/@solidity-parser/parser": "0.13.2",
     "**/hardhat": "^2.6.6",
@@ -138,6 +139,7 @@
     "@nrwl/tao": "12.3.4",
     "@nrwl/web": "12.3.4",
     "@nrwl/workspace": "12.3.4",
+    "@openzeppelin/contracts": "*",
     "@types/bunyan": "^1.8.6",
     "@types/chai": "^4.2.14",
     "@types/chalk-pipe": "^2.0.0",
