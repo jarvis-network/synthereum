@@ -7,9 +7,6 @@ import {
 import {ISynthereumFinder} from '../../../../core/interfaces/IFinder.sol';
 import {IStandardERC20} from '../../../../base/interfaces/IStandardERC20.sol';
 import {
-  BaseControlledMintableBurnableERC20
-} from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
-import {
   ISynthereumDeployment
 } from '../../../../common/interfaces/IDeployment.sol';
 import {

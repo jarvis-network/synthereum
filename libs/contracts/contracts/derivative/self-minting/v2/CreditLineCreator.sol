@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {
-  BaseControlledMintableBurnableERC20
-} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
+import {
+  IMintableBurnableERC20
+} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {
+  BaseControlledMintableBurnableERC20
+} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {
   FixedPoint
@@ -22,7 +26,7 @@ contract CreditLineCreator {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
-    address collateralAddress;
+    IStandardERC20 collateralToken;
     bytes32 priceFeedIdentifier;
     string syntheticName;
     string syntheticSymbol;
@@ -136,8 +140,10 @@ contract CreditLineCreator {
       'Token Beneficiary cannot be 0x00'
     );
 
-    constructorParams.tokenAddress = params.syntheticToken;
-    constructorParams.collateralAddress = params.collateralAddress;
+    constructorParams.syntheticToken = IMintableBurnableERC20(
+      address(params.syntheticToken)
+    );
+    constructorParams.collateralToken = params.collateralToken;
     constructorParams.priceFeedIdentifier = params.priceFeedIdentifier;
     constructorParams.minSponsorTokens = params.minSponsorTokens;
     constructorParams.excessTokenBeneficiary = params.excessTokenBeneficiary;
