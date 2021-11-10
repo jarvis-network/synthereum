@@ -10,12 +10,7 @@ import {ISynthereumRegistry} from './registries/interfaces/IRegistry.sol';
 import {ISynthereumManager} from './interfaces/IManager.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IDeploymentSignature} from './interfaces/IDeploymentSignature.sol';
-import {
-  ISynthereumPoolDeployment
-} from '../synthereum-pool/common/interfaces/IPoolDeployment.sol';
-import {
-  ISelfMintingDerivativeDeployment
-} from '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
+import {ISynthereumDeployment} from '../common/interfaces/IDeployment.sol';
 import {
   IAccessControlEnumerable
 } from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
@@ -112,7 +107,7 @@ contract SynthereumDeployer is
     override
     onlyMaintainer
     nonReentrant
-    returns (ISynthereumPoolDeployment pool)
+    returns (ISynthereumDeployment pool)
   {
     pool = _deployPool(getFactoryVersioning(), poolVersion, poolParamsData);
     checkPoolDeployment(pool, poolVersion);
@@ -140,7 +135,7 @@ contract SynthereumDeployer is
     override
     onlyMaintainer
     nonReentrant
-    returns (ISelfMintingDerivativeDeployment selfMintingDerivative)
+    returns (ISynthereumDeployment selfMintingDerivative)
   {
     ISynthereumFactoryVersioning factoryVersioning = getFactoryVersioning();
     selfMintingDerivative = _deploySelfMintingDerivative(
@@ -152,12 +147,12 @@ contract SynthereumDeployer is
       selfMintingDerivative,
       selfMintingDerVersion
     );
-    address tokenCurrency = address(selfMintingDerivative.tokenCurrency());
+    address tokenCurrency = address(selfMintingDerivative.syntheticToken());
     addSyntheticTokenRoles(tokenCurrency, address(selfMintingDerivative));
     ISynthereumRegistry selfMintingRegistry = getSelfMintingRegistry();
     selfMintingRegistry.register(
       selfMintingDerivative.syntheticTokenSymbol(),
-      selfMintingDerivative.collateralCurrency(),
+      selfMintingDerivative.syntheticToken(),
       selfMintingDerVersion,
       address(selfMintingDerivative)
     );
@@ -182,7 +177,7 @@ contract SynthereumDeployer is
     ISynthereumFactoryVersioning factoryVersioning,
     uint8 poolVersion,
     bytes memory poolParamsData
-  ) internal returns (ISynthereumPoolDeployment pool) {
+  ) internal returns (ISynthereumDeployment pool) {
     address poolFactory =
       factoryVersioning.getFactoryVersion(
         FactoryInterfaces.PoolFactory,
@@ -193,9 +188,7 @@ contract SynthereumDeployer is
         abi.encodePacked(getDeploymentSignature(poolFactory), poolParamsData),
         'Wrong pool deployment'
       );
-    pool = ISynthereumPoolDeployment(
-      abi.decode(poolDeploymentResult, (address))
-    );
+    pool = ISynthereumDeployment(abi.decode(poolDeploymentResult, (address)));
   }
 
   /**
@@ -209,7 +202,7 @@ contract SynthereumDeployer is
     ISynthereumFactoryVersioning factoryVersioning,
     uint8 selfMintingDerVersion,
     bytes calldata selfMintingDerParamsData
-  ) internal returns (ISelfMintingDerivativeDeployment selfMintingDerivative) {
+  ) internal returns (ISynthereumDeployment selfMintingDerivative) {
     address selfMintingDerFactory =
       factoryVersioning.getFactoryVersion(
         FactoryInterfaces.SelfMintingFactory,
@@ -223,7 +216,7 @@ contract SynthereumDeployer is
         ),
         'Wrong self-minting derivative deployment'
       );
-    selfMintingDerivative = ISelfMintingDerivativeDeployment(
+    selfMintingDerivative = ISynthereumDeployment(
       abi.decode(selfMintingDerDeploymentResult, (address))
     );
   }
@@ -232,7 +225,7 @@ contract SynthereumDeployer is
    * @notice Sets roles of the synthetic token contract to a pool
    * @param pool Pool contract
    */
-  function setSyntheticTokenRoles(ISynthereumPoolDeployment pool) internal {
+  function setSyntheticTokenRoles(ISynthereumDeployment pool) internal {
     address _pool = address(pool);
     IAccessControlEnumerable tokenCurrency =
       IAccessControlEnumerable(address(pool.syntheticToken()));
@@ -345,7 +338,7 @@ contract SynthereumDeployer is
    * @param pool Contract pool to check
    * @param version Pool version to check
    */
-  function checkPoolDeployment(ISynthereumPoolDeployment pool, uint8 version)
+  function checkPoolDeployment(ISynthereumDeployment pool, uint8 version)
     internal
     view
   {
@@ -362,7 +355,7 @@ contract SynthereumDeployer is
    * @param version Self minting derivative version to check
    */
   function checkSelfMintingDerivativeDeployment(
-    ISelfMintingDerivativeDeployment selfMintingDerivative,
+    ISynthereumDeployment selfMintingDerivative,
     uint8 version
   ) internal view {
     require(

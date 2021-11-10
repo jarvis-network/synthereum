@@ -6,9 +6,7 @@ import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {
   ISynthereumRegistry
 } from '../../../core/registries/interfaces/IRegistry.sol';
-import {
-  ICreditLineDerivativeDeployment
-} from './interfaces/ICreditLineDerivativeDeployment.sol';
+import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {
   ISynthereumFactoryVersioning
 } from '../../../core/interfaces/IFactoryVersioning.sol';
@@ -173,7 +171,7 @@ contract CreditLineController is
 
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       checkSelfMintingDerivativeRegistration(
-        ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
+        ICreditLine(selfMintingDerivatives[j])
       );
       _setOvercollateralization(
         selfMintingDerivatives[j],
@@ -195,8 +193,7 @@ contract CreditLineController is
       'Number of derivatives and mint cap amounts must be the same'
     );
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
-      ICreditLineDerivativeDeployment creditLineDerivative =
-        ICreditLineDerivativeDeployment(selfMintingDerivatives[j]);
+      ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
 
       checkSelfMintingDerivativeRegistration(creditLineDerivative);
       _setCapMintAmount(address(creditLineDerivative), capMintAmounts[j]);
@@ -214,8 +211,8 @@ contract CreditLineController is
       'Number of derivatives and  fee percentages must be the same'
     );
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ICreditLineDerivativeDeployment selfMintingDerivative =
-        ICreditLineDerivativeDeployment(selfMintingDerivatives[j]);
+      ICreditLine selfMintingDerivative =
+        ICreditLine(selfMintingDerivatives[j]);
       checkSelfMintingDerivativeRegistration(selfMintingDerivative);
       _setFeePercentage(address(selfMintingDerivative), feePercentages[j]);
     }
@@ -238,7 +235,7 @@ contract CreditLineController is
     // update each derivative fee parameters
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       checkSelfMintingDerivativeRegistration(
-        ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
+        ICreditLine(selfMintingDerivatives[j])
       );
       _setFeeRecipients(
         selfMintingDerivatives[j],
@@ -259,7 +256,7 @@ contract CreditLineController is
   ) external override onlyMaintainerOrSelfMintingFactory {
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       checkSelfMintingDerivativeRegistration(
-        ICreditLineDerivativeDeployment(selfMintingDerivatives[j])
+        ICreditLine(selfMintingDerivatives[j])
       );
       require(
         _liquidationRewards[j].isGreaterThan(0) &&
@@ -374,7 +371,7 @@ contract CreditLineController is
    * @param selfMintingDerivative Self-minting derivative contract
    */
   function checkSelfMintingDerivativeRegistration(
-    ICreditLineDerivativeDeployment selfMintingDerivative
+    ICreditLine selfMintingDerivative
   ) internal view {
     ISynthereumRegistry selfMintingRegistry =
       ISynthereumRegistry(
@@ -384,8 +381,8 @@ contract CreditLineController is
       );
     require(
       selfMintingRegistry.isDeployed(
-        selfMintingDerivative.tokenCurrencySymbol(),
-        selfMintingDerivative.collateralCurrency(),
+        selfMintingDerivative.syntheticTokenSymbol(),
+        selfMintingDerivative.collateralToken(),
         selfMintingDerivative.version(),
         address(selfMintingDerivative)
       ),

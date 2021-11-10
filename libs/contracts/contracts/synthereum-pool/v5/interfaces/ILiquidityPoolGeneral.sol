@@ -5,10 +5,10 @@ import {
   ISynthereumLiquidityPoolInteraction
 } from './ILiquidityPoolInteraction.sol';
 import {
-  ISynthereumPoolDeployment
-} from '../../common/interfaces/IPoolDeployment.sol';
+  ISynthereumDeployment
+} from '../../../common/interfaces/IDeployment.sol';
 
 interface ISynthereumLiquidityPoolGeneral is
-  ISynthereumPoolDeployment,
+  ISynthereumDeployment,
   ISynthereumLiquidityPoolInteraction
 {}

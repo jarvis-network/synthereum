@@ -10,14 +10,14 @@ import {
   BaseControlledMintableBurnableERC20
 } from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {
-  ICreditLineDerivativeDeployment
-} from './ICreditLineDerivativeDeployment.sol';
+  ISynthereumDeployment
+} from '../../../../common/interfaces/IDeployment.sol';
 import {
   IEmergencyShutdown
 } from '../../../../common/interfaces/IEmergencyShutdown.sol';
 import {ICreditLineStorage} from './ICreditLineStorage.sol';
 
-interface ICreditLine is IEmergencyShutdown, ICreditLineDerivativeDeployment {
+interface ICreditLine is IEmergencyShutdown, ISynthereumDeployment {
   /**
    * @notice Transfers `collateralAmount` into the caller's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
