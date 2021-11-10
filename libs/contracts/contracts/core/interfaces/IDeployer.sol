@@ -2,12 +2,7 @@
 pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  ISynthereumPoolDeployment
-} from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';
-import {
-  ISelfMintingDerivativeDeployment
-} from '../../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
+import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
 
 /**
  * @title Provides interface with functions of Synthereum deployer
@@ -21,7 +16,7 @@ interface ISynthereumDeployer {
    */
   function deployPool(uint8 poolVersion, bytes calldata poolParamsData)
     external
-    returns (ISynthereumPoolDeployment pool);
+    returns (ISynthereumDeployment pool);
 
   /**
    * @notice Deploy a new self minting derivative contract
@@ -32,5 +27,5 @@ interface ISynthereumDeployer {
   function deploySelfMintingDerivative(
     uint8 selfMintingDerVersion,
     bytes calldata selfMintingDerParamsData
-  ) external returns (ISelfMintingDerivativeDeployment selfMintingDerivative);
+  ) external returns (ISynthereumDeployment selfMintingDerivative);
 }

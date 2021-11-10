@@ -5,9 +5,7 @@ import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   ISynthereumRegistry
 } from '../../core/registries/interfaces/IRegistry.sol';
-import {
-  ISynthereumPoolDeployment
-} from '../../synthereum-pool/common/interfaces/IPoolDeployment.sol';
+import {ISynthereumDeployment} from '../../common/interfaces/IDeployment.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   ISynthereumChainlinkPriceFeed
@@ -85,7 +83,7 @@ contract SynthereumChainlinkPriceFeed is
             SynthereumInterfaces.PoolRegistry
           )
         );
-      ISynthereumPoolDeployment pool = ISynthereumPoolDeployment(msg.sender);
+      ISynthereumDeployment pool = ISynthereumDeployment(msg.sender);
       require(
         poolRegister.isDeployed(
           pool.syntheticTokenSymbol(),

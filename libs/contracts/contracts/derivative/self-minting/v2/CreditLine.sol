@@ -497,20 +497,15 @@ contract CreditLine is
     finder = positionManagerData.synthereumFinder;
   }
 
-  function tokenCurrency() external view override returns (IERC20 synthToken) {
+  function syntheticToken() external view override returns (IERC20 synthToken) {
     synthToken = positionManagerData.tokenCurrency;
   }
 
-  function collateralCurrency()
-    public
-    view
-    override
-    returns (IERC20 collateral)
-  {
+  function collateralToken() public view override returns (IERC20 collateral) {
     collateral = positionManagerData.collateralToken;
   }
 
-  function tokenCurrencySymbol()
+  function syntheticTokenSymbol()
     external
     view
     override
