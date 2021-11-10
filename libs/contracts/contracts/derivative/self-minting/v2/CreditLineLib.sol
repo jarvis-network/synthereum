@@ -5,8 +5,8 @@ import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
-  BaseControlledMintableBurnableERC20
-} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+  IMintableBurnableERC20
+} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
@@ -27,7 +27,7 @@ library CreditLineLib {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for IStandardERC20;
-  using SafeERC20 for BaseControlledMintableBurnableERC20;
+  using SafeERC20 for IMintableBurnableERC20;
   using CreditLineLib for ICreditLineStorage.PositionData;
   using CreditLineLib for ICreditLineStorage.PositionManagerData;
   using CreditLineLib for ICreditLineStorage.FeeStatus;
@@ -83,8 +83,8 @@ library CreditLineLib {
   function initialize(
     ICreditLineStorage.PositionManagerData storage self,
     ISynthereumFinder _finder,
-    address _collateralToken,
-    address _tokenCurrency,
+    IStandardERC20 _collateralToken,
+    IMintableBurnableERC20 _tokenCurrency,
     bytes32 _priceIdentifier,
     FixedPoint.Unsigned memory _minSponsorTokens,
     address _excessTokenBeneficiary,
@@ -100,17 +100,17 @@ library CreditLineLib {
       'Price identifier not supported'
     );
     require(
-      IStandardERC20(_collateralToken).decimals() <= 18,
+      _collateralToken.decimals() <= 18,
       'Collateral has more than 18 decimals'
     );
     require(
-      BaseControlledMintableBurnableERC20(_tokenCurrency).decimals() == 18,
+      _tokenCurrency.decimals() == 18,
       'Synthetic token has more or less than 18 decimals'
     );
     self.priceIdentifier = _priceIdentifier;
     self.synthereumFinder = _finder;
-    self.collateralToken = IStandardERC20(_collateralToken);
-    self.tokenCurrency = BaseControlledMintableBurnableERC20(_tokenCurrency);
+    self.collateralToken = _collateralToken;
+    self.tokenCurrency = _tokenCurrency;
     self.minSponsorTokens = _minSponsorTokens;
     self.excessTokenBeneficiary = _excessTokenBeneficiary;
     self.version = _version;

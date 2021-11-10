@@ -5,8 +5,8 @@ import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
-  BaseControlledMintableBurnableERC20
-} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+  IMintableBurnableERC20
+} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
@@ -28,7 +28,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
-  using SafeERC20 for BaseControlledMintableBurnableERC20;
+  using SafeERC20 for IMintableBurnableERC20;
   using CreditLineLib for PositionData;
   using CreditLineLib for PositionManagerData;
 
@@ -135,8 +135,8 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
   constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
     positionManagerData.initialize(
       _positionManagerData.synthereumFinder,
-      _positionManagerData.collateralAddress,
-      _positionManagerData.tokenAddress,
+      _positionManagerData.collateralToken,
+      _positionManagerData.syntheticToken,
       _positionManagerData.priceFeedIdentifier,
       _positionManagerData.minSponsorTokens,
       _positionManagerData.excessTokenBeneficiary,

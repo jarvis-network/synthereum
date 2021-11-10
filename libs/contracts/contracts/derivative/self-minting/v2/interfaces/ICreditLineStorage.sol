@@ -7,8 +7,8 @@ import {
 import {ISynthereumFinder} from '../../../../core/interfaces/IFinder.sol';
 import {IStandardERC20} from '../../../../base/interfaces/IStandardERC20.sol';
 import {
-  BaseControlledMintableBurnableERC20
-} from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+  IMintableBurnableERC20
+} from '../../../../tokens/interfaces/IMintableBurnableERC20.sol';
 
 interface ICreditLineStorage {
   // Describe fee structure
@@ -51,7 +51,7 @@ interface ICreditLineStorage {
     // Collateral token
     IStandardERC20 collateralToken;
     // Synthetic token created by this contract.
-    BaseControlledMintableBurnableERC20 tokenCurrency;
+    IMintableBurnableERC20 tokenCurrency;
     // Unique identifier for DVM price feed ticker.
     bytes32 priceIdentifier;
     // Minimum number of tokens in a sponsor's position.
@@ -84,8 +84,8 @@ interface ICreditLineStorage {
    * @param synthereumFinder The SynthereumFinder contract
    */
   struct PositionManagerParams {
-    address collateralAddress;
-    address tokenAddress;
+    IStandardERC20 collateralToken;
+    IMintableBurnableERC20 syntheticToken;
     bytes32 priceFeedIdentifier;
     FixedPoint.Unsigned minSponsorTokens;
     address excessTokenBeneficiary;
