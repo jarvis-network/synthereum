@@ -36,6 +36,29 @@ contract SynthereumLiquidityPool is
   using SynthereumLiquidityPoolLib for Storage;
   using SynthereumLiquidityPoolLib for Liquidation;
 
+  struct ConstructorParams {
+    // Synthereum finder
+    ISynthereumFinder finder;
+    // Synthereum pool version
+    uint8 version;
+    // ERC20 collateral token
+    IStandardERC20 collateralToken;
+    // ERC20 synthetic token
+    IMintableBurnableERC20 syntheticToken;
+    // The addresses of admin, maintainer, liquidity provider
+    Roles roles;
+    // Overcollateralization percentage
+    uint256 overCollateralization;
+    // The feeData structure
+    FeeData feeData;
+    // Identifier of price to be used in the price feed
+    bytes32 priceIdentifier;
+    // Percentage of overcollateralization to which a liquidation can triggered
+    uint256 collateralRequirement;
+    // Percentage of reward for correct liquidation by a liquidator
+    uint256 liquidationReward;
+  }
+
   //----------------------------------------
   // Constants
   //----------------------------------------
@@ -181,50 +204,30 @@ contract SynthereumLiquidityPool is
 
   /**
    * @notice Constructor of liquidity pool
-   * @param _finder The Synthereum finder
-   * @param _version Synthereum version
-   * @param _collateralToken ERC20 collateral token
-   * @param _syntheticToken ERC20 synthetic token
-   * @param _roles The addresses of admin, maintainer, liquidity provider and validator
-   * @param _overCollateralization Overcollateralization percentage
-   * @param _feeData The feeData structure
-   * @param _priceIdentifier Identifier of price to be used in the price feed
-   * @param _collateralRequirement Percentage of overcollateralization to which a liquidation can triggered
-   * @param _liquidationReward Percentage of reward for correct liquidation by a liquidator
+
    */
-  constructor(
-    ISynthereumFinder _finder,
-    uint8 _version,
-    IStandardERC20 _collateralToken,
-    IMintableBurnableERC20 _syntheticToken,
-    Roles memory _roles,
-    uint256 _overCollateralization,
-    FeeData memory _feeData,
-    bytes32 _priceIdentifier,
-    uint256 _collateralRequirement,
-    uint256 _liquidationReward
-  ) nonReentrant {
+  constructor(ConstructorParams memory params) nonReentrant {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(LIQUIDITY_PROVIDER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
-    _setupRole(LIQUIDITY_PROVIDER_ROLE, _roles.liquidityProvider);
+    _setupRole(DEFAULT_ADMIN_ROLE, params.roles.admin);
+    _setupRole(MAINTAINER_ROLE, params.roles.maintainer);
+    _setupRole(LIQUIDITY_PROVIDER_ROLE, params.roles.liquidityProvider);
     poolStorage.initialize(
       liquidationData,
-      _finder,
-      _version,
-      _collateralToken,
-      _syntheticToken,
-      FixedPoint.Unsigned(_overCollateralization),
-      _priceIdentifier,
-      FixedPoint.Unsigned(_collateralRequirement),
-      FixedPoint.Unsigned(_liquidationReward)
+      params.finder,
+      params.version,
+      params.collateralToken,
+      params.syntheticToken,
+      FixedPoint.Unsigned(params.overCollateralization),
+      params.priceIdentifier,
+      FixedPoint.Unsigned(params.collateralRequirement),
+      FixedPoint.Unsigned(params.liquidationReward)
     );
-    poolStorage.setFeePercentage(_feeData.feePercentage);
+    poolStorage.setFeePercentage(params.feeData.feePercentage);
     poolStorage.setFeeRecipients(
-      _feeData.feeRecipients,
-      _feeData.feeProportions
+      params.feeData.feeRecipients,
+      params.feeData.feeProportions
     );
   }
 
