@@ -182,17 +182,11 @@ library CreditLineLib {
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
 
-    bool hasExtraCollateral = collateralAmount.isGreaterThan(feeAmount);
-    FixedPoint.Unsigned memory netCollateralAmount =
-      hasExtraCollateral
-        ? collateralAmount.sub(feeAmount)
-        : feeAmount.sub(collateralAmount);
-
     if (positionData.tokensOutstanding.isEqual(0)) {
       require(
         _checkCollateralization(
           positionManagerData,
-          netCollateralAmount,
+          collateralAmount.sub(feeAmount),
           numTokens
         ),
         'Insufficient Collateral'
@@ -206,9 +200,7 @@ library CreditLineLib {
       require(
         _checkCollateralization(
           positionManagerData,
-          hasExtraCollateral
-            ? positionData.rawCollateral.add(netCollateralAmount)
-            : positionData.rawCollateral.sub(netCollateralAmount),
+          positionData.rawCollateral.add(collateralAmount).sub(feeAmount),
           positionData.tokensOutstanding.add(numTokens)
         ),
         'Insufficient Collateral'
@@ -216,14 +208,14 @@ library CreditLineLib {
     }
 
     // Increase or decrease the position and global collateral balance by collateral amount or fee amount.
-    hasExtraCollateral
+    collateralAmount.isGreaterThanOrEqual(feeAmount)
       ? positionData._incrementCollateralBalances(
         globalPositionData,
-        netCollateralAmount
+        collateralAmount.sub(feeAmount)
       )
       : positionData._decrementCollateralBalances(
         globalPositionData,
-        netCollateralAmount
+        feeAmount.sub(collateralAmount)
       );
 
     // Add the number of tokens created to the position's outstanding tokens and global.
@@ -254,7 +246,7 @@ library CreditLineLib {
 
     emit PositionCreated(
       msg.sender,
-      netCollateralAmount.rawValue,
+      collateralAmount.rawValue,
       numTokens.rawValue,
       feeAmount.rawValue
     );
