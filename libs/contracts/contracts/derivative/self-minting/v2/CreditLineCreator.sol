@@ -13,19 +13,12 @@ import {
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
 import {CreditLine} from './CreditLine.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
- * @title Self-Minting Perpetual Contract creator.
- * @notice Factory contract to create and register new instances of self-minting perpetual contracts.
- * Responsible for constraining the parameters used to construct a new self-minting perpetual. This creator contains a number of constraints
- * that are applied to newly created  contracts. These constraints can evolve over time and are
- * initially constrained to conservative values in this first iteration. Technically there is nothing in the
- * Perpetual contract requiring these constraints. However, because `createPerpetual()` is intended
- * to be the only way to create valid financial contracts that are registered with the DVM (via _registerContract),
-  we can enforce deployment configurations here.
+ * @title Self-Minting Contract creator.
+ * @notice Factory contract to create new self-minting derivative
  */
-contract CreditLineCreator is Lockable {
+contract CreditLineCreator {
   using FixedPoint for FixedPoint.Unsigned;
 
   struct Params {
@@ -50,8 +43,9 @@ contract CreditLineCreator is Lockable {
   //----------------------------------------
   // Events
   //----------------------------------------
-  event CreatedPerpetual(
-    address indexed perpetualAddress,
+  event CreatedSelfMintingDerivative(
+    address indexed selfMintingAddress,
+    uint8 indexed version,
     address indexed deployerAddress
   );
 
@@ -63,7 +57,7 @@ contract CreditLineCreator is Lockable {
    * @notice Constructs the Perpetual contract.
    * @param _synthereumFinder Synthereum Finder address used to discover other contracts
    */
-  constructor(address _synthereumFinder) nonReentrant() {
+  constructor(address _synthereumFinder) {
     synthereumFinder = ISynthereumFinder(_synthereumFinder);
   }
 
@@ -72,15 +66,14 @@ contract CreditLineCreator is Lockable {
   //----------------------------------------
 
   /**
-   * @notice Creates an instance of perpetual and registers it within the registry.
-   * @param params is a `ConstructorParams` object from Perpetual.
+   * @notice Creates an instance of creditLine
+   * @param params is a `ConstructorParams` object from creditLine.
    * @return creditLine address of the deployed contract.
    */
-  function createPerpetual(Params calldata params)
+  function createSelfMintingDerivative(Params calldata params)
     public
     virtual
-    nonReentrant()
-    returns (address creditLine)
+    returns (CreditLine creditLine)
   {
     // Create a new synthetic token using the params.
     require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
@@ -110,40 +103,40 @@ contract CreditLineCreator is Lockable {
       'Decimals of synthetic token must be 18'
     );
 
-    creditLine = address(new CreditLine(_convertParams(params), params.roles));
+    creditLine = new CreditLine(_convertParams(params), params.roles);
 
     _setControllerValues(
-      creditLine,
+      address(creditLine),
       params.fee,
       params.liquidationPercentage,
       params.capMintAmount,
       params.overCollateralization
     );
 
-    emit CreatedPerpetual(creditLine, msg.sender);
+    emit CreatedSelfMintingDerivative(
+      address(creditLine),
+      params.version,
+      msg.sender
+    );
   }
 
   //----------------------------------------
   // Internal functions
   //----------------------------------------
 
-  // Converts createPerpetual params to Perpetual constructor params.
+  // Converts createPerpetual params to constructor params.
   function _convertParams(Params calldata params)
     internal
     view
     returns (CreditLine.PositionManagerParams memory constructorParams)
   {
-    // Known from creator deployment.
-
     constructorParams.synthereumFinder = synthereumFinder;
 
-    // Enforce configuration constraints.
     require(
       params.excessTokenBeneficiary != address(0),
       'Token Beneficiary cannot be 0x00'
     );
 
-    // Input from function call.
     constructorParams.tokenAddress = params.syntheticToken;
     constructorParams.collateralAddress = params.collateralAddress;
     constructorParams.priceFeedIdentifier = params.priceFeedIdentifier;
