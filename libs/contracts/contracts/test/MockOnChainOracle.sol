@@ -14,4 +14,8 @@ contract MockOnChainOracle {
   function setPrice(bytes32 identifier, uint256 price) external {
     idToPrice[identifier] = price;
   }
+
+  function isPriceSupported(bytes32 identifier) external view returns (bool) {
+    return idToPrice[identifier] > 0;
+  }
 }

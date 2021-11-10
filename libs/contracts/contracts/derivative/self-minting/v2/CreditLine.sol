@@ -133,21 +133,15 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
   //----------------------------------------
 
   constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
-    positionManagerData.synthereumFinder = _positionManagerData
-      .synthereumFinder;
-    positionManagerData.collateralToken = IStandardERC20(
-      _positionManagerData.collateralAddress
+    positionManagerData.initialize(
+      _positionManagerData.synthereumFinder,
+      _positionManagerData.collateralAddress,
+      _positionManagerData.tokenAddress,
+      _positionManagerData.priceFeedIdentifier,
+      _positionManagerData.minSponsorTokens,
+      _positionManagerData.excessTokenBeneficiary,
+      _positionManagerData.version
     );
-    positionManagerData.tokenCurrency = BaseControlledMintableBurnableERC20(
-      _positionManagerData.tokenAddress
-    );
-    positionManagerData.minSponsorTokens = _positionManagerData
-      .minSponsorTokens;
-    positionManagerData.priceIdentifier = _positionManagerData
-      .priceFeedIdentifier;
-    positionManagerData.excessTokenBeneficiary = _positionManagerData
-      .excessTokenBeneficiary;
-    positionManagerData.version = _positionManagerData.version;
   }
 
   //----------------------------------------
