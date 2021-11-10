@@ -212,7 +212,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
 
-    creditLine = await CreditLine.new(creditLineParams, roles, {
+    creditLine = await CreditLine.new(creditLineParams, {
       from: contractDeployer,
     });
     creditLineControllerInstance = await CreditLineControllerMock.new();

@@ -19,20 +19,12 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
-import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title
  * @notice
  */
-contract CreditLine is
-  AccessControlEnumerable,
-  ICreditLine,
-  ICreditLineStorage,
-  Lockable
-{
+contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
   using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
@@ -140,17 +132,7 @@ contract CreditLine is
   // Constructor
   //----------------------------------------
 
-  constructor(
-    PositionManagerParams memory _positionManagerData,
-    Roles memory _roles
-  ) nonReentrant {
-    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    for (uint256 i = 0; i < _roles.maintainers.length; i++) {
-      _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);
-    }
-
+  constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
     positionManagerData.synthereumFinder = _positionManagerData
       .synthereumFinder;
     positionManagerData.collateralToken = IStandardERC20(

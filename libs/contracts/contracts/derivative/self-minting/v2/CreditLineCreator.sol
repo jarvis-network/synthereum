@@ -28,7 +28,6 @@ contract CreditLineCreator {
     string syntheticSymbol;
     address syntheticToken;
     ICreditLineStorage.Fee fee;
-    ICreditLineStorage.Roles roles;
     uint256 liquidationPercentage;
     uint256 capMintAmount;
     uint256 overCollateralization;
@@ -103,7 +102,7 @@ contract CreditLineCreator {
       'Decimals of synthetic token must be 18'
     );
 
-    creditLine = new CreditLine(_convertParams(params), params.roles);
+    creditLine = new CreditLine(_convertParams(params));
 
     _setControllerValues(
       address(creditLine),

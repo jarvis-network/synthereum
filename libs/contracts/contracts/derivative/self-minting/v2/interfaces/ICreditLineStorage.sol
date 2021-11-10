@@ -11,12 +11,6 @@ import {
 } from '../../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 
 interface ICreditLineStorage {
-  // Describe role structure
-  struct Roles {
-    address admin;
-    address[] maintainers;
-  }
-
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and exchanges tokens
@@ -94,7 +88,7 @@ interface ICreditLineStorage {
     address tokenAddress;
     bytes32 priceFeedIdentifier;
     FixedPoint.Unsigned minSponsorTokens;
-    address excessTokenBeneficiary; // TODO
+    address excessTokenBeneficiary;
     uint8 version;
     ISynthereumFinder synthereumFinder;
   }
