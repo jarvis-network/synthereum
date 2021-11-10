@@ -37,15 +37,12 @@ abstract contract MintableBurnableTokenFactory is Lockable {
       );
     uint256 numberOfFactories =
       factoryVersioning.numberOfVerisonsOfFactory(
-        FactoryInterfaces.DerivativeFactory
+        FactoryInterfaces.PoolFactory
       );
     uint256 counter = 0;
     for (uint8 i = 0; counter < numberOfFactories; i++) {
       try
-        factoryVersioning.getFactoryVersion(
-          FactoryInterfaces.DerivativeFactory,
-          i
-        )
+        factoryVersioning.getFactoryVersion(FactoryInterfaces.PoolFactory, i)
       returns (address factory) {
         if (msg.sender == factory) {
           _;
@@ -56,7 +53,7 @@ abstract contract MintableBurnableTokenFactory is Lockable {
       } catch {}
     }
     if (numberOfFactories == counter) {
-      revert('Sender must be a derivative factory');
+      revert('Sender must be a Pool factory');
     }
   }
 

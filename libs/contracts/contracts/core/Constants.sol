@@ -17,6 +17,5 @@ library SynthereumInterfaces {
 
 library FactoryInterfaces {
   bytes32 public constant PoolFactory = 'PoolFactory';
-  bytes32 public constant DerivativeFactory = 'DerivativeFactory';
   bytes32 public constant SelfMintingFactory = 'SelfMintingFactory';
 }
