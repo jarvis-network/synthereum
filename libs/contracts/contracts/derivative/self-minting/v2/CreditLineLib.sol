@@ -80,6 +80,42 @@ library CreditLineLib {
   // External functions
   //----------------------------------------
 
+  function initialize(
+    ICreditLineStorage.PositionManagerData storage self,
+    ISynthereumFinder _finder,
+    address _collateralToken,
+    address _tokenCurrency,
+    bytes32 _priceIdentifier,
+    FixedPoint.Unsigned memory _minSponsorTokens,
+    address _excessTokenBeneficiary,
+    uint8 _version
+  ) external {
+    ISynthereumPriceFeed priceFeed =
+      ISynthereumPriceFeed(
+        _finder.getImplementationAddress(SynthereumInterfaces.PriceFeed)
+      );
+
+    require(
+      priceFeed.isPriceSupported(_priceIdentifier),
+      'Price identifier not supported'
+    );
+    require(
+      IStandardERC20(_collateralToken).decimals() <= 18,
+      'Collateral has more than 18 decimals'
+    );
+    require(
+      BaseControlledMintableBurnableERC20(_tokenCurrency).decimals() == 18,
+      'Synthetic token has more or less than 18 decimals'
+    );
+    self.priceIdentifier = _priceIdentifier;
+    self.synthereumFinder = _finder;
+    self.collateralToken = IStandardERC20(_collateralToken);
+    self.tokenCurrency = BaseControlledMintableBurnableERC20(_tokenCurrency);
+    self.minSponsorTokens = _minSponsorTokens;
+    self.excessTokenBeneficiary = _excessTokenBeneficiary;
+    self.version = _version;
+  }
+
   function depositTo(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
@@ -421,7 +457,6 @@ library CreditLineLib {
         executeLiquidationData.collateralValueLiquidatedTokens,
         positionToLiquidate.rawCollateral
       );
-      executeLiquidationData.liquidatorReward = FixedPoint.Unsigned(0);
     }
 
     // reduce position
