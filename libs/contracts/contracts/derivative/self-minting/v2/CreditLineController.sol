@@ -318,6 +318,7 @@ contract CreditLineController is
     address selfMintingDerivative,
     uint256 percentage
   ) internal {
+    require(percentage > 1, 'Overcollateralisation must be bigger than 100%');
     overCollateralizationPercentage[selfMintingDerivative] = FixedPoint
       .Unsigned(percentage);
     emit SetOvercollateralization(selfMintingDerivative, percentage);
