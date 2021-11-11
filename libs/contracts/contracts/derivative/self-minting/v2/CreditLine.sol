@@ -46,9 +46,6 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
   mapping(address => PositionData) public positions;
   // uint256 tokenSponsorsCount; // each new token sponsor will be identified with an incremental uint
 
-  // Liquidations are unique by ID per sponsor
-  mapping(address => LiquidationData[]) public liquidations;
-
   GlobalPositionData public globalPositionData;
 
   PositionManagerData public positionManagerData;
@@ -285,17 +282,6 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
       FixedPoint.Unsigned(maxTokensToLiquidate)
     );
 
-    // store new liquidation
-    liquidations[sponsor].push(
-      LiquidationData(
-        sponsor,
-        msg.sender,
-        block.timestamp,
-        tokensLiquidated,
-        collateralLiquidated
-      )
-    );
-
     emit Liquidation(
       sponsor,
       msg.sender,
@@ -369,30 +355,6 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
         positionData.rawCollateral,
         positionData.tokensOutstanding
       );
-  }
-
-  function getLiquidations(address sponsor)
-    external
-    view
-    override
-    nonReentrantView()
-    returns (LiquidationData[] memory liquidationData)
-  {
-    liquidationData = liquidations[sponsor];
-  }
-
-  function getLiquidationData(address sponsor, uint256 liquidationId)
-    external
-    view
-    override
-    nonReentrantView()
-    returns (LiquidationData memory liquidation)
-  {
-    LiquidationData[] memory liquidationArray = liquidations[sponsor];
-    // Revert if the caller is attempting to access an invalid liquidation
-    // (one that has never been created or one has never been initialized).
-    require(liquidationId < liquidationArray.length, 'Invalid liquidation ID');
-    liquidation = liquidationArray[liquidationId];
   }
 
   function getCapMintAmount() external view override returns (uint256 capMint) {

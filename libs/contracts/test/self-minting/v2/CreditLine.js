@@ -1407,29 +1407,6 @@ contract('Synthereum CreditLine ', function (accounts) {
         );
       });
 
-      // liquidation data struct check
-      let liqData = await creditLine.getLiquidationData.call(
-        sponsor,
-        toBN(toWei('0')),
-      );
-      assert.equal(liqData.sponsor, sponsor);
-      assert.equal(liqData.liquidator, other);
-      assert.equal(
-        liqData.numTokensBurnt.toString(),
-        liquidationTokens.toString(),
-      );
-      assert.equal(
-        liqData.liquidatedCollateral.toString(),
-        expectedLiquidatedCollateral.toString(),
-      );
-
-      let liqDataArr = await creditLine.getLiquidations.call(sponsor);
-      assert.deepEqual(liqData, liqDataArr[0]);
-
-      await truffleAssert.reverts(
-        creditLine.getLiquidationData.call(sponsor, toBN(toWei('2'))),
-        'Invalid liquidation ID',
-      );
       // check balances
       let liquidatorCollateralBalanceAfter = await collateral.balanceOf.call(
         other,
