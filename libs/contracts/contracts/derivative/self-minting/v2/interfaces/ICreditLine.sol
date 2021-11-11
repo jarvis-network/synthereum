@@ -116,27 +116,6 @@ interface ICreditLine is IEmergencyShutdown, ISynthereumDeployment {
   function isCollateralised(address sponsor) external view returns (bool);
 
   /**
-   * @notice Gets an array of liquidations performed on a token sponsor
-   * @param sponsor address of the TokenSponsor.
-   * @return liquidationData An array of data for all liquidations performed on a token sponsor
-   */
-  function getLiquidations(address sponsor)
-    external
-    view
-    returns (ICreditLineStorage.LiquidationData[] memory liquidationData);
-
-  /**
-   * @notice Gets liquidation data of a specific id
-   * @param sponsor address of the TokenSponsor.
-   * @param liquidationId where id is the position of the liquidations array.
-   * @return liquidation Struct representing liquidation data.
-   */
-  function getLiquidationData(address sponsor, uint256 liquidationId)
-    external
-    view
-    returns (ICreditLineStorage.LiquidationData memory liquidation);
-
-  /**
    * @notice Returns the cap mint amount of the derivative contract
    * @return capMint cap mint amount
    */
