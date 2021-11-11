@@ -40,6 +40,8 @@ import '../core/interfaces/IDeploymentSignature.sol';
 import '../core/interfaces/IDeployer.sol';
 import '../core/Constants.sol';
 import '../core/Deployer.sol';
+import '../core/CollateralWhitelist.sol';
+import '../core/interfaces/ICollateralWhitelist.sol';
 import '../core/registries/SelfMintingRegistry.sol';
 import '../core/registries/interfaces/IRegistry.sol';
 import '../core/registries/Registry.sol';
