@@ -12,8 +12,7 @@ import {
   formatWalletAddress,
   usePrettyName,
   useAuth,
-  useBehaviorSubject,
-  useCoreObservables,
+  useWeb3,
 } from '@jarvis-network/app-toolkit';
 
 import { setTheme } from '@/state/slices/theme';
@@ -51,10 +50,10 @@ const noop = () => undefined;
 
 const render = (): JSX.Element => {
   const dispatch = useDispatch();
-  const auth = useReduxSelector(state => state.auth);
+  const { account: address, chainId: networkId } = useWeb3();
   const isApplicationReady = useReduxSelector(isAppReadySelector);
   const { logout } = useAuth();
-  const name = usePrettyName((auth?.address ?? null) as Address | null);
+  const name = usePrettyName((address ?? null) as Address | null);
   const [isSigningOut, setSigningOut] = useState(false);
   const { innerWidth } = useWindowSize();
   const notify = useExchangeNotifications();
@@ -68,8 +67,7 @@ const render = (): JSX.Element => {
     setSigningOut(true);
   };
 
-  const networkId = useBehaviorSubject(useCoreObservables().networkId$);
-  const mode = auth
+  const mode = networkId
     ? networkId === Network.mainnet
       ? 'real'
       : isSupportedNetwork(networkId)
@@ -79,6 +77,10 @@ const render = (): JSX.Element => {
 
   const handleSetTheme = (theme: State['theme']) => {
     dispatch(setTheme({ theme }));
+  };
+
+  const handleAccountOverviewOpen = () => {
+    dispatch(setAccountOverviewModalVisible(true));
   };
 
   useEffect(() => {
@@ -92,15 +94,13 @@ const render = (): JSX.Element => {
         });
       }, 1000);
     }
-  }, [isSigningOut]);
+  }, [isSigningOut, notify]);
 
   const links = [
     {
       name: 'Account',
       key: 'Account',
-      onClick() {
-        dispatch(setAccountOverviewModalVisible(true));
-      },
+      onClick: handleAccountOverviewOpen,
     },
   ];
 
@@ -120,12 +120,12 @@ const render = (): JSX.Element => {
       return 'Signing out...';
     }
 
-    return auth ? formatWalletAddress(auth.address) : undefined;
+    return address ? formatWalletAddress(address) : undefined;
   };
 
   const image = useMemo(
-    () => (auth && !isSigningOut ? avatar(auth.address) : undefined),
-    [auth, isSigningOut],
+    () => (address && !isSigningOut ? avatar(address) : undefined),
+    [address, isSigningOut],
   );
 
   const content = isApplicationReady ? (

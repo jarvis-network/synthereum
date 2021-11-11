@@ -1,10 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { ExchangeSynthereumToken } from '@jarvis-network/synthereum-ts/dist/config';
+import {
+  networkSwitchAction,
+  addressSwitchAction,
+  logoutAction,
+} from '@jarvis-network/app-toolkit';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 
-import { logoutAction, addressSwitch, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 
 interface Action<T> {
@@ -38,6 +42,10 @@ export const fetchWalletBalances = createAsyncThunk<
 
 const initialState = initialAppState.wallet;
 
+function resetState() {
+  return initialState;
+}
+
 const walletSlice = createSlice({
   name: 'wallet',
   initialState,
@@ -51,15 +59,9 @@ const walletSlice = createSlice({
         state[asset] = value;
       });
     },
-    [logoutAction.type]() {
-      return initialState;
-    },
-    [addressSwitch.type]() {
-      return initialState;
-    },
-    [networkSwitch.type]() {
-      return initialState;
-    },
+    [logoutAction.type]: resetState,
+    [addressSwitchAction.type]: resetState,
+    [networkSwitchAction.type]: resetState,
   },
 });
 

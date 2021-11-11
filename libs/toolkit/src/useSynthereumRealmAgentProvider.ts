@@ -11,22 +11,15 @@ import { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent'
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 import { PoolsForVersion } from '@jarvis-network/synthereum-ts/dist/core/types/pools';
 import type { BehaviorSubject } from 'rxjs';
-import type Web3 from 'web3';
 import { PoolVersion } from '@jarvis-network/synthereum-ts/dist/config';
+
+import { useWeb3 } from './auth/useWeb3';
 
 export function useSynthereumRealmAgentProvider(
   poolVersion: PoolVersion,
-  store: {
-    getState(): { auth: { address: string } | null };
-    subscribe(callback: () => void): () => void;
-  },
   {
-    web3$,
-    networkId$,
     synthereumRealmAgent$,
   }: {
-    web3$: BehaviorSubject<Web3 | null>;
-    networkId$: BehaviorSubject<number>;
     synthereumRealmAgent$: BehaviorSubject<RealmAgent | null>;
   },
 ): void {
@@ -39,73 +32,36 @@ export function useSynthereumRealmAgentProvider(
     }
   >({});
 
-  const web3Ref = useRef(web3$.value);
-  const networkIdRef = useRef(networkId$.value);
-  const addressRef = useRef('');
-  function provide(canceledRef: { canceled: boolean }, tries = 1) {
-    const web3 = web3Ref.current;
-    const networkId = networkIdRef.current;
-    const address = addressRef.current;
+  const { account: address, chainId: networkId, library: web3 } = useWeb3();
 
+  useEffect(() => {
     if (!web3 || !address || !isSupportedNetwork(networkId)) {
       synthereumRealmAgent$.next(null);
       return;
     }
 
+    let canceled = false;
+
     loadRealm(web3 as Web3On<SupportedNetworkName>, networkId, {
       [poolVersion]: poolsRef.current[networkId] || null,
-    })
-      .then(realm => {
-        if (canceledRef.canceled) return;
-        poolsRef.current[networkId] = assertNotNull(
-          realm.pools![poolVersion],
-          'realm.pools[poolVersion] is null',
-        );
-        synthereumRealmAgent$.next(
-          new RealmAgent(
-            realm,
-            address as AddressOn<SupportedNetworkName>,
-            poolVersion as PoolVersion,
-          ),
-        );
-      })
-      .catch(reason => {
-        if (canceledRef.canceled) return;
-        // TODO: Try to fix after changing to web3-react. Throws when the network is being changed while loadRealm is running.
-        if (tries === 5) throw reason;
-        setTimeout(() => {
-          if (canceledRef.canceled) return;
-          provide(canceledRef, tries + 1);
-        }, 100);
-      });
-  }
-
-  useEffect(() => {
-    const canceledRef = { canceled: false };
-    provide(canceledRef);
-
-    const web3$subscription = web3$.subscribe(value => {
-      web3Ref.current = value;
-      provide(canceledRef);
-    });
-
-    const networkId$subscription = networkId$.subscribe(value => {
-      networkIdRef.current = value;
-      provide(canceledRef);
-    });
-
-    const unsubscribe = store.subscribe(() => {
-      const address = store.getState().auth?.address || '';
-      if (addressRef.current === address) return;
-      addressRef.current = address;
-      provide(canceledRef);
+    }).then(realm => {
+      if (canceled) return;
+      poolsRef.current[networkId] = assertNotNull(
+        realm.pools[poolVersion],
+        'realm.pools[poolVersion] is null',
+      );
+      synthereumRealmAgent$.next(
+        new RealmAgent(
+          realm,
+          address as AddressOn<SupportedNetworkName>,
+          poolVersion,
+        ),
+      );
     });
 
     return () => {
-      web3$subscription.unsubscribe();
-      networkId$subscription.unsubscribe();
-      unsubscribe();
-      canceledRef.canceled = true;
+      canceled = true;
+      synthereumRealmAgent$.next(null);
     };
-  }, [web3$, networkId$, store]);
+  }, [poolVersion, synthereumRealmAgent$, web3, address, networkId]);
 }

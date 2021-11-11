@@ -232,7 +232,6 @@ export const ExchangeCard: React.FC = () => {
   const dispatch = useDispatch();
   const list = useReduxSelector(state => state.assets.list);
   const wallet = useReduxSelector(state => state.wallet);
-  const auth = useReduxSelector(state => state.auth);
   const isApplicationReady = useReduxSelector(isAppReadySelector);
   const isExchangeConfirmationVisible = useReduxSelector(
     state => state.app.isExchangeConfirmationVisible,
@@ -379,11 +378,7 @@ export const ExchangeCard: React.FC = () => {
 
     const isAssetPriceLoaded = assetPay?.price && assetReceive?.price;
 
-    if (!auth) {
-      return isAssetPriceLoaded;
-    }
-
-    return isAssetPriceLoaded && paySymbol && wallet[paySymbol];
+    return isAssetPriceLoaded && paySymbol && wallet[paySymbol as 'jEUR'];
   };
 
   const getContent = () => {

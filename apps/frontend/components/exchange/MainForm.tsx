@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
-import { formatExchangeAmount } from '@jarvis-network/app-toolkit';
+import { formatExchangeAmount, useWeb3 } from '@jarvis-network/app-toolkit';
 
 import { State } from '@/state/initialState';
 import {
@@ -160,7 +160,7 @@ export const MainForm: React.FC = () => {
     state => state.app.isSwapLoaderVisible,
   );
 
-  const auth = useReduxSelector(state => state.auth);
+  const { active } = useWeb3();
 
   const wallet = useReduxSelector(
     state => (paySymbol && state.wallet[paySymbol]) || null,
@@ -200,7 +200,7 @@ export const MainForm: React.FC = () => {
       return true;
     }
 
-    if (!auth) {
+    if (!active) {
       return false;
     }
 
@@ -208,7 +208,7 @@ export const MainForm: React.FC = () => {
   };
 
   const handleSwapButtonClick = () => {
-    if (!auth) {
+    if (!active) {
       return dispatch(setAuthModalVisible(true));
     }
 
@@ -220,7 +220,7 @@ export const MainForm: React.FC = () => {
       return <Loader size="s" color={theme.text.secondary} />;
     }
 
-    return auth ? 'Swap' : 'Sign in';
+    return active ? 'Swap' : 'Sign in';
   };
 
   const getFormattedPay = () => {

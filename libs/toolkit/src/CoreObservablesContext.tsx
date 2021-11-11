@@ -1,20 +1,13 @@
 import React, { createContext, useContext } from 'react';
-import type Onboard from 'bnc-onboard';
 import { BehaviorSubject } from 'rxjs';
-import type Web3 from 'web3';
 import type { RealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realm-agent';
 import type { SelfMintingRealmAgent } from '@jarvis-network/synthereum-ts/dist/core/realms/self-minting/agent';
 
-import type { ENSHelper } from './ens';
 import { useConstant } from './useConstant';
 
 type Context = {
-  onboard$: BehaviorSubject<ReturnType<typeof Onboard> | null>;
-  web3$: BehaviorSubject<Web3 | null>;
-  ens$: BehaviorSubject<ENSHelper | null>;
   synthereumRealmAgent$: BehaviorSubject<RealmAgent | null>;
   selfMintingRealmAgent$: BehaviorSubject<SelfMintingRealmAgent | null>;
-  networkId$: BehaviorSubject<number>;
 };
 
 const CoreObservablesContext = createContext<Context | null>(null);
@@ -36,13 +29,9 @@ export function useCoreObservables(): Context {
 
 export function useSubjects(): Context {
   return useConstant(() => ({
-    web3$: new BehaviorSubject<Web3 | null>(null),
-    ens$: new BehaviorSubject<ENSHelper | null>(null),
-    onboard$: new BehaviorSubject<ReturnType<typeof Onboard> | null>(null),
     synthereumRealmAgent$: new BehaviorSubject<RealmAgent | null>(null),
     selfMintingRealmAgent$: new BehaviorSubject<SelfMintingRealmAgent | null>(
       null,
     ),
-    networkId$: new BehaviorSubject<number>(0),
   }));
 }
