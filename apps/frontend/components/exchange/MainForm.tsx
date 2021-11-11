@@ -119,7 +119,7 @@ const ErrorMessage = styled.div`
   left: 0;
 `;
 
-const allowedKeys = '0123456789.'.split('');
+const allowedKeys = '0123456789.,'.split('');
 
 const handleKeyPress = (
   e: React.KeyboardEvent<HTMLInputElement>,
@@ -132,7 +132,7 @@ const handleKeyPress = (
 
   if (
     !allowedKeys.includes(e.key) ||
-    (e.key === '.' && e.currentTarget.value.includes('.')) ||
+    ((e.key === '.' || e.key === ',') && e.currentTarget.value.includes('.')) ||
     (decimals.length >= asset.decimals && !somethingSelected)
   ) {
     e.preventDefault();
@@ -252,11 +252,11 @@ export const MainForm: React.FC = () => {
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
             value={getFormattedPay()}
-            inputMode="numeric"
+            inputMode="decimal"
             onKeyPress={e => handleKeyPress(e, assetPay!)}
             onChange={e => {
               updateBase('pay');
-              updatePay(e.target.value);
+              updatePay(e.target.value.replace(',', '.'));
             }}
             onFocus={e => {
               e.target.select();
@@ -281,11 +281,11 @@ export const MainForm: React.FC = () => {
         <AssetSelect error={Boolean(errorMessage)}>
           <Amount
             value={getFormattedReceive()}
-            inputMode="numeric"
+            inputMode="decimal"
             onKeyPress={e => handleKeyPress(e, assetReceive!)}
             onChange={e => {
               updateBase('receive');
-              updateReceive(e.target.value);
+              updateReceive(e.target.value.replace(',', '.'));
             }}
             onFocus={e => {
               e.target.select();
