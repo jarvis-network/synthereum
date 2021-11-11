@@ -101,10 +101,6 @@ contract CreditLineCreator {
         keccak256(abi.encodePacked(params.syntheticSymbol)),
       'Wrong synthetic token symbol'
     );
-    require(
-      tokenCurrency.decimals() == uint8(18),
-      'Decimals of synthetic token must be 18'
-    );
 
     creditLine = new CreditLine(_convertParams(params));
 
