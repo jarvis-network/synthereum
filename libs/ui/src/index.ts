@@ -6,7 +6,8 @@ export {
 } from './AnimatedBackground';
 export { Background } from './Background';
 export { BackgroundPreloader } from './BackgroundPreloader';
-export { Button } from './Button';
+export { Button, getButtonStyles } from './Button';
+export type { ButtonModifierProps } from './Button';
 export { CardButton } from './CardButton';
 export { ColumnType, DataGrid } from './DataGrid';
 export type { DataGridColumnProps, DataRows } from './DataGrid';

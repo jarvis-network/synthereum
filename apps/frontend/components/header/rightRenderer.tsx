@@ -81,10 +81,6 @@ const render = (): JSX.Element => {
     dispatch(setTheme({ theme }));
   };
 
-  const handleAccountOverviewOpen = () => {
-    dispatch(setAccountOverviewModalVisible(true));
-  };
-
   useEffect(() => {
     if (isSigningOut) {
       setTimeout(() => {
@@ -102,7 +98,9 @@ const render = (): JSX.Element => {
     {
       name: 'Account',
       key: 'Account',
-      onClick: handleAccountOverviewOpen,
+      onClick() {
+        dispatch(setAccountOverviewModalVisible(true));
+      },
     },
   ];
 

@@ -1,10 +1,27 @@
 import React from 'react';
-import { OnDesktop } from '@jarvis-network/ui';
+import {
+  styled,
+  getButtonStyles,
+  ButtonModifierProps,
+} from '@jarvis-network/ui';
+
+const Button = styled.a<ButtonModifierProps>(props =>
+  getButtonStyles(props, props.theme),
+);
+const CustomButton = styled(Button)`
+  @media screen and (max-width: 400px) {
+    display: none;
+  }
+`;
 
 const render = () => (
-  <OnDesktop>
-    <b>Jarvis Dex - Trade synthetic assets</b>
-  </OnDesktop>
+  <CustomButton
+    size="m"
+    href="https://www.mtpelerin.com/bridge-wallet"
+    target="_blank"
+  >
+    Buy with fiat
+  </CustomButton>
 );
 
 export const leftRenderer = { render };
