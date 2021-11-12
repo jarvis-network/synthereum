@@ -16,9 +16,6 @@ import {
 } from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from './Constants.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  EnumerableSet
-} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 import {
   AccessControlEnumerable
@@ -30,7 +27,6 @@ contract SynthereumDeployer is
   Lockable
 {
   using Address for address;
-  using EnumerableSet for EnumerableSet.AddressSet;
 
   bytes32 private constant ADMIN_ROLE = 0x00;
 
