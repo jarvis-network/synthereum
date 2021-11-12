@@ -63,20 +63,7 @@ async function migrate(deployer, network, accounts) {
   console.log('SynthereumChainlinkPriceFeed added to SynthereumFinder');
   var aggregatorsData = [];
   if (!isPublicNetwork(network)) {
-    await deploy(web3, deployer, network, MockAggregator, 8, 120000000, {
-      from: keys.deployer,
-    });
-    const mockAggregator = await getExistingInstance(
-      web3,
-      MockAggregator,
-      '@jarvis-network/synthereum-contracts',
-    );
-    const pair = 'EUR/USD';
-    const identifierBytes = web3.utils.utf8ToHex(pair);
-    await synthereumChainlinkPriceFeed.methods
-      .setAggregator(identifierBytes, mockAggregator.options.address)
-      .send({ from: maintainer });
-    console.log(`   Add '${pair}' aggregator`);
+    return;
   } else if (networkId === 80001) {
     const assets = Object.keys(aggregators[networkId]);
     for (let j = 0; j < assets.length; j++) {
