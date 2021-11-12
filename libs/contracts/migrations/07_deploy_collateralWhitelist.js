@@ -5,6 +5,7 @@ module.exports = require('../utils/getContractsFactory')(migrate, [
 
 async function migrate(deployer, network, accounts) {
   const rolesConfig = require('../data/roles.json');
+  const collateralsWhitelistConfig = require('../data/whitelist/collaterals.json');
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
@@ -15,6 +16,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getKeysForNetwork,
     deploy,
+    isPublicNetwork,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
   const {
     toNetworkId,
@@ -48,4 +50,13 @@ async function migrate(deployer, network, accounts) {
     )
     .send({ from: maintainer });
   console.log('SynthereumCollateralWhitelist added to SynthereumFinder');
+  const collateralsWhitelistElements = collateralsWhitelistConfig[networkId];
+  if (isPublicNetwork(network)) {
+    for (let j = 0; j < collateralsWhitelistElements.length; j++) {
+      await synthereumCollateralWhitelist.methods
+        .addToWhitelist(collateralsWhitelistElements[j])
+        .send({ from: maintainer });
+      console.log(`   Add '${collateralsWhitelistElements[j]}' collateral`);
+    }
+  }
 }
