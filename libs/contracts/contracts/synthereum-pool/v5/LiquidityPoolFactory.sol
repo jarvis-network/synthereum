@@ -1,26 +1,25 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
-import {
-  IMintableBurnableERC20
-} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
-import {
-  ISynthereumLiquidityPoolStorage
-} from './interfaces/ILiquidityPoolStorage.sol';
 import {
   IDeploymentSignature
 } from '../../core/interfaces/IDeploymentSignature.sol';
+import {
+  ISynthereumCollateralWhitelist
+} from '../../core/interfaces/ICollateralWhitelist.sol';
+import {
+  ISynthereumIdentifierWhitelist
+} from '../../core/interfaces/IIdentifierWhitelist.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumLiquidityPoolCreator} from './LiquidityPoolCreator.sol';
 import {SynthereumLiquidityPool} from './LiquidityPool.sol';
 import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 contract SynthereumLiquidityPoolFactory is
+  IDeploymentSignature,
   Lockable,
-  SynthereumLiquidityPoolCreator,
-  IDeploymentSignature
+  SynthereumLiquidityPoolCreator
 {
   //----------------------------------------
   // Storage
@@ -57,11 +56,30 @@ contract SynthereumLiquidityPoolFactory is
     nonReentrant
     returns (SynthereumLiquidityPool pool)
   {
+    ISynthereumFinder _synthereumFinder = ISynthereumFinder(synthereumFinder);
     address deployer =
-      ISynthereumFinder(synthereumFinder).getImplementationAddress(
-        SynthereumInterfaces.Deployer
-      );
+      _synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
+    ISynthereumCollateralWhitelist collateralWhitelist =
+      ISynthereumCollateralWhitelist(
+        _synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.CollateralWhitelist
+        )
+      );
+    require(
+      collateralWhitelist.isOnWhitelist(address(params.collateralToken)),
+      'Collateral not supported'
+    );
+    ISynthereumIdentifierWhitelist identifierWhitelist =
+      ISynthereumIdentifierWhitelist(
+        _synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.IdentifierWhitelist
+        )
+      );
+    require(
+      identifierWhitelist.isOnWhitelist(params.priceIdentifier),
+      'Identifier not supported'
+    );
     pool = super.createPool(params);
   }
 }
