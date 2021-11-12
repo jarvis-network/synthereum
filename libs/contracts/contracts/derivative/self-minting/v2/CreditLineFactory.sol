@@ -5,6 +5,12 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   IDeploymentSignature
 } from '../../../core/interfaces/IDeploymentSignature.sol';
+import {
+  ISynthereumCollateralWhitelist
+} from '../../../core/interfaces/ICollateralWhitelist.sol';
+import {
+  ISynthereumIdentifierWhitelist
+} from '../../../core/interfaces/IIdentifierWhitelist.sol';
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {CreditLineCreator} from './CreditLineCreator.sol';
 import {CreditLine} from './CreditLine.sol';
@@ -13,9 +19,9 @@ import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 /** @title Contract factory of self-minting derivatives
  */
 contract CreditLineFactory is
+  IDeploymentSignature,
   Lockable,
-  CreditLineCreator,
-  IDeploymentSignature
+  CreditLineCreator
 {
   //----------------------------------------
   // Storage
@@ -46,11 +52,30 @@ contract CreditLineFactory is
     nonReentrant
     returns (CreditLine creditLine)
   {
+    ISynthereumFinder _synthereumFinder = ISynthereumFinder(synthereumFinder);
     address deployer =
-      ISynthereumFinder(synthereumFinder).getImplementationAddress(
-        SynthereumInterfaces.Deployer
-      );
+      _synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
     require(msg.sender == deployer, 'Sender must be Synthereum deployer');
+    ISynthereumCollateralWhitelist collateralWhitelist =
+      ISynthereumCollateralWhitelist(
+        _synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.CollateralWhitelist
+        )
+      );
+    require(
+      collateralWhitelist.isOnWhitelist(address(params.collateralToken)),
+      'Collateral not supported'
+    );
+    ISynthereumIdentifierWhitelist identifierWhitelist =
+      ISynthereumIdentifierWhitelist(
+        _synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.IdentifierWhitelist
+        )
+      );
+    require(
+      identifierWhitelist.isOnWhitelist(params.priceFeedIdentifier),
+      'Identifier not supported'
+    );
     creditLine = super.createSelfMintingDerivative(params);
   }
 }
