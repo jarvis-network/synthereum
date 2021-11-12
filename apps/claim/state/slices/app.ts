@@ -18,17 +18,8 @@ const appSlice = createSlice({
         isAuthModalVisible: action.payload,
       };
     },
-    setUnsupportedNetworkModalVisible(state, action: SetModalVisibilityAction) {
-      return {
-        ...state,
-        isUnsupportedNetworkModalVisible: action.payload,
-      };
-    },
   },
 });
 
-export const {
-  setAuthModalVisible,
-  setUnsupportedNetworkModalVisible,
-} = appSlice.actions;
+export const { setAuthModalVisible } = appSlice.actions;
 export const { reducer } = appSlice;

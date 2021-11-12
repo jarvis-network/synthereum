@@ -1,7 +1,4 @@
-import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 import {
   AbiFor,
   getContract,
@@ -28,16 +25,14 @@ export function useAerariumMilitare():
       networkId: SupportedNetworkId;
     })
   | null {
-  const { web3$, networkId$ } = useCoreObservables();
-  const web3 = useBehaviorSubject(web3$) as Web3On<NetworkName> | null;
-  const networkId = useBehaviorSubject(networkId$);
+  const { library: web3, chainId: networkId } = useWeb3();
 
   return useMemo(
     () =>
       web3 && isSupportedNetwork(networkId)
         ? {
             ...getContract(
-              web3,
+              web3 as Web3On<NetworkName>,
               ABI as AbiFor<AerariumMilitare>,
               addresses[networkId].AerariumMilitare as AddressOn<NetworkName>,
             ),

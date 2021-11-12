@@ -1,7 +1,4 @@
-import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   AbiFor,
@@ -18,15 +15,17 @@ import { useMemo } from 'react';
 export function useERC20Contract(
   address?: AddressOn<NetworkName>,
 ): ERC20 | null {
-  const web3 = useBehaviorSubject(
-    useCoreObservables().web3$,
-  ) as Web3On<NetworkName> | null;
+  const { library: web3 } = useWeb3();
 
   return (
     useMemo(
       () =>
         web3 && address
-          ? getContract(web3, abi as AbiFor<ERC20>, address)
+          ? getContract(
+              web3 as Web3On<NetworkName>,
+              abi as AbiFor<ERC20>,
+              address,
+            )
           : null,
       [web3, address],
     )?.instance || null

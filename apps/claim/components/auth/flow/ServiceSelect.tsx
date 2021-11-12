@@ -8,9 +8,6 @@ import {
   ChevronRight,
 } from '@/components/auth/flow/ModalComponents';
 import { Button, styled, themeValue } from '@jarvis-network/ui';
-import { useAuth } from '@jarvis-network/app-toolkit';
-import { useDispatch } from 'react-redux';
-import { setAuthModalVisible } from '@/state/slices/app';
 
 const TermsContainer = styled.div`
   display: flex;
@@ -66,55 +63,31 @@ const DiagonalIcons = styled.div`
 
 const Content = styled.div``;
 
-export const ServiceSelect: React.FC<PageProps> = () => {
-  // const notify = useNotifications();
-  const { login } = useAuth();
-  const dispatch = useDispatch();
+export const ServiceSelect: React.FC<PageProps> = ({ onNext }) => (
+  <TutorialContent>
+    <ImgContainer>
+      <Img src="/images/service-statue.svg" alt="" />
+    </ImgContainer>
 
-  const logIn = () => {
-    login().then(loginSuccessful => {
-      if (loginSuccessful) {
-        // notify('You have successfully signed in', {
-        //   type: NotificationType.success,
-        //   icon: '👍🏻',
-        // });
-        dispatch(setAuthModalVisible(false));
-      }
-    });
-    requestAnimationFrame(() => {
-      const showMoreButton = document.querySelector<HTMLElement>(
-        '.bn-onboard-modal-select-wallets > div > button',
-      );
-      showMoreButton?.click();
-    });
-  };
+    <Content>
+      <BigP>
+        <b>No account</b> needed!
+      </BigP>
 
-  return (
-    <TutorialContent>
-      <ImgContainer>
-        <Img src="/images/service-statue.svg" alt="" />
-      </ImgContainer>
-
-      <Content>
-        <BigP>
-          <b>No account</b> needed!
-        </BigP>
-
-        <TermsContainer>
-          <Btn inverted type="dark" onClick={logIn}>
-            <DiagonalIcons>
-              <img src="/images/ledger.svg" alt="" />
-              <img src="/images/metamask.svg" alt="" />
-            </DiagonalIcons>
-            <span>
-              Sign Up/In
-              <br />
-              <b>with your wallet</b>
-            </span>
-            <ChevronRight />
-          </Btn>
-        </TermsContainer>
-      </Content>
-    </TutorialContent>
-  );
-};
+      <TermsContainer>
+        <Btn inverted type="dark" onClick={onNext}>
+          <DiagonalIcons>
+            <img src="/images/ledger.svg" alt="" />
+            <img src="/images/metamask.svg" alt="" />
+          </DiagonalIcons>
+          <span>
+            Sign Up/In
+            <br />
+            <b>with your wallet</b>
+          </span>
+          <ChevronRight />
+        </Btn>
+      </TermsContainer>
+    </Content>
+  </TutorialContent>
+);

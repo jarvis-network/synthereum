@@ -1,6 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
+import {
+  logoutAction,
+  addressSwitchAction,
+  networkSwitchAction,
+} from '@jarvis-network/app-toolkit';
 
-import { addressSwitch, logoutAction, networkSwitch } from '@/state/actions';
 import { initialAppState, State } from '@/state/initialState';
 
 interface UpdateClaimActionPayload {
@@ -18,17 +22,15 @@ const claimSlice = createSlice({
     },
   },
   extraReducers: {
-    [logoutAction.type]() {
-      return initialState;
-    },
-    [addressSwitch.type]() {
-      return initialState;
-    },
-    [networkSwitch.type]() {
-      return initialState;
-    },
+    [logoutAction.type]: resetState,
+    [addressSwitchAction.type]: resetState,
+    [networkSwitchAction.type]: resetState,
   },
 });
+
+function resetState() {
+  return initialState;
+}
 
 export const {
   reducer,

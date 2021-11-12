@@ -4,19 +4,20 @@ import { AccountSummary, useWindowSize } from '@jarvis-network/ui';
 
 import { setTheme } from '@/state/slices/theme';
 import { State } from '@/state/initialState';
-import { useReduxSelector } from '@/state/useReduxSelector';
 import { Address } from '@jarvis-network/core-utils/dist/eth/address';
 import {
   formatWalletAddress,
   useAuth,
   usePrettyName,
+  useWeb3,
 } from '@jarvis-network/app-toolkit';
+import { setAuthModalVisible } from '@/state/slices/app';
 
 const UserHeader = (): JSX.Element => {
   const dispatch = useDispatch();
-  const auth = useReduxSelector(state => state.auth);
-  const { logout, login } = useAuth();
-  const name = usePrettyName((auth?.address ?? null) as Address | null);
+  const { account: address } = useWeb3();
+  const { logout } = useAuth();
+  const name = usePrettyName((address ?? null) as Address | null);
   const { innerWidth } = useWindowSize();
 
   const handleSetTheme = (theme: State['theme']) => {
@@ -24,8 +25,7 @@ const UserHeader = (): JSX.Element => {
   };
 
   const getName = () => name || '';
-  const getAddress = () =>
-    auth ? formatWalletAddress(auth.address) : undefined;
+  const getAddress = () => (address ? formatWalletAddress(address) : undefined);
 
   const image = undefined; // @TODO fix mock
 
@@ -36,8 +36,10 @@ const UserHeader = (): JSX.Element => {
       image={image}
       menu={[]}
       contentOnTop={innerWidth <= 1080}
-      onLogout={() => logout()}
-      onLogin={() => login()}
+      onLogout={logout}
+      onLogin={() => {
+        dispatch(setAuthModalVisible(true));
+      }}
       onThemeChange={handleSetTheme}
     />
   );

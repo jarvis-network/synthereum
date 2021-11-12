@@ -4,7 +4,9 @@ import { Tabs, styled, Button } from '@jarvis-network/ui';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Claim } from '@/components/Claim';
 import { History } from '@/components/History';
-import { useAuth } from '@jarvis-network/app-toolkit';
+import { useAuth, useWeb3 } from '@jarvis-network/app-toolkit';
+import { setAuthModalVisible } from '@/state/slices/app';
+import { useDispatch } from 'react-redux';
 
 const Container = styled.div`
   flex: 1;
@@ -141,8 +143,14 @@ const Sculpture = styled.img`
 `;
 
 export default function Home(): JSX.Element {
-  const { auth, claim } = useReduxSelector(state => state);
-  const { logout, login } = useAuth();
+  const { claim } = useReduxSelector(state => state);
+  const { account: address } = useWeb3();
+  const { logout } = useAuth();
+  const dispatch = useDispatch();
+
+  function login() {
+    dispatch(setAuthModalVisible(true));
+  }
 
   return (
     <Container>
@@ -166,7 +174,7 @@ export default function Home(): JSX.Element {
               alt="No allocated tokens"
             />
           </SwitchWallet>
-        ) : auth ? (
+        ) : address ? (
           <CustomTabs
             pointer={false}
             tabs={[
@@ -176,7 +184,7 @@ export default function Home(): JSX.Element {
           />
         ) : (
           <SignIn>
-            <Button type="success" onClick={() => login()}>
+            <Button type="success" onClick={login}>
               Sign in
             </Button>
           </SignIn>

@@ -1,9 +1,5 @@
 import { useReduxSelector } from '@/state/useReduxSelector';
-import {
-  formatTimestamp,
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+import { formatTimestamp, useWeb3 } from '@jarvis-network/app-toolkit';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { useEffect, useRef, useState } from 'react';
 import { Button, styled } from '@jarvis-network/ui';
@@ -79,13 +75,8 @@ const ClaimButton = styled(Button)`
 `;
 
 export function Claim(): JSX.Element {
-  const { web3$, networkId$ } = useCoreObservables();
-  const web3 = useBehaviorSubject(web3$) as Web3On<NetworkName> | null;
-  const networkId = useBehaviorSubject(networkId$);
-  const { claim, auth } = useReduxSelector(state => ({
-    claim: state.claim,
-    auth: state.auth,
-  }));
+  const { library: web3, chainId: networkId, account: address } = useWeb3();
+  const claim = useReduxSelector(state => state.claim);
   const dispatch = useDispatch();
   const contractInfo = useAerariumMilitare();
   const [buttonClicked, setButtonClicked] = useState(false);
@@ -95,7 +86,7 @@ export function Claim(): JSX.Element {
       !contractInfo ||
       contractInfo.networkId !== networkId ||
       !web3 ||
-      !auth ||
+      !address ||
       claim
     )
       return;
@@ -109,14 +100,14 @@ export function Claim(): JSX.Element {
       if (web3NetworkId !== networkId) return;
 
       Promise.all([
-        contract.methods.userTotalAmount(auth.address as Address).call(),
+        contract.methods.userTotalAmount(address as Address).call(),
         contract.methods.endTime().call(),
         contract.methods.startTime().call(),
         contract.methods
-          .claimableJRT(auth.address as Address)
+          .claimableJRT(address as Address)
           .call()
           .catch(() => '0'), // Before startTime it throws
-        contract.methods.claimedAmount(auth.address as Address).call(),
+        contract.methods.claimedAmount(address as Address).call(),
       ]).then(
         ([investorInfo, endTime, startTime, claimableJRT, claimedAmount]) => {
           if (cancelRef.canceled) return;
@@ -137,10 +128,9 @@ export function Claim(): JSX.Element {
     return () => {
       cancelRef.canceled = true;
     };
-  }, [web3, claim, contractInfo, auth, networkId, dispatch]);
+  }, [web3, claim, contractInfo, address, networkId, dispatch]);
 
   const lastClaimRef = useRef<typeof claim>(null);
-  const address = auth?.address;
   useEffect(() => {
     lastClaimRef.current = null;
   }, [address]);
@@ -190,7 +180,7 @@ export function Claim(): JSX.Element {
         disabled={
           !contractInfo ||
           !web3 ||
-          !auth ||
+          !address ||
           buttonClicked ||
           (shouldLiquidate
             ? !investorInfo.sub(claimedAmount).toNumber()
@@ -203,20 +193,20 @@ export function Claim(): JSX.Element {
           };
 
           if (!contractInfo) throw new Error('contract undefined');
-          if (!auth) throw new Error('auth undefined');
+          if (!address) throw new Error('address undefined');
           if (!web3) throw new Error('web3 undefined');
 
           sendTx(
             (shouldLiquidate
               ? contractInfo.instance.methods.liquidate([
-                  auth.address as AddressOn<NetworkName>,
+                  address as AddressOn<NetworkName>,
                 ])
               : contractInfo.instance.methods.claim()) as NonPayableTransactionObject<
               void | string
             >,
             {
-              web3,
-              from: auth.address as AddressOn<NetworkName>,
+              web3: web3 as Web3On<NetworkName>,
+              from: address as AddressOn<NetworkName>,
             },
           )
             .then(result => result.promiEvent)

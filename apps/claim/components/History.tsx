@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
 import { soliditySha3, toBN } from 'web3-utils';
-import {
-  useBehaviorSubject,
-  useCoreObservables,
-} from '@jarvis-network/app-toolkit';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
 import { useERC20Contract } from '@/utils/useERC20Contract';
 import { useDebouncedValue } from '@/utils/useDebouncedValue';
 import { addresses } from '@/data/addresses';
@@ -96,11 +93,8 @@ function groupTransactionsByDay(items: State['history'][number][]) {
 }
 
 export function History(): JSX.Element | null {
-  const { web3$, networkId$ } = useCoreObservables();
-  const web3 = useBehaviorSubject(web3$);
-  const networkId = useBehaviorSubject(networkId$);
+  const { library: web3, chainId: networkId, account: address } = useWeb3();
   const history = useDebouncedValue(useReduxSelector(state => state.history));
-  const auth = useReduxSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const contract = useERC20Contract(
@@ -111,7 +105,7 @@ export function History(): JSX.Element | null {
   );
 
   useEffect(() => {
-    if (!contract || !web3 || !auth) return;
+    if (!contract || !web3 || !address) return;
 
     contract.events
       .Transfer({
@@ -119,7 +113,7 @@ export function History(): JSX.Element | null {
         topics: [
           eventTopic,
           convertAddressToUint256(addresses[42].AerariumMilitare), // TODO: networkId
-          convertAddressToUint256(auth.address),
+          convertAddressToUint256(address),
         ],
       })
       .on(
@@ -142,7 +136,7 @@ export function History(): JSX.Element | null {
       )
       // eslint-disable-next-line no-console
       .on('error', (error: Error) => console.error(error));
-  }, [contract, dispatch, web3, auth]);
+  }, [contract, dispatch, web3, address]);
 
   if (!isSupportedNetwork(networkId))
     return <MessageContainer>Unsupported Network</MessageContainer>;

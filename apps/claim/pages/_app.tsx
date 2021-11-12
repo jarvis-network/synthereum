@@ -21,20 +21,12 @@ import {
   AuthFlow,
   useSubjects,
   AuthProvider,
-  UnsupportedNetworkModal,
 } from '@jarvis-network/app-toolkit';
 import { backgroundList } from '@/data/backgrounds';
 import { ServiceSelect } from '@/components/auth/flow/ServiceSelect';
 import { Welcome } from '@/components/auth/flow/Welcome';
 import { Terms } from '@/components/auth/flow/Terms';
-import {
-  setAuthModalVisible,
-  setUnsupportedNetworkModalVisible,
-} from '@/state/slices/app';
-import { login } from '@/state/slices/auth';
-import { addressSwitch, logoutAction, networkSwitch } from '@/state/actions';
-import { DEFAULT_NETWORK } from '@/utils/environment';
-import { TutorialContent } from '@/components/auth/flow/ModalComponents';
+import { setAuthModalVisible } from '@/state/slices/app';
 import { Header } from '@/components/header/Header';
 import { Container } from '@/components/Container';
 
@@ -57,26 +49,14 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
       <StateProvider store={store}>
         <AppThemeProvider>
           <NotificationsProvider>
-            <AuthProvider loginAction={login} logoutAction={logoutAction}>
+            <AuthProvider>
               <AuthFlow<typeof store>
                 notify={noop}
                 ServiceSelect={ServiceSelect}
                 Welcome={Welcome}
                 Terms={Terms}
-                appName="jarvis-borrowing"
+                appName="jarvis-claim"
                 setAuthModalVisibleAction={setAuthModalVisible}
-                setUnsupportedNetworkModalVisibleAction={
-                  setUnsupportedNetworkModalVisible
-                }
-                addressSwitchAction={addressSwitch}
-                networkSwitchAction={networkSwitch}
-                defaultNetwork={DEFAULT_NETWORK}
-              />
-              <UnsupportedNetworkModal<typeof store>
-                setUnsupportedNetworkModalVisibleAction={
-                  setUnsupportedNetworkModalVisible
-                }
-                TutorialContent={TutorialContent}
               />
               <BackgroundPreloader backgrounds={backgroundList} />
               <Container>
