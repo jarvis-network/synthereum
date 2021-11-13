@@ -14,7 +14,6 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const umaContracts = require('../data/uma-contract-dependencies.json');
   const {
     ZERO_ADDRESS,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');

@@ -1,14 +1,6 @@
 {
   "42": [
     {
-      "version": 1,
-      "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422",
-      "daoFee": {
-        "feePercentage": 0.00165,
-        "feeRecipient": "0x0C85fdB62CAC33F2bb7fE0366Ff9CBc65d3cdBDb"
-      }
-    },
-    {
       "version": 2,
       "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422",
       "fee": {
@@ -18,16 +10,6 @@
         "totalFeeProportions": 1
       },
       "liquidationPct": 0.01
-    }
-  ],
-  "1": [
-    {
-      "version": 1,
-      "collateralAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "daoFee": {
-        "feePercentage": 0.00165,
-        "feeRecipient": "0x8eF00583bAa186094D9A34a0A4750C1D1BB86831"
-      }
     }
   ]
 }

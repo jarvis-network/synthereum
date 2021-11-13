@@ -5,20 +5,20 @@
       "syntheticSymbol": "jCHF",
       "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1363125",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "1000000000000000000000000",
-      "capDepositRatio": "1438000"
+      "overCollateralization": "200000000000000000",
+      "liquidationReward": "500000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1739125",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "1000000000000000000000000",
-      "capDepositRatio": "1821000"
+      "overCollateralization": "200000000000000000",
+      "liquidationReward": "500000000000000000"
     }
   ],
   "1": [
@@ -27,30 +27,30 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
       "collateralRequirement": "10500000000000000000",
-      "startingCollateralization": "1492875",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "380000000000000000000000",
-      "capDepositRatio": "1552000"
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
       "syntheticSymbol": "jCHF",
       "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1363125",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "322000000000000000000000",
-      "capDepositRatio": "1435000"
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1739125",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "168000000000000000000000",
-      "capDepositRatio": "1821000"
+      "overCollateralization": "",
+      "liquidationReward": ""
     }
   ],
   "80001": [
@@ -59,30 +59,30 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1477875",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "1000000000000000000000000",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
       "syntheticSymbol": "jCHF",
       "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1367875",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "1000000000000000000000000",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1736375",
       "minSponsorTokens": "50000000000000000000",
       "capMintAmount": "1000000000000000000000000",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     }
   ],
   "137": [
@@ -91,60 +91,50 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1467875",
       "minSponsorTokens": "0",
       "capMintAmount": "",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
       "syntheticSymbol": "jCHF",
       "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1355000",
       "minSponsorTokens": "0",
       "capMintAmount": "",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "1725250",
       "minSponsorTokens": "0",
       "capMintAmount": "",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic Philippine Peso",
       "syntheticSymbol": "jPHP",
       "priceFeedIdentifier": "PHPUSD",
-      "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "24490",
+      "collateraalRequirement": "1050000000000000000",
       "minSponsorTokens": "0",
       "capMintAmount": "",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     },
     {
       "syntheticName": "Jarvis Synthetic Singapore Dollar",
       "syntheticSymbol": "jSGD",
       "priceFeedIdentifier": "SGDUSD",
       "collateralRequirement": "1050000000000000000",
-      "startingCollateralization": "920375",
       "minSponsorTokens": "0",
       "capMintAmount": "",
-      "capDepositRatio": ""
-    },
-    {
-      "syntheticName": "Jarvis Synthetic Canadian Dollar",
-      "syntheticSymbol": "jCAD",
-      "priceFeedIdentifier": "CADUSD",
-      "collateralRequirement": "1025000000000000000",
-      "startingCollateralization": "889900",
-      "minSponsorTokens": "0",
-      "capMintAmount": "",
-      "capDepositRatio": ""
+      "overCollateralization": "",
+      "liquidationReward": ""
     }
   ]
 }
