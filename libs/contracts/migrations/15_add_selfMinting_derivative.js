@@ -1,7 +1,6 @@
 const web3Utils = require('web3-utils');
 const rolesConfig = require('../data/roles.json');
-const umaContracts = require('../data/uma-contract-dependencies.json');
-const umaConfig = require('../data/uma-config.json');
+const synthereumConfig = require('../data/synthereum-config.json');
 const {
   getExistingInstance,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
@@ -62,7 +61,7 @@ module.exports = async function (deployer, network, accounts) {
           asset.capMintAmount,
           asset.collateralRequirement,
           asset.minSponsorTokens,
-          umaConfig[networkId].excessTokenBeneficiary,
+          synthereumConfig.excessTokenBeneficiary,
           creditLineDerivativeVersion,
         );
       }
@@ -76,14 +75,14 @@ module.exports = async function (deployer, network, accounts) {
       log(`   Deploying '${txData[j].asset} Credit Line Derivative'`);
       log('   -------------------------------------');
       const gasEstimation = await synthereumDeployer.methods
-        .deployOnlySelfMintingDerivative(
+        .deploySelfMintingDerivative(
           txData[j].creditLineDerivativeVersion,
           txData[j].creditLineDerivativePayload,
         )
         .estimateGas({ from: maintainer });
       if (gasEstimation != undefined) {
         const tx = await synthereumDeployer.methods
-          .deployOnlySelfMintingDerivative(
+          .deploySelfMintingDerivative(
             txData[j].creditLineDerivativeVersion,
             txData[j].creditLineDerivativePayload,
           )

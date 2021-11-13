@@ -1,0 +1,16 @@
+{
+  "42": {
+    "isEnabled": true,
+    "Pool": 5,
+    "SynthToken": {}
+  },
+  "1": {
+    "isEnabled": true,
+    "Pool": 5,
+    "SynthToken": {
+      "jEUR": "",
+      "jCHF": "",
+      "jGBP": ""
+    }
+  }
+}

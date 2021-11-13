@@ -1,0 +1,22 @@
+{
+  "42": {
+    "collateralAddress": "0xe22da380ee6B445bb8273C81944ADEB6E8450422",
+    "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
+  },
+  "1": {
+    "collateralAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "excessTokenBeneficiary": "0x8ef00583baa186094d9a34a0a4750c1d1bb86831"
+  },
+  "80001": {
+    "collateralAddress": "0xdEe897d5E6eaA6365F293c37cB3fA8335B9B8f3F",
+    "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
+  },
+  "4": {
+    "collateralAddress": "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+    "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
+  },
+  "137": {
+    "collateralAddress": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    "excessTokenBeneficiary": "0x8ef00583baa186094d9a34a0a4750c1d1bb86831"
+  }
+}
