@@ -138,6 +138,6 @@ contract SynthereumLiquidityPoolCreator {
     constructorParams.feeData = params.feeData;
     constructorParams.priceIdentifier = params.priceIdentifier;
     constructorParams.collateralRequirement = params.collateralRequirement;
-    constructorParams.collateralRequirement = params.liquidationReward;
+    constructorParams.liquidationReward = params.liquidationReward;
   }
 }
