@@ -106,7 +106,8 @@ contract SynthereumDeployer is
     returns (ISynthereumDeployment pool)
   {
     pool = _deployPool(getFactoryVersioning(), poolVersion, poolParamsData);
-    checkPoolDeployment(pool, poolVersion);
+    checkDeployment(pool, poolVersion);
+    setSyntheticTokenRoles(pool);
     ISynthereumRegistry poolRegistry = getPoolRegistry();
     poolRegistry.register(
       pool.syntheticTokenSymbol(),
@@ -139,10 +140,7 @@ contract SynthereumDeployer is
       selfMintingDerVersion,
       selfMintingDerParamsData
     );
-    checkSelfMintingDerivativeDeployment(
-      selfMintingDerivative,
-      selfMintingDerVersion
-    );
+    checkDeployment(selfMintingDerivative, selfMintingDerVersion);
     address tokenCurrency = address(selfMintingDerivative.syntheticToken());
     addSyntheticTokenRoles(tokenCurrency, address(selfMintingDerivative));
     ISynthereumRegistry selfMintingRegistry = getSelfMintingRegistry();
@@ -330,37 +328,21 @@ contract SynthereumDeployer is
   }
 
   /**
-   * @notice Check correct finder and version of the deployed pool
-   * @param pool Contract pool to check
-   * @param version Pool version to check
+   * @notice Check correct finder and version of the deployed pool or self-minting derivative
+   * @param poolOrDerivative Contract pool or self-minting derivative to check
+   * @param version Pool or self-minting derivative version to check
    */
-  function checkPoolDeployment(ISynthereumDeployment pool, uint8 version)
-    internal
-    view
-  {
-    require(
-      pool.synthereumFinder() == synthereumFinder,
-      'Wrong finder in pool deployment'
-    );
-    require(pool.version() == version, 'Wrong version in pool deployment');
-  }
-
-  /**
-   * @notice Check correct finder and version of the deployed self minting derivative
-   * @param selfMintingDerivative Self minting derivative to check
-   * @param version Self minting derivative version to check
-   */
-  function checkSelfMintingDerivativeDeployment(
-    ISynthereumDeployment selfMintingDerivative,
+  function checkDeployment(
+    ISynthereumDeployment poolOrDerivative,
     uint8 version
   ) internal view {
     require(
-      selfMintingDerivative.synthereumFinder() == synthereumFinder,
-      'Wrong finder in self-minting deployment'
+      poolOrDerivative.synthereumFinder() == synthereumFinder,
+      'Wrong finder in deployment'
     );
     require(
-      selfMintingDerivative.version() == version,
-      'Wrong version in self-minting deployment'
+      poolOrDerivative.version() == version,
+      'Wrong version in deployment'
     );
   }
 }
