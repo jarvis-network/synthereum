@@ -168,11 +168,13 @@ contract CreditLineController is
       selfMintingDerivatives.length == overcollateralPct.length,
       'Number of derivatives and overcollaterals must be the same'
     );
-
+    bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
-      checkSelfMintingDerivativeRegistration(
-        ICreditLine(selfMintingDerivatives[j])
-      );
+      if (isMaintainer) {
+        checkSelfMintingDerivativeRegistration(
+          ICreditLine(selfMintingDerivatives[j])
+        );
+      }
       _setOvercollateralization(
         selfMintingDerivatives[j],
         overcollateralPct[j]
@@ -192,10 +194,12 @@ contract CreditLineController is
       selfMintingDerivatives.length == capMintAmounts.length,
       'Number of derivatives and mint cap amounts must be the same'
     );
+    bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
-
-      checkSelfMintingDerivativeRegistration(creditLineDerivative);
+      if (isMaintainer) {
+        checkSelfMintingDerivativeRegistration(creditLineDerivative);
+      }
       _setCapMintAmount(address(creditLineDerivative), capMintAmounts[j]);
     }
   }
@@ -210,10 +214,13 @@ contract CreditLineController is
       selfMintingDerCount == feePercentages.length,
       'Number of derivatives and  fee percentages must be the same'
     );
+    bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerCount; j++) {
       ICreditLine selfMintingDerivative =
         ICreditLine(selfMintingDerivatives[j]);
-      checkSelfMintingDerivativeRegistration(selfMintingDerivative);
+      if (isMaintainer) {
+        checkSelfMintingDerivativeRegistration(selfMintingDerivative);
+      }
       _setFeePercentage(address(selfMintingDerivative), feePercentages[j]);
     }
   }
@@ -231,12 +238,14 @@ contract CreditLineController is
       selfMintingDerivatives.length == feeProportions.length,
       'Mismatch between derivatives to update and fee proportions'
     );
-
+    bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     // update each derivative fee parameters
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
-      checkSelfMintingDerivativeRegistration(
-        ICreditLine(selfMintingDerivatives[j])
-      );
+      if (isMaintainer) {
+        checkSelfMintingDerivativeRegistration(
+          ICreditLine(selfMintingDerivatives[j])
+        );
+      }
       _setFeeRecipients(
         selfMintingDerivatives[j],
         feeRecipients[j],
@@ -254,10 +263,13 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     FixedPoint.Unsigned[] calldata _liquidationRewards
   ) external override onlyMaintainerOrSelfMintingFactory {
+    bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
-      checkSelfMintingDerivativeRegistration(
-        ICreditLine(selfMintingDerivatives[j])
-      );
+      if (isMaintainer) {
+        checkSelfMintingDerivativeRegistration(
+          ICreditLine(selfMintingDerivatives[j])
+        );
+      }
       require(
         _liquidationRewards[j].isGreaterThan(0) &&
           _liquidationRewards[j].isLessThanOrEqual(
