@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-import {
-  TestnetERC20
-} from '@uma/core/contracts/common/implementation/TestnetERC20.sol';
+import {TestnetERC20} from './TestnetERC20.sol';
 
 contract TestnetSelfMintingERC20 is TestnetERC20 {
   constructor(

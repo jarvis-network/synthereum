@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.4;
 
-import './UmaInfra.sol';
 import '../base/interfaces/IStandardERC20.sol';
 import '../base/utils/EnumerableBytesSet.sol';
 import '../base/utils/StringUtils.sol';
@@ -10,6 +9,7 @@ import '../common/interfaces/IEmergencyShutdown.sol';
 import '../common/interfaces/IDeployment.sol';
 import '../test/MockAggregator.sol';
 import '../test/MockRandomAggregator.sol';
+import '../test/TestnetERC20.sol';
 import '../test/TestnetSelfMintingERC20.sol';
 import '../test/SelfMintingControllerMock.sol';
 import '../test/CreditLineControllerMock.sol';

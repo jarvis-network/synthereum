@@ -8,7 +8,7 @@ contract('Finder', function (accounts) {
   const maintainer = accounts[1];
   const sender = accounts[5];
 
-  it('General methods', async function () {
+  it('Can call General methods', async function () {
     const finder = await Finder.deployed();
 
     const interfaceName1 = web3Utils.utf8ToHex('interface1');
