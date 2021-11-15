@@ -5,12 +5,13 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
-import { supportedNetworkIds } from '@jarvis-network/synthereum-config/dist/supported/networks';
 import Web3 from 'web3';
 import type { provider as Provider } from 'web3-core';
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
 import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 import { noop } from '@jarvis-network/ui';
+
+import { supportedNetworkIds } from './env';
 
 export type LogoutAction = () => AnyAction;
 
