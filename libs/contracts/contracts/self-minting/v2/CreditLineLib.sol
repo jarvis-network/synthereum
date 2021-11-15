@@ -3,13 +3,13 @@ pragma solidity ^0.8.4;
 
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
-} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
-import {SynthereumInterfaces} from '../../../core/Constants.sol';
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
@@ -19,7 +19,7 @@ import {
 import {CreditLine} from './CreditLine.sol';
 import {
   ISynthereumPriceFeed
-} from '../../../oracle/common/interfaces/IPriceFeed.sol';
+} from '../../oracle/common/interfaces/IPriceFeed.sol';
 
 library CreditLineLib {
   using FixedPoint for FixedPoint.Unsigned;
