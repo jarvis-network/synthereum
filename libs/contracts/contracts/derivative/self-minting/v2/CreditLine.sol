@@ -17,13 +17,15 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title
  * @notice
  */
-contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
+contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for IMintableBurnableERC20;
@@ -343,7 +345,6 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
     external
     view
     override
-    nonReentrantView
     returns (bool)
   {
     PositionData storage positionData = positions[sponsor];
@@ -410,7 +411,6 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
     external
     view
     override
-    nonReentrantView()
     returns (FixedPoint.Unsigned memory collateralAmount)
   {
     return positions[sponsor].rawCollateral;

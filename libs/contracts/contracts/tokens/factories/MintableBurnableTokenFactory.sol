@@ -12,12 +12,11 @@ import {
 import {
   BaseControlledMintableBurnableERC20
 } from '../interfaces/BaseControlledMintableBurnableERC20.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
  * @title Factory for creating new mintable and burnable tokens.
  */
-abstract contract MintableBurnableTokenFactory is Lockable {
+abstract contract MintableBurnableTokenFactory {
   //----------------------------------------
   // Storage
   //----------------------------------------

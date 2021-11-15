@@ -8,8 +8,14 @@ import {MintableBurnableTokenFactory} from './MintableBurnableTokenFactory.sol';
 import {
   MintableBurnableSyntheticTokenPermit
 } from '../MintableBurnableSyntheticTokenPermit.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
-contract SynthereumSyntheticTokenPermitFactory is MintableBurnableTokenFactory {
+contract SynthereumSyntheticTokenPermitFactory is
+  ReentrancyGuard,
+  MintableBurnableTokenFactory
+{
   //----------------------------------------
   // Constructor
   //----------------------------------------

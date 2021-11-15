@@ -16,7 +16,9 @@ import {
 } from '@openzeppelin/contracts/access/IAccessControlEnumerable.sol';
 import {SynthereumInterfaces, FactoryInterfaces} from './Constants.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -24,7 +26,7 @@ import {
 contract SynthereumDeployer is
   ISynthereumDeployer,
   AccessControlEnumerable,
-  Lockable
+  ReentrancyGuard
 {
   using Address for address;
 

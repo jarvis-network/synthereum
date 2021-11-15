@@ -14,11 +14,13 @@ import {
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumLiquidityPoolCreator} from './LiquidityPoolCreator.sol';
 import {SynthereumLiquidityPool} from './LiquidityPool.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 contract SynthereumLiquidityPoolFactory is
   IDeploymentSignature,
-  Lockable,
+  ReentrancyGuard,
   SynthereumLiquidityPoolCreator
 {
   //----------------------------------------
