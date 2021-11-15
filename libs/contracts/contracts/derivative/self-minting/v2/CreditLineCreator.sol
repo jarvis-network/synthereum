@@ -34,7 +34,7 @@ contract CreditLineCreator {
     ICreditLineStorage.Fee fee;
     uint256 liquidationPercentage;
     uint256 capMintAmount;
-    uint256 overCollateralization;
+    uint256 collateralRequirement;
     FixedPoint.Unsigned minSponsorTokens;
     address excessTokenBeneficiary;
     uint8 version;
@@ -109,7 +109,7 @@ contract CreditLineCreator {
       params.fee,
       params.liquidationPercentage,
       params.capMintAmount,
-      params.overCollateralization
+      params.collateralRequirement
     );
 
     emit CreatedSelfMintingDerivative(
@@ -157,7 +157,7 @@ contract CreditLineCreator {
     ICreditLineStorage.Fee memory feeStruct,
     uint256 liquidationRewardPercentage,
     uint256 capMintAmount,
-    uint256 overCollateralization
+    uint256 collateralRequirement
   ) internal {
     ICreditLineController creditLineController =
       ICreditLineController(
@@ -173,8 +173,8 @@ contract CreditLineCreator {
     uint256[] memory capMintAmounts = new uint256[](1);
     capMintAmounts[0] = capMintAmount;
 
-    uint256[] memory overCollateralizations = new uint256[](1);
-    overCollateralizations[0] = overCollateralization;
+    uint256[] memory collateralRequirements = new uint256[](1);
+    collateralRequirements[0] = collateralRequirement;
 
     FixedPoint.Unsigned[] memory feePercentages = new FixedPoint.Unsigned[](1);
     feePercentages[0] = feeStruct.feePercentage;
@@ -189,9 +189,9 @@ contract CreditLineCreator {
     feeProportions[0] = feeStruct.feeProportions;
 
     // set the derivative over collateralization percentage
-    creditLineController.setOvercollateralization(
+    creditLineController.setCollateralRequirement(
       derivatives,
-      overCollateralizations
+      collateralRequirements
     );
 
     // set the derivative fee configuration

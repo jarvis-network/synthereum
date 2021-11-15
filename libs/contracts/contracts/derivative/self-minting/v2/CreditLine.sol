@@ -374,14 +374,14 @@ contract CreditLine is ICreditLine, ICreditLineStorage, Lockable {
     rewardPct = positionManagerData.liquidationRewardPercentage().rawValue;
   }
 
-  function getOvercollateralization()
+  function getCollateralRequirement()
     external
     view
     override
-    returns (uint256 overcollateralizationPct)
+    returns (uint256 collateralRequirement)
   {
-    overcollateralizationPct = positionManagerData
-      .overCollateralization()
+    collateralRequirement = positionManagerData
+      .collateralRequirement()
       .rawValue;
   }
 

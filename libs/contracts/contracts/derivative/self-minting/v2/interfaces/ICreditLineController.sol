@@ -11,13 +11,13 @@ import {ICreditLineStorage} from './ICreditLineStorage.sol';
  */
 interface ICreditLineController {
   /**
-   * @notice Allow to set overcollateralization percentage on a list of registered self-minting derivatives
+   * @notice Allow to set collateralRequirement percentage on a list of registered self-minting derivatives
    * @param selfMintingDerivatives Self-minting derivatives
-   * @param overcollateralPct Over collateralization percentage for self-minting derivatives
+   * @param collateralRequirements Over collateralization percentage for self-minting derivatives
    */
-  function setOvercollateralization(
+  function setCollateralRequirement(
     address[] calldata selfMintingDerivatives,
-    uint256[] calldata overcollateralPct
+    uint256[] calldata collateralRequirements
   ) external;
 
   /**
@@ -65,9 +65,9 @@ interface ICreditLineController {
   /**
    * @notice Gets the over collateralization percentage of a self-minting derivative
    * @param selfMintingDerivative Derivative to read value of
-   * @return the overcollateralization percentage
+   * @return the collateralRequirement percentage
    */
-  function getOvercollateralizationPercentage(address selfMintingDerivative)
+  function getCollateralRequirement(address selfMintingDerivative)
     external
     view
     returns (uint256);
