@@ -8,11 +8,10 @@ const web3Utils = require('web3-utils');
 const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
 
 // Contracts to test
-const CreditLine = artifacts.require('SynthereumCreditLine');
-const CreditLineLib = artifacts.require('SynthereumCreditLineLib');
+const CreditLine = artifacts.require('CreditLine');
+const CreditLineLib = artifacts.require('CreditLineLib');
 
 const MockOnchainOracle = artifacts.require('MockOnChainOracle');
-const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const SynthereumManager = artifacts.require('SynthereumManager');
@@ -43,10 +42,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   let collateral;
   let creditLine;
   let tokenCurrency;
-  let identifierWhitelist;
-  let mockOracle, mockOnchainOracle;
-  let timer;
-  let store;
+  let mockOnchainOracle;
   let creditLineParams;
   let roles;
   let synthereumFinderInstance;
@@ -177,12 +173,6 @@ contract('Synthereum CreditLine ', function (accounts) {
       },
     );
 
-    // Create identifier whitelist and register the price tracking ticker with it.
-    identifierWhitelist = await IdentifierWhitelist.deployed();
-    await identifierWhitelist.addSupportedIdentifier(priceFeedIdentifier, {
-      from: contractDeployer,
-    });
-
     // Create a mockOracle and finder. Register the mockMoracle with the finder.
     synthereumFinderInstance = await SynthereumFinder.deployed();
     mockOnchainOracle = await MockOnchainOracle.new({
@@ -197,12 +187,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     // set oracle price
     await mockOnchainOracle.setPrice(priceFeedIdentifier, startingPrice);
 
-    financialContractsAdmin = accounts[0]; // await FinancialContractsAdmin.deployed();
-    // addressWhitelistInstance = await AddressWhitelist.deployed();
-
     creditLineParams = {
-      collateralAddress: collateral.address,
-      tokenAddress: tokenCurrency.address,
+      collateralToken: collateral.address,
+      syntheticToken: tokenCurrency.address,
       priceFeedIdentifier: priceFeedIdentifier,
       minSponsorTokens: { rawValue: minSponsorTokens.toString() },
       excessTokenBeneficiary: beneficiary,
@@ -226,7 +213,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       [capMintAmount],
       { from: maintainers },
     );
-    await creditLineControllerInstance.setOvercollateralization(
+    await creditLineControllerInstance.setCollateralRequirement(
       [creditLine.address],
       [overCollateralizationFactor],
       { from: maintainers },
@@ -252,29 +239,22 @@ contract('Synthereum CreditLine ', function (accounts) {
   });
 
   it('Correct deployment and variable assignment', async function () {
-    // PricelessPosition variables
-    assert.equal(
-      await creditLine.collateralCurrency.call(),
-      collateral.address,
-    );
-    assert.equal(await creditLine.tokenCurrency.call(), tokenCurrency.address);
+    assert.equal(await creditLine.collateralToken.call(), collateral.address);
+    assert.equal(await creditLine.syntheticToken.call(), tokenCurrency.address);
     assert.equal(
       hexToUtf8(await creditLine.priceIdentifier.call()),
       hexToUtf8(priceFeedIdentifier),
     );
     assert.equal(
-      (await creditLine.getOvercollateralization.call()).toString(),
+      (await creditLine.getCollateralRequirement.call()).toString(),
       overCollateralizationFactor.toString(),
     );
     // Synthetic token and synthereum parameters
     assert.equal(await tokenCurrency.name.call(), syntheticName);
     assert.equal(await tokenCurrency.symbol.call(), syntheticSymbol);
     assert.equal(await creditLine.version.call(), 2);
-    assert.equal(
-      await creditLine.collateralCurrency.call(),
-      collateral.address,
-    );
-    assert.equal(await creditLine.tokenCurrencySymbol.call(), syntheticSymbol);
+    assert.equal(await creditLine.collateralToken.call(), collateral.address);
+    assert.equal(await creditLine.syntheticTokenSymbol.call(), syntheticSymbol);
     assert.equal(
       await creditLine.synthereumFinder.call(),
       synthereumFinderInstance.address,
@@ -326,7 +306,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     truffleAssert.eventEmitted(tx, 'PositionCreated', ev => {
       return (
         ev.sponsor == sponsor &&
-        ev.collateralAmount == createCollateral.sub(actualFee).toString() &&
+        ev.collateralAmount == createCollateral.toString() &&
         ev.tokenAmount == createTokens.toString() &&
         ev.feeAmount == feeAmount.toString()
       );
