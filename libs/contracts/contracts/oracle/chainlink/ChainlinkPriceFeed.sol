@@ -13,7 +13,6 @@ import {
 import {
   AggregatorV3Interface
 } from '@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol';
-import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -22,8 +21,6 @@ contract SynthereumChainlinkPriceFeed is
   ISynthereumChainlinkPriceFeed,
   AccessControlEnumerable
 {
-  using SafeMath for uint256;
-
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //Describe role structure
@@ -332,6 +329,6 @@ contract SynthereumChainlinkPriceFeed is
     pure
     returns (uint256 price)
   {
-    price = unscaledPrice.mul(10**(uint256(18).sub(uint256(decimals))));
+    price = unscaledPrice * (10**(18 - decimals));
   }
 }
