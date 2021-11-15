@@ -47,7 +47,7 @@ contract CreditLineControllerMock {
   //----------------------------------------
   // External functions
   //----------------------------------------
-  function setOvercollateralization(
+  function setCollateralRequirement(
     address[] calldata selfMintingDerivatives,
     uint256[] calldata overcollateralPct
   ) external {
@@ -61,7 +61,7 @@ contract CreditLineControllerMock {
     );
 
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
-      _setOvercollateralization(
+      _setCollateralRequirement(
         selfMintingDerivatives[j],
         overcollateralPct[j]
       );
@@ -141,7 +141,7 @@ contract CreditLineControllerMock {
     }
   }
 
-  function getOvercollateralizationPercentage(address selfMintingDerivative)
+  function getCollateralRequirement(address selfMintingDerivative)
     external
     view
     returns (uint256)
@@ -177,7 +177,7 @@ contract CreditLineControllerMock {
   // Internal functions
   //----------------------------------------
 
-  function _setOvercollateralization(
+  function _setCollateralRequirement(
     address selfMintingDerivative,
     uint256 percentage
   ) internal {
