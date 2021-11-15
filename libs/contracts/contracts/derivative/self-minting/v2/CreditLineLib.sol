@@ -13,7 +13,6 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -23,7 +22,6 @@ import {
 } from '../../../oracle/common/interfaces/IPriceFeed.sol';
 
 library CreditLineLib {
-  using SafeMath for uint256;
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for IStandardERC20;
