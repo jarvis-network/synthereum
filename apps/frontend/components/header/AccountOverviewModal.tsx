@@ -23,6 +23,7 @@ import {
   useWeb3,
 } from '@jarvis-network/app-toolkit';
 import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
+import { useAssets } from '@/utils/useAssets';
 
 interface BalanceProps {
   total: FPN;
@@ -95,7 +96,7 @@ export const AccountOverviewModal: FC = () => {
     state => state.app.isAccountOverviewModalVisible,
   );
   const wallet = useReduxSelector(state => state.wallet);
-  const assets = useReduxSelector(state => state.assets.list);
+  const assets = useAssets();
   const { library: web3 } = useWeb3();
   const isLoggedInViaMetaMask = useMemo(
     () =>
@@ -112,7 +113,7 @@ export const AccountOverviewModal: FC = () => {
     dispatch(setAccountOverviewModalVisible(false));
   };
 
-  const handleAddToMetamaskClick = ({ symbol, icon, decimals }: Asset) => {
+  const handleAddToMetamaskClick = ({ symbol, decimals }: Asset) => {
     if (symbol === primaryCollateralSymbol) {
       return;
     }
@@ -125,11 +126,8 @@ export const AccountOverviewModal: FC = () => {
       return;
     }
 
-    const image =
-      icon &&
-      `${window.location.href}${
-        FlagImagesMap[icon as keyof typeof FlagImagesMap]
-      }`;
+    const path = FlagImagesMap[symbol as keyof typeof FlagImagesMap];
+    const image = path && `${window.location.href}${path}`;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     (web3!.currentProvider! as AbstractProvider).request!({
       method: 'wallet_watchAsset',

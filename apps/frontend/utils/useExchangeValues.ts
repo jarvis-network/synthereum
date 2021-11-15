@@ -1,18 +1,32 @@
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { useRate } from '@/utils/useRate';
-import { FEE } from '@/data/fee';
 import { calcExchange } from '@/utils/calcExchange';
+import { useWeb3 } from '@jarvis-network/app-toolkit';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { synthereumConfig } from '@jarvis-network/synthereum-ts/dist/config';
+import { useMemo } from 'react';
+
+import { useAssets } from './useAssets';
 
 export const useExchangeValues = () => {
+  const { chainId: networkId } = useWeb3();
+
+  const feePercentage = useMemo(
+    () =>
+      FPN.fromWei(
+        networkId
+          ? synthereumConfig[networkId as 42].fees.feePercentage
+          : '2000000000000000',
+      ),
+    [networkId],
+  );
+
+  const assets = useAssets();
   const { base, pay, receive, assetPay, assetReceive } = useReduxSelector(
     state => ({
       ...state.exchange,
-      assetPay: state.assets.list.find(
-        a => a.symbol === state.exchange.payAsset,
-      ),
-      assetReceive: state.assets.list.find(
-        a => a.symbol === state.exchange.receiveAsset,
-      ),
+      assetPay: assets.find(a => a.symbol === state.exchange.payAsset),
+      assetReceive: assets.find(a => a.symbol === state.exchange.receiveAsset),
     }),
   );
 
@@ -33,7 +47,7 @@ export const useExchangeValues = () => {
     base,
     pay,
     receive,
-    fee: FEE,
+    fee: feePercentage,
   });
 
   const fee =
@@ -59,5 +73,6 @@ export const useExchangeValues = () => {
     receiveValue,
     receiveString,
     transactionCollateral,
+    feePercentage,
   };
 };

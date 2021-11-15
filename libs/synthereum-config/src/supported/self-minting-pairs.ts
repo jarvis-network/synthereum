@@ -68,6 +68,7 @@ export const supportedSelfMintingPairs = typeCheck<
     'PHPUSD',
     'ZARUSD',
   ],
+  137: [],
 } as const);
 
 export type SupportedSelfMintingPairs = typeof supportedSelfMintingPairs;

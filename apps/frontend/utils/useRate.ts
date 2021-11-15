@@ -1,33 +1,26 @@
 import { Rate } from '@/state/initialState';
-import { useReduxSelector } from '@/state/useReduxSelector';
+
+import { useAssets } from './useAssets';
 
 export const useRate = (
   inputSymbol: string | null,
   outputSymbol: string | null,
-): Rate | null =>
-  useReduxSelector(state => {
-    if (!inputSymbol || !outputSymbol) {
-      return null;
-    }
+): Rate | null => {
+  const assets = useAssets();
 
-    const inputAsset = state.assets.list.find(
-      asset => asset.symbol === inputSymbol,
-    );
-    const outputAsset = state.assets.list.find(
-      asset => asset.symbol === outputSymbol,
-    );
+  if (!inputSymbol || !outputSymbol) {
+    return null;
+  }
 
-    // asset not found or price not yet loaded
-    if (
-      !inputAsset ||
-      !outputAsset ||
-      !inputAsset.price ||
-      !outputAsset.price
-    ) {
-      return null;
-    }
+  const inputAsset = assets.find(asset => asset.symbol === inputSymbol);
+  const outputAsset = assets.find(asset => asset.symbol === outputSymbol);
 
-    return {
-      rate: outputAsset.price.div(inputAsset.price),
-    };
-  });
+  // asset not found or price not yet loaded
+  if (!inputAsset || !outputAsset || !inputAsset.price || !outputAsset.price) {
+    return null;
+  }
+
+  return {
+    rate: outputAsset.price.div(inputAsset.price),
+  };
+};

@@ -142,7 +142,6 @@ export const Repay: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Borrow',
               asset: {
                 name: selectedAsset.assetOut.name,
-                icon: selectedAsset.assetOut.icon!,
               },
               value: FPN.toWei(
                 syntheticValue !== '' ? syntheticValue : '0',
@@ -152,7 +151,6 @@ export const Repay: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Fee',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
               },
               value: `${fee.format(6)}`,
             },
@@ -215,10 +213,7 @@ export const Repay: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
                     }}
                   />
                   <Max onClick={() => onMaxSelect()} />
-                  <Asset
-                    flag={selectedAsset.assetOut.icon}
-                    name={selectedAsset.assetOut.name}
-                  />
+                  <Asset name={selectedAsset.assetOut.name} />
                 </AssetSelect>
                 <ErrorMessage>
                   {syntheticError}

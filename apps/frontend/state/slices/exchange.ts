@@ -1,7 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { initialAppState, State } from '@/state/initialState';
+import {
+  DEFAULT_PAY_ASSET,
+  DEFAULT_RECEIVE_ASSET,
+  initialAppState,
+  State,
+} from '@/state/initialState';
 import { resetSwapAction } from '@/state/actions';
+import { networkSwitchAction } from '@jarvis-network/app-toolkit';
+import { polygonOnlyAssets } from '@/data/assets';
 
 interface SetChooseAssetAction {
   payload: State['exchange']['chooseAssetActive'];
@@ -65,8 +72,10 @@ const exchangeSlice = createSlice({
     setChartDays(state, action: SetChartDays) {
       state.chartDays = action.payload;
     },
+    resetAssetsIfUnsupported: resetAssetsIfUnsupportedReducer,
   },
   extraReducers: {
+    [networkSwitchAction.type]: resetAssetsIfUnsupportedReducer,
     [resetSwapAction.type](state) {
       const { base, pay, receive } = initialAppState.exchange;
 
@@ -80,6 +89,23 @@ const exchangeSlice = createSlice({
   },
 });
 
+function resetAssetsIfUnsupportedReducer(
+  state: typeof initialAppState.exchange,
+) {
+  if (polygonOnlyAssets.includes(state.payAsset as 'jPHP')) {
+    state.payAsset = DEFAULT_PAY_ASSET;
+    if (state.receiveAsset === DEFAULT_PAY_ASSET) {
+      state.receiveAsset = DEFAULT_RECEIVE_ASSET;
+    }
+  }
+  if (polygonOnlyAssets.includes(state.receiveAsset as 'jPHP')) {
+    state.receiveAsset = DEFAULT_RECEIVE_ASSET;
+    if (state.payAsset === DEFAULT_RECEIVE_ASSET) {
+      state.payAsset = DEFAULT_PAY_ASSET;
+    }
+  }
+}
+
 export const {
   setChooseAsset,
   setBase,
@@ -89,6 +115,7 @@ export const {
   setReceiveAsset,
   invertRateInfo,
   setChartDays,
+  resetAssetsIfUnsupported,
 } = exchangeSlice.actions;
 
 export const { reducer } = exchangeSlice;

@@ -118,7 +118,7 @@ export const AssetRow: FC<AssetRowProps> = ({
   return (
     <Container>
       <Information>
-        {asset.icon && <Flag flag={asset.icon} />}
+        <Flag flag={asset.symbol} />
         <Title>{asset.symbol}</Title>
         {addToMetaMask}
       </Information>

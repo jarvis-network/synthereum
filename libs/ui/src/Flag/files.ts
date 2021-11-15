@@ -1,37 +1,25 @@
-import chf from './icons/chf.svg';
-import eur from './icons/eur.svg';
-import gbp from './icons/gbp.svg';
-import us from './icons/us.svg';
-import uma from './icons/uma.svg';
+import jCHF from './icons/jCHF.svg';
+import jEUR from './icons/jEUR.svg';
+import jGBP from './icons/jGBP.svg';
+import jCAD from './icons/jCAD.svg';
+import jPHP from './icons/jPHP.svg';
+import jSGD from './icons/jSGD.svg';
+import jXAU from './icons/jXAU.svg';
+import USDC from './icons/USDC.svg';
+import UMA from './icons/UMA.svg';
 
-const cad = us;
-const jpy = us;
-const krw = us;
-const ngn = us;
-const php = us;
-const zar = us;
-const xau = us;
-const spx = us;
-const xti = us;
-const xag = us;
-const usdc = us;
 export const files = {
-  chf,
-  eur,
-  gbp,
-  us,
-  usdc,
-  uma,
-  cad,
-  jpy,
-  krw,
-  ngn,
-  php,
-  zar,
-  xau,
-  spx,
-  xti,
-  xag,
+  jCHF,
+  jEUR,
+  jGBP,
+  jCAD,
+  jPHP,
+  jSGD,
+  jXAU,
+  USDC,
+  UMA,
 };
 
 export type FlagKeys = keyof typeof files;
+
+export { default as questionMark } from './icons/question-mark.svg';

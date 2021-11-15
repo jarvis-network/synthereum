@@ -97,4 +97,7 @@ export const syntheticPriceExpression = typeCheck<SyntheticPriceExpression>()({
       simple: '9.2',
     },
   },
+  137: {
+    ...common,
+  },
 } as const);

@@ -11,11 +11,12 @@ import { assertNotNull } from '@jarvis-network/core-utils/dist/base/asserts';
 import { useDispatch } from 'react-redux';
 import { addHistoryItem } from '@/state/slices/history';
 import { State } from '@/state/initialState';
+import { styled } from '@jarvis-network/ui';
+
 import {
   isSupportedNetwork,
   SupportedNetworkId,
-} from '@jarvis-network/synthereum-config';
-import { styled } from '@jarvis-network/ui';
+} from '@/utils/supportedNetworks';
 
 import { HistoryItem } from './HistoryItem';
 import { MessageContainer } from './MessageContainer';

@@ -6,6 +6,7 @@ import { Asset as AssetItemType } from '@/data/assets';
 import { AssetType } from '@/state/initialState';
 import { setChooseAsset } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
+import { useAssets } from '@/utils/useAssets';
 
 const Container = styled.div`
   grid-area: asset;
@@ -93,14 +94,13 @@ export const Asset: React.FC<Props> = ({ type }) => {
   const assetSymbol = useReduxSelector(state =>
     type === 'pay' ? state.exchange.payAsset : state.exchange.receiveAsset,
   );
-  const asset: AssetItemType = useReduxSelector(
-    state => state.assets.list.find(a => a.symbol === assetSymbol)!,
-  );
+  const assets = useAssets();
+  const asset: AssetItemType = assets.find(a => a.symbol === assetSymbol)!;
 
   const handleChooseAsset = () => dispatch(setChooseAsset(type));
 
   if (asset) {
-    const flag = asset.icon ? <Flag flag={asset.icon} /> : null;
+    const flag = <Flag flag={asset.symbol} />;
 
     return (
       <Container>

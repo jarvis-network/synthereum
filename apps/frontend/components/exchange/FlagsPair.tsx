@@ -31,12 +31,8 @@ const Container = styled.div`
 `;
 
 export const FlagsPair: React.FC<Props> = ({ assetPair }) => {
-  const firstFlag = assetPair.input.icon ? (
-    <Flag flag={assetPair.input.icon} className="first" />
-  ) : null;
-  const secondFlag = assetPair.output.icon ? (
-    <Flag flag={assetPair.output.icon} className="second" />
-  ) : null;
+  const firstFlag = <Flag flag={assetPair.input.symbol} className="first" />;
+  const secondFlag = <Flag flag={assetPair.output.symbol} className="second" />;
 
   return (
     <Container>

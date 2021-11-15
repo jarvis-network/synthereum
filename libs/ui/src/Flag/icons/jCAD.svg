@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="145" height="145" viewBox="0 0 145 145">
+  <defs>
+    <clipPath id="clip-path">
+      <circle id="Ellipse_256" data-name="Ellipse 256" cx="60.5" cy="60.5" r="60.5" transform="translate(0 0)" fill="#5c5c5c"/>
+    </clipPath>
+  </defs>
+  <g id="Group_4276" data-name="Group 4276" transform="translate(24391.998 -1987)">
+    <circle id="Ellipse_73" data-name="Ellipse 73" cx="72.368" cy="72.368" r="72.368" transform="translate(-24391.998 1987)" fill="#fff"/>
+    <path id="Ellipse_73_-_Outline" data-name="Ellipse 73 - Outline" d="M72.5,6.042a66.458,66.458,0,1,0,46.993,19.465A66.458,66.458,0,0,0,72.5,6.042M72.5,0A72.5,72.5,0,1,1,0,72.5,72.5,72.5,0,0,1,72.5,0Z" transform="translate(-24391.998 1987)" fill="red"/>
+    <g id="Mask_Group_57" data-name="Mask Group 57" transform="translate(-24379.998 1999)" clip-path="url(#clip-path)">
+      <g id="Group_4211" data-name="Group 4211" transform="translate(-15.519 0)">
+        <circle id="Ellipse_255" data-name="Ellipse 255" cx="60.5" cy="60.5" r="60.5" transform="translate(15.519 0)" fill="#fff"/>
+        <g id="Flag_of_Canada" transform="translate(0 22.555)">
+          <path id="Path_5023" data-name="Path 5023" d="M0,0H38.074l1.571,1.571H112.65L114.221,0h38.074V76.147H114.221l-1.571-1.571H39.644l-1.571,1.571H0Z" fill="red"/>
+          <path id="Path_5024" data-name="Path 5024" d="M2400,0h76.147V76.147H2400Zm39.5,70.277-.714-13.691a1.507,1.507,0,0,1,1.76-1.555l13.627,2.4-1.84-5.076a1.031,1.031,0,0,1,.317-1.158L2467.581,39.1l-3.363-1.571a1.031,1.031,0,0,1-.54-1.253l2.951-9.074-8.6,1.824a1.031,1.031,0,0,1-1.158-.6l-1.666-3.918-6.71,7.2a1.031,1.031,0,0,1-1.761-.9l3.236-16.689-5.187,3a1.031,1.031,0,0,1-1.443-.428l-5.267-10.343-5.267,10.343a1.032,1.032,0,0,1-1.444.428l-5.187-3,3.236,16.689a1.031,1.031,0,0,1-1.761.9l-6.71-7.2-1.666,3.918a1.031,1.031,0,0,1-1.158.6l-8.6-1.824,2.951,9.074a1.032,1.032,0,0,1-.54,1.253l-3.363,1.571,14.928,12.088a1.033,1.033,0,0,1,.318,1.158l-1.841,5.076,13.627-2.4a1.507,1.507,0,0,1,1.761,1.555l-.714,13.691Z" transform="translate(-2361.927)" fill="#fff"/>
+        </g>
+        <rect id="Rectangle_715" data-name="Rectangle 715" width="37.781" height="103.641" transform="translate(113.545 10.211)" fill="red"/>
+        <rect id="Rectangle_716" data-name="Rectangle 716" width="37.781" height="103.641" transform="translate(0.713 10.211)" fill="red"/>
+      </g>
+    </g>
+  </g>
+</svg>

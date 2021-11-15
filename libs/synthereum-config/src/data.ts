@@ -7,6 +7,7 @@ import {
   ChainLinkPriceAggregators,
   FixedPointNumber,
   SynthereumConfig,
+  SyntheticTokenConfig,
   SyntheticTokens,
 } from './types/config';
 
@@ -50,52 +51,38 @@ export const chainlinkAggregators = typeCheck<ChainLinkPriceAggregators>()({
     PHPUSD: A<42>('0x0000000000000000000000000000000000000000'),
     ZARUSD: A<42>('0x0000000000000000000000000000000000000000'),
   },
-} as const);
+  137: {
+    EURUSD: A<137>('0x73366Fe0AA0Ded304479862808e02506FE556a98'),
+    GBPUSD: A<137>('0x099a2540848573e94fb1Ca0Fa420b00acbBc845a'),
+    CHFUSD: A<137>('0xc76f762CedF0F78a439727861628E0fdfE1e70c2'),
+    XAUUSD: A<137>('0x0C466540B2ee1a31b441671eac0ca886e051E410'),
+    PHPUSD: A<137>('0x218231089Bebb2A31970c3b77E96eCfb3BA006D1'),
+    SGDUSD: A<137>('0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299'),
+    CADUSD: A<137>('0xACA44ABb8B04D07D883202F99FA5E3c53ed57Fb5'),
+    JPYUSD: A<137>('0xD647a6fC9BC6402301583C91decC5989d8Bc382D'),
+    ETHUSD: A<137>('0xF9680D99D6C9589e2a93a78A04A279e509205945'),
 
-const syntheticTokensKovan = typeCheck<SyntheticTokens<'kovan'>>()({
-  jEUR: {
-    syntheticName: 'Jarvis Synthetic Euro',
-    syntheticSymbol: 'jEUR',
-    umaPriceFeedIdentifier: 'EURUSD',
-    jarvisPriceFeedIdentifier: 'EURUSD',
-    collateralRequirement: '1200000000000000000',
-    startingCollateralization: '1824000',
-    minSponsorTokens: '20000000000000000000',
-    isContractAllowed: false,
+    UMAETH: A<137>('0x0000000000000000000000000000000000000000'),
+    KRWUSD: A<137>('0x0000000000000000000000000000000000000000'),
+    NGNUSD: A<137>('0x0000000000000000000000000000000000000000'),
+    ZARUSD: A<137>('0x0000000000000000000000000000000000000000'),
   },
-  jCHF: {
-    syntheticName: 'Jarvis Synthetic Swiss Franc',
-    syntheticSymbol: 'jCHF',
-    umaPriceFeedIdentifier: 'CHFUSD',
-    jarvisPriceFeedIdentifier: 'USDCHF',
-    collateralRequirement: '1200000000000000000',
-    startingCollateralization: '1690000',
-    minSponsorTokens: '22000000000000000000',
-    isContractAllowed: false,
-  },
-  jGBP: {
-    syntheticName: 'Jarvis Synthetic British Pound',
-    syntheticSymbol: 'jGBP',
-    umaPriceFeedIdentifier: 'GBPUSD',
-    jarvisPriceFeedIdentifier: 'GBPUSD',
-    collateralRequirement: '1200000000000000000',
-    startingCollateralization: '2061000',
-    minSponsorTokens: '18000000000000000000',
-    isContractAllowed: false,
-  },
-  jXAU: {
-    syntheticName: 'Jarvis Synthetic Gold',
-    syntheticSymbol: 'jXAU',
-    umaPriceFeedIdentifier: 'XAUUSD',
-    jarvisPriceFeedIdentifier: 'XAUUSD',
-    collateralRequirement: '1200000000000000000',
-    startingCollateralization: '2780080000',
-    minSponsorTokens: '13000000000000000',
-    isContractAllowed: false,
+  80001: {
+    EURUSD: A<80001>('0x876e7aa32a6f71405bd3ba5151cc6a43d15bffe6'),
+    GBPUSD: A<80001>('0x6f94eed129e6e29b19951e5b6f40c025d2348cf2'),
+    CHFUSD: A<80001>('0x1d5cbe59b8166d35eaa309045c5dd34b453eb4f3'),
+    XAUUSD: A<80001>('0xddb827c1b6b29c02532739a53d226a57381e719c'),
+    ETHUSD: A<80001>('0x0715A7794a1dc8e42615F059dD6e406A6594651A'),
+
+    UMAETH: A<80001>('0x0000000000000000000000000000000000000000'),
+    CADUSD: A<80001>('0x0000000000000000000000000000000000000000'),
+    NGNUSD: A<80001>('0x0000000000000000000000000000000000000000'),
+    PHPUSD: A<80001>('0x0000000000000000000000000000000000000000'),
+    ZARUSD: A<80001>('0x0000000000000000000000000000000000000000'),
   },
 } as const);
 
-const syntheticTokensMainnet = typeCheck<SyntheticTokens<'mainnet'>>()({
+const syntheticTokens = typeCheck<SyntheticTokens<'mainnet'>>()({
   jEUR: {
     syntheticName: 'Jarvis Synthetic Euro',
     syntheticSymbol: 'jEUR',
@@ -184,21 +171,9 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       ),
     },
     perVersionConfig: {
-      v1: {
-        version: 1,
-        syntheticTokens: syntheticTokensKovan,
-      },
-      v2: {
-        version: 2,
-        syntheticTokens: syntheticTokensKovan,
-      },
-      v3: {
-        version: 3,
-        syntheticTokens: syntheticTokensKovan,
-      },
       v4: {
         version: 4,
-        syntheticTokens: syntheticTokensMainnet,
+        syntheticTokens,
       },
     },
   },
@@ -243,21 +218,94 @@ export const synthereumConfig = typeCheck<SynthereumConfig>()({
       ),
     },
     perVersionConfig: {
-      v1: {
-        version: 1,
-        syntheticTokens: syntheticTokensMainnet,
-      },
-      v2: {
-        version: 2,
-        syntheticTokens: syntheticTokensMainnet,
-      },
-      v3: {
-        version: 3,
-        syntheticTokens: syntheticTokensMainnet,
-      },
       v4: {
         version: 4,
-        syntheticTokens: syntheticTokensMainnet,
+        syntheticTokens,
+      },
+    },
+  },
+  '137': {
+    fees: {
+      feePercentage: toWeiString('0.001'),
+      feeRecipients: [
+        A<137>('0x8eF00583bAa186094D9A34a0A4750C1D1BB86831'),
+        A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
+      ],
+      feeProportions: [50, 50],
+    },
+    roles: {
+      admin: A<137>('0x8a73fdA882601C4B84B0C52D7d85E4BA46357ca1'),
+      maintainer: A<137>('0x05Bd62e8Be770A03C0Da0eC3033cB637331F0941'),
+      liquidityProvider: A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
+      validator: A<137>('0xc31249BA48763dF46388BA5C4E7565d62ed4801C'),
+    },
+    contractsDependencies: {
+      uma: {
+        identifierWhitelist: A<137>(
+          '0x2271a5E74eA8A29764ab10523575b41AA52455f0',
+        ),
+        finder: A<137>('0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64'),
+      },
+      synthereum: {
+        primaryCollateralToken: {
+          address: A<137>('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'),
+          symbol: primaryCollateralSymbol,
+        },
+        poolRegistry: A<137>('0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2'),
+        selfMintingRegistry: A<137>(
+          '0x0000000000000000000000000000000000000000',
+        ),
+      },
+      chainlink: chainlinkAggregators[137],
+    },
+    umaDerivativeConfig: {
+      disputeBondPct: toFixed('0.05'),
+      sponsorDisputeRewardPct: toFixed('0.05'),
+      disputerDisputeRewardPct: toFixed('0.2'),
+      withdrawalLiveness: 86400,
+      liquidationLiveness: 86400,
+      excessTokenBeneficiary: A<137>(
+        '0x8ef00583baa186094d9a34a0a4750c1d1bb86831',
+      ),
+    },
+    perVersionConfig: {
+      v4: {
+        version: 4,
+        syntheticTokens: {
+          ...syntheticTokens,
+          jPHP: typeCheck<SyntheticTokenConfig>()({
+            syntheticName: 'Jarvis Synthetic Philippine Peso',
+            syntheticSymbol: 'jPHP',
+            umaPriceFeedIdentifier: 'PHPUSD',
+            jarvisPriceFeedIdentifier: 'PHPUSD',
+            chainlinkPriceFeedIdentifier: 'PHPUSD',
+            collateralRequirement: '1050000000000000000',
+            startingCollateralization: '24490',
+            minSponsorTokens: '0',
+            isContractAllowed: true,
+          } as const),
+          jSGD: typeCheck<SyntheticTokenConfig>()({
+            syntheticName: 'Jarvis Synthetic Singapore Dollar',
+            syntheticSymbol: 'jSGD',
+            umaPriceFeedIdentifier: 'SGDUSD',
+            jarvisPriceFeedIdentifier: 'SGDUSD',
+            chainlinkPriceFeedIdentifier: 'SGDUSD',
+            collateralRequirement: '1050000000000000000',
+            startingCollateralization: '920375',
+            minSponsorTokens: '0',
+            isContractAllowed: true,
+          } as const),
+          jCAD: typeCheck<SyntheticTokenConfig>()({
+            syntheticName: 'Jarvis Synthetic Canadian Dollar',
+            syntheticSymbol: 'jCAD',
+            umaPriceFeedIdentifier: 'CADUSD',
+            jarvisPriceFeedIdentifier: 'CADUSD',
+            collateralRequirement: '1025000000000000000',
+            startingCollateralization: '889900',
+            minSponsorTokens: '0',
+            isContractAllowed: true,
+          } as const),
+        },
       },
     },
   },

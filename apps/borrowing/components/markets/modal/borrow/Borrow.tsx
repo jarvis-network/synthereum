@@ -192,7 +192,6 @@ export const Borrow: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Deposit',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon,
               },
               value: FPN.toWei(
                 collateralValue !== '' ? collateralValue : '0',
@@ -202,7 +201,6 @@ export const Borrow: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Borrow',
               asset: {
                 name: selectedAsset.assetOut.name,
-                icon: selectedAsset.assetOut.icon!,
               },
               value: FPN.toWei(
                 syntheticValue !== '' ? syntheticValue : '0',
@@ -212,7 +210,6 @@ export const Borrow: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Fee',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon,
               },
               value: `${fee.format(6)}`,
             },
@@ -286,10 +283,7 @@ export const Borrow: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
                     />
                   )}
 
-                  <Asset
-                    flag={selectedAsset.assetIn.icon}
-                    name={selectedAsset.assetIn.name}
-                  />
+                  <Asset name={selectedAsset.assetIn.name} />
                 </AssetSelect>
                 <ErrorMessage>
                   {balanceErrorMessage}
@@ -344,10 +338,7 @@ export const Borrow: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
                       }
                     />
                   )}
-                  <Asset
-                    flag={selectedAsset.assetOut.icon}
-                    name={selectedAsset.assetOut.name}
-                  />
+                  <Asset name={selectedAsset.assetOut.name} />
                 </AssetSelect>
 
                 <ErrorMessage>

@@ -81,7 +81,6 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
               title: 'Cancel Withdraw',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
               },
               value: FPN.fromWei(
                 asset!.positionWithdrawalRequestAmount!,
@@ -106,7 +105,6 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
               title: 'Approve Withdraw',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
               },
               value: FPN.fromWei(
                 asset!.positionWithdrawalRequestAmount!,
@@ -144,7 +142,6 @@ export const ManageWithdraw: React.FC<ManageWithdrawProps> = ({
                       title: 'Withdraw',
                       asset: {
                         name: selectedAsset.assetIn.name,
-                        icon: selectedAsset.assetIn.icon!,
                       },
                       value: FPN.fromWei(
                         asset!.positionWithdrawalRequestAmount!,

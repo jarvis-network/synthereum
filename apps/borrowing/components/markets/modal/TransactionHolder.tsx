@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FlagKeys, IconButton, styled } from '@jarvis-network/ui';
+import { IconButton, styled } from '@jarvis-network/ui';
 
 import { Img, ImgContainer } from '@/components/auth/flow/ModalComponents';
 import { useReduxSelector } from '@/state/useReduxSelector';
@@ -139,7 +139,7 @@ export const TransactionParams = ({ params }: TransactionParamsProps) => (
           <div>{param.title}</div>
           <ValueBox>
             <div>{param.value}</div>
-            <Asset flag={param.asset.icon} name={param.asset.name} />
+            <Asset name={param.asset.name} />
           </ValueBox>
         </AssetSelect>
       </div>
@@ -157,7 +157,6 @@ export interface PreviewParamsRow {
   title: string;
   asset: {
     name: string;
-    icon: FlagKeys;
   };
   value: string;
 }

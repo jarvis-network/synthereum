@@ -188,7 +188,7 @@ export const MarketCard: FC<MarketCardProps> = ({
   return (
     <Container>
       <Header>
-        <FlagsPair assets={[assetOut.icon, assetIn.icon]} /> {assetOut.name}-
+        <FlagsPair assets={[assetOut.name, assetIn.name]} /> {assetOut.name}-
         {assetIn.name}
       </Header>
 

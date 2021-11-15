@@ -36,6 +36,7 @@ import { AssetPair } from '@/data/assets';
 import { createPairs } from '@/utils/createPairs';
 import { useExchangeNotifications } from '@/utils/useExchangeNotifications';
 import { useExchangeValues } from '@/utils/useExchangeValues';
+import { useAssets } from '@/utils/useAssets';
 
 import { useSwap } from '@/components/exchange/useSwap';
 
@@ -230,7 +231,7 @@ const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 export const ExchangeCard: React.FC = () => {
   const notify = useExchangeNotifications();
   const dispatch = useDispatch();
-  const list = useReduxSelector(state => state.assets.list);
+  const list = useAssets();
   const wallet = useReduxSelector(state => state.wallet);
   const isApplicationReady = useReduxSelector(isAppReadySelector);
   const isExchangeConfirmationVisible = useReduxSelector(

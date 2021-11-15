@@ -3,8 +3,8 @@ import { ThemeNameType } from '@jarvis-network/ui';
 import { ExchangeSynthereumToken } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { cache } from '@jarvis-network/app-toolkit';
+import { primaryCollateralSymbol } from '@jarvis-network/synthereum-config';
 
-import { assets, Asset } from '@/data/assets';
 import { Transaction } from '@/data/transactions';
 import { SubscriptionPair } from '@/utils/priceFeed';
 
@@ -38,7 +38,7 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
-export const DEFAULT_PAY_ASSET: ExchangeSynthereumToken = 'USDC';
+export const DEFAULT_PAY_ASSET: ExchangeSynthereumToken = primaryCollateralSymbol;
 export const DEFAULT_RECEIVE_ASSET: ExchangeSynthereumToken = 'jEUR';
 
 export type Days = 1 | 7 | 30;
@@ -54,9 +54,6 @@ export interface State {
     isExchangeConfirmationVisible: boolean;
     isWindowLoaded: boolean;
     mobileTab: number;
-  };
-  assets: {
-    list: Asset[];
   };
   exchange: {
     // pay/receive are stored as string to allow incomplete input fills while
@@ -103,9 +100,6 @@ export const initialAppState: State = {
     isExchangeConfirmationVisible: false,
     isWindowLoaded: false,
     mobileTab: 1,
-  },
-  assets: {
-    list: assets,
   },
   exchange: {
     pay: '0',

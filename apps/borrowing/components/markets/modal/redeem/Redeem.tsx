@@ -207,7 +207,6 @@ export const Redeem: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Deposit',
               asset: {
                 name: selectedAsset.assetOut.name,
-                icon: selectedAsset.assetOut.icon!,
               },
               value: FPN.toWei(
                 syntheticValue !== '' ? syntheticValue : '0',
@@ -217,7 +216,6 @@ export const Redeem: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Redeem',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon,
               },
               value: FPN.toWei(
                 collateralValue !== '' ? collateralValue : '0',
@@ -227,7 +225,6 @@ export const Redeem: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Fee',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
               },
               value: `${fee.format(6)}`,
             },
@@ -291,10 +288,7 @@ export const Redeem: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
                   <Max onClick={onMaxSyntheticSelect} />
                   {/* TODO: Fix this and pass asset as 1 object */}
 
-                  <Asset
-                    flag={selectedAsset.assetOut.icon}
-                    name={selectedAsset.assetOut.name}
-                  />
+                  <Asset name={selectedAsset.assetOut.name} />
                 </AssetSelect>
                 <ErrorMessage>{errorMessage}</ErrorMessage>
                 <ErrorMessage>
@@ -343,10 +337,7 @@ export const Redeem: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
                     }}
                   />
                   <Max onClick={onMaxCollateralSelect} />
-                  <Asset
-                    flag={selectedAsset.assetIn.icon}
-                    name={selectedAsset.assetIn.name}
-                  />
+                  <Asset name={selectedAsset.assetIn.name} />
                 </AssetSelect>
 
                 <ErrorMessage>{collateralError}</ErrorMessage>

@@ -162,7 +162,6 @@ export const Deposit: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
               title: 'Deposit',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
               },
               value: FPN.toWei(
                 collateralValue !== '' ? collateralValue : '0',
@@ -210,10 +209,7 @@ export const Deposit: React.FC<ActionProps> = ({ assetKey, tabHandler }) => {
                   {maxCollateral && (
                     <Max onClick={() => onMaxSelect(maxCollateral.format(6))} />
                   )}
-                  <Asset
-                    flag={selectedAsset.assetIn.icon}
-                    name={selectedAsset.assetIn.name}
-                  />
+                  <Asset name={selectedAsset.assetIn.name} />
                 </AssetSelect>
                 <ErrorMessage>{collateralError}</ErrorMessage>
                 <ErrorMessage>{collateralRequiredError}</ErrorMessage>

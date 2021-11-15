@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Icon, styled, useTheme } from '@jarvis-network/ui';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 import { formatExchangeAmount, useWeb3 } from '@jarvis-network/app-toolkit';
+import { Network } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { State } from '@/state/initialState';
 import {
+  resetAssetsIfUnsupported,
   setBase,
   setPay,
   setPayAsset,
@@ -17,7 +19,7 @@ import {
   setAuthModalVisible,
   setExchangeConfirmationVisible,
 } from '@/state/slices/app';
-import { Asset as AssetType } from '@/data/assets';
+import { Asset as AssetType, polygonOnlyAssets } from '@/data/assets';
 
 import { ExchangeRate } from '@/components/exchange/ExchangeRate';
 import { useExchangeValues } from '@/utils/useExchangeValues';
@@ -160,7 +162,21 @@ export const MainForm: React.FC = () => {
     state => state.app.isSwapLoaderVisible,
   );
 
-  const { active } = useWeb3();
+  const { active, chainId: networkId } = useWeb3();
+
+  useEffect(() => {
+    if (networkId !== Network.polygon) {
+      if (
+        polygonOnlyAssets.includes(paySymbol as 'jPHP') ||
+        polygonOnlyAssets.includes(receiveSymbol as 'jPHP')
+      ) {
+        // This can happen if the page is loaded on mainnet but the app was closed on polygon with a polygon only asset chosen
+        setTimeout(() => {
+          dispatch(resetAssetsIfUnsupported());
+        }, 0);
+      }
+    }
+  }, [networkId, paySymbol, receiveSymbol, dispatch]);
 
   const wallet = useReduxSelector(
     state => (paySymbol && state.wallet[paySymbol]) || null,

@@ -123,7 +123,7 @@ export const ServiceSelect: React.FC<PageProps> = ({ onNext }) => (
     </Content>
     <Footer>
       <div>
-        <Flag flag="us" />
+        <Flag flag="USDC" />
       </div>
       <div>
         You will need <b>USDC</b> to interact with our <b>application</b>.

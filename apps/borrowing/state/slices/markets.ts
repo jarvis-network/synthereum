@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { FlagKeys } from '@jarvis-network/ui';
 
 import {
   networkSwitchAction,
@@ -14,19 +13,15 @@ import {
   SyntheticSymbolOf,
   CollateralOf,
   SelfMintingCollateralSymbol,
-  AssetFromSyntheticSymbol,
 } from '@jarvis-network/synthereum-config';
 
 import { StringAmount } from '@jarvis-network/core-utils/dist/base/big-number';
 
-export type MarketAssetFlag = FlagKeys | null;
 export interface MarketAsset<T extends SupportedSelfMintingSymbol> {
   name: T;
-  icon: Lowercase<AssetFromSyntheticSymbol<T>> | null;
 }
 export interface MarketCollateral<T extends SelfMintingCollateralSymbol> {
   name: T;
-  icon: Lowercase<T>;
 }
 export interface Market<
   Out extends SupportedSelfMintingSymbol = SupportedSelfMintingSymbol,

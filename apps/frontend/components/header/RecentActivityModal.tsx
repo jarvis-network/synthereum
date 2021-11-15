@@ -27,7 +27,7 @@ const mapTransactionToAssetRow = (
   io: TransactionIO,
   isFrom?: boolean,
 ): AssetProps => ({
-  flag: io.asset.icon ?? undefined,
+  flag: io.asset.symbol,
   name: io.asset.symbol,
   value: isFrom
     ? io.amount.mul(new BN('-1')).toString(10)

@@ -27,6 +27,7 @@ import { useReduxSelector } from '@/state/useReduxSelector';
 import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-ts/dist/config';
 import { createPairs } from '@/utils/createPairs';
 import { isAppReadySelector } from '@/state/selectors';
+import { useAssets } from '@/utils/useAssets';
 
 const Box = styled.div<{ hasContent: boolean }>`
   display: flex;
@@ -227,7 +228,7 @@ const InfoBox: React.FC<Props> = ({
 
   const isApplicationReady = useReduxSelector(isAppReadySelector);
 
-  const allAssets = useReduxSelector(state => state.assets.list);
+  const allAssets = useAssets();
   const options = useMemo(
     () =>
       createPairs(allAssets).map<Option>(p => {
@@ -237,8 +238,8 @@ const InfoBox: React.FC<Props> = ({
           label,
           icon: (
             <Flags>
-              {p.input.icon && <Flag flag={p.input.icon} />}
-              {p.output.icon && <Flag flag={p.output.icon} />}
+              <Flag flag={p.input.symbol} />
+              <Flag flag={p.output.symbol} />
             </Flags>
           ),
         };

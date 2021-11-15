@@ -19,6 +19,7 @@ export const supportedSynthereumPairs = typeCheck<
 >()({
   1: ['EURUSD', 'GBPUSD', 'CHFUSD'],
   42: ['EURUSD', 'GBPUSD', 'CHFUSD', 'XAUUSD'],
+  137: ['EURUSD', 'GBPUSD', 'CHFUSD', 'CADUSD', 'SGDUSD', 'PHPUSD'],
 } as const);
 
 export type SupportedSynthereumPairs = typeof supportedSynthereumPairs;

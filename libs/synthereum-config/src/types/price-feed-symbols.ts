@@ -28,6 +28,7 @@ export const assetSymbols = [
   'SPX',
   'XTI',
   'XAG',
+  'SGD',
 ] as const;
 
 export type PairLike<
@@ -130,6 +131,7 @@ export const allSyntheticSymbols = typeCheck<SyntheticSymbol[]>()([
   'jPHP',
   'jJPY',
   'jNGN',
+  'jSGD',
 ] as const);
 
 export const priceFeed = typeCheck<PriceFeed>()({
@@ -146,6 +148,7 @@ export const priceFeed = typeCheck<PriceFeed>()({
   jPHP: 'PHPUSD',
   jJPY: 'JPYUSD',
   jNGN: 'NGNUSD',
+  jSGD: 'SGDUSD',
 } as const);
 
 export const reversedPriceFeedPairs: string[] = [priceFeed.jCHF];

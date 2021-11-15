@@ -118,7 +118,7 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
             Exchange: <TokenValue>{formatExchangeAmount(payString)}</TokenValue>
           </Key>
           <Value>
-            <Flag flag={assetPay!.icon!} />
+            <Flag flag={assetPay!.symbol} />
             <TokenName>{paySymbol}</TokenName>
           </Value>
         </Line>
@@ -127,7 +127,7 @@ export const SwapConfirm: FC<SwapConfirmProps> = ({ onConfim }) => {
             For: <TokenValue>{formatExchangeAmount(receiveString)}</TokenValue>
           </Key>
           <Value>
-            <Flag flag={assetReceive!.icon!} />
+            <Flag flag={assetReceive!.symbol} />
             <TokenName>{receiveSymbol}</TokenName>
           </Value>
         </Line>

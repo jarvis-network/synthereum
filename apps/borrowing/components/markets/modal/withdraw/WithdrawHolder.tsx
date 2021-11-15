@@ -80,7 +80,6 @@ export const WithdrawHolder: React.FC<WithdrawHolderProps> = ({
                       title: 'Withdraw',
                       asset: {
                         name: selectedAsset.assetIn.name,
-                        icon: selectedAsset.assetIn.icon!,
                       },
                       value: FPN.fromWei(
                         asset!.positionWithdrawalRequestAmount!,

@@ -24,6 +24,7 @@ import {
 } from '@/state/slices/exchange';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { Asset, AssetWithWalletInfo } from '@/data/assets';
+import { useAssets } from '@/utils/useAssets';
 
 import { StyledSearchBar } from './StyledSearchBar';
 
@@ -53,10 +54,7 @@ const grid = {
       type: ColumnType.CustomCell,
       cell: ({ original }: CellInfo) => {
         const o = original as Asset;
-        if (!o.icon) {
-          return null;
-        }
-        return <Flag flag={o.icon} />;
+        return <Flag flag={o.symbol} />;
       },
       className: 'flag',
     },
@@ -208,8 +206,9 @@ const ScrollableTabs = styled(StyledTabs)`
 
 export const ChooseAsset: React.FC = () => {
   const dispatch = useDispatch();
+  const assets = useAssets();
   const list = useReduxSelector(state =>
-    state.assets.list.map(
+    assets.map(
       (asset): AssetWithWalletInfo => {
         const ownedAmount = state.wallet[asset.symbol]?.amount || new FPN('0');
 

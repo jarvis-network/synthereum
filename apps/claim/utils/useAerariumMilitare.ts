@@ -9,14 +9,14 @@ import {
 } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 import { useMemo } from 'react';
 import { AddressOn } from '@jarvis-network/core-utils/dist/eth/address';
-import {
-  isSupportedNetwork,
-  SupportedNetworkId,
-} from '@jarvis-network/synthereum-config';
 import { ContractInstance } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 
 import { AerariumMilitare } from '@/data/AerariumMilitare';
 import { addresses } from '@/data/addresses';
+import {
+  isSupportedNetwork,
+  SupportedNetworkId,
+} from '@/utils/supportedNetworks';
 
 import ABI from '../data/abi.json';
 

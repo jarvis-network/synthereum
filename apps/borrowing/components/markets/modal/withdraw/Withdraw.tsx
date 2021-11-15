@@ -151,7 +151,6 @@ export const Withdraw: React.FC<ActionProps> = ({ assetKey }) => {
               title: 'Withdraw',
               asset: {
                 name: selectedAsset.assetIn.name,
-                icon: selectedAsset.assetIn.icon!,
               },
               value: FPN.toWei(
                 collateralValue !== '' ? collateralValue : '0',
@@ -188,10 +187,7 @@ export const Withdraw: React.FC<ActionProps> = ({ assetKey }) => {
                       e.target.select();
                     }}
                   />
-                  <Asset
-                    flag={selectedAsset.assetIn.icon}
-                    name={selectedAsset.assetIn.name}
-                  />
+                  <Asset name={selectedAsset.assetIn.name} />
                 </AssetSelect>
 
                 <ErrorMessage>{collateralError}</ErrorMessage>

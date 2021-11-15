@@ -1,19 +1,17 @@
-import { FlagKeys } from '@jarvis-network/ui';
 import {
   primaryCollateralSymbol,
   ExchangeSynthereumToken,
   synthereumConfig,
+  allSyntheticSymbols,
 } from '@jarvis-network/synthereum-ts/dist/config';
 import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
 
 import { SubscriptionPair } from '@/utils/priceFeed';
-import { PerSynthereumPair } from '@jarvis-network/synthereum-config';
 
 export interface Asset {
   name: string;
   symbol: ExchangeSynthereumToken;
   pair: SubscriptionPair | null;
-  icon: FlagKeys | null;
   price: FPN | null;
   decimals: number;
   type: 'forex' | 'crypto';
@@ -31,7 +29,6 @@ export const PRIMARY_STABLE_COIN: Asset = {
   name: 'USDC',
   symbol: primaryCollateralSymbol,
   pair: null,
-  icon: 'us',
   price: new FPN(1),
   decimals: 6,
   type: 'forex',
@@ -42,13 +39,6 @@ export interface AssetWithWalletInfo extends Asset {
   ownedAmount: FPN;
 }
 
-const assetIconMap: PerSynthereumPair<FlagKeys | null> = {
-  jEUR: 'eur',
-  jGBP: 'gbp',
-  jCHF: 'chf',
-  jXAU: 'xau',
-} as const;
-
 // FIXME: Instead of hardcoding the networkId and pool version make them dynamic
 const syntheticAssets: Asset[] = Object.values(
   synthereumConfig[1].perVersionConfig.v4.syntheticTokens,
@@ -56,10 +46,29 @@ const syntheticAssets: Asset[] = Object.values(
   name: info.syntheticName,
   symbol: info.syntheticSymbol,
   pair: info.umaPriceFeedIdentifier,
-  icon: assetIconMap[info.syntheticSymbol],
+  price: null,
+  decimals: 18,
+  type: 'forex',
+}));
+const syntheticAssetsPolygon: Asset[] = Object.values(
+  synthereumConfig[137].perVersionConfig.v4.syntheticTokens,
+).map(info => ({
+  name: info.syntheticName,
+  symbol: info.syntheticSymbol,
+  pair: info.umaPriceFeedIdentifier,
   price: null,
   decimals: 18,
   type: 'forex',
 }));
 
 export const assets: Asset[] = [PRIMARY_STABLE_COIN, ...syntheticAssets];
+export const assetsPolygon: Asset[] = [
+  PRIMARY_STABLE_COIN,
+  ...syntheticAssetsPolygon,
+];
+
+export const polygonOnlyAssets: typeof allSyntheticSymbols[number][] = [
+  'jPHP',
+  'jSGD',
+  'jCAD',
+];

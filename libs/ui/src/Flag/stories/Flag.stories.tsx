@@ -8,10 +8,10 @@ export default {
   component: Flag,
 };
 
-export const Default = () => <Flag flag="chf" />;
+export const Default = () => <Flag flag="jCHF" />;
 
 export const Knobs = () => {
-  const flag = select('Flag', ['us', 'eur', 'chf', 'gbp', 'xau'], 'us');
+  const flag = select('Flag', ['USDC', 'jEUR', 'jCHF', 'jGBP', 'jXAU'], 'USDC');
   const size = select('Size', ['small', 'medium', 'big'], 'medium');
 
   return <Flag flag={flag} size={size} />;
