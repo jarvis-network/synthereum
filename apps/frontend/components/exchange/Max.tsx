@@ -46,10 +46,8 @@ export const Max: React.FC = () => {
     return null;
   }
 
-  const formattedMax = max.format(4);
-
   const handleClick = () => {
-    dispatch(setPay(formattedMax));
+    dispatch(setPay(max.format()));
     dispatch(setBase('pay'));
   };
   return <Container onClick={handleClick}>Max</Container>;
