@@ -18,7 +18,9 @@ import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {SynthereumLiquidityPoolLib} from './LiquidityPoolLib.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -31,7 +33,7 @@ contract SynthereumLiquidityPool is
   AccessControlEnumerable,
   ISynthereumLiquidityPoolStorage,
   ISynthereumLiquidityPool,
-  Lockable
+  ReentrancyGuard
 {
   using SynthereumLiquidityPoolLib for Storage;
   using SynthereumLiquidityPoolLib for Liquidation;
@@ -692,13 +694,7 @@ contract SynthereumLiquidityPool is
    * @notice Returns the total amount of liquidity deposited in the pool, but nut used as collateral
    * @return Total available liquidity
    */
-  function totalAvailableLiquidity()
-    external
-    view
-    override
-    nonReentrantView
-    returns (uint256)
-  {
+  function totalAvailableLiquidity() external view override returns (uint256) {
     return poolStorage.totalAvailableLiquidity(lpPosition, feeStatus);
   }
 
@@ -760,13 +756,7 @@ contract SynthereumLiquidityPool is
    * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
    * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
    */
-  function collateralCoverage()
-    external
-    view
-    override
-    nonReentrantView
-    returns (bool, uint256)
-  {
+  function collateralCoverage() external view override returns (bool, uint256) {
     return poolStorage.collateralCoverage(lpPosition, liquidationData);
   }
 
@@ -781,7 +771,6 @@ contract SynthereumLiquidityPool is
     external
     view
     override
-    nonReentrantView
     returns (uint256 synthTokensReceived, uint256 feePaid)
   {
     (synthTokensReceived, feePaid) = poolStorage.getMintTradeInfo(
@@ -802,7 +791,6 @@ contract SynthereumLiquidityPool is
     external
     view
     override
-    nonReentrantView
     returns (uint256 collateralAmountReceived, uint256 feePaid)
   {
     (collateralAmountReceived, feePaid) = poolStorage.getRedeemTradeInfo(
@@ -826,7 +814,6 @@ contract SynthereumLiquidityPool is
     external
     view
     override
-    nonReentrantView
     returns (uint256 destSyntheticTokensReceived, uint256 feePaid)
   {
     (destSyntheticTokensReceived, feePaid) = poolStorage.getExchangeTradeInfo(

@@ -14,13 +14,15 @@ import {
 import {SynthereumInterfaces} from '../../../core/Constants.sol';
 import {CreditLineCreator} from './CreditLineCreator.sol';
 import {CreditLine} from './CreditLine.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /** @title Contract factory of self-minting derivatives
  */
 contract CreditLineFactory is
   IDeploymentSignature,
-  Lockable,
+  ReentrancyGuard,
   CreditLineCreator
 {
   //----------------------------------------

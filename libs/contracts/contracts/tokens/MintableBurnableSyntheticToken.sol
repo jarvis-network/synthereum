@@ -1,28 +1,24 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 import {MintableBurnableERC20} from './MintableBurnableERC20.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
 
 /**
  * @title Synthetic token contract
  * Inherits from MintableBurnableERC20
  */
-contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
+contract MintableBurnableSyntheticToken is MintableBurnableERC20 {
   constructor(
     string memory tokenName,
     string memory tokenSymbol,
     uint8 tokenDecimals
-  )
-    MintableBurnableERC20(tokenName, tokenSymbol, tokenDecimals)
-    nonReentrant()
-  {}
+  ) MintableBurnableERC20(tokenName, tokenSymbol, tokenDecimals) {}
 
   /**
    * @notice Add minter role to account
    * @dev The caller must have the admin role
    * @param account The address on which minter role is added
    */
-  function addMinter(address account) public override nonReentrant() {
+  function addMinter(address account) public override {
     super.addMinter(account);
   }
 
@@ -31,7 +27,7 @@ contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
    * @dev The caller must have the admin role
    * @param account The address to which burner role is added
    */
-  function addBurner(address account) public override nonReentrant() {
+  function addBurner(address account) public override {
     super.addBurner(account);
   }
 
@@ -40,7 +36,7 @@ contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
    * @dev The caller must have the admin role.
    * @param account The address to which the admin role is added.
    */
-  function addAdmin(address account) public override nonReentrant() {
+  function addAdmin(address account) public override {
     super.addAdmin(account);
   }
 
@@ -49,39 +45,35 @@ contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
    * @dev The caller must have the admin role.
    * @param account The address to which the admin, minter and burner roles are added.
    */
-  function addAdminAndMinterAndBurner(address account)
-    public
-    override
-    nonReentrant()
-  {
+  function addAdminAndMinterAndBurner(address account) public override {
     super.addAdminAndMinterAndBurner(account);
   }
 
   /**
    * @notice Minter renounce to minter role
    */
-  function renounceMinter() public override nonReentrant() {
+  function renounceMinter() public override {
     super.renounceMinter();
   }
 
   /**
    * @notice Burner renounce to burner role
    */
-  function renounceBurner() public override nonReentrant() {
+  function renounceBurner() public override {
     super.renounceBurner();
   }
 
   /**
    * @notice Admin renounce to admin role
    */
-  function renounceAdmin() public override nonReentrant() {
+  function renounceAdmin() public override {
     super.renounceAdmin();
   }
 
   /**
    * @notice Admin, minter and murner renounce to admin, minter and burner roles
    */
-  function renounceAdminAndMinterAndBurner() public override nonReentrant() {
+  function renounceAdminAndMinterAndBurner() public override {
     super.renounceAdminAndMinterAndBurner();
   }
 
@@ -90,12 +82,7 @@ contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
    * @param account The address which is checked for the minter role.
    * @return bool True if the provided account is a minter.
    */
-  function isMinter(address account)
-    public
-    view
-    nonReentrantView()
-    returns (bool)
-  {
+  function isMinter(address account) public view returns (bool) {
     return hasRole(MINTER_ROLE, account);
   }
 
@@ -104,12 +91,7 @@ contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
    * @param account The address which is checked for the burner role.
    * @return bool True if the provided account is a burner.
    */
-  function isBurner(address account)
-    public
-    view
-    nonReentrantView()
-    returns (bool)
-  {
+  function isBurner(address account) public view returns (bool) {
     return hasRole(BURNER_ROLE, account);
   }
 
@@ -118,12 +100,7 @@ contract MintableBurnableSyntheticToken is MintableBurnableERC20, Lockable {
    * @param account The address which is checked for the admin role.
    * @return bool True if the provided account is an admin.
    */
-  function isAdmin(address account)
-    public
-    view
-    nonReentrantView()
-    returns (bool)
-  {
+  function isAdmin(address account) public view returns (bool) {
     return hasRole(DEFAULT_ADMIN_ROLE, account);
   }
 

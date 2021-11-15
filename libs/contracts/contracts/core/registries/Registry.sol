@@ -10,12 +10,14 @@ import {
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {EnumerableBytesSet} from '../../base/utils/EnumerableBytesSet.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
-import {Lockable} from '@uma/core/contracts/common/implementation/Lockable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 
 /**
  * @title Register and track all the pools deployed
  */
-contract SynthereumRegistry is ISynthereumRegistry, Lockable {
+contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
   using EnumerableSet for EnumerableSet.AddressSet;
   using EnumerableSet for EnumerableSet.UintSet;
   using EnumerableBytesSet for EnumerableBytesSet.BytesSet;
