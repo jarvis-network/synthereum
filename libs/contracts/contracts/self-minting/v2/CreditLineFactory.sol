@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
   IDeploymentSignature
-} from '../../../core/interfaces/IDeploymentSignature.sol';
+} from '../../core/interfaces/IDeploymentSignature.sol';
 import {
   ISynthereumCollateralWhitelist
-} from '../../../core/interfaces/ICollateralWhitelist.sol';
+} from '../../core/interfaces/ICollateralWhitelist.sol';
 import {
   ISynthereumIdentifierWhitelist
-} from '../../../core/interfaces/IIdentifierWhitelist.sol';
-import {SynthereumInterfaces} from '../../../core/Constants.sol';
+} from '../../core/interfaces/IIdentifierWhitelist.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {CreditLineCreator} from './CreditLineCreator.sol';
 import {CreditLine} from './CreditLine.sol';
 import {

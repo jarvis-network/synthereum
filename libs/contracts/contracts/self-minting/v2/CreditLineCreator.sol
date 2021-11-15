@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {
   IMintableBurnableERC20
-} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 import {
   BaseControlledMintableBurnableERC20
-} from '../../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
-import {SynthereumInterfaces} from '../../../core/Constants.sol';
+} from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';

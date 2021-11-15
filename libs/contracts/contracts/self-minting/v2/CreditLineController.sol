@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {
   ISynthereumRegistry
-} from '../../../core/registries/interfaces/IRegistry.sol';
+} from '../../core/registries/interfaces/IRegistry.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {
   ISynthereumFactoryVersioning
-} from '../../../core/interfaces/IFactoryVersioning.sol';
+} from '../../core/interfaces/IFactoryVersioning.sol';
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {
   SynthereumInterfaces,
   FactoryInterfaces
-} from '../../../core/Constants.sol';
+} from '../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';

@@ -3,13 +3,13 @@ pragma solidity ^0.8.4;
 
 import {ICreditLineStorage} from './interfaces/ICreditLineStorage.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
+import {IStandardERC20} from '../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
-} from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
-import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
-import {SynthereumInterfaces} from '../../../core/Constants.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';

@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import {ISynthereumFinder} from '../core/interfaces/IFinder.sol';
 import {
   ICreditLineStorage
-} from '../derivative/self-minting/v2/interfaces/ICreditLineStorage.sol';
+} from '../self-minting/v2/interfaces/ICreditLineStorage.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
