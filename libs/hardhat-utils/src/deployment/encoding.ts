@@ -118,7 +118,7 @@ function encodeCreditLineDerivative(
           },
           liquidationPercentage: 'uint256',
           capMintAmount: 'uint256',
-          overCollateralization: 'uint256',
+          collateralRequirement: 'uint256',
           minSponsorTokens: {
             rawValue: 'uint256',
           },
@@ -147,7 +147,7 @@ function encodeCreditLineDerivative(
         },
         liquidationPercentage,
         capMintAmount,
-        overCollateralization: collateralRequirement,
+        collateralRequirement,
         minSponsorTokens: { rawValue: minSponsorTokens },
         excessTokenBeneficiary,
         version,

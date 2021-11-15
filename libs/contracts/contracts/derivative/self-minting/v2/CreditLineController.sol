@@ -51,8 +51,7 @@ contract CreditLineController is
 
   mapping(address => FixedPoint.Unsigned) private liquidationReward;
 
-  mapping(address => FixedPoint.Unsigned)
-    private overCollateralizationPercentage;
+  mapping(address => FixedPoint.Unsigned) private collateralRequirement;
 
   mapping(address => ICreditLineStorage.Fee) private fee;
 
@@ -81,9 +80,9 @@ contract CreditLineController is
     uint256 liquidationReward
   );
 
-  event SetOvercollateralization(
+  event SetCollateralRequirement(
     address indexed selfMintingDerivative,
-    uint256 overcollateralizationPercentage
+    uint256 collateralRequirement
   );
 
   //----------------------------------------
@@ -156,16 +155,16 @@ contract CreditLineController is
   //----------------------------------------
   // External functions
   //----------------------------------------
-  function setOvercollateralization(
+  function setCollateralRequirement(
     address[] calldata selfMintingDerivatives,
-    uint256[] calldata overcollateralPct
+    uint256[] calldata collateralRequirements
   ) external override onlyMaintainerOrSelfMintingFactory {
     require(
       selfMintingDerivatives.length > 0,
       'No self-minting derivatives passed'
     );
     require(
-      selfMintingDerivatives.length == overcollateralPct.length,
+      selfMintingDerivatives.length == collateralRequirements.length,
       'Number of derivatives and overcollaterals must be the same'
     );
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
@@ -175,9 +174,9 @@ contract CreditLineController is
           ICreditLine(selfMintingDerivatives[j])
         );
       }
-      _setOvercollateralization(
+      _setCollateralRequirement(
         selfMintingDerivatives[j],
-        overcollateralPct[j]
+        collateralRequirements[j]
       );
     }
   }
@@ -286,13 +285,13 @@ contract CreditLineController is
     }
   }
 
-  function getOvercollateralizationPercentage(address selfMintingDerivative)
+  function getCollateralRequirement(address selfMintingDerivative)
     external
     view
     override
     returns (uint256)
   {
-    return overCollateralizationPercentage[selfMintingDerivative].rawValue;
+    return collateralRequirement[selfMintingDerivative].rawValue;
   }
 
   function getLiquidationRewardPercentage(address selfMintingDerivative)
@@ -326,14 +325,18 @@ contract CreditLineController is
   // Internal functions
   //----------------------------------------
 
-  function _setOvercollateralization(
+  function _setCollateralRequirement(
     address selfMintingDerivative,
     uint256 percentage
   ) internal {
-    require(percentage > 1, 'Overcollateralisation must be bigger than 100%');
-    overCollateralizationPercentage[selfMintingDerivative] = FixedPoint
-      .Unsigned(percentage);
-    emit SetOvercollateralization(selfMintingDerivative, percentage);
+    require(
+      percentage > 10**18,
+      'Overcollateralisation must be bigger than 100%'
+    );
+    collateralRequirement[selfMintingDerivative] = FixedPoint.Unsigned(
+      percentage
+    );
+    emit SetCollateralRequirement(selfMintingDerivative, percentage);
   }
 
   function _setFeeRecipients(

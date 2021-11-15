@@ -138,12 +138,12 @@ interface ICreditLine is IEmergencyShutdown, ISynthereumDeployment {
 
   /**
    * @notice Returns the over collateralization percentage of the derivative contract
-   * @return overcollateralizationPct percentage of overcollateralization
+   * @return collateralRequirement percentage of overcollateralization
    */
-  function getOvercollateralization()
+  function getCollateralRequirement()
     external
     view
-    returns (uint256 overcollateralizationPct);
+    returns (uint256 collateralRequirement);
 
   /**
    * @notice Delete a TokenSponsor position. This function can only be called by the contract itself.

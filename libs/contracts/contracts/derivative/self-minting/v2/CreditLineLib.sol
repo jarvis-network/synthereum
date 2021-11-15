@@ -669,10 +669,10 @@ library CreditLineLib {
     fee = positionManagerData._getFeeInfo();
   }
 
-  function overCollateralization(
+  function collateralRequirement(
     ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) external view returns (FixedPoint.Unsigned memory percentage) {
-    percentage = positionManagerData._getOverCollateralization();
+  ) external view returns (FixedPoint.Unsigned memory) {
+    return positionManagerData._getCollateralRequirement();
   }
 
   //----------------------------------------
@@ -806,7 +806,7 @@ library CreditLineLib {
       numTokens.mul(oraclePrice).div(10**(18 - collateralDecimals));
 
     thresholdValue = thresholdValue.mul(
-      positionManagerData._getOverCollateralization()
+      positionManagerData._getCollateralRequirement()
     );
 
     return collateral.isGreaterThanOrEqual(thresholdValue);
@@ -862,18 +862,15 @@ library CreditLineLib {
     );
   }
 
-  function _getOverCollateralization(
+  function _getCollateralRequirement(
     ICreditLineStorage.PositionManagerData storage positionManagerData
-  )
-    internal
-    view
-    returns (FixedPoint.Unsigned memory overCollateralizationPercentage)
-  {
-    overCollateralizationPercentage = FixedPoint.Unsigned(
-      positionManagerData
-        .getCreditLineController()
-        .getOvercollateralizationPercentage(address(this))
-    );
+  ) internal view returns (FixedPoint.Unsigned memory) {
+    return
+      FixedPoint.Unsigned(
+        positionManagerData.getCreditLineController().getCollateralRequirement(
+          address(this)
+        )
+      );
   }
 
   // Get mint amount limit from CreditLineController
