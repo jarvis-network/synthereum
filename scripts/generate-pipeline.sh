@@ -49,5 +49,5 @@ before_script:
         NETLIFY_SITE_ID: '\$NETLIFY_SITE_ID_CLAIM'
   script:
     - yarn build \$TARGET
-    - yarn netlify deploy --dir "/src/apps/\$TARGET/out" --site "\$NETLIFY_SITE_ID" --auth "\$NETLIFY_AUTH_TOKEN"
+    - yarn netlify deploy --dir "/src/apps/\$TARGET/out" --site "\$NETLIFY_SITE_ID" --auth "\$NETLIFY_AUTH_TOKEN" --debug
 EOF
