@@ -38,7 +38,14 @@
     ]
   },
   "dependencies": {
-    "bnc-onboard": "^1.30.0",
+    "@web3-react/core": "^6.1.9",
+    "@web3-react/fortmatic-connector": "^6.1.6",
+    "@web3-react/injected-connector": "^6.0.7",
+    "@web3-react/ledger-connector": "^6.1.9",
+    "@web3-react/portis-connector": "^6.1.9",
+    "@web3-react/torus-connector": "^6.1.9",
+    "@web3-react/walletconnect-connector": "^6.2.8",
+    "@web3-react/walletlink-connector": "^6.2.8",
     "eth-ens-namehash": "^2.0.8",
     "ethereum-blockies": "^0.1.1",
     "rxjs": "^7.3.0",
