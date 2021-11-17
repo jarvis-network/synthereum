@@ -146,7 +146,7 @@ contract SynthereumDeployer is
     ISynthereumRegistry selfMintingRegistry = getSelfMintingRegistry();
     selfMintingRegistry.register(
       selfMintingDerivative.syntheticTokenSymbol(),
-      selfMintingDerivative.syntheticToken(),
+      selfMintingDerivative.collateralToken(),
       selfMintingDerVersion,
       address(selfMintingDerivative)
     );
