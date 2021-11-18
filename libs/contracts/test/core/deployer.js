@@ -113,7 +113,8 @@ contract('Deployer', function (accounts) {
   beforeEach(async () => {
     deployerInstance = await SynthereumDeployer.deployed();
     poolVersion = 5;
-    synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
+    finderInstance = await SynthereumFinder.deployed();
+    synthereumFinderAddress = finderInstance.address;
     manager = (await SynthereumManager.deployed()).address;
     poolPayload = encodeLiquidityPool(
       collateralAddress,
@@ -522,6 +523,16 @@ contract('Deployer', function (accounts) {
       );
     });
     it('Can revert if pool version is different from the one using in the deployemnt', async () => {
+      const creditLine = await CreditLineController.new(
+        synthereumFinderAddress,
+        roles,
+        3,
+      );
+      await finderInstance.changeImplementationAddress(
+        web3.utils.stringToHex('CreditLineController'),
+        creditLine.address,
+        { from: maintainer },
+      );
       const wrongDerVersion = 3;
       selfMintingPayload = encodeCreditLineDerivative(
         selfMintingCollateralAddress,
@@ -546,6 +557,11 @@ contract('Deployer', function (accounts) {
           },
         ),
         'Wrong version in deployment',
+      );
+      await finderInstance.changeImplementationAddress(
+        web3.utils.stringToHex('CreditLineController'),
+        (await CreditLineController.deployed()).address,
+        { from: maintainer },
       );
     });
   });
