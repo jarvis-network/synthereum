@@ -14,6 +14,7 @@ import {
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {CreditLineCreator} from './CreditLineCreator.sol';
 import {CreditLine} from './CreditLine.sol';
+import {FactoryConditions} from '../../common/FactoryConditions.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -23,6 +24,7 @@ import {
 contract CreditLineFactory is
   IDeploymentSignature,
   ReentrancyGuard,
+  FactoryConditions,
   CreditLineCreator
 {
   //----------------------------------------
@@ -54,29 +56,10 @@ contract CreditLineFactory is
     nonReentrant
     returns (CreditLine creditLine)
   {
-    ISynthereumFinder _synthereumFinder = ISynthereumFinder(synthereumFinder);
-    address deployer =
-      _synthereumFinder.getImplementationAddress(SynthereumInterfaces.Deployer);
-    require(msg.sender == deployer, 'Sender must be Synthereum deployer');
-    ISynthereumCollateralWhitelist collateralWhitelist =
-      ISynthereumCollateralWhitelist(
-        _synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.CollateralWhitelist
-        )
-      );
-    require(
-      collateralWhitelist.isOnWhitelist(address(params.collateralToken)),
-      'Collateral not supported'
-    );
-    ISynthereumIdentifierWhitelist identifierWhitelist =
-      ISynthereumIdentifierWhitelist(
-        _synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.IdentifierWhitelist
-        )
-      );
-    require(
-      identifierWhitelist.isOnWhitelist(params.priceFeedIdentifier),
-      'Identifier not supported'
+    checkDeploymentConditions(
+      synthereumFinder,
+      params.collateralToken,
+      params.priceFeedIdentifier
     );
     creditLine = super.createSelfMintingDerivative(params);
   }
