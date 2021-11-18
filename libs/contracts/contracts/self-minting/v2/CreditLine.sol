@@ -36,6 +36,8 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
   // Constants
   //----------------------------------------
 
+  string public constant override typology = 'SELF-MINTING';
+
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   //----------------------------------------

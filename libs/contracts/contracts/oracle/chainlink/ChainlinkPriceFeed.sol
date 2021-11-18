@@ -10,6 +10,7 @@ import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   ISynthereumChainlinkPriceFeed
 } from './interfaces/IChainlinkPriceFeed.sol';
+import {ITypology} from '../../common/interfaces/ITypology.sol';
 import {
   AggregatorV3Interface
 } from '@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol';
@@ -72,23 +73,35 @@ contract SynthereumChainlinkPriceFeed is
     _;
   }
 
-  modifier onlyPools() {
+  modifier onlyPoolsOrSelfMinting() {
     if (msg.sender != tx.origin) {
-      ISynthereumRegistry poolRegister =
-        ISynthereumRegistry(
+      bytes32 typology =
+        keccak256(abi.encodePacked(ITypology(msg.sender).typology()));
+      ISynthereumRegistry registry;
+      if (typology == keccak256(abi.encodePacked('POOL'))) {
+        registry = ISynthereumRegistry(
           synthereumFinder.getImplementationAddress(
             SynthereumInterfaces.PoolRegistry
           )
         );
-      ISynthereumDeployment pool = ISynthereumDeployment(msg.sender);
+      } else if (typology == keccak256(abi.encodePacked('SELF-MINTING'))) {
+        registry = ISynthereumRegistry(
+          synthereumFinder.getImplementationAddress(
+            SynthereumInterfaces.SelfMintingRegistry
+          )
+        );
+      } else {
+        revert('Typology not supported');
+      }
+      ISynthereumDeployment callingContract = ISynthereumDeployment(msg.sender);
       require(
-        poolRegister.isDeployed(
-          pool.syntheticTokenSymbol(),
-          pool.collateralToken(),
-          pool.version(),
+        registry.isDeployed(
+          callingContract.syntheticTokenSymbol(),
+          callingContract.collateralToken(),
+          callingContract.version(),
           msg.sender
         ),
-        'Pool not registered'
+        'Calling contract not registered'
       );
     }
     _;
@@ -141,7 +154,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPools()
+    onlyPoolsOrSelfMinting
     returns (uint256 price)
   {
     OracleData memory oracleData = _getOracleLatestRoundData(priceIdentifier);
@@ -157,7 +170,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPools()
+    onlyPoolsOrSelfMinting
     returns (OracleData memory oracleData)
   {
     oracleData = _getOracleLatestRoundData(priceIdentifier);
@@ -173,7 +186,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPools()
+    onlyPoolsOrSelfMinting
     returns (uint256 price)
   {
     OracleData memory oracleData =
@@ -191,7 +204,7 @@ contract SynthereumChainlinkPriceFeed is
     external
     view
     override
-    onlyPools()
+    onlyPoolsOrSelfMinting
     returns (OracleData memory oracleData)
   {
     oracleData = _getOracleRoundData(priceIdentifier, _roundId);
