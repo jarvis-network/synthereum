@@ -59,11 +59,11 @@ contract SynthereumFactoryVersioning is
   //----------------------------------------
   // Constructor
   //----------------------------------------
-  constructor(Roles memory _roles) {
+  constructor(Roles memory roles) {
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
+    _setupRole(MAINTAINER_ROLE, roles.maintainer);
   }
 
   //----------------------------------------

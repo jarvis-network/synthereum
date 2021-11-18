@@ -58,14 +58,14 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
   /**
    * @notice Constructs the SynthereumManager contract
    * @param _synthereumFinder Synthereum finder contract
-   * @param _roles Admin and Mainteiner roles
+   * @param roles Admin and Mainteiner roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
+    _setupRole(MAINTAINER_ROLE, roles.maintainer);
   }
 
   //----------------------------------------
