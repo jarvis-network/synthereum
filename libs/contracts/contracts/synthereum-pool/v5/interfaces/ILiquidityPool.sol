@@ -6,11 +6,13 @@ import {
 } from '../../../common/interfaces/IEmergencyShutdown.sol';
 import {ISynthereumLiquidityPoolGeneral} from './ILiquidityPoolGeneral.sol';
 import {ISynthereumLiquidityPoolStorage} from './ILiquidityPoolStorage.sol';
+import {ITypology} from '../../../common/interfaces/ITypology.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
 interface ISynthereumLiquidityPool is
+  ITypology,
   IEmergencyShutdown,
   ISynthereumLiquidityPoolGeneral
 {

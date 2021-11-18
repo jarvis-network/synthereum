@@ -65,6 +65,8 @@ contract SynthereumLiquidityPool is
   // Constants
   //----------------------------------------
 
+  string public constant override typology = 'POOL';
+
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   bytes32 public constant LIQUIDITY_PROVIDER_ROLE =

@@ -13,8 +13,9 @@ import {
   IEmergencyShutdown
 } from '../../../common/interfaces/IEmergencyShutdown.sol';
 import {ICreditLineStorage} from './ICreditLineStorage.sol';
+import {ITypology} from '../../../common/interfaces/ITypology.sol';
 
-interface ICreditLine is IEmergencyShutdown, ISynthereumDeployment {
+interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   /**
    * @notice Transfers `collateralAmount` into the caller's position.
    * @dev Increases the collateralization level of a position after creation. This contract must be approved to spend
