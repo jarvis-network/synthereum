@@ -38,7 +38,7 @@ contract CreditLineController is
   //Describe role structure
   struct Roles {
     address admin;
-    address[] maintainers;
+    address maintainer;
   }
 
   //----------------------------------------
@@ -147,9 +147,7 @@ contract CreditLineController is
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
-    for (uint256 i = 0; i < roles.maintainers.length; i++) {
-      _setupRole(MAINTAINER_ROLE, roles.maintainers[i]);
-    }
+    _setupRole(MAINTAINER_ROLE, roles.maintainer);
   }
 
   //----------------------------------------

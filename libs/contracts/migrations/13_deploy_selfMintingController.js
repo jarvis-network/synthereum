@@ -27,7 +27,7 @@ async function migrate(deployer, network, accounts) {
   );
   const admin = rolesConfig[networkId]?.admin ?? accounts[0];
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
-  const roles = { admin: admin, maintainers: [maintainer] };
+  const roles = { admin, maintainer };
   const keys = getKeysForNetwork(network, accounts);
   await deploy(
     web3,
