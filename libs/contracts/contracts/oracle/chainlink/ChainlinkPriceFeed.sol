@@ -33,7 +33,7 @@ contract SynthereumChainlinkPriceFeed is
   // Storage
   //----------------------------------------
 
-  ISynthereumFinder public synthereumFinder;
+  ISynthereumFinder public immutable synthereumFinder;
   mapping(bytes32 => AggregatorV3Interface) private aggregators;
 
   //----------------------------------------

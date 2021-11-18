@@ -28,9 +28,9 @@ contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
   // Storage
   //----------------------------------------
 
-  string public registryType;
+  ISynthereumFinder public immutable synthereumFinder;
 
-  ISynthereumFinder public synthereumFinder;
+  string public registryType;
 
   mapping(string => mapping(IERC20 => mapping(uint8 => EnumerableSet.AddressSet)))
     private symbolToElements;

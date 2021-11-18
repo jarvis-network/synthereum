@@ -29,7 +29,7 @@ contract CreditLineFactory is
   // Storage
   //----------------------------------------
 
-  bytes4 public override deploymentSignature;
+  bytes4 public immutable override deploymentSignature;
 
   //----------------------------------------
   // Constructor
