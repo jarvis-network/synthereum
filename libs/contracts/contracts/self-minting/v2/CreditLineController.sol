@@ -140,15 +140,15 @@ contract CreditLineController is
   /**
    * @notice Constructs the SynthereumManager contract
    * @param _synthereumFinder Synthereum finder contract
-   * @param _roles Admin and maintainer roles
+   * @param roles Admin and maintainer roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    for (uint256 i = 0; i < _roles.maintainers.length; i++) {
-      _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);
+    _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
+    for (uint256 i = 0; i < roles.maintainers.length; i++) {
+      _setupRole(MAINTAINER_ROLE, roles.maintainers[i]);
     }
   }
 

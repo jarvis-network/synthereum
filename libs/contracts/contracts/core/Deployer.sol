@@ -80,14 +80,14 @@ contract SynthereumDeployer is
   /**
    * @notice Constructs the SynthereumDeployer contract
    * @param _synthereumFinder Synthereum finder contract
-   * @param _roles Admin and Maintainer roles
+   * @param roles Admin and Maintainer roles
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory roles) {
     synthereumFinder = _synthereumFinder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
+    _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
+    _setupRole(MAINTAINER_ROLE, roles.maintainer);
   }
 
   //----------------------------------------
