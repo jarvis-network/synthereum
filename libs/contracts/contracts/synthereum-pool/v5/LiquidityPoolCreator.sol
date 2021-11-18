@@ -34,7 +34,7 @@ contract SynthereumLiquidityPoolCreator {
   }
 
   // Address of Synthereum Finder
-  ISynthereumFinder public synthereumFinder;
+  ISynthereumFinder public immutable synthereumFinder;
 
   //----------------------------------------
   // Events

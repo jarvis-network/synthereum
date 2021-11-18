@@ -48,7 +48,7 @@ contract SynthereumDeployer is
   // State variables
   //----------------------------------------
 
-  ISynthereumFinder public synthereumFinder;
+  ISynthereumFinder public immutable synthereumFinder;
 
   //----------------------------------------
   // Events

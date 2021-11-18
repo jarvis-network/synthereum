@@ -25,7 +25,7 @@ contract SynthereumManager is ISynthereumManager, AccessControlEnumerable {
   // Storage
   //----------------------------------------
 
-  ISynthereumFinder public synthereumFinder;
+  ISynthereumFinder public immutable synthereumFinder;
 
   //----------------------------------------
   // Modifiers

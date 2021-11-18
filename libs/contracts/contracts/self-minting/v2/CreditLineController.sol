@@ -45,7 +45,7 @@ contract CreditLineController is
   // Storage
   //----------------------------------------
 
-  ISynthereumFinder public synthereumFinder;
+  ISynthereumFinder public immutable synthereumFinder;
 
   mapping(address => uint256) private capMint;
 
