@@ -47,6 +47,8 @@ contract CreditLineController is
 
   ISynthereumFinder public immutable synthereumFinder;
 
+  uint8 public immutable selfMintingVersion;
+
   mapping(address => uint256) private capMint;
 
   mapping(address => FixedPoint.Unsigned) private liquidationReward;
@@ -141,9 +143,15 @@ contract CreditLineController is
    * @notice Constructs the SynthereumManager contract
    * @param _synthereumFinder Synthereum finder contract
    * @param roles Admin and maintainer roles
+   * @param version Version of self-minting contracts on which this controller has setting grants
    */
-  constructor(ISynthereumFinder _synthereumFinder, Roles memory roles) {
+  constructor(
+    ISynthereumFinder _synthereumFinder,
+    Roles memory roles,
+    uint8 version
+  ) {
     synthereumFinder = _synthereumFinder;
+    selfMintingVersion = version;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, roles.admin);
@@ -167,13 +175,14 @@ contract CreditLineController is
     );
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
+      ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
+      uint8 version = creditLineDerivative.version();
+      require(version == selfMintingVersion, 'Wrong self-minting version');
       if (isMaintainer) {
-        checkSelfMintingDerivativeRegistration(
-          ICreditLine(selfMintingDerivatives[j])
-        );
+        checkSelfMintingDerivativeRegistration(creditLineDerivative, version);
       }
       _setCollateralRequirement(
-        selfMintingDerivatives[j],
+        address(creditLineDerivative),
         collateralRequirements[j]
       );
     }
@@ -194,8 +203,10 @@ contract CreditLineController is
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
+      uint8 version = creditLineDerivative.version();
+      require(version == selfMintingVersion, 'Wrong self-minting version');
       if (isMaintainer) {
-        checkSelfMintingDerivativeRegistration(creditLineDerivative);
+        checkSelfMintingDerivativeRegistration(creditLineDerivative, version);
       }
       _setCapMintAmount(address(creditLineDerivative), capMintAmounts[j]);
     }
@@ -213,12 +224,13 @@ contract CreditLineController is
     );
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerCount; j++) {
-      ICreditLine selfMintingDerivative =
-        ICreditLine(selfMintingDerivatives[j]);
+      ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
+      uint8 version = creditLineDerivative.version();
+      require(version == selfMintingVersion, 'Wrong self-minting version');
       if (isMaintainer) {
-        checkSelfMintingDerivativeRegistration(selfMintingDerivative);
+        checkSelfMintingDerivativeRegistration(creditLineDerivative, version);
       }
-      _setFeePercentage(address(selfMintingDerivative), feePercentages[j]);
+      _setFeePercentage(address(creditLineDerivative), feePercentages[j]);
     }
   }
 
@@ -238,18 +250,19 @@ contract CreditLineController is
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     // update each derivative fee parameters
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
+      ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
+      uint8 version = creditLineDerivative.version();
+      require(version == selfMintingVersion, 'Wrong self-minting version');
       if (isMaintainer) {
-        checkSelfMintingDerivativeRegistration(
-          ICreditLine(selfMintingDerivatives[j])
-        );
+        checkSelfMintingDerivativeRegistration(creditLineDerivative, version);
       }
       _setFeeRecipients(
-        selfMintingDerivatives[j],
+        address(creditLineDerivative),
         feeRecipients[j],
         feeProportions[j]
       );
       emit SetFeeRecipients(
-        selfMintingDerivatives[j],
+        address(creditLineDerivative),
         feeRecipients[j],
         feeProportions[j]
       );
@@ -262,10 +275,11 @@ contract CreditLineController is
   ) external override onlyMaintainerOrSelfMintingFactory {
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
+      ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
+      uint8 version = creditLineDerivative.version();
+      require(version == selfMintingVersion, 'Wrong self-minting version');
       if (isMaintainer) {
-        checkSelfMintingDerivativeRegistration(
-          ICreditLine(selfMintingDerivatives[j])
-        );
+        checkSelfMintingDerivativeRegistration(creditLineDerivative, version);
       }
       require(
         _liquidationRewards[j].isGreaterThan(0) &&
@@ -274,10 +288,9 @@ contract CreditLineController is
           ),
         'Liquidation reward must be between 0 and 100%'
       );
-
-      liquidationReward[selfMintingDerivatives[j]] = _liquidationRewards[j];
+      liquidationReward[address(creditLineDerivative)] = _liquidationRewards[j];
       emit SetLiquidationReward(
-        selfMintingDerivatives[j],
+        address(creditLineDerivative),
         _liquidationRewards[j].rawValue
       );
     }
@@ -331,6 +344,10 @@ contract CreditLineController is
       percentage > 10**18,
       'Overcollateralisation must be bigger than 100%'
     );
+    require(
+      collateralRequirement[selfMintingDerivative].rawValue != percentage,
+      ' Fee percentage is the same'
+    );
     collateralRequirement[selfMintingDerivative] = FixedPoint.Unsigned(
       percentage
     );
@@ -360,9 +377,13 @@ contract CreditLineController is
     FixedPoint.Unsigned calldata feePercentage
   ) internal {
     require(
+      fee[selfMintingDerivative].feePercentage.rawValue <= 10**18,
+      ' Fee percentage must be less than 100%'
+    );
+    require(
       fee[selfMintingDerivative].feePercentage.rawValue !=
         feePercentage.rawValue,
-      ' fee percentage is the same'
+      ' Fee percentage is the same'
     );
     fee[selfMintingDerivative].feePercentage = feePercentage;
     emit SetFeePercentage(selfMintingDerivative, feePercentage.rawValue);
@@ -383,9 +404,11 @@ contract CreditLineController is
   /**
    * @notice Check if a self-minting derivative is registered with the SelfMintingRegistry
    * @param selfMintingDerivative Self-minting derivative contract
+   * @param version version of self-mintinting derivative
    */
   function checkSelfMintingDerivativeRegistration(
-    ICreditLine selfMintingDerivative
+    ICreditLine selfMintingDerivative,
+    uint8 version
   ) internal view {
     ISynthereumRegistry selfMintingRegistry =
       ISynthereumRegistry(
@@ -397,7 +420,7 @@ contract CreditLineController is
       selfMintingRegistry.isDeployed(
         selfMintingDerivative.syntheticTokenSymbol(),
         selfMintingDerivative.collateralToken(),
-        selfMintingDerivative.version(),
+        version,
         address(selfMintingDerivative)
       ),
       'Self-minting derivative not registred'

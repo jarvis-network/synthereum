@@ -11,6 +11,7 @@ async function migrate(deployer, network, accounts) {
   const { SynthereumFinder, CreditLineController } = migrate.getContracts(
     artifacts,
   );
+  const selfMintingVersions = require('../data/selfMinting-versions.json');
   const {
     getKeysForNetwork,
     deploy,
@@ -36,6 +37,7 @@ async function migrate(deployer, network, accounts) {
     CreditLineController,
     synthereumFinder.options.address,
     roles,
+    selfMintingVersions[networkId]?.CreditLineFactory?.version ?? 2,
     { from: keys.deployer },
   );
   const controllerInterface = await web3.utils.stringToHex(
