@@ -27,7 +27,7 @@ abstract contract MintableBurnableTokenFactory {
   // Modifiers
   //----------------------------------------
 
-  modifier onlyDerivativeFactory() {
+  modifier onlyPoolFactory() {
     ISynthereumFactoryVersioning factoryVersioning =
       ISynthereumFactoryVersioning(
         synthereumFinder.getImplementationAddress(

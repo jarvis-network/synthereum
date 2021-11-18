@@ -43,7 +43,7 @@ contract SynthereumSyntheticTokenPermitFactory is
   )
     public
     override
-    onlyDerivativeFactory
+    onlyPoolFactory
     nonReentrant()
     returns (BaseControlledMintableBurnableERC20 newToken)
   {
