@@ -108,7 +108,7 @@ contract('MintableBurnableSyntheticTokenPermit', function (accounts) {
     assert.isFalse(await token.isMinter(random));
     assert.isFalse(await token.isBurner(random));
   });
-  it('Token can execute expected methods', async () => {
+  it('Can token execute expected methods', async () => {
     const token = await Token.new(
       tokenDetails.name,
       tokenDetails.symbol,
