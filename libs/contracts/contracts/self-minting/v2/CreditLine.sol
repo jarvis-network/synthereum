@@ -184,7 +184,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     external
     override
     notEmergencyShutdown
-    nonReentrant()
+    nonReentrant
   {
     PositionData storage positionData = _getPositionData(sponsor);
 
