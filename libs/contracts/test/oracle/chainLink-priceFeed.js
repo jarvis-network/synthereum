@@ -8,54 +8,42 @@ const {
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
-  encodeDerivative,
-  encodePoolOnChainPriceFeed,
+  encodeLiquidityPool,
+  encodeCreditLineDerivative,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
+const { artifacts } = require('hardhat');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
-const AddressWhitelist = artifacts.require('AddressWhitelist');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
+const SynthereumCollateralWhitelist = artifacts.require(
+  'SynthereumCollateralWhitelist',
+);
+const SynthereumIdentifierWhitelist = artifacts.require(
+  'SynthereumIdentifierWhitelist',
+);
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
-const SynthereumPoolOnChainPriceFeed = artifacts.require(
-  'SynthereumPoolOnChainPriceFeed',
-);
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
-const IdentifierWhitelist = artifacts.require('IdentifierWhitelist');
-const SynthereumPoolOnChainPriceFeedLib = artifacts.require(
-  'SynthereumPoolOnChainPriceFeedLib',
-);
-const Derivative = artifacts.require('PerpetualPoolParty');
-const Timer = artifacts.require('Timer');
-const MockOracle = artifacts.require('MockOracle');
-const UmaFinder = artifacts.require('Finder');
 const MockAggregator = artifacts.require('MockAggregator');
 const PriceFeedGetter = artifacts.require('PriceFeedGetter');
+const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
+const CreditLine = artifacts.require('CreditLine');
+const WrongTypology = artifacts.require('WrongTypology');
 
 contract('Synthereum chainlink price feed', function (accounts) {
-  let derivativeVersion = 2;
-
-  // Derivative params
   let collateralAddress;
-  let priceFeedIdentifier = 'EUR/USD';
-  let secondPriceFeedIdentifier = 'GBP/USD';
+  let priceFeedIdentifier = 'EURUSD';
+  let secondPriceFeedIdentifier = 'GBPUSD';
   let syntheticName = 'Jarvis Synthetic Euro';
   let secondSyntheticName = 'Jarvis Synthetic British Pound';
   let syntheticSymbol = 'jEUR';
   let secondSyntheticSymbol = 'jGBP';
   let syntheticTokenAddress = ZERO_ADDRESS;
   let collateralRequirement = web3Utils.toWei('1.1');
-  let disputeBondPct = web3Utils.toWei('0.05');
-  let sponsorDisputeRewardPct = web3Utils.toWei('0.5');
-  let disputerDisputeRewardPct = web3Utils.toWei('0.2');
+  let liquidationReward = web3Utils.toWei('0.6');
+  let overCollateralization = web3Utils.toWei('1.2');
+  let capMintAmount = web3Utils.toWei('10000000');
   let minSponsorTokens = web3Utils.toWei('0');
-  let withdrawalLiveness = 7200;
-  let liquidationLiveness = 7200;
   let excessBeneficiary = accounts[4];
-  let derivativeAdmins;
-  let derivativePools;
-
-  //Pool params
-  let derivativeAddress = ZERO_ADDRESS;
   let synthereumFinderAddress;
   let poolVersion;
   let admin = accounts[0];
@@ -64,8 +52,6 @@ contract('Synthereum chainlink price feed', function (accounts) {
   let newAggregatorAddress = accounts[4];
   let secondNewAggregatorAddress = accounts[5];
   let newAggregatorIdentifier = web3Utils.toHex('TEST/USD');
-  let startingCollateralization = '1500000';
-  let secondStartingCollateralization = '1700000';
   let feePercentage = '0.002';
   let feePercentageWei;
   let DAO = accounts[5];
@@ -76,40 +62,31 @@ contract('Synthereum chainlink price feed', function (accounts) {
     feeRecipients,
     feeProportions,
   };
-
-  //Addresses
-  let poolAddress;
-  let synthTokenAddr;
-  //Other params
   let sender = accounts[6];
-  let secondSender = accounts[7];
-  let wrongSender = accounts[8];
-  let wrongDerivativeAddr = accounts[9];
-  let newAdmin = accounts[10];
-  let derivativePayload;
   let poolPayload;
   let collateralInstance;
   let poolStartingDeposit = web3Utils.toWei('1000', 'mwei');
   let poolInstance;
-  let derivativeInstance;
-  let synthTokenInstance;
-  let aggregatorInstance;
-  //We suppose a starting rate of 1 jEur = 1.2 USDC (EUR/USD = 1.2)
+  let priceFeedInstance;
+  let aggregator;
   let collateralAmount;
-  let feeAmount;
+  let collateralAmountSelfMinting;
   let numTokens;
-  let networkId;
-  let version;
   let expiration;
   let priceFeedId;
-  beforeEach(async () => {
+  before(async () => {
     priceFeedInstance = await ChainlinkPriceFeed.deployed();
-    aggregator = await MockAggregator.deployed();
+    aggregator = await MockAggregator.new(8, 120000000);
     checkingPrice = web3Utils.toWei('1.2');
-    priceFeedId = web3Utils.toHex('EUR/USD');
+    priceFeedId = web3Utils.toHex('EURUSD');
+    await priceFeedInstance.setAggregator(
+      web3.utils.utf8ToHex(priceFeedIdentifier),
+      aggregator.address,
+      { from: maintainer },
+    );
   });
-  describe('Aggregators managment', async () => {
-    it('Add aggregator', async () => {
+  describe('Should manage aggregators', async () => {
+    it('Can add aggregator', async () => {
       const addAggregatortTx = await priceFeedInstance.setAggregator(
         newAggregatorIdentifier,
         newAggregatorAddress,
@@ -136,7 +113,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         'Price identifier supported',
       );
     });
-    it('Update aggregator', async () => {
+    it('Can update aggregator', async () => {
       await priceFeedInstance.setAggregator(
         newAggregatorIdentifier,
         newAggregatorAddress,
@@ -158,7 +135,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         from: maintainer,
       });
     });
-    it('Revert if the the aggregator of an existing identifier has same address', async () => {
+    it('Can revert if the the aggregator of an existing identifier has same address', async () => {
       const addAggregatortTx = await priceFeedInstance.setAggregator(
         newAggregatorIdentifier,
         newAggregatorAddress,
@@ -176,7 +153,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         from: maintainer,
       });
     });
-    it('Revert if the transaction for setting the aggregator is not sent by the maintainer', async () => {
+    it('Can revert if the transaction for setting the aggregator is not sent by the maintainer', async () => {
       await truffleAssert.reverts(
         priceFeedInstance.setAggregator(
           newAggregatorIdentifier,
@@ -186,7 +163,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         'Sender must be the maintainer',
       );
     });
-    it('Remove aggregator', async () => {
+    it('Can remove aggregator', async () => {
       const addAggregatortTx = await priceFeedInstance.setAggregator(
         newAggregatorIdentifier,
         newAggregatorAddress,
@@ -202,7 +179,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         );
       });
     });
-    it('Revert if remove a non existing aggregator', async () => {
+    it('Can revert if remove a non existing aggregator', async () => {
       await truffleAssert.reverts(
         priceFeedInstance.removeAggregator(newAggregatorIdentifier, {
           from: maintainer,
@@ -210,7 +187,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         'Price identifier does not exist',
       );
     });
-    it('Revert if the transaction for remove the aggregator is not sent by the maintainer', async () => {
+    it('Can revert if the transaction for remove the aggregator is not sent by the maintainer', async () => {
       await priceFeedInstance.setAggregator(
         newAggregatorIdentifier,
         newAggregatorAddress,
@@ -226,7 +203,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         from: maintainer,
       });
     });
-    it('Check get aggreagtor view function', async () => {
+    it('Can check get aggreagtor view function', async () => {
       await priceFeedInstance.setAggregator(
         newAggregatorIdentifier,
         newAggregatorAddress,
@@ -245,7 +222,7 @@ contract('Synthereum chainlink price feed', function (accounts) {
         from: maintainer,
       });
     });
-    it('Revert if get aggregator does not find aggregator', async () => {
+    it('Can revert if get aggregator does not find aggregator', async () => {
       await truffleAssert.reverts(
         priceFeedInstance.getAggregator(newAggregatorIdentifier, {
           from: sender,
@@ -254,119 +231,190 @@ contract('Synthereum chainlink price feed', function (accounts) {
       );
     });
   });
-  describe('Price feed access', async () => {
-    it('Price can be get by an EOA (off-chain)', async () => {
+
+  describe('Should have access to the price feed', async () => {
+    let deployerInstance;
+    let poolVersion = 5;
+    let selfMintingDerivativeVersion = 2;
+    let finderInstance;
+    let synthereumFinderAddress;
+    let roles = {
+      admin,
+      maintainer,
+      liquidityProvider,
+    };
+    let collateralInstance;
+    let collateralAddress;
+    before(async () => {
+      deployerInstance = await SynthereumDeployer.deployed();
+      poolVersion = 5;
+      finderInstance = await SynthereumFinder.deployed();
+      synthereumFinderAddress = finderInstance.address;
+      collateralInstance = await TestnetERC20.new('Test Token', 'USDC', 6);
+      collateralAddress = collateralInstance.address;
+      collateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+      await collateralWhitelistInstance.addToWhitelist(collateralAddress, {
+        from: maintainer,
+      });
+      identifierWhitelistInstance = await SynthereumIdentifierWhitelist.deployed();
+      await identifierWhitelistInstance.addToWhitelist(
+        web3.utils.utf8ToHex(priceFeedIdentifier),
+        {
+          from: maintainer,
+        },
+      );
+    });
+    it('Can price be get by an EOA (off-chain)', async () => {
       await priceFeedInstance.getLatestPrice.call(priceFeedId);
     });
-    it('Price can be get by a synthereum pool', async () => {
-      collateralAddress = (await TestnetERC20.deployed()).address;
-      deployerInstance = await SynthereumDeployer.deployed();
-      derivativeAdmins = [deployerInstance.address];
-      derivativePools = [];
-      poolVersion = 4;
-      let admin = accounts[0];
-      let maintainer = accounts[1];
-      let liquidityProvider = accounts[2];
-      let roles = {
-        admin,
-        maintainer,
-        liquidityProvider,
-      };
-      feePercentageWei = web3Utils.toWei(feePercentage);
-      synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
-      derivativePayload = encodeDerivative(
+    it('Can price be get by a synthereum pool', async () => {
+      poolPayload = encodeLiquidityPool(
         collateralAddress,
-        priceFeedIdentifier,
         syntheticName,
         syntheticSymbol,
         syntheticTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        derivativeAdmins,
-        derivativePools,
-      );
-      poolPayload = encodePoolOnChainPriceFeed(
-        derivativeAddress,
-        synthereumFinderAddress,
-        poolVersion,
         roles,
-        startingCollateralization,
+        overCollateralization,
         fee,
-      );
-      const addresses = await deployerInstance.deployPoolAndDerivative.call(
-        derivativeVersion,
+        priceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
         poolVersion,
-        derivativePayload,
+      );
+      const pool = await deployerInstance.deployPool.call(
+        poolVersion,
         poolPayload,
         { from: maintainer },
       );
-      poolAddress = addresses.pool;
-      derivativeAddress = addresses.derivative;
-      await deployerInstance.deployPoolAndDerivative(
-        derivativeVersion,
-        poolVersion,
-        derivativePayload,
-        poolPayload,
-        { from: maintainer },
-      );
-      poolInstance = await SynthereumPoolOnChainPriceFeed.at(poolAddress);
-      derivat = await Derivative.at(derivativeAddress);
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      poolInstance = await SynthereumLiquidityPool.at(pool);
       expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
       collateralAmount = web3Utils.toWei('120', 'mwei');
       numTokens = web3Utils.toWei('99.8');
       let MintParameters = {
-        derivative: derivativeAddress,
         minNumTokens: numTokens,
         collateralAmount: collateralAmount,
-        feePercentage: feePercentageWei,
         expiration: expiration,
         recipient: sender,
       };
-      collateralInstance = await TestnetERC20.deployed();
-      await collateralInstance.allocateTo(poolAddress, poolStartingDeposit);
+      await collateralInstance.allocateTo(pool, poolStartingDeposit);
       await collateralInstance.allocateTo(sender, collateralAmount);
-      await collateralInstance.approve(poolAddress, collateralAmount, {
+      await collateralInstance.approve(pool, collateralAmount, {
         from: sender,
       });
       const mintTx = await poolInstance.mint(MintParameters, {
         from: sender,
       });
     });
-    it('Revert if price getter is called by a contract that is not a pool', async () => {
+    it('Can price be get by a self-minting derivative', async () => {
+      poolPayload = encodeLiquidityPool(
+        collateralAddress,
+        syntheticName,
+        syntheticSymbol,
+        syntheticTokenAddress,
+        roles,
+        overCollateralization,
+        fee,
+        priceFeedIdentifier,
+        collateralRequirement,
+        liquidationReward,
+        poolVersion,
+      );
+      const pool = await deployerInstance.deployPool.call(
+        poolVersion,
+        poolPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deployPool(poolVersion, poolPayload, {
+        from: maintainer,
+      });
+      poolInstance = await SynthereumLiquidityPool.at(pool);
+      const synthTokenAddress = await poolInstance.syntheticToken.call();
+      selfMintingFee = {
+        feePercentage,
+        feeRecipients,
+        feeProportions,
+      };
+      selfMintingPayload = encodeCreditLineDerivative(
+        collateralAddress,
+        priceFeedIdentifier,
+        syntheticName,
+        syntheticSymbol,
+        synthTokenAddress,
+        collateralRequirement,
+        minSponsorTokens,
+        excessBeneficiary,
+        selfMintingDerivativeVersion,
+        selfMintingFee,
+        liquidationReward,
+        capMintAmount,
+      );
+      const selfMintingDerivative = await deployerInstance.deploySelfMintingDerivative.call(
+        selfMintingDerivativeVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      await deployerInstance.deploySelfMintingDerivative(
+        selfMintingDerivativeVersion,
+        selfMintingPayload,
+        { from: maintainer },
+      );
+      const selfMintingInstance = await CreditLine.at(selfMintingDerivative);
+      collateralAmountSelfMinting = web3Utils.toWei('200', 'mwei');
+      await collateralInstance.allocateTo(sender, collateralAmountSelfMinting);
+      await collateralInstance.approve(
+        selfMintingInstance.address,
+        collateralAmountSelfMinting,
+        {
+          from: sender,
+        },
+      );
+      await selfMintingInstance.create(collateralAmountSelfMinting, numTokens, {
+        from: sender,
+      });
+    });
+    it('Can revert if price getter is called by a contract that is not a pool', async () => {
       const proxyPriceContract = await PriceFeedGetter.new(
         priceFeedInstance.address,
         'jEUR',
         collateralAddress,
-        3,
+        poolVersion,
       );
       await truffleAssert.reverts(
         proxyPriceContract.getPrice.call(priceFeedId),
-        'Pool not registered',
+        'Calling contract not registered',
+      );
+    });
+    it('Can revert if price getter is called by a contract with a wrong typology', async () => {
+      const wrongContract = await WrongTypology.new(priceFeedInstance.address);
+      await truffleAssert.reverts(
+        wrongContract.getPrice.call(priceFeedId),
+        'Typology not supported',
       );
     });
   });
-  describe('Check price and data getters', async () => {
-    beforeEach(async () => {
-      let prevAnswer;
-      let prevAnswerUnscaled;
-      let prevTimestamp;
-      let prevRound;
-    });
-    it('Check latest price', async () => {
+  describe('Should Check price and data getters', async () => {
+    let prevAnswer;
+    let prevAnswerUnscaled;
+    let prevTimestamp;
+    let prevRound;
+    let newAnswer;
+    let newAnswerUnscaled;
+    it('Can check latest price', async () => {
       const price = (
         await priceFeedInstance.getLatestPrice.call(priceFeedId)
       ).toString();
       assert.equal(price, checkingPrice, 'Wrong price getter');
     });
-    it('Check latest data', async () => {
+    it('Can check latest data', async () => {
+      prevRound = (await aggregator.latestRoundData.call()).roundId;
+      console.log(prevRound.toString());
       newAnswer = web3Utils.toWei('130', 'mwei');
+      newAnswerUnscaled = web3Utils.toWei('1.30');
       const updateTx = await aggregator.updateAnswer(newAnswer);
+      console.log((await aggregator.latestRound.call()).toString());
       txTimestamp = (await web3.eth.getBlock(updateTx.receipt.blockNumber))
         .timestamp;
       const data = await priceFeedInstance.getOracleLatestData.call(
@@ -375,23 +423,42 @@ contract('Synthereum chainlink price feed', function (accounts) {
       assert.equal(data.startedAt, txTimestamp, 'Wrong starting time');
       assert.equal(data.updatedAt, txTimestamp, 'Wrong updating time');
       assert.equal(data.answer, newAnswer, 'Wrong answer');
-      assert.equal(data.roundId, 2, 'Wrong round');
-      assert.equal(data.answeredInRound, 2, 'Wrong answer in round');
+      assert.equal(
+        data.roundId,
+        (parseInt(prevRound) + 1).toString(),
+        'Wrong round',
+      );
+      assert.equal(
+        data.answeredInRound,
+        (parseInt(prevRound) + 1).toString(),
+        'Wrong answer in round',
+      );
       assert.equal(data.decimals, 8, 'Wrong decimals');
-      prevAnswer = web3Utils.toWei('1.30');
-      prevAnswerUnscaled = newAnswer;
+
+      prevAnswer = newAnswer;
+      prevAnswerUnscaled = newAnswerUnscaled;
       prevTimestamp = txTimestamp;
-      prevRound = 2;
+      prevRound = (parseInt(prevRound) + 1).toString();
+      console.log({ prevRound });
     });
-    it('Check previous round price', async () => {
-      const newAnswer = web3Utils.toWei('140', 'mwei');
+    it('Can check previous round price', async () => {
+      newAnswer = web3Utils.toWei('140', 'mwei');
+      newAnswerUnscaled = web3Utils.toWei('1.40');
+      console.log((await aggregator.latestRound.call()).toString());
       const updateTx = await aggregator.updateAnswer(newAnswer);
+      txTimestamp = (await web3.eth.getBlock(updateTx.receipt.blockNumber))
+        .timestamp;
+      console.log((await aggregator.latestRound.call()).toString());
       const price = (
         await priceFeedInstance.getRoundPrice.call(priceFeedId, prevRound)
       ).toString();
-      assert.equal(price, prevAnswer, 'Wrong previous price getter');
+      assert.equal(price, prevAnswerUnscaled, 'Wrong previous price getter');
+      prevRound = (parseInt(prevRound) + 1).toString();
+      prevAnswer = newAnswer;
+      prevAnswerUnscaled = newAnswerUnscaled;
+      prevTimestamp = txTimestamp;
     });
-    it('Check previous round data', async () => {
+    it('Can check previous round data', async () => {
       const newAnswer = web3Utils.toWei('150', 'mwei');
       const updateTx = await aggregator.updateAnswer(newAnswer);
       const prevData = await priceFeedInstance.getOracleRoundData.call(
@@ -408,15 +475,11 @@ contract('Synthereum chainlink price feed', function (accounts) {
         prevTimestamp,
         'Wrong previous updating time',
       );
-      assert.equal(
-        prevData.answer,
-        prevAnswerUnscaled,
-        'Wrong previous answer',
-      );
-      assert.equal(prevData.roundId, 2, 'Wrong previous round');
+      assert.equal(prevData.answer, prevAnswer, 'Wrong previous answer');
+      assert.equal(prevData.roundId, prevRound, 'Wrong previous round');
       assert.equal(
         prevData.answeredInRound,
-        2,
+        prevRound,
         'Wrong previous answer in round',
       );
       assert.equal(prevData.decimals, 8, 'Wrong previous decimals');

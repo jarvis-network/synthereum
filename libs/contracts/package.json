@@ -15,7 +15,7 @@
     "build:nx-necessary": "cp ./package.json ./dist/",
     "add-pool": "MIGRATION_TYPE=add_pool hardhat test ./test/correct-migration.js",
     "add-selfMinting-derivative": "MIGRATION_TYPE=add_selfMinting_derivative hardhat test ./test/correct-migration.js",
-    "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/core/**",
+    "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/core/** ./test/oracle/**",
     "test:credit-line": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/self-minting/v2/CreditLine.js",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
