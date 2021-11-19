@@ -7,6 +7,7 @@ import {
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract PriceFeedGetter {
+  string public constant typology = 'POOL';
   ISynthereumChainlinkPriceFeed public priceFeed;
 
   string private symbol;

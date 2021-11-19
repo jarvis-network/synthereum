@@ -18,6 +18,7 @@ import '../test/PriceFeedGetter.sol';
 import '../test/UtilsMock.sol';
 import '../test/DerivativeMock.sol';
 import '../test/PoolMock.sol';
+import '../test/WrongTypology.sol';
 import '../test/PoolRegistryMock.sol';
 import '../oracle/common/interfaces/IPriceFeed.sol';
 import '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
