@@ -23,7 +23,13 @@
       "isEnabled": true
     }
   },
-  "137": {
+  "97": {
+    "LiquidityPoolFactory": {
+      "version": 5,
+      "isEnabled": true
+    }
+  },
+  "56": {
     "LiquidityPoolFactory": {
       "version": 5,
       "isEnabled": true
