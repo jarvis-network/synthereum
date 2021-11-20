@@ -87,5 +87,7 @@ addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 4, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 137, process.env.POLYGON_PROJECT_ID!);
 addPublicNetwork(config, 80001, process.env.POLYGON_PROJECT_ID!);
+addPublicNetwork(config, 56);
+addPublicNetwork(config, 97);
 
 export default config;
