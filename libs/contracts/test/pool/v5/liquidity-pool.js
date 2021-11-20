@@ -17,14 +17,13 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumManager = artifacts.require('SynthereumManager');
 const MockAggregator = artifacts.require('MockAggregator');
 const PoolRegistryMock = artifacts.require('PoolRegistryMock');
-
 contract('LiquidityPool', function (accounts) {
   let collateralInstance;
-  let collateralAddress;
+  let collateralToken;
   let synthTokenInstance;
-  let synthTokenAddress;
+  let syntheticToken;
   let finderInstance;
-  let finderAddress;
+  let finder;
   let liquidityPoolLibInstance;
   let liquidityPoolInstance;
   let liquidityPoolAddress;
@@ -32,9 +31,9 @@ contract('LiquidityPool', function (accounts) {
   let aggregatorInstanceAddress;
   let poolRegistryInstance;
   let poolRegistryAddress;
-  let synthereumFinderInstance;
   let priceFeedInstance;
   let managerInstance;
+  let params;
   const version = 5;
   const admin = accounts[0];
   const maintainer = accounts[1];
@@ -49,29 +48,27 @@ contract('LiquidityPool', function (accounts) {
     liquidityProvider,
   };
   const overCollateralization = web3Utils.toWei('0.25');
-  const feePercentageValue = web3Utils.toWei('0.002');
-  const feePercentage = { rawValue: feePercentageValue };
+  const feeDataPercentageValue = web3Utils.toWei('0.002');
+  const feePercentage = { rawValue: feeDataPercentageValue };
   const feeRecipients = [liquidityProvider, DAO];
   const feeProportions = [50, 50];
-  const feeTotalProportion = 100;
-  const fee = {
+  const feeDataTotalProportion = 100;
+  const feeData = {
     feePercentage,
     feeRecipients,
     feeProportions,
   };
-  const priceFeedIdentifier = web3Utils.padRight(
-    web3Utils.toHex('EUR/USD'),
-    64,
-  );
+  const priceIdentifier = web3Utils.padRight(web3Utils.toHex('EUR/USD'), 64);
   const collateralRequirement = web3Utils.toWei('1.05');
   const liquidationReward = web3Utils.toWei('0.75');
-  const synthTokenSymbol = 'jEUR';
+  const syntheticName = 'Jarvis Synthetic Euro';
+  const syntheticSymbol = 'jEUR';
   const initialPoolAllocation = web3Utils.toWei('1000', 'mwei');
   const initialUserAllocation = web3Utils.toWei('500', 'mwei');
 
   const checkResult = async (
     liquidityPool,
-    synthToken,
+    syntheticToken,
     user,
     userCollBalance,
     userSynthBalance,
@@ -89,7 +86,7 @@ contract('LiquidityPool', function (accounts) {
       'Wrong user collateral balance',
     );
     assert.equal(
-      (await synthToken.balanceOf.call(user)).toString(),
+      (await syntheticToken.balanceOf.call(user)).toString(),
       userSynthBalance,
       'Wrong user synth token balance',
     );
@@ -111,17 +108,17 @@ contract('LiquidityPool', function (accounts) {
     assert.equal(
       (await liquidityPool.totalFeeAmount.call()).toString(),
       totFees,
-      'Wrong total fee amount',
+      'Wrong total feeData amount',
     );
     assert.equal(
       (await liquidityPool.userFee.call(liquidityProvider)).toString(),
       lpFees,
-      'Wrong Lp fee amount',
+      'Wrong Lp feeData amount',
     );
     assert.equal(
       (await liquidityPool.userFee.call(DAO)).toString(),
       daoFees,
-      'Wrong Dao fee amount',
+      'Wrong Dao feeData amount',
     );
     assert.equal(
       (
@@ -138,29 +135,43 @@ contract('LiquidityPool', function (accounts) {
   });
 
   beforeEach(async () => {
-    collateralInstance = await TestnetERC20.deployed();
-    collateralAddress = collateralInstance.address;
+    collateralInstance = await TestnetERC20.new('Test Token', 'USDC', 6);
+    collateralToken = collateralInstance.address;
     synthTokenInstance = await MintableBurnableSyntheticTokenPermit.new(
-      'Jarvis Synthetic Euro',
-      synthTokenSymbol,
+      syntheticName,
+      syntheticSymbol,
       18,
       { from: admin },
     );
-    synthTokenAddress = synthTokenInstance.address;
+    syntheticToken = synthTokenInstance.address;
     finderInstance = await SynthereumFinder.deployed();
-    finderAddress = finderInstance.address;
-    liquidityPoolInstance = await SynthereumLiquidityPool.new(
-      finderAddress,
+    finder = finderInstance.address;
+    priceFeedInstance = await SynthereumChainlinkPriceFeed.deployed();
+    aggregatorInstance = await MockAggregator.new(
+      8,
+      web3Utils.toWei('120', 'mwei'),
+    );
+    aggregatorInstanceAddress = aggregatorInstance.address;
+    await priceFeedInstance.setAggregator(
+      priceIdentifier,
+      aggregatorInstanceAddress,
+      { from: maintainer },
+    );
+    params = {
+      finder,
       version,
-      collateralAddress,
-      synthTokenAddress,
+      collateralToken,
+      syntheticToken,
       roles,
       overCollateralization,
-      fee,
-      priceFeedIdentifier,
+      feeData,
+      priceIdentifier,
       collateralRequirement,
       liquidationReward,
-    );
+    };
+    liquidityPoolInstance = await SynthereumLiquidityPool.new(params, {
+      from: admin,
+    });
     liquidityPoolAddress = liquidityPoolInstance.address;
     await synthTokenInstance.addMinter(liquidityPoolAddress, { from: admin });
     await synthTokenInstance.addBurner(liquidityPoolAddress, { from: admin });
@@ -174,28 +185,16 @@ contract('LiquidityPool', function (accounts) {
       liquidityProvider,
       initialUserAllocation,
     );
-    priceFeedInstance = await SynthereumChainlinkPriceFeed.deployed();
-    aggregatorInstance = await MockAggregator.new(
-      8,
-      web3Utils.toWei('120', 'mwei'),
-    );
-    aggregatorInstanceAddress = aggregatorInstance.address;
-    await priceFeedInstance.setAggregator(
-      priceFeedIdentifier,
-      aggregatorInstanceAddress,
-      { from: maintainer },
-    );
     poolRegistryInstance = await PoolRegistryMock.new();
     poolRegistryAddress = poolRegistryInstance.address;
-    synthereumFinderInstance = await SynthereumFinder.deployed();
-    await synthereumFinderInstance.changeImplementationAddress(
+    await finderInstance.changeImplementationAddress(
       web3Utils.toHex('PoolRegistry'),
       poolRegistryAddress,
       { from: maintainer },
     );
     await poolRegistryInstance.register(
-      synthTokenSymbol,
-      collateralAddress,
+      syntheticSymbol,
+      collateralToken,
       version,
       liquidityPoolAddress,
     );
@@ -206,7 +205,7 @@ contract('LiquidityPool', function (accounts) {
     it('Can initialize variables in the correct way', async () => {
       assert.equal(
         await liquidityPoolInstance.synthereumFinder(),
-        finderAddress,
+        finder,
         'Wrong finder initialization',
       );
       assert.equal(
@@ -216,17 +215,17 @@ contract('LiquidityPool', function (accounts) {
       );
       assert.equal(
         await liquidityPoolInstance.collateralToken(),
-        collateralAddress,
+        collateralToken,
         'Wrong collateral initialization',
       );
       assert.equal(
         await liquidityPoolInstance.syntheticToken(),
-        synthTokenAddress,
+        syntheticToken,
         'Wrong synthetic token initialization',
       );
       assert.equal(
         await liquidityPoolInstance.syntheticTokenSymbol(),
-        synthTokenSymbol,
+        syntheticSymbol,
         'Wrong synthetic token symbol',
       );
       assert.equal(
@@ -236,8 +235,8 @@ contract('LiquidityPool', function (accounts) {
       );
       assert.equal(
         await liquidityPoolInstance.getPriceFeedIdentifier(),
-        priceFeedIdentifier,
-        'Wrong price feed identifier initialization',
+        priceIdentifier,
+        'Wrong price feeDatad identifier initialization',
       );
       assert.equal(
         await liquidityPoolInstance.collateralRequirement(),
@@ -251,183 +250,110 @@ contract('LiquidityPool', function (accounts) {
       );
       assert.equal(
         await liquidityPoolInstance.feePercentage(),
-        feePercentageValue,
-        'Wrong fee percentage initialization',
+        feeDataPercentageValue,
+        'Wrong feeData percentage initialization',
       );
-      const feeInfo = await liquidityPoolInstance.feeRecipientsInfo();
+      const feeDataInfo = await liquidityPoolInstance.feeRecipientsInfo();
       assert.deepEqual(
-        feeInfo[0],
+        feeDataInfo[0],
         feeRecipients,
-        'Wrong fee recipients initialization',
+        'Wrong feeData recipients initialization',
       );
       assert.deepEqual(
-        feeInfo[1].map(fee => parseInt(fee.toString())),
+        feeDataInfo[1].map(feeData => parseInt(feeData.toString())),
         feeProportions,
-        'Wrong fee proportions initialization',
+        'Wrong feeData proportions initialization',
       );
       assert.equal(
-        feeInfo[2].toString(),
-        web3Utils.toBN(feeTotalProportion).toString(),
-        'Wrong fee total proportion initialization',
+        feeDataInfo[2].toString(),
+        web3Utils.toBN(feeDataTotalProportion).toString(),
+        'Wrong feeData total proportion initialization',
       );
     });
     it('Can revert if collateral requirement is less than 100% ', async () => {
       const wrongCollateralRequirement = web3Utils.toWei('0.999');
+      const wrongParams = params;
+      wrongParams.collateralRequirement = wrongCollateralRequirement;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          synthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          priceFeedIdentifier,
-          wrongCollateralRequirement,
-          liquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Collateral requirement must be bigger than 100%',
       );
     });
     it('Can revert if overCollateralization is less then Lp part of the collateral', async () => {
       const wrongOverCollateralization = web3Utils.toWei('0.03');
+      const wrongParams = params;
+      wrongParams.overCollateralization = wrongOverCollateralization;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          synthTokenAddress,
-          roles,
-          wrongOverCollateralization,
-          fee,
-          priceFeedIdentifier,
-          collateralRequirement,
-          liquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Overcollateralization must be bigger than the Lp part of the collateral requirement',
       );
     });
     it('Can revert if liquidation reward is 0', async () => {
+      const wrongParams = params;
+      wrongParams.liquidationReward = 0;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          synthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          priceFeedIdentifier,
-          collateralRequirement,
-          0,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Liquidation reward must be between 0 and 100%',
       );
     });
     it('Can revert if liquidation reward is bigger than 100%', async () => {
+      const wrongParams = params;
       const wrongLiquidationReward = web3Utils.toWei('1.01');
+      wrongParams.liquidationReward = wrongLiquidationReward;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          synthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          priceFeedIdentifier,
-          collateralRequirement,
-          wrongLiquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Liquidation reward must be between 0 and 100%',
       );
     });
     it('Can revert if collateral has more than 18 decimals', async () => {
+      const wrongParams = params;
       const wrongCollateralToken = await TestnetERC20.new(
         'Test token',
         'TEST',
         20,
       );
+      wrongParams.collateralToken = wrongCollateralToken.address;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          wrongCollateralToken.address,
-          synthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          priceFeedIdentifier,
-          collateralRequirement,
-          liquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Collateral has more than 18 decimals',
       );
     });
     it('Can revert if synthetic token has more or less than 18 decimals', async () => {
+      let wrongParams = params;
       let wrongSynthTokenInstance = await MintableBurnableSyntheticTokenPermit.new(
         'Jarvis Synthetic Euro',
-        synthTokenSymbol,
+        syntheticSymbol,
         16,
         { from: admin },
       );
       let wrongSynthTokenAddress = wrongSynthTokenInstance.address;
+      wrongParams.syntheticToken = wrongSynthTokenAddress;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          wrongSynthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          priceFeedIdentifier,
-          collateralRequirement,
-          liquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Synthetic token has more or less than 18 decimals',
       );
       wrongSynthTokenInstance = await MintableBurnableSyntheticTokenPermit.new(
         'Jarvis Synthetic Euro',
-        synthTokenSymbol,
+        syntheticSymbol,
         20,
         { from: admin },
       );
       wrongSynthTokenAddress = wrongSynthTokenInstance.address;
+      wrongParams.syntheticToken = wrongSynthTokenAddress;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          wrongSynthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          priceFeedIdentifier,
-          collateralRequirement,
-          liquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Synthetic token has more or less than 18 decimals',
       );
     });
-    it('Can revert if price identifier is not supported by the the price feed', async () => {
+    it('Can revert if price identifier is not supported by the the price feeDatad', async () => {
+      const wrongParams = params;
       const wrongPriceIdentifier = web3Utils.padRight(
         web3Utils.toHex('EUR/NOT-USD'),
         64,
       );
+      wrongParams.priceIdentifier = wrongPriceIdentifier;
       await truffleAssert.reverts(
-        SynthereumLiquidityPool.new(
-          finderAddress,
-          version,
-          collateralAddress,
-          synthTokenAddress,
-          roles,
-          overCollateralization,
-          fee,
-          wrongPriceIdentifier,
-          collateralRequirement,
-          liquidationReward,
-        ),
+        SynthereumLiquidityPool.new(wrongParams),
         'Price identifier not supported',
       );
     });
@@ -436,7 +362,7 @@ contract('LiquidityPool', function (accounts) {
   describe('Should mint synthetic tokens', async () => {
     it('Can mint in the correct way', async () => {
       const collateralAmount = web3Utils.toWei('120', 'mwei');
-      const feeAmount = web3Utils.toWei('0.24048', 'mwei');
+      const feeDataAmount = web3Utils.toWei('0.24048', 'mwei');
       const lpAmount = web3Utils.toWei('0.12024', 'mwei');
       const daoAmount = web3Utils.toWei('0.12024', 'mwei');
       const totalCollateralAmount = web3Utils.toWei('120.24048', 'mwei');
@@ -470,7 +396,7 @@ contract('LiquidityPool', function (accounts) {
           ev.account == firstUser &&
           ev.collateralSent == totalCollateralAmount &&
           ev.numTokensReceived == synthTokens &&
-          ev.feePaid == feeAmount &&
+          ev.feePaid == feeDataAmount &&
           ev.recipient == firstUser
         );
       });
@@ -495,7 +421,7 @@ contract('LiquidityPool', function (accounts) {
           .add(web3Utils.toBN(overCollateralAmount))
           .toString(),
         synthTokens,
-        feeAmount,
+        feeDataAmount,
         lpAmount,
         daoAmount,
         web3Utils
@@ -663,7 +589,7 @@ contract('LiquidityPool', function (accounts) {
       const synthTokens = web3Utils.toWei('50');
       const totalCollateralAmount = web3Utils.toWei('57.5', 'mwei');
       const collateralAmount = web3Utils.toWei('57.385', 'mwei');
-      const feeAmount = web3Utils.toWei('0.115', 'mwei');
+      const feeDataAmount = web3Utils.toWei('0.115', 'mwei');
       const lpFee = web3Utils.toWei('0.0575', 'mwei');
       const daoFee = web3Utils.toWei('0.0575', 'mwei');
       const actualUserCollBalance = await collateralInstance.balanceOf.call(
@@ -712,7 +638,7 @@ contract('LiquidityPool', function (accounts) {
           ev.account == secondUser &&
           ev.numTokensSent == synthTokens &&
           ev.collateralReceived == collateralAmount &&
-          ev.feePaid == feeAmount &&
+          ev.feePaid == feeDataAmount &&
           ev.recipient == secondUser
         );
       });
@@ -740,7 +666,7 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
         web3Utils
           .toBN(totalFeeAmount)
-          .add(web3Utils.toBN(feeAmount))
+          .add(web3Utils.toBN(feeDataAmount))
           .toString(),
         web3Utils.toBN(totalLpAmount).add(web3Utils.toBN(lpFee)).toString(),
         web3Utils.toBN(totalDaoAmount).add(web3Utils.toBN(daoFee)).toString(),
@@ -931,18 +857,19 @@ contract('LiquidityPool', function (accounts) {
         destAggregatorAddress,
         { from: maintainer },
       );
-      destLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        finderAddress,
+      const destParams = {
+        finder,
         version,
-        collateralAddress,
-        destSynthTokenAddress,
+        collateralToken,
+        syntheticToken: destSynthTokenAddress,
         roles,
-        destOverCollateralization,
-        fee,
-        destPriceFeedIdentifier,
+        overCollateralization: destOverCollateralization,
+        feeData,
+        priceIdentifier: destPriceFeedIdentifier,
         collateralRequirement,
         liquidationReward,
-      );
+      };
+      destLiquidityPoolInstance = await SynthereumLiquidityPool.new(destParams);
       destLiquidityPoolAddress = destLiquidityPoolInstance.address;
       await destSynthTokenInstance.addMinter(destLiquidityPoolAddress, {
         from: admin,
@@ -956,7 +883,7 @@ contract('LiquidityPool', function (accounts) {
       );
       await poolRegistryInstance.register(
         destSynthTokenSymbol,
-        collateralAddress,
+        collateralToken,
         version,
         destLiquidityPoolAddress,
       );
@@ -1308,18 +1235,11 @@ contract('LiquidityPool', function (accounts) {
         'USDC',
         18,
       );
+      const wrongParams = params;
       const wrongCollateralAddress = wrongCollateralInstance.address;
+      wrongParams.collateralToken = wrongCollateralAddress;
       const wrongCollateraLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        finderAddress,
-        version,
-        wrongCollateralAddress,
-        destSynthTokenAddress,
-        roles,
-        destOverCollateralization,
-        fee,
-        destPriceFeedIdentifier,
-        collateralRequirement,
-        liquidationReward,
+        wrongParams,
       );
       const synthTokens = web3Utils.toWei('50');
       const netSynthTokens = web3Utils.toWei('49.9');
@@ -1361,17 +1281,20 @@ contract('LiquidityPool', function (accounts) {
         priceFeedInstance.address,
         { from: maintainer },
       );
-      const wrongFinderLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        wrongFinderInstance.address,
+      const wrongParams = {
+        finder: wrongFinderInstance.address,
         version,
-        collateralAddress,
-        destSynthTokenAddress,
+        collateralToken,
+        syntheticToken: destSynthTokenAddress,
         roles,
-        destOverCollateralization,
-        fee,
-        destPriceFeedIdentifier,
+        overCollateralization: destOverCollateralization,
+        feeData,
+        priceIdentifier: destPriceFeedIdentifier,
         collateralRequirement,
         liquidationReward,
+      };
+      const wrongFinderLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        wrongParams,
       );
       const synthTokens = web3Utils.toWei('50');
       const netSynthTokens = web3Utils.toWei('49.9');
@@ -1403,17 +1326,20 @@ contract('LiquidityPool', function (accounts) {
       );
     });
     it('Can revert if the destination pool is not registered', async () => {
-      const wrongLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        finderAddress,
+      const wrongParams = {
+        finder,
         version,
-        collateralAddress,
-        destSynthTokenAddress,
+        collateralToken,
+        syntheticToken: destSynthTokenAddress,
         roles,
-        destOverCollateralization,
-        fee,
-        destPriceFeedIdentifier,
+        overCollateralization: destOverCollateralization,
+        feeData,
+        priceIdentifier: destPriceFeedIdentifier,
         collateralRequirement,
         liquidationReward,
+      };
+      const wrongLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        wrongParams,
       );
       const synthTokens = web3Utils.toWei('50');
       const netSynthTokens = web3Utils.toWei('49.9');
@@ -1467,17 +1393,20 @@ contract('LiquidityPool', function (accounts) {
       );
     });
     it('Can revert if there is no enough liquidity in the destination pool', async () => {
-      const underCapitalizedPoolInstance = await SynthereumLiquidityPool.new(
-        finderAddress,
+      const wrongParams = {
+        finder,
         version,
-        collateralAddress,
-        destSynthTokenAddress,
+        collateralToken,
+        syntheticToken: destSynthTokenAddress,
         roles,
-        destOverCollateralization,
-        fee,
-        destPriceFeedIdentifier,
+        overCollateralization: destOverCollateralization,
+        feeData,
+        priceIdentifier: destPriceFeedIdentifier,
         collateralRequirement,
         liquidationReward,
+      };
+      const underCapitalizedPoolInstance = await SynthereumLiquidityPool.new(
+        wrongParams,
       );
       await destSynthTokenInstance.addMinter(
         underCapitalizedPoolInstance.address,
@@ -1489,7 +1418,7 @@ contract('LiquidityPool', function (accounts) {
       );
       await poolRegistryInstance.register(
         destSynthTokenSymbol,
-        collateralAddress,
+        collateralToken,
         version,
         underCapitalizedPoolInstance.address,
       );
@@ -1981,7 +1910,7 @@ contract('LiquidityPool', function (accounts) {
     });
   });
 
-  describe('Should claim fees', async () => {
+  describe('Should claim feeDatas', async () => {
     beforeEach(async () => {
       const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
       const totSynthTokens = web3Utils.toWei('99.8');
@@ -2002,7 +1931,7 @@ contract('LiquidityPool', function (accounts) {
         from: firstUser,
       });
     });
-    it('Can claim fees', async () => {
+    it('Can claim feeDatas', async () => {
       const actualLpBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
@@ -2087,7 +2016,7 @@ contract('LiquidityPool', function (accounts) {
         'Wrong total fee in the pool',
       );
     });
-    it('Can revert if no fees to claim', async () => {
+    it('Can revert if no feeDatas to claim', async () => {
       await truffleAssert.reverts(
         liquidityPoolInstance.claimFee({ from: firstUser }),
         'No fee to claim',
@@ -3215,31 +3144,34 @@ contract('LiquidityPool', function (accounts) {
     });
   });
 
-  describe('Should set fee', async () => {
-    it('Can set fee percentage', async () => {
+  describe('Should set feeData', async () => {
+    it('Can set feeData percentage', async () => {
       const newFeePerc = web3Utils.toWei('0.1');
-      const feeTx = await liquidityPoolInstance.setFeePercentage(newFeePerc, {
-        from: maintainer,
-      });
-      truffleAssert.eventEmitted(feeTx, 'SetFeePercentage', ev => {
+      const feeDataTx = await liquidityPoolInstance.setFeePercentage(
+        newFeePerc,
+        {
+          from: maintainer,
+        },
+      );
+      truffleAssert.eventEmitted(feeDataTx, 'SetFeePercentage', ev => {
         return ev.feePercentage == newFeePerc;
       });
-      const feeOutput = await liquidityPoolInstance.feePercentage.call();
+      const feeDataOutput = await liquidityPoolInstance.feePercentage.call();
       assert.equal(
-        web3Utils.toBN(feeOutput).toString(),
+        web3Utils.toBN(feeDataOutput).toString(),
         web3Utils.toBN(newFeePerc),
-        'Wrong fee percentage',
+        'Wrong feeData percentage',
       );
     });
-    it('Can set fee recipients', async () => {
-      const feeTx = await liquidityPoolInstance.setFeeRecipients(
+    it('Can set feeData recipients', async () => {
+      const feeDataTx = await liquidityPoolInstance.setFeeRecipients(
         [firstUser, secondUser],
         [40, 80],
         {
           from: maintainer,
         },
       );
-      truffleAssert.eventEmitted(feeTx, 'SetFeeRecipients', ev => {
+      truffleAssert.eventEmitted(feeDataTx, 'SetFeeRecipients', ev => {
         return (
           ev.feeRecipients[0] == firstUser &&
           ev.feeRecipients[1] == secondUser &&
@@ -3247,14 +3179,18 @@ contract('LiquidityPool', function (accounts) {
           ev.feeProportions[1] == 80
         );
       });
-      const feeOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
-      assert.equal(feeOutput[0][0], firstUser, 'Wrong first user address');
-      assert.equal(feeOutput[0][1], secondUser, 'Wrong second user address');
-      assert.equal(feeOutput[1][0], 40, 'Wrong first proportion');
-      assert.equal(feeOutput[1][1], 80, 'Wrong second proportion');
-      assert.equal(feeOutput[2], 120, 'Wrong total fee proportion');
+      const feeDataOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
+      assert.equal(feeDataOutput[0][0], firstUser, 'Wrong first user address');
+      assert.equal(
+        feeDataOutput[0][1],
+        secondUser,
+        'Wrong second user address',
+      );
+      assert.equal(feeDataOutput[1][0], 40, 'Wrong first proportion');
+      assert.equal(feeDataOutput[1][1], 80, 'Wrong second proportion');
+      assert.equal(feeDataOutput[2], 120, 'Wrong total feeData proportion');
     });
-    it('Can set fee', async () => {
+    it('Can set feeData', async () => {
       const newFeePerc = web3Utils.toWei('0.1');
       const newFee = {
         feePercentage: {
@@ -3264,26 +3200,34 @@ contract('LiquidityPool', function (accounts) {
         feeProportions: [30, 70],
       };
       await liquidityPoolInstance.setFee(newFee, { from: maintainer });
-      const feePercentageOutput = await liquidityPoolInstance.feePercentage.call();
+      const feeDataPercentageOutput = await liquidityPoolInstance.feePercentage.call();
       assert.equal(
-        web3Utils.toBN(feePercentageOutput).toString(),
+        web3Utils.toBN(feeDataPercentageOutput).toString(),
         web3Utils.toBN(newFeePerc),
-        'Wrong fee percentage',
+        'Wrong feeData percentage',
       );
-      const feeRecipientsOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
+      const feeDataRecipientsOutput = await liquidityPoolInstance.feeRecipientsInfo.call();
       assert.equal(
-        feeRecipientsOutput[0][0],
+        feeDataRecipientsOutput[0][0],
         firstUser,
         'Wrong first user address',
       );
       assert.equal(
-        feeRecipientsOutput[0][1],
+        feeDataRecipientsOutput[0][1],
         secondUser,
         'Wrong second user address',
       );
-      assert.equal(feeRecipientsOutput[1][0], 30, 'Wrong first proportion');
-      assert.equal(feeRecipientsOutput[1][1], 70, 'Wrong second proportion');
-      assert.equal(feeRecipientsOutput[2], 100, 'Wrong total fee proportion');
+      assert.equal(feeDataRecipientsOutput[1][0], 30, 'Wrong first proportion');
+      assert.equal(
+        feeDataRecipientsOutput[1][1],
+        70,
+        'Wrong second proportion',
+      );
+      assert.equal(
+        feeDataRecipientsOutput[2],
+        100,
+        'Wrong total feeData proportion',
+      );
     });
     it('Can revert if sender is not the maintainer', async () => {
       const newFeePerc = web3Utils.toWei('0.1');
@@ -3313,7 +3257,7 @@ contract('LiquidityPool', function (accounts) {
         'Sender must be the maintainer',
       );
     });
-    it('Can revert if fee percentage is more than 100%', async () => {
+    it('Can revert if feeData percentage is more than 100%', async () => {
       const newFeePerc = web3Utils.toWei('1.01');
       await truffleAssert.reverts(
         liquidityPoolInstance.setFeePercentage(newFeePerc, {
@@ -3488,7 +3432,7 @@ contract('LiquidityPool', function (accounts) {
       assert.equal(
         web3Utils.toBN(mintResult.feePaid).toString(),
         web3Utils.toBN(web3Utils.toWei('0.24', 'mwei')).toString(),
-        'Wrong fee paid',
+        'Wrong feeData paid',
       );
     });
     it('Can revert is no collateral amount passed', async () => {
@@ -3539,7 +3483,7 @@ contract('LiquidityPool', function (accounts) {
       assert.equal(
         web3Utils.toBN(redeemResult.feePaid).toString(),
         web3Utils.toBN(web3Utils.toWei('0.036', 'mwei')).toString(),
-        'Wrong fee paid',
+        'Wrong feeData paid',
       );
     });
     it('Can revert is no tokens  passed', async () => {
@@ -3611,17 +3555,20 @@ contract('LiquidityPool', function (accounts) {
         destAggregatorAddress,
         { from: maintainer },
       );
-      destLiquidityPoolInstance = await SynthereumLiquidityPool.new(
-        finderAddress,
+      const wrongParams = {
+        finder,
         version,
-        collateralAddress,
-        destSynthTokenAddress,
+        collateralToken,
+        syntheticToken: destSynthTokenAddress,
         roles,
-        destOverCollateralization,
-        fee,
-        destPriceFeedIdentifier,
+        overCollateralization: destOverCollateralization,
+        feeData,
+        priceIdentifier: destPriceFeedIdentifier,
         collateralRequirement,
         liquidationReward,
+      };
+      destLiquidityPoolInstance = await SynthereumLiquidityPool.new(
+        wrongParams,
       );
       destLiquidityPoolAddress = destLiquidityPoolInstance.address;
       await destSynthTokenInstance.addMinter(destLiquidityPoolAddress, {
@@ -3636,7 +3583,7 @@ contract('LiquidityPool', function (accounts) {
       );
       await poolRegistryInstance.register(
         destSynthTokenSymbol,
-        collateralAddress,
+        collateralToken,
         version,
         destLiquidityPoolAddress,
       );
@@ -3656,7 +3603,7 @@ contract('LiquidityPool', function (accounts) {
       assert.equal(
         web3Utils.toBN(exchangeResult.feePaid).toString(),
         web3Utils.toBN(web3Utils.toWei('0.26', 'mwei')).toString(),
-        'Wrong fee paid',
+        'Wrong feeData paid',
       );
     });
     it('Can revert if source and destination pools are the same', async () => {
