@@ -34,7 +34,13 @@ async function migrate(deployer, network, accounts) {
   );
   const keys = getKeysForNetwork(network, accounts);
   let tokenFactory;
-  if (!isPublicNetwork(network) || networkId == 80001 || networkId === 137) {
+  if (
+    !isPublicNetwork(network) ||
+    networkId === 56 ||
+    networkId === 97 ||
+    networkId === 137 ||
+    networkId == 80001
+  ) {
     await deploy(
       web3,
       deployer,
