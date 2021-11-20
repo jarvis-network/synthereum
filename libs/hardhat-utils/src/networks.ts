@@ -6,18 +6,24 @@ import {
   isNetworkId,
 } from '@jarvis-network/core-utils/dist/eth/networks';
 
-import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
+import {
+  getInfuraEndpoint,
+  getBSCEndpoint,
+} from '@jarvis-network/core-utils/dist/apis/infura';
 
 export function addPublicNetwork(
   config: HardhatUserConfig,
   chainId: NetworkId,
-  projectId: string,
+  projectId = '',
 ): void {
   const networkName = toNetworkName(chainId);
   config.networks ??= {};
   config.networks[networkName] = {
     chainId,
-    url: process.env.RPC_URL ?? getInfuraEndpoint(chainId, 'https', projectId),
+    url:
+      process.env.RPC_URL ?? (chainId !== 56 && chainId !== 97)
+        ? getInfuraEndpoint(chainId, 'https', projectId)
+        : getBSCEndpoint(chainId, 'https'),
     accounts: {
       mnemonic:
         process.env.MNEMONIC ??

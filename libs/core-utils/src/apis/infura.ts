@@ -23,6 +23,20 @@ export function getInfuraEndpoint<Net extends Network>(
   }/v3/${projectId}` as ValueOnNetwork<string, Net>;
 }
 
+export function getBSCEndpoint<Net extends Network>(
+  network: Net,
+  protocol: Protocol = 'https',
+): ValueOnNetwork<string, Net> {
+  const networkName = toNetworkName(network);
+  const endpoint =
+    networkName === 'bsc'
+      ? 'bsc-dataseed.binance.org/'
+      : networkName === 'bscTestnet'
+      ? 'data-seed-prebsc-1-s1.binance.org:8545/'
+      : networkName;
+  return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
+}
+
 export function getInfuraWeb3<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
