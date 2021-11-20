@@ -24,6 +24,8 @@ createOrModifyHardhatTask(TASK_VERIFY_VERIFY).setAction(
     const network = hre.network.name;
     if (network === 'polygon' || network === 'mumbai') {
       (hre.config as any).etherscan.apiKey = process.env.POLYGONSCAN_API_KEY;
+    } else if (network === 'bsc' || network === 'bscTestnet') {
+      (hre.config as any).etherscan.apiKey = process.env.BSC_API_KEY;
     }
     return runSuper();
   },
