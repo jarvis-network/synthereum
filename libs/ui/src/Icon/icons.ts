@@ -23,6 +23,7 @@ export {
   IoIosMoon,
   IoIosCloud,
   IoIosCloudyNight,
+  IoIosCog,
 } from 'react-icons/io';
 export {
   BsArrowLeft,

@@ -4,7 +4,7 @@ import { initialAppState } from '@/state/initialState';
 
 import { resetSwapAction } from '../actions';
 
-interface SetModalVisibilityAction {
+interface BooleanAction {
   payload: boolean;
 }
 
@@ -16,43 +16,43 @@ const appSlice = createSlice({
   name: 'app',
   initialState: initialAppState.app,
   reducers: {
-    setAccountOverviewModalVisible(state, action: SetModalVisibilityAction) {
+    setAccountOverviewModalVisible(state, action: BooleanAction) {
       return {
         ...state,
         isAccountOverviewModalVisible: action.payload,
       };
     },
-    setRecentActivityModalVisible(state, action: SetModalVisibilityAction) {
+    setRecentActivityModalVisible(state, action: BooleanAction) {
       return {
         ...state,
         isRecentActivityModalVisible: action.payload,
       };
     },
-    setFullScreenLoaderVisible(state, action: SetModalVisibilityAction) {
+    setFullScreenLoaderVisible(state, action: BooleanAction) {
       return {
         ...state,
         isFullScreenLoaderVisible: action.payload,
       };
     },
-    setSwapLoaderVisible(state, action: SetModalVisibilityAction) {
+    setSwapLoaderVisible(state, action: BooleanAction) {
       return {
         ...state,
         isSwapLoaderVisible: action.payload,
       };
     },
-    setAuthModalVisible(state, action: SetModalVisibilityAction) {
+    setAuthModalVisible(state, action: BooleanAction) {
       return {
         ...state,
         isAuthModalVisible: action.payload,
       };
     },
-    setExchangeConfirmationVisible(state, action: SetModalVisibilityAction) {
+    setExchangeConfirmationVisible(state, action: BooleanAction) {
       return {
         ...state,
         isExchangeConfirmationVisible: action.payload,
       };
     },
-    setWindowLoaded(state, action: SetModalVisibilityAction) {
+    setWindowLoaded(state, action: BooleanAction) {
       return {
         ...state,
         isWindowLoaded: action.payload,
@@ -62,6 +62,12 @@ const appSlice = createSlice({
       return {
         ...state,
         mobileTab: action.payload,
+      };
+    },
+    setExchangeSettingsVisible(state, action: BooleanAction) {
+      return {
+        ...state,
+        areExchangeSettingsVisible: action.payload,
       };
     },
   },
@@ -85,5 +91,6 @@ export const {
   setExchangeConfirmationVisible,
   setWindowLoaded,
   setMobileTab,
+  setExchangeSettingsVisible,
 } = appSlice.actions;
 export const { reducer } = appSlice;

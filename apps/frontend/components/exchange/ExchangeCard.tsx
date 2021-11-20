@@ -29,6 +29,7 @@ import {
 import {
   setSwapLoaderVisible,
   setExchangeConfirmationVisible,
+  setExchangeSettingsVisible,
 } from '@/state/slices/app';
 import { useReduxSelector } from '@/state/useReduxSelector';
 import { AssetPair } from '@/data/assets';
@@ -47,6 +48,7 @@ import { StyledSearchBar } from './StyledSearchBar';
 import { FlagsPair } from './FlagsPair';
 import { Fees, FEES_BLOCK_HEIGHT_PX } from './Fees';
 import { SwapConfirm } from './SwapConfirm';
+import { ExchangeSettings } from './ExchangeSettings';
 
 export const FULL_WIDGET_HEIGHT_PX = 595;
 
@@ -226,20 +228,33 @@ const NotificationsContainer = styled.div`
   }
 `;
 
+const SettingsIcon = styled(Icon)`
+  font-size: 24px;
+  line-height: 68px;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+`;
+
 const CUSTOM_SEARCH_BAR_CLASS = 'custom-search-bar';
 
 export const ExchangeCard: React.FC = () => {
   const notify = useExchangeNotifications();
   const dispatch = useDispatch();
   const list = useAssets();
-  const wallet = useReduxSelector(state => state.wallet);
-  const isApplicationReady = useReduxSelector(isAppReadySelector);
-  const isExchangeConfirmationVisible = useReduxSelector(
-    state => state.app.isExchangeConfirmationVisible,
-  );
-  const chooseAsset = useReduxSelector(
-    state => state.exchange.chooseAssetActive,
-  );
+  const {
+    wallet,
+    isApplicationReady,
+    isExchangeConfirmationVisible,
+    areExchangeSettingsVisible,
+    chooseAsset,
+  } = useReduxSelector(state => ({
+    wallet: state.wallet,
+    isApplicationReady: isAppReadySelector(state),
+    isExchangeConfirmationVisible: state.app.isExchangeConfirmationVisible,
+    areExchangeSettingsVisible: state.app.areExchangeSettingsVisible,
+    chooseAsset: state.exchange.chooseAssetActive,
+  }));
 
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -391,6 +406,10 @@ export const ExchangeCard: React.FC = () => {
       return <SwapConfirm onConfim={handleConfirmButtonClick} />;
     }
 
+    if (areExchangeSettingsVisible) {
+      return <ExchangeSettings />;
+    }
+
     const suffix = searchOpen && (
       <ClearButton onClick={handleCloseClick}>
         <Icon icon="IoMdClose" />
@@ -422,8 +441,23 @@ export const ExchangeCard: React.FC = () => {
       };
     }
 
+    if (areExchangeSettingsVisible) {
+      return {
+        title: 'Exchange settings',
+        onBack() {
+          dispatch(setExchangeSettingsVisible(false));
+        },
+      };
+    }
+
     return {
       title: 'Swap',
+      extra: (
+        <SettingsIcon
+          icon="IoIosCog"
+          onClick={() => dispatch(setExchangeSettingsVisible(true))}
+        />
+      ),
     };
   };
 
@@ -440,7 +474,10 @@ export const ExchangeCard: React.FC = () => {
   );
 
   const isMobileCardVisible =
-    chooseAsset || searchOpen || isExchangeConfirmationVisible;
+    chooseAsset ||
+    searchOpen ||
+    isExchangeConfirmationVisible ||
+    areExchangeSettingsVisible;
 
   const mobileContent = isMobileCardVisible ? (
     <MobileCardContainer>{card}</MobileCardContainer>

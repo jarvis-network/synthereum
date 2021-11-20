@@ -38,8 +38,15 @@ export interface PricePointsMap {
   [pair: string]: PricePoint[];
 }
 
+export enum TransactionSpeed {
+  standard = 'standard',
+  fast = 'fast',
+  rapid = 'rapid',
+}
+
 export const DEFAULT_PAY_ASSET: ExchangeSynthereumToken = primaryCollateralSymbol;
 export const DEFAULT_RECEIVE_ASSET: ExchangeSynthereumToken = 'jEUR';
+export const DEFAULT_TRANSACTION_SPEED = TransactionSpeed.fast;
 
 export type Days = 1 | 7 | 30;
 
@@ -53,6 +60,7 @@ export interface State {
     isAuthModalVisible: boolean;
     isExchangeConfirmationVisible: boolean;
     isWindowLoaded: boolean;
+    areExchangeSettingsVisible: boolean;
     mobileTab: number;
   };
   exchange: {
@@ -68,6 +76,7 @@ export interface State {
     invertRateInfo: boolean;
     chooseAssetActive: Values | null;
     chartDays: Days;
+    transactionSpeed: TransactionSpeed;
   };
   wallet: {
     [key in ExchangeSynthereumToken]?: WalletInfo;
@@ -99,6 +108,7 @@ export const initialAppState: State = {
     isAuthModalVisible: false,
     isExchangeConfirmationVisible: false,
     isWindowLoaded: false,
+    areExchangeSettingsVisible: false,
     mobileTab: 1,
   },
   exchange: {
@@ -116,6 +126,9 @@ export const initialAppState: State = {
     invertRateInfo: false,
     chooseAssetActive: null,
     chartDays: cache.get<Days | null>('jarvis/state/exchange.chartDays') || 7,
+    transactionSpeed:
+      cache.get<TransactionSpeed>('jarvis/state/exchange.transactionSpeed') ||
+      DEFAULT_TRANSACTION_SPEED,
   },
   wallet: {},
   transactions: {

@@ -3,11 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   DEFAULT_PAY_ASSET,
   DEFAULT_RECEIVE_ASSET,
+  DEFAULT_TRANSACTION_SPEED,
   initialAppState,
   State,
 } from '@/state/initialState';
 import { resetSwapAction } from '@/state/actions';
-import { networkSwitchAction } from '@jarvis-network/app-toolkit';
+import { logoutAction, networkSwitchAction } from '@jarvis-network/app-toolkit';
 import { polygonOnlyAssets } from '@/data/assets';
 
 interface SetChooseAssetAction {
@@ -36,6 +37,10 @@ interface SetReceiveAssetAction {
 
 interface SetChartDays {
   payload: State['exchange']['chartDays'];
+}
+
+interface SetTransactionSpeed {
+  payload: State['exchange']['transactionSpeed'];
 }
 
 const exchangeSlice = createSlice({
@@ -72,6 +77,10 @@ const exchangeSlice = createSlice({
     setChartDays(state, action: SetChartDays) {
       state.chartDays = action.payload;
     },
+    setTransactionSpeed(state, action: SetTransactionSpeed) {
+      state.transactionSpeed = action.payload;
+    },
+
     resetAssetsIfUnsupported: resetAssetsIfUnsupportedReducer,
   },
   extraReducers: {
@@ -84,6 +93,12 @@ const exchangeSlice = createSlice({
         base,
         pay,
         receive,
+      };
+    },
+    [logoutAction.type](state) {
+      return {
+        ...state,
+        transactionSpeed: DEFAULT_TRANSACTION_SPEED,
       };
     },
   },
@@ -115,6 +130,7 @@ export const {
   setReceiveAsset,
   invertRateInfo,
   setChartDays,
+  setTransactionSpeed,
   resetAssetsIfUnsupported,
 } = exchangeSlice.actions;
 

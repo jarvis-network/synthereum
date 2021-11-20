@@ -6,6 +6,7 @@ export * from './CoreObservablesContext';
 export * from './ens';
 export * from './environment';
 export * from './format';
+export * from './TransactionSpeedProvider';
 export * from './useBehaviorSubject';
 export * from './useConstant';
 export * from './useLocalStorage';

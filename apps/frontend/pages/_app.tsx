@@ -15,6 +15,7 @@ import {
   useSynthereumRealmAgentProvider,
   useSubjects,
   AuthProvider,
+  TransactionSpeedProvider,
 } from '@jarvis-network/app-toolkit';
 
 import '@/utils/consoleErrorFilter';
@@ -61,7 +62,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
   if (!isMounted) return null;
 
   const app = (
-    <AuthProvider>
+    <TransactionSpeedProvider>
       <Providers subjects={subjects} store={store} />
       <AuthFlow<typeof store>
         notify={(notify, isMobile, title, options) =>
@@ -79,7 +80,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
         <Component {...pageProps} />
         <GDPRPopup />
       </MainWrapper>
-    </AuthProvider>
+    </TransactionSpeedProvider>
   );
 
   return (
@@ -92,7 +93,9 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element | null {
       </Head>
       <StateProvider store={store}>
         <AppThemeProvider>
-          <NotificationsProvider>{app}</NotificationsProvider>
+          <NotificationsProvider>
+            <AuthProvider>{app}</AuthProvider>
+          </NotificationsProvider>
         </AppThemeProvider>
       </StateProvider>
     </CoreObservablesContextProvider>

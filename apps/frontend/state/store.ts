@@ -15,6 +15,7 @@ function initStore(preloadedState: State = initialAppState) {
       'exchange.payAsset',
       'exchange.receiveAsset',
       'exchange.chartDays',
+      'exchange.transactionSpeed',
       'app.isAccountOverviewModalVisible',
       'app.isRecentActivityModalVisible',
     ]),

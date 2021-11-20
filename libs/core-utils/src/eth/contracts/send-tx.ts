@@ -19,7 +19,7 @@ import type {
 export interface TxOptions {
   nonce?: number;
   gasLimit?: number;
-  gasPrice?: number;
+  gasPrice?: string | number;
   printInfo?: Omit<TxLogParams, 'txhash'>;
   confirmations?: number;
 }

@@ -4,8 +4,12 @@ import { PRIMARY_STABLE_COIN } from '@/data/assets';
 import {
   useBehaviorSubject,
   useCoreObservables,
+  useTransactionSpeedContext,
 } from '@jarvis-network/app-toolkit';
 import { SupportedSynthereumSymbol } from '@jarvis-network/synthereum-config';
+import { useReduxSelector } from '@/state/useReduxSelector';
+import { FPN } from '@jarvis-network/core-utils/dist/base/fixed-point-number';
+import { TransactionSpeed } from '@/state/initialState';
 
 export const useSwap = () => {
   const agent = useBehaviorSubject(useCoreObservables().synthereumRealmAgent$);
@@ -16,6 +20,12 @@ export const useSwap = () => {
     receiveValue,
     transactionCollateral,
   } = useExchangeValues();
+
+  const { transactionSpeed } = useReduxSelector(state => ({
+    transactionSpeed: state.exchange.transactionSpeed,
+  }));
+
+  const transactionSpeedContext = useTransactionSpeedContext();
 
   if (!agent || paySymbol === receiveSymbol) {
     // symbols should never be the same, but just in case..
@@ -39,6 +49,12 @@ export const useSwap = () => {
         collateral,
         outputAmount,
         outputSynth,
+        txOptions: {
+          gasPrice: calculateGasPrice(
+            transactionSpeedContext,
+            transactionSpeed,
+          ),
+        },
       });
 
       txPromise.then(result => console.log('Minted!', result));
@@ -63,6 +79,12 @@ export const useSwap = () => {
         collateral,
         inputAmount,
         inputSynth,
+        txOptions: {
+          gasPrice: calculateGasPrice(
+            transactionSpeedContext,
+            transactionSpeed,
+          ),
+        },
       });
 
       txPromise.then(result => console.log('Redeem!', result));
@@ -95,6 +117,9 @@ export const useSwap = () => {
       inputSynth,
       outputAmount,
       outputSynth,
+      txOptions: {
+        gasPrice: calculateGasPrice(transactionSpeedContext, transactionSpeed),
+      },
     });
 
     txPromise.then(result => console.log('Exchange!', result));
@@ -102,3 +127,15 @@ export const useSwap = () => {
     return { allowancePromise, txPromise, sendTx };
   };
 };
+
+const oneGwei = FPN.fromWei(1000_000_000);
+function calculateGasPrice(
+  transactionSpeedContext: ReturnType<typeof useTransactionSpeedContext>,
+  transactionSpeed: TransactionSpeed,
+): string | undefined {
+  return transactionSpeedContext.current
+    ? oneGwei
+        .mul(new FPN(transactionSpeedContext.current[transactionSpeed]))
+        .toString(10)
+    : undefined;
+}

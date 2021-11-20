@@ -10,6 +10,7 @@ export interface IconProps {
   icon: IconKeys;
   className?: string;
   style?: CSSProperties;
+  onClick?: React.DOMAttributes<HTMLElement>['onClick'];
 }
 
 export const IconContainer = styled.i`
@@ -18,11 +19,16 @@ export const IconContainer = styled.i`
   justify-content: center;
 `;
 
-export const Icon: FC<IconProps> = ({ icon, className, style = {} }) => {
+export const Icon: FC<IconProps> = ({
+  icon,
+  className,
+  style = {},
+  onClick,
+}) => {
   const IconComponent = icons[icon];
 
   return (
-    <IconContainer className={className} style={style}>
+    <IconContainer className={className} style={style} onClick={onClick}>
       <IconComponent />
     </IconContainer>
   );
