@@ -64,16 +64,16 @@ async function migrate(deployer, network, accounts) {
   var aggregatorsData = [];
   if (!isPublicNetwork(network)) {
     return;
-  } else if (networkId === 80001) {
-    const assets = Object.keys(aggregators[networkId]);
+  } else if (networkId === 80001 || networkId === 97) {
+    const assets = Object.keys(randomOracleConfig[networkId]);
     for (let j = 0; j < assets.length; j++) {
       await deploy(
         web3,
         deployer,
         network,
         MockRandomAggregator,
-        web3.utils.toWei(randomOracleConfig[80001][assets[j]].initialPrice),
-        web3.utils.toWei(randomOracleConfig[80001][assets[j]].maxSpread),
+        web3.utils.toWei(randomOracleConfig[networkId][assets[j]].initialPrice),
+        web3.utils.toWei(randomOracleConfig[networkId][assets[j]].maxSpread),
         {
           from: maintainer,
         },
