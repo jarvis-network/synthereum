@@ -28,8 +28,6 @@ module.exports = async function (deployer, network, accounts) {
   const networkId = toNetworkId(network);
   global.web3 = web3;
 
-  const gasPrice = parseFiniteFloat(process.env.GAS_PRICE);
-
   const synthereumDeployer = await getExistingInstance(
     web3,
     SynthereumDeployer,
@@ -87,7 +85,7 @@ module.exports = async function (deployer, network, accounts) {
             txData[j].creditLineDerivativeVersion,
             txData[j].creditLineDerivativePayload,
           )
-          .send({ from: maintainer, gasPrice });
+          .send({ from: maintainer });
         const { transactionHash } = tx;
         await logTransactionOutput({
           log,
