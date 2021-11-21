@@ -30,6 +30,7 @@ async function migrate(deployer, network, accounts) {
   const synthereumFactoryVersioning = await getExistingInstance(
     web3,
     SynthereumFactoryVersioning,
+    '@jarvis-network/synthereum-contracts',
   );
   const synthereumFinder = await getExistingInstance(
     web3,
