@@ -90,6 +90,22 @@
             "cwd": "./libs/ui",
             "color": true
           }
+        },
+        "build-storybook": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn run build:storybook"],
+            "cwd": "./libs/ui",
+            "color": true
+          }
+        },
+        "deploy-chromatic": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": ["yarn deploy:chromatic"],
+            "cwd": "./libs/ui",
+            "color": true
+          }
         }
       }
     },
