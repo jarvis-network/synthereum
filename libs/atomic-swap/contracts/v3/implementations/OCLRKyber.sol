@@ -90,7 +90,7 @@ contract OCLRV2Kyber is OCLRBase {
         // swapExactTokensForTokens
         // get funds from caller
         tokenSwapPath[0].safeTransferFrom(
-          msg.sender,
+          inputParams.msgSender,
           address(this),
           inputParams.exactAmount
         );
@@ -129,16 +129,16 @@ contract OCLRV2Kyber is OCLRBase {
 
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           (bool success, ) =
-            msg.sender.call{value: inputParams.minOutOrMaxIn - amountsOut[0]}(
-              ''
-            );
+            inputParams.msgSender.call{
+              value: inputParams.minOutOrMaxIn - amountsOut[0]
+            }('');
           require(success, 'Failed eth refund');
         }
       } else {
         //swapTokensForExactTokens
         // pull the max input tokens allowed to spend
         tokenSwapPath[0].safeTransferFrom(
-          msg.sender,
+          inputParams.msgSender,
           address(this),
           inputParams.minOutOrMaxIn
         );
@@ -161,7 +161,7 @@ contract OCLRV2Kyber is OCLRBase {
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           // refund leftover input erc20
           tokenSwapPath[0].safeTransfer(
-            msg.sender,
+            inputParams.msgSender,
             inputParams.minOutOrMaxIn - amountsOut[0]
           );
 
@@ -183,11 +183,12 @@ contract OCLRV2Kyber is OCLRBase {
       synthereumParams.mintParams.collateralAmount
     );
 
-    // mint jSynth to mintParams.recipient (supposedly msg.sender)
+    // mint jSynth to mintParams.recipient
     // returns the output amount
-    (returnValues.outputAmount, ) = synthereumParams.synthereumPool.mint(
-      synthereumParams.mintParams
-    );
+    // (returnValues.outputAmount, ) = synthereumParams.synthereumPool.mint(
+    //   synthereumParams.mintParams
+    // );
+    returnValues.outputAmount = 0;
   }
 
   /// see IBase.sol
@@ -232,7 +233,7 @@ contract OCLRV2Kyber is OCLRBase {
 
       // redeem USDC with jSynth into this contract
       synthTokenInstance.safeTransferFrom(
-        msg.sender,
+        inputParams.msgSender,
         address(this),
         synthereumParams.redeemParams.numTokens
       );
@@ -305,7 +306,7 @@ contract OCLRV2Kyber is OCLRBase {
       if (collateralOut > amountsOut[0]) {
         uint256 collateralRefund = collateralOut - amountsOut[0];
 
-        tokenSwapPath[0].safeTransfer(msg.sender, collateralRefund);
+        tokenSwapPath[0].safeTransfer(inputParams.msgSender, collateralRefund);
 
         // reset router allowance
         tokenSwapPath[0].safeApprove(implementationInfo.routerAddress, 0);

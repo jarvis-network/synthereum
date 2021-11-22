@@ -19,8 +19,13 @@ import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
+import {
+  ERC2771Context,
+  Context
+} from '@openzeppelin/contracts/metatx/ERC2771Context.sol';
 
 contract OnChainLiquidityRouterV2 is
+  ERC2771Context,
   IOnChainLiquidityRouterV2,
   AccessControlEnumerable,
   ReentrancyGuard
@@ -62,7 +67,11 @@ contract OnChainLiquidityRouterV2 is
     _;
   }
 
-  constructor(Roles memory _roles, address _synthereumFinderAddress) {
+  constructor(
+    Roles memory _roles,
+    address _synthereumFinderAddress,
+    address forwarder
+  ) ERC2771Context(forwarder) {
     synthereumFinder = ISynthereumFinder(_synthereumFinderAddress);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
@@ -138,9 +147,12 @@ contract OnChainLiquidityRouterV2 is
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes),(address,address,(uint256,uint256,uint256,uint256,address)))';
+      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,uint256,address)))';
     SynthereumMintParams memory synthereumParams =
       SynthereumMintParams(synthereumFinder, synthereumPool, mintParams);
+
+    // store msg sender using ERC2771Context
+    inputParams.msgSender = _msgSender();
 
     bytes memory result =
       implementation.functionDelegateCall(
@@ -183,9 +195,12 @@ contract OnChainLiquidityRouterV2 is
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes),(address,address,(uint256,uint256,uint256,uint256,address)),address)';
+      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,uint256,address)),address)';
     SynthereumRedeemParams memory synthereumParams =
       SynthereumRedeemParams(synthereumFinder, synthereumPool, redeemParams);
+
+    // store msg sender using ERC2771Context
+    inputParams.msgSender = _msgSender();
 
     bytes memory result =
       implementation.functionDelegateCall(
@@ -209,5 +224,25 @@ contract OnChainLiquidityRouterV2 is
       returnValues.collateralAmountRefunded,
       implementation
     );
+  }
+
+  function _msgSender()
+    internal
+    view
+    virtual
+    override(ERC2771Context, Context)
+    returns (address sender)
+  {
+    return super._msgSender();
+  }
+
+  function _msgData()
+    internal
+    view
+    virtual
+    override(ERC2771Context, Context)
+    returns (bytes calldata)
+  {
+    return super._msgData();
   }
 }

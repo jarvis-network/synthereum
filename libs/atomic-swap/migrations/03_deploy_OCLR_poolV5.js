@@ -2,6 +2,7 @@ const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouterV2');
 const UniV2AtomicSwap = artifacts.require('OCLRV2UniswapV2');
 const UniV3AtomicSwap = artifacts.require('OCLRV2UniswapV3');
 const KyberAtomicSwap = artifacts.require('OCLRV2Kyber');
+const MinimalForwarder = artifacts.require('MinimalForwarder');
 
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');
@@ -28,6 +29,13 @@ module.exports = async function (deployer, network, accounts) {
     elem => elem.contractName === 'SynthereumFinder',
   )[0].address;
 
+  // deploy minimal forwarder
+  await deploy(web3, deployer, network, MinimalForwarder, {
+    from: admin,
+  });
+
+  const forwarderInstance = await getExistingInstance(web3, MinimalForwarder);
+
   // deploy proxy
   await deploy(
     web3,
@@ -36,6 +44,7 @@ module.exports = async function (deployer, network, accounts) {
     OnChainLiquidityRouter,
     FixedRateRoles,
     synthereumFinderAddress,
+    forwarderInstance.options.address,
     {
       from: admin,
     },
