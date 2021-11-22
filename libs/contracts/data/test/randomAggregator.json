@@ -26,5 +26,11 @@
       "initialPrice": "0.00243404",
       "maxSpread": "0.00000000868"
     }
+  },
+  "3": {
+    "EURUSD": {
+      "initialPrice": "1.1281",
+      "maxSpread": "0.00000000868"
+    }
   }
 }
