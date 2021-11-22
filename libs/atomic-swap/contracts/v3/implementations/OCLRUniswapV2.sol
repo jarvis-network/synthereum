@@ -83,7 +83,7 @@ contract OCLRV2UniswapV2 is OCLRBase {
       } else {
         //swapExactTokensForTokens into this wallet
         inputTokenInstance.safeTransferFrom(
-          msg.sender,
+          inputParams.msgSender,
           address(this),
           inputParams.exactAmount
         );
@@ -118,15 +118,15 @@ contract OCLRV2UniswapV2 is OCLRBase {
         // refund eventual eth leftover
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           (bool success, ) =
-            msg.sender.call{value: inputParams.minOutOrMaxIn - amountsOut[0]}(
-              ''
-            );
+            inputParams.msgSender.call{
+              value: inputParams.minOutOrMaxIn - amountsOut[0]
+            }('');
           require(success, 'Failed eth refund');
         }
       } else {
         //swapTokensForExactTokens
         inputTokenInstance.safeTransferFrom(
-          msg.sender,
+          inputParams.msgSender,
           address(this),
           inputParams.minOutOrMaxIn
         );
@@ -145,7 +145,7 @@ contract OCLRV2UniswapV2 is OCLRBase {
 
         if (inputParams.minOutOrMaxIn > amountsOut[0]) {
           inputTokenInstance.safeTransfer(
-            msg.sender,
+            inputParams.msgSender,
             inputParams.minOutOrMaxIn - amountsOut[0]
           );
 
@@ -211,7 +211,7 @@ contract OCLRV2UniswapV2 is OCLRBase {
 
     // redeem USDC with jSynth into this contract
     synthTokenInstance.safeTransferFrom(
-      msg.sender,
+      inputParams.msgSender,
       address(this),
       synthereumParams.redeemParams.numTokens
     );
@@ -278,7 +278,10 @@ contract OCLRV2UniswapV2 is OCLRBase {
       if (collateralOut > amountsOut[0]) {
         uint256 collateralRefund = collateralOut - amountsOut[0];
 
-        IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
+        IERC20(tokenSwapPath[0]).safeTransfer(
+          inputParams.msgSender,
+          collateralRefund
+        );
 
         // reset router allowance
         IERC20(tokenSwapPath[0]).safeApprove(

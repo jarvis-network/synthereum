@@ -84,7 +84,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
         // erc20 as input
         // get input funds from caller
         IERC20(tokenSwapPath[0]).safeTransferFrom(
-          msg.sender,
+          inputParams.msgSender,
           address(this),
           inputParams.exactAmount
         );
@@ -117,7 +117,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
         synthereumParams.mintParams.collateralAmount
       );
 
-      // mint jSynth to mintParams.recipient (supposedly msg.sender)
+      // mint jSynth to mintParams.recipient (supposedly inputParams.msgSender)
       // returns the output amount
       (returnValues.outputAmount, ) = synthereumParams.synthereumPool.mint(
         synthereumParams.mintParams
@@ -131,7 +131,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
         // max erc20 as input
         // pull the max input tokens allowed to spend
         IERC20(tokenSwapPath[0]).safeTransferFrom(
-          msg.sender,
+          inputParams.msgSender,
           address(this),
           inputParams.minOutOrMaxIn
         );
@@ -161,12 +161,13 @@ contract OCLRV2UniswapV3 is OCLRBase {
           // take leftover eth from the router
           router.refundETH();
           //send it to user
-          (bool success, ) = msg.sender.call{value: address(this).balance}('');
+          (bool success, ) =
+            inputParams.msgSender.call{value: address(this).balance}('');
           require(success, 'Failed eth refund');
         } else {
           // refund erc20
           IERC20(tokenSwapPath[0]).safeTransfer(
-            msg.sender,
+            inputParams.msgSender,
             inputParams.minOutOrMaxIn - returnValues.inputAmount
           );
 
@@ -184,7 +185,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
         inputParams.exactAmount
       );
 
-      // mint jSynth to mintParams.recipient (supposedly msg.sender)
+      // mint jSynth to mintParams.recipient (supposedly inputParams.msgSender)
       // returns the output amount
       synthereumParams.mintParams.collateralAmount = inputParams.exactAmount;
       (returnValues.outputAmount, ) = synthereumParams.synthereumPool.mint(
@@ -225,7 +226,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
       );
       // redeem USDC with jSynth into this contract
       synthTokenInstance.safeTransferFrom(
-        msg.sender,
+        inputParams.msgSender,
         address(this),
         synthereumParams.redeemParams.numTokens
       );
@@ -306,7 +307,10 @@ contract OCLRV2UniswapV3 is OCLRBase {
           uint256 collateralRefund =
             inputParams.minOutOrMaxIn - inputTokensUsed;
 
-          IERC20(tokenSwapPath[0]).safeTransfer(msg.sender, collateralRefund);
+          IERC20(tokenSwapPath[0]).safeTransfer(
+            inputParams.msgSender,
+            collateralRefund
+          );
 
           // reset router allowance
           collateralInstance.safeApprove(implementationInfo.routerAddress, 0);

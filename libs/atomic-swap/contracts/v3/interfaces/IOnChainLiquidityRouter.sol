@@ -33,6 +33,7 @@ interface IOnChainLiquidityRouterV2 {
     uint256 exactAmount;
     uint256 minOutOrMaxIn;
     bytes extraParams;
+    address msgSender; // meta-tx support
   }
 
   // input values for implementation
@@ -41,6 +42,7 @@ interface IOnChainLiquidityRouterV2 {
     uint256 exactAmount;
     uint256 minOutOrMaxIn;
     bytes extraParams;
+    address msgSender; //meta-tx support
   }
 
   // synthereum variables
