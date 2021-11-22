@@ -87,6 +87,7 @@ export const config = {
 addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 4, process.env.ETHEREUM_PROJECT_ID!);
+addPublicNetwork(config, 3, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 137, process.env.POLYGON_PROJECT_ID!);
 addPublicNetwork(config, 80001, process.env.POLYGON_PROJECT_ID!);
 addPublicNetwork(config, 56);
