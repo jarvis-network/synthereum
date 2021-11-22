@@ -48,19 +48,18 @@ contract CreditLineFactory is
   /**
    * @notice Check if the sender is the deployer and deploy a new creditLine contract
    * @param params is a `ConstructorParams` object from creditLine.
+   * @param trustedForwarder address of the forwarder contract (EIP2771)
    * @return creditLine address of the deployed contract.
    */
-  function createSelfMintingDerivative(Params calldata params)
-    public
-    override
-    nonReentrant
-    returns (CreditLine creditLine)
-  {
+  function createSelfMintingDerivative(
+    Params calldata params,
+    address trustedForwarder
+  ) public override nonReentrant returns (CreditLine creditLine) {
     checkDeploymentConditions(
       synthereumFinder,
       params.collateralToken,
       params.priceFeedIdentifier
     );
-    creditLine = super.createSelfMintingDerivative(params);
+    creditLine = super.createSelfMintingDerivative(params, trustedForwarder);
   }
 }

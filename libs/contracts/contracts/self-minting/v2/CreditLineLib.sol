@@ -20,6 +20,9 @@ import {CreditLine} from './CreditLine.sol';
 import {
   ISynthereumPriceFeed
 } from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {
+  ERC2771Context
+} from '@openzeppelin/contracts/metatx/ERC2771Context.sol';
 
 library CreditLineLib {
   using FixedPoint for FixedPoint.Unsigned;
@@ -119,7 +122,8 @@ library CreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
-    address sponsor
+    address sponsor,
+    address msgSender
   ) external {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
 
@@ -132,7 +136,7 @@ library CreditLineLib {
     emit Deposit(sponsor, collateralAmount.rawValue);
 
     positionManagerData.collateralToken.safeTransferFrom(
-      msg.sender,
+      msgSender,
       address(this),
       collateralAmount.rawValue
     );
@@ -142,7 +146,8 @@ library CreditLineLib {
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FixedPoint.Unsigned memory collateralAmount
+    FixedPoint.Unsigned memory collateralAmount,
+    address msgSender
   ) external returns (FixedPoint.Unsigned memory) {
     require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
 
@@ -155,11 +160,11 @@ library CreditLineLib {
       collateralAmount
     );
 
-    emit Withdrawal(msg.sender, collateralAmount.rawValue);
+    emit Withdrawal(msgSender, collateralAmount.rawValue);
 
     // Move collateral currency from contract to sender.
     positionManagerData.collateralToken.safeTransfer(
-      msg.sender,
+      msgSender,
       collateralAmount.rawValue
     );
 
@@ -172,7 +177,8 @@ library CreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateralAmount,
     FixedPoint.Unsigned memory numTokens,
-    ICreditLineStorage.FeeStatus storage feeStatus
+    ICreditLineStorage.FeeStatus storage feeStatus,
+    address msgSender
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     // Update fees status - percentage is retrieved from Credit Line Controller
     feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
@@ -193,7 +199,7 @@ library CreditLineLib {
         numTokens.isGreaterThanOrEqual(positionManagerData.minSponsorTokens),
         'Below minimum sponsor position'
       );
-      emit NewSponsor(msg.sender);
+      emit NewSponsor(msgSender);
     } else {
       require(
         _checkCollateralization(
@@ -233,17 +239,17 @@ library CreditLineLib {
 
       // Transfer tokens into the contract from caller
       collateralCurrency.safeTransferFrom(
-        msg.sender,
+        msgSender,
         address(this),
         (collateralAmount).rawValue
       );
     }
 
     // mint corresponding synthetic tokens to the caller's address.
-    positionManagerData.tokenCurrency.mint(msg.sender, numTokens.rawValue);
+    positionManagerData.tokenCurrency.mint(msgSender, numTokens.rawValue);
 
     emit PositionCreated(
-      msg.sender,
+      msgSender,
       collateralAmount.rawValue,
       numTokens.rawValue,
       feeAmount.rawValue
@@ -312,11 +318,11 @@ library CreditLineLib {
     IERC20 collateralCurrency = positionManagerData.collateralToken;
 
     {
-      collateralCurrency.safeTransfer(msg.sender, amountWithdrawn.rawValue);
+      collateralCurrency.safeTransfer(sponsor, amountWithdrawn.rawValue);
 
       // Pull and burn callers synthetic tokens.
       positionManagerData.tokenCurrency.safeTransferFrom(
-        msg.sender,
+        sponsor,
         address(this),
         numTokens.rawValue
       );
@@ -324,7 +330,7 @@ library CreditLineLib {
     }
 
     emit Redeem(
-      msg.sender,
+      sponsor,
       amountWithdrawn.rawValue,
       numTokens.rawValue,
       feeAmount.rawValue
@@ -336,7 +342,8 @@ library CreditLineLib {
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    ICreditLineStorage.FeeStatus storage feeStatus
+    ICreditLineStorage.FeeStatus storage feeStatus,
+    address msgSender
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     require(
       numTokens.isLessThanOrEqual(positionData.tokensOutstanding),
@@ -368,14 +375,14 @@ library CreditLineLib {
 
     // Transfer the tokens back from the sponsor and burn them.
     positionManagerData.tokenCurrency.safeTransferFrom(
-      msg.sender,
+      msgSender,
       address(this),
       numTokens.rawValue
     );
     positionManagerData.tokenCurrency.burn(numTokens.rawValue);
 
     emit Repay(
-      msg.sender,
+      msgSender,
       numTokens.rawValue,
       newTokenCount.rawValue,
       feeAmount.rawValue
@@ -386,7 +393,8 @@ library CreditLineLib {
     ICreditLineStorage.PositionData storage positionToLiquidate,
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    FixedPoint.Unsigned calldata numSynthTokens
+    FixedPoint.Unsigned calldata numSynthTokens,
+    address msgSender
   )
     external
     returns (
@@ -459,13 +467,13 @@ library CreditLineLib {
     // transfer tokens from liquidator to here and burn them
     _burnLiquidatedTokens(
       positionManagerData,
-      msg.sender,
+      msgSender,
       executeLiquidationData.tokensToLiquidate.rawValue
     );
 
     // pay sender with collateral unlocked + rewards
     positionManagerData.collateralToken.safeTransfer(
-      msg.sender,
+      msgSender,
       executeLiquidationData.collateralLiquidated.rawValue
     );
 
@@ -480,12 +488,13 @@ library CreditLineLib {
   function settleEmergencyShutdown(
     ICreditLineStorage.PositionData storage positionData,
     ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.PositionManagerData storage positionManagerData
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
+    address msgSender
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
     // Get caller's tokens balance
     FixedPoint.Unsigned memory tokensToRedeem =
       FixedPoint.Unsigned(
-        positionManagerData.tokenCurrency.balanceOf(msg.sender)
+        positionManagerData.tokenCurrency.balanceOf(msgSender)
       );
 
     // calculate amount of underlying collateral entitled to them, with oracle emergency price
@@ -510,8 +519,8 @@ library CreditLineLib {
         positionData.rawCollateral.sub(tokenDebtValueInCollateral)
       );
 
-      CreditLine(address(this)).deleteSponsorPosition(msg.sender);
-      emit EndedSponsorPosition(msg.sender);
+      CreditLine(address(this)).deleteSponsorPosition(msgSender);
+      emit EndedSponsorPosition(msgSender);
     }
 
     // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
@@ -530,18 +539,18 @@ library CreditLineLib {
       .sub(tokensToRedeem);
 
     emit SettleEmergencyShutdown(
-      msg.sender,
+      msgSender,
       amountWithdrawn.rawValue,
       tokensToRedeem.rawValue
     );
 
     // Transfer tokens & collateral and burn the redeemed tokens.
     positionManagerData.collateralToken.safeTransfer(
-      msg.sender,
+      msgSender,
       amountWithdrawn.rawValue
     );
     positionManagerData.tokenCurrency.safeTransferFrom(
-      msg.sender,
+      msgSender,
       address(this),
       tokensToRedeem.rawValue
     );
@@ -556,16 +565,17 @@ library CreditLineLib {
    */
   function claimFee(
     ICreditLineStorage.PositionManagerData storage self,
-    ICreditLineStorage.FeeStatus storage feeStatus
+    ICreditLineStorage.FeeStatus storage feeStatus,
+    address msgSender
   ) external returns (uint256 feeClaimed) {
     // Fee to claim
-    FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msg.sender];
+    FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msgSender];
 
     // Check that fee is available
     require(_feeClaimed.isGreaterThanOrEqual(0), 'No fee to claim');
 
     // Update fee status
-    delete feeStatus.feeGained[msg.sender];
+    delete feeStatus.feeGained[msgSender];
 
     FixedPoint.Unsigned memory _totalRemainingFees =
       feeStatus.totalFeeAmount.sub(_feeClaimed);
@@ -575,9 +585,9 @@ library CreditLineLib {
     // Transfer amount to the sender
     feeClaimed = _feeClaimed.rawValue;
 
-    self.collateralToken.safeTransfer(msg.sender, _feeClaimed.rawValue);
+    self.collateralToken.safeTransfer(msgSender, _feeClaimed.rawValue);
 
-    emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
+    emit ClaimFee(msgSender, feeClaimed, _totalRemainingFees.rawValue);
   }
 
   /**
