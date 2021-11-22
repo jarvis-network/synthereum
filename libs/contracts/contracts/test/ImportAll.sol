@@ -7,6 +7,7 @@ import '../base/utils/EnumerableBytesSet.sol';
 import '../base/utils/StringUtils.sol';
 import '../common/interfaces/IEmergencyShutdown.sol';
 import '../common/interfaces/IDeployment.sol';
+import '../common/FactoryConditions.sol';
 import '../test/MockAggregator.sol';
 import '../test/MockRandomAggregator.sol';
 import '../test/TestnetERC20.sol';
