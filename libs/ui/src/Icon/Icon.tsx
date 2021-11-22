@@ -6,7 +6,7 @@ import * as icons from './icons';
 
 export type IconKeys = keyof typeof icons;
 
-interface IconProps {
+export interface IconProps {
   icon: IconKeys;
   className?: string;
   style?: CSSProperties;

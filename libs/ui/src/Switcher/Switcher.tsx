@@ -2,7 +2,7 @@ import React from 'react';
 
 import { styled } from '../Theme';
 
-interface Props {
+export interface Props {
   items: any[];
   onChange: (item: any) => void;
   selected: number;

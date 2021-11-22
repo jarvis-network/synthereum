@@ -8,6 +8,12 @@ export default {
   component: Select,
 };
 
+interface Option {
+  value: string;
+  label: string;
+  icon: JSX.Element;
+}
+
 export const Default = () => {
   const [value, setValue] = useState('10');
 
@@ -51,7 +57,7 @@ export const Select200 = () => {
   );
 };
 
-const RedHugeSelect = styled(Select)`
+const RedHugeSelect = styled(Select as Select<Option>)`
   .react-select__control {
     background: #ff8585;
     max-height: none;

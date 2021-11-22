@@ -7,7 +7,7 @@ import { useWindowSize } from '../hooks/useWindowSize';
 
 import { useBackground } from './BackgroundProvider';
 
-interface IBackgroundProps {
+export interface IBackgroundProps {
   url: string;
   offset?: string;
   bgColor?: string;

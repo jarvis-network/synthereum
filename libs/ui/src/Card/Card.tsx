@@ -13,7 +13,7 @@ const Wrapper = styled.div`
     ${props => props.theme.borderRadius.m};
 `;
 
-interface CardProps extends Omit<CardTabsProps, 'tabs'> {
+export interface CardProps extends Omit<CardTabsProps, 'tabs'> {
   title: string;
   children: ReactNode;
   onBack?: () => void;

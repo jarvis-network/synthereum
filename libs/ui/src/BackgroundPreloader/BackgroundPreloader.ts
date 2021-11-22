@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 
-interface Props {
+export interface Props {
   backgrounds: string[];
 }
 
