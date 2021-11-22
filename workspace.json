@@ -102,7 +102,7 @@
         "deploy-chromatic": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn deploy:chromatic"],
+            "commands": ["yarn run deploy:chromatic"],
             "cwd": "./libs/ui",
             "color": true
           }
