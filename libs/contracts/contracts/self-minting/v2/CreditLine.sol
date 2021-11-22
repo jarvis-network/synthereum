@@ -20,12 +20,20 @@ import {CreditLineLib} from './CreditLineLib.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {
+  ERC2771Context
+} from '@openzeppelin/contracts/metatx/ERC2771Context.sol';
 
 /**
  * @title
  * @notice
  */
-contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
+contract CreditLine is
+  ICreditLine,
+  ICreditLineStorage,
+  ReentrancyGuard,
+  ERC2771Context
+{
   using FixedPoint for FixedPoint.Unsigned;
   using SafeERC20 for IERC20;
   using SafeERC20 for IMintableBurnableERC20;
@@ -131,7 +139,10 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
   // Constructor
   //----------------------------------------
 
-  constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
+  constructor(
+    PositionManagerParams memory _positionManagerData,
+    address trustedForwarder
+  ) ERC2771Context(trustedForwarder) nonReentrant {
     positionManagerData.initialize(
       _positionManagerData.synthereumFinder,
       _positionManagerData.collateralToken,
@@ -152,13 +163,14 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     override
     notEmergencyShutdown
   {
-    PositionData storage positionData = _getPositionData(msg.sender);
+    PositionData storage positionData = _getPositionData(_msgSender());
 
     positionData.depositTo(
       globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
-      msg.sender
+      _msgSender(),
+      _msgSender()
     );
   }
 
@@ -169,13 +181,14 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     nonReentrant
     returns (uint256 amountWithdrawn)
   {
-    PositionData storage positionData = _getPositionData(msg.sender);
+    PositionData storage positionData = _getPositionData(_msgSender());
 
     amountWithdrawn = positionData
       .withdraw(
       globalPositionData,
       positionManagerData,
-      FixedPoint.Unsigned(collateralAmount)
+      FixedPoint.Unsigned(collateralAmount),
+      _msgSender()
     )
       .rawValue;
   }
@@ -192,7 +205,8 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
       globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
-      sponsor
+      sponsor,
+      _msgSender()
     );
   }
 
@@ -203,14 +217,15 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     nonReentrant
     returns (uint256 feeAmount)
   {
-    PositionData storage positionData = positions[msg.sender];
+    PositionData storage positionData = positions[_msgSender()];
     feeAmount = positionData
       .create(
       globalPositionData,
       positionManagerData,
       FixedPoint.Unsigned(collateralAmount),
       FixedPoint.Unsigned(numTokens),
-      feeStatus
+      feeStatus,
+      _msgSender()
     )
       .rawValue;
   }
@@ -222,7 +237,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     nonReentrant
     returns (uint256 amountWithdrawn, uint256 feeAmount)
   {
-    PositionData storage positionData = _getPositionData(msg.sender);
+    PositionData storage positionData = _getPositionData(_msgSender());
 
     (
       FixedPoint.Unsigned memory collateralAmount,
@@ -233,7 +248,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
         feeStatus,
-        msg.sender
+        _msgSender()
       );
 
     amountWithdrawn = collateralAmount.rawValue;
@@ -247,13 +262,14 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     nonReentrant
     returns (uint256 feeAmount)
   {
-    PositionData storage positionData = _getPositionData(msg.sender);
+    PositionData storage positionData = _getPositionData(_msgSender());
     feeAmount = (
       positionData.repay(
         globalPositionData,
         positionManagerData,
         FixedPoint.Unsigned(numTokens),
-        feeStatus
+        feeStatus,
+        _msgSender()
       )
     )
       .rawValue;
@@ -281,12 +297,13 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     ) = positionToLiquidate.liquidate(
       positionManagerData,
       globalPositionData,
-      FixedPoint.Unsigned(maxTokensToLiquidate)
+      FixedPoint.Unsigned(maxTokensToLiquidate),
+      _msgSender()
     );
 
     emit Liquidation(
       sponsor,
-      msg.sender,
+      _msgSender(),
       tokensLiquidated,
       collateralLiquidated,
       collateralReward,
@@ -301,9 +318,13 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     nonReentrant
     returns (uint256 amountWithdrawn)
   {
-    PositionData storage positionData = positions[msg.sender];
+    PositionData storage positionData = positions[_msgSender()];
     amountWithdrawn = positionData
-      .settleEmergencyShutdown(globalPositionData, positionManagerData)
+      .settleEmergencyShutdown(
+      globalPositionData,
+      positionManagerData,
+      _msgSender()
+    )
       .rawValue;
   }
 
@@ -315,7 +336,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     returns (uint256 timestamp, uint256 price)
   {
     require(
-      msg.sender ==
+      _msgSender() ==
         positionManagerData.synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.Manager
         ),
@@ -331,7 +352,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
 
     price = _price.rawValue;
 
-    emit EmergencyShutdown(msg.sender, price, timestamp);
+    emit EmergencyShutdown(_msgSender(), price, timestamp);
   }
 
   function claimFee()
@@ -340,7 +361,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     nonReentrant
     returns (uint256 feeClaimed)
   {
-    feeClaimed = positionManagerData.claimFee(feeStatus);
+    feeClaimed = positionManagerData.claimFee(feeStatus, _msgSender());
   }
 
   function isCollateralised(address sponsor)
@@ -403,7 +424,7 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
 
   function deleteSponsorPosition(address sponsor) external override {
     require(
-      msg.sender == address(this),
+      _msgSender() == address(this),
       'Only the contract can invoke this function'
     );
     delete positions[sponsor];
@@ -487,5 +508,25 @@ contract CreditLine is ICreditLine, ICreditLineStorage, ReentrancyGuard {
     returns (PositionData storage)
   {
     return positions[sponsor];
+  }
+
+  function _msgSender()
+    internal
+    view
+    virtual
+    override(ERC2771Context)
+    returns (address sender)
+  {
+    return super._msgSender();
+  }
+
+  function _msgData()
+    internal
+    view
+    virtual
+    override(ERC2771Context)
+    returns (bytes calldata)
+  {
+    return super._msgData();
   }
 }

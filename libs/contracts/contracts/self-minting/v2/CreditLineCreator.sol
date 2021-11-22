@@ -71,13 +71,13 @@ contract CreditLineCreator {
   /**
    * @notice Creates an instance of creditLine
    * @param params is a `ConstructorParams` object from creditLine.
+   * @param trustedForwarder address of the forwarder contract (EIP2771)
    * @return creditLine address of the deployed contract.
    */
-  function createSelfMintingDerivative(Params calldata params)
-    public
-    virtual
-    returns (CreditLine creditLine)
-  {
+  function createSelfMintingDerivative(
+    Params calldata params,
+    address trustedForwarder
+  ) public virtual returns (CreditLine creditLine) {
     // Create a new synthetic token using the params.
     require(bytes(params.syntheticName).length != 0, 'Missing synthetic name');
     require(
@@ -102,7 +102,7 @@ contract CreditLineCreator {
       'Wrong synthetic token symbol'
     );
 
-    creditLine = new CreditLine(_convertParams(params));
+    creditLine = new CreditLine(_convertParams(params), trustedForwarder);
 
     _setControllerValues(
       address(creditLine),

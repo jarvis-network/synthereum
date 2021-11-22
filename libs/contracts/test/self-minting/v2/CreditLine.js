@@ -18,6 +18,7 @@ const SynthereumManager = artifacts.require('SynthereumManager');
 
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineControllerMock = artifacts.require('CreditLineControllerMock');
+const MinimalForwarder = artifacts.require('MinimalForwarder');
 
 contract('Synthereum CreditLine ', function (accounts) {
   const contractDeployer = accounts[0];
@@ -48,6 +49,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   let synthereumFinderInstance;
   let creditLineControllerInstance;
   let synthereumManagerInstance;
+  let minimalForwInstance;
 
   // Initial constant values
   const initialPositionTokens = toWei('80');
@@ -187,6 +189,8 @@ contract('Synthereum CreditLine ', function (accounts) {
     // set oracle price
     await mockOnchainOracle.setPrice(priceFeedIdentifier, startingPrice);
 
+    // deploy minimal forwwarder
+    const minimalForwInstance = await MinimalForwarder.new();
     creditLineParams = {
       collateralToken: collateral.address,
       syntheticToken: tokenCurrency.address,
@@ -199,9 +203,13 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
 
-    creditLine = await CreditLine.new(creditLineParams, {
-      from: contractDeployer,
-    });
+    creditLine = await CreditLine.new(
+      creditLineParams,
+      minimalForwInstance.address,
+      {
+        from: contractDeployer,
+      },
+    );
     creditLineControllerInstance = await CreditLineControllerMock.new();
     await synthereumFinderInstance.changeImplementationAddress(
       utf8ToHex('CreditLineController'),
