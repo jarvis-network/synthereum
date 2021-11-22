@@ -36,6 +36,11 @@ before_script:
   script:
     - yarn build cli
 
+💄 deploy:chromatic:
+  script:
+    - yarn nx build-storybook ui
+    - yarn nx deploy-chromatic ui
+
 🚀:
   variables:
     NETLIFY_AUTH_TOKEN: '\$NETLIFY_AUTH_TOKEN'
