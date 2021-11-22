@@ -36,6 +36,7 @@ async function migrate(deployer, network, accounts) {
   let tokenFactory;
   if (
     !isPublicNetwork(network) ||
+    networkId === 3 ||
     networkId === 56 ||
     networkId === 97 ||
     networkId === 137 ||
