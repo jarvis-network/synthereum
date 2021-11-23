@@ -86,7 +86,7 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build:package"],
+            "command": "yarn run build:package",
             "cwd": "./libs/ui",
             "color": true
           }
@@ -94,7 +94,7 @@
         "build-storybook": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build:storybook"],
+            "command": "yarn run build:storybook",
             "cwd": "./libs/ui",
             "color": true
           }
@@ -102,7 +102,7 @@
         "deploy-chromatic": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run deploy:chromatic"],
+            "command": "yarn run deploy:chromatic",
             "cwd": "./libs/ui",
             "color": true
           }
@@ -132,7 +132,7 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build"],
+            "command": "yarn run build",
             "cwd": "./libs/toolkit",
             "color": true
           }
@@ -182,7 +182,7 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build"],
+            "command": "yarn run build",
             "cwd": "apps/frontend",
             "color": true
           }
@@ -190,7 +190,7 @@
         "start": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn start"],
+            "command": "yarn start",
             "cwd": "apps/frontend",
             "color": true
           }
@@ -198,7 +198,7 @@
         "start:server": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn start-dev"],
+            "command": "yarn start-dev",
             "cwd": "apps/frontend",
             "color": true
           }
@@ -227,7 +227,7 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build"],
+            "command": "yarn run build",
             "cwd": "apps/borrowing",
             "color": true
           }
@@ -235,7 +235,7 @@
         "start": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn start"],
+            "command": "yarn start",
             "cwd": "apps/borrowing",
             "color": true
           }
@@ -243,7 +243,7 @@
         "start:server": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn start-dev"],
+            "command": "yarn start-dev",
             "cwd": "apps/borrowing",
             "color": true
           }
@@ -272,7 +272,7 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build"],
+            "command": "yarn run build",
             "cwd": "apps/claim",
             "color": true
           }
@@ -280,7 +280,7 @@
         "start": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn start"],
+            "command": "yarn start",
             "cwd": "apps/claim",
             "color": true
           }
@@ -288,7 +288,7 @@
         "start:server": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn start-dev"],
+            "command": "yarn start-dev",
             "cwd": "apps/claim",
             "color": true
           }
@@ -318,7 +318,7 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn run build"],
+            "command": "yarn run build",
             "cwd": "./apps/cli",
             "color": true
           }
@@ -570,7 +570,7 @@
         "test": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "commands": ["yarn test "],
+            "command": "yarn test",
             "cwd": "libs/atomic-swap",
             "color": true
           }
