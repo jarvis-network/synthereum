@@ -106,6 +106,14 @@
             "cwd": "./libs/ui",
             "color": true
           }
+        },
+        "start": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "yarn run start",
+            "cwd": "./libs/ui",
+            "color": true
+          }
         }
       }
     },
