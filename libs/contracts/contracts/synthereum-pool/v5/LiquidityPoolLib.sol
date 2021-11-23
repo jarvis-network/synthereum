@@ -51,6 +51,8 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned totCollateralAmount;
     // Recipient address that will receive synthetic tokens
     address recipient;
+    // Sender of the mint transaction
+    address sender;
   }
 
   struct ExecuteRedeemParams {
@@ -64,6 +66,8 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned totCollateralAmount;
     // Recipient address that will receive synthetic tokens
     address recipient;
+    // Sender of the redeem transaction
+    address sender;
   }
 
   struct ExecuteExchangeParams {
@@ -81,6 +85,8 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned destNumTokens;
     // Recipient address that will receive synthetic tokens
     address recipient;
+    // Sender of the exchange transaction
+    address sender;
   }
 
   struct ExecuteSettlement {
@@ -123,6 +129,8 @@ library SynthereumLiquidityPoolLib {
     FixedPoint.Unsigned settledCollateral;
     // Reward amount received by the user
     FixedPoint.Unsigned rewardAmount;
+    // Price rate at the moment of the liquidation
+    FixedPoint.Unsigned priceRate;
   }
 
   //----------------------------------------
@@ -291,6 +299,7 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param mintParams Input parameters for minting (see MintParams struct)
+   * @param sender Sender of the mint transaction
    * @return syntheticTokensMinted Amount of synthetic tokens minted by a user
    * @return feePaid Amount of collateral paid by the user as fee
    */
@@ -298,7 +307,8 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumLiquidityPool.MintParams calldata mintParams
+    ISynthereumLiquidityPool.MintParams calldata mintParams,
+    address sender
   ) external returns (uint256 syntheticTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory totCollateralAmount =
       FixedPoint.Unsigned(mintParams.collateralAmount);
@@ -324,7 +334,8 @@ library SynthereumLiquidityPoolLib {
         collateralAmount,
         feeAmount,
         totCollateralAmount,
-        mintParams.recipient
+        mintParams.recipient,
+        sender
       )
     );
 
@@ -340,6 +351,7 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param redeemParams Input parameters for redeeming (see RedeemParams struct)
+   * @param sender Sender of the redeem transaction
    * @return collateralRedeemed Amount of collateral redeem by user
    * @return feePaid Amount of collateral paid by user as fee
    */
@@ -347,7 +359,8 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumLiquidityPool.RedeemParams calldata redeemParams
+    ISynthereumLiquidityPool.RedeemParams calldata redeemParams,
+    address sender
   ) external returns (uint256 collateralRedeemed, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(redeemParams.numTokens);
@@ -373,7 +386,8 @@ library SynthereumLiquidityPoolLib {
         collateralAmount,
         feeAmount,
         totCollateralAmount,
-        redeemParams.recipient
+        redeemParams.recipient,
+        sender
       )
     );
 
@@ -389,6 +403,7 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param exchangeParams Input parameters for exchanging (see ExchangeParams struct)
+   * @param sender Sender of the exchange transaction
    * @return destNumTokensMinted Amount of synthetic token minted in the destination pool
    * @return feePaid Amount of collateral paid by user as fee
    */
@@ -396,7 +411,8 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    ISynthereumLiquidityPool.ExchangeParams calldata exchangeParams
+    ISynthereumLiquidityPool.ExchangeParams calldata exchangeParams,
+    address sender
   ) external returns (uint256 destNumTokensMinted, uint256 feePaid) {
     FixedPoint.Unsigned memory numTokens =
       FixedPoint.Unsigned(exchangeParams.numTokens);
@@ -425,7 +441,8 @@ library SynthereumLiquidityPoolLib {
         feeAmount,
         totCollateralAmount,
         destNumTokens,
-        exchangeParams.recipient
+        exchangeParams.recipient,
+        sender
       )
     );
 
@@ -491,18 +508,21 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param collateralAmount Collateral to be withdrawn
+   * @param sender Sender of the withdrawLiquidity transaction
    * @return remainingLiquidity Remaining unused collateral in the pool
    */
   function withdrawLiquidity(
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    FixedPoint.Unsigned calldata collateralAmount
+    FixedPoint.Unsigned calldata collateralAmount,
+    address sender
   ) external returns (uint256 remainingLiquidity) {
     remainingLiquidity = self._withdrawLiquidity(
       lpPosition,
       feeStatus,
-      collateralAmount
+      collateralAmount,
+      sender
     );
   }
 
@@ -514,6 +534,7 @@ library SynthereumLiquidityPoolLib {
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param collateralToTransfer Collateral to be transferred before increase collateral in the position
    * @param collateralToIncrease Collateral to be added to the position
+   * @param sender Sender of the increaseCollateral transaction
    * @return newTotalCollateral New total collateral amount
    */
   function increaseCollateral(
@@ -521,14 +542,15 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata collateralToTransfer,
-    FixedPoint.Unsigned calldata collateralToIncrease
+    FixedPoint.Unsigned calldata collateralToIncrease,
+    address sender
   ) external returns (uint256 newTotalCollateral) {
     // Check the collateral to be increased is not 0
     require(collateralToIncrease.rawValue > 0, 'No collateral to be increased');
 
     // Deposit collateral in the pool
     if (collateralToTransfer.rawValue > 0) {
-      self.pullCollateral(msg.sender, collateralToTransfer);
+      self.pullCollateral(sender, collateralToTransfer);
     }
 
     // Collateral available
@@ -554,7 +576,7 @@ library SynthereumLiquidityPoolLib {
     newTotalCollateral = _newTotalCollateral.rawValue;
 
     emit IncreaseCollateral(
-      msg.sender,
+      sender,
       collateralToIncrease.rawValue,
       newTotalCollateral
     );
@@ -570,6 +592,7 @@ library SynthereumLiquidityPoolLib {
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param collateralToDecrease Collateral to decreased from the position
    * @param collateralToWithdraw Collateral to be transferred to the LP
+   * @param sender Sender of the decreaseCollateral transaction
    * @return newTotalCollateral New total collateral amount
    */
   function decreaseCollateral(
@@ -578,7 +601,8 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     FixedPoint.Unsigned calldata collateralToDecrease,
-    FixedPoint.Unsigned calldata collateralToWithdraw
+    FixedPoint.Unsigned calldata collateralToWithdraw,
+    address sender
   ) external returns (uint256 newTotalCollateral) {
     // Check that collateral to be decreased is not 0
     require(collateralToDecrease.rawValue > 0, 'No collateral to be decreased');
@@ -604,13 +628,18 @@ library SynthereumLiquidityPoolLib {
     newTotalCollateral = _newTotalCollateral.rawValue;
 
     emit DecreaseCollateral(
-      msg.sender,
+      sender,
       collateralToDecrease.rawValue,
       newTotalCollateral
     );
 
     if (collateralToWithdraw.rawValue > 0) {
-      self._withdrawLiquidity(lpPosition, feeStatus, collateralToWithdraw);
+      self._withdrawLiquidity(
+        lpPosition,
+        feeStatus,
+        collateralToWithdraw,
+        sender
+      );
     }
   }
 
@@ -618,21 +647,23 @@ library SynthereumLiquidityPoolLib {
    * @notice Withdraw fees gained by the sender
    * @param self Data type the library is attached to
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
+   * @param sender Sender of the claimFee transaction
    * @return feeClaimed Amount of fee claimed
    */
   function claimFee(
     ISynthereumLiquidityPoolStorage.Storage storage self,
-    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus
+    ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
+    address sender
   ) external returns (uint256 feeClaimed) {
     // Fee to claim
-    FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msg.sender];
+    FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[sender];
     feeClaimed = _feeClaimed.rawValue;
 
     // Check that fee is available
     require(feeClaimed > 0, 'No fee to claim');
 
     // Update fee status
-    delete feeStatus.feeGained[msg.sender];
+    delete feeStatus.feeGained[sender];
 
     FixedPoint.Unsigned memory _totalRemainingFees =
       feeStatus.totalFeeAmount.sub(_feeClaimed);
@@ -640,9 +671,9 @@ library SynthereumLiquidityPoolLib {
     feeStatus.totalFeeAmount = _totalRemainingFees;
 
     // Transfer amount to the sender
-    self.collateralToken.safeTransfer(msg.sender, feeClaimed);
+    self.collateralToken.safeTransfer(sender, feeClaimed);
 
-    emit ClaimFee(msg.sender, feeClaimed, _totalRemainingFees.rawValue);
+    emit ClaimFee(sender, feeClaimed, _totalRemainingFees.rawValue);
   }
 
   /**
@@ -653,6 +684,7 @@ library SynthereumLiquidityPoolLib {
    * @param liquidationData Liquidation info (see LiquidationData struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param numSynthTokens Number of synthetic tokens that user wants to liquidate
+   * @param sender Sender of the liquidation transaction
    * @return synthTokensLiquidated Amount of synthetic tokens liquidated
    * @return collateralReceived Amount of received collateral equal to the value of tokens liquidated
    * @return rewardAmount Amount of received collateral as reward for the liquidation
@@ -662,7 +694,8 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.Liquidation storage liquidationData,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    FixedPoint.Unsigned calldata numSynthTokens
+    FixedPoint.Unsigned calldata numSynthTokens,
+    address sender
   )
     external
     returns (
@@ -676,17 +709,19 @@ library SynthereumLiquidityPoolLib {
 
     executeLiquidation.totalCollateralAmount = lpPosition.totalCollateralAmount;
 
-    FixedPoint.Unsigned memory priceRate =
-      getPriceFeedRate(self.finder, self.priceIdentifier);
+    executeLiquidation.priceRate = getPriceFeedRate(
+      self.finder,
+      self.priceIdentifier
+    );
 
     uint8 collateralDecimals = getCollateralDecimals(self.collateralToken);
 
+    // Collateral value of the synthetic token passed
     {
-      // Collateral value of the synthetic token passed
       (bool _isOverCollaterlized, ) =
         lpPosition.isOverCollateralized(
           liquidationData,
-          priceRate,
+          executeLiquidation.priceRate,
           collateralDecimals,
           executeLiquidation.totalCollateralAmount
         );
@@ -705,7 +740,7 @@ library SynthereumLiquidityPoolLib {
     );
 
     executeLiquidation.expectedCollateral = calculateCollateralAmount(
-      priceRate,
+      executeLiquidation.priceRate,
       collateralDecimals,
       executeLiquidation.tokensInLiquidation
     );
@@ -764,18 +799,15 @@ library SynthereumLiquidityPoolLib {
     synthTokensLiquidated = executeLiquidation.tokensInLiquidation.rawValue;
 
     // Burn synthetic tokens to be liquidated
-    self.burnSyntheticTokens(synthTokensLiquidated);
+    self.burnSyntheticTokens(synthTokensLiquidated, sender);
 
     // Transfer liquidated collateral and reward to the user
-    _collateralToken.safeTransfer(
-      msg.sender,
-      collateralReceived + rewardAmount
-    );
+    _collateralToken.safeTransfer(sender, collateralReceived + rewardAmount);
 
     emit Liquidate(
-      msg.sender,
+      sender,
       synthTokensLiquidated,
-      priceRate.rawValue,
+      executeLiquidation.priceRate.rawValue,
       executeLiquidation.expectedCollateral.rawValue,
       collateralReceived,
       rewardAmount
@@ -843,6 +875,7 @@ library SynthereumLiquidityPoolLib {
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param emergencyShutdownData Emergency shutdown info (see Shutdown struct)
    * @param isLiquidityProvider True if the sender is an LP, otherwise false
+   * @param sender Sender of the settleEmergencyShutdown transaction
    * @return synthTokensSettled Amount of synthetic tokens liquidated
    * @return collateralSettled Amount of collateral withdrawn after emergency shutdown
    */
@@ -851,7 +884,8 @@ library SynthereumLiquidityPoolLib {
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
     ISynthereumLiquidityPoolStorage.Shutdown storage emergencyShutdownData,
-    bool isLiquidityProvider
+    bool isLiquidityProvider,
+    address sender
   ) external returns (uint256 synthTokensSettled, uint256 collateralSettled) {
     // Memory struct for saving local varibales
     ExecuteSettlement memory executeSettlement;
@@ -861,22 +895,19 @@ library SynthereumLiquidityPoolLib {
     executeSettlement.emergencyPrice = emergencyShutdownData.price;
 
     executeSettlement.userNumTokens = FixedPoint.Unsigned(
-      syntheticToken.balanceOf(msg.sender)
+      syntheticToken.balanceOf(sender)
     );
 
-    // Make sure there is something for the user to settle
-    uint256 _userNumTokens = executeSettlement.userNumTokens.rawValue;
-
     require(
-      _userNumTokens > 0 || isLiquidityProvider,
+      executeSettlement.userNumTokens.rawValue > 0 || isLiquidityProvider,
       'Sender has nothing to settle'
     );
 
-    if (_userNumTokens > 0) {
+    if (executeSettlement.userNumTokens.rawValue > 0) {
       // Move synthetic tokens from the user to the pool
       // - This is because derivative expects the tokens to come from the sponsor address
       syntheticToken.safeTransferFrom(
-        msg.sender,
+        sender,
         address(this),
         executeSettlement.userNumTokens.rawValue
       );
@@ -953,10 +984,10 @@ library SynthereumLiquidityPoolLib {
     syntheticToken.burn(synthTokensSettled);
 
     // Transfer settled collateral to the user
-    _collateralToken.safeTransfer(msg.sender, collateralSettled);
+    _collateralToken.safeTransfer(sender, collateralSettled);
 
     emit Settle(
-      msg.sender,
+      sender,
       synthTokensSettled,
       executeSettlement.redeemableCollateral.rawValue,
       collateralSettled
@@ -1343,7 +1374,10 @@ library SynthereumLiquidityPoolLib {
     feeStatus.updateFees(self.fee, executeMintParams.feeAmount);
 
     // Pull user's collateral
-    self.pullCollateral(msg.sender, executeMintParams.totCollateralAmount);
+    self.pullCollateral(
+      executeMintParams.sender,
+      executeMintParams.totCollateralAmount
+    );
 
     // Mint synthetic asset and transfer to the recipient
     self.syntheticToken.mint(
@@ -1352,7 +1386,7 @@ library SynthereumLiquidityPoolLib {
     );
 
     emit Mint(
-      msg.sender,
+      executeMintParams.sender,
       executeMintParams.totCollateralAmount.rawValue,
       executeMintParams.numTokens.rawValue,
       executeMintParams.feeAmount.rawValue,
@@ -1394,7 +1428,10 @@ library SynthereumLiquidityPoolLib {
     feeStatus.updateFees(self.fee, executeRedeemParams.feeAmount);
 
     // Burn synthetic tokens
-    self.burnSyntheticTokens(executeRedeemParams.numTokens.rawValue);
+    self.burnSyntheticTokens(
+      executeRedeemParams.numTokens.rawValue,
+      executeRedeemParams.sender
+    );
 
     //Send net amount of collateral to the user that submitted the redeem request
     self.collateralToken.safeTransfer(
@@ -1403,7 +1440,7 @@ library SynthereumLiquidityPoolLib {
     );
 
     emit Redeem(
-      msg.sender,
+      executeRedeemParams.sender,
       executeRedeemParams.numTokens.rawValue,
       executeRedeemParams.collateralAmount.rawValue,
       executeRedeemParams.feeAmount.rawValue,
@@ -1445,7 +1482,10 @@ library SynthereumLiquidityPoolLib {
     feeStatus.updateFees(self.fee, executeExchangeParams.feeAmount);
 
     // Burn synthetic tokens
-    self.burnSyntheticTokens(executeExchangeParams.numTokens.rawValue);
+    self.burnSyntheticTokens(
+      executeExchangeParams.numTokens.rawValue,
+      executeExchangeParams.sender
+    );
 
     ISynthereumLiquidityPoolGeneral destinationPool =
       executeExchangeParams.destPool;
@@ -1472,7 +1512,7 @@ library SynthereumLiquidityPoolLib {
     );
 
     emit Exchange(
-      msg.sender,
+      executeExchangeParams.sender,
       address(destinationPool),
       executeExchangeParams.numTokens.rawValue,
       executeExchangeParams.destNumTokens.rawValue,
@@ -1487,13 +1527,15 @@ library SynthereumLiquidityPoolLib {
    * @param lpPosition Position of the LP (see LPPosition struct)
    * @param feeStatus Actual status of fee gained (see FeeStatus struct)
    * @param collateralAmount Collateral to be withdrawn
+   * @param sender Sender that withdraws liquidity
    * @return remainingLiquidity Remaining unused collateral in the pool
    */
   function _withdrawLiquidity(
     ISynthereumLiquidityPoolStorage.Storage storage self,
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
     ISynthereumLiquidityPoolStorage.FeeStatus storage feeStatus,
-    FixedPoint.Unsigned memory collateralAmount
+    FixedPoint.Unsigned memory collateralAmount,
+    address sender
   ) internal returns (uint256 remainingLiquidity) {
     // Collateral available
     FixedPoint.Unsigned memory unusedCollateral =
@@ -1509,9 +1551,9 @@ library SynthereumLiquidityPoolLib {
     // Transfer amount to the Lp
     uint256 _collateralAmount = collateralAmount.rawValue;
 
-    self.collateralToken.safeTransfer(msg.sender, _collateralAmount);
+    self.collateralToken.safeTransfer(sender, _collateralAmount);
 
-    emit WithdrawLiquidity(msg.sender, _collateralAmount, remainingLiquidity);
+    emit WithdrawLiquidity(sender, _collateralAmount, remainingLiquidity);
   }
 
   /**
@@ -1632,15 +1674,17 @@ library SynthereumLiquidityPoolLib {
    * @notice Pulls synthetic tokens from the sender and burn them
    * @param self Data type the library is attached to
    * @param numTokens The number of tokens to be burned
+   * @param sender Sender of synthetic tokens
    */
   function burnSyntheticTokens(
     ISynthereumLiquidityPoolStorage.Storage storage self,
-    uint256 numTokens
+    uint256 numTokens,
+    address sender
   ) internal {
     IMintableBurnableERC20 synthToken = self.syntheticToken;
 
     // Transfer synthetic token from the user to the pool
-    synthToken.safeTransferFrom(msg.sender, address(this), numTokens);
+    synthToken.safeTransferFrom(sender, address(this), numTokens);
 
     // Burn synthetic asset
     synthToken.burn(numTokens);
