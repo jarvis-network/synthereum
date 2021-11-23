@@ -75,7 +75,7 @@ export const CustomizedSelect = () => {
     <div style={{ width: '200px' }}>
       <RedHugeSelect
         selected={value}
-        onChange={e => setValue(e!.label)}
+        onChange={(e: any) => setValue(e!.label)}
         rowsText="rows"
         options={['USDC', 'jEUR', 'jGBP']}
       />

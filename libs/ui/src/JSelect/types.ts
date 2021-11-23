@@ -1,11 +1,11 @@
 import {
   ActionMeta,
   ValueType,
-  NamedProps,
   SingleValueProps,
   OptionProps as ReactSelectOptionProps,
   OptionTypeBase,
 } from 'react-select';
+import { ComponentType } from 'react';
 
 export type TOption<T> = T extends number | string
   ? { value: T; label: string }
@@ -22,16 +22,8 @@ export interface SelectProps<Option> {
   rowsText: string;
   options: (TOption<Option> | string | number)[];
   className?: string;
-  optionComponent?: Extract<
-    NamedProps<TOption<Option>, false>['components'],
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
-  >['Option'];
-  singleValueComponent?: Extract<
-    NamedProps<TOption<Option>, false>['components'],
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
-  >['SingleValue'];
+  optionComponent?: ComponentType<OptionProps<TOption<Option>, false>>;
+  singleValueComponent?: ComponentType<SingleValueProps<TOption<Option>>>;
 }
 
 export interface OptionProps<

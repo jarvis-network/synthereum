@@ -123,6 +123,10 @@ export function Select<Option>({
     [options, rowsText],
   );
 
+  const innerComponents = { IndicatorSeperator: null, SingleValue, Option };
+  if (!SingleValue) delete innerComponents.SingleValue;
+  if (!Option) delete innerComponents.Option;
+
   const selectedItem =
     typeof selected === 'string' || typeof selected === 'number'
       ? formattedOptions.find(opt => String(opt.value) === String(selected))!
@@ -136,7 +140,7 @@ export function Select<Option>({
         onChange={onChange}
         isSearchable={false}
         menuPlacement="auto"
-        components={{ IndicatorSeparator: null, Option, SingleValue }}
+        components={innerComponents}
         hideSelectedOptions={false}
         classNamePrefix="react-select"
         theme={theme => ({
