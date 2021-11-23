@@ -15,6 +15,7 @@ library SynthereumInterfaces {
   bytes32 public constant CreditLineController = 'CreditLineController';
   bytes32 public constant CollateralWhitelist = 'CollateralWhitelist';
   bytes32 public constant IdentifierWhitelist = 'IdentifierWhitelist';
+  bytes32 public constant TrustedForwarder = 'TrustedForwarder';
 }
 
 library FactoryInterfaces {

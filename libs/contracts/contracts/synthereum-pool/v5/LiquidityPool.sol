@@ -14,6 +14,7 @@ import {
   ISynthereumLiquidityPoolGeneral
 } from './interfaces/ILiquidityPoolGeneral.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
+import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
@@ -22,17 +23,17 @@ import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {
-  AccessControlEnumerable
-} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+  ERC2771ContextWithRoles
+} from '../../common//ERC2771ContextWithRoles.sol';
 
 /**
  * @title Token Issuer Contract
  * @notice Collects collateral and issues synthetic assets
  */
 contract SynthereumLiquidityPool is
-  AccessControlEnumerable,
   ISynthereumLiquidityPoolStorage,
   ISynthereumLiquidityPool,
+  ERC2771ContextWithRoles,
   ReentrancyGuard
 {
   using SynthereumLiquidityPoolLib for Storage;
@@ -823,5 +824,23 @@ contract SynthereumLiquidityPool is
       FixedPoint.Unsigned(syntheticTokens),
       destinationPool
     );
+  }
+
+  /**
+   * @notice Check if an address is the trusted forwarder
+   * @param  forwarder Address to check
+   * @return True is the input address is the trusted forwarder, otherwise false
+   */
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override
+    returns (bool)
+  {
+    return
+      forwarder ==
+      poolStorage.finder.getImplementationAddress(
+        SynthereumInterfaces.TrustedForwarder
+      );
   }
 }
