@@ -89,11 +89,6 @@ export function modifyTest(contractsPath: string, deployPath: string): void {
       const prepare =
         ((hre as unknown) as { fromDeployScript?: boolean })
           .fromDeployScript !== true;
-      const { name: network } = hre.network;
-      const deployUmaAndAll =
-        !network.endsWith('_fork') &&
-        (!process.env.MIGRATION_TYPE ||
-          !process.env.MIGRATION_TYPE.startsWith('add_'));
 
       if (prepare) {
         console.log(0, {
@@ -101,15 +96,6 @@ export function modifyTest(contractsPath: string, deployPath: string): void {
           taskArgs,
           'process.env.MIGRATION_TYPE ': process.env.MIGRATION_TYPE,
         });
-        if (deployUmaAndAll) {
-          await hre.run(TASK_DEPLOY, {
-            noVerify: true,
-            migrationScript: 'uma',
-          });
-          (hre as {
-            migrationScript?: string;
-          }).migrationScript = 'all';
-        }
         await gatherAllFiles(contractsPath, deployPath);
       }
 
@@ -132,7 +118,7 @@ export function modifyTest(contractsPath: string, deployPath: string): void {
       await runSuper(taskArgs);
       delete ((hre as unknown) as { fromTestScript?: boolean }).fromTestScript;
 
-      if (prepare && deployUmaAndAll) {
+      if (prepare) {
         delete (hre as {
           migrationScript?: string;
         }).migrationScript;
