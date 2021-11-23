@@ -43,6 +43,7 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumSyntheticTokenPermitFactory = artifacts.require(
   'SynthereumSyntheticTokenPermitFactory',
 );
+const MinimalForwarder = artifacts.require('MinimalForwarder');
 
 contract('Deployer', function (accounts) {
   let collateralAddress;
@@ -85,6 +86,7 @@ contract('Deployer', function (accounts) {
   let mockAggregator;
   let synthereumChainlinkPriceFeed;
   let tokenFactory;
+  let forwarderInstance;
 
   before(async () => {
     collateralAddress = (await TestnetERC20.new('Testnet token', 'USDC', 6))
@@ -109,6 +111,7 @@ contract('Deployer', function (accounts) {
     );
     factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
     tokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
+    forwarderInstance = await MinimalForwarder.deployed();
   });
   beforeEach(async () => {
     deployerInstance = await SynthereumDeployer.deployed();
@@ -283,6 +286,11 @@ contract('Deployer', function (accounts) {
       await newFinder.changeImplementationAddress(
         web3Utils.stringToHex('PriceFeed'),
         synthereumChainlinkPriceFeed.address,
+        { from: maintainer },
+      );
+      await newFinder.changeImplementationAddress(
+        web3Utils.stringToHex('TrustedForwarder'),
+        forwarderInstance.address,
         { from: maintainer },
       );
       const synthereumLiquidityPoolLib = await SynthereumLiquidityPoolLib.deployed();

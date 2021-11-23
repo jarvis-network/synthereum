@@ -176,7 +176,7 @@ contract SynthereumLiquidityPool is
 
   modifier onlyMaintainer() {
     require(
-      hasRole(MAINTAINER_ROLE, msg.sender),
+      hasRole(MAINTAINER_ROLE, _msgSender()),
       'Sender must be the maintainer'
     );
     _;
@@ -184,7 +184,7 @@ contract SynthereumLiquidityPool is
 
   modifier onlyLiquidityProvider() {
     require(
-      hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender),
+      hasRole(LIQUIDITY_PROVIDER_ROLE, _msgSender()),
       'Sender must be the liquidity provider'
     );
     _;
@@ -212,12 +212,6 @@ contract SynthereumLiquidityPool is
 
    */
   constructor(ConstructorParams memory params) nonReentrant {
-    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
-    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setRoleAdmin(LIQUIDITY_PROVIDER_ROLE, DEFAULT_ADMIN_ROLE);
-    _setupRole(DEFAULT_ADMIN_ROLE, params.roles.admin);
-    _setupRole(MAINTAINER_ROLE, params.roles.maintainer);
-    _setupRole(LIQUIDITY_PROVIDER_ROLE, params.roles.liquidityProvider);
     poolStorage.initialize(
       liquidationData,
       params.finder,
@@ -234,6 +228,12 @@ contract SynthereumLiquidityPool is
       params.feeData.feeRecipients,
       params.feeData.feeProportions
     );
+    _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(LIQUIDITY_PROVIDER_ROLE, DEFAULT_ADMIN_ROLE);
+    _setupRole(DEFAULT_ADMIN_ROLE, params.roles.admin);
+    _setupRole(MAINTAINER_ROLE, params.roles.maintainer);
+    _setupRole(LIQUIDITY_PROVIDER_ROLE, params.roles.liquidityProvider);
   }
 
   //----------------------------------------
@@ -258,7 +258,8 @@ contract SynthereumLiquidityPool is
     (syntheticTokensMinted, feePaid) = poolStorage.mint(
       lpPosition,
       feeStatus,
-      mintParams
+      mintParams,
+      _msgSender()
     );
   }
 
@@ -280,7 +281,8 @@ contract SynthereumLiquidityPool is
     (collateralRedeemed, feePaid) = poolStorage.redeem(
       lpPosition,
       feeStatus,
-      redeemParams
+      redeemParams,
+      _msgSender()
     );
   }
 
@@ -302,7 +304,8 @@ contract SynthereumLiquidityPool is
     (destNumTokensMinted, feePaid) = poolStorage.exchange(
       lpPosition,
       feeStatus,
-      exchangeParams
+      exchangeParams,
+      _msgSender()
     );
   }
 
@@ -344,7 +347,8 @@ contract SynthereumLiquidityPool is
     remainingLiquidity = poolStorage.withdrawLiquidity(
       lpPosition,
       feeStatus,
-      FixedPoint.Unsigned(collateralAmount)
+      FixedPoint.Unsigned(collateralAmount),
+      _msgSender()
     );
   }
 
@@ -369,7 +373,8 @@ contract SynthereumLiquidityPool is
       lpPosition,
       feeStatus,
       FixedPoint.Unsigned(collateralToTransfer),
-      FixedPoint.Unsigned(collateralToIncrease)
+      FixedPoint.Unsigned(collateralToIncrease),
+      _msgSender()
     );
   }
 
@@ -397,7 +402,8 @@ contract SynthereumLiquidityPool is
       liquidationData,
       feeStatus,
       FixedPoint.Unsigned(collateralToDecrease),
-      FixedPoint.Unsigned(collateralToWithdraw)
+      FixedPoint.Unsigned(collateralToWithdraw),
+      _msgSender()
     );
   }
 
@@ -411,7 +417,7 @@ contract SynthereumLiquidityPool is
     nonReentrant
     returns (uint256 feeClaimed)
   {
-    feeClaimed = poolStorage.claimFee(feeStatus);
+    feeClaimed = poolStorage.claimFee(feeStatus, _msgSender());
   }
 
   /**
@@ -438,7 +444,8 @@ contract SynthereumLiquidityPool is
       lpPosition,
       liquidationData,
       feeStatus,
-      FixedPoint.Unsigned(numSynthTokens)
+      FixedPoint.Unsigned(numSynthTokens),
+      _msgSender()
     );
   }
 
@@ -480,7 +487,8 @@ contract SynthereumLiquidityPool is
       lpPosition,
       feeStatus,
       emergencyShutdownData,
-      isLiquidityProvider
+      isLiquidityProvider,
+      _msgSender()
     );
   }
 

@@ -70,3 +70,4 @@ import '../tokens/MintableBurnableERC20.sol';
 import '../tokens/factories/MintableBurnableTokenFactory.sol';
 import '../tokens/factories/SyntheticTokenFactory.sol';
 import '../tokens/factories/SyntheticTokenPermitFactory.sol';
+import '@openzeppelin/contracts/metatx/MinimalForwarder.sol';

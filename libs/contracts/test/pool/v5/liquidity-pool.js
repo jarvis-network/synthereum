@@ -17,6 +17,8 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumManager = artifacts.require('SynthereumManager');
 const MockAggregator = artifacts.require('MockAggregator');
 const PoolRegistryMock = artifacts.require('PoolRegistryMock');
+const MinimalForwarder = artifacts.require('MinimalForwarder');
+
 contract('LiquidityPool', function (accounts) {
   let collateralInstance;
   let collateralToken;
@@ -1281,6 +1283,15 @@ contract('LiquidityPool', function (accounts) {
         priceFeedInstance.address,
         { from: maintainer },
       );
+      const forwarderInstance = await MinimalForwarder.deployed();
+      const forwarderInterface = await web3.utils.stringToHex(
+        'TrustedForwarder',
+      );
+      await wrongFinderInstance.changeImplementationAddress(
+        forwarderInterface,
+        forwarderInstance.address,
+        { from: maintainer },
+      );
       const wrongParams = {
         finder: wrongFinderInstance.address,
         version,
@@ -1910,7 +1921,7 @@ contract('LiquidityPool', function (accounts) {
     });
   });
 
-  describe('Should claim feeDatas', async () => {
+  describe('Should claim fees', async () => {
     beforeEach(async () => {
       const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
       const totSynthTokens = web3Utils.toWei('99.8');
@@ -1931,7 +1942,7 @@ contract('LiquidityPool', function (accounts) {
         from: firstUser,
       });
     });
-    it('Can claim feeDatas', async () => {
+    it('Can claim fee', async () => {
       const actualLpBalance = await collateralInstance.balanceOf.call(
         liquidityProvider,
       );
@@ -2016,7 +2027,7 @@ contract('LiquidityPool', function (accounts) {
         'Wrong total fee in the pool',
       );
     });
-    it('Can revert if no feeDatas to claim', async () => {
+    it('Can revert if no fee to claim', async () => {
       await truffleAssert.reverts(
         liquidityPoolInstance.claimFee({ from: firstUser }),
         'No fee to claim',
@@ -3144,8 +3155,8 @@ contract('LiquidityPool', function (accounts) {
     });
   });
 
-  describe('Should set feeData', async () => {
-    it('Can set feeData percentage', async () => {
+  describe('Should set fee', async () => {
+    it('Can set fee percentage', async () => {
       const newFeePerc = web3Utils.toWei('0.1');
       const feeDataTx = await liquidityPoolInstance.setFeePercentage(
         newFeePerc,
@@ -3163,7 +3174,7 @@ contract('LiquidityPool', function (accounts) {
         'Wrong feeData percentage',
       );
     });
-    it('Can set feeData recipients', async () => {
+    it('Can set fee recipients', async () => {
       const feeDataTx = await liquidityPoolInstance.setFeeRecipients(
         [firstUser, secondUser],
         [40, 80],
@@ -3190,7 +3201,7 @@ contract('LiquidityPool', function (accounts) {
       assert.equal(feeDataOutput[1][1], 80, 'Wrong second proportion');
       assert.equal(feeDataOutput[2], 120, 'Wrong total feeData proportion');
     });
-    it('Can set feeData', async () => {
+    it('Can set fee', async () => {
       const newFeePerc = web3Utils.toWei('0.1');
       const newFee = {
         feePercentage: {
@@ -3257,7 +3268,7 @@ contract('LiquidityPool', function (accounts) {
         'Sender must be the maintainer',
       );
     });
-    it('Can revert if feeData percentage is more than 100%', async () => {
+    it('Can revert if fee percentage is more than 100%', async () => {
       const newFeePerc = web3Utils.toWei('1.01');
       await truffleAssert.reverts(
         liquidityPoolInstance.setFeePercentage(newFeePerc, {
