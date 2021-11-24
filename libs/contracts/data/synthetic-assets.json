@@ -145,6 +145,16 @@
       "minSponsorTokens": "0",
       "capMintAmount": "",
       "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Japanese Yen",
+      "syntheticSymbol": "jJPY",
+      "priceFeedIdentifier": "JPYUSD",
+      "collateralRequirement": "1025000000000000000",
+      "startingCollateralization": "9527",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
     }
   ]
 }
