@@ -3,7 +3,13 @@ import ReactSelect, { components } from 'react-select';
 
 import { styled } from '../Theme';
 
-import { SelectProps, TOption } from './types';
+import {
+  BaseValue,
+  SelectComponentsGeneric,
+  OptionObj,
+  SelectProps,
+  TOption,
+} from './types';
 
 const SELECT_WIDTH = '100%';
 const ZERO_PADDING = 0;
@@ -88,9 +94,9 @@ const SelectWrapper = styled.div`
   }
 `;
 
-function makeOption<Option>(
-  rowsText: SelectProps<TOption<Option>>['rowsText'],
-  opt: TOption<Option>,
+function makeOption<Option extends BaseValue | OptionObj>(
+  rowsText: string | undefined,
+  opt: Option,
 ): TOption<Option> {
   if (typeof opt === 'string' || typeof opt === 'number') {
     const suffix = rowsText ? ` ${rowsText}` : '';
@@ -100,60 +106,49 @@ function makeOption<Option>(
       label: String(opt) + suffix,
     } as TOption<Option>;
   }
-  return opt;
+  return opt as TOption<Option>;
 }
 
-export interface Select<Option> {
-  (e: SelectProps<Option>): JSX.Element;
+export interface Select<
+  Option extends BaseValue | OptionObj,
+  IsMulti extends boolean = false
+> {
+  (e: SelectProps<Option, IsMulti>): JSX.Element;
 }
-export function Select<Option>({
-  onChange,
-  selected,
-  rowsText,
+
+export function Select<
+  Option extends BaseValue | OptionObj,
+  IsMulti extends boolean = false
+>({
   options,
+  rowsText,
+  selected,
   className,
-  optionComponent: Option,
-  singleValueComponent: SingleValue,
-}: SelectProps<Option>) {
-  const formattedOptions = useMemo(
-    () =>
-      options.map(item =>
-        makeOption<Option>(rowsText, item as TOption<Option>),
-      ),
+  ...props
+}: SelectProps<Option, IsMulti>): JSX.Element {
+  const formattedOptions: TOption<Option>[] = useMemo(
+    () => options.map(item => makeOption<Option>(rowsText, item)),
     [options, rowsText],
   );
-
-  const innerComponents = { IndicatorSeperator: null, SingleValue, Option };
-  if (!SingleValue) delete innerComponents.SingleValue;
-  if (!Option) delete innerComponents.Option;
-
-  const selectedItem =
+  const selectedItem: TOption<Option> =
     typeof selected === 'string' || typeof selected === 'number'
       ? formattedOptions.find(opt => String(opt.value) === String(selected))!
-      : selected;
+      : ((selected as unknown) as TOption<Option>);
 
   return (
     <SelectWrapper className={className}>
       <ReactSelect
         value={selectedItem}
         options={formattedOptions}
-        onChange={onChange}
+        hideSelectedOptions={false}
         isSearchable={false}
         menuPlacement="auto"
-        components={innerComponents}
-        hideSelectedOptions={false}
         classNamePrefix="react-select"
-        theme={theme => ({
-          ...theme,
-          borderRadius: 0,
-          colors: {
-            ...theme.colors,
-            primary: 'primary',
-          },
-        })}
+        {...props}
+        theme={theme => ({ ...theme, borderRadius: 0 })}
       />
     </SelectWrapper>
   );
 }
 
-export const { Option, SingleValue } = components;
+export const ReactSelectComponents: SelectComponentsGeneric = components;

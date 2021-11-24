@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
+import { number } from '@storybook/addon-knobs';
 
-import {
-  Select,
-  SingleValueProps,
-  SingleValue,
-  Option as OptionWrapper,
-  OptionProps,
-} from '..';
+import { ReactSelectComponents, Select, SingleValueProps } from '..';
 import { styled } from '../../Theme';
 
 export default {
@@ -33,11 +28,16 @@ export const Default = () => {
   );
 };
 
-export const Select100 = () => {
+export const CustomWidth = () => {
+  const width = number('Select width in px', 100, {
+    range: true,
+    min: 50,
+    max: 400,
+  });
   const [value, setValue] = useState('10');
 
   return (
-    <div style={{ width: '100px' }}>
+    <div style={{ width: `${width}px` }}>
       <Select
         selected={value}
         onChange={(e: any) => setValue(e)}
@@ -48,22 +48,7 @@ export const Select100 = () => {
   );
 };
 
-export const Select200 = () => {
-  const [value, setValue] = useState(20);
-
-  return (
-    <div style={{ width: '200px' }}>
-      <Select
-        selected={value}
-        onChange={(e: any) => setValue(e)}
-        rowsText="rows"
-        options={['10', '20']}
-      />
-    </div>
-  );
-};
-
-const RedHugeSelect = styled(Select as Select<Option>)`
+const RedHugeSelect = styled(Select as Select<string, false>)`
   .react-select__control {
     background: #ff8585;
     max-height: none;
@@ -74,14 +59,14 @@ const RedHugeSelect = styled(Select as Select<Option>)`
   }
 `;
 
-export const CustomizedSelect = () => {
+export const Styled = () => {
   const [value, setValue] = useState('jEUR');
 
   return (
-    <div style={{ width: '200px' }}>
+    <div style={{ width: '300px' }}>
       <RedHugeSelect
         selected={value}
-        onChange={(e: any) => setValue(e!.label)}
+        onChange={(e: any) => setValue(e?.label)}
         rowsText="rows"
         options={['USDC', 'jEUR', 'jGBP']}
       />
@@ -90,14 +75,27 @@ export const CustomizedSelect = () => {
   );
 };
 
-const CustomSelect = styled(Select as Select<Option>)`
+const CustomSubComponentSelect = styled(Select as Select<Option, false>)`
+  min-width: 100px;
+  width: auto;
+  margin: 0 0 0 -4px;
+  padding: 0;
+
   .react-select__control {
-    background: #ff8585;
     max-height: none;
+    transition: background-color 300ms;
+
+    &:not(:hover):not(.react-select__control--menu-is-open) {
+      background: transparent;
+    }
   }
+
   .react-select__single-value {
-    font-size: 24px;
-    padding: 10px;
+    font-size: 20px;
+  }
+
+  .react-select__menu-list {
+    background: white;
   }
 `;
 const AlignVertically = styled.div`
@@ -106,8 +104,8 @@ const AlignVertically = styled.div`
   padding: 4px 0;
 `;
 
-export const multiSelect = () => {
-  const [values, setValues] = useState(['jEUR']);
+export const CustomSubComponent = () => {
+  const [value, setValue] = useState('jEUR');
 
   const options = ['USDC', 'jEUR', 'jGBP'].map<Option>(val => ({
     value: val,
@@ -115,58 +113,29 @@ export const multiSelect = () => {
     icon: <div style={{ marginRight: '16px' }}>ICON</div>,
   }));
 
-  const handleSelectChange = (symbols: string) => {
-    if (values.includes(symbols)) {
-      setValues(values.filter(value => value !== symbols));
-    } else {
-      setValues(oldValues => [...oldValues, symbols]);
-    }
-  };
-
-  const renderSelectedValues = (): string => {
-    if (!values.length) return '';
-    if (values.length === 1) return values[0];
-    return values.join(', ');
-  };
-
-  const OptionComponent = (props: OptionProps<Option, false>) => {
+  const SingleValue = (props: SingleValueProps<Option, false>) => {
     const {
       data: { icon, label },
     } = props;
     return (
-      <OptionWrapper {...props}>
+      <ReactSelectComponents.SingleValue {...props}>
         <AlignVertically>
           {icon}
           {label}
         </AlignVertically>
-      </OptionWrapper>
-    );
-  };
-  const SelectValue = (props: SingleValueProps<Option>) => {
-    const {
-      data: { icon, label },
-    } = props;
-    return (
-      <SingleValue {...props}>
-        <AlignVertically>
-          {icon}
-          {label}
-        </AlignVertically>
-      </SingleValue>
+      </ReactSelectComponents.SingleValue>
     );
   };
 
   return (
     <div style={{ width: '300px' }}>
-      <CustomSelect
-        selected={renderSelectedValues()}
-        onChange={(val: any) => handleSelectChange(String(val!.value))}
-        rowsText=""
+      <CustomSubComponentSelect
+        selected={value}
+        onChange={(val: any) => setValue(val?.value)}
         options={options}
-        optionComponent={OptionComponent}
-        singleValueComponent={SelectValue}
+        components={{ SingleValue }}
       />
-      Selected values: {renderSelectedValues()}
+      Selected values: {value}
     </div>
   );
 };

@@ -1,2 +1,2 @@
-export { Select, Option, SingleValue } from './Select';
-export type { SingleValueProps, OptionProps } from './types';
+export { Select, ReactSelectComponents } from './Select';
+export type { SingleValueProps, OptionProps, TOption } from './types';

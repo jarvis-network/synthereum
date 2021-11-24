@@ -5,8 +5,7 @@ import {
   Skeleton,
   Icon,
   Select,
-  Option as OptionWrapper,
-  SingleValue,
+  ReactSelectComponents,
   styledScrollbars,
   SingleValueProps,
   OptionProps,
@@ -186,25 +185,25 @@ function OptionComponent(props: OptionProps<Option, false>) {
     data: { icon, label },
   } = props;
   return (
-    <OptionWrapper {...props}>
+    <ReactSelectComponents.Option {...props}>
       <AlignVertically>
         {icon}
         {label}
       </AlignVertically>
-    </OptionWrapper>
+    </ReactSelectComponents.Option>
   );
 }
-function SelectValue(props: SingleValueProps<Option>) {
+function SelectValue(props: SingleValueProps<Option, false>) {
   const {
     data: { icon, label },
   } = props;
   return (
-    <SingleValue {...props}>
+    <ReactSelectComponents.SingleValue {...props}>
       <AlignVertically>
         {icon}
         {label}
       </AlignVertically>
-    </SingleValue>
+    </ReactSelectComponents.SingleValue>
   );
 }
 
@@ -290,10 +289,8 @@ const InfoBox: React.FC<Props> = ({
           <CustomSelect
             selected={selectedPair}
             onChange={val => handlePairChange(String(val!.value))}
-            rowsText=""
             options={options}
-            optionComponent={OptionComponent}
-            singleValueComponent={SelectValue}
+            components={{ Option: OptionComponent, SingleValue: SelectValue }}
           />
         </CurrencySymbol>
         <InfoBoxTwoIcons onClick={flipValues}>
