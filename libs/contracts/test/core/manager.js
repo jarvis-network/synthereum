@@ -55,6 +55,7 @@ contract('Manager', function (accounts) {
   let feePercentage = 0.02;
   let DAO = accounts[5];
   let testAccount = accounts[6];
+  let sender = accounts[7];
   let feeRecipients = [liquidityProvider, DAO];
   let feeProportions = [50, 50];
   let fee = {
@@ -201,6 +202,45 @@ contract('Manager', function (accounts) {
         'Wrong number of burners after manager calls',
       );
     });
+    it('Can revert if no roles are passed in revoking roles', async () => {
+      await truffleAssert.reverts(
+        managerInstance.revokeSynthereumRole([], [], [], { from: maintainer }),
+        'No roles paased',
+      );
+    });
+    it('Can revert if different number of roles and accounts in revoking roles', async () => {
+      const contracts = [synthTokenAddress, synthTokenAddress];
+      const roles = [adminRole, minterRole];
+      const accounts = [managerInstance.address];
+      await truffleAssert.reverts(
+        managerInstance.revokeSynthereumRole(contracts, roles, accounts, {
+          from: maintainer,
+        }),
+        'Number of roles and accounts must be the same',
+      );
+    });
+    it('Can revert if different number of roles and contracts in revoking roles', async () => {
+      const contracts = [synthTokenAddress];
+      const roles = [adminRole, minterRole];
+      const accounts = [managerInstance.address, liquidityPool.address];
+      await truffleAssert.reverts(
+        managerInstance.revokeSynthereumRole(contracts, roles, accounts, {
+          from: maintainer,
+        }),
+        'Number of roles and contracts must be the same',
+      );
+    });
+    it('Can revert if revoke roles is not called by the maintainer', async () => {
+      const contracts = [synthTokenAddress, synthTokenAddress];
+      const roles = [minterRole, burnerRole];
+      const accounts = [liquidityPool.address, liquidityPool.address];
+      await truffleAssert.reverts(
+        managerInstance.revokeSynthereumRole(contracts, roles, accounts, {
+          from: sender,
+        }),
+        'Sender must be the maintainer or the deployer',
+      );
+    });
     it('Can add roles', async () => {
       const contracts = [synthTokenAddress, synthTokenAddress];
       const roles = [minterRole, burnerRole];
@@ -242,6 +282,45 @@ contract('Manager', function (accounts) {
         'Wrong burner before manager calls',
       );
     });
+    it('Can revert if no roles are passed in adding roles', async () => {
+      await truffleAssert.reverts(
+        managerInstance.grantSynthereumRole([], [], [], { from: maintainer }),
+        'No roles paased',
+      );
+    });
+    it('Can revert if different number of roles and accounts in adding roles', async () => {
+      const contracts = [synthTokenAddress, synthTokenAddress];
+      const roles = [minterRole, burnerRole];
+      const accounts = [testAccount];
+      await truffleAssert.reverts(
+        managerInstance.grantSynthereumRole(contracts, roles, accounts, {
+          from: maintainer,
+        }),
+        'Number of roles and accounts must be the same',
+      );
+    });
+    it('Can revert if different number of roles and contracts in adding roles', async () => {
+      const contracts = [synthTokenAddress];
+      const roles = [minterRole, burnerRole];
+      const accounts = [testAccount, testAccount];
+      await truffleAssert.reverts(
+        managerInstance.grantSynthereumRole(contracts, roles, accounts, {
+          from: maintainer,
+        }),
+        'Number of roles and contracts must be the same',
+      );
+    });
+    it('Can revert if grant roles is not called by the maintainer', async () => {
+      const contracts = [synthTokenAddress, synthTokenAddress];
+      const roles = [minterRole, burnerRole];
+      const accounts = [testAccount, testAccount];
+      await truffleAssert.reverts(
+        managerInstance.grantSynthereumRole(contracts, roles, accounts, {
+          from: sender,
+        }),
+        'Sender must be the maintainer or the deployer',
+      );
+    });
     it('Can renounce roles', async () => {
       const contracts = [synthTokenAddress];
       const roles = [adminRole];
@@ -265,6 +344,32 @@ contract('Manager', function (accounts) {
         actualBurners.length,
         1,
         'Wrong number of burners after manager calls',
+      );
+    });
+    it('Can revert if no roles are passed in renouncing roles', async () => {
+      await truffleAssert.reverts(
+        managerInstance.renounceSynthereumRole([], [], { from: maintainer }),
+        'No roles paased',
+      );
+    });
+    it('Can revert if different number of roles and contracts in renouncing roles', async () => {
+      const contracts = [synthTokenAddress, synthTokenAddress];
+      const roles = [adminRole];
+      await truffleAssert.reverts(
+        managerInstance.renounceSynthereumRole(contracts, roles, {
+          from: maintainer,
+        }),
+        'Number of roles and contracts must be the same',
+      );
+    });
+    it('Can revert if renounce roles is not called by the maintainer', async () => {
+      const contracts = [synthTokenAddress];
+      const roles = [adminRole];
+      await truffleAssert.reverts(
+        managerInstance.renounceSynthereumRole(contracts, roles, {
+          from: sender,
+        }),
+        'Sender must be the maintainer or the deployer',
       );
     });
   });
