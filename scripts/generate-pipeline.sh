@@ -44,7 +44,7 @@ before_script:
       refs:
         - merge_requests
       changes:
-        - apps/libs/ui/*
+        - libs/ui/*
 
 🚀:
   variables:
