@@ -66,7 +66,7 @@ contract SynthereumIdentifierWhitelist is
     override
     onlyMaintainer
   {
-    require(identifiers.add(newIdentifier), 'Identifier already added');
+    require(identifiers.add(newIdentifier), 'Identifier already supported');
     emit AddedToWhitelist(newIdentifier);
   }
 
@@ -79,7 +79,7 @@ contract SynthereumIdentifierWhitelist is
     override
     onlyMaintainer
   {
-    require(identifiers.remove(identifierToRemove), 'Identifier not present');
+    require(identifiers.remove(identifierToRemove), 'Identifier not supported');
     emit RemovedFromWhitelist(identifierToRemove);
   }
 
