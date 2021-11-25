@@ -179,4 +179,6 @@ const deployKyberDMM = async (
       encodedInfo,
     )
     .send({ from: maintainer });
+
+  console.log('KyberDMM implementation registered in proxy');
 };
