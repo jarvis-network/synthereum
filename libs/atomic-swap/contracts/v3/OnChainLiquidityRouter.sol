@@ -147,7 +147,7 @@ contract OnChainLiquidityRouterV2 is
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,uint256,address)))';
+      'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)))';
     SynthereumMintParams memory synthereumParams =
       SynthereumMintParams(synthereumFinder, synthereumPool, mintParams);
 
@@ -195,7 +195,7 @@ contract OnChainLiquidityRouterV2 is
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,uint256,address)),address)';
+      'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)),address)';
     SynthereumRedeemParams memory synthereumParams =
       SynthereumRedeemParams(synthereumFinder, synthereumPool, redeemParams);
 
