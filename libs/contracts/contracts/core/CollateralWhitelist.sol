@@ -32,8 +32,8 @@ contract SynthereumCollateralWhitelist is
 
   EnumerableSet.AddressSet private collaterals;
 
-  event AddedToWhitelist(address indexed addedAddress);
-  event RemovedFromWhitelist(address indexed removedAddress);
+  event AddedToWhitelist(address indexed addedCollateral);
+  event RemovedFromWhitelist(address indexed removedCollateral);
 
   //----------------------------------------
   // Modifiers
@@ -67,7 +67,7 @@ contract SynthereumCollateralWhitelist is
     override
     onlyMaintainer
   {
-    require(collaterals.add(newCollateral), 'Collateral already added');
+    require(collaterals.add(newCollateral), 'Collateral already supported');
     emit AddedToWhitelist(newCollateral);
   }
 
@@ -80,7 +80,7 @@ contract SynthereumCollateralWhitelist is
     override
     onlyMaintainer
   {
-    require(collaterals.remove(collateralToRemove), 'Collateral not present');
+    require(collaterals.remove(collateralToRemove), 'Collateral not supported');
     emit RemovedFromWhitelist(collateralToRemove);
   }
 
