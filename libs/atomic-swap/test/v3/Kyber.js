@@ -14,11 +14,9 @@ const IKyberRouter = artifacts.require(
   'contracts/v3/implementations/interfaces/IKyberRouter.sol:IDMMExchangeRouter',
 );
 const PoolMock = artifacts.require('PoolMock');
-const MockContractUser = artifacts.require('MockContractUser');
+const MockContractUser = artifacts.require('MockContractUserV2');
 const TestnetERC20 = artifacts.require('TestnetERC20');
-const SynthereumPoolOnChainPriceFeed = artifacts.require(
-  'SynthereumPoolOnChainPriceFeed',
-);
+const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 
 const tokens = require('../../data/test/tokens.json');
 const kyber = require('../../data/test/kyber.json');
@@ -31,7 +29,6 @@ contract('KyberDMM', async accounts => {
 
   let AtomicSwapInstance, ProxyInstance;
 
-  let feePercentage = 2000000000000000;
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1', 'ether');
 
@@ -67,9 +64,8 @@ contract('KyberDMM', async accounts => {
   };
 
   const initializeSynthereum = async networkId => {
-    pool = synthereum[networkId].pool;
-    derivative = synthereum[networkId].derivative;
-    poolInstance = await SynthereumPoolOnChainPriceFeed.at(pool);
+    pool = synthereum[networkId].poolV5;
+    poolInstance = await SynthereumLiquidityPool.at(pool);
   };
 
   const getWBTC = async ethAmount => {
@@ -77,6 +73,17 @@ contract('KyberDMM', async accounts => {
       0,
       [kyberPools.WETHWBTC],
       [WETHAddress, WBTCAddress],
+      user,
+      deadline,
+      { from: user, value: ethAmount },
+    );
+  };
+
+  const getUSDC = async ethAmount => {
+    await kyberInstance.swapExactETHForTokens(
+      0,
+      [kyberPools.WETHUSDC],
+      [WETHAddress, USDCAddress],
       user,
       deadline,
       { from: user, value: ethAmount },
@@ -100,7 +107,7 @@ contract('KyberDMM', async accounts => {
     admin = accounts[0];
     user = accounts[1];
 
-    networkId = await web3.eth.net.getId();
+    networkId = 3;
     expiration = (await web3.eth.getBlock('latest')).timestamp + 60;
 
     // init kyber router and pools
@@ -112,6 +119,11 @@ contract('KyberDMM', async accounts => {
     // initialise synthereum
     await initializeSynthereum(networkId);
 
+    // fund the pool
+    await getUSDC(web3Utils.toWei('1', 'ether'));
+    let balance = await USDCInstance.balanceOf.call(user);
+    await USDCInstance.transfer(pool, balance.toString(), { from: user });
+
     // get deployed Proxy
     ProxyInstance = await Proxy.deployed();
 
@@ -121,9 +133,9 @@ contract('KyberDMM', async accounts => {
 
   describe('From/to ERC20', () => {
     it('mint jSynth from ERC20 - exact input - multihop', async () => {
-      const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WBTCUSDT, kyberPools.USDCUSDT];
+      const tokenAmountIn = web3Utils.toWei('10', 'wei');
+      const tokenPathSwap = [WBTCAddress, WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHWBTC, kyberPools.WETHUSDC];
 
       await getWBTC(amountETH);
 
@@ -132,11 +144,9 @@ contract('KyberDMM', async accounts => {
         ['address[]', 'address[]'],
         [poolsPath, tokenPathSwap],
       );
-
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -156,7 +166,6 @@ contract('KyberDMM', async accounts => {
       await WBTCInstance.approve(ProxyInstance.address, tokenAmountIn, {
         from: user,
       });
-
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
         implementationID,
@@ -172,11 +181,12 @@ contract('KyberDMM', async accounts => {
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
-          ev.inputToken == WBTCAddress &&
-          ev.outputToken == jEURAddress &&
+          ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -208,9 +218,9 @@ contract('KyberDMM', async accounts => {
     });
 
     it('mint jSynth from ERC20 - exact output - multihop', async () => {
-      const exactTokensOut = 10;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WBTCUSDT, kyberPools.USDCUSDT];
+      const exactTokensOut = 1;
+      const tokenPathSwap = [WBTCAddress, WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHWBTC, kyberPools.WETHUSDC];
 
       await getWBTC(amountETH);
 
@@ -223,7 +233,6 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: exactTokensOut,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -234,7 +243,7 @@ contract('KyberDMM', async accounts => {
       const maxTokenAmountIn = WBTCbalanceBefore.div(web3Utils.toBN(10));
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
@@ -266,11 +275,12 @@ contract('KyberDMM', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
-          ev.inputToken == WBTCAddress &&
-          ev.outputToken == jEURAddress &&
+          ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -305,8 +315,8 @@ contract('KyberDMM', async accounts => {
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
-      const tokenPathSwap = [USDCAddress, USDTAddress, WBTCAddress];
-      const poolsPath = [kyberPools.USDCUSDT, kyberPools.WBTCUSDT];
+      const tokenPathSwap = [USDCAddress, WETHAddress, WBTCAddress];
+      const poolsPath = [kyberPools.WETHUSDC, kyberPools.WETHWBTC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -321,13 +331,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: 0,
@@ -351,11 +360,12 @@ contract('KyberDMM', async accounts => {
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == jEURInput.toString() &&
-          ev.inputToken == jEURAddress &&
-          ev.outputToken == WBTCAddress &&
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -383,13 +393,12 @@ contract('KyberDMM', async accounts => {
 
     it('burn jSynth and swaps for ERC20 - exact output- single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
-      let USDTBalanceBefore = await USDTInstance.balanceOf.call(user);
       let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
-      const tokenPathSwap = [USDCAddress, USDTAddress];
-      const poolsPath = [kyberPools.USDCUSDT];
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -404,13 +413,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: false,
         unwrapToETH: false,
         exactAmount: expectedOutput.toString(),
@@ -435,21 +443,17 @@ contract('KyberDMM', async accounts => {
           ev.outputAmount.toString() == expectedOutput &&
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == USDTAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
-      let USDTBalanceAfter = await USDTInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
       let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
 
-      assert.equal(
-        USDTBalanceAfter.eq(USDTBalanceBefore.add(expectedOutput)),
-        true,
-      );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
       assert.equal(
         USDCBalanceAfter.eq(USDCBalanceBefore.add(collateralRefunded)),
@@ -481,8 +485,8 @@ contract('KyberDMM', async accounts => {
       );
 
       const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WBTCUSDT, kyberPools.USDCUSDT];
+      const tokenPathSwap = [WBTCAddress, WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHWBTC, kyberPools.WETHUSDC];
       await getWBTC(amountETH);
 
       //encode in extra params
@@ -494,13 +498,12 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -530,8 +533,8 @@ contract('KyberDMM', async accounts => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
-      const tokenPathSwap = [USDCAddress, USDTAddress];
-      const poolsPath = [kyberPools.USDCUSDT];
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -542,13 +545,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -571,8 +573,8 @@ contract('KyberDMM', async accounts => {
 
     it('mintFromERC20 - Rejects if pool collateral token is missing in swap path', async function () {
       const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress];
-      const poolsPath = [kyberPools.WBTCUSDT];
+      const tokenPathSwap = [WBTCAddress, WETHAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       await getWBTC(amountETH);
 
@@ -585,13 +587,12 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -614,8 +615,8 @@ contract('KyberDMM', async accounts => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
-      const tokenPathSwap = [USDTAddress, WBTCAddress];
-      const poolsPath = [kyberPools.WBTCUSDT];
+      const tokenPathSwap = [WETHAddress, WBTCAddress];
+      const poolsPath = [kyberPools.WETHWBTC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -626,13 +627,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: jEURInput.toString(),
@@ -654,8 +654,8 @@ contract('KyberDMM', async accounts => {
     });
 
     it('swapToERC20 - Rejects with mismatch between pools and tokens', async () => {
-      const tokenPathSwap = [USDTAddress, WBTCAddress, USDCAddress];
-      const poolsPath = [kyberPools.WBTCUSDT];
+      const tokenPathSwap = [WETHAddress, WBTCAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHWBTC];
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
         ['address[]', 'address[]'],
@@ -665,13 +665,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: 1,
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         unwrapToETH: false,
         exactAmount: 1,
@@ -694,8 +693,8 @@ contract('KyberDMM', async accounts => {
 
     it('mintFromERC20 - Rejects with mismatch between pools and tokens', async function () {
       const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WBTCUSDT];
+      const tokenPathSwap = [WBTCAddress, WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -706,13 +705,12 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -735,8 +733,8 @@ contract('KyberDMM', async accounts => {
   describe('From/To ETH', () => {
     it('mint jSynth from ETH - exact input - multihop', async () => {
       const tokenAmountIn = web3Utils.toWei('1', 'ether');
-      const tokenPathSwap = [WETHAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WETHUSDT, kyberPools.USDCUSDT];
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -747,13 +745,12 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
@@ -786,10 +783,11 @@ contract('KyberDMM', async accounts => {
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
-          ev.outputToken == jEURAddress &&
+          ev.outputToken.toLowerCase() == jEURAddress &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -824,8 +822,8 @@ contract('KyberDMM', async accounts => {
     it('mint jSynth from ETH - exact output - multi hop', async () => {
       const maxTokenAmountIn = web3Utils.toWei('1', 'ether');
       const exactTokensOut = 100;
-      const tokenPathSwap = [WETHAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WETHUSDT, kyberPools.USDCUSDT];
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -836,13 +834,12 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
@@ -874,10 +871,11 @@ contract('KyberDMM', async accounts => {
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
-          ev.outputToken == jEURAddress &&
+          ev.outputToken.toLowerCase() == jEURAddress &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -914,8 +912,8 @@ contract('KyberDMM', async accounts => {
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
-      const tokenPathSwap = [USDCAddress, USDTAddress, WETHAddress];
-      const poolsPath = [kyberPools.USDCUSDT, kyberPools.WETHUSDT];
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -930,13 +928,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: true,
         unwrapToETH: true,
         exactAmount: 0,
@@ -963,11 +960,12 @@ contract('KyberDMM', async accounts => {
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == jEURInput.toString() &&
-          ev.inputToken == jEURAddress &&
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -995,14 +993,14 @@ contract('KyberDMM', async accounts => {
         '0',
       );
     });
-    it('burn jSynth and swaps for ETH - exact output- multi-hop', async () => {
+    it('burn jSynth and swaps for ETH - exact output', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
       let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
-      const tokenPathSwap = [USDCAddress, USDTAddress, WETHAddress];
-      const poolsPath = [kyberPools.USDCUSDT, kyberPools.WETHUSDT];
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -1017,13 +1015,12 @@ contract('KyberDMM', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: false,
         unwrapToETH: true,
         exactAmount: expectedOutput.toString(),
@@ -1096,8 +1093,8 @@ contract('KyberDMM', async accounts => {
 
       const maxTokenAmountIn = web3Utils.toWei('0.8', 'ether');
       const exactTokensOut = 1;
-      const tokenPathSwap = [WETHAddress, USDTAddress, USDCAddress];
-      const poolsPath = [kyberPools.WETHUSDT, kyberPools.USDCUSDT];
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -1108,13 +1105,12 @@ contract('KyberDMM', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
       const inputParams = {
-        msgSender: ZERO_ADDRESS,
+        msgSender: user,
         isExactInput: false,
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
