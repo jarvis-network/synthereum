@@ -40,6 +40,11 @@ before_script:
   script:
     - yarn nx build-storybook ui
     - yarn nx deploy-chromatic ui
+  only:
+      refs:
+        - merge_requests
+      changes:
+        - apps/libs/ui/*
 
 🚀:
   variables:
