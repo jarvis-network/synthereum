@@ -185,10 +185,9 @@ contract OCLRV2Kyber is OCLRBase {
 
     // mint jSynth to mintParams.recipient
     // returns the output amount
-    // (returnValues.outputAmount, ) = synthereumParams.synthereumPool.mint(
-    //   synthereumParams.mintParams
-    // );
-    returnValues.outputAmount = 0;
+    (returnValues.outputAmount, ) = synthereumParams.synthereumPool.mint(
+      synthereumParams.mintParams
+    );
   }
 
   /// see IBase.sol
