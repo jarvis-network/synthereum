@@ -6,5 +6,8 @@
   "1": {
     "pool": "0x2431b64cDD6D7E9A630046d225BA4F01B3AC9D3b",
     "derivative": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
+  },
+  "3": {
+    "poolV5": "0xdE7b48c76C646d9d8c89BE8FC52CC1d6ED43085a"
   }
 }
