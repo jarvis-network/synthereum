@@ -12,25 +12,26 @@ const MockContractUser = artifacts.require('MockContractUserV2');
 const Proxy = artifacts.require('OnChainLiquidityRouterV2');
 const UniV3AtomicSwap = artifacts.require('OCLRV2UniswapV3');
 const ISwapRouter = artifacts.require('ISwapRouter');
+const IUniswapRouter = artifacts.require(
+  '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
+);
+
 const PoolMock = artifacts.require('PoolMock');
 
 const TestnetERC20 = artifacts.require('TestnetERC20');
-const SynthereumPoolOnChainPriceFeed = artifacts.require(
-  'SynthereumPoolOnChainPriceFeed',
-);
+const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 
 const tokens = require('../../data/test/tokens.json');
 const uniswap = require('../../data/test/uniswap.json');
 const synthereum = require('../../data/test/synthereum.json');
 
 contract('AtomicSwapv2 - UniswapV3', async accounts => {
-  let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
-  let WBTCAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
-  let networkId, UniV3Info, encodedInfo;
+  let DAIInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
+  let DAIAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
+  let networkId;
 
   let AtomicSwapInstance, ProxyInstance;
 
-  let feePercentage = 2000000000000000;
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1', 'ether');
 
@@ -40,13 +41,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
   const initializeTokens = async networkId => {
     USDCAddress = tokens[networkId].USDC;
-    WBTCAddress = tokens[networkId].WBTC;
+    DAIAddress = tokens[networkId].DAI;
     jEURAddress = tokens[networkId].JEUR;
     WETHAddress = tokens[networkId].WETH;
     USDTAddress = tokens[networkId].USDT;
 
     WETHInstance = await initializeTokenInstanace(WETHAddress);
-    WBTCInstance = await initializeTokenInstanace(WBTCAddress);
+    DAIInstance = await initializeTokenInstanace(DAIAddress);
     USDCInstance = await initializeTokenInstanace(USDCAddress);
     USDTInstance = await initializeTokenInstanace(USDTAddress);
     jEURInstance = await initializeTokenInstanace(jEURAddress);
@@ -56,27 +57,30 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     await ISwapRouter.at(uniswap[networkId].routerV3);
 
   const initializeSynthereum = async networkId => {
-    pool = synthereum[networkId].pool;
-    derivative = synthereum[networkId].derivative;
-    poolInstance = await SynthereumPoolOnChainPriceFeed.at(pool);
+    pool = synthereum[networkId].poolV5;
+    poolInstance = await SynthereumLiquidityPool.at(pool);
   };
 
-  const getWBTC = async ethAmount => {
-    let params = {
-      tokenIn: WETHAddress,
-      tokenOut: WBTCAddress,
-      fee: 3000,
-      recipient: user,
+  const getDAI = async ethAmount => {
+    let univ2Router = await IUniswapRouter.at(uniswap[networkId].router);
+    await univ2Router.swapExactETHForTokens(
+      0,
+      [WETHAddress, DAIAddress],
+      user,
       deadline,
-      amountIn: ethAmount,
-      amountOutMinimum: 0,
-      sqrtPriceLimitX96: 0,
-    };
+      { from: user, value: ethAmount },
+    );
+  };
 
-    await uniswapInstance.exactInputSingle(params, {
-      value: ethAmount,
-      from: user,
-    });
+  const getUSDC = async ethAmount => {
+    let univ2Router = await IUniswapRouter.at(uniswap[networkId].router);
+    await univ2Router.swapExactETHForTokens(
+      0,
+      [WETHAddress, USDCAddress],
+      user,
+      deadline,
+      { from: user, value: ethAmount },
+    );
   };
 
   const getTxFee = async txReceipt => {
@@ -116,6 +120,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     // initialise synthereum
     await initializeSynthereum(networkId);
 
+    // fund the pool
+    await getUSDC(web3Utils.toWei('1', 'ether'));
+    let balance = await USDCInstance.balanceOf.call(user);
+    await USDCInstance.transfer(pool, balance.toString(), { from: user });
+
     // get deployed Proxy
     ProxyInstance = await Proxy.deployed();
 
@@ -125,11 +134,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
   describe('From/to ERC20', () => {
     it('mint jSynth from ERC20 - exact input - multihop', async () => {
-      const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const tokenAmountIn = web3Utils.toWei('100000000000', 'wei');
+      const tokenPathSwap = [DAIAddress, WETHAddress, USDCAddress];
       const fees = [3000, 3000];
 
-      await getWBTC(amountETH);
+      await getDAI(amountETH);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -140,7 +149,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -150,13 +158,14 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
-      let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(user);
+      let DAIbalanceBefore = await DAIInstance.balanceOf.call(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
       // approve proxy to pull tokens
-      await WBTCInstance.approve(ProxyInstance.address, tokenAmountIn, {
+      await DAIInstance.approve(ProxyInstance.address, tokenAmountIn, {
         from: user,
       });
 
@@ -175,21 +184,20 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
-          ev.inputToken == WBTCAddress &&
-          ev.outputToken == jEURAddress &&
+          ev.inputToken.toLowerCase() == DAIAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
-      let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
+      let DAIbalanceAfter = await DAIInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
       assert.equal(
-        WBTCbalanceAfter.eq(
-          WBTCbalanceBefore.sub(web3Utils.toBN(tokenAmountIn)),
-        ),
+        DAIbalanceAfter.eq(DAIbalanceBefore.sub(web3Utils.toBN(tokenAmountIn))),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
@@ -197,7 +205,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       // check allowance is set to 0 after the tx
       assert.equal(
         (
-          await WBTCInstance.allowance(
+          await DAIInstance.allowance(
             ProxyInstance.address,
             UniV3Info.routerAddress,
           )
@@ -212,10 +220,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
     it('mint jSynth from ERC20 - exact output - multihop', async () => {
       const exactTokensOut = 10;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const tokenPathSwap = [DAIAddress, WETHAddress, USDCAddress];
       const fees = [3000, 3000];
 
-      await getWBTC(amountETH);
+      await getDAI(amountETH);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -226,18 +234,17 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: exactTokensOut,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
 
-      let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(user);
+      let DAIbalanceBefore = await DAIInstance.balanceOf.call(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
-      const maxTokenAmountIn = WBTCbalanceBefore.div(web3Utils.toBN(10));
+      const maxTokenAmountIn = DAIbalanceBefore.div(web3Utils.toBN(10));
 
       // approve proxy to pull tokens
-      await WBTCInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
+      await DAIInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
         from: user,
       });
 
@@ -246,6 +253,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn.toString(),
         extraParams,
+        msgSender: user,
       };
 
       // tx through proxy
@@ -268,27 +276,25 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
             .toBN(maxTokenAmountIn)
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
-          ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.inputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
-      let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
+      let DAIbalanceAfter = await DAIInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-      assert.equal(
-        WBTCbalanceAfter.eq(WBTCbalanceBefore.sub(inputAmount)),
-        true,
-      );
+      assert.equal(DAIbalanceAfter.eq(DAIbalanceBefore.sub(inputAmount)), true);
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
 
       // check allowance is set to 0 after the tx
       assert.equal(
         (
-          await WBTCInstance.allowance(
+          await DAIInstance.allowance(
             ProxyInstance.address,
             UniV3Info.routerAddress,
           )
@@ -303,12 +309,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
     it('burn jSynth and swaps for ERC20 - exact input - single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
-      let WBTCBalanceBefore = await WBTCInstance.balanceOf.call(user);
+      let DAIBalanceBefore = await DAIInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
 
-      const tokenPathSwap = [USDCAddress, WBTCAddress];
-      const fees = [3000];
+      const tokenPathSwap = [USDCAddress, WETHAddress, DAIAddress];
+      const fees = [3000, 3000];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -322,7 +328,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -333,6 +338,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: 0,
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       // tx through proxy
@@ -345,14 +351,14 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         { from: user },
       );
 
-      let WBTCOut;
+      let DAIOut;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        WBTCOut = ev.outputAmount;
+        DAIOut = ev.outputAmount;
         return (
           ev.outputAmount > web3Utils.toBN(0) &&
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
@@ -360,10 +366,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         );
       });
 
-      let WBTCBalanceAfter = await WBTCInstance.balanceOf.call(user);
+      let DAIBalanceAfter = await DAIInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-      assert.equal(WBTCBalanceAfter.eq(WBTCBalanceBefore.add(WBTCOut)), true);
+      assert.equal(DAIBalanceAfter.eq(DAIBalanceBefore.add(DAIOut)), true);
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
 
       // check allowance is set to 0 after the tx
@@ -384,13 +390,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
     it('burn jSynth and swaps for ERC20 - exact output- single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
-      let USDTBalanceBefore = await USDTInstance.balanceOf.call(user);
+      let DAIBalanceBefore = await DAIInstance.balanceOf.call(user);
       let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
 
-      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
-
-      const tokenPathSwap = [USDCAddress, USDTAddress];
-      const fees = [3000];
+      let jEURInput = jEURBalanceBefore;
+      const tokenPathSwap = [USDCAddress, WETHAddress, DAIAddress];
+      const fees = [3000, 3000];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -405,7 +410,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -416,6 +420,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: expectedOutput.toString(),
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       // tx through proxy
@@ -435,7 +440,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.outputAmount.toString() == expectedOutput.toString() &&
           ev.inputAmount.toString() == jEURInput.toString() &&
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == USDTAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
           ev.dexImplementationAddress.toLowerCase() ==
@@ -443,12 +448,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         );
       });
 
-      let USDTBalanceAfter = await USDTInstance.balanceOf.call(user);
+      let DAIBalanceAfter = await DAIInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
       let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
 
       assert.equal(
-        USDTBalanceAfter.eq(USDTBalanceBefore.add(expectedOutput)),
+        DAIBalanceAfter.eq(DAIBalanceBefore.add(expectedOutput)),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
@@ -481,11 +486,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         jEURAddress,
       );
 
-      const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress, USDCAddress];
+      const tokenAmountIn = web3Utils.toWei('10', 'wei');
+      const tokenPathSwap = [DAIAddress, WETHAddress, USDCAddress];
       const fees = [3000, 3000];
 
-      await getWBTC(amountETH);
+      await getDAI(amountETH);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -496,7 +501,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -506,6 +510,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       await truffleAssert.reverts(
@@ -543,7 +548,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -554,6 +558,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: jEURInput.toString(),
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       await truffleAssert.reverts(
@@ -570,11 +575,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     });
 
     it('mintFromERC20 - Rejects if pool collateral token is missing in swap path', async function () {
-      const tokenAmountIn = 10000;
-      const tokenPathSwap = [WBTCAddress, USDTAddress];
+      const tokenAmountIn = web3Utils.toWei('10', 'wei');
+      const tokenPathSwap = [DAIAddress, USDTAddress];
       const fees = [3000];
 
-      await getWBTC(amountETH);
+      await getDAI(amountETH);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -585,7 +590,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -595,6 +599,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       await truffleAssert.reverts(
@@ -613,7 +618,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
-      const tokenPathSwap = [USDTAddress, WBTCAddress];
+      const tokenPathSwap = [USDTAddress, DAIAddress];
       const fees = [3000];
 
       //encode in extra params
@@ -625,7 +630,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -636,6 +640,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: jEURInput.toString(),
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       await truffleAssert.reverts(
@@ -654,9 +659,9 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
   describe('From ETH', () => {
     it('mint jSynth from ETH - exact input - multihop', async () => {
-      const tokenAmountIn = web3Utils.toWei('1', 'ether');
-      const tokenPathSwap = [WETHAddress, USDTAddress, USDCAddress];
-      const fees = [3000, 3000];
+      const tokenAmountIn = web3Utils.toWei('1', 'gwei');
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const fees = [3000];
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -667,7 +672,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -677,12 +681,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
-
-      // approve proxy to pull tokens
-      await WETHInstance.approve(ProxyInstance.address, tokenAmountIn, {
-        from: user,
-      });
 
       let EthBalanceBefore = await web3.eth.getBalance(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
@@ -705,10 +705,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == tokenAmountIn &&
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
-          ev.outputToken == jEURAddress &&
+          ev.outputToken.toLowerCase() ==
+            jEURAddress.toLowerCase().toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -746,7 +748,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -756,6 +757,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: exactTokensOut,
         minOutOrMaxIn: maxTokenAmountIn,
         extraParams,
+        msgSender: user,
       };
 
       // approve proxy to pull tokens
@@ -788,10 +790,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
             .sub(ev.inputAmount)
             .gte(web3Utils.toBN(0)) &&
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
-          ev.outputToken == jEURAddress &&
+          ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
       let EthBalanceAfter = await web3.eth.getBalance(user);
@@ -812,7 +815,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         '0',
       );
     });
-
     it('burn jSynth and swaps for ETH - exact input - single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
       let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
@@ -832,7 +834,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -843,6 +844,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: 0,
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       // tx through proxy
@@ -864,11 +866,12 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         return (
           ev.outputAmount > 0 &&
           ev.inputAmount.toString() == jEURInput.toString() &&
-          ev.inputToken == jEURAddress &&
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -919,7 +922,6 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
-        feePercentage: feePercentage,
         expiration: deadline,
         recipient: user,
       };
@@ -930,6 +932,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: expectedOutput.toString(),
         minOutOrMaxIn: 0,
         extraParams,
+        msgSender: user,
       };
 
       // tx through proxy
@@ -954,7 +957,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
-          ev.dexImplementationAddress == AtomicSwapInstance.address
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
         );
       });
 
@@ -987,51 +991,50 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         '0',
       );
     });
-  });
-  it('Rejects if user cant receive eth refund', async () => {
-    const mockContractUser = await MockContractUser.new();
-    await mockContractUser.getEth({
-      value: web3Utils.toWei('1', 'ether'),
-      from: user,
+    it('Rejects if user cant receive eth refund', async () => {
+      const mockContractUser = await MockContractUser.new();
+      await mockContractUser.getEth({
+        value: web3Utils.toWei('1', 'ether'),
+        from: user,
+      });
+
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const fees = [3000];
+      const maxTokenAmountIn = web3Utils.toWei('0.8', 'ether');
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: 0,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: false,
+        exactAmount: 100,
+        minOutOrMaxIn: maxTokenAmountIn,
+        extraParams,
+        msgSender: user,
+      };
+
+      // tx through proxy
+      await truffleAssert.reverts(
+        mockContractUser.swapAndMint(
+          ProxyInstance.address,
+          implementationID,
+          inputParams,
+          pool,
+          mintParams,
+          { from: user, value: maxTokenAmountIn },
+        ),
+        'Failed eth refund',
+      );
     });
-
-    const tokenPathSwap = [WETHAddress, USDCAddress];
-    const fees = [3000];
-    const maxTokenAmountIn = web3Utils.toWei('0.8', 'ether');
-
-    //encode in extra params
-    let extraParams = web3.eth.abi.encodeParameters(
-      ['uint24[]', 'address[]'],
-      [fees, tokenPathSwap],
-    );
-
-    const mintParams = {
-      derivative: derivative,
-      minNumTokens: 0,
-      collateralAmount: 0,
-      feePercentage: feePercentage,
-      expiration: deadline,
-      recipient: user,
-    };
-
-    const inputParams = {
-      isExactInput: false,
-      exactAmount: 100,
-      minOutOrMaxIn: maxTokenAmountIn,
-      extraParams,
-    };
-
-    // tx through proxy
-    await truffleAssert.reverts(
-      mockContractUser.swapAndMint(
-        ProxyInstance.address,
-        implementationID,
-        inputParams,
-        pool,
-        mintParams,
-        { from: user, value: maxTokenAmountIn },
-      ),
-      'Failed eth refund',
-    );
   });
 });
