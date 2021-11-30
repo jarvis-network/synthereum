@@ -112,6 +112,13 @@
     },
     "meta-tx-lib": {
       "tags": []
+    },
+    "burner-wallet": {
+      "tags": []
+    },
+    "burner-wallet-e2e": {
+      "tags": [],
+      "implicitDependencies": ["burner-wallet"]
     }
   },
   "workspaceLayout": {
