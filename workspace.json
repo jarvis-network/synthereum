@@ -706,13 +706,13 @@
           "outputs": ["{options.outputPath}"],
           "options": {
             "root": "apps/burner-wallet",
-            "outputPath": "dist/apps/burner-wallet"
+            "outputPath": "apps/burner-wallet/out"
           },
           "configurations": {
             "production": {}
           }
         },
-        "serve": {
+        "start": {
           "executor": "@nrwl/next:server",
           "options": {
             "buildTarget": "burner-wallet:build",
