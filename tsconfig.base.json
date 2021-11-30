@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "experimentalDecorators": true,
 
     // Output config:
     "incremental": false,
