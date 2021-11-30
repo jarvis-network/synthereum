@@ -135,6 +135,7 @@
     "@jarvis-network/cz-ccgls": "^0.3.2",
     "@nrwl/cli": "12.3.4",
     "@nrwl/jest": "12.3.4",
+    "@nrwl/nest": "12.3.4",
     "@nrwl/node": "12.3.4",
     "@nrwl/react": "12.3.4",
     "@nrwl/tao": "12.3.4",
@@ -174,7 +175,6 @@
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "hardhat": "*",
-    "solidity-coverage": "*",
     "husky": "^4.3.8",
     "jest": "^26.6.3",
     "netlify-cli": "^3.37.31",
@@ -182,6 +182,7 @@
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.2",
     "pretty-quick": "^3.1.0",
+    "solidity-coverage": "*",
     "ts-jest": "^26.5.3",
     "ts-node": "^9.1.1",
     "typescript": "*"
