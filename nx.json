@@ -109,6 +109,9 @@
     },
     "synthereum-config": {
       "tags": []
+    },
+    "meta-tx-lib": {
+      "tags": []
     }
   },
   "workspaceLayout": {

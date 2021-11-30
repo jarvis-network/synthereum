@@ -11,5 +11,6 @@ module.exports = {
     '<rootDir>/libs/atomic-swap',
     '<rootDir>/libs/jrt-investors',
     '<rootDir>/libs/synthereum-config',
+    '<rootDir>/libs/meta-tx-lib',
   ],
 };

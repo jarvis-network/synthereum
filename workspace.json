@@ -649,6 +649,38 @@
           }
         }
       }
+    },
+    "meta-tx-lib": {
+      "root": "libs/meta-tx-lib",
+      "sourceRoot": "libs/meta-tx-lib/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/meta-tx-lib",
+            "tsConfig": "libs/meta-tx-lib/tsconfig.lib.json",
+            "packageJson": "libs/meta-tx-lib/package.json",
+            "main": "libs/meta-tx-lib/src/index.ts",
+            "assets": ["libs/meta-tx-lib/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/meta-tx-lib/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/meta-tx-lib"],
+          "options": {
+            "jestConfig": "libs/meta-tx-lib/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }
