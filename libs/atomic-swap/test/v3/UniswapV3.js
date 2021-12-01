@@ -31,7 +31,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
   let networkId;
 
   let AtomicSwapInstance, ProxyInstance, forwarderInstance;
-
+  const swapMintSig =
+    'swapAndMint(string,(bool,uint256,uint256,bytes,address),address,(uint256,uint256,uint256,address))';
+  const redeemSwapSig =
+    'redeemAndSwap(string,(bool,bool,uint256,uint256,bytes,address),address,(uint256,uint256,uint256,address),address)';
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1', 'ether');
 
@@ -135,20 +138,22 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     AtomicSwapInstance = await UniV3AtomicSwap.deployed();
   });
 
-  describe.only('Meta-Tx', async () => {
-    let signers, user;
+  describe('Meta-Tx', async () => {
+    let signers, metaUserAddr, userSigner;
     before(async () => {
       signers = await ethers.getSigners();
-      user = signers[0].address;
+      userSigner = signers[1].provider;
+      metaUserAddr = signers[1].address;
     });
-    it('Succesfully mint via meta tx', async () => {
-      let DAIbalanceBefore = await DAIInstance.balanceOf.call(user);
-      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
-      const tokenAmountIn = web3Utils.toWei('100000000000', 'wei');
+
+    it('Succesfully mint from ERC20 via meta tx', async () => {
+      const tokenAmountIn = web3Utils.toWei('10000000000000', 'wei');
       const tokenPathSwap = [DAIAddress, WETHAddress, USDCAddress];
       const fees = [3000, 3000];
 
-      await getDAI(amountETH, user);
+      await getDAI(amountETH, metaUserAddr);
+      let DAIbalanceBefore = await DAIInstance.balanceOf.call(metaUserAddr);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -160,7 +165,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         minNumTokens: 0,
         collateralAmount: 0,
         expiration: deadline,
-        recipient: user,
+        recipient: metaUserAddr,
       };
 
       const inputParams = {
@@ -168,17 +173,15 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: tokenAmountIn,
         minOutOrMaxIn: 0,
         extraParams,
-        msgSender: user,
+        msgSender: metaUserAddr,
       };
 
       // approve proxy to pull tokens
       await DAIInstance.approve(ProxyInstance.address, tokenAmountIn, {
-        from: user,
+        from: metaUserAddr,
       });
 
-      let functionName =
-        'swapAndMint(string,(bool,uint256,uint256,bytes,address),address,(uint256,uint256,uint256,address))';
-      const functionSig = web3.eth.abi.encodeFunctionSignature(functionName);
+      const functionSig = web3.utils.sha3(swapMintSig).substr(0, 10);
       const functionParam = web3.eth.abi.encodeParameters(
         [
           'string',
@@ -219,16 +222,16 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           },
         ],
       );
-
       let encodedCall = functionSig + functionParam.substr(2);
 
       const { request, signature } = await signMetaTxRequest(
-        signers[0].provider,
+        userSigner,
         forwarderInstance,
         {
-          from: user,
+          from: metaUserAddr,
           to: ProxyInstance.address,
           data: encodedCall,
+          value: 0,
         },
         networkId,
       );
@@ -236,9 +239,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       //send metatx
       await forwarderInstance.execute(request, signature);
 
-      let DAIbalanceAfter = await DAIInstance.balanceOf.call(user);
-      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
-      console.log(jEURBalanceAfter.toString());
+      let DAIbalanceAfter = await DAIInstance.balanceOf.call(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
 
       assert.equal(
         DAIbalanceAfter.eq(DAIbalanceBefore.sub(web3Utils.toBN(tokenAmountIn))),
@@ -262,10 +264,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
     });
 
-    it('Succesfully redeem via meta tx', async () => {
-      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
-      let DAIBalanceBefore = await DAIInstance.balanceOf.call(user);
-      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+    it('Succesfully redeem to ERC20 via meta tx', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+      let DAIBalanceBefore = await DAIInstance.balanceOf.call(metaUserAddr);
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(4));
 
       const tokenPathSwap = [USDCAddress, WETHAddress, DAIAddress];
       const fees = [3000, 3000];
@@ -276,14 +278,14 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         [fees, tokenPathSwap],
       );
       await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
-        from: user,
+        from: metaUserAddr,
       });
 
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
         expiration: deadline,
-        recipient: user,
+        recipient: metaUserAddr,
       };
 
       const inputParams = {
@@ -292,12 +294,10 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         exactAmount: 0,
         minOutOrMaxIn: 0,
         extraParams,
-        msgSender: user,
+        msgSender: metaUserAddr,
       };
 
-      let functionName =
-        'redeemAndSwap(string,(bool,bool,uint256,uint256,bytes,address),address,(uint256,uint256,uint256,address),address)';
-      const functionSig = web3.eth.abi.encodeFunctionSignature(functionName);
+      const functionSig = web3.eth.abi.encodeFunctionSignature(redeemSwapSig);
       const functionParam = web3.eth.abi.encodeParameters(
         [
           'string',
@@ -344,9 +344,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       let encodedCall = functionSig + functionParam.substr(2);
-
       const { request, signature } = await signMetaTxRequest(
-        signers[0].provider,
+        userSigner,
         forwarderInstance,
         {
           from: user,
@@ -359,10 +358,238 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       //send metatx
       await forwarderInstance.execute(request, signature);
 
-      let DAIBalanceAfter = await DAIInstance.balanceOf.call(user);
-      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+      let DAIBalanceAfter = await DAIInstance.balanceOf.call(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
 
       assert.equal(DAIBalanceAfter.gt(DAIBalanceBefore), true);
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV3Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
+
+    it('Succesfully mint from ETH via meta tx', async () => {
+      const tokenAmountIn = web3Utils.toWei('1', 'ether');
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const fees = [3000];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: 0,
+        expiration: deadline,
+        recipient: metaUserAddr,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: metaUserAddr,
+      };
+
+      const functionSig = web3.utils.sha3(swapMintSig).substr(0, 10);
+      const functionParam = web3.eth.abi.encodeParameters(
+        [
+          'string',
+          {
+            SwapMintParams: {
+              isExactInput: 'bool',
+              exactAmount: 'uint256',
+              minOutOrMaxIn: 'uint256',
+              extraParams: 'bytes',
+              msgSender: 'address',
+            },
+          },
+          'address',
+          {
+            'ISynthereumLiquidityPool.MintParams': {
+              minNumTokens: 'uint256',
+              collateralAmount: 'uint256',
+              expiration: 'uint256',
+              recipient: 'address',
+            },
+          },
+        ],
+        [
+          implementationID,
+          {
+            isExactInput: inputParams.isExactInput,
+            exactAmount: inputParams.exactAmount,
+            minOutOrMaxIn: inputParams.minOutOrMaxIn,
+            extraParams: inputParams.extraParams,
+            msgSender: inputParams.msgSender,
+          },
+          pool,
+          {
+            minNumTokens: mintParams.minNumTokens,
+            collateralAmount: mintParams.collateralAmount,
+            expiration: mintParams.expiration,
+            recipient: mintParams.recipient,
+          },
+        ],
+      );
+
+      let encodedCall = functionSig + functionParam.substr(2);
+
+      let EthBalanceBefore = await web3.eth.getBalance(metaUserAddr);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      const { request, signature } = await signMetaTxRequest(
+        userSigner,
+        forwarderInstance,
+        {
+          from: metaUserAddr,
+          to: ProxyInstance.address,
+          value: tokenAmountIn,
+          data: encodedCall,
+        },
+        networkId,
+      );
+
+      //send metatx
+      let tx = await forwarderInstance.execute(request, signature, {
+        value: tokenAmountIn,
+        from: user,
+      });
+      let txFee = await getTxFee(tx);
+
+      let EthBalanceAfter = await web3.eth.getBalance(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      const expectedEthBalance = web3Utils
+        .toBN(EthBalanceBefore)
+        .sub(txFee)
+        .sub(web3Utils.toBN(tokenAmountIn));
+      assert.equal(expectedEthBalance.toString(), EthBalanceAfter.toString());
+      assert.equal(jEURBalanceAfter.gt(jEURBalanceBefore), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
+
+    it('Succesfully redeem to ETH via meta tx', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(4));
+
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+      const fees = [3000];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+      await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
+        from: metaUserAddr,
+      });
+
+      let EthBalanceBefore = await web3.eth.getBalance(metaUserAddr);
+      const redeemParams = {
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        expiration: deadline,
+        recipient: metaUserAddr,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: true,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: metaUserAddr,
+      };
+
+      const functionSig = web3.eth.abi.encodeFunctionSignature(redeemSwapSig);
+      const functionParam = web3.eth.abi.encodeParameters(
+        [
+          'string',
+          {
+            RedeemSwapParams: {
+              isExactInput: 'bool',
+              unwrapToETH: 'bool',
+              exactAmount: 'uint256',
+              minOutOrMaxIn: 'uint256',
+              extraParams: 'bytes',
+              msgSender: 'address',
+            },
+          },
+          'address',
+          {
+            'ISynthereumLiquidityPool.RedeemParams': {
+              numTokens: 'uint256',
+              minCollateral: 'uint256',
+              expiration: 'uint256',
+              recipient: 'address',
+            },
+          },
+          'address',
+        ],
+        [
+          implementationID,
+          {
+            isExactInput: inputParams.isExactInput,
+            unwrapToETH: inputParams.unwrapToETH,
+            exactAmount: inputParams.exactAmount,
+            minOutOrMaxIn: inputParams.minOutOrMaxIn,
+            extraParams: inputParams.extraParams,
+            msgSender: inputParams.msgSender,
+          },
+          pool,
+          {
+            numTokens: redeemParams.numTokens,
+            minCollateral: redeemParams.minCollateral,
+            expiration: redeemParams.expiration,
+            recipient: redeemParams.recipient,
+          },
+          user,
+        ],
+      );
+
+      let encodedCall = functionSig + functionParam.substr(2);
+      const { request, signature } = await signMetaTxRequest(
+        userSigner,
+        forwarderInstance,
+        {
+          from: user,
+          to: ProxyInstance.address,
+          data: encodedCall,
+        },
+        networkId,
+      );
+
+      //send metatx
+      await forwarderInstance.execute(request, signature);
+
+      let EthBalanceAfter = await web3.eth.getBalance(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      assert.equal(
+        web3Utils.toBN(EthBalanceAfter).gt(web3Utils.toBN(EthBalanceBefore)),
+        true,
+      );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
 
       // check allowance is set to 0 after the tx

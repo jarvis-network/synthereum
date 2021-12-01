@@ -52,8 +52,8 @@ async function buildRequest(forwarder, input) {
   const nonce = await forwarder
     .getNonce(input.from)
     .then(nonce => nonce.toString());
-  const gasLimit = (1e6 + 50000).toString();
-  return { value: 0, gas: 1e6, nonce, ...input };
+  const msgValue = input.value > 0 ? input.value : 0;
+  return { value: msgValue, gas: 1e6, nonce, ...input };
 }
 
 async function buildTypedData(forwarder, request, chainId) {
