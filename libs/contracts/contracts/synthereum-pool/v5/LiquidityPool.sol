@@ -22,9 +22,11 @@ import {SynthereumLiquidityPoolLib} from './LiquidityPoolLib.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import {ERC2771Context} from '../../common//ERC2771Context.sol';
 import {
-  ERC2771ContextWithRoles
-} from '../../common//ERC2771ContextWithRoles.sol';
+  AccessControlEnumerable,
+  Context
+} from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title Token Issuer Contract
@@ -33,7 +35,8 @@ import {
 contract SynthereumLiquidityPool is
   ISynthereumLiquidityPoolStorage,
   ISynthereumLiquidityPool,
-  ERC2771ContextWithRoles,
+  AccessControlEnumerable,
+  ERC2771Context,
   ReentrancyGuard
 {
   using SynthereumLiquidityPoolLib for Storage;
@@ -850,5 +853,34 @@ contract SynthereumLiquidityPool is
       poolStorage.finder.getImplementationAddress(
         SynthereumInterfaces.TrustedForwarder
       );
+  }
+
+  function _msgSender()
+    internal
+    view
+    override(ERC2771Context, Context)
+    returns (address sender)
+  {
+    if (isTrustedForwarder(msg.sender)) {
+      // The assembly code is more direct than the Solidity version using `abi.decode`.
+      assembly {
+        sender := shr(96, calldataload(sub(calldatasize(), 20)))
+      }
+    } else {
+      return ERC2771Context._msgSender();
+    }
+  }
+
+  function _msgData()
+    internal
+    view
+    override(ERC2771Context, Context)
+    returns (bytes calldata)
+  {
+    if (isTrustedForwarder(msg.sender)) {
+      return msg.data[0:msg.data.length - 20];
+    } else {
+      return ERC2771Context._msgData();
+    }
   }
 }
