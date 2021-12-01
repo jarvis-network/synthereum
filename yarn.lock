@@ -5375,8 +5375,10 @@ __metadata:
   resolution: "@jarvis-network/atomic-swap@workspace:libs/atomic-swap"
   dependencies:
     "@jarvis-network/synthereum-contracts": "*"
+    "@nomiclabs/hardhat-ethers": ^2.0.1
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
+    eth-sig-util: ^3.0.1
     hardhat-gas-reporter: ^1.0.4
   languageName: unknown
   linkType: soft
@@ -6772,6 +6774,16 @@ __metadata:
     "@nodelib/fs.scandir": 2.1.4
     fastq: ^1.6.0
   checksum: d156901823b3d3de368ad68047a964523e0ce5f796c0aa7712443b1f748d8e7fc24ce2c0f18d22a177e1f1c6092bca609ab5e4cb1792c41cdc8a6989bc391139
+  languageName: node
+  linkType: hard
+
+"@nomiclabs/hardhat-ethers@npm:^2.0.1":
+  version: 2.0.4
+  resolution: "@nomiclabs/hardhat-ethers@npm:2.0.4::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40nomiclabs%2Fhardhat-ethers%2F-%2Fhardhat-ethers-2.0.4.tgz"
+  peerDependencies:
+    ethers: ^5.0.0
+    hardhat: ^2.0.0
+  checksum: 46b01edde014f5484c38ab199531e6a742d93a1a5fd60576fed97231a1ce325607c7ead6b6be8fd7b64aff55daa0a388c691b45a69cb63ae28db4087f281f573
   languageName: node
   linkType: hard
 

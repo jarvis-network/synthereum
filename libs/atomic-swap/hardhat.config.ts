@@ -10,6 +10,7 @@ import '@nomiclabs/hardhat-truffle5';
 import 'solidity-coverage';
 import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
+import '@nomiclabs/hardhat-ethers';
 
 require('dotenv').config();
 
