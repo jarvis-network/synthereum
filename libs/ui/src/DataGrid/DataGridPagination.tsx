@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button } from '../Button';
-import { Select } from '../JSelect';
+import { Select } from '../Select';
 import { styled } from '../Theme';
 
 const PaginationWrapper = styled.div`
