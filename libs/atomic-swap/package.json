@@ -23,8 +23,10 @@
   "devDependencies": {
     "@jarvis-network/synthereum-contracts": "*",
     "@nomiclabs/hardhat-etherscan": "^2.1.4",
+    "@nomiclabs/hardhat-ethers": "^2.0.1",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
-    "hardhat-gas-reporter": "^1.0.4"
+    "hardhat-gas-reporter": "^1.0.4",
+    "eth-sig-util": "^3.0.1"
   }
 }
