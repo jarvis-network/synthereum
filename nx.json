@@ -61,7 +61,7 @@
     },
     "contracts": {
       "tags": [],
-      "implicitDependencies": []
+      "implicitDependencies": ["crypto-utils"]
     },
     "synthereum-ts": {
       "tags": [],
