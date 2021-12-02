@@ -17,7 +17,9 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumManager = artifacts.require('SynthereumManager');
 const MockAggregator = artifacts.require('MockAggregator');
 const PoolRegistryMock = artifacts.require('PoolRegistryMock');
-const MinimalForwarder = artifacts.require('MinimalForwarder');
+const SynthereumTrustedForwarder = artifacts.require(
+  'SynthereumTrustedForwarder',
+);
 
 contract('LiquidityPool', function (accounts) {
   let collateralInstance;
@@ -1283,7 +1285,7 @@ contract('LiquidityPool', function (accounts) {
         priceFeedInstance.address,
         { from: maintainer },
       );
-      const forwarderInstance = await MinimalForwarder.deployed();
+      const forwarderInstance = await SynthereumTrustedForwarder.deployed();
       const forwarderInterface = await web3.utils.stringToHex(
         'TrustedForwarder',
       );

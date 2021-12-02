@@ -43,7 +43,9 @@ const SynthereumChainlinkPriceFeed = artifacts.require(
 const SynthereumSyntheticTokenPermitFactory = artifacts.require(
   'SynthereumSyntheticTokenPermitFactory',
 );
-const MinimalForwarder = artifacts.require('MinimalForwarder');
+const SynthereumTrustedForwarder = artifacts.require(
+  'SynthereumTrustedForwarder',
+);
 
 contract('Deployer', function (accounts) {
   let collateralAddress;
@@ -111,7 +113,7 @@ contract('Deployer', function (accounts) {
     );
     factoryVersioningInstance = await SynthereumFactoryVersioning.deployed();
     tokenFactory = await SynthereumSyntheticTokenPermitFactory.deployed();
-    forwarderInstance = await MinimalForwarder.deployed();
+    forwarderInstance = await SynthereumTrustedForwarder.deployed();
   });
   beforeEach(async () => {
     deployerInstance = await SynthereumDeployer.deployed();

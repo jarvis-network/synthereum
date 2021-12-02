@@ -1,6 +1,6 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
-  'MinimalForwarder',
+  'SynthereumTrustedForwarder',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -8,7 +8,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { SynthereumFinder, MinimalForwarder } = migrate.getContracts(
+  const { SynthereumFinder, SynthereumTrustedForwarder } = migrate.getContracts(
     artifacts,
   );
   const {
@@ -26,22 +26,22 @@ async function migrate(deployer, network, accounts) {
   );
   const maintainer = rolesConfig[networkId]?.maintainer ?? accounts[1];
   const keys = getKeysForNetwork(network, accounts);
-  await deploy(web3, deployer, network, MinimalForwarder, {
+  await deploy(web3, deployer, network, SynthereumTrustedForwarder, {
     from: keys.deployer,
   });
   const trustForwarderInterface = await web3.utils.stringToHex(
     'TrustedForwarder',
   );
-  const synthereumMinimalForwarder = await getExistingInstance(
+  const synthereumTrustedForwarder = await getExistingInstance(
     web3,
-    MinimalForwarder,
+    SynthereumTrustedForwarder,
     '@jarvis-network/synthereum-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(
       trustForwarderInterface,
-      synthereumMinimalForwarder.options.address,
+      synthereumTrustedForwarder.options.address,
     )
     .send({ from: maintainer });
-  console.log('Minimal forwarder added to SynthereumFinder');
+  console.log('TrustedForwarder added to SynthereumFinder');
 }
