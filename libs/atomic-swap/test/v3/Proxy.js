@@ -34,7 +34,7 @@ contract('AtomicSwap Proxy', accounts => {
   let implementationAddr1 = accounts[4];
   let implementationAddr2 = accounts[5];
 
-  describe.only('Add/Remove Implementation', () => {
+  describe('Add/Remove Implementation', () => {
     before(async () => {
       let forwarder = await Forwarder.deployed();
       proxyInstance = await Proxy.new(

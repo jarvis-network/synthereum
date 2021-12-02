@@ -32,7 +32,6 @@ contract('UniswapV2', async accounts => {
 
   let AtomicSwapInstance, ProxyInstance, forwarderInstance;
 
-  let feePercentage = 2000000000000000;
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1');
 
@@ -1234,7 +1233,6 @@ contract('UniswapV2', async accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 0,
-
         expiration: deadline,
         recipient: user,
       };

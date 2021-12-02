@@ -501,7 +501,7 @@ contract('KyberDMM', async accounts => {
       );
     });
 
-    it.only('Succesfully redeem to ETH via meta tx', async () => {
+    it('Succesfully redeem to ETH via meta tx', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
       let EthBalanceBefore = await web3.eth.getBalance(metaUserAddr);
 
@@ -1221,7 +1221,7 @@ contract('KyberDMM', async accounts => {
 
   describe('From/To ETH', () => {
     it('mint jSynth from ETH - exact input - multihop', async () => {
-      const tokenAmountIn = web3Utils.toWei('1', 'ether');
+      const tokenAmountIn = web3Utils.toWei('1', 'gwei');
       const tokenPathSwap = [WETHAddress, USDCAddress];
       const poolsPath = [kyberPools.WETHUSDC];
 

@@ -1223,7 +1223,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       const mintParams = {
-        minNumTokens: 0,
+        minNumTokens: 100,
         collateralAmount: 0,
         expiration: deadline,
         recipient: user,
@@ -1277,12 +1277,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let EthBalanceAfter = await web3.eth.getBalance(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-      const expectedEthBalance = web3Utils
-        .toBN(EthBalanceBefore)
-        .sub(txFee)
-        .sub(web3Utils.toBN(ethInput));
       assert.equal(
-        web3Utils.toBN(EthBalanceAfter).eq(expectedEthBalance),
+        web3Utils.toBN(EthBalanceBefore).sub(txFee).gt(EthBalanceAfter),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
@@ -1294,7 +1290,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     });
     it('burn jSynth and swaps for ETH - exact input - single-hop', async () => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
-      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(5));
       const fees = [3000];
 
       const tokenPathSwap = [USDCAddress, WETHAddress];
@@ -1355,10 +1351,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-      assert.equal(
-        EthBalanceAfter.eq(EthBalanceBefore.add(EthOutput).sub(ethFee)),
-        true,
-      );
+      assert.equal(EthBalanceAfter.gt(EthBalanceBefore.sub(ethFee)), true);
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
 
       // check allowance is set to 0 after the tx
@@ -1395,7 +1388,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         from: user,
       });
 
-      const expectedOutput = web3Utils.toBN(web3Utils.toWei('1', 'gwei'));
+      const expectedOutput = web3Utils.toBN('1', 'gwei');
       const redeemParams = {
         numTokens: jEURInput.toString(),
         minCollateral: 0,
@@ -1413,7 +1406,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       };
 
       // tx through proxy
-      let EthBalanceBefore = web3Utils.toBN(await web3.eth.getBalance(user));
+      let EthBalanceBefore = await web3.eth.getBalance(user);
       const tx = await ProxyInstance.redeemAndSwap(
         implementationID,
         inputParams,
@@ -1439,14 +1432,16 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         );
       });
 
-      let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
+      let EthBalanceAfter = await web3.eth.getBalance(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
       let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
 
-      assert.equal(
-        EthBalanceAfter.eq(EthBalanceBefore.add(expectedOutput).sub(ethFee)),
-        true,
-      );
+      const expectedEthBalance = web3Utils
+        .toBN(EthBalanceBefore)
+        .sub(ethFee)
+        .add(expectedOutput);
+
+      assert.equal(EthBalanceAfter.toString(), expectedEthBalance.toString());
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
       assert.equal(
         USDCBalanceAfter.eq(USDCBalanceBefore.add(collateralRefunded)),
