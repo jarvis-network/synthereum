@@ -344,7 +344,7 @@ contract('UniswapV2', async accounts => {
             expiration: redeemParams.expiration,
             recipient: redeemParams.recipient,
           },
-          user,
+          metaUserAddr,
         ],
       );
 
@@ -472,7 +472,7 @@ contract('UniswapV2', async accounts => {
       //send metatx
       let tx = await forwarderInstance.execute(request, signature, {
         value: tokenAmountIn,
-        from: user,
+        from: metaUserAddr,
       });
       let txFee = await getTxFee(tx);
 

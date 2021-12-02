@@ -468,7 +468,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       //send metatx
       let tx = await forwarderInstance.execute(request, signature, {
         value: tokenAmountIn,
-        from: user,
+        from: metaUserAddr,
       });
       let txFee = await getTxFee(tx);
 
