@@ -7,27 +7,30 @@ import {
   ISynthereumLiquidityPool
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
 import {
+  SynthereumInterfaces
+} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
+import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {
+  ERC2771Context
+} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
 import {
   IOnChainLiquidityRouterV2
 } from './interfaces/IOnChainLiquidityRouter.sol';
 import {
-  AccessControlEnumerable
+  AccessControlEnumerable,
+  Context
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {
-  ERC2771Context,
-  Context
-} from '@openzeppelin/contracts/metatx/ERC2771Context.sol';
 
 contract OnChainLiquidityRouterV2 is
-  ERC2771Context,
   IOnChainLiquidityRouterV2,
   AccessControlEnumerable,
+  ERC2771Context,
   ReentrancyGuard
 {
   using Address for address;
@@ -67,11 +70,7 @@ contract OnChainLiquidityRouterV2 is
     _;
   }
 
-  constructor(
-    Roles memory _roles,
-    address _synthereumFinderAddress,
-    address forwarder
-  ) ERC2771Context(forwarder) {
+  constructor(Roles memory _roles, address _synthereumFinderAddress) {
     synthereumFinder = ISynthereumFinder(_synthereumFinderAddress);
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
@@ -226,23 +225,50 @@ contract OnChainLiquidityRouterV2 is
     );
   }
 
+  /**
+   * @notice Check if an address is the trusted forwarder
+   * @param  forwarder Address to check
+   * @return True is the input address is the trusted forwarder, otherwise false
+   */
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override(ERC2771Context)
+    returns (bool)
+  {
+    return
+      forwarder ==
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.TrustedForwarder
+      );
+  }
+
   function _msgSender()
     internal
     view
-    virtual
     override(ERC2771Context, Context)
     returns (address sender)
   {
-    return super._msgSender();
+    if (isTrustedForwarder(msg.sender)) {
+      // The assembly code is more direct than the Solidity version using `abi.decode`.
+      assembly {
+        sender := shr(96, calldataload(sub(calldatasize(), 20)))
+      }
+    } else {
+      return ERC2771Context._msgSender();
+    }
   }
 
   function _msgData()
     internal
     view
-    virtual
     override(ERC2771Context, Context)
     returns (bytes calldata)
   {
-    return super._msgData();
+    if (isTrustedForwarder(msg.sender)) {
+      return msg.data[0:msg.data.length - 20];
+    } else {
+      return ERC2771Context._msgData();
+    }
   }
 }

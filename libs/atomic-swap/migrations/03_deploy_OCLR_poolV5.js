@@ -44,7 +44,6 @@ module.exports = async function (deployer, network, accounts) {
     OnChainLiquidityRouter,
     FixedRateRoles,
     synthereumFinderAddress,
-    forwarderInstance.options.address,
     {
       from: admin,
     },
