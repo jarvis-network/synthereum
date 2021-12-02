@@ -7,6 +7,7 @@ const Web3Utils = require('web3-utils');
 const truffleAssert = require('truffle-assertions');
 
 const Proxy = artifacts.require('OnChainLiquidityRouterV2');
+const Forwarder = artifacts.require('MinimalForwarder');
 
 contract('AtomicSwap Proxy', accounts => {
   let admin = accounts[0];
@@ -33,9 +34,14 @@ contract('AtomicSwap Proxy', accounts => {
   let implementationAddr1 = accounts[4];
   let implementationAddr2 = accounts[5];
 
-  describe('Add/Remove Implementation', () => {
+  describe.only('Add/Remove Implementation', () => {
     before(async () => {
-      proxyInstance = await Proxy.new(FixedRateRoles, synthereumFinder);
+      let forwarder = await Forwarder.deployed();
+      proxyInstance = await Proxy.new(
+        FixedRateRoles,
+        synthereumFinder,
+        forwarder.address,
+      );
     });
 
     it('Register a new implementation', async () => {
@@ -145,16 +151,15 @@ contract('AtomicSwap Proxy', accounts => {
       const mintParams = {
         minNumTokens: 0,
         collateralAmount: 1,
-        feePercentage: 1,
         expiration: 1,
         recipient: accounts[2],
       };
       const inputParams = {
         isExactInput: true,
-        unwrapToETH: false,
         exactAmount: 1,
         minOutOrMaxIn: 0,
         extraParams: '0x00',
+        msgSender: accounts[3],
       };
       await truffleAssert.reverts(
         proxyInstance.swapAndMint(
@@ -171,16 +176,15 @@ contract('AtomicSwap Proxy', accounts => {
       const redeemParams = {
         numTokens: 1,
         minCollateral: 0,
-        feePercentage: 0,
         expiration: 1,
         recipient: accounts[2],
       };
       const inputParams = {
         isExactInput: true,
-        unwrapToETH: false,
         exactAmount: 1,
         minOutOrMaxIn: 0,
         extraParams: '0x00',
+        msgSender: accounts[3],
       };
       await truffleAssert.reverts(
         proxyInstance.redeemAndSwap(
