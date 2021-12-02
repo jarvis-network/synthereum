@@ -484,14 +484,15 @@ contract SynthereumLiquidityPool is
     nonReentrant
     returns (uint256 synthTokensSettled, uint256 collateralSettled)
   {
-    bool isLiquidityProvider = hasRole(LIQUIDITY_PROVIDER_ROLE, msg.sender);
+    address msgSender = _msgSender();
+    bool isLiquidityProvider = hasRole(LIQUIDITY_PROVIDER_ROLE, msgSender);
     (synthTokensSettled, collateralSettled) = poolStorage
       .settleEmergencyShutdown(
       lpPosition,
       feeStatus,
       emergencyShutdownData,
       isLiquidityProvider,
-      _msgSender()
+      msgSender
     );
   }
 
