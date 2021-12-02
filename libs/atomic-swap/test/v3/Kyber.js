@@ -17,20 +17,27 @@ const PoolMock = artifacts.require('PoolMock');
 const MockContractUser = artifacts.require('MockContractUserV2');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
+const Forwarder = artifacts.require('MinimalForwarder');
 
 const tokens = require('../../data/test/tokens.json');
 const kyber = require('../../data/test/kyber.json');
 const synthereum = require('../../data/test/synthereum.json');
+const { signMetaTxRequest } = require('../signer');
 
 contract('KyberDMM', async accounts => {
   let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, kyberInstance;
   let WBTCAddress, USDCAddress, USDTAddress, jEURAddress, WETHAddress;
   let networkId, KyberInfo, kyberPools, encodedInfo;
 
-  let AtomicSwapInstance, ProxyInstance;
+  let AtomicSwapInstance, ProxyInstance, forwarderInstance;
 
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1', 'ether');
+
+  const swapMintSig =
+    'swapAndMint(string,(bool,uint256,uint256,bytes,address),address,(uint256,uint256,uint256,address))';
+  const redeemSwapSig =
+    'redeemAndSwap(string,(bool,bool,uint256,uint256,bytes,address),address,(uint256,uint256,uint256,address),address)';
 
   const implementationID = 'kyberDMM';
   const initializeTokenInstanace = async tokenAddress =>
@@ -124,11 +131,493 @@ contract('KyberDMM', async accounts => {
     let balance = await USDCInstance.balanceOf.call(user);
     await USDCInstance.transfer(pool, balance.toString(), { from: user });
 
+    // get deployed Forwarder
+    forwarderInstance = await Forwarder.deployed();
+
     // get deployed Proxy
     ProxyInstance = await Proxy.deployed();
 
     // get deployed kyber atomic swap
     AtomicSwapInstance = await KyberAtomicSwap.deployed();
+  });
+
+  describe('Meta-Tx', async () => {
+    let signers, metaUserAddr, userSigner;
+    before(async () => {
+      signers = await ethers.getSigners();
+      userSigner = signers[1].provider;
+      metaUserAddr = signers[1].address;
+    });
+
+    it('Succesfully mint from ERC20 via meta tx', async () => {
+      const tokenAmountIn = web3Utils.toWei('10', 'wei');
+      const tokenPathSwap = [WBTCAddress, WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHWBTC, kyberPools.WETHUSDC];
+
+      await getWBTC(amountETH);
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: 0,
+        expiration: deadline,
+        recipient: metaUserAddr,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: metaUserAddr,
+      };
+
+      let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(metaUserAddr);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      // approve proxy to pull tokens
+      await WBTCInstance.approve(ProxyInstance.address, tokenAmountIn, {
+        from: metaUserAddr,
+      });
+
+      const functionSig = web3.utils.sha3(swapMintSig).substr(0, 10);
+      const functionParam = web3.eth.abi.encodeParameters(
+        [
+          'string',
+          {
+            SwapMintParams: {
+              isExactInput: 'bool',
+              exactAmount: 'uint256',
+              minOutOrMaxIn: 'uint256',
+              extraParams: 'bytes',
+              msgSender: 'address',
+            },
+          },
+          'address',
+          {
+            'ISynthereumLiquidityPool.MintParams': {
+              minNumTokens: 'uint256',
+              collateralAmount: 'uint256',
+              expiration: 'uint256',
+              recipient: 'address',
+            },
+          },
+        ],
+        [
+          implementationID,
+          {
+            isExactInput: inputParams.isExactInput,
+            exactAmount: inputParams.exactAmount,
+            minOutOrMaxIn: inputParams.minOutOrMaxIn,
+            extraParams: inputParams.extraParams,
+            msgSender: inputParams.msgSender,
+          },
+          pool,
+          {
+            minNumTokens: mintParams.minNumTokens,
+            collateralAmount: mintParams.collateralAmount,
+            expiration: mintParams.expiration,
+            recipient: mintParams.recipient,
+          },
+        ],
+      );
+      let encodedCall = functionSig + functionParam.substr(2);
+
+      const { request, signature } = await signMetaTxRequest(
+        userSigner,
+        forwarderInstance,
+        {
+          from: metaUserAddr,
+          to: ProxyInstance.address,
+          data: encodedCall,
+          value: 0,
+        },
+        networkId,
+      );
+
+      //send metatx
+      await forwarderInstance.execute(request, signature);
+
+      let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      assert.equal(
+        WBTCbalanceAfter.eq(
+          WBTCbalanceBefore.sub(web3Utils.toBN(tokenAmountIn)),
+        ),
+        true,
+      );
+      assert.equal(jEURBalanceAfter.gt(jEURBalanceBefore), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await WBTCInstance.allowance(
+            ProxyInstance.address,
+            KyberInfo.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
+
+    it('Succesfully redeem to ERC20 via meta tx', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+      let WBTCBalanceBefore = await WBTCInstance.balanceOf.call(metaUserAddr);
+
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+
+      const tokenPathSwap = [USDCAddress, WETHAddress, WBTCAddress];
+      const poolsPath = [kyberPools.WETHUSDC, kyberPools.WETHWBTC];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+
+      await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
+        from: metaUserAddr,
+      });
+
+      const redeemParams = {
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        expiration: deadline,
+        recipient: metaUserAddr,
+      };
+
+      const inputParams = {
+        msgSender: metaUserAddr,
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      const functionSig = web3.eth.abi.encodeFunctionSignature(redeemSwapSig);
+      const functionParam = web3.eth.abi.encodeParameters(
+        [
+          'string',
+          {
+            RedeemSwapParams: {
+              isExactInput: 'bool',
+              unwrapToETH: 'bool',
+              exactAmount: 'uint256',
+              minOutOrMaxIn: 'uint256',
+              extraParams: 'bytes',
+              msgSender: 'address',
+            },
+          },
+          'address',
+          {
+            'ISynthereumLiquidityPool.RedeemParams': {
+              numTokens: 'uint256',
+              minCollateral: 'uint256',
+              expiration: 'uint256',
+              recipient: 'address',
+            },
+          },
+          'address',
+        ],
+        [
+          implementationID,
+          {
+            isExactInput: inputParams.isExactInput,
+            unwrapToETH: inputParams.unwrapToETH,
+            exactAmount: inputParams.exactAmount,
+            minOutOrMaxIn: inputParams.minOutOrMaxIn,
+            extraParams: inputParams.extraParams,
+            msgSender: inputParams.msgSender,
+          },
+          pool,
+          {
+            numTokens: redeemParams.numTokens,
+            minCollateral: redeemParams.minCollateral,
+            expiration: redeemParams.expiration,
+            recipient: redeemParams.recipient,
+          },
+          metaUserAddr,
+        ],
+      );
+
+      let encodedCall = functionSig + functionParam.substr(2);
+      const { request, signature } = await signMetaTxRequest(
+        userSigner,
+        forwarderInstance,
+        {
+          from: metaUserAddr,
+          to: ProxyInstance.address,
+          data: encodedCall,
+        },
+        networkId,
+      );
+
+      //send metatx
+      await forwarderInstance.execute(request, signature);
+
+      let WBTCBalanceAfter = await WBTCInstance.balanceOf.call(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      assert.equal(WBTCBalanceAfter.gt(WBTCBalanceBefore), true);
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            KyberInfo.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
+
+    it('Succesfully mint from ETH via meta tx', async () => {
+      const tokenAmountIn = web3Utils.toWei('1', 'ether');
+      const tokenPathSwap = [WETHAddress, USDCAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+
+      const mintParams = {
+        minNumTokens: 0,
+        collateralAmount: 0,
+        expiration: deadline,
+        recipient: metaUserAddr,
+      };
+
+      const inputParams = {
+        msgSender: metaUserAddr,
+        isExactInput: true,
+        exactAmount: tokenAmountIn,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      // approve proxy to pull tokens
+      await WETHInstance.approve(ProxyInstance.address, tokenAmountIn, {
+        from: metaUserAddr,
+      });
+
+      let EthBalanceBefore = await web3.eth.getBalance(metaUserAddr);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      const functionSig = web3.utils.sha3(swapMintSig).substr(0, 10);
+      const functionParam = web3.eth.abi.encodeParameters(
+        [
+          'string',
+          {
+            SwapMintParams: {
+              isExactInput: 'bool',
+              exactAmount: 'uint256',
+              minOutOrMaxIn: 'uint256',
+              extraParams: 'bytes',
+              msgSender: 'address',
+            },
+          },
+          'address',
+          {
+            'ISynthereumLiquidityPool.MintParams': {
+              minNumTokens: 'uint256',
+              collateralAmount: 'uint256',
+              expiration: 'uint256',
+              recipient: 'address',
+            },
+          },
+        ],
+        [
+          implementationID,
+          {
+            isExactInput: inputParams.isExactInput,
+            exactAmount: inputParams.exactAmount,
+            minOutOrMaxIn: inputParams.minOutOrMaxIn,
+            extraParams: inputParams.extraParams,
+            msgSender: inputParams.msgSender,
+          },
+          pool,
+          {
+            minNumTokens: mintParams.minNumTokens,
+            collateralAmount: mintParams.collateralAmount,
+            expiration: mintParams.expiration,
+            recipient: mintParams.recipient,
+          },
+        ],
+      );
+
+      let encodedCall = functionSig + functionParam.substr(2);
+
+      const { request, signature } = await signMetaTxRequest(
+        userSigner,
+        forwarderInstance,
+        {
+          from: metaUserAddr,
+          to: ProxyInstance.address,
+          value: tokenAmountIn,
+          data: encodedCall,
+        },
+        networkId,
+      );
+
+      //send metatx
+      let tx = await forwarderInstance.execute(request, signature, {
+        value: tokenAmountIn,
+        from: metaUserAddr,
+      });
+      let txFee = await getTxFee(tx);
+
+      let EthBalanceAfter = await web3.eth.getBalance(metaUserAddr);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
+
+      const expectedEthBalance = web3Utils
+        .toBN(EthBalanceBefore)
+        .sub(txFee)
+        .sub(web3Utils.toBN(tokenAmountIn));
+      assert.equal(expectedEthBalance.toString(), EthBalanceAfter.toString());
+      assert.equal(jEURBalanceAfter.gt(jEURBalanceBefore), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (await USDCInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
+
+    it.only('Succesfully redeem to ETH via meta tx', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
+      let EthBalanceBefore = await web3.eth.getBalance(metaUserAddr);
+
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(2));
+
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+      const poolsPath = [kyberPools.WETHUSDC];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]', 'address[]'],
+        [poolsPath, tokenPathSwap],
+      );
+
+      await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
+        from: metaUserAddr,
+      });
+
+      const redeemParams = {
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        expiration: deadline,
+        recipient: metaUserAddr,
+      };
+
+      const inputParams = {
+        msgSender: metaUserAddr,
+        isExactInput: true,
+        unwrapToETH: true,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+      };
+
+      const functionSig = web3.eth.abi.encodeFunctionSignature(redeemSwapSig);
+      const functionParam = web3.eth.abi.encodeParameters(
+        [
+          'string',
+          {
+            RedeemSwapParams: {
+              isExactInput: 'bool',
+              unwrapToETH: 'bool',
+              exactAmount: 'uint256',
+              minOutOrMaxIn: 'uint256',
+              extraParams: 'bytes',
+              msgSender: 'address',
+            },
+          },
+          'address',
+          {
+            'ISynthereumLiquidityPool.RedeemParams': {
+              numTokens: 'uint256',
+              minCollateral: 'uint256',
+              expiration: 'uint256',
+              recipient: 'address',
+            },
+          },
+          'address',
+        ],
+        [
+          implementationID,
+          {
+            isExactInput: inputParams.isExactInput,
+            unwrapToETH: inputParams.unwrapToETH,
+            exactAmount: inputParams.exactAmount,
+            minOutOrMaxIn: inputParams.minOutOrMaxIn,
+            extraParams: inputParams.extraParams,
+            msgSender: inputParams.msgSender,
+          },
+          pool,
+          {
+            numTokens: redeemParams.numTokens,
+            minCollateral: redeemParams.minCollateral,
+            expiration: redeemParams.expiration,
+            recipient: redeemParams.recipient,
+          },
+          metaUserAddr,
+        ],
+      );
+
+      let encodedCall = functionSig + functionParam.substr(2);
+      const { request, signature } = await signMetaTxRequest(
+        userSigner,
+        forwarderInstance,
+        {
+          from: metaUserAddr,
+          to: ProxyInstance.address,
+          data: encodedCall,
+        },
+        networkId,
+      );
+
+      //send metatx
+      await forwarderInstance.execute(request, signature);
+
+      let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      assert.equal(EthBalanceAfter.gt(EthBalanceBefore), true);
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            KyberInfo.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
+      );
+    });
   });
 
   describe('From/to ERC20', () => {
