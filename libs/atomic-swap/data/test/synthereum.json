@@ -8,6 +8,7 @@
     "derivative": "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c"
   },
   "3": {
-    "poolV5": "0xdE7b48c76C646d9d8c89BE8FC52CC1d6ED43085a"
+    "poolV5": "0xdE7b48c76C646d9d8c89BE8FC52CC1d6ED43085a",
+    "forwarder": "0x5629881d04115Bc59D07F2F7CFB4CdF5660c7f35"
   }
 }

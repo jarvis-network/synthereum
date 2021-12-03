@@ -132,7 +132,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     ProxyInstance = await Proxy.deployed();
 
     // get deployed Forwarder
-    forwarderInstance = await Forwarder.deployed();
+    forwarderInstance = await Forwarder.at(synthereum[networkId].forwarder);
 
     // get deployed univ3 atomic swap
     AtomicSwapInstance = await UniV3AtomicSwap.deployed();

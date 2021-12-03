@@ -132,7 +132,7 @@ contract('KyberDMM', async accounts => {
     await USDCInstance.transfer(pool, balance.toString(), { from: user });
 
     // get deployed Forwarder
-    forwarderInstance = await Forwarder.deployed();
+    forwarderInstance = await Forwarder.at(synthereum[networkId].forwarder);
 
     // get deployed Proxy
     ProxyInstance = await Proxy.deployed();
