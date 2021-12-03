@@ -509,15 +509,12 @@ library CreditLineLib {
           positionManagerData.emergencyShutdownPrice
         );
 
-      require(
-        tokenDebtValueInCollateral.isLessThan(positionData.rawCollateral),
-        'You dont have free collateral to withdraw'
-      );
-
-      // Add the number of redeemable tokens for the sponsor to their total redeemable collateral.
-      totalRedeemableCollateral = totalRedeemableCollateral.add(
-        positionData.rawCollateral.sub(tokenDebtValueInCollateral)
-      );
+      // accrued to withdrawable collateral eventual excess collateral after debt
+      if (tokenDebtValueInCollateral.isLessThan(positionData.rawCollateral)) {
+        totalRedeemableCollateral = totalRedeemableCollateral.add(
+          positionData.rawCollateral.sub(tokenDebtValueInCollateral)
+        );
+      }
 
       CreditLine(address(this)).deleteSponsorPosition(msgSender);
       emit EndedSponsorPosition(msgSender);
