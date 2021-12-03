@@ -427,13 +427,16 @@ contract CreditLine is
     delete positions[sponsor];
   }
 
-  function getPositionCollateral(address sponsor)
+  function getPositionData(address sponsor)
     external
     view
     override
-    returns (FixedPoint.Unsigned memory collateralAmount)
+    returns (uint256 collateralAmount, uint256 tokensAmount)
   {
-    return positions[sponsor].rawCollateral;
+    return (
+      positions[sponsor].rawCollateral.rawAmount,
+      positions[sponsor].tokensOutstanding.rawAmount
+    );
   }
 
   function synthereumFinder()
@@ -508,7 +511,7 @@ contract CreditLine is
   {
     return
       forwarder ==
-      synthereumFinder.getImplementationAddress(
+      positionManagerData.synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.TrustedForwarder
       );
   }
@@ -528,29 +531,18 @@ contract CreditLine is
   function _msgSender()
     internal
     view
-    override(ERC2771Context, Context)
+    override(ERC2771Context)
     returns (address sender)
   {
-    if (isTrustedForwarder(msg.sender)) {
-      // The assembly code is more direct than the Solidity version using `abi.decode`.
-      assembly {
-        sender := shr(96, calldataload(sub(calldatasize(), 20)))
-      }
-    } else {
-      return ERC2771Context._msgSender();
-    }
+    return ERC2771Context._msgSender();
   }
 
   function _msgData()
     internal
     view
-    override(ERC2771Context, Context)
+    override(ERC2771Context)
     returns (bytes calldata)
   {
-    if (isTrustedForwarder(msg.sender)) {
-      return msg.data[0:msg.data.length - 20];
-    } else {
-      return ERC2771Context._msgData();
-    }
+    return ERC2771Context._msgData();
   }
 }
