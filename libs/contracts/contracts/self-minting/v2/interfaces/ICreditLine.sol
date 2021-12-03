@@ -153,15 +153,14 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   function deleteSponsorPosition(address sponsor) external;
 
   /**
-   * @notice Accessor method for a sponsor's collateral.
-   * @dev This is necessary because the struct returned by positions() method shows
-   * rawCollateral, which isn't a user-readable value.
-   * @param sponsor address whose collateral amount is retrieved.
+   * @notice Accessor method for a sponsor's position.
+   * @param sponsor address whose position data is retrieved.
    * @return collateralAmount amount of collateral of the sponsor's position.
+   * @return tokensAmount amount of outstanding tokens of the sponsor's position.
    */
-  function getPositionCollateral(address sponsor)
+  function getPositionData(address sponsor)
     external
-    returns (FixedPoint.Unsigned memory collateralAmount);
+    returns (uint256 collateralAmount, uint256 tokensAmount);
 
   /**
    * @notice Get synthetic token price identifier as represented by the oracle interface
