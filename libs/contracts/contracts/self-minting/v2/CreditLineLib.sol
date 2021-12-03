@@ -491,28 +491,30 @@ library CreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     address msgSender
   ) external returns (FixedPoint.Unsigned memory amountWithdrawn) {
+    // copy value
+    FixedPoint.Unsigned memory emergencyShutdownPrice =
+      positionManagerData.emergencyShutdownPrice;
+    IMintableBurnableERC20 tokenCurrency = positionManagerData.tokenCurrency;
+    FixedPoint.Unsigned memory rawCollateral = positionData.rawCollateral;
+
     // Get caller's tokens balance
     FixedPoint.Unsigned memory tokensToRedeem =
-      FixedPoint.Unsigned(
-        positionManagerData.tokenCurrency.balanceOf(msgSender)
-      );
+      FixedPoint.Unsigned(tokenCurrency.balanceOf(msgSender));
 
     // calculate amount of underlying collateral entitled to them, with oracle emergency price
     FixedPoint.Unsigned memory totalRedeemableCollateral =
-      tokensToRedeem.mul(positionManagerData.emergencyShutdownPrice);
+      tokensToRedeem.mul(emergencyShutdownPrice);
 
     // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
-    if (positionData.rawCollateral.isGreaterThan(0)) {
+    if (rawCollateral.isGreaterThan(0)) {
       // Calculate the underlying entitled to a token sponsor. This is collateral - debt
       FixedPoint.Unsigned memory tokenDebtValueInCollateral =
-        positionData.tokensOutstanding.mul(
-          positionManagerData.emergencyShutdownPrice
-        );
+        positionData.tokensOutstanding.mul(emergencyShutdownPrice);
 
       // accrued to withdrawable collateral eventual excess collateral after debt
-      if (tokenDebtValueInCollateral.isLessThan(positionData.rawCollateral)) {
+      if (tokenDebtValueInCollateral.isLessThan(rawCollateral)) {
         totalRedeemableCollateral = totalRedeemableCollateral.add(
-          positionData.rawCollateral.sub(tokenDebtValueInCollateral)
+          rawCollateral.sub(tokenDebtValueInCollateral)
         );
       }
 
@@ -546,12 +548,12 @@ library CreditLineLib {
       msgSender,
       amountWithdrawn.rawValue
     );
-    positionManagerData.tokenCurrency.safeTransferFrom(
+    tokenCurrency.safeTransferFrom(
       msgSender,
       address(this),
       tokensToRedeem.rawValue
     );
-    positionManagerData.tokenCurrency.burn(tokensToRedeem.rawValue);
+    tokenCurrency.burn(tokensToRedeem.rawValue);
   }
 
   /**
@@ -635,15 +637,12 @@ library CreditLineLib {
     FixedPoint.Unsigned memory balance =
       FixedPoint.Unsigned(token.balanceOf(address(this)));
     if (address(token) == address(positionManagerData.collateralToken)) {
+      FixedPoint.Unsigned memory rawTotalPositionCollateral =
+        globalPositionData.rawTotalPositionCollateral;
+      FixedPoint.Unsigned memory totalFeeAmount = feeStatus.totalFeeAmount;
       // If it is the collateral currency, send only the amount that the contract is not tracking (ie minus fees and positions)
-      balance.isGreaterThan(
-        globalPositionData.rawTotalPositionCollateral.sub(
-          feeStatus.totalFeeAmount
-        )
-      )
-        ? amount = balance
-          .sub(globalPositionData.rawTotalPositionCollateral)
-          .sub(feeStatus.totalFeeAmount)
+      balance.isGreaterThan(rawTotalPositionCollateral.sub(totalFeeAmount))
+        ? amount = balance.sub(rawTotalPositionCollateral).sub(totalFeeAmount)
         : amount = FixedPoint.Unsigned(0);
     } else {
       // If it's not the collateral currency, send the entire balance.
@@ -665,9 +664,6 @@ library CreditLineLib {
     ICreditLineStorage.PositionManagerData storage self,
     ICreditLineStorage.PositionData storage positionData
   ) external view returns (bool, uint256) {
-    // get oracle price
-    FixedPoint.Unsigned memory oraclePrice = _getOraclePrice(self);
-
     bool _isOverCollateralised =
       _checkCollateralization(
         self,
