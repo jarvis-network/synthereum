@@ -1,18 +1,20 @@
-image: registry.gitlab.com/jarvis-network/base/container-images/docker-buildx:20.10
-services:
-  - name: docker:20.10-dind
-    entrypoint: ['env', '-u', 'DOCKER_HOST']
-    command: ['dockerd-entrypoint.sh']
+default:
+  image: registry.gitlab.com/jarvis-network/base/container-images/docker-buildx:20.10
+  services:
+    - name: docker:20.10-dind
+      entrypoint: ['env', '-u', 'DOCKER_HOST']
+      command: ['dockerd-entrypoint.sh']
+  before_script:
+    - docker context create buildx-ctx
+    - docker buildx create buildx-ctx --use
+    - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
+  interruptible: true
 variables:
   DOCKER_DRIVER: overlay2
   TAG: mr-${CI_MERGE_REQUEST_ID}
   REGISTRY: jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo
   REGISTRY_USERNAME: asim_jarvis
   REGISTRY_PASSWORD: ${GITLAB_TOKEN}
-before_script:
-  - docker context create buildx-ctx
-  - docker buildx create buildx-ctx --use
-  - echo $ACR_CORE_PASSWORD | docker login -u $ACR_CORE_USER --password-stdin $ACR_CORE_URL
 
 .yarn-hash: &yarn-hash |-
   export YARN_LOCK_SHA256="$(sha256sum yarn.lock | cut -f1 -d' ')"
@@ -24,8 +26,9 @@ stages:
 
 build `install` image:
   stage: prepare
-  only:
-    - merge_requests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   variables:
     TARGET: install
   script:
@@ -40,7 +43,8 @@ build `install` image:
 execute pipeline:
   stage: test and deploy
   rules:
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   trigger:
     strategy: depend
     include:

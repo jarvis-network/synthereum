@@ -5,25 +5,24 @@ set -eu
 YARN_LOCK_SHA256="${YARN_LOCK_SHA256:=$(sha256sum yarn.lock | cut -f1 -d' ')}"
 
 cat <<EOF
-workflow:
-  rules:
-    - if: \$CI_MERGE_REQUEST_ID
-
-image: '\${REGISTRY}/install:${YARN_LOCK_SHA256}'
+default:
+  image: '\${REGISTRY}/install:${YARN_LOCK_SHA256}'
+  interruptible: true
+  before_script:
+    - cd /src
+    - git init
+    - git remote add jn \$CI_PROJECT_URL
+    - git fetch jn \$CI_COMMIT_REF_NAME
+    - git switch --discard-changes \$CI_COMMIT_REF_NAME
 
 variables:
   GIT_STRATEGY: none
 
-before_script:
-  - cd /src
-  - git init
-  - git remote add jn \$CI_PROJECT_URL
-  - git fetch jn \$CI_COMMIT_REF_NAME
-  - git switch --discard-changes \$CI_COMMIT_REF_NAME
-
 🎨 lint:all:
   script:
     - yarn lint:all
+  rules:
+    - if: \$CI_MERGE_REQUEST_ID
 
 🧪:
   parallel:
@@ -31,18 +30,22 @@ before_script:
       - TARGET: [contracts, atomic-swap, yield-farming, legacy-currency-contracts, jrt-investors]
   script:
     - yarn test \$TARGET
+  rules:
+    - if: \$CI_MERGE_REQUEST_ID
 
 🧱 cli:build:
   script:
     - yarn build cli
+  rules:
+    - if: \$CI_MERGE_REQUEST_ID
 
 💄 deploy:chromatic:
   script:
     - yarn nx build-storybook ui
     - yarn nx deploy-chromatic ui
-  only:
-      refs:
-        - merge_requests
+  rules:
+    - if: \$CI_COMMIT_BRANCH == \$CI_DEFAULT_BRANCH
+    - if: \$CI_MERGE_REQUEST_ID
       changes:
         - libs/ui/*
 
@@ -60,4 +63,6 @@ before_script:
   script:
     - yarn build \$TARGET
     - yarn netlify deploy --dir "/src/apps/\$TARGET/out" --site "\$NETLIFY_SITE_ID" --auth "\$NETLIFY_AUTH_TOKEN" --debug
+  rules:
+    - if: \$CI_MERGE_REQUEST_ID
 EOF
