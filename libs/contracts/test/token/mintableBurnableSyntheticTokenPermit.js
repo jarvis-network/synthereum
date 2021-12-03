@@ -131,7 +131,7 @@ contract('MintableBurnableSyntheticTokenPermit', function (accounts) {
     // Other account cannot burn any tokens because they are not a minter
     assert(
       await didContractThrow(
-        token.mint(amountToMint, { from: contractDeployer }),
+        token.mint(random, amountToMint, { from: contractDeployer }),
       ),
     );
 
