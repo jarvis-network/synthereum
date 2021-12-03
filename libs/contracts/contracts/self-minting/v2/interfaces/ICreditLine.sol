@@ -163,6 +163,15 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
     returns (uint256 collateralAmount, uint256 tokensAmount);
 
   /**
+   * @notice Returns if sponsor position is overcollateralized and thepercentage of coverage of the collateral according to the last price
+   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
+   */
+  function collateralCoverage(address sponsor)
+    external
+    view
+    returns (bool, uint256);
+
+  /**
    * @notice Get synthetic token price identifier as represented by the oracle interface
    * @return identifier Synthetic token price identifier
    */

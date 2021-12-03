@@ -655,6 +655,34 @@ library CreditLineLib {
     );
   }
 
+  /**
+   * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
+   * @param self Data type the library is attached to
+   * @param positionData Position of the LP
+   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
+   */
+  function collateralCoverage(
+    ICreditLineStorage.PositionManagerData storage self,
+    ICreditLineStorage.PositionData storage positionData
+  ) external view returns (bool, uint256) {
+    // get oracle price
+    FixedPoint.Unsigned memory oraclePrice = _getOraclePrice(self);
+
+    bool _isOverCollateralised =
+      _checkCollateralization(
+        self,
+        positionData.rawCollateral,
+        positionData.tokensOutstanding
+      );
+
+    FixedPoint.Unsigned memory _collateralCoverage =
+      positionData.tokensOutstanding.div(
+        calculateCollateralAmount(self, positionData.tokensOutstanding)
+      );
+
+    return (_isOverCollateralised, _collateralCoverage.rawValue);
+  }
+
   //Calls to the CreditLine controller
   function capMintAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData
