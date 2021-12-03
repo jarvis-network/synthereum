@@ -179,8 +179,8 @@ contract CreditLineCreator {
     FixedPoint.Unsigned[] memory feePercentages = new FixedPoint.Unsigned[](1);
     feePercentages[0] = feeStruct.feePercentage;
 
-    FixedPoint.Unsigned[] memory liqPercentages = new FixedPoint.Unsigned[](1);
-    liqPercentages[0] = FixedPoint.Unsigned(liquidationRewardPercentage);
+    uint256[] memory liqPercentages = new uint256[](1);
+    liqPercentages[0] = liquidationRewardPercentage;
 
     address[][] memory feeRecipients = new address[][](1);
     feeRecipients[0] = feeStruct.feeRecipients;
