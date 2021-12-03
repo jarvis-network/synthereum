@@ -22,7 +22,7 @@ import {
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import {
   ERC2771Context
-} from '@openzeppelin/contracts/metatx/ERC2771Context.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
 
 /**
  * @title
@@ -139,10 +139,7 @@ contract CreditLine is
   // Constructor
   //----------------------------------------
 
-  constructor(
-    PositionManagerParams memory _positionManagerData,
-    address trustedForwarder
-  ) ERC2771Context(trustedForwarder) nonReentrant {
+  constructor(PositionManagerParams memory _positionManagerData) nonReentrant {
     positionManagerData.initialize(
       _positionManagerData.synthereumFinder,
       _positionManagerData.collateralToken,
@@ -498,6 +495,24 @@ contract CreditLine is
     price = positionManagerData.emergencyShutdownPrice.rawValue;
   }
 
+  /**
+   * @notice Check if an address is the trusted forwarder
+   * @param  forwarder Address to check
+   * @return True is the input address is the trusted forwarder, otherwise false
+   */
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override
+    returns (bool)
+  {
+    return
+      forwarder ==
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.TrustedForwarder
+      );
+  }
+
   //----------------------------------------
   // Internal functions
   //----------------------------------------
@@ -513,20 +528,29 @@ contract CreditLine is
   function _msgSender()
     internal
     view
-    virtual
-    override(ERC2771Context)
+    override(ERC2771Context, Context)
     returns (address sender)
   {
-    return super._msgSender();
+    if (isTrustedForwarder(msg.sender)) {
+      // The assembly code is more direct than the Solidity version using `abi.decode`.
+      assembly {
+        sender := shr(96, calldataload(sub(calldatasize(), 20)))
+      }
+    } else {
+      return ERC2771Context._msgSender();
+    }
   }
 
   function _msgData()
     internal
     view
-    virtual
-    override(ERC2771Context)
+    override(ERC2771Context, Context)
     returns (bytes calldata)
   {
-    return super._msgData();
+    if (isTrustedForwarder(msg.sender)) {
+      return msg.data[0:msg.data.length - 20];
+    } else {
+      return ERC2771Context._msgData();
+    }
   }
 }
