@@ -434,9 +434,18 @@ contract CreditLine is
     returns (uint256 collateralAmount, uint256 tokensAmount)
   {
     return (
-      positions[sponsor].rawCollateral.rawAmount,
-      positions[sponsor].tokensOutstanding.rawAmount
+      positions[sponsor].rawCollateral.rawValue,
+      positions[sponsor].tokensOutstanding.rawValue
     );
+  }
+
+  function collateralCoverage(address sponsor)
+    external
+    view
+    override
+    returns (bool, uint256)
+  {
+    return positionManagerData.collateralCoverage(positions[sponsor]);
   }
 
   function synthereumFinder()
