@@ -261,11 +261,6 @@ contract CreditLineController is
         feeRecipients[j],
         feeProportions[j]
       );
-      emit SetFeeRecipients(
-        address(creditLineDerivative),
-        feeRecipients[j],
-        feeProportions[j]
-      );
     }
   }
 
@@ -273,6 +268,11 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     FixedPoint.Unsigned[] calldata _liquidationRewards
   ) external override onlyMaintainerOrSelfMintingFactory {
+    require(
+      selfMintingDerivatives.length == _liquidationRewards.length,
+      'Mismatch between derivatives to update and liquidation rewards'
+    );
+
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerivatives.length; j++) {
       ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
@@ -281,18 +281,7 @@ contract CreditLineController is
       if (isMaintainer) {
         checkSelfMintingDerivativeRegistration(creditLineDerivative, version);
       }
-      require(
-        _liquidationRewards[j].isGreaterThan(0) &&
-          _liquidationRewards[j].isLessThanOrEqual(
-            FixedPoint.fromUnscaledUint(1)
-          ),
-        'Liquidation reward must be between 0 and 100%'
-      );
-      liquidationReward[address(creditLineDerivative)] = _liquidationRewards[j];
-      emit SetLiquidationReward(
-        address(creditLineDerivative),
-        _liquidationRewards[j].rawValue
-      );
+      _setLiquidationReward(selfMintingDerivatives[j], _liquidationRewards[j]);
     }
   }
 
@@ -336,17 +325,34 @@ contract CreditLineController is
   // Internal functions
   //----------------------------------------
 
+  function _setLiquidationReward(
+    address selfMintingDerivative,
+    FixedPoint.Unsigned calldata liqReward
+  ) internal {
+    require(
+      liquidationReward[selfMintingDerivative].rawValue != liqReward.rawValue,
+      'Liquidation reward is the same'
+    );
+    require(
+      liqReward.isGreaterThan(0) &&
+        liqReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
+      'Liquidation reward must be between 0 and 100%'
+    );
+    liquidationReward[selfMintingDerivative] = liqReward;
+    emit SetLiquidationReward(selfMintingDerivative, liqReward.rawValue);
+  }
+
   function _setCollateralRequirement(
     address selfMintingDerivative,
     uint256 percentage
   ) internal {
     require(
-      percentage > 10**18,
-      'Overcollateralisation must be bigger than 100%'
+      collateralRequirement[selfMintingDerivative].rawValue != percentage,
+      'Collateral requirement is the same'
     );
     require(
-      collateralRequirement[selfMintingDerivative].rawValue != percentage,
-      ' Fee percentage is the same'
+      percentage > 10**18,
+      'Overcollateralisation must be bigger than 100%'
     );
     collateralRequirement[selfMintingDerivative] = FixedPoint.Unsigned(
       percentage
@@ -369,6 +375,12 @@ contract CreditLineController is
       fee[selfMintingDerivative].feeProportions = feeProportions;
       fee[selfMintingDerivative]
         .totalFeeProportions = totalActualFeeProportions;
+
+      emit SetFeeRecipients(
+        selfMintingDerivative,
+        feeRecipients,
+        feeProportions
+      );
     }
   }
 
@@ -377,13 +389,13 @@ contract CreditLineController is
     FixedPoint.Unsigned calldata feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage.rawValue <= 10**18,
-      ' Fee percentage must be less than 100%'
-    );
-    require(
       fee[selfMintingDerivative].feePercentage.rawValue !=
         feePercentage.rawValue,
       ' Fee percentage is the same'
+    );
+    require(
+      fee[selfMintingDerivative].feePercentage.rawValue <= 10**18,
+      ' Fee percentage must be less than 100%'
     );
     fee[selfMintingDerivative].feePercentage = feePercentage;
     emit SetFeePercentage(selfMintingDerivative, feePercentage.rawValue);
