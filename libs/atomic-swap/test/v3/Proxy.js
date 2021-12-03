@@ -36,7 +36,7 @@ contract('AtomicSwap Proxy', accounts => {
 
   describe('Add/Remove Implementation', () => {
     before(async () => {
-      proxyInstance = await Proxy.new(FixedRateRoles, synthereumFinder);
+      proxyInstance = await Proxy.deployed();
     });
 
     it('Register a new implementation', async () => {
