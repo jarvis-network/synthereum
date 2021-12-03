@@ -203,13 +203,9 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     synthereumManagerInstance = await SynthereumManager.deployed();
 
-    creditLine = await CreditLine.new(
-      creditLineParams,
-      minimalForwInstance.address,
-      {
-        from: contractDeployer,
-      },
-    );
+    creditLine = await CreditLine.new(creditLineParams, {
+      from: contractDeployer,
+    });
     creditLineControllerInstance = await CreditLineControllerMock.new();
     await synthereumFinderInstance.changeImplementationAddress(
       utf8ToHex('CreditLineController'),
