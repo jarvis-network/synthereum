@@ -59,7 +59,7 @@ interface ICreditLineController {
    */
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
-    FixedPoint.Unsigned[] calldata _liquidationRewards
+    uint256[] calldata _liquidationRewards
   ) external;
 
   /**

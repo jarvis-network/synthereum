@@ -51,9 +51,9 @@ contract CreditLineController is
 
   mapping(address => uint256) private capMint;
 
-  mapping(address => FixedPoint.Unsigned) private liquidationReward;
+  mapping(address => uint256) private liquidationReward;
 
-  mapping(address => FixedPoint.Unsigned) private collateralRequirement;
+  mapping(address => uint256) private collateralRequirement;
 
   mapping(address => ICreditLineStorage.Fee) private fee;
 
@@ -266,7 +266,7 @@ contract CreditLineController is
 
   function setLiquidationRewardPercentage(
     address[] calldata selfMintingDerivatives,
-    FixedPoint.Unsigned[] calldata _liquidationRewards
+    uint256[] calldata _liquidationRewards
   ) external override onlyMaintainerOrSelfMintingFactory {
     require(
       selfMintingDerivatives.length == _liquidationRewards.length,
@@ -291,7 +291,7 @@ contract CreditLineController is
     override
     returns (uint256)
   {
-    return collateralRequirement[selfMintingDerivative].rawValue;
+    return collateralRequirement[selfMintingDerivative];
   }
 
   function getLiquidationRewardPercentage(address selfMintingDerivative)
@@ -300,7 +300,7 @@ contract CreditLineController is
     override
     returns (uint256)
   {
-    return liquidationReward[selfMintingDerivative].rawValue;
+    return liquidationReward[selfMintingDerivative];
   }
 
   function getFeeInfo(address selfMintingDerivative)
@@ -327,19 +327,18 @@ contract CreditLineController is
 
   function _setLiquidationReward(
     address selfMintingDerivative,
-    FixedPoint.Unsigned calldata liqReward
+    uint256 liqReward
   ) internal {
     require(
-      liquidationReward[selfMintingDerivative].rawValue != liqReward.rawValue,
+      liquidationReward[selfMintingDerivative] != liqReward,
       'Liquidation reward is the same'
     );
     require(
-      liqReward.isGreaterThan(0) &&
-        liqReward.isLessThanOrEqual(FixedPoint.fromUnscaledUint(1)),
+      liqReward > 0 && liqReward < 10**18,
       'Liquidation reward must be between 0 and 100%'
     );
     liquidationReward[selfMintingDerivative] = liqReward;
-    emit SetLiquidationReward(selfMintingDerivative, liqReward.rawValue);
+    emit SetLiquidationReward(selfMintingDerivative, liqReward);
   }
 
   function _setCollateralRequirement(
@@ -347,16 +346,14 @@ contract CreditLineController is
     uint256 percentage
   ) internal {
     require(
-      collateralRequirement[selfMintingDerivative].rawValue != percentage,
+      collateralRequirement[selfMintingDerivative] != percentage,
       'Collateral requirement is the same'
     );
     require(
       percentage > 10**18,
       'Overcollateralisation must be bigger than 100%'
     );
-    collateralRequirement[selfMintingDerivative] = FixedPoint.Unsigned(
-      percentage
-    );
+    collateralRequirement[selfMintingDerivative] = percentage;
     emit SetCollateralRequirement(selfMintingDerivative, percentage);
   }
 
