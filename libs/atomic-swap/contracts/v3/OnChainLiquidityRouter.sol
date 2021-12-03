@@ -44,7 +44,7 @@ contract OnChainLiquidityRouterV2 is
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
-  ISynthereumFinder immutable synthereumFinder;
+  ISynthereumFinder public synthereumFinder;
 
   event RegisterImplementation(
     string id,
@@ -233,7 +233,7 @@ contract OnChainLiquidityRouterV2 is
   function isTrustedForwarder(address forwarder)
     public
     view
-    override(ERC2771Context)
+    override
     returns (bool)
   {
     return
