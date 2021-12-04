@@ -13,6 +13,7 @@ import {
   compile,
 } from '@jarvis-network/hardhat-utils/dist/tasks';
 
+import '@nomiclabs/hardhat-ethers';
 import { TASK_VERIFY_VERIFY } from '@nomiclabs/hardhat-etherscan/dist/src/constants';
 
 import { task as createOrModifyHardhatTask } from 'hardhat/config';
