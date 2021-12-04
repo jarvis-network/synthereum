@@ -15,15 +15,16 @@ const MockOnchainOracle = artifacts.require('MockOnChainOracle');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const SynthereumManager = artifacts.require('SynthereumManager');
-
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineControllerMock = artifacts.require('CreditLineControllerMock');
-const MinimalForwarder = artifacts.require('MinimalForwarder');
+const Forwarder = artifacts.require('MinimalForwarder');
+const { signMetaTxRequest } = require('../../../../atomic-swap/test/signer.js');
 
 contract('Synthereum CreditLine ', function (accounts) {
   const contractDeployer = accounts[0];
   const maintainers = accounts[1];
   const sponsor = accounts[2];
+  let sponsorSigner, signers;
   const tokenHolder = accounts[3];
   const other = accounts[4];
   const collateralOwner = accounts[5];
@@ -46,10 +47,11 @@ contract('Synthereum CreditLine ', function (accounts) {
   let mockOnchainOracle;
   let creditLineParams;
   let roles;
+  let networkId;
+  let forwarderInstance;
   let synthereumFinderInstance;
   let creditLineControllerInstance;
   let synthereumManagerInstance;
-  let minimalForwInstance;
 
   // Initial constant values
   const initialPositionTokens = toWei('80');
@@ -148,6 +150,11 @@ contract('Synthereum CreditLine ', function (accounts) {
     // deploy and link library
     creditLineLib = await CreditLineLib.deployed();
     await CreditLine.link(creditLineLib);
+    networkId = await web3.eth.net.getId();
+
+    forwarderInstance = await Forwarder.new();
+    signers = await ethers.getSigners();
+    sponsorSigner = signers[1].provider;
   });
 
   beforeEach(async function () {
@@ -190,7 +197,6 @@ contract('Synthereum CreditLine ', function (accounts) {
     await mockOnchainOracle.setPrice(priceFeedIdentifier, startingPrice);
 
     // deploy minimal forwwarder
-    const minimalForwInstance = await MinimalForwarder.new();
     creditLineParams = {
       collateralToken: collateral.address,
       syntheticToken: tokenCurrency.address,
@@ -240,6 +246,66 @@ contract('Synthereum CreditLine ', function (accounts) {
 
   afterEach(async () => {
     await expectNoExcessCollateralToTrim();
+  });
+
+  const createSig = 'create(uint256,uint56)';
+  const depositSig = 'deposit(uint256)';
+  const depositToSig = 'depositTo(address,uint256)';
+  const withdrawSig = 'withdraw(uint256)';
+  const redeemSig = 'redeem(uint256)';
+  const repaySig = 'repay(uint255)';
+  const liquidateSig = 'liquidate(address,uint256)';
+  const settleEmergencySig = 'settleEmergencyShutdown()';
+  const claimFeeSig = 'claimFee()';
+
+  it('Meta-tx Lifecycle', async () => {
+    // Create the initial creditLine.
+    const createTokens = toBN(toWei('100'));
+    const createCollateral = toBN(toWei('150'));
+    let expectedSponsorTokens = toBN(createTokens);
+    let feeAmount = calculateFeeAmount(
+      calculateCollateralValue(createTokens, startingPrice),
+    );
+    let expectedSponsorCollateral = createCollateral.sub(feeAmount);
+
+    // Fails without approving collateral.
+    // await truffleAssert.reverts(
+    //   creditLine.create(createCollateral, createTokens, {
+    //     from: sponsor,
+    //   }),
+    //   'ERC20: transfer amount exceeds allowance',
+    // );
+    await collateral.approve(creditLine.address, createCollateral, {
+      from: sponsor,
+    });
+    const actualFee = await creditLine.create.call(
+      createCollateral,
+      createTokens,
+      { from: sponsor },
+    );
+    assert.equal(
+      feeAmount.toString(),
+      actualFee.toString(),
+      'Wrong fee output',
+    );
+
+    const functionSig = web3Utils.sha3(createSig).substr(0, 10);
+    const functionParam = web3.eth.abi.encodeParameters(
+      ['uint256', 'uint256'],
+      [createCollateral, createTokens],
+    );
+    const { request, signature } = await signMetaTxRequest(
+      sponsorSigner,
+      forwarderInstance,
+      {
+        from: sponsor,
+        to: creditLine.address,
+        data: functionSig + functionParam.substr(2),
+      },
+      networkId,
+    );
+
+    await forwarderInstance.execute(request, signature);
   });
 
   it('Correct deployment and variable assignment', async function () {

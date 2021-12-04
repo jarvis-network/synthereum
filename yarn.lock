@@ -5613,6 +5613,7 @@ __metadata:
     "@jarvis-network/crypto-utils": "*"
     "@jarvis-network/hardhat-utils": "*"
     "@jarvis-network/sol2ts-code-gen": "*"
+    "@nomiclabs/hardhat-ethers": ^2.0.1
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@solidity-parser/parser": ^0.13.2
