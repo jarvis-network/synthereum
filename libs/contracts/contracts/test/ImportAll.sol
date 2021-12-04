@@ -53,8 +53,6 @@ import '../core/registries/interfaces/IRegistry.sol';
 import '../core/registries/Registry.sol';
 import '../core/registries/PoolRegistry.sol';
 import '../self-minting/v1/interfaces/ISelfMintingPerpetualPositionManagerMultiParty.sol';
-import '../self-minting/v2/CreditLine.sol';
-import '../self-minting/v2/CreditLineLib.sol';
 import '../self-minting/v2/CreditLineCreator.sol';
 import '../self-minting/v2/CreditLineFactory.sol';
 import '../self-minting/v2/CreditLineController.sol';

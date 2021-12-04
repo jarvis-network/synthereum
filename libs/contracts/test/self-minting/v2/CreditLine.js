@@ -319,9 +319,9 @@ contract('Synthereum CreditLine ', function (accounts) {
       return ev.sponsor == sponsor;
     });
 
-    (await creditLine.getPositionCollateral.call(sponsor)).rawValue.toString(),
+    (await creditLine.getPositionData.call(sponsor))[0].toString(),
       createCollateral.sub(actualFee).toString();
-    (await creditLine.totalTokensOutstanding.call()).toString(),
+    (await creditLine.getPositionData.call(sponsor))[1].toString(),
       createTokens.toString();
     // check balances and fee distribution is ok
     await checkBalances(
