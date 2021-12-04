@@ -488,15 +488,6 @@ contract CreditLine is
     identifier = positionManagerData.priceIdentifier;
   }
 
-  function totalTokensOutstanding()
-    external
-    view
-    override
-    returns (uint256 totalTokens)
-  {
-    totalTokens = globalPositionData.totalTokensOutstanding.rawValue;
-  }
-
   function emergencyShutdownPrice()
     external
     view

@@ -178,12 +178,6 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   function priceIdentifier() external view returns (bytes32 identifier);
 
   /**
-   * @notice Get the currently minted synthetic tokens from all self-minting derivatives
-   * @return totalTokens Total amount of synthetic tokens minted
-   */
-  function totalTokensOutstanding() external view returns (uint256);
-
-  /**
    * @notice Get the price of synthetic token set by DVM after emergencyShutdown call
    * @return price Price of synthetic token
    */
