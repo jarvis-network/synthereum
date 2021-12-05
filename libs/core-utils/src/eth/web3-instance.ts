@@ -6,8 +6,8 @@ import type { Network, NetworkName, ValueOnNetwork } from './networks';
 
 export type Web3On<Net extends Network> = ValueOnNetwork<Web3, Net>;
 export type NetworkOf<
-  Web3 extends Web3On<NetworkName>
-> = TagKindOf<Web3>['network'];
+  Web3ON extends Web3On<NetworkName>
+> = TagKindOf<Web3ON>['network'];
 export type { NetworkName };
 
 /**

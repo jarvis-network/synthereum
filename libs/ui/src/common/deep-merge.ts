@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-restricted-syntax */
 
