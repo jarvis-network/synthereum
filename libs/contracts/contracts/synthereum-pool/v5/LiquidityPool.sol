@@ -848,11 +848,19 @@ contract SynthereumLiquidityPool is
     override
     returns (bool)
   {
-    return
-      forwarder ==
+    try
       poolStorage.finder.getImplementationAddress(
         SynthereumInterfaces.TrustedForwarder
-      );
+      )
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
   }
 
   function _msgSender()
