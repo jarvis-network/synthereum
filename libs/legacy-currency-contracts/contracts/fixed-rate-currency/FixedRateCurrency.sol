@@ -19,7 +19,11 @@ import {
   ISynthereumPoolOnChainPriceFeed
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v4/interfaces/IPoolOnChainPriceFeed.sol';
 
-contract FixedRateCurrency is FixedRateWrapper {
+import {
+  ERC20Permit
+} from '@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol';
+
+contract FixedRateCurrency is ERC20Permit, FixedRateWrapper {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -100,7 +104,11 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 _rate,
     string memory _name,
     string memory _symbol
-  ) public FixedRateWrapper(_pegToken, _rate, _name, _symbol) {
+  )
+    public
+    ERC20Permit(_name)
+    FixedRateWrapper(_pegToken, _rate, _name, _symbol)
+  {
     paused = false;
     synthereumFinder = _synthereumFinder;
     synthereumPool = _synthereumPoolAddress;
@@ -147,7 +155,8 @@ contract FixedRateCurrency is FixedRateWrapper {
         Mints _pegToken from USDC using the appropriate synthereum pool.
      */
   function mintFromUSDC(
-    ISynthereumPoolOnChainPriceFeed.MintParams memory _mintParams
+    ISynthereumPoolOnChainPriceFeed.MintParams memory _mintParams,
+    address _recipient
   ) public isActive() {
     // pull USDC from user's wallet
     collateralInstance.safeTransferFrom(
@@ -167,7 +176,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     (uint256 pegTokensMinted, ) = synthereumPool.mint(_mintParams);
 
     // mint fixedRate to user wallet
-    uint256 numTokensMinted = super.wrap(pegTokensMinted, msg.sender);
+    uint256 numTokensMinted = super.wrap(pegTokensMinted, _recipient);
 
     emit Mint(msg.sender, address(synth), address(this), numTokensMinted);
   }
@@ -203,7 +212,8 @@ contract FixedRateCurrency is FixedRateWrapper {
   function mintFromSynth(
     IERC20 inputSynthAddress,
     ISynthereumPoolOnChainPriceFeed inputSynthPool,
-    ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams
+    ISynthereumPoolOnChainPriceFeed.ExchangeParams memory _exchangeParams,
+    address _recipient
   ) public isActive {
     // pull synth to be exchanged from user wallet into this contract wallet
     inputSynthAddress.safeTransferFrom(
@@ -223,7 +233,7 @@ contract FixedRateCurrency is FixedRateWrapper {
     (uint256 pegTokenAmount, ) = inputSynthPool.exchange(_exchangeParams);
 
     // mint fixedRate token according to rate into user wallet
-    uint256 numTokensMinted = super.wrap(pegTokenAmount, msg.sender);
+    uint256 numTokensMinted = super.wrap(pegTokenAmount, _recipient);
 
     emit SwapWithSynth(
       msg.sender,
@@ -266,7 +276,8 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 amountTokensIn,
     uint256 collateralAmountOutMin,
     address[] calldata tokenSwapPath,
-    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
+    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams,
+    address _recipient
   ) public isActive {
     // deposit erc20 into this contract
     IERC20(tokenSwapPath[0]).safeTransferFrom(
@@ -293,7 +304,7 @@ contract FixedRateCurrency is FixedRateWrapper {
       );
 
     // mint FixedRate to user wallet
-    uint256 numTokensMinted = super.wrap(synthMinted, msg.sender);
+    uint256 numTokensMinted = super.wrap(synthMinted, _recipient);
 
     emit SwapWithERC20(
       msg.sender,
@@ -311,7 +322,8 @@ contract FixedRateCurrency is FixedRateWrapper {
   function mintFromETH(
     uint256 collateralAmountOutMin,
     address[] calldata tokenSwapPath,
-    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams
+    ISynthereumPoolOnChainPriceFeed.MintParams memory mintParams,
+    address _recipient
   ) public payable isActive {
     // ETH -> USDC -> jEUR into this wallet
     mintParams.recipient = address(this);
@@ -324,7 +336,7 @@ contract FixedRateCurrency is FixedRateWrapper {
       );
 
     // mint fixedRate into this wallet
-    uint256 numTokensMinted = super.wrap(pegSynthMinted, msg.sender);
+    uint256 numTokensMinted = super.wrap(pegSynthMinted, _recipient);
 
     emit SwapWithETH(msg.sender, 'buy', msg.value, numTokensMinted);
   }
@@ -336,7 +348,8 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 fixedSynthAmountIn,
     uint256 amountTokenOutMin,
     address[] calldata tokenSwapPath,
-    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    address _recipient
   ) public {
     // jBGN -> jEUR into this waallet
     uint256 pegSynthRedeemed = super.unwrap(fixedSynthAmountIn, address(this));
@@ -352,7 +365,7 @@ contract FixedRateCurrency is FixedRateWrapper {
         tokenSwapPath,
         synthereumPool,
         redeemParams,
-        msg.sender
+        _recipient
       );
 
     emit SwapWithERC20(
@@ -372,7 +385,8 @@ contract FixedRateCurrency is FixedRateWrapper {
     uint256 fixedSynthAmountIn,
     uint256 amountTokenOutMin,
     address[] calldata tokenSwapPath,
-    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams
+    ISynthereumPoolOnChainPriceFeed.RedeemParams memory redeemParams,
+    address _recipient
   ) public {
     // jBGN -> jEUR into this wallet
     uint256 pegSynthRedeemed = super.unwrap(fixedSynthAmountIn, address(this));
@@ -388,7 +402,7 @@ contract FixedRateCurrency is FixedRateWrapper {
         tokenSwapPath,
         synthereumPool,
         redeemParams,
-        msg.sender
+        _recipient
       );
 
     emit SwapWithETH(msg.sender, 'sell', fixedSynthAmountIn, outputAmount);
