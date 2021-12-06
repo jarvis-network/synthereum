@@ -4,6 +4,9 @@ const {
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const { assert } = require('chai');
 const truffleAssert = require('truffle-assertions');
+const {
+  collapseTextChangeRangesAcrossMultipleVersions,
+} = require('typescript');
 const web3Utils = require('web3-utils');
 const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
 
@@ -18,12 +21,12 @@ const SynthereumManager = artifacts.require('SynthereumManager');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineControllerMock = artifacts.require('CreditLineControllerMock');
 const Forwarder = artifacts.require('MinimalForwarder');
-const { signMetaTxRequest } = require('../../../../atomic-swap/test/signer.js');
+const { signAndSendMetaTx } = require('./meta-tx/metaTx');
 
 contract('Synthereum CreditLine ', function (accounts) {
   const contractDeployer = accounts[0];
   const maintainers = accounts[1];
-  const sponsor = accounts[2];
+  let sponsor;
   let sponsorSigner, signers;
   const tokenHolder = accounts[3];
   const other = accounts[4];
@@ -71,17 +74,14 @@ contract('Synthereum CreditLine ', function (accounts) {
     expectedSponsorCollateral,
     feeAmount,
   ) => {
-    const positionData = await creditLine.positions.call(sponsor);
-    const sponsorCollateral = positionData.rawCollateral;
+    const positionData = await creditLine.getPositionData.call(sponsor);
+    const sponsorCollateral = positionData[0];
     assert.equal(
       sponsorCollateral.toString(),
       expectedSponsorCollateral.toString(),
     );
     // The below assertion only holds if the sponsor holds all of the tokens outstanding.
-    assert.equal(
-      positionData.tokensOutstanding.toString(),
-      expectedSponsorTokens.toString(),
-    );
+    assert.equal(positionData[1].toString(), expectedSponsorTokens.toString());
     assert.equal(
       (await tokenCurrency.balanceOf.call(sponsor)).toString(),
       expectedSponsorTokens.toString(),
@@ -152,9 +152,10 @@ contract('Synthereum CreditLine ', function (accounts) {
     await CreditLine.link(creditLineLib);
     networkId = await web3.eth.net.getId();
 
-    forwarderInstance = await Forwarder.new();
+    forwarderInstance = await Forwarder.deployed();
     signers = await ethers.getSigners();
-    sponsorSigner = signers[1].provider;
+    sponsorSigner = signers[2].provider;
+    sponsor = signers[2].address;
   });
 
   beforeEach(async function () {
@@ -166,10 +167,10 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Represents WETH or some other token that the sponsor and contracts don't control.
     collateral = await TestnetSelfMintingERC20.new('test', 'tsc', 18);
-    await collateral.allocateTo(sponsor, toWei('100000000'), {
+    await collateral.allocateTo(sponsor, toWei('10000000000000'), {
       from: collateralOwner,
     });
-    await collateral.allocateTo(other, toWei('100000000'), {
+    await collateral.allocateTo(other, toWei('10000000000000000'), {
       from: collateralOwner,
     });
 
@@ -184,6 +185,9 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Create a mockOracle and finder. Register the mockMoracle with the finder.
     synthereumFinderInstance = await SynthereumFinder.deployed();
+    // // register forwarder
+    // await synthereumFinderInstance.changeImplementationAddress(utf8ToHex("TrustedForwarder"), forwarderInstance.address, {from:maintainers})
+
     mockOnchainOracle = await MockOnchainOracle.new({
       from: contractDeployer,
     });
@@ -196,7 +200,6 @@ contract('Synthereum CreditLine ', function (accounts) {
     // set oracle price
     await mockOnchainOracle.setPrice(priceFeedIdentifier, startingPrice);
 
-    // deploy minimal forwwarder
     creditLineParams = {
       collateralToken: collateral.address,
       syntheticToken: tokenCurrency.address,
@@ -248,7 +251,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await expectNoExcessCollateralToTrim();
   });
 
-  const createSig = 'create(uint256,uint56)';
+  const createSig = 'create(uint256,uint256)';
   const depositSig = 'deposit(uint256)';
   const depositToSig = 'depositTo(address,uint256)';
   const withdrawSig = 'withdraw(uint256)';
@@ -258,7 +261,7 @@ contract('Synthereum CreditLine ', function (accounts) {
   const settleEmergencySig = 'settleEmergencyShutdown()';
   const claimFeeSig = 'claimFee()';
 
-  it('Meta-tx Lifecycle', async () => {
+  it.only('Meta-tx Lifecycle', async () => {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
     const createCollateral = toBN(toWei('150'));
@@ -268,14 +271,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
     let expectedSponsorCollateral = createCollateral.sub(feeAmount);
 
-    // Fails without approving collateral.
-    // await truffleAssert.reverts(
-    //   creditLine.create(createCollateral, createTokens, {
-    //     from: sponsor,
-    //   }),
-    //   'ERC20: transfer amount exceeds allowance',
-    // );
-    await collateral.approve(creditLine.address, createCollateral, {
+    await collateral.approve(creditLine.address, createCollateral.toString(), {
       from: sponsor,
     });
     const actualFee = await creditLine.create.call(
@@ -289,23 +285,178 @@ contract('Synthereum CreditLine ', function (accounts) {
       'Wrong fee output',
     );
 
-    const functionSig = web3Utils.sha3(createSig).substr(0, 10);
-    const functionParam = web3.eth.abi.encodeParameters(
+    let functionSig = web3.utils.sha3(createSig).substr(0, 10);
+    let functionParam = web3.eth.abi.encodeParameters(
       ['uint256', 'uint256'],
       [createCollateral, createTokens],
     );
-    const { request, signature } = await signMetaTxRequest(
-      sponsorSigner,
+    await signAndSendMetaTx(
       forwarderInstance,
-      {
-        from: sponsor,
-        to: creditLine.address,
-        data: functionSig + functionParam.substr(2),
-      },
+      sponsorSigner,
+      functionSig,
+      functionParam,
+      sponsor,
+      creditLine.address,
+      0,
+      networkId,
+    );
+    // let { request, signature } = await signMetaTxRequest(
+    //   sponsorSigner,
+    //   forwarderInstance,
+    //   {
+    //     from: sponsor,
+    //     to: creditLine.address,
+    //     data: functionSig + functionParam.substr(2),
+    //     value: 0,
+    //   },
+    //   networkId,
+    // );
+    // await forwarderInstance.execute(request, signature);
+
+    // check balances and fee distribution is ok
+    await checkBalances(
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
+      feeAmount,
+    );
+    await checkFeeRecipients(feeAmount);
+
+    // Periodic check for no excess collateral.
+    await expectNoExcessCollateralToTrim();
+
+    // Deposit.
+    const depositCollateral = toWei('50');
+    expectedSponsorCollateral = expectedSponsorCollateral.add(
+      toBN(depositCollateral),
+    );
+    // Fails without approving collateral.
+    await truffleAssert.reverts(
+      creditLine.deposit(depositCollateral, { from: sponsor }),
+      'ERC20: transfer amount exceeds allowance',
+    );
+    await collateral.approve(creditLine.address, depositCollateral, {
+      from: sponsor,
+    });
+
+    functionSig = web3.utils.sha3(depositSig).substr(0, 10);
+    functionParam = web3.eth.abi.encodeParameters(
+      ['uint256'],
+      [depositCollateral],
+    );
+    await signAndSendMetaTx(
+      forwarderInstance,
+      sponsorSigner,
+      functionSig,
+      functionParam,
+      sponsor,
+      creditLine.address,
+      0,
+      networkId,
+    );
+    await checkBalances(
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
+      toBN(0),
+    );
+
+    // Periodic check for no excess collateral.
+    await expectNoExcessCollateralToTrim();
+
+    // withdraw
+    const withdrawCollateral = toWei('20');
+    expectedSponsorCollateral = expectedSponsorCollateral.sub(
+      toBN(withdrawCollateral),
+    );
+    let sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
+
+    functionSig = web3.utils.sha3(withdrawSig).substr(0, 10);
+    functionParam = web3.eth.abi.encodeParameters(
+      ['uint256'],
+      [withdrawCollateral],
+    );
+    await signAndSendMetaTx(
+      forwarderInstance,
+      sponsorSigner,
+      functionSig,
+      functionParam,
+      sponsor,
+      creditLine.address,
+      0,
+      networkId,
+    );
+    let sponsorFinalBalance = await collateral.balanceOf.call(sponsor);
+    assert.equal(
+      sponsorFinalBalance.sub(sponsorInitialBalance).toString(),
+      withdrawCollateral,
+    );
+    await checkBalances(
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
+      toBN(0),
+    );
+
+    // Periodic check for no excess collateral.
+    await expectNoExcessCollateralToTrim();
+
+    // redeem 50% of tokens
+    const redeemTokens = expectedSponsorTokens.divn(2);
+    expectedSponsorTokens = expectedSponsorTokens.sub(toBN(redeemTokens));
+    expectedSponsorCollateral = expectedSponsorCollateral.divn(2);
+
+    await tokenCurrency.approve(creditLine.address, redeemTokens, {
+      from: sponsor,
+    });
+    sponsorInitialBalance = await collateral.balanceOf.call(sponsor);
+
+    // Check redeem return value and event.
+    expectedFeeAmount = calculateFeeAmount(
+      calculateCollateralValue(redeemTokens, startingPrice),
+    );
+
+    const res = await creditLine.redeem.call(redeemTokens, { from: sponsor });
+    let amountWithdrawn = res.amountWithdrawn;
+    let redeemFee = res.feeAmount;
+
+    let expectedWithdrawAmount = expectedSponsorCollateral.sub(
+      expectedFeeAmount,
+    );
+    assert.equal(
+      amountWithdrawn.toString(),
+      expectedWithdrawAmount.toString(),
+      'Wrong redeemed output collateral',
+    );
+    assert.equal(
+      expectedFeeAmount.toString(),
+      redeemFee,
+      'Wrong redeem output fee',
+    );
+    functionSig = web3.utils.sha3(redeemSig).substr(0, 10);
+    functionParam = web3.eth.abi.encodeParameters(['uint256'], [redeemTokens]);
+    await signAndSendMetaTx(
+      forwarderInstance,
+      sponsorSigner,
+      functionSig,
+      functionParam,
+      sponsor,
+      creditLine.address,
+      0,
       networkId,
     );
 
-    await forwarderInstance.execute(request, signature);
+    sponsorFinalBalance = await collateral.balanceOf.call(sponsor);
+    assert.equal(
+      sponsorFinalBalance.sub(sponsorInitialBalance).toString(),
+      expectedSponsorCollateral.sub(redeemFee).toString(),
+    );
+    await checkBalances(
+      expectedSponsorTokens,
+      expectedSponsorCollateral,
+      redeemFee,
+    );
+    await checkFeeRecipients(redeemFee);
+
+    // Periodic check for no excess collateral.
+    await expectNoExcessCollateralToTrim();
   });
 
   it('Correct deployment and variable assignment', async function () {
@@ -385,10 +536,6 @@ contract('Synthereum CreditLine ', function (accounts) {
       return ev.sponsor == sponsor;
     });
 
-    (await creditLine.getPositionData.call(sponsor))[0].toString(),
-      createCollateral.sub(actualFee).toString();
-    (await creditLine.getPositionData.call(sponsor))[1].toString(),
-      createTokens.toString();
     // check balances and fee distribution is ok
     await checkBalances(
       expectedSponsorTokens,
