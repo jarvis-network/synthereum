@@ -58,5 +58,10 @@
     "contractName": "SynthereumChainlinkPriceFeed",
     "address": "0xb6095B28257287EE730c5B18Aa6Ede2AF5b47FA8",
     "transactionHash": "0x03713a26c0ac07f1b8364df9596be22236e13dd576a0efcbd3487442b40110f1"
+  },
+  {
+    "contractName": "SynthereumTrustedForwarder",
+    "address": "0x45adD0c2fD5D2796ee8272074CE55168A75c5347",
+    "transactionHash": "0xf66e12388830ae55047878b71377f0b9df6492f20f99ad4efc93e0d97c01d404"
   }
 ]
