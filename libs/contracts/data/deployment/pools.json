@@ -16,7 +16,11 @@
   "97": {
     "isEnabled": true,
     "Pool": 5,
-    "SynthToken": {}
+    "SynthToken": {
+      "jEUR": "0x416A4b83d6EC3922eDc5c85f1f2B4527d5653E91",
+      "jGBP": "0x691820c530D2E83492BD36281009131b1D77940C",
+      "jNGN": "0x2A98802604c9269E453D18893f31eABa00e07525"
+    }
   },
   "3": {
     "isEnabled": true,
