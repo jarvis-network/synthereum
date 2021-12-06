@@ -20,7 +20,7 @@ utils.signAndSendMetaTx = async (
     {
       from,
       to,
-      data: functionSig + params.substr(2),
+      data: functionSig + params,
       value,
     },
     networkId,
