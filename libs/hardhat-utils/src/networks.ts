@@ -9,6 +9,7 @@ import {
 import {
   getInfuraEndpoint,
   getBSCEndpoint,
+  getSokolEndpoint,
 } from '@jarvis-network/core-utils/dist/apis/infura';
 
 export function addPublicNetwork(
@@ -21,9 +22,11 @@ export function addPublicNetwork(
   config.networks[networkName] = {
     chainId,
     url:
-      process.env.RPC_URL ?? (chainId !== 56 && chainId !== 97)
-        ? getInfuraEndpoint(chainId, 'https', projectId)
-        : getBSCEndpoint(chainId, 'https'),
+      process.env.RPC_URL ?? chainId === 77
+        ? getSokolEndpoint(chainId, 'https')
+        : chainId === 56 || chainId === 97
+        ? getBSCEndpoint(chainId, 'https')
+        : getInfuraEndpoint(chainId, 'https', projectId),
     accounts: {
       mnemonic:
         process.env.MNEMONIC ??
