@@ -93,5 +93,6 @@ addPublicNetwork(config, 137, process.env.POLYGON_PROJECT_ID!);
 addPublicNetwork(config, 80001, process.env.POLYGON_PROJECT_ID!);
 addPublicNetwork(config, 56);
 addPublicNetwork(config, 97);
+addPublicNetwork(config, 77);
 
 export default config;
