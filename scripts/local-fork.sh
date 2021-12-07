@@ -21,6 +21,9 @@ if [ "$network" == "bsc" ]; then
 elif [ "$network" == "bscTestnet" ]; then
     networkId=97
     endpoint='https://data-seed-prebsc-1-s1.binance.org:8545/'
+elif [ "$network" == "sokol" ]; then
+    networkId=77
+    endpoint='https://sokol.poa.network'
 else
     if [ "$network" = "kovan" ]; then
         networkId=42
