@@ -4952,17 +4952,10 @@
     unixify "^1.0.0"
     yargs "^16.0.0"
 
-"@next/bundle-analyzer@^10.0.4":
-  version "10.0.4"
-  resolved "https://registry.npmjs.org/@next/bundle-analyzer/-/bundle-analyzer-10.0.4.tgz#7aaae96e69d2ce186d1d6bf2bc9e4377f418cc78"
-  integrity sha512-A0Qcy/Q9D4eGd+WM3acA4LwkCT3zZHC9KQ6PVIyraVIHm8rjgQAHNc5r/XVLLyE/oMt6yCKMvDLEAUmrXqU9kQ==
-  dependencies:
-    webpack-bundle-analyzer "4.3.0"
-
-"@next/bundle-analyzer@^11.0.1":
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/@next/bundle-analyzer/-/bundle-analyzer-11.0.1.tgz#6f5d617ae861346ac9bf6a1e7bd05444a7fedcc1"
-  integrity sha512-/+VqZsEu1Q19PlJyNrXJ0qNuYVH1ZiA9fz3G1tiTLdJmHHt4SeAqiBejHvuy8nkttGnHg7uUTdycvVujK0IcQQ==
+"@next/bundle-analyzer@^11.1.3":
+  version "11.1.3"
+  resolved "https://registry.yarnpkg.com/@next/bundle-analyzer/-/bundle-analyzer-11.1.3.tgz#627a5e7ce1ca8e7c2d4e8c2a6d8fdd3be5f89bc0"
+  integrity sha512-oNBM19JqJ6MtKAx8wNJRdJW2prj6feyalzAujMgvQ5/yxDpnk0IR6j91fYE+jnmNe031W8N5LUERU3vQBB4Pdg==
   dependencies:
     webpack-bundle-analyzer "4.3.0"
 
