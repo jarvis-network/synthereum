@@ -99,9 +99,10 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "command": "yarn run build:package",
+            "commands": ["yarn run build:package", "cp ./package.json ./dist/"],
             "cwd": "./libs/ui",
-            "color": true
+            "color": true,
+            "parallel": false
           }
         },
         "build-storybook": {
@@ -145,8 +146,9 @@
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
-            "command": "yarn run build",
+            "commands": ["yarn run build", "cp ./package.json ./dist/"],
             "cwd": "./libs/toolkit",
+            "parallel": false,
             "color": true
           }
         }

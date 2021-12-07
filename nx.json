@@ -114,7 +114,8 @@
       "tags": []
     },
     "burner-wallet": {
-      "tags": []
+      "tags": [],
+      "implicitDependencies": ["toolkit"]
     },
     "burner-wallet-e2e": {
       "tags": [],
