@@ -121,7 +121,9 @@
         "claim",
         "cli",
         "subgraph",
-        "validator-lib"
+        "validator-lib",
+        "meta-tx-lib",
+        "burner-wallet"
       ]
     }
   },
