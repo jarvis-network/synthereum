@@ -19,6 +19,7 @@ export const networkIdToName = {
   31337: 'hardhat',
   56: 'bsc',
   97: 'bscTestnet',
+  77: 'sokol',
 } as const;
 
 export const networkNameToId: InverseOf<typeof networkIdToName> = {
@@ -32,6 +33,7 @@ export const networkNameToId: InverseOf<typeof networkIdToName> = {
   hardhat: 31337,
   bsc: 56,
   bscTestnet: 97,
+  sokol: 77,
 } as const;
 
 export type NetworkId = keyof typeof networkIdToName;
@@ -56,6 +58,7 @@ const networkIdToId: KeysToKeys<typeof networkIdToName> = {
   31337: 31337,
   56: 56,
   97: 97,
+  77: 77,
 };
 
 const networkNameToName: KeysToKeys<typeof networkNameToId> = {
@@ -69,6 +72,7 @@ const networkNameToName: KeysToKeys<typeof networkNameToId> = {
   hardhat: 'hardhat',
   bsc: 'bsc',
   bscTestnet: 'bscTestnet',
+  sokol: 'sokol',
 };
 
 export function isNetworkId(x: unknown): x is NetworkId {
