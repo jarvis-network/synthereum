@@ -246,5 +246,27 @@
       "overCollateralization": "100000000000000000",
       "liquidationReward": "600000000000000000"
     }
+  ],
+  "77": [
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURUSD",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "",
+      "capMintAmount": "",
+      "overCollateralization": "100000000000000000",
+      "liquidationReward": "600000000000000000"
+    },
+    {
+      "syntheticName": "Jarvis Synthetic British Pound",
+      "syntheticSymbol": "jGBP",
+      "priceFeedIdentifier": "GBPUSD",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "",
+      "capMintAmount": "",
+      "overCollateralization": "100000000000000000",
+      "liquidationReward": "600000000000000000"
+    }
   ]
 }

@@ -26,5 +26,9 @@
   "3": {
     "collateralAddress": "0xDBC941fEc34e8965EbC4A25452ae7519d6BDfc4e",
     "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
+  },
+  "77": {
+    "collateralAddress": "0x2AdA4F8DffaF645bC62bBf937dbA60f82Ab02e8f",
+    "excessTokenBeneficiary": "0x49251bc21C3e3Af201F39AeEbF93474dA6a9A5E7"
   }
 }
