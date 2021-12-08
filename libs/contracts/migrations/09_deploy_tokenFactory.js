@@ -38,6 +38,7 @@ async function migrate(deployer, network, accounts) {
     !isPublicNetwork(network) ||
     networkId === 3 ||
     networkId === 56 ||
+    networkId === 77 ||
     networkId === 97 ||
     networkId === 137 ||
     networkId == 80001
