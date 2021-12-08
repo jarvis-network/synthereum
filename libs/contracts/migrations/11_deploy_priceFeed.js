@@ -64,7 +64,12 @@ async function migrate(deployer, network, accounts) {
   var aggregatorsData = [];
   if (!isPublicNetwork(network)) {
     return;
-  } else if (networkId === 80001 || networkId === 97 || networkId === 3) {
+  } else if (
+    networkId === 80001 ||
+    networkId === 97 ||
+    networkId === 3 ||
+    networkId === 77
+  ) {
     const assets = Object.keys(randomOracleConfig[networkId]);
     for (let j = 0; j < assets.length; j++) {
       await deploy(

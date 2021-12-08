@@ -36,11 +36,12 @@ async function migrate(deployer, network, accounts) {
   let tokenFactory;
   if (
     !isPublicNetwork(network) ||
-    networkId == 80001 ||
+    networkId === 80001 ||
     networkId === 137 ||
     networkId === 56 ||
     networkId === 97 ||
-    networkId === 3
+    networkId === 3 ||
+    networkId === 77
   ) {
     await deploy(
       web3,
