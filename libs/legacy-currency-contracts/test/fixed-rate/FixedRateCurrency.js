@@ -104,6 +104,7 @@ contract('Fixed Rate Currency', accounts => {
   let expiration;
 
   let user = accounts[6];
+  let recipientAddress = accounts[7];
   beforeEach(async () => {
     // deploy derivatives and synthereum pool
     collateralInstance = await TestnetERC20.deployed();
@@ -588,19 +589,23 @@ contract('Fixed Rate Currency', accounts => {
 
       const pegTokenBalanceBefore = await pegTokenInstance.balanceOf.call(user);
       const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
-        user,
+        recipientAddress,
       );
 
-      const tx = await fixedRateCurrencyInstance.mintFromUSDC(MintParams, {
-        from: user,
-      });
+      const tx = await fixedRateCurrencyInstance.mintFromUSDC(
+        MintParams,
+        recipientAddress,
+        {
+          from: user,
+        },
+      );
 
       const pegTokenBalanceAfter = await pegTokenInstance.balanceOf.call(user);
       const collateralBalanceAfter = await collateralInstance.balanceOf.call(
         user,
       );
       const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
-        user,
+        recipientAddress,
       );
 
       truffleAssert.eventEmitted(tx, 'Mint', ev => {
@@ -640,7 +645,9 @@ contract('Fixed Rate Currency', accounts => {
       };
 
       await truffleAssert.reverts(
-        fixedRateCurrencyInstance.mintFromUSDC(MintParams, { from: user }),
+        fixedRateCurrencyInstance.mintFromUSDC(MintParams, recipientAddress, {
+          from: user,
+        }),
         'ERC20: transfer amount exceeds balance',
       );
     });
@@ -658,7 +665,9 @@ contract('Fixed Rate Currency', accounts => {
       await fixedRateCurrencyInstance.pauseContract({ from: admin });
 
       await truffleAssert.reverts(
-        fixedRateCurrencyInstance.mintFromUSDC(MintParams, { from: user }),
+        fixedRateCurrencyInstance.mintFromUSDC(MintParams, recipientAddress, {
+          from: user,
+        }),
         'Contract has been paused',
       );
     });
@@ -988,11 +997,12 @@ contract('Fixed Rate Currency', accounts => {
         jGBPAddr,
         secondPoolAddress,
         ExchangeParams,
+        recipientAddress,
         { from: user },
       );
 
       const fixedTokensBalance = await fixedRateCurrencyInstance.balanceOf.call(
-        user,
+        recipientAddress,
       );
 
       truffleAssert.eventEmitted(exchangeTx, 'SwapWithSynth', ev => {
@@ -1025,6 +1035,7 @@ contract('Fixed Rate Currency', accounts => {
           jGBPAddr,
           secondPoolAddress,
           ExchangeParams,
+          recipientAddress,
           { from: user },
         ),
         'Contract has been paused',

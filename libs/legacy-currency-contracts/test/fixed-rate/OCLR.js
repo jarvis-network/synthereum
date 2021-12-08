@@ -98,6 +98,7 @@ contract('Fixed Rate Currency', accounts => {
     beforeEach(async () => {
       admin = accounts[0];
       user = accounts[1];
+      recipientAddress = accounts[2];
       EthAmountInput = Web3Utils.toWei('1');
 
       const networkId = 42;
@@ -166,7 +167,7 @@ contract('Fixed Rate Currency', accounts => {
 
         const tokenSwapPath = [WBTCAddress, USDCAddress];
         const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
-          user,
+          recipientAddress,
         );
 
         const tx = await fixedRateCurrencyInstance.mintFromERC20(
@@ -174,13 +175,14 @@ contract('Fixed Rate Currency', accounts => {
           0,
           tokenSwapPath,
           MintParams,
+          recipientAddress,
           {
             from: user,
           },
         );
 
         const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
-          user,
+          recipientAddress,
         );
         const WBTCBalanceAfter = await WBTCInstance.balanceOf.call(user);
         const jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
@@ -218,9 +220,16 @@ contract('Fixed Rate Currency', accounts => {
         await fixedRateCurrencyInstance.pauseContract({ from: admin });
 
         await truffleAssert.reverts(
-          fixedRateCurrencyInstance.mintFromERC20(10, 0, [], MintParams, {
-            from: user,
-          }),
+          fixedRateCurrencyInstance.mintFromERC20(
+            10,
+            0,
+            [],
+            MintParams,
+            recipientAddress,
+            {
+              from: user,
+            },
+          ),
           'Contract has been paused',
         );
       });
@@ -269,7 +278,7 @@ contract('Fixed Rate Currency', accounts => {
           },
         );
 
-        WBTCBalanceBefore = await WBTCInstance.balanceOf.call(user);
+        WBTCBalanceBefore = await WBTCInstance.balanceOf.call(recipientAddress);
         const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
           user,
         );
@@ -297,13 +306,16 @@ contract('Fixed Rate Currency', accounts => {
           0,
           tokenSwapPath,
           RedeemParams,
+          recipientAddress,
           { from: user },
         );
 
         const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
           user,
         );
-        const WBTCBalanceAfter = await WBTCInstance.balanceOf.call(user);
+        const WBTCBalanceAfter = await WBTCInstance.balanceOf.call(
+          recipientAddress,
+        );
         const jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
         let WBTCOut;
@@ -351,7 +363,7 @@ contract('Fixed Rate Currency', accounts => {
 
         const EthBalanceBefore = await web3.eth.getBalance(user);
         const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
-          user,
+          recipientAddress,
         );
         const jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
@@ -360,13 +372,14 @@ contract('Fixed Rate Currency', accounts => {
           0,
           tokenSwapPath,
           MintParams,
+          recipientAddress,
           { from: user, value: EthAmountInput },
         );
 
         // assert
         const EthBalanceAfter = await web3.eth.getBalance(user);
         const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
-          user,
+          recipientAddress,
         );
         const jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
@@ -409,10 +422,16 @@ contract('Fixed Rate Currency', accounts => {
         await fixedRateCurrencyInstance.pauseContract({ from: admin });
 
         await truffleAssert.reverts(
-          fixedRateCurrencyInstance.mintFromETH(0, [], MintParams, {
-            from: user,
-            value: 1,
-          }),
+          fixedRateCurrencyInstance.mintFromETH(
+            0,
+            [],
+            MintParams,
+            recipientAddress,
+            {
+              from: user,
+              value: 1,
+            },
+          ),
           'Contract has been paused',
         );
       });
@@ -462,7 +481,7 @@ contract('Fixed Rate Currency', accounts => {
           },
         );
 
-        const EthBalanceBefore = await web3.eth.getBalance(user);
+        const EthBalanceBefore = await web3.eth.getBalance(recipientAddress);
         const fixedRateBalanceBefore = await fixedRateCurrencyInstance.balanceOf.call(
           user,
         );
@@ -485,6 +504,7 @@ contract('Fixed Rate Currency', accounts => {
           0,
           tokenSwapPath,
           RedeemParams,
+          recipientAddress,
           { from: user },
         );
 
@@ -500,16 +520,15 @@ contract('Fixed Rate Currency', accounts => {
           );
         });
 
-        const txFee = await getTxFee(tx);
-        const EthBalanceAfter = await web3.eth.getBalance(user);
+        const EthBalanceAfter = await web3.eth.getBalance(recipientAddress);
         const fixedRateBalanceAfter = await fixedRateCurrencyInstance.balanceOf.call(
           user,
         );
         const jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
-        const expectedEthBalance = Web3Utils.toBN(EthBalanceBefore)
-          .sub(txFee)
-          .add(Web3Utils.toBN(ethTokenOut));
+        const expectedEthBalance = Web3Utils.toBN(EthBalanceBefore).add(
+          Web3Utils.toBN(ethTokenOut),
+        );
         assert.equal(
           expectedEthBalance.eq(Web3Utils.toBN(EthBalanceAfter)),
           true,
