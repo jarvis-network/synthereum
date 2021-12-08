@@ -32,5 +32,15 @@
       "initialPrice": "1.1281",
       "maxSpread": "0.00000000868"
     }
+  },
+  "77": {
+    "EURUSD": {
+      "initialPrice": "1.1256",
+      "maxSpread": "0.00000000868"
+    },
+    "GBPUSD": {
+      "initialPrice": "1.323",
+      "maxSpread": "0.00000000868"
+    }
   }
 }
