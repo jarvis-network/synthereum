@@ -220,7 +220,7 @@ contract CreditLineController is
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
       selfMintingDerCount == feePercentages.length,
-      'Number of derivatives and  fee percentages must be the same'
+      'Number of derivatives and fee percentages must be the same'
     );
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     for (uint256 j; j < selfMintingDerCount; j++) {
@@ -239,17 +239,19 @@ contract CreditLineController is
     address[][] calldata feeRecipients,
     uint32[][] calldata feeProportions
   ) external override onlyMaintainerOrSelfMintingFactory {
+    uint256 selfMintingDerCount = selfMintingDerivatives.length;
+    require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
-      selfMintingDerivatives.length == feeRecipients.length,
+      selfMintingDerCount == feeRecipients.length,
       'Mismatch between derivatives to update and fee recipients'
     );
     require(
-      selfMintingDerivatives.length == feeProportions.length,
+      selfMintingDerCount == feeProportions.length,
       'Mismatch between derivatives to update and fee proportions'
     );
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
     // update each derivative fee parameters
-    for (uint256 j; j < selfMintingDerivatives.length; j++) {
+    for (uint256 j; j < selfMintingDerCount; j++) {
       ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
       uint8 version = creditLineDerivative.version();
       require(version == selfMintingVersion, 'Wrong self-minting version');
@@ -268,13 +270,15 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     uint256[] calldata _liquidationRewards
   ) external override onlyMaintainerOrSelfMintingFactory {
+    uint256 selfMintingDerCount = selfMintingDerivatives.length;
+    require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
     require(
-      selfMintingDerivatives.length == _liquidationRewards.length,
+      selfMintingDerCount == _liquidationRewards.length,
       'Mismatch between derivatives to update and liquidation rewards'
     );
 
     bool isMaintainer = hasRole(MAINTAINER_ROLE, msg.sender);
-    for (uint256 j; j < selfMintingDerivatives.length; j++) {
+    for (uint256 j; j < selfMintingDerCount; j++) {
       ICreditLine creditLineDerivative = ICreditLine(selfMintingDerivatives[j]);
       uint8 version = creditLineDerivative.version();
       require(version == selfMintingVersion, 'Wrong self-minting version');
@@ -388,11 +392,11 @@ contract CreditLineController is
     require(
       fee[selfMintingDerivative].feePercentage.rawValue !=
         feePercentage.rawValue,
-      ' Fee percentage is the same'
+      'Fee percentage is the same'
     );
     require(
       fee[selfMintingDerivative].feePercentage.rawValue <= 10**18,
-      ' Fee percentage must be less than 100%'
+      'Fee percentage must be less than 100%'
     );
     fee[selfMintingDerivative].feePercentage = feePercentage;
     emit SetFeePercentage(selfMintingDerivative, feePercentage.rawValue);
