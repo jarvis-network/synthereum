@@ -155,6 +155,36 @@
       "minSponsorTokens": "0",
       "capMintAmount": "",
       "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Swedish Krona",
+      "syntheticSymbol": "jSEK",
+      "priceFeedIdentifier": "SEKUSD",
+      "collateralRequirement": "1025000000000000000",
+      "startingCollateralization": "121220",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Australian Dollar",
+      "syntheticSymbol": "jAUD",
+      "priceFeedIdentifier": "AUDUSD",
+      "collateralRequirement": "1025000000000000000",
+      "startingCollateralization": "789030",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
+    },
+    {
+      "syntheticName": "Jarvis Synthetic Colombian Peso",
+      "syntheticSymbol": "jCOP",
+      "priceFeedIdentifier": "COPUSD",
+      "collateralRequirement": "1025000000000000000",
+      "startingCollateralization": "309",
+      "minSponsorTokens": "0",
+      "capMintAmount": "",
+      "capDepositRatio": ""
     }
   ]
 }
