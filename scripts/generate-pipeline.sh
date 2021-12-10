@@ -60,6 +60,8 @@ variables:
         NETLIFY_SITE_ID: '\$NETLIFY_SITE_ID_BORROWING'
       - TARGET: claim
         NETLIFY_SITE_ID: '\$NETLIFY_SITE_ID_CLAIM'
+      - TARGET: burner-wallet
+        NETLIFY_SITE_ID: '\$NETLIFY_SITE_ID_BURNER_WALLET'
   script:
     - yarn build \$TARGET
     - yarn netlify deploy --dir "/src/apps/\$TARGET/out" --site "\$NETLIFY_SITE_ID" --auth "\$NETLIFY_AUTH_TOKEN" --debug
