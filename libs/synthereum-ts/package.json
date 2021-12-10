@@ -16,6 +16,7 @@
     "@jarvis-network/core-utils": "*",
     "@jarvis-network/synthereum-contracts": "*",
     "mathjs": "^9.4.3",
+    "redux-observable": "^2.0.0",
     "rxjs": "^7.3.0"
   }
 }

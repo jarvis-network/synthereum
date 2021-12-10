@@ -1,4 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
+import type { Epic as RoEpic } from 'redux-observable';
 
 import type Web3 from 'web3';
 
@@ -32,17 +33,11 @@ export interface StateObservable<S> extends Observable<S> {
   value: S;
 }
 
-export declare interface Epic<
+export type Epic<
   Input extends ReduxAction,
-  Output extends ReduxAction,
+  Output extends Input,
   State = unknown
-> {
-  (
-    action$: Observable<Input>,
-    state$: StateObservable<State>,
-    dependencies: Dependencies,
-  ): Observable<Output>;
-}
+> = RoEpic<Input, Output, State, Dependencies>;
 
 export interface Dependencies {
   context$: BehaviorSubject<Context> | null;
