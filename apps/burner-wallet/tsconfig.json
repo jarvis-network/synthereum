@@ -1,8 +1,14 @@
 {
   "extends": "../../tsconfig.frontend.json",
   "compilerOptions": {
-    "types": ["node", "jest"]
+    "baseUrl": ".",
+    "paths": {
+      "@/components/*": ["src/components/*"],
+      "@/data/*": ["src/data/*"],
+      "@/state/*": ["src/state/*"],
+      "@/utils/*": ["src/utils/*"]
+    }
   },
-  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts"],
+  "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]
 }
