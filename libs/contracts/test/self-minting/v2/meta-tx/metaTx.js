@@ -1,6 +1,4 @@
-const {
-  signMetaTxRequest,
-} = require('../../../../../atomic-swap/test/signer.js');
+const { signMetaTxRequest } = require('./signer.js');
 
 let utils = {};
 
