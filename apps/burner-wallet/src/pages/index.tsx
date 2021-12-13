@@ -1,5 +1,8 @@
 import { FC } from 'react';
+import Image from 'next/image';
 import styled from '@emotion/styled';
+
+import Star from '@/img/star.svg';
 
 const StyledPage = styled.div`
   .page {
@@ -22,7 +25,7 @@ const Index: FC = () => (
         {' '}
         If you like Nx, please give it a star:
         <div className="github-star-badge">
-          <img src="/star.svg" className="material-icons" alt="" />
+          <Image src={Star} className="material-icons" />
           Star
         </div>
       </a>

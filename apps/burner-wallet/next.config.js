@@ -3,8 +3,8 @@ const withNx = require('@nrwl/next/plugins/with-nx');
 
 module.exports = withNx({
   nx: {
-    // Set this to false if you do not want to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: true,
+    // SVGR is disabled (https://github.com/nrwl/nx/pull/6634)
+    // in favor of next/image (https://nextjs.org/docs/basic-features/image-optimization)
+    svgr: false,
   },
 });
