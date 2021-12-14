@@ -519,11 +519,19 @@ contract CreditLine is
     override
     returns (bool)
   {
-    return
-      forwarder ==
+    try
       positionManagerData.synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.TrustedForwarder
-      );
+      )
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
   }
 
   //----------------------------------------
