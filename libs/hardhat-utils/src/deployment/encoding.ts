@@ -88,7 +88,7 @@ function encodeLiquidityPool(
 }
 
 function encodeCreditLineDerivative(
-  collateralAddress: string,
+  collateralToken: string,
   priceFeedIdentifier: string,
   syntheticName: string,
   syntheticSymbol: string,
@@ -105,13 +105,13 @@ function encodeCreditLineDerivative(
     [
       {
         params: {
-          collateralAddress: 'address',
+          collateralToken: 'address',
           priceFeedIdentifier: 'bytes32',
           syntheticName: 'string',
           syntheticSymbol: 'string',
           syntheticToken: 'address',
           fee: {
-            feePercentage: { rawValue: 'uint256' },
+            feePercentage: 'uint256',
             feeRecipients: 'address[]',
             feeProportions: 'uint32[]',
             totalFeeProportions: 'uint256',
@@ -129,7 +129,7 @@ function encodeCreditLineDerivative(
     ],
     [
       {
-        collateralAddress,
+        collateralToken,
         priceFeedIdentifier: web3Utils.padRight(
           web3Utils.toHex(priceFeedIdentifier),
           64,
@@ -138,9 +138,7 @@ function encodeCreditLineDerivative(
         syntheticSymbol,
         syntheticToken,
         fee: {
-          feePercentage: {
-            rawValue: web3Utils.toWei(fee.feePercentage.toString()),
-          },
+          feePercentage: fee.feePercentage,
           feeRecipients: fee.feeRecipients,
           feeProportions: fee.feeProportions,
           totalFeeProportions: web3Utils.toWei('0'),
