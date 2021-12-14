@@ -88,16 +88,12 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
 
     assert.equal(
-      (
-        await creditLine.globalPositionData.call()
-      ).rawTotalPositionCollateral.toString(),
+      (await creditLine.getGlobalPositionData.call())[0].toString(),
       expectedSponsorCollateral.toString(),
     );
 
     assert.equal(
-      (
-        await creditLine.globalPositionData.call()
-      ).totalTokensOutstanding.toString(),
+      (await creditLine.getGlobalPositionData.call())[1].toString(),
       expectedSponsorTokens.toString(),
     );
     assert.equal(
@@ -524,14 +520,14 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
 
       assert.equal(
-        (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
+        (await creditLine.getPositionData.call(sponsor))[0].toString(),
         toBN(depositCollateral)
           .add(toBN(collateralAmount))
           .sub(feeAmount)
           .toString(),
       );
       assert.equal(
-        (await creditLine.positions.call(other)).rawCollateral.toString(),
+        (await creditLine.getPositionData.call(other))[0].toString(),
         '0',
       );
     });
@@ -554,11 +550,10 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       const initialSponsorTokens = await tokenCurrency.balanceOf.call(sponsor);
       const initialSponsorTokenDebt = toBN(
-        (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
+        (await creditLine.getPositionData.call(sponsor))[1],
       );
       const initialTotalTokensOutstanding = toBN(
-        (await creditLine.globalPositionData.call()).totalTokensOutstanding
-          .rawValue,
+        (await creditLine.getGlobalPositionData.call())[1],
       );
 
       let repayTokens = toWei('6');
@@ -588,22 +583,17 @@ contract('Synthereum CreditLine ', function (accounts) {
         .sub(repayFeeAmount);
       assert.equal(
         expectedCollAmount.toString(),
-        (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
+        (await creditLine.getPositionData.call(sponsor))[0].toString(),
         'Wrong collateral result',
       );
       const tokensPaid = initialSponsorTokens.sub(
         await tokenCurrency.balanceOf(sponsor),
       );
       const tokenDebtDecreased = initialSponsorTokenDebt.sub(
-        toBN(
-          (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
-        ),
+        toBN((await creditLine.getPositionData.call(sponsor))[1]),
       );
       const totalTokensOutstandingDecreased = initialTotalTokensOutstanding.sub(
-        toBN(
-          (await creditLine.globalPositionData.call()).totalTokensOutstanding
-            .rawValue,
-        ),
+        toBN((await creditLine.getGlobalPositionData.call())[1]),
       );
 
       // Tokens paid back to contract,the token debt decrease and decrease in outstanding should all equal 40 tokens.
@@ -613,8 +603,8 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // Can not request to repay more than their token balance.
       assert.equal(
-        (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
-        toBN(outputTokens).sub(toBN(repayTokens)),
+        (await creditLine.getPositionData.call(sponsor))[1].toString(),
+        toBN(outputTokens).sub(toBN(repayTokens)).toString(),
       );
     });
     it('Emergency shutdown: lifecycle', async function () {
@@ -965,17 +955,15 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // check sponsor position
       let {
-        tokensOutstanding,
-        rawCollateral,
-      } = await creditLine.positions.call(sponsor);
-      tokensOutstanding = toBN(tokensOutstanding.rawValue);
-      rawCollateral = toBN(rawCollateral.rawValue);
+        collateralAmount,
+        tokensAmount,
+      } = await creditLine.getPositionData.call(sponsor);
       assert.equal(
-        tokensOutstanding.toString(),
+        tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        rawCollateral.toString(),
+        collateralAmount.toString(),
         createCollateral.sub(expectedLiquidatedCollateral).toString(),
       );
     });
@@ -1070,8 +1058,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await expectNoExcessCollateralToTrim();
 
     // can create other tokens without collateral staying above cr
-    let collateralBefore = (await creditLine.positions.call(sponsor))
-      .rawCollateral;
+    let collateralBefore = (await creditLine.getPositionData.call(sponsor))[0];
     let opfee = await creditLine.create.call(0, toBN(toWei('2')), {
       from: sponsor,
     });
@@ -1083,9 +1070,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     assert.equal(opfee.toString(), createFeeAmount.toString());
 
     // position data should be reduced by fee amount
-    let position = await creditLine.positions.call(sponsor);
+    let collateralAfter = (await creditLine.getPositionData.call(sponsor))[0];
     assert.equal(
-      position.rawCollateral.toString(),
+      collateralAfter.toString(),
       toBN(collateralBefore.toString()).sub(createFeeAmount).toString(),
     );
 
@@ -1105,7 +1092,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await collateral.approve(creditLine.address, collateralPassed, {
       from: sponsor,
     });
-    collateralBefore = (await creditLine.positions.call(sponsor)).rawCollateral;
+    collateralBefore = (await creditLine.getPositionData.call(sponsor))[0];
     opfee = await creditLine.create.call(collateralPassed, toBN(toWei('10')), {
       from: sponsor,
     });
@@ -1119,9 +1106,9 @@ contract('Synthereum CreditLine ', function (accounts) {
     assert.equal(opfee.toString(), createFeeAmount.toString());
 
     // position data should be reduced by fee amount
-    position = await creditLine.positions.call(sponsor);
+    collateralAfter = (await creditLine.getPositionData.call(sponsor))[0];
     assert.equal(
-      position.rawCollateral.toString(),
+      collateralAfter.toString(),
       toBN(collateralBefore.toString())
         .sub(createFeeAmount)
         .add(collateralPassed)
@@ -1382,14 +1369,14 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.depositTo(sponsor, depositCollateral, { from: other });
 
     assert.equal(
-      (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
+      (await creditLine.getPositionData.call(sponsor))[0].toString(),
       toBN(depositCollateral)
         .add(toBN(collateralAmount))
         .sub(feeAmount)
         .toString(),
     );
     assert.equal(
-      (await creditLine.positions.call(other)).rawCollateral.toString(),
+      (await creditLine.getPositionData.call(other))[0].toString(),
       '0',
     );
   });
@@ -1495,11 +1482,11 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.depositTo(sponsor, toWei('1'), { from: other });
 
     assert.equal(
-      (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
+      (await creditLine.getPositionData.call(sponsor))[0].toString(),
       toWei('11'),
     );
     assert.equal(
-      (await creditLine.positions.call(other)).rawCollateral.toString(),
+      (await creditLine.getPositionData.call(other))[0].toString(),
       toWei('10'),
     );
   });
@@ -1523,7 +1510,7 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.depositTo(sponsor, toWei('1'), { from: sponsor });
 
     assert.equal(
-      (await creditLine.positions(sponsor)).rawCollateral.toString(),
+      (await creditLine.getPositionData(sponsor))[0].toString(),
       toWei('11'),
     );
     await creditLineControllerInstance.setFeePercentage(
@@ -1552,11 +1539,10 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     const initialSponsorTokens = await tokenCurrency.balanceOf.call(sponsor);
     const initialSponsorTokenDebt = toBN(
-      (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
+      (await creditLine.getPositionData.call(sponsor))[1],
     );
     const initialTotalTokensOutstanding = toBN(
-      (await creditLine.globalPositionData.call()).totalTokensOutstanding
-        .rawValue,
+      (await creditLine.getGlobalPositionData.call())[1],
     );
 
     let repayTokens = toWei('6');
@@ -1584,22 +1570,17 @@ contract('Synthereum CreditLine ', function (accounts) {
       .sub(repayFeeAmount);
     assert.equal(
       expectedCollAmount.toString(),
-      (await creditLine.positions.call(sponsor)).rawCollateral.toString(),
+      (await creditLine.getPositionData.call(sponsor))[0].toString(),
       'Wrong collateral result',
     );
     const tokensPaid = initialSponsorTokens.sub(
       await tokenCurrency.balanceOf(sponsor),
     );
     const tokenDebtDecreased = initialSponsorTokenDebt.sub(
-      toBN(
-        (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
-      ),
+      (await creditLine.getPositionData.call(sponsor))[1],
     );
     const totalTokensOutstandingDecreased = initialTotalTokensOutstanding.sub(
-      toBN(
-        (await creditLine.globalPositionData.call()).totalTokensOutstanding
-          .rawValue,
-      ),
+      (await creditLine.getGlobalPositionData.call())[1],
     );
 
     // Tokens paid back to contract,the token debt decrease and decrease in outstanding should all equal 40 tokens.
@@ -1609,8 +1590,8 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     // Can not request to repay more than their token balance.
     assert.equal(
-      (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
-      toBN(outputTokens).sub(toBN(repayTokens)),
+      (await creditLine.getPositionData.call(sponsor))[1].toString(),
+      toBN(outputTokens).sub(toBN(repayTokens)).toString(),
     );
     await truffleAssert.reverts(
       creditLine.repay(toWei('65'), { from: sponsor }),
@@ -1630,8 +1611,8 @@ contract('Synthereum CreditLine ', function (accounts) {
     await creditLine.repay(toBN(toWei('1')), { from: sponsor });
 
     assert.equal(
-      (await creditLine.positions.call(sponsor)).tokensOutstanding.rawValue,
-      minSponsorTokens,
+      (await creditLine.getPositionData.call(sponsor))[1].toString(),
+      minSponsorTokens.toString(),
     );
 
     // As at the minimum sponsor size even removing 1 wei wll reverts.
@@ -2150,17 +2131,15 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // check sponsor position
       let {
-        tokensOutstanding,
-        rawCollateral,
-      } = await creditLine.positions.call(sponsor);
-      tokensOutstanding = toBN(tokensOutstanding.rawValue);
-      rawCollateral = toBN(rawCollateral.rawValue);
+        collateralAmount,
+        tokensAmount,
+      } = await creditLine.getPositionData.call(sponsor);
       assert.equal(
-        tokensOutstanding.toString(),
+        tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        rawCollateral.toString(),
+        collateralAmount.toString(),
         createCollateral.sub(expectedLiquidatedCollateral).toString(),
       );
     });
@@ -2260,17 +2239,15 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // check sponsor position
       let {
-        tokensOutstanding,
-        rawCollateral,
-      } = await creditLine.positions.call(sponsor);
-      tokensOutstanding = toBN(tokensOutstanding.rawValue);
-      rawCollateral = toBN(rawCollateral.rawValue);
+        collateralAmount,
+        tokensAmount,
+      } = await creditLine.getPositionData.call(sponsor);
       assert.equal(
-        tokensOutstanding.toString(),
+        tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        rawCollateral.toString(),
+        collateralAmount.toString(),
         createCollateral.sub(expectedLiquidatedCollateral).toString(),
       );
     });
@@ -2366,17 +2343,15 @@ contract('Synthereum CreditLine ', function (accounts) {
 
       // check sponsor position
       let {
-        tokensOutstanding,
-        rawCollateral,
-      } = await creditLine.positions.call(sponsor);
-      tokensOutstanding = toBN(tokensOutstanding.rawValue);
-      rawCollateral = toBN(rawCollateral.rawValue);
+        collateralAmount,
+        tokensAmount,
+      } = await creditLine.getPositionData.call(sponsor);
       assert.equal(
-        tokensOutstanding.toString(),
+        tokensAmount.toString(),
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        rawCollateral.toString(),
+        collateralAmount.toString(),
         createCollateral.sub(expectedLiquidatedCollateral).toString(),
       );
     });
