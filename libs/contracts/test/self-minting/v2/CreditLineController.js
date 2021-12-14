@@ -5,42 +5,50 @@ const {
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
 const {
-  encodeDerivative,
-  encodePoolOnChainPriceFeed,
-  encodeSelfMintingDerivative,
+  encodeCreditLineDerivative,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
-const { version } = require('yargs');
-const { assert } = require('console');
+const { assert } = require('chai');
+const SynthereumManager = artifacts.require('SynthereumManager');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
+const SynthereumDeployer = artifacts.require('SynthereumDeployer');
+const SynthereumCollateralWhitelist = artifacts.require(
+  'SynthereumCollateralWhitelist',
+);
+const SynthereumIdentifierWhitelist = artifacts.require(
+  'SynthereumIdentifierWhitelist',
+);
 const CreditLineController = artifacts.require('CreditLineController');
-const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
+const SyntheticToken = artifacts.require(
+  'MintableBurnableSyntheticTokenPermit',
+);
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const CreditLine = artifacts.require('CreditLine');
 const CreditLineLib = artifacts.require('CreditLineLib');
-
+const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumChainlinkPriceFeed = artifacts.require(
+  'SynthereumChainlinkPriceFeed',
+);
 const { toWei, toBN, stringToHex, utf8ToHex, hexToUtf8 } = web3Utils;
 
 contract('Self-minting controller', function (accounts) {
-  let derivativeVersion = 2;
+  let version = 2;
 
   // Derivative params
   let collateral, tokenCurrency, creditLine, creditLineLib;
-  const priceFeedIdentifier = web3.utils.padRight(utf8ToHex('JRT/EUR'), 64);
-  const syntheticName = 'Test Synthetic Token';
-  const syntheticSymbol = 'SYNTH';
-  let feePercentage = toBN(toWei('0.002'));
-  let collateralRequirement = toBN(toWei('1.2'));
-  let liquidationRewardPct = toBN(toWei('0.2'));
+  const priceFeedIdentifier = 'EURUSD';
+  const syntheticName = 'Jarvis Euro Token';
+  const syntheticSymbol = 'jEUR';
+  let feePercentage = 0.2;
+  let collateralRequirement = toWei('1.2');
+  let liquidationRewardPct = toWei('0.2');
 
   let feeRecipient = accounts[7];
   let Fee = {
-    feePercentage: feePercentage,
+    feePercentage,
     feeRecipients: [feeRecipient],
     feeProportions: [1],
-    totalFeeProportions: [1],
   };
-  let capMintAmount = toBN(toWei('1000000'));
-  const startingPrice = toBN(toWei('1.02'));
+  let capMintAmount = toWei('100');
   const minSponsorTokens = toWei('5');
   let excessBeneficiary = accounts[4];
   let derivativeAdmins;
@@ -49,527 +57,553 @@ contract('Self-minting controller', function (accounts) {
   //Pool params
   let derivativeAddress = ZERO_ADDRESS;
   let synthereumFinderAddress;
-  let poolVersion;
+  let poolVersion = 2;
   let admin = accounts[0];
   let maintainer = accounts[1];
 
   //Other params
   let creditLineAddress;
-  let controllerInstance;
+  let creditLineControllerInstance;
   let synthereumFinderInstance;
 
   before(async () => {
-    // deploy and link library
-    creditLineLib = await CreditLineLib.deployed();
-    await CreditLine.link(creditLineLib);
-  });
-  beforeEach(async () => {
     // set roles
     roles = {
       admin,
       maintainer,
     };
 
+    // deploy and link library
+    creditLineLib = await CreditLineLib.deployed();
+    await CreditLine.link(creditLineLib);
+
     // Represents WETH or some other token that the sponsor and contracts don't control.
-    collateral = await TestnetSelfMintingERC20.new('test', 'tsc', 18);
-    await collateral.allocateTo(sponsor, toWei('10000000000000'), {
-      from: collateralOwner,
-    });
-    await collateral.allocateTo(other, toWei('10000000000000000'), {
-      from: collateralOwner,
-    });
+    collateral = await TestnetSelfMintingERC20.new('Test Token', 'USDC', 6);
 
     tokenCurrency = await SyntheticToken.new(
       syntheticName,
       syntheticSymbol,
       18,
       {
-        from: admin,
+        from: maintainer,
       },
     );
 
-    // Create a mockOracle and finder. Register the mockMoracle with the finder.
+    deployerInstance = await SynthereumDeployer.deployed();
     synthereumFinderInstance = await SynthereumFinder.deployed();
+    synthereumFinderAddress = synthereumFinderInstance.address;
+    synthereumManagerInstance = await SynthereumManager.deployed();
 
-    creditLineParams = {
-      collateralToken: collateral.address,
-      syntheticToken: tokenCurrency.address,
-      priceFeedIdentifier: priceFeedIdentifier,
-      minSponsorTokens: { rawValue: minSponsorTokens.toString() },
-      excessTokenBeneficiary: beneficiary,
-      version: derivativeVersion,
-      synthereumFinder: synthereumFinderInstance.address,
-    };
+    synthereumCollateralWhitelistInstance = await SynthereumCollateralWhitelist.deployed();
+    await synthereumCollateralWhitelistInstance.addToWhitelist(
+      collateral.address,
+      { from: maintainer },
+    );
 
-    creditLine = await CreditLine.new(creditLineParams, {
-      from: admin,
+    synthereumIdWhitelist = await SynthereumIdentifierWhitelist.deployed();
+    await synthereumIdWhitelist.addToWhitelist(utf8ToHex(priceFeedIdentifier), {
+      from: maintainer,
     });
-    creditLineAddress = creditLine.address;
 
-    controllerInstance = await CreditLineController.new(
-      synthereumFinderAddress,
-      roles,
+    mockAggregator = await MockAggregator.new(8, 140000000);
+    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    await synthereumChainlinkPriceFeed.setAggregator(
+      utf8ToHex(priceFeedIdentifier),
+      mockAggregator.address,
+      { from: roles.maintainer },
+    );
+
+    await tokenCurrency.grantRole(
+      ZERO_ADDRESS,
+      synthereumManagerInstance.address,
+      { from: maintainer },
+    );
+
+    selfMintingPayload = encodeCreditLineDerivative(
+      collateral.address,
+      priceFeedIdentifier,
+      syntheticName,
+      syntheticSymbol,
+      tokenCurrency.address,
+      collateralRequirement,
+      minSponsorTokens,
+      excessBeneficiary,
       version,
-      { from: maintainer },
+      Fee,
+      liquidationRewardPct,
+      capMintAmount,
     );
-    await controllerInstance.setCapMintAmount(
-      [creditLineAddress],
-      [capMintAmount],
-      { from: maintainer },
+
+    creditLineAddress = await deployerInstance.deploySelfMintingDerivative.call(
+      version,
+      selfMintingPayload,
+      { from: roles.maintainer },
     );
-    await controllerInstance.setCollateralRequirement(
-      [creditLineAddress],
-      [collateralRequirement],
-      { from: maintainer },
+    await deployerInstance.deploySelfMintingDerivative(
+      version,
+      selfMintingPayload,
+      { from: roles.maintainer },
     );
-    await controllerInstance.setLiquidationRewardPercentage(
-      [creditLineAddress],
-      [liquidationRewardPct],
-      { from: maintainer },
-    );
-    await creditLineControllerInstance.setFeePercentage(
-      [creditLine.address],
-      [feePercentage],
-      { from: maintainer },
-    );
-    await creditLineControllerInstance.setFeeRecipients(
-      [creditLine.address],
-      [[Fee.feeRecipients]],
-      [[Fee.feeProportions]],
-      { from: maintainer },
-    );
+    creditLine = await CreditLine.at(creditLineAddress);
+    creditLineControllerInstance = await CreditLineController.deployed();
   });
 
-  describe('Cap mint amount', () => {
-    it('Set cap mint amount', async () => {
-      let capMint = await controllerInstance.getCapMintAmount.call(
-        creditLineAddress,
-      );
-      assert.equal(capMint, capMintAmount, 'Wrong initial cap mint amount');
-      const newCapMintAmount = toWei('1000');
-      const updateTx = await controllerInstance.setCapMintAmount(
-        [creditLineAddress],
-        [newCapMintAmount],
-        { from: maintainer },
-      );
-      capMint = await controllerInstance.getCapMintAmount.call(
-        creditLineAddress,
-      );
-      assert.equal(
-        capMint,
-        newCapMintAmount,
-        'Wrong cap mint amount after update',
-      );
-      truffleAssert.eventEmitted(updateTx, 'SetCapMintAmount', ev => {
-        return (
-          ev.selfMintingDerivative == creditLineAddress &&
-          ev.capMintAmount == capMint.toString()
+  context('CreditLineController', async () => {
+    let liquidationRewardPct = toWei('0.2');
+
+    describe('Cap mint amount', () => {
+      it('Set cap mint amount', async () => {
+        let capMint = await creditLineControllerInstance.getCapMintAmount.call(
+          creditLine.address,
         );
-      });
-      await controllerInstance.setCapMintAmount(
-        [creditLineAddress],
-        [capMintAmount],
-        { from: maintainer },
-      );
-    });
-    it('Revert if no self-minting derivatives are passed', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setCapMintAmount([], [], {
-          from: maintainer,
-        }),
-        'No self-minting derivatives passed',
-      );
-    });
-    it('Revert if different number of self-minting derivatives and mint amounts', async () => {
-      const newCapMintAmount = toWei('1000');
-      await truffleAssert.reverts(
-        controllerInstance.setCapMintAmount(
-          [creditLineAddress, firstWrongAddress],
+        assert.equal(capMint, capMintAmount, 'Wrong initial cap mint amount');
+        const newCapMintAmount = toWei('1000');
+        const updateTx = await creditLineControllerInstance.setCapMintAmount(
+          [creditLine.address],
           [newCapMintAmount],
-          {
-            from: maintainer,
-          },
-        ),
-        'Number of derivatives and mint cap amounts must be the same',
-      );
-    });
-    it('Revert if try to set the same cap deposit amount', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setCapMintAmount(
-          [creditLineAddress],
+          { from: maintainer },
+        );
+        capMint = await creditLineControllerInstance.getCapMintAmount.call(
+          creditLine.address,
+        );
+        assert.equal(
+          capMint,
+          newCapMintAmount,
+          'Wrong cap mint amount after update',
+        );
+        truffleAssert.eventEmitted(updateTx, 'SetCapMintAmount', ev => {
+          return (
+            ev.selfMintingDerivative == creditLine.address &&
+            ev.capMintAmount == capMint.toString()
+          );
+        });
+        await creditLineControllerInstance.setCapMintAmount(
+          [creditLine.address],
           [capMintAmount],
-          {
+          { from: maintainer },
+        );
+      });
+      it('Revert if no self-minting derivatives are passed', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCapMintAmount([], [], {
             from: maintainer,
-          },
-        ),
-        'Cap mint amount is the same',
-      );
-    });
-  });
-
-  describe('Collateral Requirement', () => {
-    it('Set collateral requirement', async () => {
-      let collReq = await controllerInstance.getCollateralRequirement.call(
-        creditLineAddress,
-      );
-      assert.equal(
-        collReq,
-        collateralRequirement,
-        'Wrong initial collateral req',
-      );
-      const newCollReq = toWei('1.3');
-      const updateTx = await controllerInstance.setCollateralRequirement(
-        [creditLineAddress],
-        [newCollReq],
-        { from: maintainer },
-      );
-      collReq = await controllerInstance.getCollateralRequirement.call(
-        creditLineAddress,
-      );
-      assert.equal(collReq, newCollReq, 'Wrong coll req after updte');
-      truffleAssert.eventEmitted(updateTx, 'SetCollateralRequirement', ev => {
-        return (
-          ev.selfMintingDerivative == creditLineAddress &&
-          ev.collateralRequirement == collReq.toString()
+          }),
+          'No self-minting derivatives passed',
+        );
+      });
+      it('Revert if different number of self-minting derivatives and mint amounts', async () => {
+        const newCapMintAmount = toWei('1000');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCapMintAmount(
+            [creditLine.address, accounts[7]],
+            [newCapMintAmount],
+            {
+              from: maintainer,
+            },
+          ),
+          'Number of derivatives and mint cap amounts must be the same',
+        );
+      });
+      it('Revert if try to set the same cap deposit amount', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCapMintAmount(
+            [creditLine.address],
+            [capMintAmount],
+            {
+              from: maintainer,
+            },
+          ),
+          'Cap mint amount is the same',
         );
       });
     });
-    it('Revert if no self-minting derivatives are passed', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setCollateralRequirement([], [], {
-          from: maintainer,
-        }),
-        'No self-minting derivatives passed',
-      );
-    });
-    it('Revert if different number of self-minting derivatives and collateral requirements', async () => {
-      const newCollReq = toWei('1000');
-      await truffleAssert.reverts(
-        controllerInstance.setCollateralRequirement(
-          [creditLineAddress, firstWrongAddress],
+
+    describe('Collateral Requirement', () => {
+      it('Set collateral requirement', async () => {
+        let collReq = await creditLineControllerInstance.getCollateralRequirement.call(
+          creditLine.address,
+        );
+        assert.equal(
+          collReq,
+          collateralRequirement,
+          'Wrong initial collateral req',
+        );
+        const newCollReq = toWei('1.3');
+        const updateTx = await creditLineControllerInstance.setCollateralRequirement(
+          [creditLine.address],
           [newCollReq],
-          {
+          { from: maintainer },
+        );
+        collReq = await creditLineControllerInstance.getCollateralRequirement.call(
+          creditLine.address,
+        );
+        assert.equal(collReq, newCollReq, 'Wrong coll req after updte');
+        truffleAssert.eventEmitted(updateTx, 'SetCollateralRequirement', ev => {
+          return (
+            ev.selfMintingDerivative == creditLine.address &&
+            ev.collateralRequirement == collReq.toString()
+          );
+        });
+      });
+      it('Revert if no self-minting derivatives are passed', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCollateralRequirement([], [], {
             from: maintainer,
-          },
-        ),
-        'Number of derivatives and overcollaterals must be the same',
-      );
-    });
-    it('Revert if try to set the same collateral requirement as existing', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setCollateralRequirement(
-          [creditLineAddress],
-          [collateralRequirement],
-          {
-            from: maintainer,
-          },
-        ),
-        'Collateral requirement is the same',
-      );
-    });
-  });
-
-  describe('Liquidation Reward', () => {
-    it('Set liquidation reward', async () => {
-      let liqRew = await controllerInstance.getLiquidationRewardPercentage.call(
-        creditLineAddress,
-      );
-      assert.equal(
-        liqRew,
-        liquidationRewardPct,
-        'Wrong initial collateral req',
-      );
-      const newLiqRew = toWei('1.3');
-      const updateTx = await controllerInstance.setLiquidationRewardPercentage(
-        [creditLineAddress],
-        [newLiqRew],
-        { from: maintainer },
-      );
-      liqRew = await controllerInstance.getLiquidationRewardPercentage.call(
-        creditLineAddress,
-      );
-      assert.equal(liqRew, newLiqRew, 'Wrong liq rew after updte');
-      truffleAssert.eventEmitted(updateTx, 'SetLiquidationReward', ev => {
-        return (
-          ev.selfMintingDerivative == creditLineAddress &&
-          ev.liquidationReward == newLiqRew.toString()
+          }),
+          'No self-minting derivatives passed',
+        );
+      });
+      it('Revert if different number of self-minting derivatives and collateral requirements', async () => {
+        const newCollReq = toWei('1000');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCollateralRequirement(
+            [creditLine.address, accounts[7]],
+            [newCollReq],
+            {
+              from: maintainer,
+            },
+          ),
+          'Number of derivatives and overcollaterals must be the same',
+        );
+      });
+      it('Revert if try to set the same collateral requirement as existing', async () => {
+        const newCollReq = toWei('1.3');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCollateralRequirement(
+            [creditLine.address],
+            [newCollReq],
+            {
+              from: maintainer,
+            },
+          ),
+          'Collateral requirement is the same',
         );
       });
     });
-    it('Revert if no self-minting derivatives are passed', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setLiquidationRewardPercentage([], [], {
-          from: maintainer,
-        }),
-        'No self-minting derivatives passed',
-      );
-    });
-    it('Revert if different number of self-minting derivatives and collateral requirements', async () => {
-      const newLiqRew = toWei('1.3');
-      await truffleAssert.reverts(
-        controllerInstance.setLiquidationRewardPercentage(
-          [creditLineAddress, firstWrongAddress],
+
+    describe('Liquidation Reward', () => {
+      it('Set liquidation reward', async () => {
+        let liqRew = await creditLineControllerInstance.getLiquidationRewardPercentage.call(
+          creditLine.address,
+        );
+        assert.equal(
+          liqRew,
+          liquidationRewardPct,
+          'Wrong initial collateral req',
+        );
+        const newLiqRew = toWei('0.3');
+        const updateTx = await creditLineControllerInstance.setLiquidationRewardPercentage(
+          [creditLine.address],
           [newLiqRew],
-          {
+          { from: maintainer },
+        );
+        liqRew = await creditLineControllerInstance.getLiquidationRewardPercentage.call(
+          creditLine.address,
+        );
+        assert.equal(liqRew, newLiqRew, 'Wrong liq rew after updte');
+        truffleAssert.eventEmitted(updateTx, 'SetLiquidationReward', ev => {
+          return (
+            ev.selfMintingDerivative == creditLine.address &&
+            ev.liquidationReward == newLiqRew.toString()
+          );
+        });
+      });
+      it('Revert if no self-minting derivatives are passed', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setLiquidationRewardPercentage([], [], {
             from: maintainer,
-          },
-        ),
-        'Mismatch between derivatives to update and liquidation rewards',
-      );
-    });
-    it('Revert if try to set the same collateral requirement as existing', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setLiquidationRewardPercentage(
-          [creditLineAddress],
-          [liquidationRewardPct],
-          {
-            from: maintainer,
-          },
-        ),
-        'Liquidation reward is the same',
-      );
-    });
-  });
-
-  describe('Fees', () => {
-    it('Set fee percentage', async () => {
-      let feeInfo = await controllerInstance.getFeeInfo.call(creditLineAddress);
-      assert.equal(
-        feeInfo.feePercentage,
-        feePercentage,
-        'Wrong initial fee percentage',
-      );
-      const newFeePerc = toWei('1.3');
-      const updateTx = await controllerInstance.setFeePercentage(
-        [creditLineAddress],
-        [newFeePerc],
-        { from: maintainer },
-      );
-      feeInfo = await controllerInstance.getFeeInfo.call(creditLineAddress);
-      assert.equal(
-        feeInfo.feePercentage,
-        newFeePerc,
-        'Wrong fee percentage after updte',
-      );
-      truffleAssert.eventEmitted(updateTx, 'SetFeePercentage', ev => {
-        return (
-          ev.selfMintingDerivative == creditLineAddress &&
-          ev.feePercentage == newFeePerc.toString()
+          }),
+          'No self-minting derivatives passed',
+        );
+      });
+      it('Revert if different number of self-minting derivatives and collateral requirements', async () => {
+        const newLiqRew = toWei('1.3');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setLiquidationRewardPercentage(
+            [creditLine.address, accounts[7]],
+            [newLiqRew],
+            {
+              from: maintainer,
+            },
+          ),
+          'Mismatch between derivatives to update and liquidation rewards',
+        );
+      });
+      it('Revert if try to set the same collateral requirement as existing', async () => {
+        const newLiqRew = toWei('0.3');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setLiquidationRewardPercentage(
+            [creditLine.address],
+            [newLiqRew],
+            {
+              from: maintainer,
+            },
+          ),
+          'Liquidation reward is the same',
         );
       });
     });
-    it('Revert if no self-minting derivatives are passed', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setFeePercentage([], [], {
-          from: maintainer,
-        }),
-        'No self-minting derivatives passed',
-      );
-    });
-    it('Revert if different number of self-minting derivatives and fee percentages', async () => {
-      const newFeePerc = toWei('1.3');
-      await truffleAssert.reverts(
-        controllerInstance.setFeePercentage(
-          [creditLineAddress, firstWrongAddress],
+
+    describe('Fees', () => {
+      it('Set fee percentage', async () => {
+        let feeInfo = await creditLineControllerInstance.getFeeInfo.call(
+          creditLine.address,
+        );
+        assert.equal(
+          feeInfo.feePercentage,
+          toWei(feePercentage.toString()),
+          'Wrong initial fee percentage',
+        );
+        const newFeePerc = toWei('0.3');
+        const updateTx = await creditLineControllerInstance.setFeePercentage(
+          [creditLine.address],
           [newFeePerc],
-          {
+          { from: maintainer },
+        );
+        feeInfo = await creditLineControllerInstance.getFeeInfo.call(
+          creditLine.address,
+        );
+        assert.equal(
+          feeInfo.feePercentage,
+          newFeePerc,
+          'Wrong fee percentage after updte',
+        );
+        truffleAssert.eventEmitted(updateTx, 'SetFeePercentage', ev => {
+          return (
+            ev.selfMintingDerivative == creditLine.address &&
+            ev.feePercentage == newFeePerc.toString()
+          );
+        });
+      });
+      it('Revert if no self-minting derivatives are passed', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeePercentage([], [], {
             from: maintainer,
-          },
-        ),
-        'Number of derivatives and fee percentages must be the same',
-      );
-    });
-    it('Revert if try to set fee percentage greater than 100%', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setFeePercentage(
-          [creditLineAddress],
-          [toWei('110')],
-          {
-            from: maintainer,
-          },
-        ),
-        'Fee percentage must be less than 100%',
-      );
-    });
-    it('Revert if try to set the same fee percentage as existing', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setFeePercentage(
-          [creditLineAddress],
-          [feePercentage],
-          {
-            from: maintainer,
-          },
-        ),
-        'Fee percentage is the same',
-      );
-    });
-    it('Set fee recipients', async () => {
-      let feeInfo = await controllerInstance.getFeeInfo.call(creditLineAddress);
-      assert.equal(
-        feeInfo.feeProportions,
-        Fee.feeProportions,
-        'Wrong initial fee proportions',
-      );
-      assert.equal(
-        feeInfo.feeRecipients,
-        Fee.feeRecipients,
-        'Wrong initial fee recipients',
-      );
+          }),
+          'No self-minting derivatives passed',
+        );
+      });
+      it('Revert if different number of self-minting derivatives and fee percentages', async () => {
+        const newFeePerc = toWei('1.3');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeePercentage(
+            [creditLine.address, accounts[7]],
+            [newFeePerc],
+            {
+              from: maintainer,
+            },
+          ),
+          'Number of derivatives and fee percentages must be the same',
+        );
+      });
+      it('Revert if try to set fee percentage greater than 100%', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeePercentage(
+            [creditLine.address],
+            [toWei('110')],
+            {
+              from: maintainer,
+            },
+          ),
+          'Fee percentage must be less than 100%',
+        );
+      });
+      it('Revert if try to set the same fee percentage as existing', async () => {
+        const newFeePerc = toWei('0.3');
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeePercentage(
+            [creditLine.address],
+            [newFeePerc],
+            {
+              from: maintainer,
+            },
+          ),
+          'Fee percentage is the same',
+        );
+      });
+      it('Set fee recipients', async () => {
+        let feeInfo = await creditLineControllerInstance.getFeeInfo.call(
+          creditLine.address,
+        );
+        assert.equal(
+          feeInfo.feeProportions,
+          Fee.feeProportions.toString(),
+          'Wrong initial fee proportions',
+        );
+        assert.equal(
+          feeInfo.feeRecipients[0],
+          Fee.feeRecipients[0],
+          'Wrong initial fee recipients',
+        );
 
-      const newFeeRecipients = { recipients: [accounts[5]], proportions: [1] };
-      const updateTx = await controllerInstance.setFeeRecipients(
-        [creditLineAddress],
-        [[newFeeRecipients.feeRecipients]],
-        [[newFeeRecipients.feeProportions]],
-        { from: maintainer },
-      );
-      feeInfo = await controllerInstance.getFeeInfo.call(creditLineAddress);
-      assert.equal(
-        feeInfo.feeProportions,
-        newFeeRecipients.feeProportions,
-        'Wrong fee proportions after update',
-      );
-      assert.equal(
-        feeInfo.feeRecipients,
-        newFeeRecipients.feeRecipients,
-        'Wrong fee recipients after update',
-      );
+        const newFeeRecipients = {
+          recipients: [accounts[5]],
+          proportions: [1],
+        };
+        const updateTx = await creditLineControllerInstance.setFeeRecipients(
+          [creditLine.address],
+          [newFeeRecipients.recipients],
+          [newFeeRecipients.proportions],
+          { from: maintainer },
+        );
+        feeInfo = await creditLineControllerInstance.getFeeInfo.call(
+          creditLine.address,
+        );
+        assert.equal(
+          feeInfo.feeProportions[0],
+          newFeeRecipients.proportions[0].toString(),
+          'Wrong fee proportions after update',
+        );
+        assert.equal(
+          feeInfo.feeRecipients[0],
+          newFeeRecipients.recipients[0],
+          'Wrong fee recipients after update',
+        );
 
-      truffleAssert.eventEmitted(updateTx, 'SetFeeRecipients', ev => {
-        return (
-          ev.selfMintingDerivative == creditLineAddress &&
-          ev.feeRecipient == newFeeRecipients.recipients &&
-          ev.feeProportions == newFeeRecipients.feeProportions
+        truffleAssert.eventEmitted(updateTx, 'SetFeeRecipients', ev => {
+          return (
+            ev.selfMintingDerivative == creditLine.address &&
+            ev.feeRecipient == newFeeRecipients.recipients[0] &&
+            ev.feeProportions == newFeeRecipients.proportions[0].toString()
+          );
+        });
+      });
+      it('Revert if no self-minting derivatives are passed', async () => {
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeeRecipients([], [[]], [[]], {
+            from: maintainer,
+          }),
+          'No self-minting derivatives passed',
+        );
+      });
+      it('Revert if different number of self-minting derivatives and fee recipients', async () => {
+        const newFeeRecipients = {
+          recipients: [accounts[5]],
+          proportions: [1],
+        };
+
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeeRecipients(
+            [creditLine.address, accounts[7]],
+            [[]],
+            [[]],
+            { from: maintainer },
+          ),
+          'Mismatch between derivatives to update and fee recipients',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeeRecipients(
+            [creditLine.address, accounts[7]],
+            [newFeeRecipients.recipients, newFeeRecipients.recipients],
+            [[]],
+            { from: maintainer },
+          ),
+          'Mismatch between derivatives to update and fee proportions',
         );
       });
     });
-    it('Revert if no self-minting derivatives are passed', async () => {
+
+    // it('Revert if self-minting derivative is not registred', async () => {
+    //   const newSelfMintingRegistry = await SelfMintingRegistry.new(
+    //     synthereumFinderAddress,
+    //   );
+    //   await synthereumFinderInstance.changeImplementationAddress(
+    //     web3Utils.stringToHex('SelfMintingRegistry'),
+    //     newSelfMintingRegistry.address,
+    //     { from: maintainer },
+    //   );
+    //   const notRegistredDerivative = creditLine.address;
+    //   await truffleAssert.reverts(
+    //     creditLineControllerInstance.setCapMintAmount(
+    //       [creditLine.address],
+    //       [capMintAmount],
+    //       { from: maintainer },
+    //     ),
+    //     'Self-minting derivative not registred',
+    //   );
+    //   await truffleAssert.reverts(
+    //     creditLineControllerInstance.setFeePercentage(
+    //       [notRegistredDerivative],
+    //       [feePercentage],
+    //       {
+    //         from: maintainer,
+    //       },
+    //     ),
+    //     'Self-minting derivative not registred',
+    //   );
+    //   await truffleAssert.reverts(
+    //     creditLineControllerInstance.setCollateralRequirement(
+    //       [creditLine.address],
+    //       [collateralRequirement],
+    //       { from: maintainer },
+    //     ),
+    //     'Self-minting derivative not registred',
+    //   );
+    //   await truffleAssert.reverts(
+    //     creditLineControllerInstance.setLiquidationRewardPercentage(
+    //       [creditLine.address],
+    //       [liquidationRewardPct],
+    //       { from: maintainer },
+    //     ),
+    //     'Self-minting derivative not registred',
+    //   );
+
+    //   await truffleAssert.reverts(
+    //     creditLineControllerInstance.setFeeRecipients(
+    //       [creditLine.address],
+    //       [[Fee.feeRecipients]],
+    //       [[Fee.feeProportions]],
+    //       { from: maintainer },
+    //     ),
+    //     'Self-minting derivative not registred',
+    //   );
+    // });
+
+    it('Revert if sender is not maintainer', async () => {
+      const newWrongValue = toWei('0.11');
+
       await truffleAssert.reverts(
-        controllerInstance.setFeeRecipients([], [[]], [[]], {
-          from: maintainer,
-        }),
-        'No self-minting derivatives passed',
+        creditLineControllerInstance.setCapMintAmount(
+          [creditLine.address],
+          [newWrongValue],
+          { from: accounts[6] },
+        ),
+        'Sender must be the maintainer or a self-minting factory',
+      );
+      await truffleAssert.reverts(
+        creditLineControllerInstance.setFeePercentage(
+          [creditLine.address],
+          [newWrongValue],
+          { from: accounts[6] },
+        ),
+        'Sender must be the maintainer or a self-minting factory',
+      );
+      await truffleAssert.reverts(
+        creditLineControllerInstance.setCollateralRequirement(
+          [creditLine.address],
+          [newWrongValue],
+          { from: accounts[6] },
+        ),
+        'Sender must be the maintainer or a self-minting factory',
+      );
+      await truffleAssert.reverts(
+        creditLineControllerInstance.setLiquidationRewardPercentage(
+          [creditLine.address],
+          [newWrongValue],
+          { from: accounts[6] },
+        ),
+        'Sender must be the maintainer or a self-minting factory',
+      );
+
+      await truffleAssert.reverts(
+        creditLineControllerInstance.setFeeRecipients(
+          [creditLine.address],
+          [Fee.feeRecipients],
+          [Fee.feeProportions],
+          { from: accounts[6] },
+        ),
+        'Sender must be the maintainer or a self-minting factory',
       );
     });
-    it('Revert if different number of self-minting derivatives and fee recipients', async () => {
-      await truffleAssert.reverts(
-        controllerInstance.setFeeRecipients(
-          [creditLineAddress, firstWrongAddress],
-          [[]],
-          [[]],
-          { from: maintainer },
-        ),
-        'Mismatch between derivatives to update and fee recipients',
-      );
-      await truffleAssert.reverts(
-        controllerInstance.setFeeRecipients(
-          [creditLineAddress, firstWrongAddress],
-          [[newFeeRecipients.feeRecipients], [newFeeRecipients.feeRecipients]],
-          [[]],
-          { from: maintainer },
-        ),
-        'Mismatch between derivatives to update and fee proportions',
-      );
-    });
-  });
-  it('Revert if self-minting derivative is not registred', async () => {
-    const newSelfMintingRegistry = await SelfMintingRegistry.new(
-      synthereumFinderAddress,
-    );
-    await synthereumFinderInstance.changeImplementationAddress(
-      web3Utils.stringToHex('SelfMintingRegistry'),
-      newSelfMintingRegistry.address,
-      { from: maintainer },
-    );
-    const notRegistredDerivative = creditLineAddress;
-    await truffleAssert.reverts(
-      controllerInstance.setCapMintAmount(
-        [creditLineAddress],
-        [capMintAmount],
-        { from: maintainer },
-      ),
-      'Self-minting derivative not registred',
-    );
-    await truffleAssert.reverts(
-      controllerInstance.setFeePercentage(
-        [notRegistredDerivative],
-        [feePercentage],
-        {
-          from: maintainer,
-        },
-      ),
-      'Self-minting derivative not registred',
-    );
-    await truffleAssert.reverts(
-      controllerInstance.setCollateralRequirement(
-        [creditLineAddress],
-        [collateralRequirement],
-        { from: maintainer },
-      ),
-      'Self-minting derivative not registred',
-    );
-    await truffleAssert.reverts(
-      controllerInstance.setLiquidationRewardPercentage(
-        [creditLineAddress],
-        [liquidationRewardPct],
-        { from: maintainer },
-      ),
-      'Self-minting derivative not registred',
-    );
-
-    await truffleAssert.reverts(
-      creditLineControllerInstance.setFeeRecipients(
-        [creditLine.address],
-        [[Fee.feeRecipients]],
-        [[Fee.feeProportions]],
-        { from: maintainer },
-      ),
-      'Self-minting derivative not registred',
-    );
-  });
-
-  it('Revert if sender is not maintainer', async () => {
-    await truffleAssert.reverts(
-      controllerInstance.setCapMintAmount(
-        [creditLineAddress],
-        [capMintAmount],
-        { from: accounts[6] },
-      ),
-      'Sender must be the maintainer',
-    );
-    await truffleAssert.reverts(
-      controllerInstance.setFeePercentage(
-        [notRegistredDerivative],
-        [feePercentage],
-        { from: accounts[6] },
-      ),
-      'Sender must be the maintainer',
-    );
-    await truffleAssert.reverts(
-      controllerInstance.setCollateralRequirement(
-        [creditLineAddress],
-        [collateralRequirement],
-        { from: accounts[6] },
-      ),
-      'Sender must be the maintainer',
-    );
-    await truffleAssert.reverts(
-      controllerInstance.setLiquidationRewardPercentage(
-        [creditLineAddress],
-        [liquidationRewardPct],
-        { from: accounts[6] },
-      ),
-      'Sender must be the maintainer',
-    );
-
-    await truffleAssert.reverts(
-      creditLineControllerInstance.setFeeRecipients(
-        [creditLine.address],
-        [[Fee.feeRecipients]],
-        [[Fee.feeProportions]],
-        { from: accounts[6] },
-      ),
-      'Sender must be the maintainer',
-    );
   });
 });
