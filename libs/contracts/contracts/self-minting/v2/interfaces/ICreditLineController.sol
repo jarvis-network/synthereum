@@ -101,4 +101,27 @@ interface ICreditLineController {
     external
     view
     returns (ICreditLineStorage.Fee memory fee);
+
+  /**
+   * @notice Gets the fee percentage of a self-minting derivative
+   * @param selfMintingDerivative Self-minting derivative
+   * @return feePercentage value
+   */
+  function feePercentage(address selfMintingDerivative)
+    external
+    view
+    returns (uint256);
+
+  /**
+   * @notice Returns fee recipients info
+   * @return Addresses, weigths and total of weigtht
+   */
+  function feeRecipientsInfo(address selfMintingDerivative)
+    external
+    view
+    returns (
+      address[] memory,
+      uint32[] memory,
+      uint256
+    );
 }
