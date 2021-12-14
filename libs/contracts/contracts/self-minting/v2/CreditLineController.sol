@@ -316,6 +316,33 @@ contract CreditLineController is
     return fee[selfMintingDerivative];
   }
 
+  function feePercentage(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return fee[selfMintingDerivative].feePercentage.rawValue;
+  }
+
+  function feeRecipientsInfo(address selfMintingDerivative)
+    external
+    view
+    override
+    returns (
+      address[] memory,
+      uint32[] memory,
+      uint256
+    )
+  {
+    ICreditLineStorage.Fee storage _feeData = fee[selfMintingDerivative];
+    return (
+      _feeData.feeRecipients,
+      _feeData.feeProportions,
+      _feeData.totalFeeProportions
+    );
+  }
+
   function getCapMintAmount(address selfMintingDerivative)
     external
     view
