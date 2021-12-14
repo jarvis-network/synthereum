@@ -496,6 +496,8 @@ library CreditLineLib {
       positionManagerData.emergencyShutdownPrice;
     IMintableBurnableERC20 tokenCurrency = positionManagerData.tokenCurrency;
     FixedPoint.Unsigned memory rawCollateral = positionData.rawCollateral;
+    FixedPoint.Unsigned memory totalCollateral =
+      globalPositionData.rawTotalPositionCollateral;
 
     // Get caller's tokens balance
     FixedPoint.Unsigned memory tokensToRedeem =
@@ -525,14 +527,14 @@ library CreditLineLib {
     // Take the min of the remaining collateral and the collateral "owed". If the contract is undercapitalized,
     // the caller will get as much collateral as the contract can pay out.
     amountWithdrawn = FixedPoint.min(
-      globalPositionData.rawTotalPositionCollateral,
+      totalCollateral,
       totalRedeemableCollateral
     );
 
     // Decrement total contract collateral and outstanding debt.
-    globalPositionData.rawTotalPositionCollateral = globalPositionData
-      .rawTotalPositionCollateral
-      .sub(amountWithdrawn);
+    globalPositionData.rawTotalPositionCollateral = totalCollateral.sub(
+      amountWithdrawn
+    );
     globalPositionData.totalTokensOutstanding = globalPositionData
       .totalTokensOutstanding
       .sub(tokensToRedeem);
