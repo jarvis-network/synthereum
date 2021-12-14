@@ -47,7 +47,7 @@ const config = {
 
 // set hardat forking
 if (process.env.FORKCHAINID !== undefined) {
-  setForkingUrl(config, parseInt(process.env.FORKCHAINID, 10));
+  setForkingUrl(config, parseInt(process.env.FORKCHAINID, 10), 13531307);
 }
 
 addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
