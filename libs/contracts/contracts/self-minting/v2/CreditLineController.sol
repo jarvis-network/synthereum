@@ -183,8 +183,6 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capMintAmounts
   ) external override onlyMaintainerOrSelfMintingFactory {
-    console.log('her');
-
     require(
       selfMintingDerivatives.length > 0,
       'No self-minting derivatives passed'
