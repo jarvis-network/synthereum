@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 import type { HardhatUserConfig } from 'hardhat/config';
 
 import {
@@ -7,6 +9,7 @@ import {
 } from '@jarvis-network/core-utils/dist/eth/networks';
 
 import { getInfuraEndpoint } from '@jarvis-network/core-utils/dist/apis/infura';
+import { throwError } from '@jarvis-network/core-utils/dist/base/asserts';
 
 export function addPublicNetwork(
   config: HardhatUserConfig,
@@ -52,6 +55,15 @@ export function addPublicNetwork(
   };
 }
 
+function isValidUrl(s: string | undefined): s is string {
+  try {
+    const _ = new URL(s ?? '');
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 // set hardhat default network to a forking url if the env is specified
 export function setForkingUrl(
   config: HardhatUserConfig,
@@ -66,10 +78,17 @@ export function setForkingUrl(
   const gitlabForkEnvVariable = `ETHEREUM_${networkName.toUpperCase()}_RPC`;
 
   const forkEnvVariable = process.env[gitlabForkEnvVariable] ?? undefined;
-  if (forkEnvVariable !== undefined) {
-    config.networks ??= {};
-    config.networks.hardhat ??= {};
-    config.networks.hardhat.forking = { url: forkEnvVariable, enabled: true };
-    config.networks.hardhat.chainId = chainId;
+
+  if (!isValidUrl(forkEnvVariable)) {
+    throwError(`'${gitlabForkEnvVariable}' is not defined, or a valid URL`);
   }
+
+  config.networks ??= {};
+  config.networks.hardhat ??= {};
+  config.networks.hardhat.forking = { url: forkEnvVariable, enabled: true };
+  config.networks.hardhat.chainId = chainId;
+  console.log(
+    `'${gitlabForkEnvVariable}' env variable is specified -> updating Hardhat Network settings to:`,
+    config.networks.hardhat,
+  );
 }
