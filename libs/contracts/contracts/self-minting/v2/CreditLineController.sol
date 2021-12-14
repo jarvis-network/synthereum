@@ -214,7 +214,7 @@ contract CreditLineController is
 
   function setFeePercentage(
     address[] calldata selfMintingDerivatives,
-    FixedPoint.Unsigned[] calldata feePercentages
+    uint256[] calldata feePercentages
   ) external override onlyMaintainerOrSelfMintingFactory {
     uint256 selfMintingDerCount = selfMintingDerivatives.length;
     require(selfMintingDerCount > 0, 'No self-minting derivatives passed');
@@ -414,19 +414,15 @@ contract CreditLineController is
 
   function _setFeePercentage(
     address selfMintingDerivative,
-    FixedPoint.Unsigned calldata feePercentage
+    uint256 feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage.rawValue !=
-        feePercentage.rawValue,
+      fee[selfMintingDerivative].feePercentage.rawValue != feePercentage,
       'Fee percentage is the same'
     );
-    require(
-      fee[selfMintingDerivative].feePercentage.rawValue <= 10**18,
-      'Fee percentage must be less than 100%'
-    );
-    fee[selfMintingDerivative].feePercentage = feePercentage;
-    emit SetFeePercentage(selfMintingDerivative, feePercentage.rawValue);
+    require(feePercentage <= 10**18, 'Fee percentage must be less than 100%');
+    fee[selfMintingDerivative].feePercentage.rawValue = feePercentage;
+    emit SetFeePercentage(selfMintingDerivative, feePercentage);
   }
 
   function _setCapMintAmount(

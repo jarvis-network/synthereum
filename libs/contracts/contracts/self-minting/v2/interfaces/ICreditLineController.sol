@@ -37,7 +37,7 @@ interface ICreditLineController {
    */
   function setFeePercentage(
     address[] calldata selfMintingDerivatives,
-    FixedPoint.Unsigned[] calldata feePercentages
+    uint256[] calldata feePercentages
   ) external;
 
   /**
