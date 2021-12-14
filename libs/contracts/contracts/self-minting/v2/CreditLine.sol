@@ -384,6 +384,24 @@ contract CreditLine is
     fee = positionManagerData.feeInfo();
   }
 
+  function getTotalFeeAmount()
+    external
+    view
+    override
+    returns (uint256 totalFee)
+  {
+    totalFee = feeStatus.totalFeeAmount.rawValue;
+  }
+
+  function getUserFeeGained(address feeGainer)
+    external
+    view
+    override
+    returns (uint256 feeGained)
+  {
+    feeGained = feeStatus.feeGained[feeGainer].rawValue;
+  }
+
   function getLiquidationReward()
     external
     view
@@ -404,11 +422,6 @@ contract CreditLine is
       .rawValue;
   }
 
-  // /**
-  //  * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
-  //  * @dev This will drain down to the amount of tracked collateral and drain the full balance of any other token.
-  //  * @param token address of the ERC20 token whose excess balance should be drained.
-  //  */
   function trimExcess(IERC20 token)
     external
     nonReentrant
