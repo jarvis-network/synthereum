@@ -672,7 +672,7 @@ library CreditLineLib {
       );
 
     FixedPoint.Unsigned memory _collateralCoverage =
-      positionData.tokensOutstanding.div(
+      positionData.rawCollateral.div(
         calculateCollateralAmount(self, positionData.tokensOutstanding)
       );
 
