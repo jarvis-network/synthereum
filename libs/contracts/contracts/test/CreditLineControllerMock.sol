@@ -208,12 +208,10 @@ contract CreditLineControllerMock {
     uint256 feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage.rawValue != feePercentage,
+      fee[selfMintingDerivative].feePercentage != feePercentage,
       ' fee percentage is the same'
     );
-    fee[selfMintingDerivative].feePercentage = FixedPoint.Unsigned(
-      feePercentage
-    );
+    fee[selfMintingDerivative].feePercentage = feePercentage;
   }
 
   function _setCapMintAmount(
