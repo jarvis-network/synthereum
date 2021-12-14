@@ -92,7 +92,7 @@ contract('Self-minting creator', function (accounts) {
     );
 
     manager = (await SynthereumManager.deployed()).address;
-    const factoryInterface = await web3.utils.stringToHex('CreditLineFactory');
+    const factoryInterface = await web3.utils.stringToHex('SelfMintingFactory');
     synthereumFactoryVersioning = await SynthereumFactoryVersioning.deployed();
     await synthereumFactoryVersioning.setFactory(
       factoryInterface,
@@ -133,370 +133,168 @@ contract('Self-minting creator', function (accounts) {
   describe('Revert conditions', async () => {
     it('Revert if no token name is passed', async () => {
       const wrongSyntName = '';
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        wrongSyntName,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
+        syntheticName: wrongSyntName,
         syntheticSymbol,
-        synthTokenAddress,
+        syntheticToken: syntheticTokenAddress,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
         'Missing synthetic name',
       );
     });
     it('Revert if no token symbol is passed', async () => {
       const wrongSyntSymbol = '';
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
         syntheticName,
-        wrongSyntSymbol,
-        synthTokenAddress,
+        syntheticSymbol: wrongSyntSymbol,
+        syntheticToken: syntheticTokenAddress,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
         'Missing synthetic symbol',
       );
     });
     it('Revert if no synthetic asset is passed', async () => {
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
         syntheticName,
         syntheticSymbol,
-        ZERO_ADDRESS,
+        syntheticToken: ZERO_ADDRESS,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
         'Synthetic token address cannot be 0x00',
       );
     });
     it('Revert if wrong token name is passed', async () => {
       const wrongSyntName = 'EUR wrong coin';
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        wrongSyntName,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
+        syntheticName: wrongSyntName,
         syntheticSymbol,
-        synthTokenAddress,
+        syntheticToken: syntheticTokenAddress,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
         'Wrong synthetic token name',
       );
     });
     it('Revert if wrong token symbol is passed', async () => {
       const wrongSyntSymbol = 'jCHF';
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
         syntheticName,
-        wrongSyntSymbol,
-        synthTokenAddress,
+        syntheticSymbol: wrongSyntSymbol,
+        syntheticToken: syntheticTokenAddress,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
         'Wrong synthetic token symbol',
       );
     });
 
     it('Revert if token with no 18 decimals is passed', async () => {
-      const wrongDecimalsContract = await MintableBurnableSyntheticToken.new(
+      const wrongDecimalsContract = await SyntheticToken.new(
         syntheticName,
         syntheticSymbol,
         8,
       );
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
         syntheticName,
         syntheticSymbol,
-        wrongDecimalsContract.address,
+        syntheticToken: wrongDecimalsContract.address,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Decimals of synthetic token must be 18',
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
+        'Synthetic token has more or less than 18 decimals',
       );
     });
-    it('Revert if null withdrawal liveness is passed', async () => {
-      const wrongWithdrawalLiveness = 0;
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        syntheticName,
-        syntheticSymbol,
-        synthTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        wrongWithdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
-        capMintAmount,
-        capDepositRatio,
-      );
-      await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Withdrawal liveness cannot be 0',
-      );
-    });
-    it('Revert if null liquidation liveness is passed', async () => {
-      const wrongLiquidationLiveness = 0;
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        syntheticName,
-        syntheticSymbol,
-        synthTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        wrongLiquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
-        capMintAmount,
-        capDepositRatio,
-      );
-      await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Liquidation liveness cannot be 0',
-      );
-    });
+
     it('Revert if excess token beneficiary can not be zero address', async () => {
       const wrongExcessTokenBeneficiary = ZERO_ADDRESS;
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
         syntheticName,
         syntheticSymbol,
-        synthTokenAddress,
+        syntheticToken: syntheticTokenAddress,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        wrongExcessTokenBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: wrongExcessTokenBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
-      await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Token Beneficiary cannot be 0x00',
-      );
-    });
-    it('Revert if fee recipient is zero address', async () => {
-      const wrongDaoFeeRecipient = ZERO_ADDRESS;
-      const wrongDaoFee = {
-        feePercentage,
-        feeRecipient: wrongDaoFeeRecipient,
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
       };
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        syntheticName,
-        syntheticSymbol,
-        synthTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        wrongDaoFee,
-        capMintAmount,
-        capDepositRatio,
-      );
       await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Fee recipient cannot be 0x00',
-      );
-    });
-    it('Revert if withdrawal liveness more than 5200 weeks is passed', async () => {
-      const wrongWithdrawalLiveness = 3144960001;
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        syntheticName,
-        syntheticSymbol,
-        synthTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        wrongWithdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
-        capMintAmount,
-        capDepositRatio,
-      );
-      await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Withdrawal liveness too large',
-      );
-    });
-    it('Revert if liquidation liveness more than 5200 weeks is passed', async () => {
-      const wrongLiquidationLiveness = 3144960001;
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
-        syntheticName,
-        syntheticSymbol,
-        synthTokenAddress,
-        collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        wrongLiquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
-        capMintAmount,
-        capDepositRatio,
-      );
-      await truffleAssert.reverts(
-        deployerInstance.deployOnlySelfMintingDerivative(
-          selfMintingDerivativeVersion,
-          selfMintingPayload,
-          { from: maintainer },
-        ),
-        'Liquidation liveness too large',
+        creditLineCreatorInstance.createSelfMintingDerivative(params, {
+          from: roles.maintainer,
+        }),
+        'Token Beneficiary cannot be 0x00',
       );
     });
   });
