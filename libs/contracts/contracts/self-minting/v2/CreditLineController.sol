@@ -90,15 +90,6 @@ contract CreditLineController is
   //----------------------------------------
   // Modifiers
   //----------------------------------------
-  modifier onlyMaintainer() {
-    require(
-      hasRole(MAINTAINER_ROLE, msg.sender),
-      'Sender must be the maintainer'
-    );
-    _;
-  }
-
-  // TODO
   modifier onlyMaintainerOrSelfMintingFactory() {
     if (hasRole(MAINTAINER_ROLE, msg.sender)) {
       _;
@@ -192,6 +183,8 @@ contract CreditLineController is
     address[] calldata selfMintingDerivatives,
     uint256[] calldata capMintAmounts
   ) external override onlyMaintainerOrSelfMintingFactory {
+    console.log('her');
+
     require(
       selfMintingDerivatives.length > 0,
       'No self-minting derivatives passed'
@@ -322,7 +315,7 @@ contract CreditLineController is
     override
     returns (uint256)
   {
-    return fee[selfMintingDerivative].feePercentage.rawValue;
+    return fee[selfMintingDerivative].feePercentage;
   }
 
   function feeRecipientsInfo(address selfMintingDerivative)
@@ -417,11 +410,11 @@ contract CreditLineController is
     uint256 feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage.rawValue != feePercentage,
+      fee[selfMintingDerivative].feePercentage != feePercentage,
       'Fee percentage is the same'
     );
     require(feePercentage <= 10**18, 'Fee percentage must be less than 100%');
-    fee[selfMintingDerivative].feePercentage.rawValue = feePercentage;
+    fee[selfMintingDerivative].feePercentage = feePercentage;
     emit SetFeePercentage(selfMintingDerivative, feePercentage);
   }
 
