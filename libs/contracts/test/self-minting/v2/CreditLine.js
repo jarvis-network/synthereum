@@ -21,7 +21,7 @@ const SynthereumManager = artifacts.require('SynthereumManager');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineControllerMock = artifacts.require('CreditLineControllerMock');
 const Forwarder = artifacts.require('MinimalForwarder');
-const { signAndSendMetaTx } = require('./meta-tx/metaTx');
+const { signAndSendMetaTx } = require('../meta-tx/metaTx');
 
 contract('Synthereum CreditLine ', function (accounts) {
   const contractDeployer = accounts[0];

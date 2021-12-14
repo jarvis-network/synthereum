@@ -5,176 +5,129 @@ const {
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const truffleAssert = require('truffle-assertions');
 const web3Utils = require('web3-utils');
+const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
 const {
   encodeDerivative,
   encodePoolOnChainPriceFeed,
-  encodeSelfMintingDerivative,
+  encodeCreditLineDerivative,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/encoding');
-const Finder = artifacts.require('Finder');
-const AddressWhitelist = artifacts.require('AddressWhitelist');
-const Registry = artifacts.require('Registry');
+const { factory } = require('typescript');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
+const SynthereumRegistry = artifacts.require('SynthereumRegistry');
 const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumManager = artifacts.require('SynthereumManager');
-const SelfMintingController = artifacts.require('SelfMintingController');
 const SynthereumFactoryVersioning = artifacts.require(
   'SynthereumFactoryVersioning',
 );
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
-const PerpetualPoolParty = artifacts.require('PerpetualPoolParty');
-const MintableBurnableSyntheticToken = artifacts.require(
-  'MintableBurnableSyntheticToken',
+const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
+const MockAggregator = artifacts.require('MockAggregator');
+const SynthereumChainlinkPriceFeed = artifacts.require(
+  'SynthereumChainlinkPriceFeed',
 );
+const CreditLineCreator = artifacts.require('CreditLineCreator');
+const CreditLineLib = artifacts.require('CreditLineLib');
 
 contract('Self-minting creator', function (accounts) {
-  let derivativeVersion = 2;
+  let version = 2;
 
   // Derivative params
   let collateralAddress;
-  let priceFeedIdentifier = 'EUR/USD';
+  const priceFeedIdentifier = web3.utils.padRight(utf8ToHex('EURUSD'), 64);
   let syntheticName = 'Jarvis Synthetic Euro';
   let syntheticSymbol = 'jEUR';
   let syntheticTokenAddress = ZERO_ADDRESS;
-  let collateralRequirement = web3Utils.toWei('1.1');
-  let disputeBondPct = web3Utils.toWei('1.5');
-  let sponsorDisputeRewardPct = web3Utils.toWei('0.5');
-  let disputerDisputeRewardPct = web3Utils.toWei('0.4');
-  let minSponsorTokens = web3Utils.toWei('1');
-  let withdrawalLiveness = 3600;
-  let liquidationLiveness = 3600;
+  let minSponsorTokens = toWei('1');
   let excessBeneficiary = accounts[4];
-  let derivativeAdmins;
-  let derivativePools;
 
-  //Pool params
-  let derivativeAddress = ZERO_ADDRESS;
+  let capMintAmount = toWei('1000000');
+  let liquidationRewardPct = toWei('0.2');
+  let collateralRequirement = toWei('1.2');
+  let feePercentage = toWei('0.002');
+
+  let admin = accounts[0];
+  let roles = {
+    admin: accounts[0],
+    maintainer: accounts[1],
+  };
+  let feeRecipient = accounts[3];
+  let Fee = {
+    feePercentage: { rawValue: feePercentage },
+    feeRecipients: [feeRecipient],
+    feeProportions: [1],
+    totalFeeProportions: 1,
+  };
+
   let synthereumFinderAddress;
   let manager;
-  let poolVersion;
-  let admin = accounts[0];
-  let maintainer = accounts[1];
-  let liquidityProvider = accounts[2];
-  let validator = accounts[3];
-  let roles = {
-    admin,
-    maintainer,
-    liquidityProvider,
-    validator,
-  };
-  let startingCollateralization = '1586700';
-  let feePercentage = 0.02;
-  let DAO = accounts[5];
-  let feeRecipients = [liquidityProvider, DAO];
-  let feeProportions = [50, 50];
-  let fee = {
-    feePercentage,
-    feeRecipients,
-    feeProportions,
-  };
-  let feeRecipient = DAO;
-  let daoFee = {
-    feePercentage,
-    feeRecipient,
-  };
-  let capMintAmount = web3Utils.toWei('1000000');
-  let capDepositRatio = 700000000;
+
   //Other params
-  let firstWrongAddress = accounts[6];
-  let secondWrongAddress = accounts[7];
-  let derivativePayload;
-  let poolPayload;
   let synthTokenAddress;
   let selfMintingDerivativeVersion;
   let selfMintingCollateralAddress;
   let selfMintingPriceFeedIdentifier;
   let selfMintingPayload;
-
-  beforeEach(async () => {
-    collateralAddress = (await TestnetERC20.deployed()).address;
-    deployerInstance = await SynthereumDeployer.deployed();
-    derivativeAdmins = [deployerInstance.address];
-    derivativePools = [];
-    poolVersion = 4;
-    synthereumFinderAddress = (await SynthereumFinder.deployed()).address;
-    manager = (await SynthereumManager.deployed()).address;
-    selfMintingControllerInstanceAddr = (await SelfMintingController.deployed())
-      .address;
-    derivativePayload = encodeDerivative(
-      collateralAddress,
-      priceFeedIdentifier,
+  let deployer;
+  before(async () => {
+    deployer = await SynthereumDeployer.deployed();
+    collateral = await TestnetSelfMintingERC20.new('USDC', 'USDC', 18);
+    collateralAddress = collateral.address;
+    syntheticToken = await SyntheticToken.new(
       syntheticName,
       syntheticSymbol,
-      syntheticTokenAddress,
-      collateralRequirement,
-      disputeBondPct,
-      sponsorDisputeRewardPct,
-      disputerDisputeRewardPct,
-      minSponsorTokens,
-      withdrawalLiveness,
-      liquidationLiveness,
-      excessBeneficiary,
-      derivativeAdmins,
-      derivativePools,
+      18,
+      {
+        from: admin,
+      },
     );
-    poolPayload = encodePoolOnChainPriceFeed(
-      derivativeAddress,
+
+    syntheticTokenAddress = syntheticToken.address;
+    finder = await SynthereumFinder.deployed();
+    synthereumFinderAddress = finder.address;
+    const creditLineLib = await CreditLineLib.new();
+    await CreditLineCreator.link(creditLineLib);
+    creditLineCreatorInstance = await CreditLineCreator.new(
       synthereumFinderAddress,
-      poolVersion,
-      roles,
-      startingCollateralization,
-      fee,
     );
-    const {
-      derivative,
-      pool,
-    } = await deployerInstance.deployPoolAndDerivative.call(
-      derivativeVersion,
-      poolVersion,
-      derivativePayload,
-      poolPayload,
-      { from: maintainer },
+
+    manager = (await SynthereumManager.deployed()).address;
+    const factoryInterface = await web3.utils.stringToHex('CreditLineFactory');
+    synthereumFactoryVersioning = await SynthereumFactoryVersioning.deployed();
+    await synthereumFactoryVersioning.setFactory(
+      factoryInterface,
+      version,
+      creditLineCreatorInstance.address,
+      { from: roles.maintainer },
     );
-    await deployerInstance.deployPoolAndDerivative(
-      derivativeVersion,
-      poolVersion,
-      derivativePayload,
-      poolPayload,
-      { from: maintainer },
+    mockAggregator = await MockAggregator.new(8, 140000000);
+    synthereumChainlinkPriceFeed = await SynthereumChainlinkPriceFeed.deployed();
+    await synthereumChainlinkPriceFeed.setAggregator(
+      priceFeedIdentifier,
+      mockAggregator.address,
+      { from: roles.maintainer },
     );
-    const derivativeInstance = await PerpetualPoolParty.at(derivative);
-    synthTokenAddress = await derivativeInstance.tokenCurrency.call();
-    selfMintingDerivativeVersion = 1;
-    selfMintingCollateralAddress = (await TestnetSelfMintingERC20.deployed())
-      .address;
-    selfMintingPriceFeedIdentifier = 'EUR/JRT';
   });
   describe('Deploy self-minting derivative', async () => {
     it('Can deploy', async () => {
-      selfMintingPayload = encodeSelfMintingDerivative(
-        selfMintingCollateralAddress,
-        selfMintingPriceFeedIdentifier,
+      const params = {
+        collateralToken: collateralAddress,
+        priceFeedIdentifier,
         syntheticName,
         syntheticSymbol,
-        synthTokenAddress,
+        syntheticToken: syntheticTokenAddress,
         collateralRequirement,
-        disputeBondPct,
-        sponsorDisputeRewardPct,
-        disputerDisputeRewardPct,
-        minSponsorTokens,
-        withdrawalLiveness,
-        liquidationLiveness,
-        excessBeneficiary,
-        selfMintingDerivativeVersion,
-        daoFee,
+        excessTokenBeneficiary: excessBeneficiary,
+        fee: Fee,
+        liquidationPercentage: liquidationRewardPct,
         capMintAmount,
-        capDepositRatio,
-      );
-      await deployerInstance.deployOnlySelfMintingDerivative(
-        selfMintingDerivativeVersion,
-        selfMintingPayload,
-        { from: maintainer },
-      );
+        minSponsorTokens: { rawValue: minSponsorTokens },
+        version: 2,
+      };
+
+      await creditLineCreatorInstance.createSelfMintingDerivative(params, {
+        from: roles.maintainer,
+      });
     });
   });
   describe('Revert conditions', async () => {
