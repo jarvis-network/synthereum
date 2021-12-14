@@ -177,7 +177,7 @@ contract CreditLineCreator {
     collateralRequirements[0] = collateralRequirement;
 
     uint256[] memory feePercentages = new uint256[](1);
-    feePercentages[0] = feeStruct.feePercentage.rawValue;
+    feePercentages[0] = feeStruct.feePercentage;
 
     uint256[] memory liqPercentages = new uint256[](1);
     liqPercentages[0] = liquidationRewardPercentage;

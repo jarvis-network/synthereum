@@ -14,7 +14,7 @@ interface ICreditLineStorage {
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and exchanges tokens
-    FixedPoint.Unsigned feePercentage;
+    uint256 feePercentage;
     // Recipient receiving fees
     address[] feeRecipients;
     // Proportion for each recipient

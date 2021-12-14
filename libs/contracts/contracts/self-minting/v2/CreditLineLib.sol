@@ -182,7 +182,9 @@ library CreditLineLib {
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     // Update fees status - percentage is retrieved from Credit Line Controller
     feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
-      positionManagerData._getFeeInfo().feePercentage
+      FixedPoint.fromUnscaledUint(
+        positionManagerData._getFeeInfo().feePercentage
+      )
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
 
@@ -282,7 +284,9 @@ library CreditLineLib {
 
     // Update fee status
     feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
-      positionManagerData._getFeeInfo().feePercentage
+      FixedPoint.fromUnscaledUint(
+        positionManagerData._getFeeInfo().feePercentage
+      )
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
 
@@ -360,7 +364,9 @@ library CreditLineLib {
 
     // Update fee status
     feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
-      positionManagerData._getFeeInfo().feePercentage
+      FixedPoint.fromUnscaledUint(
+        positionManagerData._getFeeInfo().feePercentage
+      )
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
 
