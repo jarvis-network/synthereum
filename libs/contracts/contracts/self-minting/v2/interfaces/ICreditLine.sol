@@ -138,6 +138,22 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
     returns (ICreditLineStorage.Fee memory fee);
 
   /**
+   * @notice Returns the total fee produced by the contract
+   * @return totalFee total amount of fees
+   */
+  function getTotalFeeAmount() external view returns (uint256 totalFee);
+
+  /**
+   * @notice Returns the total fee gained by the input address
+   * @param feeGainer address to check claimable fees
+   * @return feeGained amount of fess claimable by feeGainer
+   */
+  function getUserFeeGained(address feeGainer)
+    external
+    view
+    returns (uint256 feeGained);
+
+  /**
    * @notice Returns the over collateralization percentage of the derivative contract
    * @return collateralRequirement percentage of overcollateralization
    */
