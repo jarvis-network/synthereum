@@ -53,7 +53,7 @@ contract('Self-minting creator', function (accounts) {
   };
   let feeRecipient = accounts[3];
   let Fee = {
-    feePercentage: { rawValue: feePercentage },
+    feePercentage,
     feeRecipients: [feeRecipient],
     feeProportions: [1],
     totalFeeProportions: 1,
@@ -63,11 +63,6 @@ contract('Self-minting creator', function (accounts) {
   let manager;
 
   //Other params
-  let synthTokenAddress;
-  let selfMintingDerivativeVersion;
-  let selfMintingCollateralAddress;
-  let selfMintingPriceFeedIdentifier;
-  let selfMintingPayload;
   let deployer;
   before(async () => {
     deployer = await SynthereumDeployer.deployed();
