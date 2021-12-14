@@ -68,6 +68,7 @@ function isValidUrl(s: string | undefined): s is string {
 export function setForkingUrl(
   config: HardhatUserConfig,
   chainId: number,
+  blockNumber?: number,
 ): void {
   if (!chainId || !isNetworkId(chainId)) {
     // User didn't specify a (valid) networkId, so
@@ -85,7 +86,11 @@ export function setForkingUrl(
 
   config.networks ??= {};
   config.networks.hardhat ??= {};
-  config.networks.hardhat.forking = { url: forkEnvVariable, enabled: true };
+  config.networks.hardhat.forking = {
+    url: forkEnvVariable,
+    enabled: true,
+    blockNumber,
+  };
   config.networks.hardhat.chainId = chainId;
   console.log(
     `'${gitlabForkEnvVariable}' env variable is specified -> updating Hardhat Network settings to:`,
