@@ -176,8 +176,8 @@ contract CreditLineCreator {
     uint256[] memory collateralRequirements = new uint256[](1);
     collateralRequirements[0] = collateralRequirement;
 
-    FixedPoint.Unsigned[] memory feePercentages = new FixedPoint.Unsigned[](1);
-    feePercentages[0] = feeStruct.feePercentage;
+    uint256[] memory feePercentages = new uint256[](1);
+    feePercentages[0] = feeStruct.feePercentage.rawValue;
 
     uint256[] memory liqPercentages = new uint256[](1);
     liqPercentages[0] = liquidationRewardPercentage;
