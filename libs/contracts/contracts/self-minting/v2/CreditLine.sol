@@ -53,12 +53,12 @@ contract CreditLine is
   //----------------------------------------
 
   // Maps sponsor addresses to their positions. Each sponsor can have only one position.
-  mapping(address => PositionData) public positions;
+  mapping(address => PositionData) private positions;
   // uint256 tokenSponsorsCount; // each new token sponsor will be identified with an incremental uint
 
-  GlobalPositionData public globalPositionData;
+  GlobalPositionData private globalPositionData;
 
-  PositionManagerData public positionManagerData;
+  PositionManagerData private positionManagerData;
 
   FeeStatus private feeStatus;
 
@@ -437,6 +437,16 @@ contract CreditLine is
       positions[sponsor].rawCollateral.rawValue,
       positions[sponsor].tokensOutstanding.rawValue
     );
+  }
+
+  function getGlobalPositionData()
+    external
+    view
+    override
+    returns (uint256 totCollateral, uint256 totTokensOutstanding)
+  {
+    totCollateral = globalPositionData.rawTotalPositionCollateral.rawValue;
+    totTokensOutstanding = globalPositionData.totalTokensOutstanding.rawValue;
   }
 
   function collateralCoverage(address sponsor)

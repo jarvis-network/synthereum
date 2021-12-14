@@ -160,7 +160,18 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    */
   function getPositionData(address sponsor)
     external
+    view
     returns (uint256 collateralAmount, uint256 tokensAmount);
+
+  /**
+   * @notice Accessor method for contract's global position (aggregate).
+   * @return totCollateral total amount of collateral deposited by lps
+   * @return totTokensOutstanding total amount of outstanding tokens.
+   */
+  function getGlobalPositionData()
+    external
+    view
+    returns (uint256 totCollateral, uint256 totTokensOutstanding);
 
   /**
    * @notice Returns if sponsor position is overcollateralized and thepercentage of coverage of the collateral according to the last price
