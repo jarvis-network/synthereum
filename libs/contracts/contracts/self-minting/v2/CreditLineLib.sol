@@ -641,7 +641,7 @@ library CreditLineLib {
         globalPositionData.rawTotalPositionCollateral;
       FixedPoint.Unsigned memory totalFeeAmount = feeStatus.totalFeeAmount;
       // If it is the collateral currency, send only the amount that the contract is not tracking (ie minus fees and positions)
-      balance.isGreaterThan(rawTotalPositionCollateral.sub(totalFeeAmount))
+      balance.isGreaterThan(rawTotalPositionCollateral.add(totalFeeAmount))
         ? amount = balance.sub(rawTotalPositionCollateral).sub(totalFeeAmount)
         : amount = FixedPoint.Unsigned(0);
     } else {
