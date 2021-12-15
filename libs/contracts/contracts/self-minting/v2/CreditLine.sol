@@ -362,32 +362,11 @@ contract CreditLine is
     delete positions[sponsor];
   }
 
-  function isCollateralised(address sponsor)
-    external
-    view
-    override
-    returns (bool)
-  {
-    PositionData storage positionData = positions[sponsor];
-
-    return
-      positionManagerData._checkCollateralization(
-        positionData.rawCollateral,
-        positionData.tokensOutstanding,
-        positionManagerData._getOraclePrice()
-      );
+  function minSponsorTokens() external view override returns (uint256 amount) {
+    amount = positionManagerData.minSponsorTokens.rawValue;
   }
 
-  function getMinSponsorTokens()
-    external
-    view
-    override
-    returns (uint256 minSponsorTokens)
-  {
-    minSponsorTokens = positionManagerData.minSponsorTokens.rawValue;
-  }
-
-  function getExcessTokensBeneficiary()
+  function excessTokensBeneficiary()
     external
     view
     override
@@ -396,24 +375,19 @@ contract CreditLine is
     beneficiary = positionManagerData.excessTokenBeneficiary;
   }
 
-  function getCapMintAmount() external view override returns (uint256 capMint) {
+  function capMintAmount() external view override returns (uint256 capMint) {
     capMint = positionManagerData.capMintAmount().rawValue;
   }
 
-  function getFeeInfo() external view override returns (Fee memory fee) {
+  function feeInfo() external view override returns (Fee memory fee) {
     fee = positionManagerData.feeInfo();
   }
 
-  function getTotalFeeAmount()
-    external
-    view
-    override
-    returns (uint256 totalFee)
-  {
+  function totalFeeAmount() external view override returns (uint256 totalFee) {
     totalFee = feeStatus.totalFeeAmount.rawValue;
   }
 
-  function getUserFeeGained(address feeGainer)
+  function userFeeGained(address feeGainer)
     external
     view
     override
@@ -422,7 +396,7 @@ contract CreditLine is
     feeGained = feeStatus.feeGained[feeGainer].rawValue;
   }
 
-  function getLiquidationReward()
+  function liquidationReward()
     external
     view
     override
@@ -431,15 +405,13 @@ contract CreditLine is
     rewardPct = positionManagerData.liquidationRewardPercentage().rawValue;
   }
 
-  function getCollateralRequirement()
+  function collateralRequirement()
     external
     view
     override
-    returns (uint256 collateralRequirement)
+    returns (uint256 collReq)
   {
-    collateralRequirement = positionManagerData
-      .collateralRequirement()
-      .rawValue;
+    collReq = positionManagerData.collateralRequirement().rawValue;
   }
 
   function getPositionData(address sponsor)

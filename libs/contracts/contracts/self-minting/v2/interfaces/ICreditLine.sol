@@ -106,30 +106,19 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    * @notice Withdraw fees gained by the sender
    * @return feeClaimed Amount of fee claimed
    */
-
   function claimFee() external returns (uint256 feeClaimed);
 
   /**
-   * @notice Checks if a sponsor position is collateralised, according to latest on-chain price
-   * @param sponsor address of the TokenSponsor to check
-   * @return true if position is collateralised, false if not
-   */
-  function isCollateralised(address sponsor) external view returns (bool);
-
-  /**
    * @notice Returns the minimum amount of tokens a sponsor must mint
-   * @return minSponsorTokens the value
+   * @return amount the value
    */
-  function getMinSponsorTokens()
-    external
-    view
-    returns (uint256 minSponsorTokens);
+  function minSponsorTokens() external view returns (uint256 amount);
 
   /**
    * @notice Returns the address of the trim excess tokens receiver
    * @return beneficiary the addess
    */
-  function getExcessTokensBeneficiary()
+  function excessTokensBeneficiary()
     external
     view
     returns (address beneficiary);
@@ -138,47 +127,41 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    * @notice Returns the cap mint amount of the derivative contract
    * @return capMint cap mint amount
    */
-  function getCapMintAmount() external view returns (uint256 capMint);
-
-  /**
-   * @notice Returns the liquidation rewrd percentage of the derivative contract
-   * @return rewardPct liquidator reward percentage
-   */
-  function getLiquidationReward() external view returns (uint256 rewardPct);
+  function capMintAmount() external view returns (uint256 capMint);
 
   /**
    * @notice Returns the fee parameters of the derivative contract
    * @return fee Fee struct
    */
-  function getFeeInfo()
-    external
-    view
-    returns (ICreditLineStorage.Fee memory fee);
+  function feeInfo() external view returns (ICreditLineStorage.Fee memory fee);
 
   /**
    * @notice Returns the total fee produced by the contract
    * @return totalFee total amount of fees
    */
-  function getTotalFeeAmount() external view returns (uint256 totalFee);
+  function totalFeeAmount() external view returns (uint256 totalFee);
 
   /**
    * @notice Returns the total fee gained by the input address
    * @param feeGainer address to check claimable fees
    * @return feeGained amount of fess claimable by feeGainer
    */
-  function getUserFeeGained(address feeGainer)
+  function userFeeGained(address feeGainer)
     external
     view
     returns (uint256 feeGained);
 
   /**
-   * @notice Returns the over collateralization percentage of the derivative contract
-   * @return collateralRequirement percentage of overcollateralization
+   * @notice Returns the liquidation rewrd percentage of the derivative contract
+   * @return rewardPct liquidator reward percentage
    */
-  function getCollateralRequirement()
-    external
-    view
-    returns (uint256 collateralRequirement);
+  function liquidationReward() external view returns (uint256 rewardPct);
+
+  /**
+   * @notice Returns the over collateralization percentage of the derivative contract
+   * @return collReq percentage of overcollateralization
+   */
+  function collateralRequirement() external view returns (uint256 collReq);
 
   /**
    * @notice Delete a TokenSponsor position. This function can only be called by the contract itself.
