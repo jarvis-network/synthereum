@@ -835,7 +835,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       });
 
       // check collateralisation from view function
-      assert.equal(await creditLine.isCollateralised.call(sponsor), true);
+      assert.equal(
+        (await creditLine.collateralCoverage.call(sponsor))[0],
+        true,
+      );
 
       // create liquidator position to have tokens
       liquidatorCollateral = toBN(toWei('10000'));
@@ -860,9 +863,12 @@ contract('Synthereum CreditLine ', function (accounts) {
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       // check collateralisation from view function
-      assert.equal(await creditLine.isCollateralised.call(sponsor), false);
       assert.equal(
-        (await creditLine.getLiquidationReward.call()).toString(),
+        (await creditLine.collateralCoverage.call(sponsor))[0],
+        false,
+      );
+      assert.equal(
+        (await creditLine.liquidationReward.call()).toString(),
         liquidationRewardPct.toString(),
       );
 
@@ -977,7 +983,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       hexToUtf8(priceFeedIdentifier),
     );
     assert.equal(
-      (await creditLine.getCollateralRequirement.call()).toString(),
+      (await creditLine.collateralRequirement.call()).toString(),
       overCollateralizationFactor.toString(),
     );
     // Synthetic token and synthereum parameters
@@ -990,13 +996,13 @@ contract('Synthereum CreditLine ', function (accounts) {
       await creditLine.synthereumFinder.call(),
       synthereumFinderInstance.address,
     );
-    const returnedFee = await creditLine.getFeeInfo.call();
+    const returnedFee = await creditLine.feeInfo.call();
     assert.equal(returnedFee.feePercentage.toString(), Fee.feePercentage);
     assert.equal(returnedFee.feeRecipients[0], Fee.feeRecipients[0]);
     assert.equal(returnedFee.feeProportions[0], 1);
     assert.equal(returnedFee.totalFeeProportions, 1);
     assert.equal(
-      (await creditLine.getCapMintAmount.call()).toString(),
+      (await creditLine.capMintAmount.call()).toString(),
       capMintAmount.toString(),
     );
   });
@@ -2011,7 +2017,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       });
 
       // check collateralisation from view function
-      assert.equal(await creditLine.isCollateralised.call(sponsor), true);
+      assert.equal(
+        (await creditLine.collateralCoverage.call(sponsor))[0],
+        true,
+      );
 
       // create liquidator position to have tokens
       liquidatorCollateral = toBN(toWei('10000'));
@@ -2038,9 +2047,12 @@ contract('Synthereum CreditLine ', function (accounts) {
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       // check collateralisation from view function
-      assert.equal(await creditLine.isCollateralised.call(sponsor), false);
       assert.equal(
-        (await creditLine.getLiquidationReward.call()).toString(),
+        (await creditLine.collateralCoverage.call(sponsor))[0],
+        false,
+      );
+      assert.equal(
+        (await creditLine.liquidationReward.call()).toString(),
         liquidationRewardPct.toString(),
       );
 
@@ -2150,7 +2162,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       // check collateralisation from view function
-      assert.equal(await creditLine.isCollateralised.call(sponsor), false);
+      assert.equal(
+        (await creditLine.collateralCoverage.call(sponsor))[0],
+        false,
+      );
 
       const collateralRequirement = createTokens
         .mul(updatedPrice)
