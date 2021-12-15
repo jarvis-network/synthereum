@@ -373,7 +373,8 @@ contract CreditLine is
     return
       positionManagerData._checkCollateralization(
         positionData.rawCollateral,
-        positionData.tokensOutstanding
+        positionData.tokensOutstanding,
+        positionManagerData._getOraclePrice()
       );
   }
 
