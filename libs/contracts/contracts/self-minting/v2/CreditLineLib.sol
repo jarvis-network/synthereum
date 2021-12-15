@@ -185,7 +185,11 @@ library CreditLineLib {
     address msgSender
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     // Update fees status - percentage is retrieved from Credit Line Controller
-    feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
+    FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
+
+    feeAmount = positionManagerData
+      .calculateCollateralAmount(numTokens, priceRate)
+      .mul(
       FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
@@ -195,7 +199,8 @@ library CreditLineLib {
         _checkCollateralization(
           positionManagerData,
           collateralAmount.sub(feeAmount),
-          numTokens
+          numTokens,
+          priceRate
         ),
         'Insufficient Collateral'
       );
@@ -209,7 +214,8 @@ library CreditLineLib {
         _checkCollateralization(
           positionManagerData,
           positionData.rawCollateral.add(collateralAmount).sub(feeAmount),
-          positionData.tokensOutstanding.add(numTokens)
+          positionData.tokensOutstanding.add(numTokens),
+          priceRate
         ),
         'Insufficient Collateral'
       );
@@ -284,8 +290,12 @@ library CreditLineLib {
         positionData.tokensOutstanding
       );
 
+    FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
+
     // Update fee status
-    feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
+    feeAmount = positionManagerData
+      .calculateCollateralAmount(numTokens, priceRate)
+      .mul(
       FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
@@ -362,8 +372,12 @@ library CreditLineLib {
       'Below minimum sponsor position'
     );
 
+    FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
+
     // Update fee status
-    feeAmount = positionManagerData.calculateCollateralAmount(numTokens).mul(
+    feeAmount = positionManagerData
+      .calculateCollateralAmount(numTokens, priceRate)
+      .mul(
       FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
     );
     positionManagerData.updateFees(feeStatus, feeAmount);
@@ -410,11 +424,14 @@ library CreditLineLib {
     // to avoid stack too deep
     ICreditLineStorage.ExecuteLiquidationData memory executeLiquidationData;
 
+    FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
+
     // make sure position is undercollateralised
     require(
       !positionManagerData._checkCollateralization(
         positionToLiquidate.rawCollateral,
-        positionToLiquidate.tokensOutstanding
+        positionToLiquidate.tokensOutstanding,
+        priceRate
       ),
       'Position is properly collateralised'
     );
@@ -428,7 +445,10 @@ library CreditLineLib {
 
     // calculate collateral value of those tokens
     executeLiquidationData.collateralValueLiquidatedTokens = positionManagerData
-      .calculateCollateralAmount(executeLiquidationData.tokensToLiquidate);
+      .calculateCollateralAmount(
+      executeLiquidationData.tokensToLiquidate,
+      priceRate
+    );
 
     // calculate proportion of collateral liquidated from position
     executeLiquidationData.collateralLiquidated = executeLiquidationData
@@ -694,16 +714,23 @@ library CreditLineLib {
     ICreditLineStorage.PositionManagerData storage self,
     ICreditLineStorage.PositionData storage positionData
   ) external view returns (bool, uint256) {
+    FixedPoint.Unsigned memory priceRate = _getOraclePrice(self);
+
     bool _isOverCollateralised =
       _checkCollateralization(
         self,
         positionData.rawCollateral,
-        positionData.tokensOutstanding
+        positionData.tokensOutstanding,
+        priceRate
       );
 
     FixedPoint.Unsigned memory _collateralCoverage =
       positionData.rawCollateral.div(
-        calculateCollateralAmount(self, positionData.tokensOutstanding)
+        calculateCollateralAmount(
+          self,
+          positionData.tokensOutstanding,
+          priceRate
+        )
       );
 
     return (_isOverCollateralised, _collateralCoverage.rawValue);
@@ -796,7 +823,8 @@ library CreditLineLib {
       _checkCollateralization(
         positionManagerData,
         newRawCollateral,
-        positionData.tokensOutstanding
+        positionData.tokensOutstanding,
+        _getOraclePrice(positionManagerData)
       ),
       'CR is not sufficiently high after the withdraw - try less amount'
     );
@@ -851,12 +879,9 @@ library CreditLineLib {
   function _checkCollateralization(
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateral,
-    FixedPoint.Unsigned memory numTokens
+    FixedPoint.Unsigned memory numTokens,
+    FixedPoint.Unsigned memory oraclePrice
   ) internal view returns (bool) {
-    // get oracle price
-    FixedPoint.Unsigned memory oraclePrice =
-      _getOraclePrice(positionManagerData);
-
     uint256 collateralDecimals =
       getCollateralDecimals(positionManagerData.collateralToken);
 
@@ -965,13 +990,15 @@ library CreditLineLib {
   /**
    * @notice Calculate collateral amount starting from an amount of synthtic token
    * @param numTokens Amount of synthetic tokens from which you want to calculate collateral amount
+   * @param priceRate On-chain price rate
    * @return collateralAmount Amount of collateral after on-chain oracle conversion
    */
   function calculateCollateralAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData,
-    FixedPoint.Unsigned memory numTokens
+    FixedPoint.Unsigned memory numTokens,
+    FixedPoint.Unsigned memory priceRate
   ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
-    collateralAmount = numTokens.mul(_getOraclePrice(positionManagerData)).div(
+    collateralAmount = numTokens.mul(priceRate).div(
       10**(18 - getCollateralDecimals(positionManagerData.collateralToken))
     );
   }
