@@ -510,11 +510,10 @@ library CreditLineLib {
   }
 
   function emergencyShutdown(
-    ICreditLineStorage.PositionManagerData storage self,
-    address caller
+    ICreditLineStorage.PositionManagerData storage self
   ) external returns (uint256 timestamp, uint256 price) {
     require(
-      caller ==
+      msg.sender ==
         self.synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.Manager
         ),
@@ -530,7 +529,7 @@ library CreditLineLib {
 
     price = _price.rawValue;
 
-    emit EmergencyShutdown(caller, price, timestamp);
+    emit EmergencyShutdown(msg.sender, price, timestamp);
   }
 
   function settleEmergencyShutdown(

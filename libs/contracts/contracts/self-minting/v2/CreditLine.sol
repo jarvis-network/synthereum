@@ -332,7 +332,7 @@ contract CreditLine is
     nonReentrant
     returns (uint256 timestamp, uint256 price)
   {
-    return positionManagerData.emergencyShutdown(_msgSender());
+    return positionManagerData.emergencyShutdown();
   }
 
   function claimFee()
