@@ -344,6 +344,24 @@ contract CreditLine is
     feeClaimed = positionManagerData.claimFee(feeStatus, _msgSender());
   }
 
+  function trimExcess(IERC20 token)
+    external
+    nonReentrant
+    returns (uint256 amount)
+  {
+    amount = positionManagerData
+      .trimExcess(globalPositionData, feeStatus, token)
+      .rawValue;
+  }
+
+  function deleteSponsorPosition(address sponsor) external override {
+    require(
+      _msgSender() == address(this),
+      'Only the contract can invoke this function'
+    );
+    delete positions[sponsor];
+  }
+
   function isCollateralised(address sponsor)
     external
     view
@@ -357,6 +375,24 @@ contract CreditLine is
         positionData.rawCollateral,
         positionData.tokensOutstanding
       );
+  }
+
+  function getMinSponsorTokens()
+    external
+    view
+    override
+    returns (uint256 minSponsorTokens)
+  {
+    minSponsorTokens = positionManagerData.minSponsorTokens.rawValue;
+  }
+
+  function getExcessTokensBeneficiary()
+    external
+    view
+    override
+    returns (address beneficiary)
+  {
+    beneficiary = positionManagerData.excessTokenBeneficiary;
   }
 
   function getCapMintAmount() external view override returns (uint256 capMint) {
@@ -403,24 +439,6 @@ contract CreditLine is
     collateralRequirement = positionManagerData
       .collateralRequirement()
       .rawValue;
-  }
-
-  function trimExcess(IERC20 token)
-    external
-    nonReentrant
-    returns (uint256 amount)
-  {
-    amount = positionManagerData
-      .trimExcess(globalPositionData, feeStatus, token)
-      .rawValue;
-  }
-
-  function deleteSponsorPosition(address sponsor) external override {
-    require(
-      _msgSender() == address(this),
-      'Only the contract can invoke this function'
-    );
-    delete positions[sponsor];
   }
 
   function getPositionData(address sponsor)
@@ -502,6 +520,16 @@ contract CreditLine is
     returns (uint256 price)
   {
     price = positionManagerData.emergencyShutdownPrice.rawValue;
+  }
+
+  function emergencyShutdownTime()
+    external
+    view
+    override
+    isEmergencyShutdown()
+    returns (uint256 time)
+  {
+    time = positionManagerData.emergencyShutdownTimestamp;
   }
 
   /**

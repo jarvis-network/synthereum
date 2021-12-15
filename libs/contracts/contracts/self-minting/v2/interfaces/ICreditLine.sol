@@ -117,6 +117,24 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   function isCollateralised(address sponsor) external view returns (bool);
 
   /**
+   * @notice Returns the minimum amount of tokens a sponsor must mint
+   * @return minSponsorTokens the value
+   */
+  function getMinSponsorTokens()
+    external
+    view
+    returns (uint256 minSponsorTokens);
+
+  /**
+   * @notice Returns the address of the trim excess tokens receiver
+   * @return beneficiary the addess
+   */
+  function getExcessTokensBeneficiary()
+    external
+    view
+    returns (address beneficiary);
+
+  /**
    * @notice Returns the cap mint amount of the derivative contract
    * @return capMint cap mint amount
    */
@@ -209,4 +227,10 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    * @return price Price of synthetic token
    */
   function emergencyShutdownPrice() external view returns (uint256 price);
+
+  /**
+   * @notice Get the block number when the emergency shutdown was called
+   * @return time Block time
+   */
+  function emergencyShutdownTime() external view returns (uint256 time);
 }
