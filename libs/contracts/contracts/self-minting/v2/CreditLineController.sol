@@ -405,15 +405,15 @@ contract CreditLineController is
 
   function _setFeePercentage(
     address selfMintingDerivative,
-    uint256 feePercentage
+    uint256 _feePercentage
   ) internal {
     require(
-      fee[selfMintingDerivative].feePercentage != feePercentage,
+      fee[selfMintingDerivative].feePercentage != _feePercentage,
       'Fee percentage is the same'
     );
-    require(feePercentage <= 10**18, 'Fee percentage must be less than 100%');
-    fee[selfMintingDerivative].feePercentage = feePercentage;
-    emit SetFeePercentage(selfMintingDerivative, feePercentage);
+    require(_feePercentage <= 10**18, 'Fee percentage must be less than 100%');
+    fee[selfMintingDerivative].feePercentage = _feePercentage;
+    emit SetFeePercentage(selfMintingDerivative, _feePercentage);
   }
 
   function _setCapMintAmount(
