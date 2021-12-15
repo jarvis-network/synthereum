@@ -17,10 +17,10 @@ fi
 
 if [ "$network" == "bsc" ]; then
     networkId=56
-    endpoint='https://bsc-dataseed.binance.org/'
+    endpoint="https://speedy-nodes-nyc.moralis.io/$BSC_PROJECT_ID/bsc/mainnet"
 elif [ "$network" == "bscTestnet" ]; then
     networkId=97
-    endpoint='https://data-seed-prebsc-1-s1.binance.org:8545/'
+    endpoint="https://speedy-nodes-nyc.moralis.io/$BSC_PROJECT_ID/bsc/testnet"
 elif [ "$network" == "sokol" ]; then
     networkId=77
     endpoint='https://sokol.poa.network'
