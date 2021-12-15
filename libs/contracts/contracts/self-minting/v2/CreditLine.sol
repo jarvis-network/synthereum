@@ -332,24 +332,7 @@ contract CreditLine is
     nonReentrant
     returns (uint256 timestamp, uint256 price)
   {
-    require(
-      _msgSender() ==
-        positionManagerData.synthereumFinder.getImplementationAddress(
-          SynthereumInterfaces.Manager
-        ),
-      'Caller must be a Synthereum manager'
-    );
-
-    timestamp = block.timestamp;
-    FixedPoint.Unsigned memory _price = positionManagerData._getOraclePrice();
-
-    // store timestamp and last price
-    positionManagerData.emergencyShutdownTimestamp = timestamp;
-    positionManagerData.emergencyShutdownPrice = _price;
-
-    price = _price.rawValue;
-
-    emit EmergencyShutdown(_msgSender(), price, timestamp);
+    return positionManagerData.emergencyShutdown(_msgSender());
   }
 
   function claimFee()
