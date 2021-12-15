@@ -144,7 +144,7 @@ contract SynthereumDeployer is
     );
     checkDeployment(selfMintingDerivative, selfMintingDerVersion);
     address tokenCurrency = address(selfMintingDerivative.syntheticToken());
-    setSyntheticTokenRoles(selfMintingDerivative);
+    addSyntheticTokenRoles(tokenCurrency, address(selfMintingDerivative));
     ISynthereumRegistry selfMintingRegistry = getSelfMintingRegistry();
     selfMintingRegistry.register(
       selfMintingDerivative.syntheticTokenSymbol(),
