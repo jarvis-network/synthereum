@@ -67,7 +67,11 @@ library CreditLineLib {
     uint256 indexed newTokenCount,
     uint256 feeAmount
   );
-  event EmergencyShutdown(address indexed caller, uint256 shutdownTimestamp);
+  event EmergencyShutdown(
+    address indexed caller,
+    uint256 settlementPrice,
+    uint256 shutdownTimestamp
+  );
   event SettleEmergencyShutdown(
     address indexed caller,
     uint256 indexed collateralReturned,
@@ -483,6 +487,30 @@ library CreditLineLib {
       executeLiquidationData.tokensToLiquidate.rawValue,
       executeLiquidationData.liquidatorReward.rawValue
     );
+  }
+
+  function emergencyShutdown(
+    ICreditLineStorage.PositionManagerData storage self,
+    address caller
+  ) external returns (uint256 timestamp, uint256 price) {
+    require(
+      caller ==
+        self.synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.Manager
+        ),
+      'Caller must be a Synthereum manager'
+    );
+
+    timestamp = block.timestamp;
+    FixedPoint.Unsigned memory _price = self._getOraclePrice();
+
+    // store timestamp and last price
+    self.emergencyShutdownTimestamp = timestamp;
+    self.emergencyShutdownPrice = _price;
+
+    price = _price.rawValue;
+
+    emit EmergencyShutdown(caller, price, timestamp);
   }
 
   function settleEmergencyShutdown(
