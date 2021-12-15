@@ -25,7 +25,7 @@ export function addPublicNetwork(
       process.env.RPC_URL ?? chainId === 77
         ? getSokolEndpoint(chainId, 'https')
         : chainId === 56 || chainId === 97
-        ? getBSCEndpoint(chainId, 'https')
+        ? getBSCEndpoint(chainId, 'https', projectId)
         : getInfuraEndpoint(chainId, 'https', projectId),
     accounts: {
       mnemonic:
