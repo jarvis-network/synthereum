@@ -38,5 +38,10 @@
     "admin": "0x539E625172026F8d2AC50648a55871FA728618e8",
     "maintainer": "0x8Eadb31D981509c1a2e55111C5b9c56788c89486",
     "liquidityProvider": "0x22744fcAd77B78595f6Abb003cc5C5FB97e16365"
+  },
+  "56": {
+    "admin": "0x002d8A70BDE641426fDe4b445C719DFE18AAa1Af",
+    "maintainer": "0x64284Cdf8b0528695De0401827638c65936Dcb7c",
+    "liquidityProvider": "0xc31249BA48763dF46388BA5C4E7565d62ed4801C"
   }
 }
