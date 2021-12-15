@@ -26,13 +26,14 @@ export function getInfuraEndpoint<Net extends Network>(
 export function getBSCEndpoint<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
+  projectId = env.bscProjectId,
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
   const endpoint =
     networkName === 'bsc'
-      ? 'bsc-dataseed.binance.org/'
+      ? `speedy-nodes-nyc.moralis.io/${projectId}/bsc/mainnet`
       : networkName === 'bscTestnet'
-      ? 'data-seed-prebsc-1-s1.binance.org:8545/'
+      ? `speedy-nodes-nyc.moralis.io/${projectId}/bsc/testnet`
       : networkName;
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
