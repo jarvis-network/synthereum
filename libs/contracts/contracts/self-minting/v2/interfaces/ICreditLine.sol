@@ -118,6 +118,12 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   function trimExcess(IERC20 token) external returns (uint256 amount);
 
   /**
+   * @notice Delete a TokenSponsor position. This function can only be called by the contract itself.
+   * @param sponsor address of the TokenSponsor.
+   */
+  function deleteSponsorPosition(address sponsor) external;
+
+  /**
    * @notice Returns the minimum amount of tokens a sponsor must mint
    * @return amount the value
    */
@@ -171,12 +177,6 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
    * @return collReq percentage of overcollateralization
    */
   function collateralRequirement() external view returns (uint256 collReq);
-
-  /**
-   * @notice Delete a TokenSponsor position. This function can only be called by the contract itself.
-   * @param sponsor address of the TokenSponsor.
-   */
-  function deleteSponsorPosition(address sponsor) external;
 
   /**
    * @notice Accessor method for a sponsor's position.
