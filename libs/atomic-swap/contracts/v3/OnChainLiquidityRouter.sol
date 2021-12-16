@@ -117,17 +117,6 @@ contract OnChainLiquidityRouterV2 is
     emit RemovedImplementation(identifier);
   }
 
-  /// @notice Gets the OCLR implementation address stored under an id
-  /// @param identifier: string identifier of the OCLR implementation.
-  /// @return address of the implementation
-  function getImplementationAddress(string calldata identifier)
-    external
-    view
-    returns (address)
-  {
-    return idToAddress[keccak256(abi.encode(identifier))];
-  }
-
   // see IOnChainLiquidityRouter.sol
   function swapAndMint(
     string calldata implementationId,
@@ -223,6 +212,17 @@ contract OnChainLiquidityRouterV2 is
       returnValues.collateralAmountRefunded,
       implementation
     );
+  }
+
+  /// @notice Gets the OCLR implementation address stored under an id
+  /// @param identifier: string identifier of the OCLR implementation.
+  /// @return address of the implementation
+  function getImplementationAddress(string calldata identifier)
+    external
+    view
+    returns (address)
+  {
+    return idToAddress[keccak256(abi.encode(identifier))];
   }
 
   /**
