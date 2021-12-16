@@ -3,14 +3,14 @@
 pragma solidity ^0.8.4;
 pragma abicoder v2;
 
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IDMMExchangeRouter} from './interfaces/IKyberRouter.sol';
 import {
   IOnChainLiquidityRouterV2
 } from '../interfaces/IOnChainLiquidityRouter.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract OCLRV2Kyber is OCLRBase {
   using SafeERC20 for IERC20;
