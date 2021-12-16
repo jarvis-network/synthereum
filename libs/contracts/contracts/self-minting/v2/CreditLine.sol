@@ -171,6 +171,23 @@ contract CreditLine is
     );
   }
 
+  function depositTo(address sponsor, uint256 collateralAmount)
+    external
+    override
+    notEmergencyShutdown
+    nonReentrant
+  {
+    PositionData storage positionData = _getPositionData(sponsor);
+
+    positionData.depositTo(
+      globalPositionData,
+      positionManagerData,
+      FixedPoint.Unsigned(collateralAmount),
+      sponsor,
+      _msgSender()
+    );
+  }
+
   function withdraw(uint256 collateralAmount)
     external
     override
@@ -188,23 +205,6 @@ contract CreditLine is
       _msgSender()
     )
       .rawValue;
-  }
-
-  function depositTo(address sponsor, uint256 collateralAmount)
-    external
-    override
-    notEmergencyShutdown
-    nonReentrant
-  {
-    PositionData storage positionData = _getPositionData(sponsor);
-
-    positionData.depositTo(
-      globalPositionData,
-      positionManagerData,
-      FixedPoint.Unsigned(collateralAmount),
-      sponsor,
-      _msgSender()
-    );
   }
 
   function create(uint256 collateralAmount, uint256 numTokens)
