@@ -138,7 +138,7 @@ function encodeCreditLineDerivative(
         syntheticSymbol,
         syntheticToken,
         fee: {
-          feePercentage: fee.feePercentage,
+          feePercentage: web3Utils.toWei(fee.feePercentage.toString()),
           feeRecipients: fee.feeRecipients,
           feeProportions: fee.feeProportions,
           totalFeeProportions: web3Utils.toWei('0'),
