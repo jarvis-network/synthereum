@@ -236,11 +236,19 @@ contract OnChainLiquidityRouterV2 is
     override
     returns (bool)
   {
-    return
-      forwarder ==
+    try
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.TrustedForwarder
-      );
+      )
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
   }
 
   function _msgSender()
@@ -249,14 +257,7 @@ contract OnChainLiquidityRouterV2 is
     override(ERC2771Context, Context)
     returns (address sender)
   {
-    if (isTrustedForwarder(msg.sender)) {
-      // The assembly code is more direct than the Solidity version using `abi.decode`.
-      assembly {
-        sender := shr(96, calldataload(sub(calldatasize(), 20)))
-      }
-    } else {
-      return ERC2771Context._msgSender();
-    }
+    return ERC2771Context._msgSender();
   }
 
   function _msgData()
@@ -265,10 +266,6 @@ contract OnChainLiquidityRouterV2 is
     override(ERC2771Context, Context)
     returns (bytes calldata)
   {
-    if (isTrustedForwarder(msg.sender)) {
-      return msg.data[0:msg.data.length - 20];
-    } else {
-      return ERC2771Context._msgData();
-    }
+    return ERC2771Context._msgData();
   }
 }
