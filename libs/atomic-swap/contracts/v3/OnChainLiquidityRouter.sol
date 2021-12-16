@@ -4,6 +4,9 @@ pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import {
+  IOnChainLiquidityRouterV2
+} from './interfaces/IOnChainLiquidityRouter.sol';
+import {
   ISynthereumLiquidityPool
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
 import {
@@ -15,9 +18,6 @@ import {
 import {
   ERC2771Context
 } from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
-import {
-  IOnChainLiquidityRouterV2
-} from './interfaces/IOnChainLiquidityRouter.sol';
 import {
   AccessControlEnumerable,
   Context
