@@ -11,11 +11,11 @@ import {
 import {
   BaseControlledMintableBurnableERC20
 } from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
+import {CreditLineLib} from './CreditLineLib.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {CreditLineLib} from './CreditLineLib.sol';
 import {CreditLine} from './CreditLine.sol';
 
 /**

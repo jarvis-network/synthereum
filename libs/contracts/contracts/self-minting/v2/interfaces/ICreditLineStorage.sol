@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
 import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
 import {
   IMintableBurnableERC20
 } from '../../../tokens/interfaces/IMintableBurnableERC20.sol';
+import {
+  FixedPoint
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ICreditLineStorage {
   // Describe fee structure

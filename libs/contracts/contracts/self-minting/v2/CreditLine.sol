@@ -10,12 +10,6 @@ import {
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {ICreditLine} from './interfaces/ICreditLine.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
-import {
-  SafeERC20
-} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLineLib} from './CreditLineLib.sol';
 import {
   ReentrancyGuard
@@ -23,6 +17,12 @@ import {
 import {
   ERC2771Context
 } from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
+import {
+  FixedPoint
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * @title
@@ -346,6 +346,7 @@ contract CreditLine is
 
   function trimExcess(IERC20 token)
     external
+    override
     nonReentrant
     returns (uint256 amount)
   {
