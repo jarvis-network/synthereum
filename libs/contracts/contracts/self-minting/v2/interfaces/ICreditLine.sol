@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.4;
 
-import {
-  FixedPoint
-} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {IStandardERC20} from '../../../base/interfaces/IStandardERC20.sol';
+import {
+  IStandardERC20,
+  IERC20
+} from '../../../base/interfaces/IStandardERC20.sol';
 import {
   ISynthereumDeployment
 } from '../../../common/interfaces/IDeployment.sol';
@@ -14,6 +14,9 @@ import {
 } from '../../../common/interfaces/IEmergencyShutdown.sol';
 import {ICreditLineStorage} from './ICreditLineStorage.sol';
 import {ITypology} from '../../../common/interfaces/ITypology.sol';
+import {
+  FixedPoint
+} from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 
 interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   /**
@@ -110,9 +113,9 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
 
   /**
    * @notice trim any excess funds in the contract to the excessTokenBeneficiary address
-   * @retun amount the amount of tokens trimmed
+   * @return amount the amount of tokens trimmed
    */
-  function trimExcess(IERC20 token) returns (uint256 amount);
+  function trimExcess(IERC20 token) external returns (uint256 amount);
 
   /**
    * @notice Returns the minimum amount of tokens a sponsor must mint

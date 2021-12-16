@@ -11,15 +11,15 @@ import {ICreditLineController} from './interfaces/ICreditLineController.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {ISynthereumFinder} from '../../core/interfaces/IFinder.sol';
 import {
+  ISynthereumPriceFeed
+} from '../../oracle/common/interfaces/IPriceFeed.sol';
+import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLine} from './CreditLine.sol';
-import {
-  ISynthereumPriceFeed
-} from '../../oracle/common/interfaces/IPriceFeed.sol';
 import {
   ERC2771Context
 } from '@openzeppelin/contracts/metatx/ERC2771Context.sol';
