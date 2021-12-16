@@ -20,9 +20,6 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {CreditLine} from './CreditLine.sol';
-import {
-  ERC2771Context
-} from '@jarvis-network/synthereum-contracts/contracts/common/ERC2771Context.sol';
 
 library CreditLineLib {
   using FixedPoint for FixedPoint.Unsigned;
