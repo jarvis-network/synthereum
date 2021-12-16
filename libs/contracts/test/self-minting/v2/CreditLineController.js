@@ -14,6 +14,7 @@ const SynthereumDeployer = artifacts.require('SynthereumDeployer');
 const SynthereumCollateralWhitelist = artifacts.require(
   'SynthereumCollateralWhitelist',
 );
+const SelfMintingRegistry = artifacts.require('SelfMintingRegistry');
 const SynthereumIdentifierWhitelist = artifacts.require(
   'SynthereumIdentifierWhitelist',
 );
@@ -38,7 +39,7 @@ contract('Self-minting controller', function (accounts) {
   const priceFeedIdentifier = 'EURUSD';
   const syntheticName = 'Jarvis Euro Token';
   const syntheticSymbol = 'jEUR';
-  let feePercentage = 0.2;
+  let feePercentage = 0.002;
   let collateralRequirement = toWei('1.2');
   let liquidationRewardPct = toWei('0.2');
 
