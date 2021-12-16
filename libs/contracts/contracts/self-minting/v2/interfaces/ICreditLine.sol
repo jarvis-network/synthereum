@@ -109,6 +109,12 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
   function claimFee() external returns (uint256 feeClaimed);
 
   /**
+   * @notice trim any excess funds in the contract to the excessTokenBeneficiary address
+   * @retun amount the amount of tokens trimmed
+   */
+  function trimExcess(IERC20 token) returns (uint256 amount);
+
+  /**
    * @notice Returns the minimum amount of tokens a sponsor must mint
    * @return amount the value
    */
