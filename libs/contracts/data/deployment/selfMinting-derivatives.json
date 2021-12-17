@@ -15,5 +15,12 @@
       "jCHF": "0x53dfEa0A8CC2A2A2e425E1C174Bc162999723ea0",
       "jGBP": "0x7409856CAE628f5d578B285B45669b36E7005283"
     }
+  },
+  "97": {
+    "isEnabled": true,
+    "SelfMintingDerivative": 2,
+    "SyntheticTokenAddress": {
+      "jEUR": "0x416A4b83d6EC3922eDc5c85f1f2B4527d5653E91"
+    }
   }
 }
