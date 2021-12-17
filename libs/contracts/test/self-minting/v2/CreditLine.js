@@ -20,7 +20,7 @@ const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
 const SynthereumManager = artifacts.require('SynthereumManager');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const CreditLineControllerMock = artifacts.require('CreditLineControllerMock');
-const Forwarder = artifacts.require('MinimalForwarder');
+const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 const { signAndSendMetaTx } = require('../meta-tx/metaTx');
 
 contract('Synthereum CreditLine ', function (accounts) {

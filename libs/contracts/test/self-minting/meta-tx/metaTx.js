@@ -23,7 +23,7 @@ utils.signAndSendMetaTx = async (
     },
     networkId,
   );
-  await forwarderInstance.execute(request, signature);
+  await forwarderInstance.safeExecute(request, signature);
 };
 
 module.exports = utils;
