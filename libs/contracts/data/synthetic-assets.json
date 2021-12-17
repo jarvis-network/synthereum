@@ -59,30 +59,30 @@
       "syntheticSymbol": "jEUR",
       "priceFeedIdentifier": "EURUSD",
       "collateralRequirement": "1050000000000000000",
-      "minSponsorTokens": "50000000000000000000",
+      "minSponsorTokens": "10000000000000000000",
       "capMintAmount": "1000000000000000000000000",
       "overCollateralization": "",
-      "liquidationReward": ""
+      "liquidationReward": "600000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic Swiss Franc",
       "syntheticSymbol": "jCHF",
       "priceFeedIdentifier": "CHFUSD",
       "collateralRequirement": "1050000000000000000",
-      "minSponsorTokens": "50000000000000000000",
+      "minSponsorTokens": "10000000000000000000",
       "capMintAmount": "1000000000000000000000000",
       "overCollateralization": "",
-      "liquidationReward": ""
+      "liquidationReward": "600000000000000000"
     },
     {
       "syntheticName": "Jarvis Synthetic British Pound",
       "syntheticSymbol": "jGBP",
       "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1050000000000000000",
-      "minSponsorTokens": "50000000000000000000",
+      "minSponsorTokens": "10000000000000000000",
       "capMintAmount": "1000000000000000000000000",
       "overCollateralization": "",
-      "liquidationReward": ""
+      "liquidationReward": "600000000000000000"
     }
   ],
   "137": [
