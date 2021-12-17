@@ -46,22 +46,21 @@ module.exports = async function (deployer, network, accounts) {
     assets[networkId].map(async asset => {
       let creditLineDerivativeVersion = '';
       let creditLineDerivativePayload = '';
-      if (deployment[networkId].SelfMintingDerivative === 1) {
-        creditLineDerivativeVersion = selfMintingData[networkId][1].version;
+      if (deployment[networkId].SelfMintingDerivative === 2) {
+        creditLineDerivativeVersion = selfMintingData[networkId][0].version;
         creditLineDerivativePayload = encodeCreditLineDerivative(
-          selfMintingData[networkId][1].collateralAddress,
+          selfMintingData[networkId][0].collateralAddress,
           asset.priceFeedIdentifier,
           asset.syntheticName,
           asset.syntheticSymbol,
           deployment[networkId].SyntheticTokenAddress[asset.syntheticSymbol],
-          selfMintingData[networkId][1].fee,
-          roles,
-          selfMintingData[networkId][1].liquidationPct,
-          asset.capMintAmount,
           asset.collateralRequirement,
           asset.minSponsorTokens,
-          synthereumConfig.excessTokenBeneficiary,
+          synthereumConfig[networkId].excessTokenBeneficiary,
           creditLineDerivativeVersion,
+          selfMintingData[networkId][0].fee,
+          selfMintingData[networkId][0].liquidationPct,
+          asset.capMintAmount,
         );
       }
       txData.push({
