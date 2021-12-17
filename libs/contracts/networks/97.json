@@ -60,6 +60,21 @@
     "transactionHash": "0xfe5e20ede6ec8a7d6afeca3c5f8b0e6fa6c771a1ee7a0be472cef391e5eb1f2c"
   },
   {
+    "contractName": "CreditLineLib",
+    "address": "0x58D5cE09152e8f30d41ec5Ee4dAF6f6D08997511",
+    "transactionHash": "0x32320e245a9514b9051c5fa64db738e5710c7d642e251b860a1a0b736e521f1a"
+  },
+  {
+    "contractName": "CreditLineFactory",
+    "address": "0x5BDdd34E28C3579CC478665F567F362A8edD5825",
+    "transactionHash": "0xfec112efc6dfffa9136021aae372f7c3bd956379507412870f7ad88992d6de9c"
+  },
+  {
+    "contractName": "CreditLineController",
+    "address": "0x8bE5C425137701d1D19aBE0a49202765EdC870B3",
+    "transactionHash": "0xb7003a1de13e9069090264d9b91ff93feec5625575f5325eb2f5ff9481eab594"
+  },
+  {
     "contractName": "SynthereumTrustedForwarder",
     "address": "0x45adD0c2fD5D2796ee8272074CE55168A75c5347",
     "transactionHash": "0xf66e12388830ae55047878b71377f0b9df6492f20f99ad4efc93e0d97c01d404"

@@ -22,5 +22,11 @@
       "version": 2,
       "isEnabled": true
     }
+  },
+  "97": {
+    "CreditLineFactory": {
+      "version": 2,
+      "isEnabled": true
+    }
   }
 }
