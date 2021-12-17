@@ -2,7 +2,7 @@
   "42": ["CHFUSD", "GBPUSD"],
   "4": [],
   "1": [],
-  "80001": [],
+  "80001": ["EURUSD", "GBPUSD", "CHFUSD"],
   "137": [],
   "56": ["EURUSD", "GBPUSD", "CHFUSD", "NGNUSD"],
   "97": ["EURUSD", "GBPUSD", "NGNUSD"],
