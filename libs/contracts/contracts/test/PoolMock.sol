@@ -2,6 +2,9 @@
 pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  ISynthereumChainlinkPriceFeed
+} from '../oracle/chainlink/interfaces/IChainlinkPriceFeed.sol';
 
 contract PoolMock {
   uint8 private poolVersion;
@@ -35,5 +38,13 @@ contract PoolMock {
 
   function syntheticToken() external view returns (IERC20) {
     return token;
+  }
+
+  function getRate(address priceFeed, bytes32 identifier)
+    external
+    view
+    returns (uint256)
+  {
+    return ISynthereumChainlinkPriceFeed(priceFeed).getLatestPrice(identifier);
   }
 }

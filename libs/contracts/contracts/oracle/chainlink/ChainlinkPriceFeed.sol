@@ -75,23 +75,32 @@ contract SynthereumChainlinkPriceFeed is
 
   modifier onlyPoolsOrSelfMinting() {
     if (msg.sender != tx.origin) {
-      bytes32 typology =
-        keccak256(abi.encodePacked(ITypology(msg.sender).typology()));
       ISynthereumRegistry registry;
-      if (typology == keccak256(abi.encodePacked('POOL'))) {
+      try ITypology(msg.sender).typology() returns (
+        string memory typologyString
+      ) {
+        bytes32 typology = keccak256(abi.encodePacked(typologyString));
+        if (typology == keccak256(abi.encodePacked('POOL'))) {
+          registry = ISynthereumRegistry(
+            synthereumFinder.getImplementationAddress(
+              SynthereumInterfaces.PoolRegistry
+            )
+          );
+        } else if (typology == keccak256(abi.encodePacked('SELF-MINTING'))) {
+          registry = ISynthereumRegistry(
+            synthereumFinder.getImplementationAddress(
+              SynthereumInterfaces.SelfMintingRegistry
+            )
+          );
+        } else {
+          revert('Typology not supported');
+        }
+      } catch {
         registry = ISynthereumRegistry(
           synthereumFinder.getImplementationAddress(
             SynthereumInterfaces.PoolRegistry
           )
         );
-      } else if (typology == keccak256(abi.encodePacked('SELF-MINTING'))) {
-        registry = ISynthereumRegistry(
-          synthereumFinder.getImplementationAddress(
-            SynthereumInterfaces.SelfMintingRegistry
-          )
-        );
-      } else {
-        revert('Typology not supported');
       }
       ISynthereumDeployment callingContract = ISynthereumDeployment(msg.sender);
       require(

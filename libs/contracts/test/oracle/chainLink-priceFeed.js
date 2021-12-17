@@ -20,6 +20,7 @@ const SynthereumCollateralWhitelist = artifacts.require(
 const SynthereumIdentifierWhitelist = artifacts.require(
   'SynthereumIdentifierWhitelist',
 );
+const SynthereumPoolRegistry = artifacts.require('SynthereumPoolRegistry');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const ChainlinkPriceFeed = artifacts.require('SynthereumChainlinkPriceFeed');
 const MintableBurnableERC20 = artifacts.require('MintableBurnableERC20');
@@ -28,6 +29,8 @@ const PriceFeedGetter = artifacts.require('PriceFeedGetter');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 const CreditLine = artifacts.require('CreditLine');
 const WrongTypology = artifacts.require('WrongTypology');
+const PoolMock = artifacts.require('PoolMock');
+const PoolRegistryMock = artifacts.require('PoolRegistryMock');
 
 contract('Synthereum chainlink price feed', function (accounts) {
   let collateralAddress;
@@ -375,6 +378,42 @@ contract('Synthereum chainlink price feed', function (accounts) {
         from: sender,
       });
     });
+    it('Can price be get by a an old version of synthereum pool', async () => {
+      const oldVersion = 4;
+      const oldPool = await PoolMock.new(
+        4,
+        collateralAddress,
+        syntheticSymbol,
+        syntheticTokenAddress,
+      );
+      const tempRegistry = await PoolRegistryMock.new();
+      const poolRegistryInterface = web3Utils.stringToHex('PoolRegistry');
+      await finderInstance.changeImplementationAddress(
+        poolRegistryInterface,
+        tempRegistry.address,
+        { from: maintainer },
+      );
+      await tempRegistry.register(
+        syntheticSymbol,
+        collateralAddress,
+        oldVersion,
+        oldPool.address,
+      );
+      const priceResult = await oldPool.getRate.call(
+        priceFeedInstance.address,
+        web3Utils.toHex(priceFeedIdentifier),
+      );
+      assert.equal(
+        priceResult.toString(),
+        checkingPrice.toString(),
+        'Wrong price return in old pool',
+      );
+      await finderInstance.changeImplementationAddress(
+        poolRegistryInterface,
+        (await SynthereumPoolRegistry.deployed()).address,
+        { from: maintainer },
+      );
+    });
     it('Can revert if price getter is called by a contract that is not a pool', async () => {
       const proxyPriceContract = await PriceFeedGetter.new(
         priceFeedInstance.address,
@@ -410,11 +449,9 @@ contract('Synthereum chainlink price feed', function (accounts) {
     });
     it('Can check latest data', async () => {
       prevRound = (await aggregator.latestRoundData.call()).roundId;
-      console.log(prevRound.toString());
       newAnswer = web3Utils.toWei('130', 'mwei');
       newAnswerUnscaled = web3Utils.toWei('1.30');
       const updateTx = await aggregator.updateAnswer(newAnswer);
-      console.log((await aggregator.latestRound.call()).toString());
       txTimestamp = (await web3.eth.getBlock(updateTx.receipt.blockNumber))
         .timestamp;
       const data = await priceFeedInstance.getOracleLatestData.call(
@@ -439,16 +476,13 @@ contract('Synthereum chainlink price feed', function (accounts) {
       prevAnswerUnscaled = newAnswerUnscaled;
       prevTimestamp = txTimestamp;
       prevRound = (parseInt(prevRound) + 1).toString();
-      console.log({ prevRound });
     });
     it('Can check previous round price', async () => {
       newAnswer = web3Utils.toWei('140', 'mwei');
       newAnswerUnscaled = web3Utils.toWei('1.40');
-      console.log((await aggregator.latestRound.call()).toString());
       const updateTx = await aggregator.updateAnswer(newAnswer);
       txTimestamp = (await web3.eth.getBlock(updateTx.receipt.blockNumber))
         .timestamp;
-      console.log((await aggregator.latestRound.call()).toString());
       const price = (
         await priceFeedInstance.getRoundPrice.call(priceFeedId, prevRound)
       ).toString();
