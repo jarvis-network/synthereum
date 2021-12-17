@@ -237,7 +237,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let DAIbalanceAfter = await DAIInstance.balanceOf.call(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
@@ -356,7 +356,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let DAIBalanceAfter = await DAIInstance.balanceOf.call(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
@@ -466,7 +466,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       //send metatx
-      let tx = await forwarderInstance.execute(request, signature, {
+      let tx = await forwarderInstance.safeExecute(request, signature, {
         value: tokenAmountIn,
         from: metaUserAddr,
       });
@@ -581,7 +581,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let EthBalanceAfter = await web3.eth.getBalance(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);

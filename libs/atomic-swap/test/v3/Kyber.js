@@ -17,7 +17,7 @@ const PoolMock = artifacts.require('PoolMock');
 const MockContractUser = artifacts.require('MockContractUserV2');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
-const Forwarder = artifacts.require('MinimalForwarder');
+const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 
 const tokens = require('../../data/test/tokens.json');
 const kyber = require('../../data/test/kyber.json');
@@ -240,7 +240,7 @@ contract('KyberDMM', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
@@ -363,7 +363,7 @@ contract('KyberDMM', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let WBTCBalanceAfter = await WBTCInstance.balanceOf.call(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
@@ -478,7 +478,7 @@ contract('KyberDMM', async accounts => {
       );
 
       //send metatx
-      let tx = await forwarderInstance.execute(request, signature, {
+      let tx = await forwarderInstance.safeExecute(request, signature, {
         value: tokenAmountIn,
         from: metaUserAddr,
       });
@@ -595,7 +595,7 @@ contract('KyberDMM', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);

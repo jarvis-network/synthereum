@@ -2,7 +2,7 @@ const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouterV2');
 const UniV2AtomicSwap = artifacts.require('OCLRV2UniswapV2');
 const UniV3AtomicSwap = artifacts.require('OCLRV2UniswapV3');
 const KyberAtomicSwap = artifacts.require('OCLRV2Kyber');
-const MinimalForwarder = artifacts.require('MinimalForwarder');
+const MinimalForwarder = artifacts.require('SynthereumTrustedForwarder');
 
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');
@@ -30,11 +30,14 @@ module.exports = async function (deployer, network, accounts) {
   )[0].address;
 
   // deploy minimal forwarder
-  await deploy(web3, deployer, network, MinimalForwarder, {
+  await deploy(web3, deployer, network, SynthereumTrustedForwarder, {
     from: admin,
   });
 
-  const forwarderInstance = await getExistingInstance(web3, MinimalForwarder);
+  const forwarderInstance = await getExistingInstance(
+    web3,
+    SynthereumTrustedForwarder,
+  );
 
   // deploy proxy
   await deploy(

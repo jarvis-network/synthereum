@@ -15,7 +15,7 @@ const IUniswapRouter = artifacts.require(
   '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
 );
 const PoolMock = artifacts.require('PoolMock');
-const Forwarder = artifacts.require('MinimalForwarder');
+const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
@@ -239,7 +239,7 @@ contract('UniswapV2', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
@@ -360,7 +360,7 @@ contract('UniswapV2', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let WETHBalanceAfter = await WETHInstance.balanceOf.call(metaUserAddr);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(metaUserAddr);
@@ -469,7 +469,7 @@ contract('UniswapV2', async accounts => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(metaUserAddr);
 
       //send metatx
-      let tx = await forwarderInstance.execute(request, signature, {
+      let tx = await forwarderInstance.safeExecute(request, signature, {
         value: tokenAmountIn,
         from: metaUserAddr,
       });
@@ -587,7 +587,7 @@ contract('UniswapV2', async accounts => {
       );
 
       //send metatx
-      await forwarderInstance.execute(request, signature);
+      await forwarderInstance.safeExecute(request, signature);
 
       let EthBalanceAfter = web3Utils.toBN(
         await web3.eth.getBalance(metaUserAddr),
