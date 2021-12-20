@@ -355,6 +355,15 @@ contract('Self-minting controller', function (accounts) {
           toWei(feePercentage.toString()),
           'Wrong initial fee percentage',
         );
+        assert.equal(
+          (
+            await creditLineControllerInstance.feePercentage.call(
+              creditLine.address,
+            )
+          ).toString(),
+          toWei(feePercentage.toString()),
+          'Wrong initial fee percentage',
+        );
         const newFeePerc = toWei('0.3');
         const updateTx = await creditLineControllerInstance.setFeePercentage(
           [creditLine.address],
@@ -435,6 +444,15 @@ contract('Self-minting controller', function (accounts) {
           feeInfo.feeRecipients[0],
           Fee.feeRecipients[0],
           'Wrong initial fee recipients',
+        );
+
+        const expectedRec = await creditLineControllerInstance.feeRecipientsInfo(
+          creditLine.address,
+        );
+        assert.equal(Fee.feeRecipients[0], expectedRec[0][0].toString());
+        assert.equal(
+          Fee.feeProportions[0].toString(),
+          expectedRec[1][0].toString(),
         );
 
         const newFeeRecipients = {
