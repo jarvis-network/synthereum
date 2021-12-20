@@ -454,7 +454,6 @@ library CreditLineLib {
       .mul(positionToLiquidate.rawCollateral);
 
     // compute final liquidation outcome
-    FixedPoint.Unsigned memory liquidatorReward;
     if (
       executeLiquidationData.collateralLiquidated.isGreaterThan(
         executeLiquidationData.collateralValueLiquidatedTokens
@@ -469,7 +468,7 @@ library CreditLineLib {
         .mul(positionManagerData._getLiquidationReward());
       executeLiquidationData.collateralLiquidated = executeLiquidationData
         .collateralValueLiquidatedTokens
-        .add(liquidatorReward);
+        .add(executeLiquidationData.liquidatorReward);
     } else {
       // undercapitalised - take min between position total collateral and value of burned tokens - liquidator don't make profit
       executeLiquidationData.collateralLiquidated = FixedPoint.min(
