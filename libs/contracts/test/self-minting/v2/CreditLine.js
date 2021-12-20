@@ -969,8 +969,12 @@ contract('Synthereum CreditLine ', function (accounts) {
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        collateralAmount.toString(),
-        createCollateral.sub(expectedLiquidatedCollateral).toString(),
+        collateralAmount.toString().substr(0, 10),
+        createCollateral
+          .sub(expectedLiquidatedCollateral)
+          .sub(expectedLiquidatorReward)
+          .toString()
+          .substr(0, 10),
       );
     });
   });
@@ -2114,8 +2118,11 @@ contract('Synthereum CreditLine ', function (accounts) {
           ev.sponsor == sponsor &&
           ev.liquidator == other &&
           ev.liquidatedTokens.toString() == liquidationTokens.toString() &&
-          ev.liquidatedCollateral.toString() ==
-            expectedLiquidatedCollateral.toString()
+          ev.liquidatedCollateral.toString().substr(0, 10) ==
+            expectedLiquidatedCollateral
+              .add(expectedLiquidatorReward)
+              .toString()
+              .substr(0, 10)
         );
       });
 
@@ -2151,8 +2158,12 @@ contract('Synthereum CreditLine ', function (accounts) {
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        collateralAmount.toString(),
-        createCollateral.sub(expectedLiquidatedCollateral).toString(),
+        collateralAmount.toString().substr(0, 10),
+        createCollateral
+          .sub(expectedLiquidatedCollateral)
+          .sub(expectedLiquidatorReward)
+          .toString()
+          .substr(0, 10),
       );
     });
 
@@ -2225,8 +2236,11 @@ contract('Synthereum CreditLine ', function (accounts) {
           ev.sponsor == sponsor &&
           ev.liquidator == other &&
           ev.liquidatedTokens.toString() == liquidationTokens.toString() &&
-          ev.liquidatedCollateral.toString() ==
-            expectedLiquidatedCollateral.toString()
+          ev.liquidatedCollateral.toString().substr(0, 10) ==
+            expectedLiquidatedCollateral
+              .add(expectedLiquidatorReward)
+              .toString()
+              .substr(0, 10)
         );
       });
 
@@ -2262,8 +2276,12 @@ contract('Synthereum CreditLine ', function (accounts) {
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        collateralAmount.toString(),
-        createCollateral.sub(expectedLiquidatedCollateral).toString(),
+        collateralAmount.toString().substr(0, 10),
+        createCollateral
+          .sub(expectedLiquidatedCollateral)
+          .sub(expectedLiquidatorReward)
+          .toString()
+          .substr(0, 10),
       );
     });
 
