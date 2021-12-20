@@ -103,6 +103,10 @@ contract('Synthereum CreditLine ', function (accounts) {
   };
 
   const checkFeeRecipients = async expectedFeeAmount => {
+    assert.equal(
+      expectedFeeAmount.toString(),
+      await creditLine.userFeeGained(feeRecipient),
+    );
     const feeRecipientBalanceBefore = await collateral.balanceOf.call(
       feeRecipient,
     );
@@ -383,6 +387,30 @@ contract('Synthereum CreditLine ', function (accounts) {
       // Periodic check for no excess collateral.
       await expectNoExcessCollateralToTrim();
 
+      // revert if not trustedd forwarder
+      await synthereumFinderInstance.changeImplementationAddress(
+        utf8ToHex('TrustedForwarder'),
+        accounts[4],
+        { from: maintainers },
+      );
+      await truffleAssert.reverts(
+        signAndSendMetaTx(
+          forwarderInstance,
+          sponsorSigner,
+          functionSig,
+          functionParam.substr(2),
+          sponsor,
+          creditLine.address,
+          0,
+          networkId,
+        ),
+      );
+      await synthereumFinderInstance.changeImplementationAddress(
+        utf8ToHex('TrustedForwarder'),
+        forwarderInstance.address,
+        { from: maintainers },
+      );
+
       // withdraw
       const withdrawCollateral = toWei('20');
       expectedSponsorCollateral = expectedSponsorCollateral.sub(
@@ -646,10 +674,20 @@ contract('Synthereum CreditLine ', function (accounts) {
       const emergencyShutdownPrice = await mockOnchainOracle.getLatestPrice(
         priceFeedIdentifier,
       );
-      await synthereumManagerInstance.emergencyShutdown([creditLine.address], {
-        from: maintainers,
-      });
+      let tx = await synthereumManagerInstance.emergencyShutdown(
+        [creditLine.address],
+        {
+          from: maintainers,
+        },
+      );
 
+      let expectedEmergencyTime = (
+        await web3.eth.getBlock(tx.receipt.blockNumber)
+      ).timestamp;
+      assert.equal(
+        (await creditLine.emergencyShutdownTime.call()).toString(),
+        expectedEmergencyTime.toString(),
+      );
       assert.equal(
         (await creditLine.emergencyShutdownPrice.call()).toString(),
         emergencyShutdownPrice.toString(),
@@ -977,6 +1015,7 @@ contract('Synthereum CreditLine ', function (accounts) {
           .substr(0, 10),
       );
     });
+    it('Reverts if not trusted forwarder', async () => {});
   });
 
   it('Correct deployment and variable assignment', async function () {
