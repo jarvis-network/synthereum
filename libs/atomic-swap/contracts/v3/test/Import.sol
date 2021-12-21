@@ -8,3 +8,6 @@ import {
 import {
   SynthereumLiquidityPool
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/LiquidityPool.sol';
+import {
+  PoolMock
+} from '@jarvis-network/synthereum-contracts/contracts/test/PoolMock.sol';

@@ -2,7 +2,9 @@ const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouterV2');
 const UniV2AtomicSwap = artifacts.require('OCLRV2UniswapV2');
 const UniV3AtomicSwap = artifacts.require('OCLRV2UniswapV3');
 const KyberAtomicSwap = artifacts.require('OCLRV2Kyber');
-const MinimalForwarder = artifacts.require('SynthereumTrustedForwarder');
+const SynthereumTrustedForwarder = artifacts.require(
+  'SynthereumTrustedForwarder',
+);
 
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');

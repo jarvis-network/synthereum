@@ -15,7 +15,7 @@ const ISwapRouter = artifacts.require('ISwapRouter');
 const IUniswapRouter = artifacts.require(
   '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
 );
-const Forwarder = artifacts.require('MinimalForwarder');
+const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 const PoolMock = artifacts.require('PoolMock');
 const TestnetERC20 = artifacts.require('TestnetERC20');
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
