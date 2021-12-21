@@ -105,6 +105,10 @@ contract('Synthereum CreditLine ', function (accounts) {
   const checkFeeRecipients = async expectedFeeAmount => {
     assert.equal(
       expectedFeeAmount.toString(),
+      (await creditLine.totalFeeAmount.call()).toString(),
+    );
+    assert.equal(
+      expectedFeeAmount.toString(),
       await creditLine.userFeeGained(feeRecipient),
     );
     const feeRecipientBalanceBefore = await collateral.balanceOf.call(
@@ -390,7 +394,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       // revert if not trustedd forwarder
       await synthereumFinderInstance.changeImplementationAddress(
         utf8ToHex('TrustedForwarder'),
-        accounts[4],
+        (await Forwarder.new()).address,
         { from: maintainers },
       );
       await truffleAssert.reverts(
@@ -1047,6 +1051,11 @@ contract('Synthereum CreditLine ', function (accounts) {
     assert.equal(
       (await creditLine.capMintAmount.call()).toString(),
       capMintAmount.toString(),
+    );
+    assert.equal(await creditLine.excessTokensBeneficiary.call(), beneficiary);
+    assert.equal(
+      (await creditLine.minSponsorTokens.call()).toString(),
+      minSponsorTokens.toString(),
     );
   });
 
