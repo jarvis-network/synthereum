@@ -1,6 +1,7 @@
 // Libraries and helpers
 const {
   interfaceName,
+  ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const { assert } = require('chai');
 const truffleAssert = require('truffle-assertions');
@@ -394,7 +395,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       // revert if not trustedd forwarder
       await synthereumFinderInstance.changeImplementationAddress(
         utf8ToHex('TrustedForwarder'),
-        (await Forwarder.new()).address,
+        ZERO_ADDRESS,
         { from: maintainers },
       );
       await truffleAssert.reverts(
@@ -2288,7 +2289,9 @@ contract('Synthereum CreditLine ', function (accounts) {
             expectedLiquidatedCollateral
               .add(expectedLiquidatorReward)
               .toString()
-              .substr(0, 10)
+              .substr(0, 10) &&
+          ev.collateralReward.toString().substr(0, 10) ==
+            expectedLiquidatorReward.toString().substr(0, 10)
         );
       });
 
@@ -2335,7 +2338,7 @@ contract('Synthereum CreditLine ', function (accounts) {
 
     it('Correctly liquidates an undercollateralised amount, position undercapitalised', async () => {
       // change price - position is under collateral requirement and cant fully cover debt
-      const updatedPrice = toBN(toWei('1.5'));
+      const updatedPrice = toBN(toWei('15'));
       await mockOnchainOracle.setPrice(priceFeedIdentifier, updatedPrice);
 
       const collateralRequirement = createTokens
@@ -2355,24 +2358,10 @@ contract('Synthereum CreditLine ', function (accounts) {
       let liquidatedCollateralPortion = liquidationTokens
         .mul(createCollateral)
         .div(createTokens);
-      const liquidatedTokensValue = liquidationTokens
-        .mul(updatedPrice)
-        .div(toBN(Math.pow(10, 18)));
-      const isCapitalised = liquidatedCollateralPortion.gt(
-        liquidatedTokensValue,
-      );
-      let expectedLiquidatorReward = isCapitalised
-        ? liquidatedCollateralPortion
-            .sub(liquidatedTokensValue)
-            .mul(liquidationRewardPct)
-            .div(toBN(Math.pow(10, 18)))
-        : toBN(0);
 
-      let expectedLiquidatedCollateral = isCapitalised
-        ? liquidatedTokensValue
-        : liquidatedTokensValue.gt(createCollateral)
-        ? createCollateral
-        : liquidatedTokensValue;
+      let expectedLiquidatorReward = toBN(0);
+
+      let expectedLiquidatedCollateral = liquidatedCollateralPortion;
 
       let liquidatorCollateralBalanceBefore = await collateral.balanceOf.call(
         other,
@@ -2395,8 +2384,10 @@ contract('Synthereum CreditLine ', function (accounts) {
           ev.sponsor == sponsor &&
           ev.liquidator == other &&
           ev.liquidatedTokens.toString() == liquidationTokens.toString() &&
-          ev.liquidatedCollateral.toString() ==
-            expectedLiquidatedCollateral.toString()
+          ev.liquidatedCollateral.toString().substr(0, 10) ==
+            expectedLiquidatedCollateral.toString().substr(0, 10) &&
+          ev.collateralReward.toString().substr(0, 10) ==
+            expectedLiquidatorReward.toString().substr(0, 10)
         );
       });
 
@@ -2432,8 +2423,11 @@ contract('Synthereum CreditLine ', function (accounts) {
         createTokens.sub(liquidationTokens).toString(),
       );
       assert.equal(
-        collateralAmount.toString(),
-        createCollateral.sub(expectedLiquidatedCollateral).toString(),
+        collateralAmount.toString().substr(0, 10),
+        createCollateral
+          .sub(expectedLiquidatedCollateral)
+          .toString()
+          .substr(0, 10),
       );
     });
   });

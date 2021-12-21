@@ -469,12 +469,6 @@ library CreditLineLib {
       executeLiquidationData.collateralLiquidated = executeLiquidationData
         .collateralValueLiquidatedTokens
         .add(executeLiquidationData.liquidatorReward);
-    } else {
-      // undercapitalised - take min between position total collateral and value of burned tokens - liquidator don't make profit
-      executeLiquidationData.collateralLiquidated = FixedPoint.min(
-        executeLiquidationData.collateralValueLiquidatedTokens,
-        positionToLiquidate.rawCollateral
-      );
     }
 
     // reduce position
