@@ -183,9 +183,13 @@ library CreditLineLib {
   ) external returns (FixedPoint.Unsigned memory feeAmount) {
     // Update fees status - percentage is retrieved from Credit Line Controller
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
-
-    feeAmount = positionManagerData
-      .calculateCollateralAmount(numTokens, priceRate)
+    uint256 collateralDecimals =
+      getCollateralDecimals(positionManagerData.collateralToken);
+    feeAmount = calculateCollateralAmount(
+      numTokens,
+      priceRate,
+      collateralDecimals
+    )
       .mul(
       FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
     );
@@ -197,7 +201,8 @@ library CreditLineLib {
           positionManagerData,
           collateralAmount.sub(feeAmount),
           numTokens,
-          priceRate
+          priceRate,
+          collateralDecimals
         ),
         'Insufficient Collateral'
       );
@@ -212,7 +217,8 @@ library CreditLineLib {
           positionManagerData,
           positionData.rawCollateral.add(collateralAmount).sub(feeAmount),
           positionData.tokensOutstanding.add(numTokens),
-          priceRate
+          priceRate,
+          collateralDecimals
         ),
         'Insufficient Collateral'
       );
@@ -290,8 +296,11 @@ library CreditLineLib {
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
 
     // Update fee status
-    feeAmount = positionManagerData
-      .calculateCollateralAmount(numTokens, priceRate)
+    feeAmount = calculateCollateralAmount(
+      numTokens,
+      priceRate,
+      getCollateralDecimals(positionManagerData.collateralToken)
+    )
       .mul(
       FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
     );
@@ -372,8 +381,11 @@ library CreditLineLib {
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
 
     // Update fee status
-    feeAmount = positionManagerData
-      .calculateCollateralAmount(numTokens, priceRate)
+    feeAmount = calculateCollateralAmount(
+      numTokens,
+      priceRate,
+      getCollateralDecimals(positionManagerData.collateralToken)
+    )
       .mul(
       FixedPoint.Unsigned(positionManagerData._getFeeInfo().feePercentage)
     );
@@ -420,6 +432,8 @@ library CreditLineLib {
   {
     // to avoid stack too deep
     ICreditLineStorage.ExecuteLiquidationData memory executeLiquidationData;
+    uint256 collateralDecimals =
+      getCollateralDecimals(positionManagerData.collateralToken);
 
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(positionManagerData);
 
@@ -428,7 +442,8 @@ library CreditLineLib {
       !positionManagerData._checkCollateralization(
         positionToLiquidate.rawCollateral,
         positionToLiquidate.tokensOutstanding,
-        priceRate
+        priceRate,
+        collateralDecimals
       ),
       'Position is properly collateralised'
     );
@@ -441,10 +456,11 @@ library CreditLineLib {
       : positionToLiquidate.tokensOutstanding.rawValue;
 
     // calculate collateral value of those tokens
-    executeLiquidationData.collateralValueLiquidatedTokens = positionManagerData
-      .calculateCollateralAmount(
+    executeLiquidationData
+      .collateralValueLiquidatedTokens = calculateCollateralAmount(
       executeLiquidationData.tokensToLiquidate,
-      priceRate
+      priceRate,
+      collateralDecimals
     );
 
     // calculate proportion of collateral liquidated from position
@@ -704,21 +720,22 @@ library CreditLineLib {
     ICreditLineStorage.PositionData storage positionData
   ) external view returns (bool, uint256) {
     FixedPoint.Unsigned memory priceRate = _getOraclePrice(self);
-
+    uint256 collateralDecimals = getCollateralDecimals(self.collateralToken);
     bool _isOverCollateralised =
       _checkCollateralization(
         self,
         positionData.rawCollateral,
         positionData.tokensOutstanding,
-        priceRate
+        priceRate,
+        collateralDecimals
       );
 
     FixedPoint.Unsigned memory _collateralCoverage =
       positionData.rawCollateral.div(
         calculateCollateralAmount(
-          self,
           positionData.tokensOutstanding,
-          priceRate
+          priceRate,
+          collateralDecimals
         )
       );
 
@@ -813,7 +830,8 @@ library CreditLineLib {
         positionManagerData,
         newRawCollateral,
         positionData.tokensOutstanding,
-        _getOraclePrice(positionManagerData)
+        _getOraclePrice(positionManagerData),
+        getCollateralDecimals(positionManagerData.collateralToken)
       ),
       'CR is not sufficiently high after the withdraw - try less amount'
     );
@@ -869,11 +887,9 @@ library CreditLineLib {
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory collateral,
     FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory oraclePrice
+    FixedPoint.Unsigned memory oraclePrice,
+    uint256 collateralDecimals
   ) internal view returns (bool) {
-    uint256 collateralDecimals =
-      getCollateralDecimals(positionManagerData.collateralToken);
-
     // calculate the min collateral of numTokens with chainlink
     FixedPoint.Unsigned memory thresholdValue =
       numTokens.mul(oraclePrice).div(10**(18 - collateralDecimals));
@@ -983,12 +999,12 @@ library CreditLineLib {
    * @return collateralAmount Amount of collateral after on-chain oracle conversion
    */
   function calculateCollateralAmount(
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
     FixedPoint.Unsigned memory numTokens,
-    FixedPoint.Unsigned memory priceRate
+    FixedPoint.Unsigned memory priceRate,
+    uint256 collateraDecimals
   ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
     collateralAmount = numTokens.mul(priceRate).div(
-      10**(18 - getCollateralDecimals(positionManagerData.collateralToken))
+      10**(18 - collateraDecimals)
     );
   }
 }
