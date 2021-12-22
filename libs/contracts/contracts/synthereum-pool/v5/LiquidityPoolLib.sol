@@ -750,11 +750,8 @@ library SynthereumLiquidityPoolLib {
       .div(executeLiquidation.tokensCollateralized)
       .mul(executeLiquidation.totalCollateralAmount);
 
-    executeLiquidation.settledCollateral;
-    executeLiquidation.rewardAmount;
-
     if (
-      executeLiquidation.userCollateralization.isGreaterThan(
+      executeLiquidation.userCollateralization.isGreaterThanOrEqual(
         executeLiquidation.expectedCollateral
       )
     ) {
@@ -764,6 +761,12 @@ library SynthereumLiquidityPoolLib {
         .userCollateralization
         .sub(executeLiquidation.expectedCollateral)
         .mul(liquidationData.liquidationReward);
+
+      // Update Lp position
+      lpPosition.totalCollateralAmount = executeLiquidation
+        .totalCollateralAmount
+        .sub(executeLiquidation.settledCollateral)
+        .sub(executeLiquidation.rewardAmount);
     } else {
       executeLiquidation.unusedCollateral = self.calculateUnusedCollateral(
         executeLiquidation.totalCollateralAmount,
@@ -772,21 +775,28 @@ library SynthereumLiquidityPoolLib {
       );
       executeLiquidation.settledCollateral = FixedPoint.min(
         executeLiquidation.expectedCollateral,
-        executeLiquidation.totalCollateralAmount.add(
+        executeLiquidation.userCollateralization.add(
           executeLiquidation.unusedCollateral
         )
       );
-    }
 
-    // Update Lp position
-    lpPosition.totalCollateralAmount = executeLiquidation
-      .totalCollateralAmount
-      .isGreaterThan(executeLiquidation.expectedCollateral)
-      ? executeLiquidation
-        .totalCollateralAmount
-        .sub(executeLiquidation.expectedCollateral)
-        .sub(executeLiquidation.rewardAmount)
-      : FixedPoint.Unsigned(0);
+      // Update Lp position untill max 105% coverage using available liquidity
+      lpPosition.totalCollateralAmount = FixedPoint.min(
+        executeLiquidation
+          .totalCollateralAmount
+          .add(executeLiquidation.unusedCollateral)
+          .sub(executeLiquidation.settledCollateral),
+        calculateCollateralAmount(
+          executeLiquidation
+            .priceRate,
+          collateralDecimals,
+          executeLiquidation.tokensCollateralized.sub(
+            executeLiquidation.tokensInLiquidation
+          )
+        )
+          .mul(liquidationData.collateralRequirement)
+      );
+    }
 
     lpPosition.tokensCollateralized = executeLiquidation
       .tokensCollateralized

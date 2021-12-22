@@ -155,6 +155,24 @@ contract('LiquidityPool', function (accounts) {
     );
   };
 
+  const checkBalances = async liquidityPool => {
+    const availableLiquidity = await liquidityPool.totalAvailableLiquidity.call();
+    const totCollAmount = await liquidityPool.totalCollateralAmount.call();
+    const totalFees = await liquidityPool.totalFeeAmount.call();
+    const poolBalance = await collateralInstance.balanceOf(
+      liquidityPool.address,
+    );
+    assert.equal(
+      poolBalance.toString(),
+      web3Utils
+        .toBN(availableLiquidity)
+        .add(web3Utils.toBN(totCollAmount))
+        .add(web3Utils.toBN(totalFees))
+        .toString(),
+      'Wrong balances',
+    );
+  };
+
   before(async () => {
     liquidityPoolLibInstance = await SynthereumLiquidityPoolLib.new();
     await SynthereumLiquidityPool.link(liquidityPoolLibInstance);
@@ -455,6 +473,7 @@ contract('LiquidityPool', function (accounts) {
           .add(web3Utils.toBN(totalCollateralAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       await collateralInstance.approve(
         liquidityPoolAddress,
         totalCollateralAmount,
@@ -701,6 +720,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(collateralAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can redeem in the correct way and redirect tokens to a different address', async () => {
       const synthTokens = web3Utils.toWei('50');
@@ -1038,6 +1058,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(collateralAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       await checkResult(
         destLiquidityPoolInstance,
         destSynthTokenInstance,
@@ -1068,6 +1089,7 @@ contract('LiquidityPool', function (accounts) {
           .add(web3Utils.toBN(collateralAmount))
           .toString(),
       );
+      await checkBalances(destLiquidityPoolInstance);
       await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
         from: firstUser,
       });
@@ -1587,6 +1609,7 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
         'Wrong LP balance after withdraw',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can revert if sender is not LP', async () => {
       const withdrawAmount = web3Utils.toWei('150', 'mwei');
@@ -1668,6 +1691,7 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
         'Wrong increase collateral amount',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can increase collateralization with deposit by the LP', async () => {
       const collateralToTransfer = web3Utils.toWei('30', 'mwei');
@@ -1840,6 +1864,7 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
         'Wrong decrease collateral amount',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can decrease collateralization with withdraw by the LP', async () => {
       const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
@@ -1903,6 +1928,7 @@ contract('LiquidityPool', function (accounts) {
           .toString(),
         'Wrong increase collateral amount',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can revert if sender is not LP', async () => {
       const collateralToRemove = web3Utils.toWei('23.5', 'mwei');
@@ -2050,6 +2076,7 @@ contract('LiquidityPool', function (accounts) {
         '0',
         'Wrong total fee in the pool',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can revert if no fee to claim', async () => {
       await truffleAssert.reverts(
@@ -2169,6 +2196,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(firstUserReward))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
       totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
       collateralPortion = web3Utils
@@ -2228,6 +2256,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(secondUserReward))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       const remainingCollateral = await liquidityPoolInstance.totalCollateralAmount.call();
       await liquidityPoolInstance.decreaseCollateral(
         remainingCollateral,
@@ -2251,29 +2280,55 @@ contract('LiquidityPool', function (accounts) {
       );
     });
     it('Can liquidate in case the position is under-capitalized', async () => {
-      const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      let availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
       await liquidityPoolInstance.withdrawLiquidity(availableLiquidity, {
         from: liquidityProvider,
       });
-      const initialLiquidity = web3Utils.toWei('5', 'mwei');
+      const initialLiquidity = web3Utils.toWei('30', 'mwei');
       await collateralInstance.transfer(
         liquidityPoolAddress,
         initialLiquidity,
         { from: liquidityProvider },
       );
-      const emergencyPrice = web3Utils.toWei('160', 'mwei');
-      const resultingPrice = web3Utils.toWei('1.60');
-      await aggregatorInstance.updateAnswer(emergencyPrice);
+      let price = web3Utils.toWei('160', 'mwei');
+      let resultingPrice = web3Utils.toWei('1.60');
+      await aggregatorInstance.updateAnswer(price);
       const firstUserSynthTokens = web3Utils.toWei('79.8');
-      const secondUserSynthTokens = web3Utils.toWei('20');
-      const secondUserSynthTokensExceeding = web3Utils.toWei('21');
+      const secondUserSynthTokens = web3Utils.toWei('15');
+      const thirdUserSynthTokens = web3Utils.toWei('5');
+      const thirdUserSynthTokensExceeding = web3Utils.toWei('6');
       await synthTokenInstance.transfer(secondUser, secondUserSynthTokens, {
         from: firstUser,
       });
+      await synthTokenInstance.transfer(thirdUser, thirdUserSynthTokens, {
+        from: firstUser,
+      });
       const firstUserCollateralAmount = web3Utils.toWei('127.68', 'mwei');
-      const secondUserCollateralAmount = web3Utils.toWei('32', 'mwei');
+      const secondUserCollateralAmount = web3Utils.toWei('24', 'mwei');
+      const thirdUserCollateralAmount = web3Utils.toWei('8', 'mwei');
       let totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
       let totalSynthTokensInPool = await liquidityPoolInstance.totalSyntheticTokens.call();
+      let collateralPortion = web3Utils
+        .toBN(firstUserSynthTokens)
+        .mul(web3Utils.toBN(Math.pow(10, 18)))
+        .div(web3Utils.toBN(totalSynthTokensInPool))
+        .mul(web3Utils.toBN(totalCollateralPosition))
+        .div(web3Utils.toBN(Math.pow(10, 18)));
+      let remainingCollateralPortion = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(collateralPortion);
+      let targetCollateral = web3Utils
+        .toBN(secondUserSynthTokens)
+        .add(web3Utils.toBN(thirdUserSynthTokens))
+        .mul(web3Utils.toBN(resultingPrice))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .mul(web3Utils.toBN(collateralRequirement))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .div(web3Utils.toBN(Math.pow(10, 12)));
+      let liquidityUsed = web3Utils
+        .toBN(firstUserCollateralAmount)
+        .sub(collateralPortion);
+      let rebalancingAmount = targetCollateral.sub(remainingCollateralPortion);
       const totalFeeAmount = await liquidityPoolInstance.totalFeeAmount.call();
       const actualFirstUserCollBalance = await collateralInstance.balanceOf.call(
         firstUser,
@@ -2287,7 +2342,7 @@ contract('LiquidityPool', function (accounts) {
       const actualSecondUserSynthBalance = await synthTokenInstance.balanceOf.call(
         secondUser,
       );
-      const totalPoolBalance = await collateralInstance.balanceOf.call(
+      let totalPoolBalance = await collateralInstance.balanceOf.call(
         liquidityPoolAddress,
       );
       await synthTokenInstance.approve(
@@ -2318,11 +2373,12 @@ contract('LiquidityPool', function (accounts) {
           .add(web3Utils.toBN(firstUserCollateralAmount))
           .toString(),
         '0',
-        initialLiquidity.toString(),
         web3Utils
-          .toBN(totalCollateralPosition)
-          .sub(web3Utils.toBN(firstUserCollateralAmount))
+          .toBN(initialLiquidity)
+          .sub(liquidityUsed)
+          .sub(rebalancingAmount)
           .toString(),
+        targetCollateral.toString(),
         web3Utils
           .toBN(totalSynthTokensInPool)
           .sub(web3Utils.toBN(firstUserSynthTokens))
@@ -2335,16 +2391,59 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(firstUserCollateralAmount))
           .toString(),
       );
-      const secondUserNetAmount = web3Utils
-        .toBN(await liquidityPoolInstance.totalCollateralAmount.call())
-        .add(web3Utils.toBN(initialLiquidity));
+      await checkBalances(liquidityPoolInstance);
+      let overCollateralizationData = await liquidityPoolInstance.collateralCoverage.call();
+      assert.equal(
+        overCollateralizationData[0],
+        true,
+        'Wrong overcollateral after liquidation',
+      );
+      assert.equal(
+        overCollateralizationData[1].toString(),
+        collateralRequirement.toString(),
+        'Wrong overcollateral amount after liquidation',
+      );
+      price = web3Utils.toWei('144', 'mwei');
+      resultingPrice = web3Utils.toWei('1.44');
+      await aggregatorInstance.updateAnswer(price);
+      targetCollateral = web3Utils
+        .toBN(secondUserSynthTokens)
+        .add(web3Utils.toBN(thirdUserSynthTokens))
+        .mul(web3Utils.toBN(resultingPrice))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .mul(web3Utils.toBN(collateralRequirement))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .div(web3Utils.toBN(Math.pow(10, 12)));
+      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      let collateralToDecrease = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(targetCollateral);
+      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      await liquidityPoolInstance.decreaseCollateral(
+        collateralToDecrease,
+        web3Utils.toBN(availableLiquidity).add(collateralToDecrease),
+        { from: liquidityProvider },
+      );
+      price = web3Utils.toWei('160', 'mwei');
+      resultingPrice = web3Utils.toWei('1.6');
+      await aggregatorInstance.updateAnswer(price);
+      await collateralInstance.transfer(
+        liquidityPoolAddress,
+        web3Utils.toBN(web3Utils.toWei('2', 'mwei')),
+        { from: liquidityProvider },
+      );
+      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
       await synthTokenInstance.approve(
         liquidityPoolAddress,
         secondUserSynthTokens,
         { from: secondUser },
       );
       const secondLiquidationTx = await liquidityPoolInstance.liquidate(
-        secondUserSynthTokensExceeding,
+        secondUserSynthTokens,
         { from: secondUser },
       );
       truffleAssert.eventEmitted(secondLiquidationTx, 'Liquidate', ev => {
@@ -2352,8 +2451,8 @@ contract('LiquidityPool', function (accounts) {
           ev.liquidator == secondUser &&
           ev.tokensLiquidated == secondUserSynthTokens &&
           ev.price == resultingPrice &&
-          ev.collateralExpected == secondUserCollateralAmount &&
-          ev.collateralReceived == secondUserNetAmount.toString() &&
+          ev.collateralExpected == secondUserCollateralAmount.toString() &&
+          ev.collateralReceived == secondUserCollateralAmount.toString() &&
           ev.rewardReceived == '0'
         );
       });
@@ -2363,7 +2462,95 @@ contract('LiquidityPool', function (accounts) {
         secondUser,
         web3Utils
           .toBN(actualSecondUserCollBalance)
-          .add(secondUserNetAmount)
+          .add(web3Utils.toBN(secondUserCollateralAmount))
+          .toString(),
+        '0',
+        '0',
+        web3Utils
+          .toBN(totalCollateralPosition)
+          .add(web3Utils.toBN(availableLiquidity))
+          .sub(web3Utils.toBN(secondUserCollateralAmount))
+          .toString(),
+        web3Utils.toBN(thirdUserSynthTokens).toString(),
+        web3Utils.toBN(totalFeeAmount).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
+        web3Utils
+          .toBN(totalPoolBalance)
+          .sub(web3Utils.toBN(secondUserCollateralAmount))
+          .toString(),
+      );
+      await checkBalances(liquidityPoolInstance);
+      overCollateralizationData = await liquidityPoolInstance.collateralCoverage.call();
+      assert.equal(
+        overCollateralizationData[0],
+        false,
+        'Wrong overcollateral after liquidation',
+      );
+      price = web3Utils.toWei('144', 'mwei');
+      resultingPrice = web3Utils.toWei('1.44');
+      await aggregatorInstance.updateAnswer(price);
+      targetCollateral = web3Utils
+        .toBN(thirdUserSynthTokens)
+        .mul(web3Utils.toBN(resultingPrice))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .mul(web3Utils.toBN(collateralRequirement))
+        .div(web3Utils.toBN(Math.pow(10, 18)))
+        .div(web3Utils.toBN(Math.pow(10, 12)));
+      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      collateralToDecrease = web3Utils
+        .toBN(totalCollateralPosition)
+        .sub(targetCollateral);
+      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      await liquidityPoolInstance.decreaseCollateral(
+        collateralToDecrease,
+        collateralToDecrease,
+        { from: liquidityProvider },
+      );
+      price = web3Utils.toWei('160', 'mwei');
+      resultingPrice = web3Utils.toWei('1.6');
+      await aggregatorInstance.updateAnswer(price);
+      const addedLiquidity = web3Utils.toBN(web3Utils.toWei('0.1', 'mwei'));
+      await collateralInstance.transfer(liquidityPoolAddress, addedLiquidity, {
+        from: liquidityProvider,
+      });
+      availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
+      totalPoolBalance = await collateralInstance.balanceOf.call(
+        liquidityPoolAddress,
+      );
+      totalCollateralPosition = await liquidityPoolInstance.totalCollateralAmount.call();
+      const actualThirdUserCollBalance = await collateralInstance.balanceOf.call(
+        thirdUser,
+      );
+      const receivedAmount = web3Utils
+        .toBN(totalCollateralPosition)
+        .add(web3Utils.toBN(availableLiquidity));
+      await synthTokenInstance.approve(
+        liquidityPoolAddress,
+        thirdUserSynthTokens,
+        { from: thirdUser },
+      );
+      const thirdLiquidationTx = await liquidityPoolInstance.liquidate(
+        thirdUserSynthTokensExceeding,
+        { from: thirdUser },
+      );
+      truffleAssert.eventEmitted(thirdLiquidationTx, 'Liquidate', ev => {
+        return (
+          ev.liquidator == thirdUser &&
+          ev.tokensLiquidated == thirdUserSynthTokens &&
+          ev.price == resultingPrice &&
+          ev.collateralExpected == thirdUserCollateralAmount.toString() &&
+          ev.collateralReceived == receivedAmount.toString() &&
+          ev.rewardReceived == '0'
+        );
+      });
+      await checkResult(
+        liquidityPoolInstance,
+        synthTokenInstance,
+        thirdUser,
+        web3Utils
+          .toBN(actualThirdUserCollBalance)
+          .add(receivedAmount)
           .toString(),
         '0',
         '0',
@@ -2374,6 +2561,7 @@ contract('LiquidityPool', function (accounts) {
         web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
         web3Utils.toBN(totalFeeAmount).toString(),
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can revert if the position is over-collateralized', async () => {
       const emergencyPrice = web3Utils.toWei('130', 'mwei');
@@ -2457,6 +2645,7 @@ contract('LiquidityPool', function (accounts) {
         finalCollateral,
         'No collateral added',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can revert is emergency shutdown is not called by the manager', async () => {
       await truffleAssert.reverts(
@@ -2679,6 +2868,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(expectedLpAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       const addedLiquidity = web3Utils.toWei('40', 'mwei');
       await collateralInstance.approve(liquidityPoolAddress, addedLiquidity, {
         from: liquidityProvider,
@@ -2729,6 +2919,7 @@ contract('LiquidityPool', function (accounts) {
         '0',
         'Wrong null total supply',
       );
+      await checkBalances(liquidityPoolInstance);
       const finalLpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown(
         {
           from: liquidityProvider,
@@ -2759,6 +2950,7 @@ contract('LiquidityPool', function (accounts) {
         web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
         web3Utils.toBN(totalFeeAmount).toString(),
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can settle in case the position is capitalized and LP is a token holder', async () => {
       await aggregatorInstance.updateAnswer(web3Utils.toWei('115', 'mwei'));
@@ -2845,6 +3037,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(collateralAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       await synthTokenInstance.approve(liquidityPoolAddress, lpSynthTokens, {
         from: liquidityProvider,
       });
@@ -2881,6 +3074,7 @@ contract('LiquidityPool', function (accounts) {
         '0',
         'Wrong null total supply',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can settle in case the position is under-capitalized and LP is not a token holder', async () => {
       const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
@@ -2969,6 +3163,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(firstUserCollateralAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       const lpSettleTx = await liquidityPoolInstance.settleEmergencyShutdown({
         from: liquidityProvider,
       });
@@ -3003,6 +3198,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(firstUserCollateralAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       await synthTokenInstance.approve(
         liquidityPoolAddress,
         secondUserSynthTokens,
@@ -3040,6 +3236,7 @@ contract('LiquidityPool', function (accounts) {
         web3Utils.toBN(totalFeeAmount).div(web3Utils.toBN('2')).toString(),
         web3Utils.toBN(totalFeeAmount).toString(),
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can settle in case the position is under-capitalized and LP is a token holder', async () => {
       const availableLiquidity = await liquidityPoolInstance.totalAvailableLiquidity.call();
@@ -3129,6 +3326,7 @@ contract('LiquidityPool', function (accounts) {
           .sub(web3Utils.toBN(expectedLpAmount))
           .toString(),
       );
+      await checkBalances(liquidityPoolInstance);
       await synthTokenInstance.approve(liquidityPoolAddress, synthTokens, {
         from: firstUser,
       });
@@ -3165,6 +3363,7 @@ contract('LiquidityPool', function (accounts) {
         '0',
         'Wrong null total supply',
       );
+      await checkBalances(liquidityPoolInstance);
     });
     it('Can revert if the sender is not a token holder or the liquidity provider', async () => {
       await managerInstance.emergencyShutdown([liquidityPoolAddress], {
