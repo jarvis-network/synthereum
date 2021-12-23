@@ -126,7 +126,7 @@ library CreditLineLib {
     address sponsor,
     address msgSender
   ) external {
-    require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
+    require(collateralAmount.rawValue > 0, 'Invalid collateral amount');
 
     // Increase the position and global collateral balance by collateral amount.
     positionData._incrementCollateralBalances(
@@ -150,7 +150,7 @@ library CreditLineLib {
     FixedPoint.Unsigned memory collateralAmount,
     address msgSender
   ) external returns (FixedPoint.Unsigned memory) {
-    require(collateralAmount.isGreaterThan(0), 'Invalid collateral amount');
+    require(collateralAmount.rawValue > 0, 'Invalid collateral amount');
 
     // Decrement the sponsor's collateral and global collateral amounts.
     // Reverts if the resulting position is not properly collateralized
@@ -246,7 +246,7 @@ library CreditLineLib {
 
     checkMintLimit(globalPositionData, positionManagerData);
 
-    if (collateralAmount.isGreaterThan(FixedPoint.Unsigned(0))) {
+    if (collateralAmount.rawValue > 0) {
       // pull collateral
       IERC20 collateralCurrency = positionManagerData.collateralToken;
 
@@ -561,7 +561,7 @@ library CreditLineLib {
       tokensToRedeem.mul(emergencyShutdownPrice);
 
     // If the caller is a sponsor with outstanding collateral they are also entitled to their excess collateral after their debt.
-    if (rawCollateral.isGreaterThan(0)) {
+    if (rawCollateral.rawValue > 0) {
       // Calculate the underlying entitled to a token sponsor. This is collateral - debt
       FixedPoint.Unsigned memory tokenDebtValueInCollateral =
         positionData.tokensOutstanding.mul(emergencyShutdownPrice);
@@ -626,7 +626,7 @@ library CreditLineLib {
     FixedPoint.Unsigned memory _feeClaimed = feeStatus.feeGained[msgSender];
 
     // Check that fee is available
-    require(_feeClaimed.isGreaterThanOrEqual(0), 'No fee to claim');
+    require(_feeClaimed.rawValue > 0, 'No fee to claim');
 
     // Update fee status
     delete feeStatus.feeGained[msgSender];
