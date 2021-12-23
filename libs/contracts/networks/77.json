@@ -46,13 +46,13 @@
   },
   {
     "contractName": "SynthereumLiquidityPoolLib",
-    "address": "0x637e1594fF1BF3b93034E97c39a80E5FdAFd94F7",
-    "transactionHash": "0x3da7282371aa0b8c2a322bf50c05a98fdd9c852f75432039bbec026c62cb3f9c"
+    "address": "0x804A40d12FdeD71D41cD69a0054d371a80Cc84da",
+    "transactionHash": "0xc938daa6b8a147f64b5c56db8308ed707b425e8ecc6e9b5c89562d56027f32cf"
   },
   {
     "contractName": "SynthereumLiquidityPoolFactory",
-    "address": "0xf50eBF877FB54010809027cbe83D04846e16af19",
-    "transactionHash": "0x637a923443b4db881c8166ba406cd0dc39eda9651c66a118fddd9ef32d334780"
+    "address": "0xfaa6229B087Da78cAEBb29799D9a8A74Ec1ea237",
+    "transactionHash": "0x16bb46b4ec964e2b13b928b4923ca1d0f5a31a3fa954c6feda9c2cb4d2e0535b"
   },
   {
     "contractName": "SynthereumChainlinkPriceFeed",
