@@ -520,109 +520,108 @@ contract('Self-minting controller', function (accounts) {
           'Mismatch between derivatives to update and fee proportions',
         );
       });
-    });
+      it('Revert if sender is not maintainer', async () => {
+        const newWrongValue = toWei('0.11');
 
-    // it('Revert if self-minting derivative is not registred', async () => {
-    //   const newSelfMintingRegistry = await SelfMintingRegistry.new(
-    //     synthereumFinderAddress,
-    //   );
-    //   await synthereumFinderInstance.changeImplementationAddress(
-    //     web3Utils.stringToHex('SelfMintingRegistry'),
-    //     newSelfMintingRegistry.address,
-    //     { from: maintainer },
-    //   );
-    //   const notRegistredDerivative = creditLine.address;
-    //   await truffleAssert.reverts(
-    //     creditLineControllerInstance.setCapMintAmount(
-    //       [creditLine.address],
-    //       [capMintAmount],
-    //       { from: maintainer },
-    //     ),
-    //     'Self-minting derivative not registred',
-    //   );
-    //   await truffleAssert.reverts(
-    //     creditLineControllerInstance.setFeePercentage(
-    //       [notRegistredDerivative],
-    //       [feePercentage],
-    //       {
-    //         from: maintainer,
-    //       },
-    //     ),
-    //     'Self-minting derivative not registred',
-    //   );
-    //   await truffleAssert.reverts(
-    //     creditLineControllerInstance.setCollateralRequirement(
-    //       [creditLine.address],
-    //       [collateralRequirement],
-    //       { from: maintainer },
-    //     ),
-    //     'Self-minting derivative not registred',
-    //   );
-    //   await truffleAssert.reverts(
-    //     creditLineControllerInstance.setLiquidationRewardPercentage(
-    //       [creditLine.address],
-    //       [liquidationRewardPct],
-    //       { from: maintainer },
-    //     ),
-    //     'Self-minting derivative not registred',
-    //   );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCapMintAmount(
+            [creditLine.address],
+            [newWrongValue],
+            { from: accounts[6] },
+          ),
+          'Sender must be the maintainer or a self-minting factory',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeePercentage(
+            [creditLine.address],
+            [newWrongValue],
+            { from: accounts[6] },
+          ),
+          'Sender must be the maintainer or a self-minting factory',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCollateralRequirement(
+            [creditLine.address],
+            [newWrongValue],
+            { from: accounts[6] },
+          ),
+          'Sender must be the maintainer or a self-minting factory',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setLiquidationRewardPercentage(
+            [creditLine.address],
+            [newWrongValue],
+            { from: accounts[6] },
+          ),
+          'Sender must be the maintainer or a self-minting factory',
+        );
 
-    //   await truffleAssert.reverts(
-    //     creditLineControllerInstance.setFeeRecipients(
-    //       [creditLine.address],
-    //       [[Fee.feeRecipients]],
-    //       [[Fee.feeProportions]],
-    //       { from: maintainer },
-    //     ),
-    //     'Self-minting derivative not registred',
-    //   );
-    // });
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeeRecipients(
+            [creditLine.address],
+            [Fee.feeRecipients],
+            [Fee.feeProportions],
+            { from: accounts[6] },
+          ),
+          'Sender must be the maintainer or a self-minting factory',
+        );
+      });
 
-    it('Revert if sender is not maintainer', async () => {
-      const newWrongValue = toWei('0.11');
+      it('Revert if self-minting derivative is not registred', async () => {
+        const newSelfMintingRegistry = await SelfMintingRegistry.new(
+          synthereumFinderAddress,
+        );
+        await synthereumFinderInstance.changeImplementationAddress(
+          web3Utils.stringToHex('SelfMintingRegistry'),
+          newSelfMintingRegistry.address,
+          { from: maintainer },
+        );
+        const notRegistredDerivative = creditLine.address;
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCapMintAmount(
+            [notRegistredDerivative],
+            [capMintAmount],
+            { from: maintainer },
+          ),
+          'Self-minting derivative not registred',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeePercentage(
+            [notRegistredDerivative],
+            [toWei('50')],
+            {
+              from: maintainer,
+            },
+          ),
+          'Self-minting derivative not registred',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setCollateralRequirement(
+            [notRegistredDerivative],
+            [collateralRequirement],
+            { from: maintainer },
+          ),
+          'Self-minting derivative not registred',
+        );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setLiquidationRewardPercentage(
+            [notRegistredDerivative],
+            [liquidationRewardPct],
+            { from: maintainer },
+          ),
+          'Self-minting derivative not registred',
+        );
 
-      await truffleAssert.reverts(
-        creditLineControllerInstance.setCapMintAmount(
-          [creditLine.address],
-          [newWrongValue],
-          { from: accounts[6] },
-        ),
-        'Sender must be the maintainer or a self-minting factory',
-      );
-      await truffleAssert.reverts(
-        creditLineControllerInstance.setFeePercentage(
-          [creditLine.address],
-          [newWrongValue],
-          { from: accounts[6] },
-        ),
-        'Sender must be the maintainer or a self-minting factory',
-      );
-      await truffleAssert.reverts(
-        creditLineControllerInstance.setCollateralRequirement(
-          [creditLine.address],
-          [newWrongValue],
-          { from: accounts[6] },
-        ),
-        'Sender must be the maintainer or a self-minting factory',
-      );
-      await truffleAssert.reverts(
-        creditLineControllerInstance.setLiquidationRewardPercentage(
-          [creditLine.address],
-          [newWrongValue],
-          { from: accounts[6] },
-        ),
-        'Sender must be the maintainer or a self-minting factory',
-      );
-
-      await truffleAssert.reverts(
-        creditLineControllerInstance.setFeeRecipients(
-          [creditLine.address],
-          [Fee.feeRecipients],
-          [Fee.feeProportions],
-          { from: accounts[6] },
-        ),
-        'Sender must be the maintainer or a self-minting factory',
-      );
+        await truffleAssert.reverts(
+          creditLineControllerInstance.setFeeRecipients(
+            [notRegistredDerivative],
+            [Fee.feeRecipients],
+            [Fee.feeProportions],
+            { from: maintainer },
+          ),
+          'Self-minting derivative not registred',
+        );
+      });
     });
   });
 });
