@@ -3,7 +3,10 @@ const {
   interfaceName,
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
+const { mnemonicToPrivateKey } = require('@jarvis-network/crypto-utils');
+
 const { assert } = require('chai');
+const Web3EthAbi = require('web3-eth-abi');
 const truffleAssert = require('truffle-assertions');
 const {
   collapseTextChangeRangesAcrossMultipleVersions,
@@ -14,7 +17,7 @@ const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
 // Contracts to test
 const CreditLine = artifacts.require('CreditLine');
 const CreditLineLib = artifacts.require('CreditLineLib');
-
+const MockContext = artifacts.require('MockCreditLineContext');
 const MockOnchainOracle = artifacts.require('MockOnChainOracle');
 const TestnetSelfMintingERC20 = artifacts.require('TestnetSelfMintingERC20');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
@@ -25,7 +28,7 @@ const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 const {
   signAndSendMetaTx,
 } = require('../../../utils/credit-line-meta-tx/metaTx');
-
+const { generateForwarderSignature } = require('../../../utils/metaTx.js');
 contract('Synthereum CreditLine ', function (accounts) {
   const contractDeployer = accounts[0];
   const maintainers = accounts[1];
@@ -1023,6 +1026,48 @@ contract('Synthereum CreditLine ', function (accounts) {
       );
     });
     it('Reverts if not trusted forwarder', async () => {});
+    it('Can test msgData with meta-tx', async () => {
+      const MAX_GAS = 12000000;
+      const mnemonic =
+        'test test test test test test test test test test test junk';
+      await MockContext.link(creditLineLib);
+      const context = await MockContext.new(creditLineParams);
+      const data = Web3EthAbi.encodeFunctionSignature('test()');
+      const userResult = await context.test.call({ from: accounts[4] });
+      assert.equal(userResult[1], data, 'Wrong user data');
+      nonce = (await forwarderInstance.getNonce.call(accounts[4])).toString();
+      const dataMetaTxSignature = generateForwarderSignature(
+        accounts[4],
+        context.address,
+        0,
+        MAX_GAS,
+        nonce,
+        data,
+        networkId,
+        forwarderInstance.address,
+        mnemonicToPrivateKey(mnemonic, "m/44'/60'/0'/0/4"),
+      );
+      const forwarderRequest = {
+        from: accounts[4],
+        to: context.address,
+        value: 0,
+        gas: MAX_GAS,
+        nonce: nonce,
+        data: data,
+      };
+      const metaCallResult = await forwarderInstance.safeExecute.call(
+        forwarderRequest,
+        dataMetaTxSignature,
+        {
+          from: accounts[2],
+        },
+      );
+      const metaResult = Web3EthAbi.decodeParameters(
+        ['address', 'bytes'],
+        metaCallResult,
+      );
+      assert.equal(metaResult[1], data, 'Wrong meta-data');
+    });
   });
 
   it('Correct deployment and variable assignment', async function () {
