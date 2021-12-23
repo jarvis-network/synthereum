@@ -130,34 +130,11 @@ contract('Synthereum CreditLine ', function (accounts) {
       feeRecipientBalanceBefore.add(expectedFeeAmount).toString(),
       feeRecipientBalanceAfter.toString(),
     );
-  };
 
-  const checkFeeRecipientsMetaTx = async expectedFeeAmount => {
-    const feeRecipientBalanceBefore = await collateral.balanceOf.call(
-      feeRecipient,
-    );
-    let functionSig = web3.utils.sha3(claimFeeSig).substr(0, 10);
-    let functionParam = '';
-
-    await signAndSendMetaTx(
-      forwarderInstance,
-      feeRecipientSigner,
-      functionSig,
-      functionParam,
-      feeRecipient,
-      creditLine.address,
-      0,
-      networkId,
-    );
-    // claim fees and check
-    await creditLine.claimFee({ from: feeRecipient });
-    const feeRecipientBalanceAfter = await collateral.balanceOf.call(
-      feeRecipient,
-    );
-
-    assert.equal(
-      feeRecipientBalanceBefore.add(expectedFeeAmount).toString(),
-      feeRecipientBalanceAfter.toString(),
+    // revert if try to claim again
+    await truffleAssert.reverts(
+      creditLine.claimFee({ from: feeRecipient }),
+      'No fee to claim',
     );
   };
 
@@ -354,7 +331,7 @@ contract('Synthereum CreditLine ', function (accounts) {
         expectedSponsorCollateral,
         feeAmount,
       );
-      await checkFeeRecipientsMetaTx(feeAmount);
+      await checkFeeRecipients(feeAmount);
 
       // Periodic check for no excess collateral.
       await expectNoExcessCollateralToTrim();
@@ -515,7 +492,7 @@ contract('Synthereum CreditLine ', function (accounts) {
         expectedSponsorCollateral,
         redeemFee,
       );
-      await checkFeeRecipientsMetaTx(redeemFee);
+      await checkFeeRecipients(redeemFee);
 
       // Periodic check for no excess collateral.
       await expectNoExcessCollateralToTrim();
@@ -1107,6 +1084,85 @@ contract('Synthereum CreditLine ', function (accounts) {
     );
   });
 
+  it('Reverts deployment with bad price identifier', async () => {
+    let creditLineParams = {
+      collateralToken: collateral.address,
+      syntheticToken: tokenCurrency.address,
+      priceFeedIdentifier: web3.utils.padRight(utf8ToHex('JRT/USD'), 64),
+      minSponsorTokens: { rawValue: minSponsorTokens.toString() },
+      excessTokenBeneficiary: beneficiary,
+      version: 2,
+      synthereumFinder: synthereumFinderInstance.address,
+    };
+
+    synthereumManagerInstance = await SynthereumManager.deployed();
+
+    await truffleAssert.reverts(
+      CreditLine.new(creditLineParams, {
+        from: contractDeployer,
+      }),
+      'Price identifier not supported',
+    );
+  });
+
+  it('Reverts deployment with synthetic token with bad decimals', async () => {
+    let tokenCurrency = await SyntheticToken.new(
+      syntheticName,
+      syntheticSymbol,
+      10,
+      {
+        from: contractDeployer,
+      },
+    );
+    let creditLineParams = {
+      collateralToken: collateral.address,
+      syntheticToken: tokenCurrency.address,
+      priceFeedIdentifier,
+      minSponsorTokens: { rawValue: minSponsorTokens.toString() },
+      excessTokenBeneficiary: beneficiary,
+      version: 2,
+      synthereumFinder: synthereumFinderInstance.address,
+    };
+
+    synthereumManagerInstance = await SynthereumManager.deployed();
+
+    await truffleAssert.reverts(
+      CreditLine.new(creditLineParams, {
+        from: contractDeployer,
+      }),
+      'Synthetic token has more or less than 18 decimals',
+    );
+  });
+
+  it('Reverts deployment with collteral token with bad decimals', async () => {
+    let collateral = await TestnetSelfMintingERC20.new(
+      syntheticName,
+      syntheticSymbol,
+      19,
+      {
+        from: contractDeployer,
+      },
+    );
+    let creditLineParams = {
+      collateralToken: collateral.address,
+      syntheticToken: tokenCurrency.address,
+      priceFeedIdentifier,
+      minSponsorTokens: { rawValue: minSponsorTokens.toString() },
+      excessTokenBeneficiary: beneficiary,
+      version: 2,
+      synthereumFinder: synthereumFinderInstance.address,
+    };
+
+    synthereumManagerInstance = await SynthereumManager.deployed();
+
+    await truffleAssert.reverts(
+      CreditLine.new(creditLineParams, {
+        from: contractDeployer,
+      }),
+      'Collateral has more than 18 decimals',
+    );
+  });
+
   it('Lifecycle', async function () {
     // Create the initial creditLine.
     const createTokens = toBN(toWei('100'));
@@ -1127,6 +1183,15 @@ contract('Synthereum CreditLine ', function (accounts) {
     await collateral.approve(creditLine.address, createCollateral, {
       from: sponsor,
     });
+
+    // reverts if undercollateralised
+    await truffleAssert.reverts(
+      creditLine.create(toBN(toWei('90')), toBN(toWei('1000')), {
+        from: accounts[3],
+      }),
+      'Insufficient Collateral',
+    );
+
     const actualFee = await creditLine.create.call(
       createCollateral,
       createTokens,
@@ -1158,7 +1223,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       expectedSponsorCollateral,
       feeAmount,
     );
-    await checkFeeRecipientsMetaTx(feeAmount);
+    await checkFeeRecipients(feeAmount);
 
     // Periodic check for no excess collateral.
     await expectNoExcessCollateralToTrim();
@@ -1253,6 +1318,11 @@ contract('Synthereum CreditLine ', function (accounts) {
     // Cannot deposit 0 collateral.
     await truffleAssert.reverts(
       creditLine.deposit('0', { from: sponsor }),
+      'Invalid collateral amount',
+    );
+    // Cannot deposit 0 collateral.
+    await truffleAssert.reverts(
+      creditLine.depositTo(sponsor, '0', { from: accounts[3] }),
       'Invalid collateral amount',
     );
     await creditLine.deposit(depositCollateral, { from: sponsor });
@@ -2139,6 +2209,15 @@ contract('Synthereum CreditLine ', function (accounts) {
         [{ rawValue: liquidationRewardPct.toString() }],
         { from: maintainers },
       );
+    });
+
+    it('Cant liquidate a collateralised position', async () => {
+      await truffleAssert.reverts(
+        creditLine.liquidate(sponsor, toBN(toWei('30')), {
+          from: other,
+        }),
+      ),
+        'Position is properly collateralised';
     });
 
     it('Correctly liquidates an undercollateralised amount, position capitalised', async () => {
