@@ -111,18 +111,18 @@
   },
   {
     "contractName": "CreditLineLib",
-    "address": "0x7C9CD6D2c69BE64a38D73A45bc8656d02a73CC59",
-    "transactionHash": "0x6026d804ec26200111011817322bd68c51102a24a2eec71e9ce12fb991eb959c"
+    "address": "0x53A7db11F8F7aBD37BA6F275b8eb15Cecb0fe397",
+    "transactionHash": "0x2c5a4984bc766baed6ea2f2b3c8c793eeaa76dfe86d1a3e239784aa31291c92a"
   },
   {
     "contractName": "CreditLineFactory",
-    "address": "0x0df09796fF78fc70D6f15b387F6Be5687F31C67a",
-    "transactionHash": "0xc31f4f431035a6740066b16b2fe9166508fd00eab6073669ae1fd13b38b8182f"
+    "address": "0x013551360E6F74f996Cf037324f5Ea0193Da283A",
+    "transactionHash": "0xad69e7f4bcb32bf86faa077cf926bf7f83fd65eb420ca3bf56b7208a749f866c"
   },
   {
     "contractName": "CreditLineController",
-    "address": "0x67AFE8131D95873E545d5566869f106Dd91dD78B",
-    "transactionHash": "0x98ad7c755ec786c0a7ac5ecd33865bdedf8ff6deb742ee23638ad4fd1c2927d8"
+    "address": "0x2E0B9F8e5A5216B7bA5563c26f9B84d517aca90c",
+    "transactionHash": "0xb8aaca5f7d16605d63756d410b1918bc9871c8e16f213a37550aa8169b170ca6"
   },
   {
     "contractName": "SynthereumDeployer",
