@@ -644,6 +644,105 @@ library CreditLineLib {
     emit ClaimFee(msgSender, feeClaimed, _totalRemainingFees.rawValue);
   }
 
+  function trimExcess(
+    ICreditLineStorage.PositionManagerData storage positionManagerData,
+    ICreditLineStorage.GlobalPositionData storage globalPositionData,
+    ICreditLineStorage.FeeStatus storage feeStatus,
+    IERC20 token
+  ) external returns (FixedPoint.Unsigned memory amount) {
+    FixedPoint.Unsigned memory balance =
+      FixedPoint.Unsigned(token.balanceOf(address(this)));
+    if (address(token) == address(positionManagerData.collateralToken)) {
+      FixedPoint.Unsigned memory rawTotalPositionCollateral =
+        globalPositionData.rawTotalPositionCollateral;
+      FixedPoint.Unsigned memory totalFeeAmount = feeStatus.totalFeeAmount;
+      // If it is the collateral currency, send only the amount that the contract is not tracking (ie minus fees and positions)
+      balance.isGreaterThan(rawTotalPositionCollateral.add(totalFeeAmount))
+        ? amount = balance.sub(rawTotalPositionCollateral).sub(totalFeeAmount)
+        : amount = FixedPoint.Unsigned(0);
+    } else {
+      // If it's not the collateral currency, send the entire balance.
+      amount = balance;
+    }
+    token.safeTransfer(
+      positionManagerData.excessTokenBeneficiary,
+      amount.rawValue
+    );
+  }
+
+  /**
+   * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
+   * @param self Data type the library is attached to
+   * @param positionData Position of the LP
+   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
+   */
+  function collateralCoverage(
+    ICreditLineStorage.PositionManagerData storage self,
+    ICreditLineStorage.PositionData storage positionData
+  ) external view returns (bool, uint256) {
+    FixedPoint.Unsigned memory priceRate = _getOraclePrice(self);
+    uint256 collateralDecimals = getCollateralDecimals(self.collateralToken);
+    FixedPoint.Unsigned memory positionCollateral = positionData.rawCollateral;
+    FixedPoint.Unsigned memory positionTokens = positionData.tokensOutstanding;
+    bool _isOverCollateralised =
+      _checkCollateralization(
+        self,
+        positionCollateral,
+        positionTokens,
+        priceRate,
+        collateralDecimals
+      );
+
+    FixedPoint.Unsigned memory collateralRequirementPrc =
+      self._getCollateralRequirement();
+
+    FixedPoint.Unsigned memory overCollateralValue =
+      getOverCollateralizationLimit(
+        calculateCollateralAmount(
+          positionData.tokensOutstanding,
+          priceRate,
+          collateralDecimals
+        ),
+        collateralRequirementPrc
+      );
+
+    FixedPoint.Unsigned memory coverageRatio =
+      positionCollateral.div(overCollateralValue);
+
+    FixedPoint.Unsigned memory _collateralCoverage =
+      collateralRequirementPrc.mul(coverageRatio);
+
+    return (_isOverCollateralised, _collateralCoverage.rawValue);
+  }
+
+  //Calls to the CreditLine controller
+  function capMintAmount(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory capMint) {
+    capMint = positionManagerData._getCapMintAmount();
+  }
+
+  function liquidationRewardPercentage(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory liqRewardPercentage) {
+    liqRewardPercentage = positionManagerData._getLiquidationReward();
+  }
+
+  function feeInfo(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (ICreditLineStorage.Fee memory fee) {
+    fee = positionManagerData._getFeeInfo();
+  }
+
+  function collateralRequirement(
+    ICreditLineStorage.PositionManagerData storage positionManagerData
+  ) external view returns (FixedPoint.Unsigned memory) {
+    return positionManagerData._getCollateralRequirement();
+  }
+
+  //----------------------------------------
+  // Internal functions
+  //----------------------------------------
   /**
    * @notice Update fee gained by the fee recipients
    * @param feeStatus Actual status of fee gained to be withdrawn
@@ -683,93 +782,6 @@ library CreditLineLib {
     feeStatus.totalFeeAmount = feeStatus.totalFeeAmount.add(feeAmount);
   }
 
-  function trimExcess(
-    ICreditLineStorage.PositionManagerData storage positionManagerData,
-    ICreditLineStorage.GlobalPositionData storage globalPositionData,
-    ICreditLineStorage.FeeStatus storage feeStatus,
-    IERC20 token
-  ) external returns (FixedPoint.Unsigned memory amount) {
-    FixedPoint.Unsigned memory balance =
-      FixedPoint.Unsigned(token.balanceOf(address(this)));
-    if (address(token) == address(positionManagerData.collateralToken)) {
-      FixedPoint.Unsigned memory rawTotalPositionCollateral =
-        globalPositionData.rawTotalPositionCollateral;
-      FixedPoint.Unsigned memory totalFeeAmount = feeStatus.totalFeeAmount;
-      // If it is the collateral currency, send only the amount that the contract is not tracking (ie minus fees and positions)
-      balance.isGreaterThan(rawTotalPositionCollateral.add(totalFeeAmount))
-        ? amount = balance.sub(rawTotalPositionCollateral).sub(totalFeeAmount)
-        : amount = FixedPoint.Unsigned(0);
-    } else {
-      // If it's not the collateral currency, send the entire balance.
-      amount = balance;
-    }
-    token.safeTransfer(
-      positionManagerData.excessTokenBeneficiary,
-      amount.rawValue
-    );
-  }
-
-  /**
-   * @notice Returns if position is overcollateralized and thepercentage of coverage of the collateral according to the last price
-   * @param self Data type the library is attached to
-   * @param positionData Position of the LP
-   * @return True if position is overcollaterlized, otherwise false + percentage of coverage (totalCollateralAmount / (price * tokensCollateralized))
-   */
-  function collateralCoverage(
-    ICreditLineStorage.PositionManagerData storage self,
-    ICreditLineStorage.PositionData storage positionData
-  ) external view returns (bool, uint256) {
-    FixedPoint.Unsigned memory priceRate = _getOraclePrice(self);
-    uint256 collateralDecimals = getCollateralDecimals(self.collateralToken);
-    bool _isOverCollateralised =
-      _checkCollateralization(
-        self,
-        positionData.rawCollateral,
-        positionData.tokensOutstanding,
-        priceRate,
-        collateralDecimals
-      );
-
-    FixedPoint.Unsigned memory _collateralCoverage =
-      positionData.rawCollateral.div(
-        calculateCollateralAmount(
-          positionData.tokensOutstanding,
-          priceRate,
-          collateralDecimals
-        )
-      );
-
-    return (_isOverCollateralised, _collateralCoverage.rawValue);
-  }
-
-  //Calls to the CreditLine controller
-  function capMintAmount(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) external view returns (FixedPoint.Unsigned memory capMint) {
-    capMint = positionManagerData._getCapMintAmount();
-  }
-
-  function liquidationRewardPercentage(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) external view returns (FixedPoint.Unsigned memory liqRewardPercentage) {
-    liqRewardPercentage = positionManagerData._getLiquidationReward();
-  }
-
-  function feeInfo(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) external view returns (ICreditLineStorage.Fee memory fee) {
-    fee = positionManagerData._getFeeInfo();
-  }
-
-  function collateralRequirement(
-    ICreditLineStorage.PositionManagerData storage positionManagerData
-  ) external view returns (FixedPoint.Unsigned memory) {
-    return positionManagerData._getCollateralRequirement();
-  }
-
-  //----------------------------------------
-  // Internal functions
-  //----------------------------------------
   function _burnLiquidatedTokens(
     ICreditLineStorage.PositionManagerData storage positionManagerData,
     address liquidator,
@@ -894,7 +906,8 @@ library CreditLineLib {
     FixedPoint.Unsigned memory thresholdValue =
       numTokens.mul(oraclePrice).div(10**(18 - collateralDecimals));
 
-    thresholdValue = thresholdValue.mul(
+    thresholdValue = getOverCollateralizationLimit(
+      thresholdValue,
       positionManagerData._getCollateralRequirement()
     );
 
@@ -1002,9 +1015,16 @@ library CreditLineLib {
     FixedPoint.Unsigned memory numTokens,
     FixedPoint.Unsigned memory priceRate,
     uint256 collateraDecimals
-  ) internal view returns (FixedPoint.Unsigned memory collateralAmount) {
+  ) internal pure returns (FixedPoint.Unsigned memory collateralAmount) {
     collateralAmount = numTokens.mul(priceRate).div(
       10**(18 - collateraDecimals)
     );
+  }
+
+  function getOverCollateralizationLimit(
+    FixedPoint.Unsigned memory collateral,
+    FixedPoint.Unsigned memory collateralRequirementPrc
+  ) internal pure returns (FixedPoint.Unsigned memory) {
+    return collateral.mul(collateralRequirementPrc);
   }
 }

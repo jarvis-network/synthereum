@@ -3602,8 +3602,9 @@ contract('LiquidityPool', function (accounts) {
 
   describe('Should return liquidation info', async () => {
     beforeEach(async () => {
+      await liquidityPoolInstance.setFeePercentage(0, { from: maintainer });
       const totalCollateralAmount = web3Utils.toWei('120', 'mwei');
-      const totSynthTokens = web3Utils.toWei('99.8');
+      const totSynthTokens = web3Utils.toWei('100');
       const expirationTime = (expiration =
         (await web3.eth.getBlock('latest')).timestamp + 60);
       const mintOperation = {
@@ -3633,22 +3634,27 @@ contract('LiquidityPool', function (accounts) {
       assert.equal(liquidationInfo[0], false, 'Position is overcollateralized');
     });
     it('Can return percentage of collateral coverage ', async () => {
+      await liquidityPoolInstance.increaseCollateral(
+        0,
+        web3Utils.toWei('60', 'mwei'),
+        { from: liquidityProvider },
+      );
       await aggregatorInstance.updateAnswer(web3Utils.toWei('125', 'mwei'));
       let liquidationInfo = await liquidityPoolInstance.collateralCoverage.call();
-      let expectedRatio = web3Utils.toWei('1.2');
+      let expectedRatio = web3Utils.toWei('1.68');
       assert.equal(
         liquidationInfo[1].toString(),
         web3Utils.toBN(expectedRatio).toString(),
         'Wrong collateral ratio in overcollateralization',
       );
-      await aggregatorInstance.updateAnswer(web3Utils.toWei('150', 'mwei')),
+      await aggregatorInstance.updateAnswer(web3Utils.toWei('200', 'mwei')),
         (liquidationInfo = await liquidityPoolInstance.collateralCoverage.call());
-      expectedRatio = web3Utils.toWei('1');
       assert.equal(
         liquidationInfo[1].toString(),
-        web3Utils.toBN(expectedRatio).toString(),
+        web3Utils.toBN(collateralRequirement).toString(),
         'Wrong collateral ratio in undercollateralization',
       );
+      assert.equal(liquidationInfo[0], true, 'Wrong collateralization status');
     });
   });
 
