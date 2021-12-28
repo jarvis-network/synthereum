@@ -612,7 +612,7 @@ library SynthereumLiquidityPoolLib {
       lpPosition.totalCollateralAmount.sub(collateralToDecrease);
 
     // Check that position doesn't become undercollateralized
-    (bool _isOverCollateralized, ) =
+    (bool _isOverCollateralized, , ) =
       lpPosition.isOverCollateralized(
         liquidationData,
         getPriceFeedRate(self.finder, self.priceIdentifier),
@@ -718,7 +718,7 @@ library SynthereumLiquidityPoolLib {
 
     // Collateral value of the synthetic token passed
     {
-      (bool _isOverCollaterlized, ) =
+      (bool _isOverCollaterlized, , ) =
         lpPosition.isOverCollateralized(
           liquidationData,
           executeLiquidation.priceRate,
@@ -1143,7 +1143,11 @@ library SynthereumLiquidityPoolLib {
 
     uint8 collateralDecimals = getCollateralDecimals(self.collateralToken);
 
-    (bool _isOverCollateralized, ) =
+    (
+      bool _isOverCollateralized,
+      ,
+      FixedPoint.Unsigned memory overCollateralValue
+    ) =
       lpPosition.isOverCollateralized(
         liquidationData,
         priceRate,
@@ -1151,14 +1155,11 @@ library SynthereumLiquidityPoolLib {
         lpPosition.totalCollateralAmount
       );
 
+    FixedPoint.Unsigned memory coverageRatio =
+      lpPosition.totalCollateralAmount.div(overCollateralValue);
+
     FixedPoint.Unsigned memory _collateralCoverage =
-      lpPosition.totalCollateralAmount.div(
-        calculateCollateralAmount(
-          priceRate,
-          collateralDecimals,
-          lpPosition.tokensCollateralized
-        )
-      );
+      liquidationData.collateralRequirement.mul(coverageRatio);
 
     return (_isOverCollateralized, _collateralCoverage.rawValue);
   }
@@ -1865,6 +1866,7 @@ library SynthereumLiquidityPoolLib {
    * @param collateralToCompare collateral used for checking the overcollaterlization
    * @return _isOverCollateralized True if position is overcollaterlized, otherwise false
    * @return collateralValue Collateral amount equal to the value of tokens
+   * @return overCollateralValue Collateral amount equal to the value of tokens * collateralRequirement
    */
   function isOverCollateralized(
     ISynthereumLiquidityPoolStorage.LPPosition storage lpPosition,
@@ -1877,7 +1879,8 @@ library SynthereumLiquidityPoolLib {
     view
     returns (
       bool _isOverCollateralized,
-      FixedPoint.Unsigned memory collateralValue
+      FixedPoint.Unsigned memory collateralValue,
+      FixedPoint.Unsigned memory overCollateralValue
     )
   {
     collateralValue = calculateCollateralAmount(
@@ -1886,8 +1889,12 @@ library SynthereumLiquidityPoolLib {
       lpPosition.tokensCollateralized
     );
 
+    overCollateralValue = collateralValue.mul(
+      liquidationData.collateralRequirement
+    );
+
     _isOverCollateralized = collateralToCompare.isGreaterThanOrEqual(
-      collateralValue.mul(liquidationData.collateralRequirement)
+      overCollateralValue
     );
   }
 
