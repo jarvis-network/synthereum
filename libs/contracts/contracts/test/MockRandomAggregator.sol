@@ -70,6 +70,6 @@ contract MockRandomAggregator is Ownable, MockAggregator {
   }
 
   function getRandomNumber() internal view returns (uint256) {
-    return uint256(blockhash(block.number)).mod(10**18);
+    return uint256(blockhash(block.number - 1)).mod(10**18);
   }
 }
