@@ -22,7 +22,7 @@ import {SynthereumLiquidityPoolLib} from './LiquidityPoolLib.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import {ERC2771Context} from '../../common//ERC2771Context.sol';
+import {ERC2771Context} from '../../common/ERC2771Context.sol';
 import {
   AccessControlEnumerable,
   Context

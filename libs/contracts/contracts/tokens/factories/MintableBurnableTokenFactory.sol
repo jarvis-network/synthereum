@@ -34,11 +34,9 @@ abstract contract MintableBurnableTokenFactory {
           SynthereumInterfaces.FactoryVersioning
         )
       );
-    uint256 numberOfFactories =
-      factoryVersioning.numberOfVerisonsOfFactory(
-        FactoryInterfaces.PoolFactory
-      );
-    uint256 counter = 0;
+    uint8 numberOfFactories =
+      factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
+    uint8 counter = 0;
     for (uint8 i = 0; counter < numberOfFactories; i++) {
       try
         factoryVersioning.getFactoryVersion(FactoryInterfaces.PoolFactory, i)

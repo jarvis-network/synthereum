@@ -3,7 +3,6 @@
 pragma solidity ^0.8.4;
 
 import '../base/interfaces/IStandardERC20.sol';
-import '../base/utils/EnumerableBytesSet.sol';
 import '../base/utils/StringUtils.sol';
 import '../common/interfaces/IEmergencyShutdown.sol';
 import '../common/interfaces/IDeployment.sol';
