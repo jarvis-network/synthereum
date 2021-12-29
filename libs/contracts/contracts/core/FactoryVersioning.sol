@@ -94,7 +94,7 @@ contract SynthereumFactoryVersioning is
   ) external override onlyMaintainer {
     require(factory != address(0), 'Factory cannot be address 0');
     bool isNewVersion = factories[factoryType].set(version, factory);
-    if (isNewVersion == true) {
+    if (isNewVersion) {
       emit AddFactory(factoryType, version, factory);
     } else {
       emit SetFactory(factoryType, version, factory);
@@ -139,12 +139,12 @@ contract SynthereumFactoryVersioning is
    * @param factoryType The type of factory to be checked
    * @return numberOfVersions Total number of versions for a specific factory
    */
-  function numberOfVerisonsOfFactory(bytes32 factoryType)
+  function numberOfFactoryVersions(bytes32 factoryType)
     external
     view
     override
-    returns (uint256 numberOfVersions)
+    returns (uint8 numberOfVersions)
   {
-    numberOfVersions = factories[factoryType].length();
+    numberOfVersions = uint8(factories[factoryType].length());
   }
 }

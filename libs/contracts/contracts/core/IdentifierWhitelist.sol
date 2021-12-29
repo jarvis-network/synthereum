@@ -4,7 +4,9 @@ pragma solidity ^0.8.0;
 import {
   ISynthereumIdentifierWhitelist
 } from './interfaces/IIdentifierWhitelist.sol';
-import {EnumerableBytesSet} from '../base/utils/EnumerableBytesSet.sol';
+import {
+  EnumerableSet
+} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {StringUtils} from '../base/utils/StringUtils.sol';
 import {
   AccessControlEnumerable
@@ -17,7 +19,7 @@ contract SynthereumIdentifierWhitelist is
   ISynthereumIdentifierWhitelist,
   AccessControlEnumerable
 {
-  using EnumerableBytesSet for EnumerableBytesSet.BytesSet;
+  using EnumerableSet for EnumerableSet.Bytes32Set;
 
   bytes32 private constant ADMIN_ROLE = 0x00;
 
@@ -29,7 +31,7 @@ contract SynthereumIdentifierWhitelist is
     address maintainer;
   }
 
-  EnumerableBytesSet.BytesSet private identifiers;
+  EnumerableSet.Bytes32Set private identifiers;
 
   event AddedToWhitelist(bytes32 indexed addedIdentifier);
   event RemovedFromWhitelist(bytes32 indexed removedIdentifier);

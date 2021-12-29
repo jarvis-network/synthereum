@@ -36,8 +36,8 @@ interface ISynthereumFactoryVersioning {
    * @param factoryType The type of factory to be checked
    * @return numberOfVersions Total number of versions for a specific factory
    */
-  function numberOfVerisonsOfFactory(bytes32 factoryType)
+  function numberOfFactoryVersions(bytes32 factoryType)
     external
     view
-    returns (uint256 numberOfVersions);
+    returns (uint8 numberOfVersions);
 }

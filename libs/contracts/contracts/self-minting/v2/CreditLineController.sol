@@ -101,7 +101,7 @@ contract CreditLineController is
           )
         );
       uint256 numberOfFactories =
-        factoryVersioning.numberOfVerisonsOfFactory(
+        factoryVersioning.numberOfFactoryVersions(
           FactoryInterfaces.SelfMintingFactory
         );
       uint256 counter = 0;

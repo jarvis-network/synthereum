@@ -37,7 +37,7 @@ contract('Factory versioning', function (accounts) {
 
   describe('Should pool factory works', () => {
     it('Can get correct number of pool versions', async () => {
-      const numberOfVersions = await factoryVersioningInstance.numberOfVerisonsOfFactory.call(
+      const numberOfVersions = await factoryVersioningInstance.numberOfFactoryVersions.call(
         poolFactoryInterface,
       );
       assert.equal(numberOfVersions, 1, 'wrong number of pool versions');
@@ -192,7 +192,7 @@ contract('Factory versioning', function (accounts) {
 
   describe('Should self-minting Factory works', () => {
     it('Can get correct number of self-minting versions', async () => {
-      const numberOfVersions = await factoryVersioningInstance.numberOfVerisonsOfFactory.call(
+      const numberOfVersions = await factoryVersioningInstance.numberOfFactoryVersions.call(
         selfMintingFactoryInterface,
       );
       assert.equal(

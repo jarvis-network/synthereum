@@ -8,7 +8,6 @@ import {SynthereumInterfaces} from '../Constants.sol';
 import {
   EnumerableSet
 } from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import {EnumerableBytesSet} from '../../base/utils/EnumerableBytesSet.sol';
 import {StringUtils} from '../../base/utils/StringUtils.sol';
 import {
   ReentrancyGuard
@@ -20,7 +19,7 @@ import {
 contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
   using EnumerableSet for EnumerableSet.AddressSet;
   using EnumerableSet for EnumerableSet.UintSet;
-  using EnumerableBytesSet for EnumerableBytesSet.BytesSet;
+  using EnumerableSet for EnumerableSet.Bytes32Set;
   using StringUtils for string;
   using StringUtils for bytes32;
 
@@ -35,7 +34,7 @@ contract SynthereumRegistry is ISynthereumRegistry, ReentrancyGuard {
   mapping(string => mapping(IERC20 => mapping(uint8 => EnumerableSet.AddressSet)))
     private symbolToElements;
 
-  EnumerableBytesSet.BytesSet private syntheticTokens;
+  EnumerableSet.Bytes32Set private syntheticTokens;
 
   EnumerableSet.AddressSet private collaterals;
 
