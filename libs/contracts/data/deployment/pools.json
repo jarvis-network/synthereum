@@ -26,10 +26,7 @@
   "77": {
     "isEnabled": true,
     "Pool": 5,
-    "SynthToken": {
-      "jEUR": "0xC8cE2493111C892C1cDbf552368a8A90Cc5C42d8",
-      "jGBP": "0x52D7d417939B860c029f6e3bFb25504B2307EAd6"
-    }
+    "SynthToken": {}
   },
   "56": {
     "isEnabled": true,
