@@ -38,11 +38,13 @@ export function getBSCEndpoint<Net extends Network>(
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 
-export function getSokolEndpoint<Net extends Network>(
+export function getXDAIEndpoint<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
 ): ValueOnNetwork<string, Net> {
-  const endpoint = 'sokol.poa.network';
+  const networkName = toNetworkName(network);
+  const endpoint =
+    networkName === 'xDAI' ? 'rpc.xdaichain.com/' : 'sokol.poa.network';
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 
