@@ -484,7 +484,8 @@ function shouldDeployUma(networkId: number) {
     networkId !== 80001 &&
     networkId !== 56 &&
     networkId !== 97 &&
-    networkId !== 77
+    networkId !== 77 &&
+    networkId !== 100
   );
 }
 
