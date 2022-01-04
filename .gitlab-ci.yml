@@ -29,13 +29,11 @@ build `install` image:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  variables:
-    TARGET: install
   script:
     - *yarn-hash
     - sed "s/%YARN_LOCK_SHA256%/${YARN_LOCK_SHA256}/g" .gitlab-ci-template.yml > generated-pipeline.yml
-    - docker buildx bake ${TARGET} --print
-    - docker buildx bake ${TARGET} --progress=plain
+    - docker buildx bake install --print
+    - docker buildx bake install --progress=plain
   artifacts:
     paths:
       - generated-pipeline.yml
