@@ -71,7 +71,7 @@
   },
   "husky": {
     "hooks": {
-      "prepare-commit-msg": "sh husky.sh",
+      "prepare-commit-msg": "scripts/husky.sh",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "pretty-quick --staged",
       "post-commit": "git update-index --again"
