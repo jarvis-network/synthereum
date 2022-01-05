@@ -224,5 +224,17 @@
       "overCollateralization": "250000000000000000",
       "liquidationReward": "700000000000000000"
     }
+  ],
+  "100": [
+    {
+      "syntheticName": "Jarvis Synthetic Swiss Franc",
+      "syntheticSymbol": "jCHF",
+      "priceFeedIdentifier": "CHFUSD",
+      "collateralRequirement": "1050000000000000000",
+      "minSponsorTokens": "",
+      "capMintAmount": "",
+      "overCollateralization": "100000000000000000",
+      "liquidationReward": "700000000000000000"
+    }
   ]
 }
