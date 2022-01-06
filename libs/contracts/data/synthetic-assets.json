@@ -218,7 +218,7 @@
       "syntheticName": "Jarvis Synthetic Nigerian Naira",
       "syntheticSymbol": "jNGN",
       "priceFeedIdentifier": "NGNUSD",
-      "collateralRequirement": "1025000000000000000",
+      "collateralRequirement": "1050000000000000000",
       "minSponsorTokens": "",
       "capMintAmount": "",
       "overCollateralization": "250000000000000000",
