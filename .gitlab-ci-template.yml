@@ -28,6 +28,7 @@ variables:
             yield-farming,
             legacy-currency-contracts,
             jrt-investors,
+            crypto-utils,
           ]
   script:
     - yarn test $TARGET
