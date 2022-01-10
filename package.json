@@ -123,7 +123,8 @@
         "subgraph",
         "validator-lib",
         "meta-tx-lib",
-        "burner-wallet"
+        "burner-wallet",
+        "crypto-utils"
       ]
     }
   },
