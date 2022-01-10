@@ -24,7 +24,7 @@ RUN mkdir /out \
 # --------------- Builder image with all dependencies installed -------------- #
 FROM base as install
 COPY --from=yarn_lock /out .
-RUN yarn install --frozen-lock
+RUN yarn install
 RUN mkdir -p /out
 
 # -------------- Project Builder image with everything installed ------------- #
@@ -90,7 +90,7 @@ COPY --from=build-claim /out /src
 
 FROM base as prod_install
 # Install only dependencies (no devDependencies)
-RUN yarn install --production --frozen-lock
+RUN yarn install --production
 RUN mkdir -p /production_modules
 RUN cp -r node_modules /production_modules
 
