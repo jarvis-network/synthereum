@@ -14,8 +14,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "defender-relay-client": "^1.12.1",
     "@openzeppelin/contracts": "^3.3.0",
+    "defender-relay-client": "^1.12.1",
     "dotenv": "^8.2.0",
     "ethers": "5.0.3",
     "is-odd": "^3.0.1",
