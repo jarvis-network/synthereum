@@ -8,11 +8,13 @@ WORKDIR /src
 FROM base as yarn_lock
 COPY . .
 RUN mkdir /out \
-  && JQ_EXPR='{ name, version, license, private, workspaces, resolutions, dependencies, devDependencies,' \
+  && JQ_EXPR='{ name, version, packageManager, license, private, workspaces, resolutions, dependencies, devDependencies,' \
   && JQ_EXPR="${JQ_EXPR} scripts: .scripts | { preinstall, install, postinstall } | with_entries(select(.value != null)) }" \
   && git ls-files | grep "package.json" | tr '\n' '\0' | \
     xargs -0 -n1 sh -c 'x="/out/$1" && mkdir -p "${x%/*}" && cat "$1" | jq "'"$JQ_EXPR"'" > "$x"' -s \
-  && cp yarn.lock /out
+  && cp .yarnrc.yml yarn.lock /out \
+  && mkdir -p /out/.yarn/releases \
+  && cp .yarn/releases/yarn-3.1.1.cjs /out/.yarn/releases/
 
 #RUN yarn set version berry
 #RUN yarn plugin import typescript
