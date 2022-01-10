@@ -12,6 +12,7 @@ import {
 import {
   IOnChainLiquidityRouterV2
 } from '../interfaces/IOnChainLiquidityRouter.sol';
+import {IWETH9} from '../interfaces/IWETH9.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
 import {
   SafeERC20
@@ -19,7 +20,7 @@ import {
 
 // group the two univ3 interfaces for convenience
 interface IUniswapV3Router is ISwapRouter, IPeripheryPayments {
-
+  function WETH9() external returns (address);
 }
 
 contract OCLRV2UniswapV3 is OCLRBase {
@@ -158,11 +159,17 @@ contract OCLRV2UniswapV3 is OCLRBase {
       // refund leftover tokens
       if (inputParams.minOutOrMaxIn > returnValues.inputAmount) {
         if (isEthInput) {
-          // take leftover eth from the router
+          // refund extra eth to user - the univ3 router refunds all his eth balance
+          uint256 routerETHBalance =
+            address(implementationInfo.routerAddress).balance;
+          returnValues.inputAmount = inputParams.minOutOrMaxIn >
+            routerETHBalance
+            ? inputParams.minOutOrMaxIn - routerETHBalance
+            : 0;
           router.refundETH();
-          //send it to user
+
           (bool success, ) =
-            inputParams.msgSender.call{value: address(this).balance}('');
+            inputParams.msgSender.call{value: routerETHBalance}('');
           require(success, 'Failed eth refund');
         } else {
           // refund erc20
@@ -281,6 +288,12 @@ contract OCLRV2UniswapV3 is OCLRBase {
         .exactInput(params);
 
       if (inputParams.unwrapToETH) {
+        // the univ3 router unwraps all the WETH balance it has, which can be higher that outputAmount
+        returnValues.outputAmount = IWETH9(
+          IUniswapV3Router(implementationInfo.routerAddress).WETH9()
+        )
+          .balanceOf(implementationInfo.routerAddress);
+
         // unwrap to ETH
         IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
           returnValues.outputAmount,
@@ -320,15 +333,20 @@ contract OCLRV2UniswapV3 is OCLRBase {
         }
 
         if (inputParams.unwrapToETH) {
+          // the univ3 router unwraps all the WETH balance it has, which can be higher than exact output
+          returnValues.outputAmount = IWETH9(
+            IUniswapV3Router(implementationInfo.routerAddress).WETH9()
+          )
+            .balanceOf(implementationInfo.routerAddress);
           //unwrap to eth
           IUniswapV3Router(implementationInfo.routerAddress).unwrapWETH9(
-            inputParams.exactAmount,
+            returnValues.outputAmount,
             recipient
           );
+        } else {
+          returnValues.outputAmount = inputParams.exactAmount;
         }
       }
-
-      returnValues.outputAmount = inputParams.exactAmount;
     }
   }
 
