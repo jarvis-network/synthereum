@@ -11,14 +11,16 @@ default:
   interruptible: true
 variables:
   DOCKER_DRIVER: overlay2
-  TAG: mr-${CI_MERGE_REQUEST_ID}
   REGISTRY: jarvisnetworkcoreacr.azurecr.io/jarvis-network/apps/exchange/mono-repo
   REGISTRY_USERNAME: asim_jarvis
   REGISTRY_PASSWORD: ${GITLAB_TOKEN}
 
-.yarn-hash: &yarn-hash |-
-  export YARN_LOCK_SHA256="$(sha256sum yarn.lock | cut -f1 -d' ')"
-  export IMAGE="${REGISTRY}/install:${YARN_LOCK_SHA256}"
+.yarn_install_tree_hash: &yarn_install_tree_hash |-
+  apk add git bash jq
+  OUTDIR=_out ENABLE_TREE_HASH_OUTPUT=yes ./scripts/ci/gather_files_for_yarn_install.bash
+  export TREE_HASH="$(cat _out/tree_hash)"
+  export IMAGE="${REGISTRY}/install:${TREE_HASH}"
+  echo "IMAGE: '$IMAGE'"
 
 stages:
   - prepare
@@ -30,8 +32,8 @@ build `install` image:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
-    - *yarn-hash
-    - sed "s/%YARN_LOCK_SHA256%/${YARN_LOCK_SHA256}/g" .gitlab-ci-template.yml > generated-pipeline.yml
+    - *yarn_install_tree_hash
+    - sed "s/%TREE_HASH%/${TREE_HASH}/g" .gitlab-ci-template.yml > generated-pipeline.yml
     - docker buildx bake install --print
     - docker buildx bake install --progress=plain
   artifacts:
@@ -54,7 +56,7 @@ security scan:
   only:
     - merge_requests
   script:
-    - *yarn-hash
+    - *yarn_install_tree_hash
     - docker pull "$IMAGE"
     - docker run --rm -v/var/run/docker.sock:/var/run/docker.sock
       aquasec/trivy --severity CRITICAL --timeout 5m "$IMAGE"

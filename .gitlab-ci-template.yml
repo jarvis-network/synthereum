@@ -1,6 +1,6 @@
 # Use %VAR% to reference template-time variables
 default:
-  image: '${REGISTRY}/install:%YARN_LOCK_SHA256%'
+  image: '${REGISTRY}/install:%TREE_HASH%'
   interruptible: true
   before_script:
     - cd /src
