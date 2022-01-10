@@ -16,8 +16,10 @@ describe('mnemonicToPrivateKey', () => {
       'test test test test test test test test test test test junk';
     const path = "m/44'/60'/0'/0/3";
     const expectedPrivateKey =
-      '0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6';
-    expect(mnemonicToPrivateKey(mnemonic, path)).toEqual(expectedPrivateKey);
+      '7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6';
+    expect(mnemonicToPrivateKey(mnemonic, path).toString('hex')).toEqual(
+      expectedPrivateKey,
+    );
   });
 
   it('should return the expected set of addresses and private keys', () => {
