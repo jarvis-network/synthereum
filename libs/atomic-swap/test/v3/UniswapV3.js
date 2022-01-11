@@ -8,6 +8,7 @@ const {
   ZERO_ADDRESS,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
+const IWETH9 = artifacts.require('IWETH9');
 const MockContractUser = artifacts.require('MockContractUserV2');
 const Proxy = artifacts.require('OnChainLiquidityRouterV2');
 const UniV3AtomicSwap = artifacts.require('OCLRV2UniswapV3');
@@ -73,6 +74,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       deadline,
       { from: recipient, value: ethAmount },
     );
+  };
+
+  const getWETH = async (user, ethAmount) => {
+    let wethInstance = await IWETH9.at(WETHAddress);
+    await wethInstance.deposit({ from: user, value: ethAmount });
   };
 
   const getUSDC = async ethAmount => {
@@ -1134,7 +1140,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     });
   });
 
-  describe('From ETH', () => {
+  describe.only('From ETH', () => {
     it('mint jSynth from ETH - exact input - multihop', async () => {
       const tokenAmountIn = web3Utils.toWei('1', 'gwei');
       const tokenPathSwap = [WETHAddress, USDCAddress];
@@ -1506,6 +1512,98 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           { from: user, value: maxTokenAmountIn },
         ),
         'Failed eth refund',
+      );
+    });
+    it('Unwraps more eth than due if UNIV3 router has extra WETH', async () => {
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+      let jEURInput = jEURBalanceBefore.div(web3Utils.toBN(5));
+      const fees = [3000];
+
+      // send weth to router
+      let extraWETH = web3Utils.toBN(web3Utils.toWei('1', 'gwei'));
+      await getWETH(user, extraWETH);
+      await WETHInstance.transfer(UniV3Info.routerAddress, extraWETH, {
+        from: user,
+      });
+      assert.equal(
+        (await WETHInstance.balanceOf.call(UniV3Info.routerAddress)).toString(),
+        extraWETH.toString(),
+      );
+      const tokenPathSwap = [USDCAddress, WETHAddress];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['uint24[]', 'address[]'],
+        [fees, tokenPathSwap],
+      );
+      await jEURInstance.approve(ProxyInstance.address, jEURInput.toString(), {
+        from: user,
+      });
+
+      const redeemParams = {
+        numTokens: jEURInput.toString(),
+        minCollateral: 0,
+        expiration: deadline,
+        recipient: user,
+      };
+
+      const inputParams = {
+        isExactInput: true,
+        unwrapToETH: true,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: user,
+      };
+
+      // tx through proxy
+      let EthBalanceBefore = web3Utils.toBN(await web3.eth.getBalance(user));
+
+      const tx = await ProxyInstance.redeemAndSwap(
+        implementationID,
+        inputParams,
+        pool,
+        redeemParams,
+        user,
+        { from: user },
+      );
+      const ethFee = await getTxFee(tx);
+
+      let EthOutput;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        EthOutput = ev.outputAmount;
+        return (
+          ev.outputAmount > 0 &&
+          ev.inputAmount.toString() == jEURInput.toString() &&
+          ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
+          ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            AtomicSwapInstance.address.toLowerCase()
+        );
+      });
+
+      let EthBalanceAfter = web3Utils.toBN(await web3.eth.getBalance(user));
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+
+      let expectedETHBalance = EthBalanceBefore.add(EthOutput).sub(ethFee);
+      assert.equal(EthBalanceAfter.eq(expectedETHBalance), true);
+      assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.sub(jEURInput)), true);
+
+      // check allowance is set to 0 after the tx
+      assert.equal(
+        (
+          await USDCInstance.allowance(
+            ProxyInstance.address,
+            UniV3Info.routerAddress,
+          )
+        ).toString(),
+        '0',
+      );
+      assert.equal(
+        (await jEURInstance.allowance(ProxyInstance.address, pool)).toString(),
+        '0',
       );
     });
   });
