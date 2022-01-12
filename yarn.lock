@@ -5114,11 +5114,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphprotocol/graph-cli@npm:^0.20.0":
-  version: 0.20.0
-  resolution: "@graphprotocol/graph-cli@npm:0.20.0"
+"@graphprotocol/graph-cli@npm:^0.25.2":
+  version: 0.25.2
+  resolution: "@graphprotocol/graph-cli@npm:0.25.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40graphprotocol%2Fgraph-cli%2F-%2Fgraph-cli-0.25.2.tgz"
   dependencies:
-    assemblyscript: "git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3"
+    assemblyscript: 0.19.10
+    binary-install-raw: 0.0.13
     chalk: ^3.0.0
     chokidar: ^3.0.2
     debug: ^4.1.1
@@ -5126,34 +5127,32 @@ __metadata:
     dockerode: ^2.5.8
     fs-extra: ^9.0.0
     glob: ^7.1.2
-    gluegun: ^4.3.1
+    gluegun: "git+https://github.com/edgeandnode/gluegun.git#v4.3.1-pin-colors-dep"
     graphql: ^15.5.0
     immutable: ^3.8.2
     ipfs-http-client: ^34.0.0
     jayson: ^3.0.2
     js-yaml: ^3.13.1
-    keytar: ^7.4.0
     node-fetch: ^2.3.0
     pkginfo: ^0.4.1
     prettier: ^1.13.5
     request: ^2.88.0
-    tmp: ^0.1.0
+    semver: 7.3.5
+    tmp-promise: ^3.0.2
+    which: 2.0.2
     yaml: ^1.5.1
-  dependenciesMeta:
-    keytar:
-      optional: true
   bin:
     graph: bin/graph
-  checksum: ecc4ad5563d238ab7bdc1465b0fd0c9a1ff99d686eb6aca0b41ffa1b362025181bacacc34297f1c7c10f598cc4bd13b0fb3f69b5959cc925f229a6abb45bfa6e
+  checksum: 493ff8ab18a04661ff3a6e80bf0d7a9d0023cfe1fadcddbe5ee91c8f6879dece27e16b3e33c22e68becfe5fb78347cd7a5b8e7c4d3ddf50d7a7e56ff2fe62ec4
   languageName: node
   linkType: hard
 
-"@graphprotocol/graph-ts@npm:0.20.0":
-  version: 0.20.0
-  resolution: "@graphprotocol/graph-ts@npm:0.20.0"
+"@graphprotocol/graph-ts@npm:^0.24.1":
+  version: 0.24.1
+  resolution: "@graphprotocol/graph-ts@npm:0.24.1::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40graphprotocol%2Fgraph-ts%2F-%2Fgraph-ts-0.24.1.tgz"
   dependencies:
-    assemblyscript: "git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3"
-  checksum: 0d61b37d927b0f3dd1428c65a8c1f8ee6bff84e061c7100ba9e4f81095a11857a308f595926d48b0ae2b1dd54e334bccc9c6db4fd24c8c0bb2607fa2bf0ddd95
+    assemblyscript: 0.19.10
+  checksum: ad88167a4ffe1c2d61be493fc43674cacffe42f6a51de52d357125cbb152484a8a9d9835f42d65114f19fd12a073b862afad0500d8528103ee0db2b7bd92e6bc
   languageName: node
   linkType: hard
 
@@ -5630,8 +5629,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jarvis-network/synthereum-subgraph@workspace:libs/subgraph"
   dependencies:
-    "@graphprotocol/graph-cli": ^0.20.0
-    "@graphprotocol/graph-ts": 0.20.0
+    "@graphprotocol/graph-cli": ^0.25.2
+    "@graphprotocol/graph-ts": ^0.24.1
     keytar: ^7.4.0
   languageName: unknown
   linkType: soft
@@ -12811,13 +12810,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apisauce@npm:^2.0.1":
-  version: 2.1.1
-  resolution: "apisauce@npm:2.1.1"
+"apisauce@npm:^1.0.1":
+  version: 1.1.2
+  resolution: "apisauce@npm:1.1.2::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fapisauce%2F-%2Fapisauce-1.1.2.tgz"
   dependencies:
-    axios: ^0.21.1
+    axios: ^0.19.0
     ramda: ^0.25.0
-  checksum: cfe535583f422422943baf43398661ef0043286ebd695c945db0f23eeb726213ea9906228039b7bb51fb1b3890f1bcb2bfef43cffa5f30b4540990c31f48eff8
+  checksum: 468a5f07912010011f094a890551fd57a7abf44c052ff60883a776b924a4de0f48376cfc682a449aa8d8e7a1e270dbf8882b431c318ad2219f9eb2d95e211018
   languageName: node
   linkType: hard
 
@@ -13219,20 +13218,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3":
-  version: 0.6.0
-  resolution: "assemblyscript@https://github.com/AssemblyScript/assemblyscript.git#commit=36040d5b5312f19a025782b5e36663823494c2f3"
+"assemblyscript@npm:0.19.10":
+  version: 0.19.10
+  resolution: "assemblyscript@npm:0.19.10::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fassemblyscript%2F-%2Fassemblyscript-0.19.10.tgz"
   dependencies:
-    "@protobufjs/utf8": ^1.1.0
-    binaryen: 77.0.0-nightly.20190407
-    glob: ^7.1.3
+    binaryen: 101.0.0-nightly.20210723
     long: ^4.0.0
-    opencollective-postinstall: ^2.0.0
-    source-map-support: ^0.5.11
   bin:
     asc: bin/asc
     asinit: bin/asinit
-  checksum: b31854d77203dc90bb6fa88a7466a71a746ea25667b1a4f5d57c95bfc6ab3dde4bff9e6c323143a3a63e8e0fe64ca8b52046b7e43e461b52444f0fd7ba129252
+  checksum: d4087bcbae402eb0e972a78d8dfee607b2b51f4b29fcee5359f4db3052912ec12492a8714916bed8424f7f495f9357c7c6ab2482ba1d4ea4a44c55a86df5a67c
   languageName: node
   linkType: hard
 
@@ -14944,14 +14939,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"binaryen@npm:77.0.0-nightly.20190407":
-  version: 77.0.0-nightly.20190407
-  resolution: "binaryen@npm:77.0.0-nightly.20190407"
+"binary-install-raw@npm:0.0.13":
+  version: 0.0.13
+  resolution: "binary-install-raw@npm:0.0.13::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbinary-install-raw%2F-%2Fbinary-install-raw-0.0.13.tgz"
+  dependencies:
+    axios: ^0.21.1
+    rimraf: ^3.0.2
+    tar: ^6.1.0
+  checksum: f18515976237100459b4e2983832c941421ed8767c7fbc0ca716aa96210ccdd6c8ae9fdb9e0c39099248ebd8a3f4653560cb0b655192bb3b4efa1f7be204343a
+  languageName: node
+  linkType: hard
+
+"binaryen@npm:101.0.0-nightly.20210723":
+  version: 101.0.0-nightly.20210723
+  resolution: "binaryen@npm:101.0.0-nightly.20210723::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fbinaryen%2F-%2Fbinaryen-101.0.0-nightly.20210723.tgz"
   bin:
-    binaryen-as: bin/as.js
-    binaryen-dis: bin/dis.js
-    binaryen-opt: bin/opt.js
-  checksum: 756334720191ec02b28b1fa153009338bee63ead43d5923faa7c651b7b97183b020f2ade712fab45d4cc714cae5bfeef3e8a5624246f87207ee4d847e181f6a9
+    wasm-opt: bin/wasm-opt
+  checksum: b1f7cc8e9fb4f1530e9454b5ea6deba17e2d863cea4efc6d0ba1b2af2325e9080c29df0ffeaf9708d455705a629a6a4fbef0ac29ed789a4e316b4c1437879f57
   languageName: node
   linkType: hard
 
@@ -17141,7 +17145,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colors@npm:^1.1.2, colors@npm:^1.2.1, colors@npm:^1.3.3, colors@npm:^1.4.0":
+"colors@npm:1.3.3":
+  version: 1.3.3
+  resolution: "colors@npm:1.3.3::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2Fcolors%2F-%2Fcolors-1.3.3.tgz"
+  checksum: c57f0aa2b71a836435fb0cd8ac4b9f4025ff5411cb027ffcbaa2274347fd00ed52b9d66904f46be73086c27ac31bad9500da675250c95182568454b392f87ee5
+  languageName: node
+  linkType: hard
+
+"colors@npm:^1.1.2, colors@npm:^1.2.1, colors@npm:^1.4.0":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
   checksum: 98aa2c2418ad87dedf25d781be69dc5fc5908e279d9d30c34d8b702e586a0474605b3a189511482b9d5ed0d20c867515d22749537f7bc546256c6014f3ebdcec
@@ -25023,14 +25034,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gluegun@npm:^4.3.1":
-  version: 4.6.1
-  resolution: "gluegun@npm:4.6.1"
+"gluegun@git+https://github.com/edgeandnode/gluegun.git#v4.3.1-pin-colors-dep":
+  version: 4.3.1
+  resolution: "gluegun@https://github.com/edgeandnode/gluegun.git#commit=b34b9003d7bf556836da41b57ef36eb21570620a"
   dependencies:
-    apisauce: ^2.0.1
+    apisauce: ^1.0.1
     app-module-path: ^2.2.0
     cli-table3: ~0.5.0
-    colors: ^1.3.3
+    colors: 1.3.3
     cosmiconfig: 6.0.0
     cross-spawn: ^7.0.0
     ejs: ^2.6.1
@@ -25060,7 +25071,7 @@ __metadata:
     yargs-parser: ^16.1.0
   bin:
     gluegun: bin/gluegun
-  checksum: 2f8afb72a284e2cc3d3eb9c4ebd8f9967ca4250ea5d986a61b1e0e274127ec558b1dc60339c114eeb3c151f00438e88c7a7a572917219ce8de4e44bc44d712c0
+  checksum: 872685026db07ad1687056a78388f17c6a9bcd22bbf9d99d1e2b21e2d196c6e99a128bcff48063b3f0cf692a4365142fae9dd06cf8c532bc557a45f8ac853308
   languageName: node
   linkType: hard
 
@@ -33793,7 +33804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"opencollective-postinstall@npm:^2.0.0, opencollective-postinstall@npm:^2.0.2":
+"opencollective-postinstall@npm:^2.0.2":
   version: 2.0.3
   resolution: "opencollective-postinstall@npm:2.0.3"
   bin:
@@ -39859,7 +39870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.3, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5":
+"semver@npm:7.3.5, semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.3, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5":
   version: 7.3.5
   resolution: "semver@npm:7.3.5"
   dependencies:
@@ -40668,7 +40679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.11, source-map-support@npm:^0.5.13, source-map-support@npm:^0.5.17, source-map-support@npm:^0.5.19, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.19":
+"source-map-support@npm:^0.5.13, source-map-support@npm:^0.5.17, source-map-support@npm:^0.5.19, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.19":
   version: 0.5.19
   resolution: "source-map-support@npm:0.5.19"
   dependencies:
@@ -42630,15 +42641,6 @@ __metadata:
   dependencies:
     os-tmpdir: ~1.0.2
   checksum: 902d7aceb74453ea02abbf58c203f4a8fc1cead89b60b31e354f74ed5b3fb09ea817f94fb310f884a5d16987dd9fa5a735412a7c2dd088dd3d415aa819ae3a28
-  languageName: node
-  linkType: hard
-
-"tmp@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "tmp@npm:0.1.0"
-  dependencies:
-    rimraf: ^2.6.3
-  checksum: 6bab8431de9d245d4264bd8cd6bb216f9d22f179f935dada92a11d1315572c8eb7c3334201e00594b4708608bd536fad3a63bfb037e7804d827d66aa53a1afcd
   languageName: node
   linkType: hard
 
@@ -45530,7 +45532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"which@npm:^2.0.0, which@npm:^2.0.1, which@npm:^2.0.2":
+"which@npm:2.0.2, which@npm:^2.0.0, which@npm:^2.0.1, which@npm:^2.0.2":
   version: 2.0.2
   resolution: "which@npm:2.0.2"
   dependencies:
