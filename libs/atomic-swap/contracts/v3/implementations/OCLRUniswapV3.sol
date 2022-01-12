@@ -14,6 +14,7 @@ import {
 } from '../interfaces/IOnChainLiquidityRouter.sol';
 import {IWETH9} from '../interfaces/IWETH9.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
+import {Constants} from '../lib/Constants.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -31,8 +32,6 @@ contract OCLRV2UniswapV3 is OCLRBase {
   }
 
   constructor() OCLRBase() {}
-
-  receive() external payable {}
 
   /// see IBase.sol
   function swapToCollateralAndMint(
@@ -69,7 +68,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
     }
     bool isEthInput = msg.value > 0;
     returnValues.inputToken = isEthInput
-      ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+      ? address(Constants.ETH_ADDR)
       : tokenSwapPath[0];
     returnValues.outputToken = address(
       synthereumParams.synthereumPool.syntheticToken()
@@ -245,7 +244,7 @@ contract OCLRV2UniswapV3 is OCLRBase {
       // store return values
       returnValues.inputToken = address(synthTokenInstance);
       returnValues.outputToken = inputParams.unwrapToETH
-        ? address(0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF)
+        ? address(Constants.ETH_ADDR)
         : tokenSwapPath[tokenSwapPath.length - 1];
       returnValues.collateralToken = tokenSwapPath[0];
       returnValues.inputAmount = synthereumParams.redeemParams.numTokens;
