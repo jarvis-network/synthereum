@@ -10,7 +10,7 @@ import {
   IOnChainLiquidityRouterV2
 } from '../interfaces/IOnChainLiquidityRouter.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
-import {Constants} from '../lib/Constants.sol';
+import {AtomicSwapConstants} from '../lib/AtomicSwapConstants.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
@@ -59,7 +59,7 @@ contract OCLRV2UniswapV2 is OCLRBase {
     }
     bool isEthInput = msg.value > 0;
     returnValues.inputToken = isEthInput
-      ? address(Constants.ETH_ADDR)
+      ? address(AtomicSwapConstants.ETH_ADDR)
       : address(inputTokenInstance);
     returnValues.outputToken = address(
       synthereumParams.synthereumPool.syntheticToken()
@@ -221,7 +221,7 @@ contract OCLRV2UniswapV2 is OCLRBase {
 
     returnValues.inputToken = address(synthTokenInstance);
     returnValues.outputToken = inputParams.unwrapToETH
-      ? address(Constants.ETH_ADDR)
+      ? address(AtomicSwapConstants.ETH_ADDR)
       : outputTokenAddress;
     returnValues.collateralToken = tokenSwapPath[0];
     returnValues.inputAmount = synthereumParams.redeemParams.numTokens;

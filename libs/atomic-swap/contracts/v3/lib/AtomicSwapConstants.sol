@@ -2,8 +2,8 @@
 pragma solidity ^0.8.4;
 
 /**
- * @title Stores common interface names used Synthereum.
+ * @title Stores common constants used in Atomic
  */
-library Constants {
+library AtomicSwapConstants {
   address public constant ETH_ADDR = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
 }
