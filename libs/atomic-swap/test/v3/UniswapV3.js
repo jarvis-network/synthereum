@@ -1140,7 +1140,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
     });
   });
 
-  describe.only('From ETH', () => {
+  describe('From ETH', () => {
     it('mint jSynth from ETH - exact input - multihop', async () => {
       const tokenAmountIn = web3Utils.toWei('1', 'gwei');
       const tokenPathSwap = [WETHAddress, USDCAddress];
