@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 /**
- * @title Stores common constants used in Atomic
+ * @title Stores common constants used in AtomicSwap
  */
 library AtomicSwapConstants {
   address public constant ETH_ADDR = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
