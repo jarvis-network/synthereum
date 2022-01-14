@@ -28,4 +28,15 @@ interface ISynthereumDeployer {
     uint8 selfMintingDerVersion,
     bytes calldata selfMintingDerParamsData
   ) external returns (ISynthereumDeployment selfMintingDerivative);
+
+  /**
+   * @notice Deploy a new fixed rate wrapper contract
+   * @param fixedRateVersion Version of the fixed rate wrapper contract
+   * @param fixedRateParamsData Input params of fixed rate wrapper constructor
+   * @return fixedRate Fixed rate wrapper contract deployed
+   */
+  function deployFixedRate(
+    uint8 fixedRateVersion,
+    bytes calldata fixedRateParamsData
+  ) external returns (ISynthereumDeployment fixedRate);
 }

@@ -27,30 +27,41 @@ abstract contract MintableBurnableTokenFactory {
   // Modifiers
   //----------------------------------------
 
-  modifier onlyPoolFactory() {
+  modifier onlyPoolFactoryOrFixedRateFactory() {
     ISynthereumFactoryVersioning factoryVersioning =
       ISynthereumFactoryVersioning(
         synthereumFinder.getImplementationAddress(
           SynthereumInterfaces.FactoryVersioning
         )
       );
-    uint8 numberOfFactories =
+    uint8 numberOfPoolFactories =
       factoryVersioning.numberOfFactoryVersions(FactoryInterfaces.PoolFactory);
-    uint8 counter = 0;
-    for (uint8 i = 0; counter < numberOfFactories; i++) {
-      try
-        factoryVersioning.getFactoryVersion(FactoryInterfaces.PoolFactory, i)
-      returns (address factory) {
-        if (msg.sender == factory) {
-          _;
-          break;
-        } else {
-          counter++;
-        }
-      } catch {}
+    uint8 numberOfFixedRateFactories =
+      factoryVersioning.numberOfFactoryVersions(
+        FactoryInterfaces.FixedRateFactory
+      );
+    bool isPoolFactory =
+      _checkSenderIsFactory(
+        factoryVersioning,
+        numberOfPoolFactories,
+        FactoryInterfaces.PoolFactory
+      );
+    if (isPoolFactory) {
+      _;
+      return;
     }
-    if (numberOfFactories == counter) {
-      revert('Sender must be a Pool factory');
+    bool isFixedRateFactory =
+      _checkSenderIsFactory(
+        factoryVersioning,
+        numberOfFixedRateFactories,
+        FactoryInterfaces.FixedRateFactory
+      );
+    if (isFixedRateFactory) {
+      _;
+      return;
+    }
+    if (!isPoolFactory && !isFixedRateFactory) {
+      revert('Sender must be a Pool or FixedRate factory');
     }
   }
 
@@ -86,5 +97,28 @@ abstract contract MintableBurnableTokenFactory {
   function _setAdminRole(BaseControlledMintableBurnableERC20 token) internal {
     token.addAdmin(msg.sender);
     token.renounceAdmin();
+  }
+
+  function _checkSenderIsFactory(
+    ISynthereumFactoryVersioning factoryVersioning,
+    uint8 numberOfFactories,
+    bytes32 factoryKind
+  ) internal view returns (bool isFactory) {
+    uint8 counterFactory;
+    for (uint8 i = 0; counterFactory < numberOfFactories; i++) {
+      try factoryVersioning.getFactoryVersion(factoryKind, i) returns (
+        address factory
+      ) {
+        if (msg.sender == factory) {
+          isFactory = true;
+          break;
+        } else {
+          counterFactory++;
+          if (counterFactory == numberOfFactories) {
+            isFactory = false;
+          }
+        }
+      } catch {}
+    }
   }
 }
