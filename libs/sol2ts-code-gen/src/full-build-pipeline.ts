@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 
-import { mkdir, rmdir, writeFile, rm } from 'fs/promises';
+import { mkdir, writeFile, rm } from 'fs/promises';
 import { join, resolve } from 'path';
 
 import { from, lastValueFrom } from 'rxjs';
@@ -118,7 +118,7 @@ async function prepareOutputDirs(config: Config) {
     if (dir === rootDir)
       throw new Error('resolved path must not be root directory');
     // Clean previous artifacts:
-    if (config.clear) await rmdir(dir, { recursive: true });
+    if (config.clear) await rm(dir, { recursive: true, force: true });
     // Create dirs if necessary:
     await mkdir(dir, { recursive: true });
   }
