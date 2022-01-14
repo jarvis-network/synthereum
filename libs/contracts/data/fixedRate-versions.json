@@ -1,0 +1,8 @@
+{
+  "80001": {
+    "FixedRateFactory": {
+      "version": 1,
+      "isEnabled": true
+    }
+  }
+}
