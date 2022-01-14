@@ -99,10 +99,10 @@ contract SynthereumFixedRateWrapper is
   // Events
   //----------------------------------------
 
+  event Wrap(uint256 amountTokens, address recipient);
+  event Unwrap(uint256 amountCollateral, address recipient);
   event ContractPaused();
   event ContractResumed();
-
-  event RateChange(uint256 oldRate, uint256 newRate);
 
   //----------------------------------------
   // Constructor
@@ -144,6 +144,7 @@ contract SynthereumFixedRateWrapper is
     amountTokens = (_collateral * rate) / (PRECISION);
     totalDeposited = totalDeposited + _collateral;
     fixedRateToken.mint(_recipient, amountTokens);
+    emit Wrap(amountTokens, _recipient);
   }
 
   /**
@@ -168,6 +169,7 @@ contract SynthereumFixedRateWrapper is
     fixedRateToken.burn(_tokenAmount);
     totalDeposited = totalDeposited - amountCollateral;
     pegCollateralToken.transfer(_recipient, amountCollateral);
+    emit Unwrap(amountCollateral, _recipient);
   }
 
   /** @notice Allows the maintainer to pause the contract in case of emergency
