@@ -215,7 +215,7 @@ contract('Factories', function (accounts) {
           18,
           { from: sender },
         ),
-        'Sender must be a Pool factory',
+        'Sender must be a Pool or FixedRate factory',
       );
     });
     it('Can revert in pool factory', async () => {
