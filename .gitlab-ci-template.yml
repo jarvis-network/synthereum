@@ -4,10 +4,7 @@ default:
   interruptible: true
   before_script:
     - cd /src
-    - git init
-    - git remote add jn $CI_PROJECT_URL
-    - git fetch jn $CI_COMMIT_REF_NAME
-    - git switch --discard-changes $CI_COMMIT_REF_NAME
+    - ./scripts/ci/init_repo_in_container.bash
 
 variables:
   GIT_STRATEGY: none
