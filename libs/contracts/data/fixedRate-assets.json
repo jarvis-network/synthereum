@@ -1,0 +1,11 @@
+{
+  "137": {},
+  "80001": [
+    {
+      "syntheticName": "Jarvis Synthetic Bulgarian Lev",
+      "syntheticSymbol": "jBGN",
+      "rate": "1955830000000000000",
+      "collateralAddress": "0x02cbe6055f8aad745321f70d6add4711455c7f45"
+    }
+  ]
+}
