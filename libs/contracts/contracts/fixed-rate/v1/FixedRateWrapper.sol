@@ -191,35 +191,50 @@ contract SynthereumFixedRateWrapper is
   /** @notice Checks the address of the peg collateral token registered in the wrapper
    * @return collateralCurrency The address of the peg collateral token registered
    */
-  function collateralToken() external view returns (IERC20 collateralCurrency) {
+  function collateralToken()
+    external
+    view
+    override
+    returns (IERC20 collateralCurrency)
+  {
     collateralCurrency = pegCollateralToken;
   }
 
   /** @notice Checks the symbol of the fixed rate synthetic token registered in the wrapper
    * @return The symbol of the fixed rate synthetic token associated with the wrapper
    */
-  function syntheticTokenSymbol() external view returns (string memory) {
+  function syntheticTokenSymbol()
+    external
+    view
+    override
+    returns (string memory)
+  {
     return IStandardERC20(address(fixedRateToken)).symbol();
   }
 
   /** @notice Checks the address of the fixed rate synthetic token registered in the wrapper
    * @return The address of the fixed rate synthetic token associated with the wrapper
    */
-  function syntheticToken() external view returns (IERC20) {
+  function syntheticToken() external view override returns (IERC20) {
     return fixedRateToken;
   }
 
   /** @notice Checks the version of the fixed rate wrapper contract
    * @return The version of the fixed rate wrapper contract
    */
-  function version() external view returns (uint8) {
+  function version() external view override returns (uint8) {
     return fixedRateVersion;
   }
 
   /** @notice Checks the SynthereumFinder associated with the fixed rate wrapper contract
    * @return The address of the SynthereumFinder
    */
-  function synthereumFinder() external view returns (ISynthereumFinder) {
+  function synthereumFinder()
+    external
+    view
+    override
+    returns (ISynthereumFinder)
+  {
     return fixedRateStorage.finder;
   }
 
