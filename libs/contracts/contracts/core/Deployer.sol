@@ -61,6 +61,11 @@ contract SynthereumDeployer is
     address indexed selfMintingDerivative
   );
 
+  event FixedRateDeployed(
+    uint8 indexed fixedRateVersion,
+    address indexed fixedRate
+  );
+
   //----------------------------------------
   // Modifiers
   //----------------------------------------
@@ -158,6 +163,40 @@ contract SynthereumDeployer is
     );
   }
 
+  /**
+   * @notice Deploy a fixed rate wrapper
+   * @param fixedRateVersion Version of the fixed rate wrapper contract
+   * @param fixedRateParamsData Input params of the fixed rate wrapper constructor
+   * @return fixedRate FixedRate wrapper deployed
+   */
+
+  function deployFixedRate(
+    uint8 fixedRateVersion,
+    bytes calldata fixedRateParamsData
+  )
+    external
+    override
+    onlyMaintainer
+    nonReentrant
+    returns (ISynthereumDeployment fixedRate)
+  {
+    fixedRate = _deployFixedRate(
+      getFactoryVersioning(),
+      fixedRateVersion,
+      fixedRateParamsData
+    );
+    checkDeployment(fixedRate, fixedRateVersion);
+    setSyntheticTokenRoles(fixedRate);
+    ISynthereumRegistry fixedRateRegistry = getFixedRateRegistry();
+    fixedRateRegistry.register(
+      fixedRate.syntheticTokenSymbol(),
+      fixedRate.collateralToken(),
+      fixedRateVersion,
+      address(fixedRate)
+    );
+    emit FixedRateDeployed(fixedRateVersion, address(fixedRate));
+  }
+
   //----------------------------------------
   // Internal functions
   //----------------------------------------
@@ -218,8 +257,39 @@ contract SynthereumDeployer is
   }
 
   /**
-   * @notice Sets roles of the synthetic token contract to a pool
-   * @param pool Pool contract
+   * @notice Deploys a fixed rate wrapper contract of a particular version
+   * @param factoryVersioning factory versioning contract
+   * @param fixedRateVersion Version of the fixed rate wrapper contract to deploy
+   * @param fixedRateParamsData Input parameters of constructor of the fixed rate wrapper
+   * @return fixedRate Fixed rate wrapper deployed
+   */
+
+  function _deployFixedRate(
+    ISynthereumFactoryVersioning factoryVersioning,
+    uint8 fixedRateVersion,
+    bytes memory fixedRateParamsData
+  ) internal returns (ISynthereumDeployment fixedRate) {
+    address fixedRateFactory =
+      factoryVersioning.getFactoryVersion(
+        FactoryInterfaces.FixedRateFactory,
+        fixedRateVersion
+      );
+    bytes memory fixedRateDeploymentResult =
+      fixedRateFactory.functionCall(
+        abi.encodePacked(
+          getDeploymentSignature(fixedRateFactory),
+          fixedRateParamsData
+        ),
+        'Wrong fixed rate deployment'
+      );
+    fixedRate = ISynthereumDeployment(
+      abi.decode(fixedRateDeploymentResult, (address))
+    );
+  }
+
+  /**
+   * @notice Sets roles of the synthetic token contract to a pool or a fixed rate wrapper
+   * @param pool Pool or fixed rate wrapper contract
    */
   function setSyntheticTokenRoles(ISynthereumDeployment pool) internal {
     address _pool = address(pool);
@@ -302,6 +372,22 @@ contract SynthereumDeployer is
     selfMintingRegistry = ISynthereumRegistry(
       synthereumFinder.getImplementationAddress(
         SynthereumInterfaces.SelfMintingRegistry
+      )
+    );
+  }
+
+  /**
+   * @notice Get fixed rate registry contract from the finder
+   * @return fixedRateRegistry Registry of fixed rate contract
+   */
+  function getFixedRateRegistry()
+    internal
+    view
+    returns (ISynthereumRegistry fixedRateRegistry)
+  {
+    fixedRateRegistry = ISynthereumRegistry(
+      synthereumFinder.getImplementationAddress(
+        SynthereumInterfaces.FixedRateRegistry
       )
     );
   }

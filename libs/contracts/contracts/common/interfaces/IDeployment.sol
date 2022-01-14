@@ -16,9 +16,9 @@ interface ISynthereumDeployment {
 
   /**
    * @notice Get Synthereum version
-   * @return poolVersion Returns the version of this pool/self-minting derivative
+   * @return version Returns the version of this pool/self-minting derivative
    */
-  function version() external view returns (uint8 poolVersion);
+  function version() external view returns (uint8 version);
 
   /**
    * @notice Get the collateral token of this pool/self-minting derivative

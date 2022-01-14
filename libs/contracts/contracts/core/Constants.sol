@@ -16,9 +16,11 @@ library SynthereumInterfaces {
   bytes32 public constant CollateralWhitelist = 'CollateralWhitelist';
   bytes32 public constant IdentifierWhitelist = 'IdentifierWhitelist';
   bytes32 public constant TrustedForwarder = 'TrustedForwarder';
+  bytes32 public constant FixedRateRegistry = 'FixedRateRegistry';
 }
 
 library FactoryInterfaces {
   bytes32 public constant PoolFactory = 'PoolFactory';
   bytes32 public constant SelfMintingFactory = 'SelfMintingFactory';
+  bytes32 public constant FixedRateFactory = 'FixedRateFactory';
 }
