@@ -51,6 +51,12 @@ interface IOnChainLiquidityRouterV2 {
     SynthereumMintParams mintParams;
   }
 
+  struct RedeemPegSwapParams {
+    address recipient;
+    RedeemSwapParams redeemSwapParams;
+    SynthereumRedeemParams redeemParams;
+  }
+
   // synthereum variables
   struct SynthereumMintParams {
     ISynthereumFinder synthereumFinder;
@@ -103,9 +109,10 @@ interface IOnChainLiquidityRouterV2 {
   function unwrapFixedRateTo(
     bool toERC20,
     string memory implementationId,
+    address inputAsset,
+    uint256 inputAmount,
     address targetAsset,
-    bytes calldata operationArgs,
-    address recipient
+    bytes calldata operationArgs
   ) external returns (ReturnValues memory returnValues);
 
   // flow: fromERC20 ? erc20 -> swapAndMint(USDC -> peg jSynth) ->  wrap(pegSynth) : jFiat -> exchange to peg and wrap

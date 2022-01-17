@@ -249,9 +249,10 @@ contract OnChainLiquidityRouterV2 is
   function unwrapFixedRateTo(
     bool toERC20,
     string memory implementationId,
+    address inputAsset,
+    uint256 inputAmount,
     address targetAsset,
-    bytes calldata operationArgs,
-    address recipient
+    bytes calldata operationArgs
   ) external override returns (ReturnValues memory returnValues) {}
 
   /// @notice Gets the OCLR implementation address stored under an id
