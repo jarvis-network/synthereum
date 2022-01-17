@@ -214,6 +214,46 @@ contract OnChainLiquidityRouterV2 is
     );
   }
 
+  function wrapFixedRateFrom(
+    bool fromERC20,
+    string memory implementationId,
+    address targetAsset,
+    bytes calldata operationArgs,
+    address recipient
+  ) external override returns (ReturnValues memory returnValues) {
+    address fixedRateSwap =
+      synthereumFinder.getImplementationAddress('FixedRateSwap');
+    address implementation =
+      idToAddress[keccak256(abi.encode(implementationId))];
+    require(implementation != address(0), 'Implementation id not registered');
+
+    string memory functionSig =
+      'unwrapTo(bool, address, address, address, bytes, address)';
+
+    bytes memory result =
+      fixedRateSwap.functionDelegateCall(
+        abi.encodeWithSignature(
+          functionSig,
+          fromERC20,
+          implementation,
+          dexImplementationInfo[implementation],
+          targetAsset,
+          operationArgs,
+          recipient
+        )
+      );
+
+    returnValues = abi.decode(result, (ReturnValues));
+  }
+
+  function unwrapFixedRateTo(
+    bool toERC20,
+    string memory implementationId,
+    address targetAsset,
+    bytes calldata operationArgs,
+    address recipient
+  ) external override returns (ReturnValues memory returnValues) {}
+
   /// @notice Gets the OCLR implementation address stored under an id
   /// @param identifier: string identifier of the OCLR implementation.
   /// @return address of the implementation

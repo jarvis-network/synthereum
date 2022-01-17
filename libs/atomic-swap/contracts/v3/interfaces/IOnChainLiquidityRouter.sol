@@ -45,6 +45,12 @@ interface IOnChainLiquidityRouterV2 {
     address msgSender; //meta-tx support
   }
 
+  // input values for fixedRateSwap to call a OCLR implementation
+  struct SwapMintPegParams {
+    SwapMintParams swapMintParams;
+    SynthereumMintParams mintParams;
+  }
+
   // synthereum variables
   struct SynthereumMintParams {
     ISynthereumFinder synthereumFinder;
@@ -57,6 +63,11 @@ interface IOnChainLiquidityRouterV2 {
     ISynthereumFinder synthereumFinder;
     ISynthereumLiquidityPool synthereumPool;
     ISynthereumLiquidityPool.RedeemParams redeemParams;
+  }
+
+  struct SynthereumExchangeParams {
+    ISynthereumLiquidityPool inputSynthereumPool;
+    ISynthereumLiquidityPool.ExchangeParams exchangeParams;
   }
 
   /// @notice Performs a ERC20 swap through an OCLR implementation and a mint of a jSynth on a synthereum pool
@@ -75,7 +86,7 @@ interface IOnChainLiquidityRouterV2 {
   /// @notice Performs a synthereum redeem of jSynth into collateral and then a swap through an OCLR implementation
   /// @param implementationId: identifier of the OCLR implementation to call
   /// @param inputParams: params involving the swap - see RedeemSwapParams struct
-  /// @param synthereumPool: synthereum pool address to perform the mint
+  /// @param synthereumPool: synthereum pool address to perform the redeem
   /// @param redeemParams: params to perform the mint on synthereum
   /// @param recipient: recipient address of output tokens
   /// @return returnValues see ReturnValues struct
@@ -84,6 +95,26 @@ interface IOnChainLiquidityRouterV2 {
     RedeemSwapParams memory inputParams,
     ISynthereumLiquidityPool synthereumPool,
     ISynthereumLiquidityPool.RedeemParams memory redeemParams,
+    address recipient
+  ) external returns (ReturnValues memory returnValues);
+
+  // flow: unwrap(fixedRate) -> peg jSynth -> toERC20 ? redeemAndSwap(to ERC20 target) : exchange and mint target jSynth;
+  // operationArgs : toERC20 ? { redeemParams ; synthereumPool ; redeemSwapParams} : { exchange Params }
+  function unwrapFixedRateTo(
+    bool toERC20,
+    string memory implementationId,
+    address targetAsset,
+    bytes calldata operationArgs,
+    address recipient
+  ) external returns (ReturnValues memory returnValues);
+
+  // flow: fromERC20 ? erc20 -> swapAndMint(USDC -> peg jSynth) ->  wrap(pegSynth) : jFiat -> exchange to peg and wrap
+  // operationArgs : fromERC20 ? { mintParams, synthereumPool, mintSwapParams} : { exchange Params }
+  function wrapFixedRateFrom(
+    bool fromERC20,
+    string memory implementationId,
+    address targetAsset,
+    bytes calldata operationArgs,
     address recipient
   ) external returns (ReturnValues memory returnValues);
 }
