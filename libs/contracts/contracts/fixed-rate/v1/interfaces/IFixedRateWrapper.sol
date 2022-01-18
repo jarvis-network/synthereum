@@ -4,8 +4,15 @@ pragma solidity ^0.8.4;
 import {
   ISynthereumDeployment
 } from '../../../common/interfaces/IDeployment.sol';
+import {ITypology} from '../../../common/interfaces/ITypology.sol';
 
-interface ISynthereumFixedRateWrapper is ISynthereumDeployment {
+interface ISynthereumFixedRateWrapper is ITypology, ISynthereumDeployment {
+  // Describe role structure
+  struct Roles {
+    address admin;
+    address maintainer;
+  }
+
   /** @notice This function is used to mint new fixed rate synthetic tokens by depositing peg collateral tokens
    * @notice The conversion is based on a fixed rate
    * @param _collateral The amount of peg collateral tokens to be deposited
@@ -38,4 +45,19 @@ interface ISynthereumFixedRateWrapper is ISynthereumDeployment {
    * @notice After the resume contract function is called minting of new fixed rate synthetic assets is open again
    */
   function resumeContract() external;
+
+  /** @notice Check the conversion rate between peg-collateral and fixed-rate synthetic token
+   * @return Coversion rate
+   */
+  function conversionRate() external view returns (uint256);
+
+  /** @notice Amount of peg collateral stored in the contract
+   * @return Total peg collateral deposited
+   */
+  function totalPegCollateral() external view returns (uint256);
+
+  /** @notice Check if wrap can be performed or not
+   * @return True if minting is paused, otherwise false
+   */
+  function isPaused() external view returns (bool);
 }

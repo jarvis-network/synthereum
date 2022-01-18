@@ -60,9 +60,7 @@ abstract contract MintableBurnableTokenFactory {
       _;
       return;
     }
-    if (!isPoolFactory && !isFixedRateFactory) {
-      revert('Sender must be a Pool or FixedRate factory');
-    }
+    revert('Sender must be a Pool or FixedRate factory');
   }
 
   //----------------------------------------

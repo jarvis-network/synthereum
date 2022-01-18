@@ -14,9 +14,7 @@ import {
 } from '../../tokens/interfaces/BaseControlledMintableBurnableERC20.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumFixedRateWrapper} from './FixedRateWrapper.sol';
-import {
-  ISynthereumFixedRateWrapperStorage
-} from './interfaces/IFixedRateWrapperStorage.sol';
+import {ISynthereumFixedRateWrapper} from './interfaces/IFixedRateWrapper.sol';
 
 contract SynthereumFixedRateCreator {
   struct Params {
@@ -24,7 +22,7 @@ contract SynthereumFixedRateCreator {
     string syntheticName;
     string syntheticSymbol;
     address syntheticToken;
-    ISynthereumFixedRateWrapperStorage.Roles roles;
+    ISynthereumFixedRateWrapper.Roles roles;
     uint8 version;
     uint256 rate;
   }

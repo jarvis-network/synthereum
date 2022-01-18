@@ -289,17 +289,19 @@ contract SynthereumDeployer is
 
   /**
    * @notice Sets roles of the synthetic token contract to a pool or a fixed rate wrapper
-   * @param pool Pool or fixed rate wrapper contract
+   * @param financialContract Pool or fixed rate wrapper contract
    */
-  function setSyntheticTokenRoles(ISynthereumDeployment pool) internal {
-    address _pool = address(pool);
+  function setSyntheticTokenRoles(ISynthereumDeployment financialContract)
+    internal
+  {
+    address _financialContract = address(financialContract);
     IAccessControlEnumerable tokenCurrency =
-      IAccessControlEnumerable(address(pool.syntheticToken()));
+      IAccessControlEnumerable(address(financialContract.syntheticToken()));
     if (
-      !tokenCurrency.hasRole(MINTER_ROLE, _pool) ||
-      !tokenCurrency.hasRole(BURNER_ROLE, _pool)
+      !tokenCurrency.hasRole(MINTER_ROLE, _financialContract) ||
+      !tokenCurrency.hasRole(BURNER_ROLE, _financialContract)
     ) {
-      addSyntheticTokenRoles(address(tokenCurrency), _pool);
+      addSyntheticTokenRoles(address(tokenCurrency), _financialContract);
     }
   }
 
