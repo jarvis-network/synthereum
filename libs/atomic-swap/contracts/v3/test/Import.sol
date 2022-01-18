@@ -12,5 +12,14 @@ import {
   PoolMock
 } from '@jarvis-network/synthereum-contracts/contracts/test/PoolMock.sol';
 import {
+  SynthereumFinder
+} from '@jarvis-network/synthereum-contracts/contracts/core/Finder.sol';
+import {
+  SynthereumFixedRateWrapper
+} from '@jarvis-network/synthereum-contracts/contracts/fixed-rate/v1/FixedRateWrapper.sol';
+import {
+  MintableBurnableSyntheticToken
+} from '@jarvis-network/synthereum-contracts/contracts/tokens/MintableBurnableSyntheticToken.sol';
+import {
   TestnetERC20
 } from '@jarvis-network/synthereum-contracts/contracts/test/TestnetERC20.sol';
