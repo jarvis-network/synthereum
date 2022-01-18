@@ -22,10 +22,10 @@ contract FixedRateSwap {
   function wrapFrom(
     bool fromERC20,
     address OCLRImplementation,
-    bytes memory implementationInfo,
     address outputAsset,
+    address recipient,
     bytes calldata operationArgs,
-    address recipient
+    bytes memory implementationInfo
   )
     external
     returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
