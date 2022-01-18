@@ -1,6 +1,5 @@
 const web3Utils = require('web3-utils');
 const rolesConfig = require('../data/roles.json');
-const fixedRateConfig = require('../data/fixedRate-config.json');
 const { artifacts } = require('hardhat');
 const {
   getExistingInstance,
