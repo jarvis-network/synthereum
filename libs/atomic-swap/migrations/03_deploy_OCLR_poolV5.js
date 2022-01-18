@@ -5,7 +5,9 @@ const KyberAtomicSwap = artifacts.require('OCLRV2Kyber');
 const SynthereumTrustedForwarder = artifacts.require(
   'SynthereumTrustedForwarder',
 );
-
+const FixedRateSwap = artifacts.require('FixedRateSwap');
+const SynthereumFinder = artifacts.require('SynthereumFinder');
+const { utf8ToHex } = require('web3-utils');
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');
 const {
@@ -95,8 +97,40 @@ module.exports = async function (deployer, network, accounts) {
         maintainer,
       )
     : null;
+
+  // deploy Fixed Rate Swaps module
+  await deployFixedRateSwap(
+    web3,
+    proxyInstance,
+    deployer,
+    network,
+    networkId,
+    admin,
+    maintainer,
+  );
 };
 
+const deployFixedRateSwap = async (
+  web3,
+  proxyInstance,
+  deployer,
+  network,
+  networkId,
+  admin,
+  maintainer,
+) => {
+  await deploy(web3, deployer, network, FixedRateSwap, { from: admin });
+  const fixedSwapInstance = await getExistingInstance(web3, FixedRateSwap);
+  await proxyInstance.methods
+    .registerImplementation(
+      'fixedRateSwap',
+      fixedSwapInstance.options.address,
+      '0x00',
+    )
+    .send({ from: maintainer });
+  // const finderInstance = await SynthereumFinder.at(synthereumFinderAddress);
+  // await finderInstance.changeImplementationAddress(utf8ToHex('FixedRateSwap'), contract.contract.address, {from:maintainer});
+};
 const deployUniV2 = async (
   web3,
   proxyInstance,
