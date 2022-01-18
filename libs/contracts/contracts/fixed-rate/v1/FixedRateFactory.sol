@@ -8,7 +8,6 @@ import {
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 import {SynthereumFixedRateCreator} from './FixedRateCreator.sol';
 import {SynthereumFixedRateWrapper} from './FixedRateWrapper.sol';
-import {FactoryConditions} from '../../common/FactoryConditions.sol';
 import {
   ReentrancyGuard
 } from '@openzeppelin/contracts/security/ReentrancyGuard.sol';
@@ -16,7 +15,6 @@ import {
 contract SynthereumFixedRateFactory is
   IDeploymentSignature,
   ReentrancyGuard,
-  FactoryConditions,
   SynthereumFixedRateCreator
 {
   //----------------------------------------

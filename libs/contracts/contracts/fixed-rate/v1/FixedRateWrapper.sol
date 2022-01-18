@@ -16,9 +16,6 @@ import {
   AccessControlEnumerable,
   Context
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
-import {
-  ISynthereumFixedRateWrapperStorage
-} from './interfaces/IFixedRateWrapperStorage.sol';
 import {SynthereumInterfaces} from '../../core/Constants.sol';
 
 contract SynthereumFixedRateWrapper is
@@ -33,11 +30,11 @@ contract SynthereumFixedRateWrapper is
     // Synthereum fixed rate version
     uint8 version;
     // ERC20 collateral token
-    IERC20 pegCollateralToken;
+    IStandardERC20 pegCollateralToken;
     // ERC20 synthetic token
     IMintableBurnableERC20 fixedRateToken;
     // The addresses of admin, maintainer
-    ISynthereumFixedRateWrapperStorage.Roles roles;
+    Roles roles;
     // Conversion rate
     uint256 rate;
   }
@@ -46,37 +43,37 @@ contract SynthereumFixedRateWrapper is
   // Constants
   //----------------------------------------
 
-  string public constant typology = 'FIXED_RATE';
+  string public constant override typology = 'FIXED_RATE';
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
   // Precision for math operations
   uint256 public constant PRECISION = 1e18;
 
-  //----------------------------------------
-  // Storage
-  //----------------------------------------
-
   // Current rate set for the wrapper
-  uint256 public rate;
-
-  // Total amount of peg collateral tokens deposited
-  uint256 public totalDeposited;
-
-  // When contract is paused minting is revoked
-  bool public paused;
+  uint256 private immutable rate;
 
   // The fixedRate synthetic token associated with the wrapper
   IMintableBurnableERC20 private immutable fixedRateToken;
 
   // The peg collateral token associated with the wrapper
-  IERC20 private immutable pegCollateralToken;
+  IStandardERC20 private immutable pegCollateralToken;
 
   // Version of the fixed rate wrapper
-  uint8 private fixedRateVersion;
+  uint8 private immutable fixedRateVersion;
+
+  //----------------------------------------
+  // Storage
+  //----------------------------------------
 
   // Storage from interface
-  ISynthereumFixedRateWrapperStorage.Storage private fixedRateStorage;
+  ISynthereumFinder private finder;
+
+  // Total amount of peg collateral tokens deposited
+  uint256 private totalDeposited;
+
+  // When contract is paused minting is revoked
+  bool private paused;
 
   //----------------------------------------
   // Modifiers
@@ -113,11 +110,21 @@ contract SynthereumFixedRateWrapper is
    * @param params The parameters passed from deployer to construct the fixed rate wrapper contract
    */
   constructor(ConstructorParams memory params) nonReentrant {
+    require(
+      params.pegCollateralToken.decimals() <= 18,
+      'Collateral has more than 18 decimals'
+    );
+
+    require(
+      params.fixedRateToken.decimals() == 18,
+      'FixedRate token has more or less than 18 decimals'
+    );
+
     rate = params.rate;
     pegCollateralToken = params.pegCollateralToken;
     fixedRateToken = params.fixedRateToken;
     fixedRateVersion = params.version;
-    fixedRateStorage.finder = params.finder;
+    finder = params.finder;
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, params.roles.admin);
@@ -137,11 +144,14 @@ contract SynthereumFixedRateWrapper is
   function wrap(uint256 _collateral, address _recipient)
     external
     override
-    isActive()
+    nonReentrant
+    isActive
     returns (uint256 amountTokens)
   {
     pegCollateralToken.transferFrom(_msgSender(), address(this), _collateral);
-    amountTokens = (_collateral * rate) / (PRECISION);
+    amountTokens =
+      (_collateral * (10**(18 - pegCollateralToken.decimals())) * PRECISION) /
+      rate;
     totalDeposited = totalDeposited + _collateral;
     fixedRateToken.mint(_recipient, amountTokens);
     emit Wrap(amountTokens, _recipient);
@@ -156,6 +166,7 @@ contract SynthereumFixedRateWrapper is
   function unwrap(uint256 _tokenAmount, address _recipient)
     external
     override
+    nonReentrant
     returns (uint256 amountCollateral)
   {
     require(
@@ -235,7 +246,52 @@ contract SynthereumFixedRateWrapper is
     override
     returns (ISynthereumFinder)
   {
-    return fixedRateStorage.finder;
+    return finder;
+  }
+
+  /** @notice Check the conversion rate between peg-collateral and fixed-rate synthetic token
+   * @return Coversion rate
+   */
+  function conversionRate() external view override returns (uint256) {
+    return rate;
+  }
+
+  /** @notice Amount of peg collateral stored in the contract
+   * @return Total peg collateral deposited
+   */
+  function totalPegCollateral() external view override returns (uint256) {
+    return totalDeposited;
+  }
+
+  /** @notice Check if wrap can be performed or not
+   * @return True if minting is paused, otherwise false
+   */
+  function isPaused() external view override returns (bool) {
+    return paused;
+  }
+
+  /**
+   * @notice Check if an address is the trusted forwarder
+   * @param  forwarder Address to check
+   * @return True is the input address is the trusted forwarder, otherwise false
+   */
+  function isTrustedForwarder(address forwarder)
+    public
+    view
+    override
+    returns (bool)
+  {
+    try
+      finder.getImplementationAddress(SynthereumInterfaces.TrustedForwarder)
+    returns (address trustedForwarder) {
+      if (forwarder == trustedForwarder) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
   }
 
   function _msgSender()
@@ -254,31 +310,5 @@ contract SynthereumFixedRateWrapper is
     returns (bytes calldata)
   {
     return ERC2771Context._msgData();
-  }
-
-  /**
-   * @notice Check if an address is the trusted forwarder
-   * @param  forwarder Address to check
-   * @return True is the input address is the trusted forwarder, otherwise false
-   */
-  function isTrustedForwarder(address forwarder)
-    public
-    view
-    override
-    returns (bool)
-  {
-    try
-      fixedRateStorage.finder.getImplementationAddress(
-        SynthereumInterfaces.TrustedForwarder
-      )
-    returns (address trustedForwarder) {
-      if (forwarder == trustedForwarder) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
   }
 }
