@@ -155,7 +155,52 @@ function encodeCreditLineDerivative(
   return CreditLineDerivativePayload;
 }
 
+function encodeFixedRate(
+  collateralToken: string,
+  syntheticName: string,
+  syntheticSymbol: string,
+  syntheticToken: string,
+  roles: Roles,
+  version: number,
+  rate: number,
+) {
+  const fixedRatePayload = ((Web3EthAbi as unknown) as AbiCoder).encodeParameters(
+    [
+      {
+        params: {
+          collateralToken: 'address',
+          syntheticName: 'string',
+          syntheticSymbol: 'string',
+          syntheticToken: 'address',
+          roles: {
+            admin: 'address',
+            maintainer: 'address',
+          },
+          version: 'uint8',
+          rate: 'uint256',
+        },
+      },
+    ],
+    [
+      {
+        collateralToken,
+        syntheticName,
+        syntheticSymbol,
+        syntheticToken,
+        roles: {
+          admin: roles.admin,
+          maintainer: roles.maintainer,
+        },
+        version,
+        rate,
+      },
+    ],
+  );
+  return fixedRatePayload;
+}
+
 module.exports = {
   encodeLiquidityPool,
   encodeCreditLineDerivative,
+  encodeFixedRate,
 };
