@@ -11,6 +11,9 @@ import {
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IOCLRBase} from '../interfaces/IOCLRBase.sol';
 import {
   IOnChainLiquidityRouterV2
@@ -18,6 +21,9 @@ import {
 
 contract FixedRateSwap {
   using Address for address;
+  using SafeERC20 for IERC20;
+
+  constructor() {}
 
   function wrapFrom(
     bool fromERC20,
@@ -71,11 +77,9 @@ contract FixedRateSwap {
         decodeToSwapMintParams(operationArgs);
 
       // check target synth is compatible with the pool
+      IERC20 collateralToken = fixedRateWrapper.collateralToken();
       require(
-        checkSynth(
-          fixedRateWrapper.collateralToken(),
-          params.mintParams.synthereumPool
-        ),
+        checkSynth(collateralToken, params.mintParams.synthereumPool),
         'Pool and jSynth mismatch'
       );
 
@@ -88,6 +92,10 @@ contract FixedRateSwap {
       );
 
       // wrap jSynth into fixedRate and send them to final recipient
+      collateralToken.safeIncreaseAllowance(
+        address(fixedRateWrapper),
+        returnValues.outputAmount
+      );
       returnValues.outputAmount = fixedRateWrapper.wrap(
         returnValues.outputAmount,
         recipient

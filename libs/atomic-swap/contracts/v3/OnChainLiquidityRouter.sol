@@ -221,14 +221,13 @@ contract OnChainLiquidityRouterV2 is
     bytes calldata operationArgs,
     address recipient
   ) external override returns (ReturnValues memory returnValues) {
-    address fixedRateSwap =
-      synthereumFinder.getImplementationAddress('FixedRateSwap');
+    address fixedRateSwap = idToAddress[keccak256(abi.encode('fixedRateSwap'))];
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'wrapFrom(bool, address, address, address, bytes, bytes)';
+      'wrapFrom(bool,address,address,address,bytes,bytes)';
 
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
@@ -244,6 +243,16 @@ contract OnChainLiquidityRouterV2 is
       );
 
     returnValues = abi.decode(result, (ReturnValues));
+
+    emit Swap(
+      returnValues.inputToken,
+      returnValues.outputToken,
+      returnValues.collateralToken,
+      returnValues.inputAmount,
+      returnValues.outputAmount,
+      returnValues.collateralAmountRefunded,
+      implementation
+    );
   }
 
   function unwrapFixedRateTo(
@@ -253,14 +262,13 @@ contract OnChainLiquidityRouterV2 is
     uint256 inputAmount,
     bytes calldata operationArgs
   ) external override returns (ReturnValues memory returnValues) {
-    address fixedRateSwap =
-      synthereumFinder.getImplementationAddress('FixedRateSwap');
+    address fixedRateSwap = idToAddress[keccak256(abi.encode('fixedRateSwap'))];
     address implementation =
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'unwrapTo(bool, address, bytes, uint256, address, bytes)';
+      'unwrapTo(bool,address,bytes,uint256,address,bytes)';
 
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
@@ -276,6 +284,16 @@ contract OnChainLiquidityRouterV2 is
       );
 
     returnValues = abi.decode(result, (ReturnValues));
+
+    emit Swap(
+      returnValues.inputToken,
+      returnValues.outputToken,
+      returnValues.collateralToken,
+      returnValues.inputAmount,
+      returnValues.outputAmount,
+      returnValues.collateralAmountRefunded,
+      implementation
+    );
   }
 
   /// @notice Gets the OCLR implementation address stored under an id
