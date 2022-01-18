@@ -111,7 +111,6 @@ interface IOnChainLiquidityRouterV2 {
     string memory implementationId,
     address inputAsset,
     uint256 inputAmount,
-    address targetAsset,
     bytes calldata operationArgs
   ) external returns (ReturnValues memory returnValues);
 

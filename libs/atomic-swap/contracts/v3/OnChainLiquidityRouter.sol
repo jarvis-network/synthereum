@@ -228,7 +228,7 @@ contract OnChainLiquidityRouterV2 is
     require(implementation != address(0), 'Implementation id not registered');
 
     string memory functionSig =
-      'unwrapTo(bool, address, address, address, bytes, address)';
+      'wrapFrom(bool, address, address, address, bytes, bytes)';
 
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
@@ -236,10 +236,10 @@ contract OnChainLiquidityRouterV2 is
           functionSig,
           fromERC20,
           implementation,
-          dexImplementationInfo[implementation],
           targetAsset,
+          recipient,
           operationArgs,
-          recipient
+          dexImplementationInfo[implementation]
         )
       );
 
@@ -251,9 +251,32 @@ contract OnChainLiquidityRouterV2 is
     string memory implementationId,
     address inputAsset,
     uint256 inputAmount,
-    address targetAsset,
     bytes calldata operationArgs
-  ) external override returns (ReturnValues memory returnValues) {}
+  ) external override returns (ReturnValues memory returnValues) {
+    address fixedRateSwap =
+      synthereumFinder.getImplementationAddress('FixedRateSwap');
+    address implementation =
+      idToAddress[keccak256(abi.encode(implementationId))];
+    require(implementation != address(0), 'Implementation id not registered');
+
+    string memory functionSig =
+      'unwrapTo(bool, address, bytes, uint256, address, bytes)';
+
+    bytes memory result =
+      fixedRateSwap.functionDelegateCall(
+        abi.encodeWithSignature(
+          functionSig,
+          toERC20,
+          implementation,
+          dexImplementationInfo[implementation],
+          inputAmount,
+          inputAsset,
+          operationArgs
+        )
+      );
+
+    returnValues = abi.decode(result, (ReturnValues));
+  }
 
   /// @notice Gets the OCLR implementation address stored under an id
   /// @param identifier: string identifier of the OCLR implementation.
