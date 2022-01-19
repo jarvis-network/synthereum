@@ -42,5 +42,10 @@
     "isEnabled": true,
     "Pool": 5,
     "SynthToken": {}
+  },
+  "250": {
+    "isEnabled": true,
+    "Pool": 5,
+    "SynthToken": {}
   }
 }

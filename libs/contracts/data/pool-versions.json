@@ -52,5 +52,11 @@
       "version": 5,
       "isEnabled": true
     }
+  },
+  "250": {
+    "LiquidityPoolFactory": {
+      "version": 5,
+      "isEnabled": true
+    }
   }
 }

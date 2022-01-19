@@ -302,5 +302,17 @@
       "overCollateralization": "100000000000000000",
       "liquidationReward": "700000000000000000"
     }
+  ],
+  "250": [
+    {
+      "syntheticName": "Jarvis Synthetic Euro",
+      "syntheticSymbol": "jEUR",
+      "priceFeedIdentifier": "EURUSD",
+      "collateralRequirement": "1025000000000000000",
+      "minSponsorTokens": "",
+      "capMintAmount": "",
+      "overCollateralization": "100000000000000000",
+      "liquidationReward": "700000000000000000"
+    }
   ]
 }
