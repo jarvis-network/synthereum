@@ -9,9 +9,10 @@ if (typeof process !== 'undefined') {
 
 const {
   INFURA_PROJECT_ID,
-  BSC_PROJECT_ID,
+  MORALIS_PROJECT_ID,
   DEV_MNEMONIC,
   ETHERSCAN_API_KEY,
+  FANTOM_API_KEY,
 } = process.env;
 
 export const env = {
@@ -22,8 +23,10 @@ export const env = {
     DEV_MNEMONIC,
   },
   infuraProjectId: INFURA_PROJECT_ID,
-  bscProjectId: BSC_PROJECT_ID,
+  moralisId: MORALIS_PROJECT_ID,
   apiKeys: {
     etherscan: ETHERSCAN_API_KEY,
+    ftmTestnet: FANTOM_API_KEY,
+    fantom: FANTOM_API_KEY,
   },
 };

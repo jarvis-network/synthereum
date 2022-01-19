@@ -23,18 +23,16 @@ export function getInfuraEndpoint<Net extends Network>(
   }/v3/${projectId}` as ValueOnNetwork<string, Net>;
 }
 
-export function getBSCEndpoint<Net extends Network>(
+export function getMoralisEndpoint<Net extends Network>(
   network: Net,
   protocol: Protocol = 'https',
-  projectId = env.bscProjectId,
+  projectId = env.moralisId,
 ): ValueOnNetwork<string, Net> {
   const networkName = toNetworkName(network);
   const endpoint =
     networkName === 'bsc'
       ? `speedy-nodes-nyc.moralis.io/${projectId}/bsc/mainnet`
-      : networkName === 'bscTestnet'
-      ? `speedy-nodes-nyc.moralis.io/${projectId}/bsc/testnet`
-      : networkName;
+      : `speedy-nodes-nyc.moralis.io/${projectId}/bsc/testnet`;
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 
@@ -45,6 +43,22 @@ export function getXDAIEndpoint<Net extends Network>(
   const networkName = toNetworkName(network);
   const endpoint =
     networkName === 'xDAI' ? 'rpc.xdaichain.com/' : 'sokol.poa.network';
+  return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
+}
+
+export function getFantomTestnetEndpoint<Net extends Network>(
+  network: Net,
+  protocol: Protocol = 'https',
+): ValueOnNetwork<string, Net> {
+  const endpoint = 'rpc.testnet.fantom.network';
+  return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
+}
+
+export function getFantomOperaEndpoint<Net extends Network>(
+  network: Net,
+  protocol: Protocol = 'https',
+): ValueOnNetwork<string, Net> {
+  const endpoint = 'rpc.ftm.tools';
   return `${protocol}://${endpoint}` as ValueOnNetwork<string, Net>;
 }
 
