@@ -11,3 +11,6 @@ import {
 import {
   PoolMock
 } from '@jarvis-network/synthereum-contracts/contracts/test/PoolMock.sol';
+import {
+  TestnetERC20
+} from '@jarvis-network/synthereum-contracts/contracts/test/TestnetERC20.sol';
