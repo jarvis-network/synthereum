@@ -17,7 +17,9 @@ const IUniswapRouter = artifacts.require(
 const PoolMock = artifacts.require('PoolMock');
 const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 
-const TestnetERC20 = artifacts.require('TestnetERC20');
+const TestnetERC20 = artifacts.require(
+  '@jarvis-network/synthereum-contracts/contracts/test/TestnetERC20.sol:TestnetERC20',
+);
 const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
 
 const tokens = require('../../data/test/tokens.json');
