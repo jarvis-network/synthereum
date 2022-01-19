@@ -1,0 +1,17 @@
+[
+  {
+    "contractName": "SynthereumFinder",
+    "address": "0x8f0Bf7DD7d235A5d784Dd68f8e14E14964418EE5",
+    "transactionHash": "0x629902078abb8c6892387f593e7fd6788a42b957a88df9ad8aaa800b14547d96"
+  },
+  {
+    "contractName": "SynthereumDeployer",
+    "address": "0x80d629cf2D775cB9b97c4A95Fe2269e0E8459d3A",
+    "transactionHash": "0x851772dc33b13a4183d42b0d875da4a2e4999e4a8c68673f0e23c8e89af965bc"
+  },
+  {
+    "contractName": "SynthereumFinder",
+    "address": "0x43a98e5C4A7F3B7f11080fc9D58b0B8A80cA954e",
+    "transactionHash": "0x0e43ec4c33e17f8815e31f8047eb92b05c7b00759cbe2a671ccb962d7aea3a3e"
+  }
+]
