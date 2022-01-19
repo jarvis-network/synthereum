@@ -17,16 +17,22 @@ fi
 
 if [ "$network" == "bsc" ]; then
     networkId=56
-    endpoint="https://speedy-nodes-nyc.moralis.io/$BSC_PROJECT_ID/bsc/mainnet"
+    endpoint="https://speedy-nodes-nyc.moralis.io/$MORALIS_PROJECT_ID/bsc/mainnet"
 elif [ "$network" == "bscTestnet" ]; then
     networkId=97
-    endpoint="https://speedy-nodes-nyc.moralis.io/$BSC_PROJECT_ID/bsc/testnet"
+    endpoint="https://speedy-nodes-nyc.moralis.io/$MORALIS_PROJECT_ID/bsc/testnet"
 elif [ "$network" == "sokol" ]; then
     networkId=77
     endpoint='https://sokol.poa.network'
 elif [ "$network" == "xDAI" ]; then
     networkId=100
     endpoint='https://rpc.xdaichain.com/'
+elif [ "$network" == "fantomTestnet" ]; then
+    networkId=4002
+    endpoint="https://rpc.testnet.fantom.network"
+elif [ "$network" == "fantom" ]; then
+    networkId=250
+    endpoint="https://speedy-nodes-nyc.moralis.io/$MORALIS_PROJECT_ID/fantom/mainnet"
 else
     if [ "$network" = "kovan" ]; then
         networkId=42
