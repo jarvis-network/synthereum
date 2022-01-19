@@ -11,8 +11,10 @@ import {
 import { throwError } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
   getInfuraEndpoint,
-  getBSCEndpoint,
   getXDAIEndpoint,
+  getMoralisEndpoint,
+  getFantomTestnetEndpoint,
+  getFantomOperaEndpoint,
 } from '@jarvis-network/core-utils/dist/apis/infura';
 
 export function addPublicNetwork(
@@ -28,7 +30,11 @@ export function addPublicNetwork(
       process.env.RPC_URL ?? (chainId === 77 || chainId === 100)
         ? getXDAIEndpoint(chainId, 'https')
         : chainId === 56 || chainId === 97
-        ? getBSCEndpoint(chainId, 'https', projectId)
+        ? getMoralisEndpoint(chainId, 'https', projectId)
+        : chainId === 250
+        ? getFantomOperaEndpoint(chainId, 'https')
+        : chainId === 4002
+        ? getFantomTestnetEndpoint(chainId, 'https')
         : getInfuraEndpoint(chainId, 'https', projectId),
     accounts: {
       mnemonic:
