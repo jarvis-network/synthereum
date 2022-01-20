@@ -39,6 +39,7 @@ contract FixedRateSwap {
     //reverts if the interface is not implemented
     ISynthereumFixedRateWrapper fixedRateWrapper =
       ISynthereumFixedRateWrapper(outputAsset);
+    IERC20 collateralToken = fixedRateWrapper.collateralToken();
 
     if (!fromERC20) {
       // jSynth -> pegSynth -> fixedRate
@@ -49,7 +50,7 @@ contract FixedRateSwap {
       // check target synth and pool are compatible
       require(
         checkSynth(
-          fixedRateWrapper.collateralToken(),
+          collateralToken,
           ISynthereumLiquidityPool(address(params.exchangeParams.destPool))
         ),
         'Pool and jSynth mismatch'
@@ -69,7 +70,7 @@ contract FixedRateSwap {
         params.inputSynthereumPool.syntheticToken()
       );
       returnValues.inputAmount = params.exchangeParams.numTokens;
-      returnValues.outputToken = outputAsset;
+      returnValues.outputToken = address(fixedRateWrapper.syntheticToken());
     } else {
       // erc20 -> pegSynth (through atomicSwap swapAndMint implementation) -> fixedRate
       // decode into SwapMintPeg params
@@ -77,7 +78,6 @@ contract FixedRateSwap {
         decodeToSwapMintParams(operationArgs);
 
       // check target synth is compatible with the pool
-      IERC20 collateralToken = fixedRateWrapper.collateralToken();
       require(
         checkSynth(collateralToken, params.mintParams.synthereumPool),
         'Pool and jSynth mismatch'
@@ -100,11 +100,13 @@ contract FixedRateSwap {
         returnValues.outputAmount,
         recipient
       );
+      returnValues.outputToken = address(fixedRateWrapper.syntheticToken());
     }
   }
 
   function unwrapTo(
     bool toERC20,
+    address msgSender,
     address OCLRImplementation,
     bytes memory implementationInfo,
     uint256 inputAmount,
@@ -118,8 +120,17 @@ contract FixedRateSwap {
     ISynthereumFixedRateWrapper fixedRateWrapper =
       ISynthereumFixedRateWrapper(inputAsset);
 
-    // unwrap to jSynth to this contract
-    fixedRateWrapper.unwrap(inputAmount, address(this));
+    IERC20 collateralToken = fixedRateWrapper.collateralToken();
+    IERC20 fixedRateToken = fixedRateWrapper.syntheticToken();
+
+    // pull and unwrap fixedRate to jSynth to this contract
+    fixedRateToken.safeTransferFrom(msgSender, address(this), inputAmount);
+    fixedRateToken.safeIncreaseAllowance(
+      address(fixedRateWrapper),
+      inputAmount
+    );
+    uint256 pegSynthAmountOut =
+      fixedRateWrapper.unwrap(inputAmount, address(this));
 
     if (toERC20) {
       // fixedRte -> pegSynth -> erc20 (through redeemAndSwap)
@@ -132,14 +143,17 @@ contract FixedRateSwap {
 
       // check pegSynth and pool are compatible
       require(
-        checkSynth(
-          fixedRateWrapper.collateralToken(),
-          params.redeemParams.synthereumPool
-        ),
+        checkSynth(collateralToken, params.redeemParams.synthereumPool),
         'Pool and jSynth mismatch'
       );
 
-      // delegate call the implementation swapAndMint with the recipient being the final recipient
+      // approve AtomicSwap to pull pegSynth
+      collateralToken.safeIncreaseAllowance(address(this), pegSynthAmountOut);
+
+      // delegate call the implementation redeem and swap with the recipient being the final recipient
+      params.redeemParams.redeemParams.numTokens = pegSynthAmountOut;
+      params.redeemSwapParams.msgSender = address(this);
+
       returnValues = delegateCallRedeemSwap(
         OCLRImplementation,
         implementationInfo,
@@ -153,21 +167,19 @@ contract FixedRateSwap {
 
       // check input synth and pool are compatible
       require(
-        checkSynth(
-          fixedRateWrapper.collateralToken(),
-          params.inputSynthereumPool
-        ),
+        checkSynth(collateralToken, params.inputSynthereumPool),
         'Pool and jSynth mismatch'
       );
 
       // perform a pool exchange to with recipient being the final one
+      params.exchangeParams.numTokens = pegSynthAmountOut;
       (returnValues.outputAmount, ) = params.inputSynthereumPool.exchange(
         params.exchangeParams
       );
     }
 
     returnValues.inputAmount = inputAmount;
-    returnValues.inputToken = inputAsset;
+    returnValues.inputToken = address(fixedRateToken);
   }
 
   function decodeToExchangeParams(bytes memory args)
