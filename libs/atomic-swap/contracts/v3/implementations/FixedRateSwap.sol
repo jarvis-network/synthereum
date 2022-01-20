@@ -40,6 +40,7 @@ contract FixedRateSwap {
     ISynthereumFixedRateWrapper fixedRateWrapper =
       ISynthereumFixedRateWrapper(outputAsset);
     IERC20 collateralToken = fixedRateWrapper.collateralToken();
+    IERC20 syntheticToken = fixedRateWrapper.syntheticToken();
 
     if (!fromERC20) {
       // jSynth -> pegSynth -> fixedRate
@@ -66,13 +67,16 @@ contract FixedRateSwap {
         pegSynthAmount,
         recipient
       );
+
+      // set return values
       returnValues.inputToken = address(
         params.inputSynthereumPool.syntheticToken()
       );
       returnValues.inputAmount = params.exchangeParams.numTokens;
-      returnValues.outputToken = address(fixedRateWrapper.syntheticToken());
+      returnValues.outputToken = address(syntheticToken);
     } else {
       // erc20 -> pegSynth (through atomicSwap swapAndMint implementation) -> fixedRate
+
       // decode into SwapMintPeg params
       IOnChainLiquidityRouterV2.SwapMintPegParams memory params =
         decodeToSwapMintParams(operationArgs);
@@ -100,7 +104,9 @@ contract FixedRateSwap {
         returnValues.outputAmount,
         recipient
       );
-      returnValues.outputToken = address(fixedRateWrapper.syntheticToken());
+
+      // set returnValues
+      returnValues.outputToken = address(syntheticToken);
     }
   }
 
