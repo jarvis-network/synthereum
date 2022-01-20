@@ -43,6 +43,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
     jBGNInstance,
     fixedRateWrapperInstance,
     proxyInstance,
+    atomicSwapAddr,
     forwarderInstance,
     finderInstance;
   let deadline = ((Date.now() / 1000) | 0) + 7200;
@@ -122,6 +123,9 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
 
     // get deployed Proxy
     proxyInstance = await Proxy.deployed();
+    atomicSwapAddr = await proxyInstance.getImplementationAddress.call(
+      implementationID,
+    );
 
     // deploy FixedRate with jEUr as collateral
     jBGNInstance = await SyntheticToken.new(
@@ -146,9 +150,12 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
     await jBGNInstance.addMinter(fixedRateWrapperInstance.address, {
       from: admin,
     });
+    await jBGNInstance.addBurner(fixedRateWrapperInstance.address, {
+      from: admin,
+    });
   });
 
-  it('reads', async () => {
+  it('Fixed Rate deployment', async () => {
     assert.equal(
       jEURAddress.toLowerCase(),
       (await fixedRateWrapperInstance.collateralToken.call()).toLowerCase(),
@@ -254,17 +261,15 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       let jBGNOut;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
         jBGNOut = ev.outputAmount;
-        return true;
-        // return (
-        //   ev.outputAmount > 0 &&
-        //   ev.inputAmount.toString() == tokenAmountIn &&
-        //   ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
-        //   ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
-        //   ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-        //   ev.collateralAmountRefunded.toString() == 0 &&
-        //   ev.dexImplementationAddress.toLowerCase() ==
-        //     AtomicSwapInstance.address.toLowerCase()
-        // );
+        return (
+          ev.inputAmount.toString() == tokenAmountIn.toString() &&
+          ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            atomicSwapAddr.toLowerCase()
+        );
       });
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
@@ -277,6 +282,135 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
       assert.equal(
         jBGNBalanceBefore.add(jBGNOut).toString(),
+        jBGNBalanceAfter.toString(),
+      );
+    });
+  });
+
+  describe('unwrapFixedRateTo - ERC20', async () => {
+    it('correctly swaps Fixed Rate into ERC20', async () => {
+      let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
+      tokenAmountIn = tokenAmountIn.divn(4);
+      const tokenPathSwap = [USDCAddress, WETHAddress, WBTCAddress];
+
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]'],
+        [tokenPathSwap],
+      );
+
+      const synthereumRedeemParams = {
+        synthereumFinder: synthereumFinderAddress,
+        synthereumPool: pool,
+        redeemParams: {
+          numTokens: 0,
+          minCollateral: 0,
+          expiration: deadline,
+          recipient: user,
+        },
+      };
+
+      const redeemSwapParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: fixedRateSwapInstance.address,
+      };
+
+      let encodedParams = web3.eth.abi.encodeParameters(
+        [
+          {
+            RedeemPegSwapParams: {
+              recipient: 'address',
+              redeemSwapParams: {
+                isExactInput: 'bool',
+                unwrapToETH: 'bool',
+                exactAmount: 'uint256',
+                minOutOrMaxIn: 'uint256',
+                extraParams: 'bytes',
+                msgSender: 'address',
+              },
+              redeemParams: {
+                synthereumFinder: 'address',
+                synthereumPool: 'address',
+                redeemParams: {
+                  numTokens: 'uint256',
+                  minCollateral: 'uint256',
+                  expiration: 'uint256',
+                  recipient: 'address',
+                },
+              },
+            },
+          },
+        ],
+        [
+          {
+            recipient: user,
+            redeemSwapParams: {
+              isExactInput: redeemSwapParams.isExactInput,
+              unwrapToETH: redeemSwapParams.unwrapToETH,
+              exactAmount: redeemSwapParams.exactAmount,
+              minOutOrMaxIn: redeemSwapParams.minOutOrMaxIn,
+              extraParams: redeemSwapParams.extraParams,
+              msgSender: redeemSwapParams.msgSender,
+            },
+            redeemParams: {
+              synthereumFinder: synthereumRedeemParams.synthereumFinder,
+              synthereumPool: synthereumRedeemParams.synthereumPool,
+              redeemParams: {
+                numTokens: synthereumRedeemParams.redeemParams.numTokens,
+                minCollateral:
+                  synthereumRedeemParams.redeemParams.minCollateral,
+                expiration: synthereumRedeemParams.redeemParams.expiration,
+                recipient: synthereumRedeemParams.redeemParams.recipient,
+              },
+            },
+          },
+        ],
+      );
+
+      let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(user);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+      let jBGNBalanceBefore = await jBGNInstance.balanceOf.call(user);
+
+      // approve proxy to pull tokens
+      await jBGNInstance.approve(proxyInstance.address, tokenAmountIn, {
+        from: user,
+      });
+      let tx = await proxyInstance.unwrapFixedRateTo(
+        true,
+        implementationID,
+        fixedRateWrapperInstance.address,
+        tokenAmountIn,
+        encodedParams,
+        { from: user },
+      );
+      let WBTCOut;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        WBTCOut = ev.outputAmount;
+        return (
+          ev.inputAmount.toString() == tokenAmountIn.toString() &&
+          ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            atomicSwapAddr.toLowerCase()
+        );
+      });
+      let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+      let jBGNBalanceAfter = await jBGNInstance.balanceOf.call(user);
+
+      assert.equal(
+        WBTCbalanceBefore.add(WBTCOut).toString(),
+        WBTCbalanceAfter.toString(),
+      );
+      assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
+      assert.equal(
+        jBGNBalanceBefore.sub(tokenAmountIn).toString(),
         jBGNBalanceAfter.toString(),
       );
     });
