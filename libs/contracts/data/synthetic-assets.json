@@ -217,9 +217,9 @@
   ],
   "3": [
     {
-      "syntheticName": "Jarvis Synthetic Euro",
-      "syntheticSymbol": "jEUR",
-      "priceFeedIdentifier": "EURUSD",
+      "syntheticName": "Jarvis Synthetic British Pound",
+      "syntheticSymbol": "jGBP",
+      "priceFeedIdentifier": "GBPUSD",
       "collateralRequirement": "1050000000000000000",
       "minSponsorTokens": "",
       "capMintAmount": "",
