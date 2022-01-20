@@ -40,7 +40,7 @@ contract FixedRateSwap {
     //reverts if the interface is not implemented
     ISynthereumFixedRateWrapper fixedRateWrapper =
       ISynthereumFixedRateWrapper(outputAsset);
-    IERC20 collateralToken = fixedRateWrapper.collateralToken();
+    IERC20 pegToken = fixedRateWrapper.collateralToken();
     IERC20 syntheticToken = fixedRateWrapper.syntheticToken();
 
     if (!fromERC20) {
@@ -52,16 +52,21 @@ contract FixedRateSwap {
       // check target synth and pool are compatible
       require(
         checkSynth(
-          collateralToken,
+          pegToken,
           ISynthereumLiquidityPool(address(params.exchangeParams.destPool))
         ),
         'Pool and jSynth mismatch'
       );
 
-      // pull input jSynth
-      collateralToken.safeTransferFrom(
+      // pull input jSynth and approve pool
+      IERC20 inputSynth = params.inputSynthereumPool.syntheticToken();
+      inputSynth.safeTransferFrom(
         msgSender,
         address(this),
+        params.exchangeParams.numTokens
+      );
+      inputSynth.safeIncreaseAllowance(
+        address(params.inputSynthereumPool),
         params.exchangeParams.numTokens
       );
 
@@ -71,15 +76,17 @@ contract FixedRateSwap {
         params.inputSynthereumPool.exchange(params.exchangeParams);
 
       // wrap jSynth into fixedRate and send them to final recipient
+      pegToken.safeIncreaseAllowance(address(fixedRateWrapper), pegSynthAmount);
       returnValues.outputAmount = fixedRateWrapper.wrap(
         pegSynthAmount,
         recipient
       );
 
       // set return values
-      returnValues.inputToken = address(
-        params.inputSynthereumPool.syntheticToken()
+      returnValues.collateralToken = address(
+        params.inputSynthereumPool.collateralToken()
       );
+      returnValues.inputToken = address(inputSynth);
       returnValues.inputAmount = params.exchangeParams.numTokens;
       returnValues.outputToken = address(syntheticToken);
     } else {
@@ -91,7 +98,7 @@ contract FixedRateSwap {
 
       // check target synth is compatible with the pool
       require(
-        checkSynth(collateralToken, params.mintParams.synthereumPool),
+        checkSynth(pegToken, params.mintParams.synthereumPool),
         'Pool and jSynth mismatch'
       );
 
@@ -104,7 +111,7 @@ contract FixedRateSwap {
       );
 
       // wrap jSynth into fixedRate and send them to final recipient
-      collateralToken.safeIncreaseAllowance(
+      pegToken.safeIncreaseAllowance(
         address(fixedRateWrapper),
         returnValues.outputAmount
       );
@@ -134,7 +141,7 @@ contract FixedRateSwap {
     ISynthereumFixedRateWrapper fixedRateWrapper =
       ISynthereumFixedRateWrapper(inputAsset);
 
-    IERC20 collateralToken = fixedRateWrapper.collateralToken();
+    IERC20 pegToken = fixedRateWrapper.collateralToken();
     IERC20 fixedRateToken = fixedRateWrapper.syntheticToken();
 
     // pull and unwrap fixedRate to jSynth to this contract
@@ -157,12 +164,12 @@ contract FixedRateSwap {
 
       // check pegSynth and pool are compatible
       require(
-        checkSynth(collateralToken, params.redeemParams.synthereumPool),
+        checkSynth(pegToken, params.redeemParams.synthereumPool),
         'Pool and jSynth mismatch'
       );
 
       // approve AtomicSwap to pull pegSynth
-      collateralToken.safeIncreaseAllowance(address(this), pegSynthAmountOut);
+      pegToken.safeIncreaseAllowance(address(this), pegSynthAmountOut);
 
       // delegate call the implementation redeem and swap with the recipient being the final recipient
       params.redeemParams.redeemParams.numTokens = pegSynthAmountOut;
@@ -181,7 +188,7 @@ contract FixedRateSwap {
 
       // check input synth and pool are compatible
       require(
-        checkSynth(collateralToken, params.inputSynthereumPool),
+        checkSynth(pegToken, params.inputSynthereumPool),
         'Pool and jSynth mismatch'
       );
 
