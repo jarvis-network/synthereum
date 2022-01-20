@@ -27,6 +27,7 @@ contract FixedRateSwap {
 
   function wrapFrom(
     bool fromERC20,
+    address msgSender,
     address OCLRImplementation,
     address outputAsset,
     address recipient,
@@ -55,6 +56,13 @@ contract FixedRateSwap {
           ISynthereumLiquidityPool(address(params.exchangeParams.destPool))
         ),
         'Pool and jSynth mismatch'
+      );
+
+      // pull input jSynth
+      collateralToken.safeTransferFrom(
+        msgSender,
+        address(this),
+        params.exchangeParams.numTokens
       );
 
       // perform a pool exchange to with recipient being this contract
