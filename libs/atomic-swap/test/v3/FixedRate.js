@@ -389,6 +389,19 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         'Pool and jSynth mismatch',
       );
     });
+    it('reverts with bad implementationID', async () => {
+      await truffleAssert.reverts(
+        proxyInstance.wrapFixedRateFrom(
+          true,
+          'badID',
+          fixedRateWrapperInstance.address,
+          web3Utils.utf8ToHex('encodedParams'),
+          user,
+          { from: user },
+        ),
+        'Implementation id not registered',
+      );
+    });
   });
 
   describe('unwrapFixedRateTo - ERC20', async () => {
@@ -642,6 +655,19 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       assert.equal(
         jBGNBalanceBefore.sub(tokenAmountIn).toString(),
         jBGNBalanceAfter.toString(),
+      );
+    });
+    it('reverts with bad implementationID', async () => {
+      await truffleAssert.reverts(
+        proxyInstance.unwrapFixedRateTo(
+          true,
+          'badID',
+          jBGNInstance.address,
+          10,
+          web3Utils.utf8ToHex('encodedParams'),
+          { from: user },
+        ),
+        'Implementation id not registered',
       );
     });
   });
