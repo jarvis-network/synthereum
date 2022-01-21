@@ -5375,7 +5375,6 @@ __metadata:
   resolution: "@jarvis-network/atomic-swap@workspace:libs/atomic-swap"
   dependencies:
     "@jarvis-network/synthereum-contracts": "*"
-    "@nomiclabs/hardhat-etherscan": ^2.1.4
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@openzeppelin/contracts": 4.1.0
@@ -5539,6 +5538,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jarvis-network/hardhat-utils@workspace:libs/hardhat-utils"
   dependencies:
+    "@nomiclabs/hardhat-etherscan": ^3.0.0
     truffle-deploy-registry: ^0.5.1
   languageName: unknown
   linkType: soft
@@ -5547,7 +5547,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jarvis-network/jrt-investors@workspace:libs/jrt-investors"
   dependencies:
-    "@nomiclabs/hardhat-etherscan": ^2.1.4
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@openzeppelin/contracts": 4.1.0
@@ -5559,7 +5558,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jarvis-network/legacy-currency-contracts@workspace:libs/legacy-currency-contracts"
   dependencies:
-    "@nomiclabs/hardhat-etherscan": ^2.1.4
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@openzeppelin/contracts": 4.1.0
@@ -5616,7 +5614,6 @@ __metadata:
     "@jarvis-network/crypto-utils": "*"
     "@jarvis-network/hardhat-utils": "*"
     "@jarvis-network/sol2ts-code-gen": "*"
-    "@nomiclabs/hardhat-etherscan": ^2.1.4
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@openzeppelin/contracts": 4.1.0
@@ -5816,7 +5813,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jarvis-network/yield-farming@workspace:libs/yield-farming"
   dependencies:
-    "@nomiclabs/hardhat-etherscan": ^2.1.4
     "@nomiclabs/hardhat-truffle5": ^2.0.0
     "@nomiclabs/hardhat-web3": ^2.0.0
     "@openzeppelin/contracts": 4.1.0
@@ -6797,6 +6793,23 @@ __metadata:
   peerDependencies:
     hardhat: ^2.0.4
   checksum: fd938a9e40b272917cf1a55479fa6cbdb1caa831edf234f5de97ab28f887d2d6641164f01380c8be0dc39d22615b2dce470bc5e1978a43c0076980ac71bfe4c6
+  languageName: node
+  linkType: hard
+
+"@nomiclabs/hardhat-etherscan@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@nomiclabs/hardhat-etherscan@npm:3.0.0::__archiveUrl=https%3A%2F%2Fregistry.npmjs.org%2F%40nomiclabs%2Fhardhat-etherscan%2F-%2Fhardhat-etherscan-3.0.0.tgz"
+  dependencies:
+    "@ethersproject/abi": ^5.1.2
+    "@ethersproject/address": ^5.0.2
+    cbor: ^5.0.2
+    debug: ^4.1.1
+    fs-extra: ^7.0.1
+    node-fetch: ^2.6.0
+    semver: ^6.3.0
+  peerDependencies:
+    hardhat: ^2.0.4
+  checksum: 79c6f9a399f9bd09b2335e89846cf1dc245bfab53358963edcf53ca0886ac120e578cd2a176396ab42d0998c25f8d41124be55877e65eb2763669d2b74a21ef6
   languageName: node
   linkType: hard
 

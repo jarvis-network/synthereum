@@ -17,5 +17,8 @@
   },
   "devDependencies": {
     "truffle-deploy-registry": "^0.5.1"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.0.0"
   }
 }

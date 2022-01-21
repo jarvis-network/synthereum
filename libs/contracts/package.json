@@ -35,7 +35,6 @@
     "@jarvis-network/crypto-utils": "*",
     "@jarvis-network/hardhat-utils": "*",
     "@jarvis-network/sol2ts-code-gen": "*",
-    "@nomiclabs/hardhat-etherscan": "^2.1.4",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts": "4.1.0",
