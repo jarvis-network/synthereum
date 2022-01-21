@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
+import { addEtherscanApiKeys } from '@jarvis-network/hardhat-utils/dist/etherscan';
 
 import '@nomiclabs/hardhat-truffle5';
 import 'solidity-coverage';
 import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
-import '@nomiclabs/hardhat-etherscan';
 
 require('dotenv').config();
 
@@ -37,10 +37,9 @@ const config = {
   mocha: {
     timeout: 1800000,
   },
-  etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
-  },
 };
+
+addEtherscanApiKeys(config);
 
 addPublicNetwork(config, 1, process.env.ETHEREUM_PROJECT_ID!);
 addPublicNetwork(config, 42, process.env.ETHEREUM_PROJECT_ID!);

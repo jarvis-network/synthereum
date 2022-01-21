@@ -4,12 +4,12 @@ import {
   addPublicNetwork,
   setForkingUrl,
 } from '@jarvis-network/hardhat-utils/dist/networks';
+import { addEtherscanApiKeys } from '@jarvis-network/hardhat-utils/dist/etherscan';
 
 import '@nomiclabs/hardhat-truffle5';
 import 'solidity-coverage';
 import 'hardhat-gas-reporter';
 import '@nomiclabs/hardhat-web3';
-import '@nomiclabs/hardhat-etherscan';
 
 require('dotenv').config();
 
@@ -40,10 +40,9 @@ const config = {
   mocha: {
     timeout: 1800000,
   },
-  etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
-  },
 };
+
+addEtherscanApiKeys(config);
 
 // set hardat forking
 if (process.env.FORKCHAINID !== undefined) {
