@@ -185,20 +185,26 @@ contract FixedRateSwap {
       // decode params
       IOnChainLiquidityRouterV2.SynthereumExchangeParams memory params =
         decodeToExchangeParams(operationArgs);
+      ISynthereumLiquidityPool inputPool = params.inputSynthereumPool;
 
       // check input synth and pool are compatible
-      require(
-        checkSynth(pegToken, params.inputSynthereumPool),
-        'Pool and jSynth mismatch'
-      );
+      require(checkSynth(pegToken, inputPool), 'Pool and jSynth mismatch');
+
+      // approve pool
+      pegToken.safeIncreaseAllowance(address(inputPool), pegSynthAmountOut);
 
       // perform a pool exchange to with recipient being the final one
       params.exchangeParams.numTokens = pegSynthAmountOut;
-      (returnValues.outputAmount, ) = params.inputSynthereumPool.exchange(
-        params.exchangeParams
+      (returnValues.outputAmount, ) = inputPool.exchange(params.exchangeParams);
+
+      // set return values
+      returnValues.collateralToken = address(inputPool.collateralToken());
+      returnValues.outputToken = address(
+        params.exchangeParams.destPool.syntheticToken()
       );
     }
 
+    // set return values
     returnValues.inputAmount = inputAmount;
     returnValues.inputToken = address(fixedRateToken);
   }

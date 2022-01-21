@@ -409,7 +409,6 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       );
     });
   });
-
   describe('wrapFixedRateFrom - jSynth', async () => {
     it('correctly swaps jSynth into FixedRate via pool exchange', async () => {
       // mint jBGP
@@ -528,7 +527,57 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         jBGNBalanceAfter.toString(),
       );
     });
+    it('reverts with pool and peg token mismatch', async () => {
+      let jGBPBalanceBefore = await jGBPInstance.balanceOf.call(user);
+      let jGBPInput = jGBPBalanceBefore.divn(2);
+
+      let encodedParams = web3.eth.abi.encodeParameters(
+        [
+          {
+            SynthereumExchangeParams: {
+              inputSynthereumPool: 'address',
+              exchangeParams: {
+                destPool: 'address',
+                numTokens: 'uint256',
+                minDestNumTokens: 'uint256',
+                expiration: 'uint256',
+                recipient: 'address',
+              },
+            },
+          },
+        ],
+        [
+          {
+            inputSynthereumPool: jGBPPool,
+            exchangeParams: {
+              destPool: poolMock.address,
+              numTokens: jGBPInput.toString(),
+              minDestNumTokens: 0,
+              expiration: deadline,
+              recipient: user,
+            },
+          },
+        ],
+      );
+
+      // approve proxy
+      await jGBPInstance.approve(proxyInstance.address, jGBPInput, {
+        from: user,
+      });
+      await truffleAssert.reverts(
+        proxyInstance.wrapFixedRateFrom(
+          false,
+          implementationID,
+          fixedRateWrapperInstance.address,
+          encodedParams,
+          user,
+          { from: user },
+        ),
+        'Pool and jSynth mismatch',
+      );
+    });
   });
+
   describe('unwrapFixedRateTo - ERC20', async () => {
     it('correctly swaps Fixed Rate into ERC20', async () => {
       let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
@@ -656,7 +705,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         jBGNBalanceAfter.toString(),
       );
     });
-    it('correctly swaps Fixed Rate into ERC20', async () => {
+    it('reverts with pool and peg token mismatch', async () => {
       let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
       tokenAmountIn = tokenAmountIn.divn(4);
       const tokenPathSwap = [USDCAddress, WETHAddress, WBTCAddress];
@@ -726,7 +775,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
             },
             redeemParams: {
               synthereumFinder: synthereumRedeemParams.synthereumFinder,
-              synthereumPool: synthereumRedeemParams.synthereumPool,
+              synthereumPool: poolMock.address,
               redeemParams: {
                 numTokens: synthereumRedeemParams.redeemParams.numTokens,
                 minCollateral:
@@ -738,43 +787,106 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           },
         ],
       );
+      // approve proxy to pull tokens
+      await jBGNInstance.approve(proxyInstance.address, tokenAmountIn, {
+        from: user,
+      });
+      await truffleAssert.reverts(
+        proxyInstance.unwrapFixedRateTo(
+          true,
+          implementationID,
+          fixedRateWrapperInstance.address,
+          tokenAmountIn,
+          encodedParams,
+          { from: user },
+        ),
+        'Pool and jSynth mismatch',
+      );
+    });
+    it('reverts with bad implementationID', async () => {
+      await truffleAssert.reverts(
+        proxyInstance.unwrapFixedRateTo(
+          true,
+          'badID',
+          jBGNInstance.address,
+          10,
+          web3Utils.utf8ToHex('encodedParams'),
+          { from: user },
+        ),
+        'Implementation id not registered',
+      );
+    });
+  });
+  describe('unwrapFixedRateTo - jSynth', async () => {
+    it('correctly swaps Fixed Rate into any jSynth via pool exchange', async () => {
+      let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
+      tokenAmountIn = tokenAmountIn.divn(4);
 
-      let WBTCbalanceBefore = await WBTCInstance.balanceOf.call(user);
+      let encodedParams = web3.eth.abi.encodeParameters(
+        [
+          {
+            SynthereumExchangeParams: {
+              inputSynthereumPool: 'address',
+              exchangeParams: {
+                destPool: 'address',
+                numTokens: 'uint256',
+                minDestNumTokens: 'uint256',
+                expiration: 'uint256',
+                recipient: 'address',
+              },
+            },
+          },
+        ],
+        [
+          {
+            inputSynthereumPool: jEURPool,
+            exchangeParams: {
+              destPool: jGBPPool,
+              numTokens: tokenAmountIn.toString(),
+              minDestNumTokens: 0,
+              expiration: deadline,
+              recipient: user,
+            },
+          },
+        ],
+      );
+
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
       let jBGNBalanceBefore = await jBGNInstance.balanceOf.call(user);
+      let jGBPBalanceBefore = await jGBPInstance.balanceOf.call(user);
 
       // approve proxy to pull tokens
       await jBGNInstance.approve(proxyInstance.address, tokenAmountIn, {
         from: user,
       });
       let tx = await proxyInstance.unwrapFixedRateTo(
-        true,
+        false,
         implementationID,
         fixedRateWrapperInstance.address,
         tokenAmountIn,
         encodedParams,
         { from: user },
       );
-      let WBTCOut;
+      let jGBPOut;
       truffleAssert.eventEmitted(tx, 'Swap', ev => {
-        WBTCOut = ev.outputAmount;
+        jGBPOut = ev.outputAmount;
         return (
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
-          ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jGBPAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
         );
       });
-      let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
+      let jGBPBalanceAfter = await jGBPInstance.balanceOf.call(user);
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
       let jBGNBalanceAfter = await jBGNInstance.balanceOf.call(user);
 
       assert.equal(
-        WBTCbalanceBefore.add(WBTCOut).toString(),
-        WBTCbalanceAfter.toString(),
+        jGBPBalanceBefore.add(jGBPOut).toString(),
+        jGBPBalanceAfter.toString(),
       );
       assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
       assert.equal(
@@ -782,10 +894,59 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         jBGNBalanceAfter.toString(),
       );
     });
+    it('reverts with pool and peg token mismatch', async () => {
+      let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
+      tokenAmountIn = tokenAmountIn.divn(4);
+
+      let encodedParams = web3.eth.abi.encodeParameters(
+        [
+          {
+            SynthereumExchangeParams: {
+              inputSynthereumPool: 'address',
+              exchangeParams: {
+                destPool: 'address',
+                numTokens: 'uint256',
+                minDestNumTokens: 'uint256',
+                expiration: 'uint256',
+                recipient: 'address',
+              },
+            },
+          },
+        ],
+        [
+          {
+            inputSynthereumPool: poolMock.address,
+            exchangeParams: {
+              destPool: jGBPAddress,
+              numTokens: tokenAmountIn.toString(),
+              minDestNumTokens: 0,
+              expiration: deadline,
+              recipient: user,
+            },
+          },
+        ],
+      );
+
+      // approve proxy to pull tokens
+      await jBGNInstance.approve(proxyInstance.address, tokenAmountIn, {
+        from: user,
+      });
+      await truffleAssert.reverts(
+        proxyInstance.unwrapFixedRateTo(
+          false,
+          implementationID,
+          fixedRateWrapperInstance.address,
+          tokenAmountIn,
+          encodedParams,
+          { from: user },
+        ),
+        'Pool and jSynth mismatch',
+      );
+    });
     it('reverts with bad implementationID', async () => {
       await truffleAssert.reverts(
         proxyInstance.unwrapFixedRateTo(
-          true,
+          false,
           'badID',
           jBGNInstance.address,
           10,
