@@ -57,6 +57,11 @@ interface IOnChainLiquidityRouterV2 {
     SynthereumRedeemParams redeemParams;
   }
 
+  struct FixedRateSwapParams {
+    address inputAsset;
+    address outputAsset;
+  }
+
   // synthereum variables
   struct SynthereumMintParams {
     ISynthereumFinder synthereumFinder;
@@ -110,6 +115,7 @@ interface IOnChainLiquidityRouterV2 {
     bool toERC20,
     string memory implementationId,
     address inputAsset,
+    address outputAsset,
     uint256 inputAmount,
     bytes calldata operationArgs
   ) external returns (ReturnValues memory returnValues);
@@ -119,7 +125,8 @@ interface IOnChainLiquidityRouterV2 {
   function wrapFixedRateFrom(
     bool fromERC20,
     string memory implementationId,
-    address targetAsset,
+    address inputAsset,
+    address outputAsset,
     bytes calldata operationArgs,
     address recipient
   ) external returns (ReturnValues memory returnValues);
