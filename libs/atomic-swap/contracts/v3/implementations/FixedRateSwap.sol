@@ -29,6 +29,7 @@ contract FixedRateSwap {
     bool fromERC20,
     address msgSender,
     address OCLRImplementation,
+    address inputAsset,
     address outputAsset,
     address recipient,
     bytes calldata operationArgs,
@@ -90,8 +91,7 @@ contract FixedRateSwap {
       returnValues.inputAmount = params.exchangeParams.numTokens;
       returnValues.outputToken = address(syntheticToken);
     } else {
-      // erc20 -> pegSynth (through atomicSwap swapAndMint implementation) -> fixedRate
-
+      // erc20 -> pegSynth-> fixedRate
       // decode into SwapMintPeg params
       IOnChainLiquidityRouterV2.SwapMintPegParams memory params =
         decodeToSwapMintParams(operationArgs);
@@ -102,13 +102,42 @@ contract FixedRateSwap {
         'Pool and jSynth mismatch'
       );
 
-      // delegate call the implementation swapAndMint with the recipient being this contract
+      // set synthetic token recipient as this contract
       params.mintParams.mintParams.recipient = address(this);
-      returnValues = delegateCallSwapAndMint(
-        OCLRImplementation,
-        implementationInfo,
-        params
-      );
+
+      if (
+        inputAsset ==
+        address(params.mintParams.synthereumPool.collateralToken())
+      ) {
+        // collateral -> peg -> fixedRate
+        // pull collateral and approve pool
+        uint256 inputAmount = params.mintParams.mintParams.collateralAmount;
+        IERC20(inputAsset).safeTransferFrom(
+          msgSender,
+          address(this),
+          inputAmount
+        );
+        IERC20(inputAsset).safeIncreaseAllowance(
+          address(params.mintParams.synthereumPool),
+          inputAmount
+        );
+
+        // mint directly from the pools the peg synth
+        (returnValues.outputAmount, ) = params.mintParams.synthereumPool.mint(
+          params.mintParams.mintParams
+        );
+        returnValues.inputAmount = inputAmount;
+        returnValues.inputToken = inputAsset;
+        returnValues.collateralToken = inputAsset;
+      } else {
+        // erc20 -> collateral -> peg -> fixedRate
+        // delegate call the implementation swapAndMint
+        returnValues = delegateCallSwapAndMint(
+          OCLRImplementation,
+          implementationInfo,
+          params
+        );
+      }
 
       // wrap jSynth into fixedRate and send them to final recipient
       pegToken.safeIncreaseAllowance(
@@ -132,6 +161,7 @@ contract FixedRateSwap {
     bytes memory implementationInfo,
     uint256 inputAmount,
     address inputAsset,
+    address outputAsset,
     bytes calldata operationArgs
   )
     external
@@ -154,7 +184,7 @@ contract FixedRateSwap {
       fixedRateWrapper.unwrap(inputAmount, address(this));
 
     if (toERC20) {
-      // fixedRte -> pegSynth -> erc20 (through redeemAndSwap)
+      // fixedRte -> pegSynth -> erc20
       // decode params
       IOnChainLiquidityRouterV2.RedeemPegSwapParams memory params =
         abi.decode(
@@ -162,24 +192,34 @@ contract FixedRateSwap {
           (IOnChainLiquidityRouterV2.RedeemPegSwapParams)
         );
 
+      ISynthereumLiquidityPool redeemPool = params.redeemParams.synthereumPool;
       // check pegSynth and pool are compatible
-      require(
-        checkSynth(pegToken, params.redeemParams.synthereumPool),
-        'Pool and jSynth mismatch'
-      );
+      require(checkSynth(pegToken, redeemPool), 'Pool and jSynth mismatch');
 
-      // approve AtomicSwap to pull pegSynth
-      pegToken.safeIncreaseAllowance(address(this), pegSynthAmountOut);
-
-      // delegate call the implementation redeem and swap with the recipient being the final recipient
+      // set redeem params
       params.redeemParams.redeemParams.numTokens = pegSynthAmountOut;
       params.redeemSwapParams.msgSender = address(this);
 
-      returnValues = delegateCallRedeemSwap(
-        OCLRImplementation,
-        implementationInfo,
-        params
-      );
+      if (outputAsset == address(redeemPool.collateralToken())) {
+        // peg -> collateral through pool's redeem
+        pegToken.safeIncreaseAllowance(address(redeemPool), pegSynthAmountOut);
+        (returnValues.outputAmount, ) = redeemPool.redeem(
+          params.redeemParams.redeemParams
+        );
+        returnValues.outputToken = outputAsset;
+        returnValues.collateralToken = outputAsset;
+      } else {
+        // peg -> collateral -> erc20
+        // approve AtomicSwap to pull pegSynth
+        pegToken.safeIncreaseAllowance(address(this), pegSynthAmountOut);
+
+        // delegate call the implementation redeem and swap with the recipient being the final recipient
+        returnValues = delegateCallRedeemSwap(
+          OCLRImplementation,
+          implementationInfo,
+          params
+        );
+      }
     } else {
       // fixedRate -> pegSynth -> jSynth via exchange
       // decode params

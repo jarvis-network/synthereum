@@ -43,6 +43,10 @@ contract OnChainLiquidityRouterV2 is
   mapping(address => bytes) public dexImplementationInfo;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
+  string public constant UNWRAP_TO_SIG =
+    'unwrapTo(bool,address,address,bytes,uint256,address,address,bytes)';
+  string public constant WRAP_FROM_SIG =
+    'wrapFrom(bool,address,address,address,address,address,bytes,bytes)';
 
   ISynthereumFinder public synthereumFinder;
 
@@ -217,7 +221,8 @@ contract OnChainLiquidityRouterV2 is
   function wrapFixedRateFrom(
     bool fromERC20,
     string memory implementationId,
-    address targetAsset,
+    address inputAsset,
+    address outputAsset,
     bytes calldata operationArgs,
     address recipient
   ) external override returns (ReturnValues memory returnValues) {
@@ -226,17 +231,15 @@ contract OnChainLiquidityRouterV2 is
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
 
-    string memory functionSig =
-      'wrapFrom(bool,address,address,address,address,bytes,bytes)';
-
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
         abi.encodeWithSignature(
-          functionSig,
+          WRAP_FROM_SIG,
           fromERC20,
           _msgSender(),
           implementation,
-          targetAsset,
+          inputAsset,
+          outputAsset,
           recipient,
           operationArgs,
           dexImplementationInfo[implementation]
@@ -260,6 +263,7 @@ contract OnChainLiquidityRouterV2 is
     bool toERC20,
     string memory implementationId,
     address inputAsset,
+    address outputAsset,
     uint256 inputAmount,
     bytes calldata operationArgs
   ) external override returns (ReturnValues memory returnValues) {
@@ -268,19 +272,17 @@ contract OnChainLiquidityRouterV2 is
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
 
-    string memory functionSig =
-      'unwrapTo(bool,address,address,bytes,uint256,address,bytes)';
-
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
         abi.encodeWithSignature(
-          functionSig,
+          UNWRAP_TO_SIG,
           toERC20,
           _msgSender(),
           implementation,
           dexImplementationInfo[implementation],
           inputAmount,
           inputAsset,
+          outputAsset,
           operationArgs
         )
       );
