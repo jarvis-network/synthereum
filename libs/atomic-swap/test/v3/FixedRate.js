@@ -177,7 +177,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
   });
 
   describe('wrapFixedRateFrom - ERC20', async () => {
-    it('correctly swaps ERC20 into fixed rate', async () => {
+    it('correctly swaps ERC20 into fixed rate (swapAndMint + wrap)', async () => {
       const tokenAmountIn = web3Utils.toWei('10', 'wei');
       const tokenPathSwap = [WBTCAddress, WETHAddress, USDCAddress];
 
@@ -267,6 +267,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       let tx = await proxyInstance.wrapFixedRateFrom(
         true,
         implementationID,
+        WBTCAddress,
         fixedRateWrapperInstance.address,
         encodedParams,
         user,
@@ -292,6 +293,131 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       assert.equal(
         WBTCbalanceBefore.sub(web3Utils.toBN(tokenAmountIn)).toString(),
         WBTCbalanceAfter.toString(),
+      );
+      assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
+      assert.equal(
+        jBGNBalanceBefore.add(jBGNOut).toString(),
+        jBGNBalanceAfter.toString(),
+      );
+    });
+    it('correctly mint fixed rate from peg token collateral (mint + wrap)', async () => {
+      const tokenAmountIn = web3Utils.toWei('10', 'wei');
+
+      // the token swap path is not used in this case, might as well be set as empty bytes
+      const tokenPathSwap = [USDCAddress];
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]'],
+        [tokenPathSwap],
+      );
+
+      await getUSDC(amountETH, user);
+
+      const synthereumMintParams = {
+        synthereumFinder: synthereumFinderAddress,
+        synthereumPool: jEURPool,
+        mintParams: {
+          minNumTokens: 0,
+          collateralAmount: tokenAmountIn,
+          expiration: deadline,
+          recipient: user,
+        },
+      };
+
+      const swapMintParams = {
+        isExactInput: true,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: user,
+      };
+
+      let encodedParams = web3.eth.abi.encodeParameters(
+        [
+          {
+            SwapMintPegParams: {
+              swapMintParams: {
+                isExactInput: 'bool',
+                exactAmount: 'uint256',
+                minOutOrMaxIn: 'uint256',
+                extraParams: 'bytes',
+                msgSender: 'address',
+              },
+              mintParams: {
+                synthereumFinder: 'address',
+                synthereumPool: 'address',
+                mintParams: {
+                  minNumTokens: 'uint256',
+                  collateralAmount: 'uint256',
+                  expiration: 'uint256',
+                  recipient: 'address',
+                },
+              },
+            },
+          },
+        ],
+        [
+          {
+            swapMintParams: {
+              isExactInput: swapMintParams.isExactInput,
+              exactAmount: swapMintParams.exactAmount,
+              minOutOrMaxIn: swapMintParams.minOutOrMaxIn,
+              extraParams: swapMintParams.extraParams,
+              msgSender: swapMintParams.msgSender,
+            },
+            mintParams: {
+              synthereumFinder: synthereumMintParams.synthereumFinder,
+              synthereumPool: synthereumMintParams.synthereumPool,
+              mintParams: {
+                minNumTokens: synthereumMintParams.mintParams.minNumTokens,
+                collateralAmount:
+                  synthereumMintParams.mintParams.collateralAmount,
+                expiration: synthereumMintParams.mintParams.expiration,
+                recipient: synthereumMintParams.mintParams.recipient,
+              },
+            },
+          },
+        ],
+      );
+
+      let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+      let jBGNBalanceBefore = await jBGNInstance.balanceOf.call(user);
+      // approve proxy to pull tokens
+      await USDCInstance.approve(proxyInstance.address, tokenAmountIn, {
+        from: user,
+      });
+
+      let tx = await proxyInstance.wrapFixedRateFrom(
+        true,
+        implementationID,
+        USDCAddress,
+        fixedRateWrapperInstance.address,
+        encodedParams,
+        user,
+        { from: user },
+      );
+      let jBGNOut;
+
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        jBGNOut = ev.outputAmount;
+        return (
+          ev.inputAmount.toString() == tokenAmountIn.toString() &&
+          ev.inputToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            atomicSwapAddr.toLowerCase()
+        );
+      });
+      let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+      let jBGNBalanceAfter = await jBGNInstance.balanceOf.call(user);
+
+      assert.equal(
+        USDCBalanceBefore.sub(web3Utils.toBN(tokenAmountIn)).toString(),
+        USDCBalanceAfter.toString(),
       );
       assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
       assert.equal(
@@ -387,6 +513,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         proxyInstance.wrapFixedRateFrom(
           true,
           implementationID,
+          WBTCAddress,
           fixedRateWrapperInstance.address,
           encodedParams,
           user,
@@ -400,6 +527,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         proxyInstance.wrapFixedRateFrom(
           true,
           'badID',
+          WBTCAddress,
           fixedRateWrapperInstance.address,
           web3Utils.utf8ToHex('encodedParams'),
           user,
@@ -494,6 +622,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       let tx = await proxyInstance.wrapFixedRateFrom(
         false,
         implementationID,
+        jGBPAddress,
         fixedRateWrapperInstance.address,
         encodedParams,
         user,
@@ -568,6 +697,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         proxyInstance.wrapFixedRateFrom(
           false,
           implementationID,
+          jGBPAddress,
           fixedRateWrapperInstance.address,
           encodedParams,
           user,
@@ -579,7 +709,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
   });
 
   describe('unwrapFixedRateTo - ERC20', async () => {
-    it('correctly swaps Fixed Rate into ERC20', async () => {
+    it('correctly swaps Fixed Rate into ERC20 (unwrap + redeemAndSwap', async () => {
       let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
       tokenAmountIn = tokenAmountIn.divn(4);
       const tokenPathSwap = [USDCAddress, WETHAddress, WBTCAddress];
@@ -674,6 +804,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         true,
         implementationID,
         fixedRateWrapperInstance.address,
+        WBTCAddress,
         tokenAmountIn,
         encodedParams,
         { from: user },
@@ -698,6 +829,133 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       assert.equal(
         WBTCbalanceBefore.add(WBTCOut).toString(),
         WBTCbalanceAfter.toString(),
+      );
+      assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
+      assert.equal(
+        jBGNBalanceBefore.sub(tokenAmountIn).toString(),
+        jBGNBalanceAfter.toString(),
+      );
+    });
+    it('correctly swaps Fixed Rate into peg token collateral (unwrap + redeem)', async () => {
+      let tokenAmountIn = await jBGNInstance.balanceOf.call(user);
+      tokenAmountIn = tokenAmountIn.divn(4);
+      // the token swap path is not used in this case, might as well be set as empty bytes
+      const tokenPathSwap = [USDCAddress];
+      //encode in extra params
+      let extraParams = web3.eth.abi.encodeParameters(
+        ['address[]'],
+        [tokenPathSwap],
+      );
+
+      const synthereumRedeemParams = {
+        synthereumFinder: synthereumFinderAddress,
+        synthereumPool: jEURPool,
+        redeemParams: {
+          numTokens: 0,
+          minCollateral: 0,
+          expiration: deadline,
+          recipient: user,
+        },
+      };
+
+      const redeemSwapParams = {
+        isExactInput: true,
+        unwrapToETH: false,
+        exactAmount: 0,
+        minOutOrMaxIn: 0,
+        extraParams,
+        msgSender: fixedRateSwapInstance.address,
+      };
+
+      let encodedParams = web3.eth.abi.encodeParameters(
+        [
+          {
+            RedeemPegSwapParams: {
+              recipient: 'address',
+              redeemSwapParams: {
+                isExactInput: 'bool',
+                unwrapToETH: 'bool',
+                exactAmount: 'uint256',
+                minOutOrMaxIn: 'uint256',
+                extraParams: 'bytes',
+                msgSender: 'address',
+              },
+              redeemParams: {
+                synthereumFinder: 'address',
+                synthereumPool: 'address',
+                redeemParams: {
+                  numTokens: 'uint256',
+                  minCollateral: 'uint256',
+                  expiration: 'uint256',
+                  recipient: 'address',
+                },
+              },
+            },
+          },
+        ],
+        [
+          {
+            recipient: user,
+            redeemSwapParams: {
+              isExactInput: redeemSwapParams.isExactInput,
+              unwrapToETH: redeemSwapParams.unwrapToETH,
+              exactAmount: redeemSwapParams.exactAmount,
+              minOutOrMaxIn: redeemSwapParams.minOutOrMaxIn,
+              extraParams: redeemSwapParams.extraParams,
+              msgSender: redeemSwapParams.msgSender,
+            },
+            redeemParams: {
+              synthereumFinder: synthereumRedeemParams.synthereumFinder,
+              synthereumPool: synthereumRedeemParams.synthereumPool,
+              redeemParams: {
+                numTokens: synthereumRedeemParams.redeemParams.numTokens,
+                minCollateral:
+                  synthereumRedeemParams.redeemParams.minCollateral,
+                expiration: synthereumRedeemParams.redeemParams.expiration,
+                recipient: synthereumRedeemParams.redeemParams.recipient,
+              },
+            },
+          },
+        ],
+      );
+
+      let USDCBalanceBefore = await USDCInstance.balanceOf.call(user);
+      let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
+      let jBGNBalanceBefore = await jBGNInstance.balanceOf.call(user);
+
+      // approve proxy to pull tokens
+      await jBGNInstance.approve(proxyInstance.address, tokenAmountIn, {
+        from: user,
+      });
+      let tx = await proxyInstance.unwrapFixedRateTo(
+        true,
+        implementationID,
+        fixedRateWrapperInstance.address,
+        USDCAddress,
+        tokenAmountIn,
+        encodedParams,
+        { from: user },
+      );
+      let USDCOut;
+      truffleAssert.eventEmitted(tx, 'Swap', ev => {
+        USDCOut = ev.outputAmount;
+        return (
+          ev.inputAmount.toString() == tokenAmountIn.toString() &&
+          ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.outputToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralAmountRefunded.toString() == 0 &&
+          ev.dexImplementationAddress.toLowerCase() ==
+            atomicSwapAddr.toLowerCase()
+        );
+      });
+      let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
+      let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
+      let jBGNBalanceAfter = await jBGNInstance.balanceOf.call(user);
+
+      assert.equal(
+        USDCBalanceBefore.add(USDCOut).toString(),
+        USDCBalanceAfter.toString(),
       );
       assert.equal(jEURBalanceAfter.toString(), jEURBalanceBefore.toString());
       assert.equal(
@@ -796,6 +1054,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           true,
           implementationID,
           fixedRateWrapperInstance.address,
+          WBTCAddress,
           tokenAmountIn,
           encodedParams,
           { from: user },
@@ -809,6 +1068,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           true,
           'badID',
           jBGNInstance.address,
+          WBTCAddress,
           10,
           web3Utils.utf8ToHex('encodedParams'),
           { from: user },
@@ -863,6 +1123,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         false,
         implementationID,
         fixedRateWrapperInstance.address,
+        jGBPAddress,
         tokenAmountIn,
         encodedParams,
         { from: user },
@@ -936,6 +1197,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           false,
           implementationID,
           fixedRateWrapperInstance.address,
+          jGBPAddress,
           tokenAmountIn,
           encodedParams,
           { from: user },
@@ -949,6 +1211,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           false,
           'badID',
           jBGNInstance.address,
+          jGBPAddress,
           10,
           web3Utils.utf8ToHex('encodedParams'),
           { from: user },
