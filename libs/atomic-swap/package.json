@@ -13,6 +13,7 @@
     "migrate-OCLR": "MIGRATION_TYPE=OCLR_poolV5 hardhat test ./test/correct-migration.js",
     "start:local-fork": "../../scripts/local-fork.sh",
     "test": "yarn run test:v3",
+    "test:mm": "MIGRATION_TYPE=mmManager FORKCHAINID=3 hardhat test ./test/MoneyMarketManager.js",
     "test:v3": "MIGRATION_TYPE=OCLR_poolV5 FORKCHAINID=3 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v3/*",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat --network mainnet_fork coverage --solcoverjs ./test/.solcover.js",
     "verify": "hardhat verify"
