@@ -41,6 +41,7 @@ contract FixedRateSwap {
     address inputAsset,
     address outputAsset,
     address recipient,
+    address synthereumFinder,
     bytes calldata operationArgs,
     bytes memory implementationInfo
   )
@@ -58,6 +59,9 @@ contract FixedRateSwap {
       // decode into exchange params struct
       IOnChainLiquidityRouterV2.SynthereumExchangeParams memory params =
         decodeToExchangeParams(operationArgs);
+
+      // set finder passed from proxy
+      params.synthereumFinder = ISynthereumFinder(synthereumFinder);
 
       // check target synth and pool are compatible
       checkSynth(
@@ -111,6 +115,9 @@ contract FixedRateSwap {
       IOnChainLiquidityRouterV2.SwapMintPegParams memory params =
         decodeToSwapMintParams(operationArgs);
 
+      // set finder passed from proxy
+      params.mintParams.synthereumFinder = ISynthereumFinder(synthereumFinder);
+
       // check target synth is compatible with the pool
       checkSynth(pegToken, params.mintParams.synthereumPool);
 
@@ -153,6 +160,8 @@ contract FixedRateSwap {
       } else {
         // erc20 -> collateral -> peg -> fixedRate
         // delegate call the implementation swapAndMint
+        params.swapMintParams.msgSender = address(this);
+
         returnValues = delegateCallSwapAndMint(
           OCLRImplementation,
           implementationInfo,
@@ -184,6 +193,7 @@ contract FixedRateSwap {
     uint256 inputAmount,
     address inputAsset,
     address outputAsset,
+    address synthereumFinder,
     bytes calldata operationArgs
   )
     external
@@ -206,7 +216,7 @@ contract FixedRateSwap {
       fixedRateWrapper.unwrap(inputAmount, address(this));
 
     if (toERC20) {
-      // fixedRte -> pegSynth -> erc20
+      // fixedRate -> pegSynth -> erc20
       // decode params
       IOnChainLiquidityRouterV2.RedeemPegSwapParams memory params =
         abi.decode(
@@ -214,6 +224,11 @@ contract FixedRateSwap {
           (IOnChainLiquidityRouterV2.RedeemPegSwapParams)
         );
       ISynthereumLiquidityPool redeemPool = params.redeemParams.synthereumPool;
+
+      // set finder passed from proxy
+      params.redeemParams.synthereumFinder = ISynthereumFinder(
+        synthereumFinder
+      );
 
       // check pegSynth and pool are compatible
       checkSynth(pegToken, redeemPool);
@@ -230,7 +245,6 @@ contract FixedRateSwap {
 
       // set redeem params
       params.redeemParams.redeemParams.numTokens = pegSynthAmountOut;
-      params.redeemSwapParams.msgSender = address(this);
 
       if (outputAsset == address(redeemPool.collateralToken())) {
         // peg -> collateral through pool's redeem
@@ -240,6 +254,8 @@ contract FixedRateSwap {
         );
         returnValues.outputToken = outputAsset;
       } else {
+        params.redeemSwapParams.msgSender = address(this);
+
         // peg -> collateral -> erc20
         // approve AtomicSwap to pull pegSynth
         pegToken.safeIncreaseAllowance(address(this), pegSynthAmountOut);
@@ -257,6 +273,9 @@ contract FixedRateSwap {
       IOnChainLiquidityRouterV2.SynthereumExchangeParams memory params =
         decodeToExchangeParams(operationArgs);
       ISynthereumLiquidityPool inputPool = params.inputSynthereumPool;
+
+      // set finder passed from proxy
+      params.synthereumFinder = ISynthereumFinder(synthereumFinder);
 
       // check input synth and pool are compatible
       checkSynth(pegToken, inputPool);
