@@ -9,6 +9,15 @@ import {
 import {
   ISynthereumLiquidityPool
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
+import {
+  ISynthereumRegistry
+} from '@jarvis-network/synthereum-contracts/contracts/core/registries/interfaces/IRegistry.sol';
+import {
+  SynthereumInterfaces
+} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
+import {
+  ISynthereumFinder
+} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {
@@ -51,13 +60,21 @@ contract FixedRateSwap {
         decodeToExchangeParams(operationArgs);
 
       // check target synth and pool are compatible
-      require(
-        checkSynth(
-          pegToken,
-          ISynthereumLiquidityPool(address(params.exchangeParams.destPool))
-        ),
-        'Pool and jSynth mismatch'
+      checkSynth(
+        pegToken,
+        ISynthereumLiquidityPool(address(params.exchangeParams.destPool))
       );
+
+      // check pools and fixedRate registries
+      checkPoolRegistry(
+        ISynthereumLiquidityPool(address(params.exchangeParams.destPool)),
+        params.synthereumFinder
+      );
+      checkPoolRegistry(
+        ISynthereumLiquidityPool(address(params.inputSynthereumPool)),
+        params.synthereumFinder
+      );
+      checkFixedRateRegistry(fixedRateWrapper, params.synthereumFinder);
 
       // pull input jSynth and approve pool
       IERC20 inputSynth = params.inputSynthereumPool.syntheticToken();
@@ -95,9 +112,16 @@ contract FixedRateSwap {
         decodeToSwapMintParams(operationArgs);
 
       // check target synth is compatible with the pool
-      require(
-        checkSynth(pegToken, params.mintParams.synthereumPool),
-        'Pool and jSynth mismatch'
+      checkSynth(pegToken, params.mintParams.synthereumPool);
+
+      // check pools and fixedRate registries
+      checkPoolRegistry(
+        ISynthereumLiquidityPool(address(params.mintParams.synthereumPool)),
+        params.mintParams.synthereumFinder
+      );
+      checkFixedRateRegistry(
+        fixedRateWrapper,
+        params.mintParams.synthereumFinder
       );
 
       // set synthetic token recipient as this contract
@@ -189,10 +213,20 @@ contract FixedRateSwap {
           operationArgs,
           (IOnChainLiquidityRouterV2.RedeemPegSwapParams)
         );
-
       ISynthereumLiquidityPool redeemPool = params.redeemParams.synthereumPool;
+
       // check pegSynth and pool are compatible
-      require(checkSynth(pegToken, redeemPool), 'Pool and jSynth mismatch');
+      checkSynth(pegToken, redeemPool);
+
+      // check pools and fixedRate registries
+      checkPoolRegistry(
+        ISynthereumLiquidityPool(address(params.redeemParams.synthereumPool)),
+        params.redeemParams.synthereumFinder
+      );
+      checkFixedRateRegistry(
+        fixedRateWrapper,
+        params.redeemParams.synthereumFinder
+      );
 
       // set redeem params
       params.redeemParams.redeemParams.numTokens = pegSynthAmountOut;
@@ -225,7 +259,16 @@ contract FixedRateSwap {
       ISynthereumLiquidityPool inputPool = params.inputSynthereumPool;
 
       // check input synth and pool are compatible
-      require(checkSynth(pegToken, inputPool), 'Pool and jSynth mismatch');
+      checkSynth(pegToken, inputPool);
+      checkPoolRegistry(
+        ISynthereumLiquidityPool(address(params.exchangeParams.destPool)),
+        params.synthereumFinder
+      );
+      checkPoolRegistry(
+        ISynthereumLiquidityPool(address(params.inputSynthereumPool)),
+        params.synthereumFinder
+      );
+      checkFixedRateRegistry(fixedRateWrapper, params.synthereumFinder);
 
       // approve pool
       pegToken.safeIncreaseAllowance(address(inputPool), pegSynthAmountOut);
@@ -268,9 +311,46 @@ contract FixedRateSwap {
   function checkSynth(IERC20 synth, ISynthereumLiquidityPool pool)
     internal
     view
-    returns (bool)
   {
-    return synth == pool.syntheticToken();
+    require(synth == pool.syntheticToken(), 'Pool and jSynth mismatch');
+  }
+
+  function checkPoolRegistry(
+    ISynthereumLiquidityPool pool,
+    ISynthereumFinder finder
+  ) internal view {
+    ISynthereumRegistry poolRegistry =
+      ISynthereumRegistry(
+        finder.getImplementationAddress(SynthereumInterfaces.PoolRegistry)
+      );
+    require(
+      poolRegistry.isDeployed(
+        pool.syntheticTokenSymbol(),
+        pool.collateralToken(),
+        pool.version(),
+        address(pool)
+      ),
+      'Pool not registered'
+    );
+  }
+
+  function checkFixedRateRegistry(
+    ISynthereumFixedRateWrapper fixedRateToken,
+    ISynthereumFinder finder
+  ) internal view {
+    ISynthereumRegistry fixedRateRegitry =
+      ISynthereumRegistry(
+        finder.getImplementationAddress(SynthereumInterfaces.FixedRateRegistry)
+      );
+    require(
+      fixedRateRegitry.isDeployed(
+        fixedRateToken.syntheticTokenSymbol(),
+        fixedRateToken.collateralToken(),
+        fixedRateToken.version(),
+        address(fixedRateToken)
+      ),
+      'Fixed rate not registered'
+    );
   }
 
   function delegateCallSwapAndMint(

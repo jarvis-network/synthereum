@@ -77,6 +77,7 @@ interface IOnChainLiquidityRouterV2 {
   }
 
   struct SynthereumExchangeParams {
+    ISynthereumFinder synthereumFinder;
     ISynthereumLiquidityPool inputSynthereumPool;
     ISynthereumLiquidityPool.ExchangeParams exchangeParams;
   }
