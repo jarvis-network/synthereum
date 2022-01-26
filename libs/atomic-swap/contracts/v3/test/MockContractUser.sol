@@ -9,11 +9,11 @@ contract MockContractUserV2 {
   function swapAndMint(
     address proxyAddress,
     string calldata implementationId,
-    IOnChainLiquidityRouterV2.SwapMintParams memory inputParams,
+    IOnChainLiquidityRouter.SwapMintParams memory inputParams,
     ISynthereumLiquidityPool synthereumPool,
     ISynthereumLiquidityPool.MintParams memory mintParams
   ) external payable {
-    IOnChainLiquidityRouterV2(proxyAddress).swapAndMint{value: msg.value}(
+    IOnChainLiquidityRouter(proxyAddress).swapAndMint{value: msg.value}(
       implementationId,
       inputParams,
       synthereumPool,
@@ -26,12 +26,12 @@ contract MockContractUserV2 {
   function redeemAndSwap(
     address proxyAddress,
     string calldata implementationId,
-    IOnChainLiquidityRouterV2.RedeemSwapParams memory inputParams,
+    IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
     ISynthereumLiquidityPool synthereumPool,
     ISynthereumLiquidityPool.RedeemParams memory redeemParams,
     address recipient
   ) external {
-    IOnChainLiquidityRouterV2(proxyAddress).redeemAndSwap(
+    IOnChainLiquidityRouter(proxyAddress).redeemAndSwap(
       implementationId,
       inputParams,
       synthereumPool,

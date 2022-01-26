@@ -25,7 +25,7 @@ import {
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {IOCLRBase} from '../interfaces/IOCLRBase.sol';
 import {
-  IOnChainLiquidityRouterV2
+  IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
 
 contract FixedRateSwap {
@@ -37,10 +37,10 @@ contract FixedRateSwap {
   function wrapFrom(
     bool fromERC20,
     address recipient,
-    IOnChainLiquidityRouterV2.FixedRateSwapParams memory fixedRateSwapParams
+    IOnChainLiquidityRouter.FixedRateSwapParams memory fixedRateSwapParams
   )
     external
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     //reverts if the interface is not implemented
     ISynthereumFixedRateWrapper fixedRateWrapper =
@@ -51,7 +51,7 @@ contract FixedRateSwap {
     if (!fromERC20) {
       // jSynth -> pegSynth -> fixedRate
       // decode into exchange params struct
-      IOnChainLiquidityRouterV2.SynthereumExchangeParams memory params =
+      IOnChainLiquidityRouter.SynthereumExchangeParams memory params =
         decodeToExchangeParams(fixedRateSwapParams.operationArgs);
 
       // set finder passed from proxy
@@ -108,7 +108,7 @@ contract FixedRateSwap {
     } else {
       // erc20 -> pegSynth-> fixedRate
       // decode into SwapMintPeg params
-      IOnChainLiquidityRouterV2.SwapMintPegParams memory params =
+      IOnChainLiquidityRouter.SwapMintPegParams memory params =
         decodeToSwapMintParams(fixedRateSwapParams.operationArgs);
 
       // set finder passed from proxy
@@ -185,10 +185,10 @@ contract FixedRateSwap {
   function unwrapTo(
     bool toERC20,
     uint256 inputAmount,
-    IOnChainLiquidityRouterV2.FixedRateSwapParams memory fixedRateSwapParams
+    IOnChainLiquidityRouter.FixedRateSwapParams memory fixedRateSwapParams
   )
     external
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     //reverts if the interface is not implemented
     ISynthereumFixedRateWrapper fixedRateWrapper =
@@ -213,10 +213,10 @@ contract FixedRateSwap {
     if (toERC20) {
       // fixedRate -> pegSynth -> erc20
       // decode params
-      IOnChainLiquidityRouterV2.RedeemPegSwapParams memory params =
+      IOnChainLiquidityRouter.RedeemPegSwapParams memory params =
         abi.decode(
           fixedRateSwapParams.operationArgs,
-          (IOnChainLiquidityRouterV2.RedeemPegSwapParams)
+          (IOnChainLiquidityRouter.RedeemPegSwapParams)
         );
       ISynthereumLiquidityPool redeemPool = params.redeemParams.synthereumPool;
 
@@ -267,7 +267,7 @@ contract FixedRateSwap {
     } else {
       // fixedRate -> pegSynth -> jSynth via exchange
       // decode params
-      IOnChainLiquidityRouterV2.SynthereumExchangeParams memory params =
+      IOnChainLiquidityRouter.SynthereumExchangeParams memory params =
         decodeToExchangeParams(fixedRateSwapParams.operationArgs);
       ISynthereumLiquidityPool inputPool = params.inputSynthereumPool;
 
@@ -310,20 +310,20 @@ contract FixedRateSwap {
   function decodeToExchangeParams(bytes memory args)
     internal
     pure
-    returns (IOnChainLiquidityRouterV2.SynthereumExchangeParams memory params)
+    returns (IOnChainLiquidityRouter.SynthereumExchangeParams memory params)
   {
     params = abi.decode(
       args,
-      (IOnChainLiquidityRouterV2.SynthereumExchangeParams)
+      (IOnChainLiquidityRouter.SynthereumExchangeParams)
     );
   }
 
   function decodeToSwapMintParams(bytes memory args)
     internal
     pure
-    returns (IOnChainLiquidityRouterV2.SwapMintPegParams memory params)
+    returns (IOnChainLiquidityRouter.SwapMintPegParams memory params)
   {
-    params = abi.decode(args, (IOnChainLiquidityRouterV2.SwapMintPegParams));
+    params = abi.decode(args, (IOnChainLiquidityRouter.SwapMintPegParams));
   }
 
   function checkSynth(IERC20 synth, ISynthereumLiquidityPool pool)
@@ -374,10 +374,10 @@ contract FixedRateSwap {
   function delegateCallSwapAndMint(
     address implementation,
     bytes memory implementationInfo,
-    IOnChainLiquidityRouterV2.SwapMintPegParams memory params
+    IOnChainLiquidityRouter.SwapMintPegParams memory params
   )
     internal
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     string memory functionSig =
       'swapToCollateralAndMint(bytes,(bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)))';
@@ -392,16 +392,16 @@ contract FixedRateSwap {
         )
       );
 
-    returnValues = abi.decode(result, (IOnChainLiquidityRouterV2.ReturnValues));
+    returnValues = abi.decode(result, (IOnChainLiquidityRouter.ReturnValues));
   }
 
   function delegateCallRedeemSwap(
     address implementation,
     bytes memory implementationInfo,
-    IOnChainLiquidityRouterV2.RedeemPegSwapParams memory params
+    IOnChainLiquidityRouter.RedeemPegSwapParams memory params
   )
     internal
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     string memory functionSig =
       'redeemCollateralAndSwap(bytes,(bool,bool,uint256,uint256,bytes,address),(address,address,(uint256,uint256,uint256,address)),address)';
@@ -417,6 +417,6 @@ contract FixedRateSwap {
         )
       );
 
-    returnValues = abi.decode(result, (IOnChainLiquidityRouterV2.ReturnValues));
+    returnValues = abi.decode(result, (IOnChainLiquidityRouter.ReturnValues));
   }
 }
