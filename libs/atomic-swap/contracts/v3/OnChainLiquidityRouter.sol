@@ -44,9 +44,9 @@ contract OnChainLiquidityRouterV2 is
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
   string public constant UNWRAP_TO_SIG =
-    'unwrapTo(bool,address,address,bytes,uint256,address,address,address,bytes)';
+    'unwrapTo(bool,uint256,(address,address,address,address,address,bytes,bytes))';
   string public constant WRAP_FROM_SIG =
-    'wrapFrom(bool,address,address,address,address,address,address,bytes,bytes)';
+    'wrapFrom(bool,address,(address,address,address,address,address,bytes,bytes))';
 
   ISynthereumFinder public synthereumFinder;
 
@@ -228,20 +228,20 @@ contract OnChainLiquidityRouterV2 is
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
 
+    FixedRateSwapParams memory params =
+      FixedRateSwapParams(
+        _msgSender(),
+        implementation,
+        inputAsset,
+        outputAsset,
+        address(synthereumFinder),
+        dexImplementationInfo[implementation],
+        operationArgs
+      );
+
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
-        abi.encodeWithSignature(
-          WRAP_FROM_SIG,
-          fromERC20,
-          _msgSender(),
-          implementation,
-          inputAsset,
-          outputAsset,
-          recipient,
-          synthereumFinder,
-          operationArgs,
-          dexImplementationInfo[implementation]
-        )
+        abi.encodeWithSignature(WRAP_FROM_SIG, fromERC20, recipient, params)
       );
 
     returnValues = abi.decode(result, (ReturnValues));
@@ -269,20 +269,20 @@ contract OnChainLiquidityRouterV2 is
       idToAddress[keccak256(abi.encode(implementationId))];
     require(implementation != address(0), 'Implementation id not registered');
 
+    FixedRateSwapParams memory params =
+      FixedRateSwapParams(
+        _msgSender(),
+        implementation,
+        inputAsset,
+        outputAsset,
+        address(synthereumFinder),
+        dexImplementationInfo[implementation],
+        operationArgs
+      );
+
     bytes memory result =
       fixedRateSwap.functionDelegateCall(
-        abi.encodeWithSignature(
-          UNWRAP_TO_SIG,
-          toERC20,
-          _msgSender(),
-          implementation,
-          dexImplementationInfo[implementation],
-          inputAmount,
-          inputAsset,
-          outputAsset,
-          synthereumFinder,
-          operationArgs
-        )
+        abi.encodeWithSignature(UNWRAP_TO_SIG, toERC20, inputAmount, params)
       );
 
     returnValues = abi.decode(result, (ReturnValues));

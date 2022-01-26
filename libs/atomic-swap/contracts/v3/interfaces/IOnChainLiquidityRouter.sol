@@ -58,8 +58,13 @@ interface IOnChainLiquidityRouterV2 {
   }
 
   struct FixedRateSwapParams {
+    address msgSender;
+    address OCLRImplementation;
     address inputAsset;
     address outputAsset;
+    address synthereumFinder;
+    bytes implementationInfo;
+    bytes operationArgs;
   }
 
   // synthereum variables
