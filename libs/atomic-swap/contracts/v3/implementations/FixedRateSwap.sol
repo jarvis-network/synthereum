@@ -84,9 +84,7 @@ contract FixedRateSwap {
       );
 
       // set return values
-      returnValues.collateralToken = address(
-        params.inputSynthereumPool.collateralToken()
-      );
+      returnValues.collateralToken = address(pegToken);
       returnValues.inputToken = address(inputSynth);
       returnValues.inputAmount = params.exchangeParams.numTokens;
       returnValues.outputToken = address(syntheticToken);
@@ -128,7 +126,6 @@ contract FixedRateSwap {
         );
         returnValues.inputAmount = inputAmount;
         returnValues.inputToken = inputAsset;
-        returnValues.collateralToken = inputAsset;
       } else {
         // erc20 -> collateral -> peg -> fixedRate
         // delegate call the implementation swapAndMint
@@ -151,6 +148,7 @@ contract FixedRateSwap {
 
       // set returnValues
       returnValues.outputToken = address(syntheticToken);
+      returnValues.collateralToken = address(pegToken);
     }
   }
 
@@ -207,7 +205,6 @@ contract FixedRateSwap {
           params.redeemParams.redeemParams
         );
         returnValues.outputToken = outputAsset;
-        returnValues.collateralToken = outputAsset;
       } else {
         // peg -> collateral -> erc20
         // approve AtomicSwap to pull pegSynth
@@ -238,13 +235,13 @@ contract FixedRateSwap {
       (returnValues.outputAmount, ) = inputPool.exchange(params.exchangeParams);
 
       // set return values
-      returnValues.collateralToken = address(inputPool.collateralToken());
       returnValues.outputToken = address(
         params.exchangeParams.destPool.syntheticToken()
       );
     }
 
     // set return values
+    returnValues.collateralToken = address(pegToken);
     returnValues.inputAmount = inputAmount;
     returnValues.inputToken = address(fixedRateToken);
   }
