@@ -13,6 +13,7 @@ const FixedRateSwap = artifacts.require('FixedRateSwap');
 const FixedRateWrapper = artifacts.require('SynthereumFixedRateWrapper');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
+const FixedRateRegistry = artifacts.require('SynthereumFixedRateRegistry');
 const PoolMock = artifacts.require('PoolMock');
 const MockContractUser = artifacts.require('MockContractUserV2');
 const TestnetERC20 = artifacts.require(
@@ -28,13 +29,14 @@ const uniswap = require('../../data/test/uniswap.json');
 const synthereum = require('../../data/test/synthereum.json');
 const { signMetaTxRequest } = require('../signer');
 
-contract('FixedRateSwap - UniswapV3', async accounts => {
+contract('FixedRateSwap - UniswapV2', async accounts => {
   let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
   let WBTCAddress,
     USDCAddress,
     USDTAddress,
     jEURAddress,
     jGBPAddress,
+    jBGNAddress,
     WETHAddress,
     synthereumFinderAddress;
   let networkId;
@@ -47,9 +49,8 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
     atomicSwapAddr,
     poolMock,
     jEURPool,
-    jGBPPool,
-    forwarderInstance,
-    finderInstance;
+    jGBPPool;
+
   let deadline = ((Date.now() / 1000) | 0) + 7200;
   let amountETH = web3Utils.toWei('1', 'ether');
   const initializeTokenInstanace = async tokenAddress =>
@@ -82,9 +83,12 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
     WBTCAddress = tokens[networkId].WBTC;
     jEURAddress = tokens[networkId].JEUR;
     jGBPAddress = tokens[networkId].JGBP;
+    wjBGNAddress = tokens[networkId].WJBGN;
+    jBGNAddress = tokens[networkId].JBGN;
     WETHAddress = tokens[networkId].WETH;
     USDTAddress = tokens[networkId].USDT;
 
+    fixedRateWrapperInstance = await FixedRateWrapper.at(wjBGNAddress);
     WETHInstance = await initializeTokenInstanace(WETHAddress);
     WBTCInstance = await initializeTokenInstanace(WBTCAddress);
     USDCInstance = await initializeTokenInstanace(USDCAddress);
@@ -139,34 +143,10 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
       implementationID,
     );
 
-    // deploy FixedRate with jEUr as collateral
-    jBGNInstance = await SyntheticToken.new(
-      'Jarvis Bulgarian Lev',
-      'jBGN',
-      18,
-      { from: accounts[0] },
-    );
+    // get jBGN instance
+    jBGNInstance = await SyntheticToken.at(jBGNAddress);
 
-    let constructorParams = {
-      finder: synthereumFinderAddress,
-      version: 1,
-      pegCollateralToken: jEURAddress,
-      fixedRateToken: jBGNInstance.address,
-      roles: { admin: accounts[0], maintainer: accounts[1] },
-      rate: web3Utils.toWei('1.32'),
-    };
-    fixedRateWrapperInstance = await FixedRateWrapper.new(constructorParams, {
-      from: accounts[0],
-    });
     fixedRateSwapInstance = await FixedRateSwap.deployed();
-
-    // set the wrapper to be minter burner of fixed rate instance
-    await jBGNInstance.addMinter(fixedRateWrapperInstance.address, {
-      from: admin,
-    });
-    await jBGNInstance.addBurner(fixedRateWrapperInstance.address, {
-      from: admin,
-    });
   });
 
   it('Fixed Rate deployment', async () => {
@@ -279,11 +259,9 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         return (
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jBGNAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            atomicSwapAddr.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
@@ -404,11 +382,9 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         return (
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jBGNAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            atomicSwapAddr.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
@@ -587,6 +563,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         [
           {
             SynthereumExchangeParams: {
+              synthereumFinder: 'address',
               inputSynthereumPool: 'address',
               exchangeParams: {
                 destPool: 'address',
@@ -600,6 +577,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         ],
         [
           {
+            synthereumFinder: synthereumFinderAddress,
             inputSynthereumPool: jGBPPool,
             exchangeParams: {
               destPool: jEURPool,
@@ -635,11 +613,9 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         return (
           ev.inputAmount.toString() == jGBPInput.toString() &&
           ev.inputToken.toLowerCase() == jGBPAddress.toLowerCase() &&
-          ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.outputToken.toLowerCase() == jBGNAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            atomicSwapAddr.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let jGBPBalanceAfter = await jGBPInstance.balanceOf.call(user);
@@ -664,6 +640,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         [
           {
             SynthereumExchangeParams: {
+              synthereumFinder: 'address',
               inputSynthereumPool: 'address',
               exchangeParams: {
                 destPool: 'address',
@@ -677,6 +654,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         ],
         [
           {
+            synthereumFinder: synthereumFinderAddress,
             inputSynthereumPool: jGBPPool,
             exchangeParams: {
               destPool: poolMock.address,
@@ -814,12 +792,10 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         WBTCOut = ev.outputAmount;
         return (
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
-          ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.inputToken.toLowerCase() == jBGNAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            atomicSwapAddr.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
@@ -941,12 +917,10 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         USDCOut = ev.outputAmount;
         return (
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
-          ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.inputToken.toLowerCase() == jBGNAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            atomicSwapAddr.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let USDCBalanceAfter = await USDCInstance.balanceOf.call(user);
@@ -1086,6 +1060,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         [
           {
             SynthereumExchangeParams: {
+              synthereumFinder: 'address',
               inputSynthereumPool: 'address',
               exchangeParams: {
                 destPool: 'address',
@@ -1099,6 +1074,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         ],
         [
           {
+            synthereumFinder: synthereumFinderAddress,
             inputSynthereumPool: jEURPool,
             exchangeParams: {
               destPool: jGBPPool,
@@ -1133,12 +1109,10 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         jGBPOut = ev.outputAmount;
         return (
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
-          ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
+          ev.inputToken.toLowerCase() == jBGNAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jGBPAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            atomicSwapAddr.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let jGBPBalanceAfter = await jGBPInstance.balanceOf.call(user);
@@ -1163,6 +1137,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         [
           {
             SynthereumExchangeParams: {
+              synthereumFinder: 'address',
               inputSynthereumPool: 'address',
               exchangeParams: {
                 destPool: 'address',
@@ -1176,6 +1151,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
         ],
         [
           {
+            synthereumFinder: synthereumFinderAddress,
             inputSynthereumPool: poolMock.address,
             exchangeParams: {
               destPool: jGBPAddress,
