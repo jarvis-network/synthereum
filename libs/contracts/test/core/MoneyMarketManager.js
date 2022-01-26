@@ -72,9 +72,7 @@ contract('LiquidityPool', async accounts => {
     await moneyMarketManager.mint(jEURAddress, amount, { from: DAOAddress });
     let balanceAfterMint = await jEurInstance.balanceOf.call(DAOAddress);
 
-    let circulatingSupply = await moneyMarketManager.circulatingSupply.call(
-      jEURAddress,
-    );
+    let circulatingSupply = await moneyMarketManager.supply.call(jEURAddress);
     assert.equal(
       balanceBefore.add(toBN(amount)).toString(),
       balanceAfterMint.toString(),
@@ -96,9 +94,7 @@ contract('LiquidityPool', async accounts => {
       from: DAOAddress,
     });
     let balanceAfterRedeem = await jEurInstance.balanceOf.call(DAOAddress);
-    circulatingSupply = await moneyMarketManager.circulatingSupply.call(
-      jEURAddress,
-    );
+    circulatingSupply = await moneyMarketManager.supply.call(jEURAddress);
 
     assert.equal(
       balanceAfterMint.sub(toBN(redeemAmount)).toString(),
@@ -134,9 +130,7 @@ contract('LiquidityPool', async accounts => {
     await moneyMarketManager.setMaxSupply(jEURAddress, 10, {
       from: roles.maintainer,
     });
-    let newSupply = await moneyMarketManager.maxCirculatingSupply.call(
-      jEURAddress,
-    );
+    let newSupply = await moneyMarketManager.maxSupply.call(jEURAddress);
     assert.equal(newSupply, 10);
 
     truffleAssert.reverts(

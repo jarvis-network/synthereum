@@ -6,20 +6,21 @@ import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
-  IMintableBurnableERC20
-} from '@jarvis-network/synthereum-contracts/contracts/tokens/interfaces/IMintableBurnableERC20.sol';
-import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
+import {
+  IMoneyMarketManager,
+  IMintableBurnableERC20
+} from './interfaces/IMoneyMarketManager.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract MoneyMarketManager is AccessControlEnumerable {
+contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
   using SafeERC20 for IERC20;
 
-  mapping(IMintableBurnableERC20 => uint256) public maxCirculatingSupply;
-  mapping(IMintableBurnableERC20 => uint256) public circulatingSupply;
+  mapping(IMintableBurnableERC20 => uint256) maxCirculatingSupply;
+  mapping(IMintableBurnableERC20 => uint256) circulatingSupply;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
@@ -63,6 +64,7 @@ contract MoneyMarketManager is AccessControlEnumerable {
 
   function mint(IMintableBurnableERC20 token, uint256 amount)
     external
+    override
     onlyMarketMakerManager()
   {
     require(
@@ -76,6 +78,7 @@ contract MoneyMarketManager is AccessControlEnumerable {
 
   function redeem(IMintableBurnableERC20 token, uint256 amount)
     external
+    override
     onlyMarketMakerManager()
   {
     require(
@@ -90,9 +93,28 @@ contract MoneyMarketManager is AccessControlEnumerable {
 
   function setMaxSupply(IMintableBurnableERC20 token, uint256 newMaxSupply)
     external
+    override
     onlyMaintainer()
   {
     maxCirculatingSupply[token] = newMaxSupply;
     emit NewMaxSupply(address(token), newMaxSupply);
+  }
+
+  function maxSupply(IMintableBurnableERC20 token)
+    external
+    view
+    override
+    returns (uint256 maxSupply)
+  {
+    maxSupply = maxCirculatingSupply[token];
+  }
+
+  function supply(IMintableBurnableERC20 token)
+    external
+    view
+    override
+    returns (uint256 circSupply)
+  {
+    circSupply = circulatingSupply[token];
   }
 }

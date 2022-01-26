@@ -1,19 +1,14 @@
 const web3Utils = require('web3-utils');
-const rolesConfig = require('../../contracts/data/roles.json');
 const { artifacts } = require('hardhat');
-const {
-  getExistingInstance,
-} = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-const {
-  ZERO_ADDRESS,
-} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 const MoneyMarketManager = artifacts.require('MoneyMarketManager');
-
+const SynthereumFinder = artifacts.require('SynthereumFinder');
 const { toNetworkId } = require('@jarvis-network/core-utils/dist/eth/networks');
 const {
   getKeysForNetwork,
   deploy,
 } = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
+const deployment = require('../data/deployment/mmManager.json');
+const rolesConfig = require('../data/roles.json');
 
 module.exports = async function (deployer, network, accounts) {
   const networkId = process.env.FORKCHAINID
@@ -44,4 +39,14 @@ module.exports = async function (deployer, network, accounts) {
     synthereumFinderAddress,
     { from: keys.deployer },
   );
+
+  if (deployment[networkId]?.moneyMarketManager != '') {
+    // set MoneyMarketManager address in finder
+    let finder = await SynthereumFinder.at(synthereumFinderAddress);
+    await finder.changeImplementationAddress(
+      web3Utils.toHex('MoneyMarketManager'),
+      deployment[networkId].moneyMarketManager,
+      { from: roles.maintainer },
+    );
+  }
 };
