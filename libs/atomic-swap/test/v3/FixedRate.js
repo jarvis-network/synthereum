@@ -280,7 +280,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
-          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
@@ -405,7 +405,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == USDCAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
-          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
@@ -636,7 +636,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           ev.inputAmount.toString() == jGBPInput.toString() &&
           ev.inputToken.toLowerCase() == jGBPAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
-          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
@@ -816,7 +816,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
           ev.outputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
-          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
@@ -943,7 +943,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
           ev.outputToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
@@ -1135,7 +1135,7 @@ contract('FixedRateSwap - UniswapV3', async accounts => {
           ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == jBGNInstance.address.toLowerCase() &&
           ev.outputToken.toLowerCase() == jGBPAddress.toLowerCase() &&
-          ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
+          ev.collateralToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralAmountRefunded.toString() == 0 &&
           ev.dexImplementationAddress.toLowerCase() ==
             atomicSwapAddr.toLowerCase()
