@@ -619,11 +619,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
   describe('From/to ERC20', () => {
     it('mint jSynth from ERC20 - exact input - multihop', async () => {
-      const tokenAmountIn = web3Utils.toWei('100000000000', 'wei');
       const tokenPathSwap = [DAIAddress, WETHAddress, USDCAddress];
       const fees = [3000, 3000];
 
       await getDAI(amountETH, user);
+      const tokenAmountIn = (await DAIInstance.balanceOf.call(user)).divn(2);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -640,8 +640,8 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
 
       const inputParams = {
         isExactInput: true,
-        exactAmount: tokenAmountIn,
-        minOutOrMaxIn: 0,
+        exactAmount: tokenAmountIn.toString(),
+        minOutOrMaxIn: 2,
         extraParams,
         msgSender: user,
       };
@@ -650,9 +650,13 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
       // approve proxy to pull tokens
-      await DAIInstance.approve(ProxyInstance.address, tokenAmountIn, {
-        from: user,
-      });
+      await DAIInstance.approve(
+        ProxyInstance.address,
+        tokenAmountIn.toString(),
+        {
+          from: user,
+        },
+      );
 
       // tx through proxy
       const tx = await ProxyInstance.swapAndMint(
@@ -668,13 +672,11 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
         jSynthOut = ev.outputAmount;
         return (
           ev.outputAmount > 0 &&
-          ev.inputAmount.toString() == tokenAmountIn &&
+          ev.inputAmount.toString() == tokenAmountIn.toString() &&
           ev.inputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -682,7 +684,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let jEURBalanceAfter = await jEURInstance.balanceOf.call(user);
 
       assert.equal(
-        DAIbalanceAfter.eq(DAIbalanceBefore.sub(web3Utils.toBN(tokenAmountIn))),
+        DAIbalanceAfter.eq(DAIbalanceBefore.sub(tokenAmountIn)),
         true,
       );
       assert.equal(jEURBalanceAfter.eq(jEURBalanceBefore.add(jSynthOut)), true);
@@ -764,9 +766,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -845,9 +845,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -927,9 +925,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == DAIAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true
         );
       });
 
@@ -1193,9 +1189,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.outputToken.toLowerCase() ==
             jEURAddress.toLowerCase().toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -1277,9 +1271,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let EthBalanceAfter = await web3.eth.getBalance(user);
@@ -1350,9 +1342,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -1434,9 +1424,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true
         );
       });
 
@@ -1580,9 +1568,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 

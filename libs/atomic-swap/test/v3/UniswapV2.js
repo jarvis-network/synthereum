@@ -670,9 +670,7 @@ contract('UniswapV2', async accounts => {
           ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -763,9 +761,7 @@ contract('UniswapV2', async accounts => {
           ev.inputToken.toLowerCase() == WBTCAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
       let WBTCbalanceAfter = await WBTCInstance.balanceOf.call(user);
@@ -845,9 +841,7 @@ contract('UniswapV2', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -927,9 +921,7 @@ contract('UniswapV2', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress.toLowerCase() &&
           ev.outputToken.toLowerCase() == WETHAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true
         );
       });
 
@@ -1196,9 +1188,7 @@ contract('UniswapV2', async accounts => {
           ev.inputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.outputToken.toLowerCase() == jEURAddress &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -1275,9 +1265,7 @@ contract('UniswapV2', async accounts => {
           ev.outputToken.toLowerCase().toLowerCase() ==
             jEURAddress.toLowerCase() &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -1354,9 +1342,7 @@ contract('UniswapV2', async accounts => {
           ev.inputToken.toLowerCase() == jEURAddress &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.toString() == 0 &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.toString() == 0
         );
       });
 
@@ -1441,9 +1427,7 @@ contract('UniswapV2', async accounts => {
             jEURAddress.toLowerCase() &&
           ev.outputToken == '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF' &&
           ev.collateralToken.toLowerCase() == USDCAddress.toLowerCase() &&
-          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true &&
-          ev.dexImplementationAddress.toLowerCase() ==
-            AtomicSwapInstance.address.toLowerCase()
+          ev.collateralAmountRefunded.gt(web3Utils.toBN(0)) == true
         );
       });
 
