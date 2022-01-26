@@ -44,9 +44,9 @@ contract OnChainLiquidityRouterV2 is
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
   string public constant UNWRAP_TO_SIG =
-    'unwrapTo(bool,address,address,bytes,uint256,address,address,bytes)';
+    'unwrapTo(bool,address,address,bytes,uint256,address,address,address,bytes)';
   string public constant WRAP_FROM_SIG =
-    'wrapFrom(bool,address,address,address,address,address,bytes,bytes)';
+    'wrapFrom(bool,address,address,address,address,address,address,bytes,bytes)';
 
   ISynthereumFinder public synthereumFinder;
 
@@ -238,6 +238,7 @@ contract OnChainLiquidityRouterV2 is
           inputAsset,
           outputAsset,
           recipient,
+          synthereumFinder,
           operationArgs,
           dexImplementationInfo[implementation]
         )
@@ -279,6 +280,7 @@ contract OnChainLiquidityRouterV2 is
           inputAmount,
           inputAsset,
           outputAsset,
+          synthereumFinder,
           operationArgs
         )
       );
