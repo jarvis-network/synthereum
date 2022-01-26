@@ -7,5 +7,13 @@
       "rate": "1955830000000000000",
       "collateralAddress": "0x02cbe6055f8aad745321f70d6add4711455c7f45"
     }
+  ],
+  "3": [
+    {
+      "syntheticName": "Jarvis Synthetic Bulgarian Lev",
+      "syntheticSymbol": "jBGN",
+      "rate": "1955830000000000000",
+      "collateralAddress": "0xEB0BAD2BcDA7C095295445807f7ab6452D6cCdDA"
+    }
   ]
 }
