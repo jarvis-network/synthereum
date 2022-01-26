@@ -157,8 +157,7 @@ contract FixedRateSwap {
         returnValues.inputToken = fixedRateSwapParams.inputAsset;
       } else {
         // erc20 -> collateral -> peg -> fixedRate
-        // delegate call the implementation swapAndMint
-        params.swapMintParams.msgSender = address(this);
+        params.swapMintParams.msgSender = fixedRateSwapParams.msgSender;
 
         returnValues = delegateCallSwapAndMint(
           fixedRateSwapParams.OCLRImplementation,
