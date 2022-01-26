@@ -4,5 +4,11 @@
       "version": 1,
       "isEnabled": true
     }
+  },
+  "3": {
+    "FixedRateFactory": {
+      "version": 1,
+      "isEnabled": true
+    }
   }
 }

@@ -3,5 +3,10 @@
     "isEnabled": true,
     "FixedRateWrapper": 1,
     "SynthToken": {}
+  },
+  "3": {
+    "isEnabled": true,
+    "FixedRateWrapper": 1,
+    "SynthToken": {}
   }
 }
