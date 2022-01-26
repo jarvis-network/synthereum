@@ -63,8 +63,7 @@ contract OnChainLiquidityRouterV2 is
     address collateralToken,
     uint256 inputAmount,
     uint256 outputAmount,
-    uint256 collateralAmountRefunded,
-    address dexImplementationAddress
+    uint256 collateralAmountRefunded
   );
   modifier onlyMaintainer() {
     require(
@@ -164,8 +163,7 @@ contract OnChainLiquidityRouterV2 is
       returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
-      returnValues.collateralAmountRefunded,
-      implementation
+      returnValues.collateralAmountRefunded
     );
   }
 
@@ -213,8 +211,7 @@ contract OnChainLiquidityRouterV2 is
       returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
-      returnValues.collateralAmountRefunded,
-      implementation
+      returnValues.collateralAmountRefunded
     );
   }
 
@@ -254,8 +251,7 @@ contract OnChainLiquidityRouterV2 is
       returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
-      returnValues.collateralAmountRefunded,
-      implementation
+      returnValues.collateralAmountRefunded
     );
   }
 
@@ -295,8 +291,7 @@ contract OnChainLiquidityRouterV2 is
       returnValues.collateralToken,
       returnValues.inputAmount,
       returnValues.outputAmount,
-      returnValues.collateralAmountRefunded,
-      implementation
+      returnValues.collateralAmountRefunded
     );
   }
 
