@@ -10,7 +10,7 @@ import {
   IPeripheryPayments
 } from '@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments.sol';
 import {
-  IOnChainLiquidityRouterV2
+  IOnChainLiquidityRouter
 } from '../interfaces/IOnChainLiquidityRouter.sol';
 import {IWETH9} from '../interfaces/IWETH9.sol';
 import {OCLRBase, IERC20} from '../OCLRBase.sol';
@@ -36,13 +36,13 @@ contract OCLRV2UniswapV3 is OCLRBase {
   /// see IBase.sol
   function swapToCollateralAndMint(
     bytes calldata info,
-    IOnChainLiquidityRouterV2.SwapMintParams memory inputParams,
-    IOnChainLiquidityRouterV2.SynthereumMintParams memory synthereumParams
+    IOnChainLiquidityRouter.SwapMintParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumMintParams memory synthereumParams
   )
     external
     payable
     override
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =
@@ -203,13 +203,13 @@ contract OCLRV2UniswapV3 is OCLRBase {
   /// see IBase.sol
   function redeemCollateralAndSwap(
     bytes calldata info,
-    IOnChainLiquidityRouterV2.RedeemSwapParams memory inputParams,
-    IOnChainLiquidityRouterV2.SynthereumRedeemParams memory synthereumParams,
+    IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumRedeemParams memory synthereumParams,
     address recipient
   )
     external
     override
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues)
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues)
   {
     // decode implementation info
     ImplementationInfo memory implementationInfo =

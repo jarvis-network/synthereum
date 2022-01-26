@@ -6,9 +6,7 @@ pragma experimental ABIEncoderV2;
 import {
   ISynthereumLiquidityPool
 } from '@jarvis-network/synthereum-contracts/contracts/synthereum-pool/v5/interfaces/ILiquidityPool.sol';
-import {
-  IOnChainLiquidityRouterV2
-} from '../interfaces/IOnChainLiquidityRouter.sol';
+import {IOnChainLiquidityRouter} from './IOnChainLiquidityRouter.sol';
 
 /// @notice general interface that OCLR implementations must adhere to
 /// @notice in order to be callable through the proxy pattern
@@ -19,12 +17,12 @@ interface IOCLRBase {
   /// @return returnValues see IOnChainLiquidityRouter.ReturnValues struct
   function swapToCollateralAndMint(
     bytes calldata info,
-    IOnChainLiquidityRouterV2.SwapMintParams memory inputParams,
-    IOnChainLiquidityRouterV2.SynthereumMintParams memory synthereumParams
+    IOnChainLiquidityRouter.SwapMintParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumMintParams memory synthereumParams
   )
     external
     payable
-    returns (IOnChainLiquidityRouterV2.ReturnValues memory returnValues);
+    returns (IOnChainLiquidityRouter.ReturnValues memory returnValues);
 
   /// @param info: ImplementationInfo related to this implementation
   /// @param inputParams: params involving the swap - see IOnChainLiquidityRouter.RedeemSwapParams struct
@@ -33,8 +31,8 @@ interface IOCLRBase {
   /// @return returnValues see IOnChainLiquidityRouter.ReturnValues struct
   function redeemCollateralAndSwap(
     bytes calldata info,
-    IOnChainLiquidityRouterV2.RedeemSwapParams memory inputParams,
-    IOnChainLiquidityRouterV2.SynthereumRedeemParams memory synthereumParams,
+    IOnChainLiquidityRouter.RedeemSwapParams memory inputParams,
+    IOnChainLiquidityRouter.SynthereumRedeemParams memory synthereumParams,
     address recipient
-  ) external returns (IOnChainLiquidityRouterV2.ReturnValues memory);
+  ) external returns (IOnChainLiquidityRouter.ReturnValues memory);
 }

@@ -9,7 +9,7 @@ import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 
-interface IOnChainLiquidityRouterV2 {
+interface IOnChainLiquidityRouter {
   // Role structure
   struct Roles {
     address admin;

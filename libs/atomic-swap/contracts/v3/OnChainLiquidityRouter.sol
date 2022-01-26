@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import {
-  IOnChainLiquidityRouterV2
+  IOnChainLiquidityRouter
 } from './interfaces/IOnChainLiquidityRouter.sol';
 import {
   ISynthereumLiquidityPool
@@ -28,7 +28,7 @@ import {
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract OnChainLiquidityRouterV2 is
-  IOnChainLiquidityRouterV2,
+  IOnChainLiquidityRouter,
   AccessControlEnumerable,
   ERC2771Context,
   ReentrancyGuard
