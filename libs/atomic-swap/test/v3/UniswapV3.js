@@ -623,7 +623,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       const fees = [3000, 3000];
 
       await getDAI(amountETH, user);
-      const tokenAmountIn = (await DAIInstance.balanceOf.call(user)).divn(2);
+      const tokenAmountIn = (await DAIInstance.balanceOf.call(user)).divn(100);
 
       //encode in extra params
       let extraParams = web3.eth.abi.encodeParameters(
@@ -728,7 +728,7 @@ contract('AtomicSwapv2 - UniswapV3', async accounts => {
       let DAIbalanceBefore = await DAIInstance.balanceOf.call(user);
       let jEURBalanceBefore = await jEURInstance.balanceOf.call(user);
 
-      const maxTokenAmountIn = DAIbalanceBefore.div(web3Utils.toBN(10));
+      const maxTokenAmountIn = DAIbalanceBefore;
 
       // approve proxy to pull tokens
       await DAIInstance.approve(ProxyInstance.address, maxTokenAmountIn, {
