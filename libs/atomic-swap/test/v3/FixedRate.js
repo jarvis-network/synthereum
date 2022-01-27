@@ -4,30 +4,22 @@ const web3Utils = require('web3-utils');
 
 const truffleAssert = require('truffle-assertions');
 const { assert } = require('chai');
-const {
-  ZERO_ADDRESS,
-} = require('@jarvis-network/hardhat-utils/dist/deployment/migrationUtils');
 
 const Proxy = artifacts.require('OnChainLiquidityRouterV2');
 const FixedRateSwap = artifacts.require('FixedRateSwap');
 const FixedRateWrapper = artifacts.require('SynthereumFixedRateWrapper');
 const SynthereumFinder = artifacts.require('SynthereumFinder');
 const SyntheticToken = artifacts.require('MintableBurnableSyntheticToken');
-const FixedRateRegistry = artifacts.require('SynthereumFixedRateRegistry');
 const PoolMock = artifacts.require('PoolMock');
-const MockContractUser = artifacts.require('MockContractUserV2');
 const TestnetERC20 = artifacts.require(
   '@jarvis-network/synthereum-contracts/contracts/test/TestnetERC20.sol:TestnetERC20',
 );
-const SynthereumLiquidityPool = artifacts.require('SynthereumLiquidityPool');
-const Forwarder = artifacts.require('SynthereumTrustedForwarder');
 const IUniswapRouter = artifacts.require(
   '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol:IUniswapV2Router02',
 );
 const tokens = require('../../data/test/tokens.json');
 const uniswap = require('../../data/test/uniswap.json');
 const synthereum = require('../../data/test/synthereum.json');
-const { signMetaTxRequest } = require('../signer');
 
 contract('FixedRateSwap - UniswapV2', async accounts => {
   let WBTCInstance, USDCInstance, jEURInstance, WETHInstance, uniswapInstance;
