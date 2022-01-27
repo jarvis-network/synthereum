@@ -1,8 +1,13 @@
-const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouter');
-const UniV2AtomicSwap = artifacts.require('OCLRUniswapV2');
-const UniV3AtomicSwap = artifacts.require('OCLRUniswapV3');
-const KyberAtomicSwap = artifacts.require('OCLRKyber');
-
+const OnChainLiquidityRouter = artifacts.require('OnChainLiquidityRouterV2');
+const UniV2AtomicSwap = artifacts.require('OCLRV2UniswapV2');
+const UniV3AtomicSwap = artifacts.require('OCLRV2UniswapV3');
+const KyberAtomicSwap = artifacts.require('OCLRV2Kyber');
+const SynthereumTrustedForwarder = artifacts.require(
+  'SynthereumTrustedForwarder',
+);
+const FixedRateSwap = artifacts.require('FixedRateSwap');
+const SynthereumFinder = artifacts.require('SynthereumFinder');
+const { utf8ToHex } = require('web3-utils');
 const kyberData = require('../data/test/kyber.json');
 const uniswapData = require('../data/test/uniswap.json');
 const {
@@ -82,8 +87,40 @@ module.exports = async function (deployer, network, accounts) {
         maintainer,
       )
     : null;
+
+  // deploy Fixed Rate Swaps module
+  await deployFixedRateSwap(
+    web3,
+    proxyInstance,
+    deployer,
+    network,
+    networkId,
+    admin,
+    maintainer,
+  );
 };
 
+const deployFixedRateSwap = async (
+  web3,
+  proxyInstance,
+  deployer,
+  network,
+  networkId,
+  admin,
+  maintainer,
+) => {
+  await deploy(web3, deployer, network, FixedRateSwap, { from: admin });
+  const fixedSwapInstance = await getExistingInstance(web3, FixedRateSwap);
+  await proxyInstance.methods
+    .registerImplementation(
+      'fixedRateSwap',
+      fixedSwapInstance.options.address,
+      '0x00',
+    )
+    .send({ from: maintainer });
+  // const finderInstance = await SynthereumFinder.at(synthereumFinderAddress);
+  // await finderInstance.changeImplementationAddress(utf8ToHex('FixedRateSwap'), contract.contract.address, {from:maintainer});
+};
 const deployUniV2 = async (
   web3,
   proxyInstance,
@@ -170,4 +207,6 @@ const deployKyberDMM = async (
       encodedInfo,
     )
     .send({ from: maintainer });
+
+  console.log('KyberDMM implementation registered in proxy');
 };
