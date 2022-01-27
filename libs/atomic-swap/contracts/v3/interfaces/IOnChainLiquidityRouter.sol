@@ -13,7 +13,7 @@ interface IOnChainLiquidityRouter {
   // Role structure
   struct Roles {
     address admin;
-    address[] maintainers;
+    address maintainer;
   }
 
   // return values from delegate call

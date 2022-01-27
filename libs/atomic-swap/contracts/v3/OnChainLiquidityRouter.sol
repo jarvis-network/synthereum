@@ -79,9 +79,7 @@ contract OnChainLiquidityRouterV2 is
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     _setRoleAdmin(MAINTAINER_ROLE, DEFAULT_ADMIN_ROLE);
     _setupRole(DEFAULT_ADMIN_ROLE, _roles.admin);
-    for (uint256 i = 0; i < _roles.maintainers.length; i++) {
-      _setupRole(MAINTAINER_ROLE, _roles.maintainers[i]);
-    }
+    _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
   receive() external payable {}

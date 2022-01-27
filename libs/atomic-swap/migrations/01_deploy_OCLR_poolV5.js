@@ -25,7 +25,7 @@ module.exports = async function (deployer, network, accounts) {
   const networkFile = require(`@jarvis-network/synthereum-contracts/networks/${networkId}.json`);
   let FixedRateRoles = {
     admin,
-    maintainers: [maintainer],
+    maintainer,
   };
   console.log(networkId, network);
 

@@ -23,7 +23,7 @@ contract('AtomicSwap Proxy', accounts => {
 
   let FixedRateRoles = {
     admin,
-    maintainers: [maintainer],
+    maintainer,
   };
   let encodedInfo = web3.eth.abi.encodeParameters(
     ['address'],
