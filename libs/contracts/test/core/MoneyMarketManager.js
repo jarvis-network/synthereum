@@ -8,16 +8,11 @@ const SynthereumFinder = artifacts.require('SynthereumFinder');
 const MintableBurnableSyntheticToken = artifacts.require(
   'MintableBurnableSyntheticToken',
 );
-const MoneyMarketManager = artifacts.require('MoneyMarketManager');
+const JarvisBrrrrr = artifacts.require('JarvisBrrrrr');
 const { assert } = require('chai');
 
 contract('LiquidityPool', async accounts => {
-  let jEURAddress,
-    jGBPAddress,
-    moneyMarketManager,
-    networkId,
-    finder,
-    DAOAddress;
+  let jEURAddress, jarvisBrrrrr, networkId, finder, DAOAddress;
   let roles = {
     admin: accounts[0],
     maintainer: accounts[1],
@@ -32,17 +27,11 @@ contract('LiquidityPool', async accounts => {
       18,
       { from: roles.admin },
     );
-    jGBPInstance = await MintableBurnableSyntheticToken.new(
-      'TEST jGBP',
-      'tjGBP',
-      18,
-      { from: roles.admin },
-    );
-    jEURAddress = jEurInstance.address;
-    jGBPAddress = jGBPInstance.address;
 
-    finder = await SynthereumFinder.new(roles);
-    moneyMarketManager = await MoneyMarketManager.new(roles, finder.address);
+    jEURAddress = jEurInstance.address;
+
+    finder = await SynthereumFinder.deployed();
+    jarvisBrrrrr = await JarvisBrrrrr.deployed();
 
     // set Dao as token recipient
     await finder.changeImplementationAddress(
@@ -52,15 +41,15 @@ contract('LiquidityPool', async accounts => {
     );
 
     // set minting capacity
-    await moneyMarketManager.setMaxSupply(jEURAddress, toWei('1000'), {
+    await jarvisBrrrrr.setMaxSupply(jEURAddress, toWei('1000'), {
       from: roles.maintainer,
     });
 
-    // set moneyMarketManager as minter
-    await jEurInstance.addMinter(moneyMarketManager.address, {
+    // set jarvisBrrrrr as minter
+    await jEurInstance.addMinter(jarvisBrrrrr.address, {
       from: roles.admin,
     });
-    await jEurInstance.addBurner(moneyMarketManager.address, {
+    await jEurInstance.addBurner(jarvisBrrrrr.address, {
       from: roles.admin,
     });
   });
@@ -69,10 +58,19 @@ contract('LiquidityPool', async accounts => {
     // mint
     let balanceBefore = await jEurInstance.balanceOf.call(DAOAddress);
     let amount = toWei('10');
-    await moneyMarketManager.mint(jEURAddress, amount, { from: DAOAddress });
+    const mintTx = await jarvisBrrrrr.mint(jEURAddress, amount, {
+      from: DAOAddress,
+    });
+    truffleAssert.eventEmitted(mintTx, 'Minted', ev => {
+      return (
+        ev.token == jEURAddress &&
+        ev.recipient == DAOAddress &&
+        ev.amount == amount
+      );
+    });
     let balanceAfterMint = await jEurInstance.balanceOf.call(DAOAddress);
 
-    let circulatingSupply = await moneyMarketManager.supply.call(jEURAddress);
+    let circulatingSupply = await jarvisBrrrrr.supply.call(jEURAddress);
     assert.equal(
       balanceBefore.add(toBN(amount)).toString(),
       balanceAfterMint.toString(),
@@ -81,20 +79,27 @@ contract('LiquidityPool', async accounts => {
 
     // redeem
     await truffleAssert.reverts(
-      moneyMarketManager.redeem(jEURAddress, toWei('100000'), {
+      jarvisBrrrrr.redeem(jEURAddress, toWei('100000'), {
         from: DAOAddress,
       }),
       'Redeeming more than circulating supply',
     );
     let redeemAmount = toWei('6');
-    await jEurInstance.approve(moneyMarketManager.address, redeemAmount, {
+    await jEurInstance.approve(jarvisBrrrrr.address, redeemAmount, {
       from: DAOAddress,
     });
-    await moneyMarketManager.redeem(jEURAddress, redeemAmount, {
+    const redeemTx = await jarvisBrrrrr.redeem(jEURAddress, redeemAmount, {
       from: DAOAddress,
+    });
+    truffleAssert.eventEmitted(redeemTx, 'Redeemed', ev => {
+      return (
+        ev.token == jEURAddress &&
+        ev.recipient == DAOAddress &&
+        ev.amount == redeemAmount
+      );
     });
     let balanceAfterRedeem = await jEurInstance.balanceOf.call(DAOAddress);
-    circulatingSupply = await moneyMarketManager.supply.call(jEURAddress);
+    circulatingSupply = await jarvisBrrrrr.supply.call(jEURAddress);
 
     assert.equal(
       balanceAfterMint.sub(toBN(redeemAmount)).toString(),
@@ -108,7 +113,7 @@ contract('LiquidityPool', async accounts => {
 
   it('Reverts if minting amount overcomes maxLimit', async () => {
     await truffleAssert.reverts(
-      moneyMarketManager.mint(jEURAddress, toWei('100000'), {
+      jarvisBrrrrr.mint(jEURAddress, toWei('100000'), {
         from: DAOAddress,
       }),
       'Minting over max limit',
@@ -117,24 +122,27 @@ contract('LiquidityPool', async accounts => {
 
   it('Only registred address can mint and redeem', async () => {
     await truffleAssert.reverts(
-      moneyMarketManager.mint(jEURAddress, toWei('10'), { from: accounts[3] }),
+      jarvisBrrrrr.mint(jEURAddress, toWei('10'), { from: accounts[3] }),
       'Only mm manager can perform this operation',
     );
     await truffleAssert.reverts(
-      moneyMarketManager.redeem(jEURAddress, toWei('1'), { from: accounts[3] }),
+      jarvisBrrrrr.redeem(jEURAddress, toWei('1'), { from: accounts[3] }),
       'Only mm manager can perform this operation',
     );
   });
 
   it('Only maintainer can set new max supply', async () => {
-    await moneyMarketManager.setMaxSupply(jEURAddress, 10, {
+    const newMaxSupplyTx = await jarvisBrrrrr.setMaxSupply(jEURAddress, 10, {
       from: roles.maintainer,
     });
-    let newSupply = await moneyMarketManager.maxSupply.call(jEURAddress);
+    truffleAssert.eventEmitted(newMaxSupplyTx, 'NewMaxSupply', ev => {
+      return ev.token == jEURAddress && ev.newMaxSupply == 10;
+    });
+    let newSupply = await jarvisBrrrrr.maxSupply.call(jEURAddress);
     assert.equal(newSupply, 10);
 
     truffleAssert.reverts(
-      moneyMarketManager.setMaxSupply(jEURAddress, 10, { from: accounts[3] }),
+      jarvisBrrrrr.setMaxSupply(jEURAddress, 10, { from: accounts[3] }),
       'Only contract maintainer can call this function',
     );
   });
