@@ -17,6 +17,7 @@ library SynthereumInterfaces {
   bytes32 public constant IdentifierWhitelist = 'IdentifierWhitelist';
   bytes32 public constant TrustedForwarder = 'TrustedForwarder';
   bytes32 public constant FixedRateRegistry = 'FixedRateRegistry';
+  bytes32 public constant MoneyMarketManager = 'MoneyMarketManager';
 }
 
 library FactoryInterfaces {

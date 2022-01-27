@@ -9,15 +9,21 @@ interface IMoneyMarketManager {
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to mint
    * @param amount Amount of tokens to mint
+   * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function mint(IMintableBurnableERC20 token, uint256 amount) external;
+  function mint(IMintableBurnableERC20 token, uint256 amount)
+    external
+    returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Burns synthetic token without releasing collateral from the pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to burn
    * @param amount Amount of tokens to burn
+   * @return newCirculatingSupply New circulating supply in Money Market
    */
-  function redeem(IMintableBurnableERC20 token, uint256 amount) external;
+  function redeem(IMintableBurnableERC20 token, uint256 amount)
+    external
+    returns (uint256 newCirculatingSupply);
 
   /**
    * @notice Sets the max circulating supply that can be minted for a specific token - only manager can set this
@@ -30,12 +36,12 @@ interface IMoneyMarketManager {
   /**
    * @notice Returns the max circulating supply of a synthetic token
    * @param token Synthetic token address
-   * @return maxSupply Max supply of the token
+   * @return maxCircSupply Max supply of the token
    */
   function maxSupply(IMintableBurnableERC20 token)
     external
     view
-    returns (uint256 maxSupply);
+    returns (uint256 maxCircSupply);
 
   /**
    * @notice Returns the circulating supply of a synthetic token

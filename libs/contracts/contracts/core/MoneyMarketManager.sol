@@ -12,6 +12,7 @@ import {
   IMoneyMarketManager,
   IMintableBurnableERC20
 } from './interfaces/IMoneyMarketManager.sol';
+import {SynthereumInterfaces} from './Constants.sol';
 import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
@@ -19,12 +20,12 @@ import {
 contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
   using SafeERC20 for IERC20;
 
-  mapping(IMintableBurnableERC20 => uint256) maxCirculatingSupply;
-  mapping(IMintableBurnableERC20 => uint256) circulatingSupply;
+  mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
+  mapping(IMintableBurnableERC20 => uint256) private circulatingSupply;
 
   bytes32 public constant MAINTAINER_ROLE = keccak256('Maintainer');
 
-  ISynthereumFinder immutable synthereumFinder;
+  ISynthereumFinder public immutable synthereumFinder;
 
   // Describe role structure
   struct Roles {
@@ -34,16 +35,18 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
 
   modifier onlyMaintainer() {
     require(
-      _msgSender() == getRoleMember(MAINTAINER_ROLE, 0),
-      'Only contract maintainer can call this function'
+      hasRole(MAINTAINER_ROLE, msg.sender),
+      'Sender must be the maintainer'
     );
     _;
   }
 
-  modifier onlyMarketMakerManager() {
+  modifier onlyMoneyMarketManager() {
     require(
       msg.sender ==
-        synthereumFinder.getImplementationAddress('MoneyMarketManager'),
+        synthereumFinder.getImplementationAddress(
+          SynthereumInterfaces.MoneyMarketManager
+        ),
       'Only mm manager can perform this operation'
     );
     _;
@@ -53,7 +56,7 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
   event Redeemed(address token, address recipient, uint256 amount);
   event NewMaxSupply(address token, uint256 newMaxSupply);
 
-  constructor(Roles memory _roles, ISynthereumFinder _synthereumFinder) {
+  constructor(ISynthereumFinder _synthereumFinder, Roles memory _roles) {
     synthereumFinder = _synthereumFinder;
 
     _setRoleAdmin(DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
@@ -65,13 +68,15 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
   function mint(IMintableBurnableERC20 token, uint256 amount)
     external
     override
-    onlyMarketMakerManager()
+    onlyMoneyMarketManager()
+    returns (uint256 newCirculatingSupply)
   {
+    newCirculatingSupply = amount + circulatingSupply[token];
     require(
-      amount + circulatingSupply[token] <= maxCirculatingSupply[token],
+      newCirculatingSupply <= maxCirculatingSupply[token],
       'Minting over max limit'
     );
-    circulatingSupply[token] = circulatingSupply[token] + amount;
+    circulatingSupply[token] = newCirculatingSupply;
     token.mint(msg.sender, amount);
     emit Minted(address(token), msg.sender, amount);
   }
@@ -79,14 +84,14 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
   function redeem(IMintableBurnableERC20 token, uint256 amount)
     external
     override
-    onlyMarketMakerManager()
+    onlyMoneyMarketManager()
+    returns (uint256 newCirculatingSupply)
   {
-    require(
-      amount < circulatingSupply[token],
-      'Redeeming more than circulating supply'
-    );
+    uint256 actualSupply = circulatingSupply[token];
+    require(amount < actualSupply, 'Redeeming more than circulating supply');
     IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-    circulatingSupply[token] = circulatingSupply[token] - amount;
+    newCirculatingSupply = actualSupply - amount;
+    circulatingSupply[token] = newCirculatingSupply;
     token.burn(amount);
     emit Redeemed(address(token), msg.sender, amount);
   }
@@ -104,9 +109,9 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
     external
     view
     override
-    returns (uint256 maxSupply)
+    returns (uint256 maxCircSupply)
   {
-    maxSupply = maxCirculatingSupply[token];
+    maxCircSupply = maxCirculatingSupply[token];
   }
 
   function supply(IMintableBurnableERC20 token)
