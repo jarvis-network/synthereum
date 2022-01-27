@@ -446,6 +446,15 @@ contract CreditLine is
     return positionManagerData.collateralCoverage(positions[sponsor]);
   }
 
+  function liquidationPrice(address sponsor)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return positionManagerData.liquidationPrice(positions[sponsor]);
+  }
+
   function synthereumFinder()
     external
     view

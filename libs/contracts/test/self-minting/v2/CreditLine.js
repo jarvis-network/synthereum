@@ -10,6 +10,7 @@ const Web3EthAbi = require('web3-eth-abi');
 const truffleAssert = require('truffle-assertions');
 const {
   collapseTextChangeRangesAcrossMultipleVersions,
+  isReturnStatement,
 } = require('typescript');
 const web3Utils = require('web3-utils');
 const { toWei, hexToUtf8, toBN, utf8ToHex } = web3Utils;
@@ -1172,6 +1173,7 @@ contract('Synthereum CreditLine ', function (accounts) {
       calculateCollateralValue(createTokens, startingPrice),
     );
     let expectedSponsorCollateral = createCollateral.sub(feeAmount);
+    let expectedLiquidationPrice = '1.2483'; // expectedSponsor / (createTokens * overCollateralisation)
 
     // Fails without approving collateral.
     await truffleAssert.reverts(
@@ -1217,6 +1219,13 @@ contract('Synthereum CreditLine ', function (accounts) {
       return ev.sponsor == sponsor;
     });
 
+    // check liquidation Price is correct - on chain
+    assert.equal(
+      (await creditLine.liquidationPrice.call(sponsor)).toString(),
+      toWei(expectedLiquidationPrice),
+    );
+
+    return;
     // check balances and fee distribution is ok
     await checkBalances(
       expectedSponsorTokens,

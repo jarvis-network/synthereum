@@ -715,6 +715,20 @@ library CreditLineLib {
     return (_isOverCollateralised, _collateralCoverage.rawValue);
   }
 
+  function liquidationPrice(
+    ICreditLineStorage.PositionManagerData storage self,
+    ICreditLineStorage.PositionData storage positionData
+  ) external view returns (uint256 liqPrice) {
+    // liquidationPrice occurs when totalCollateral is entirely occupied in the position value * collateral requirement
+    // positionCollateral = positionTokensOut * liqPrice * collRequirement
+    liqPrice = (
+      positionData.rawCollateral.div(
+        positionData.tokensOutstanding.mul(self._getCollateralRequirement())
+      )
+    )
+      .rawValue;
+  }
+
   //Calls to the CreditLine controller
   function capMintAmount(
     ICreditLineStorage.PositionManagerData storage positionManagerData

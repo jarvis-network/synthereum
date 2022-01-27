@@ -209,6 +209,16 @@ interface ICreditLine is ITypology, IEmergencyShutdown, ISynthereumDeployment {
     returns (bool, uint256);
 
   /**
+   * @notice Returns liquidation price of a position
+   * @param sponsor address whose liquidation price is calculated.
+   * @return liquidationPrice
+   */
+  function liquidationPrice(address sponsor)
+    external
+    view
+    returns (uint256 liquidationPrice);
+
+  /**
    * @notice Get synthetic token price identifier as represented by the oracle interface
    * @return identifier Synthetic token price identifier
    */
