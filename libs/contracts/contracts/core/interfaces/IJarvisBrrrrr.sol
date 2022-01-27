@@ -2,9 +2,9 @@
 pragma solidity ^0.8.4;
 import {
   IMintableBurnableERC20
-} from '@jarvis-network/synthereum-contracts/contracts/tokens/interfaces/IMintableBurnableERC20.sol';
+} from '../../tokens/interfaces/IMintableBurnableERC20.sol';
 
-interface IMoneyMarketManager {
+interface IJarvisBrrrrr {
   /**
    * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
    * @param token Synthetic token address to mint

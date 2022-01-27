@@ -2,22 +2,20 @@
 pragma solidity ^0.8.4;
 
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {ISynthereumFinder} from './interfaces/IFinder.sol';
+import {IJarvisBrrrrr} from './interfaces/IJarvisBrrrrr.sol';
+import {
+  IMintableBurnableERC20
+} from '../tokens/interfaces/IMintableBurnableERC20.sol';
+import {SynthereumInterfaces} from './Constants.sol';
 import {
   SafeERC20
 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {
-  ISynthereumFinder
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
-import {
-  IMoneyMarketManager,
-  IMintableBurnableERC20
-} from './interfaces/IMoneyMarketManager.sol';
-import {SynthereumInterfaces} from './Constants.sol';
-import {
   AccessControlEnumerable
 } from '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 
-contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
+contract JarvisBrrrrr is AccessControlEnumerable, IJarvisBrrrrr {
   using SafeERC20 for IERC20;
 
   mapping(IMintableBurnableERC20 => uint256) private maxCirculatingSupply;
@@ -65,6 +63,12 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
     _setupRole(MAINTAINER_ROLE, _roles.maintainer);
   }
 
+  /**
+   * @notice Mints synthetic token without collateral to a pre-defined address (SynthereumMoneyMarketManager)
+   * @param token Synthetic token address to mint
+   * @param amount Amount of tokens to mint
+   * @return newCirculatingSupply New circulating supply in Money Market
+   */
   function mint(IMintableBurnableERC20 token, uint256 amount)
     external
     override
@@ -81,6 +85,12 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
     emit Minted(address(token), msg.sender, amount);
   }
 
+  /**
+   * @notice Burns synthetic token without releasing collateral from the pre-defined address (SynthereumMoneyMarketManager)
+   * @param token Synthetic token address to burn
+   * @param amount Amount of tokens to burn
+   * @return newCirculatingSupply New circulating supply in Money Market
+   */
   function redeem(IMintableBurnableERC20 token, uint256 amount)
     external
     override
@@ -96,6 +106,11 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
     emit Redeemed(address(token), msg.sender, amount);
   }
 
+  /**
+   * @notice Sets the max circulating supply that can be minted for a specific token - only manager can set this
+   * @param token Synthetic token address to set
+   * @param newMaxSupply New Max supply value of the token
+   */
   function setMaxSupply(IMintableBurnableERC20 token, uint256 newMaxSupply)
     external
     override
@@ -105,6 +120,11 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
     emit NewMaxSupply(address(token), newMaxSupply);
   }
 
+  /**
+   * @notice Returns the max circulating supply of a synthetic token
+   * @param token Synthetic token address
+   * @return maxCircSupply Max supply of the token
+   */
   function maxSupply(IMintableBurnableERC20 token)
     external
     view
@@ -114,6 +134,11 @@ contract MoneyMarketManager is AccessControlEnumerable, IMoneyMarketManager {
     maxCircSupply = maxCirculatingSupply[token];
   }
 
+  /**
+   * @notice Returns the circulating supply of a synthetic token
+   * @param token Synthetic token address
+   * @return circSupply Circulating supply of the token
+   */
   function supply(IMintableBurnableERC20 token)
     external
     view

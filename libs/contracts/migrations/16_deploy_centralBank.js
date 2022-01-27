@@ -1,6 +1,6 @@
 module.exports = require('../utils/getContractsFactory')(migrate, [
   'SynthereumFinder',
-  'MoneyMarketManager',
+  'JarvisBrrrrr',
 ]);
 
 async function migrate(deployer, network, accounts) {
@@ -8,9 +8,7 @@ async function migrate(deployer, network, accounts) {
   const {
     getExistingInstance,
   } = require('@jarvis-network/hardhat-utils/dist/deployment/get-existing-instance');
-  const { SynthereumFinder, MoneyMarketManager } = migrate.getContracts(
-    artifacts,
-  );
+  const { SynthereumFinder, JarvisBrrrrr } = migrate.getContracts(artifacts);
   const {
     getKeysForNetwork,
     deploy,
@@ -33,25 +31,23 @@ async function migrate(deployer, network, accounts) {
     web3,
     deployer,
     network,
-    MoneyMarketManager,
+    JarvisBrrrrr,
     synthereumFinder.options.address,
     roles,
     { from: keys.deployer },
   );
 
-  const moneyMarketInterface = await web3.utils.stringToHex(
-    'MoneyMarketManager',
-  );
-  const moneyMarketManager = await getExistingInstance(
+  const jarvisBrrrrrInterface = await web3.utils.stringToHex('JarvisBrrrrr');
+  const jarvisBrrrrr = await getExistingInstance(
     web3,
-    MoneyMarketManager,
+    JarvisBrrrrr,
     '@jarvis-network/synthereum-contracts',
   );
   await synthereumFinder.methods
     .changeImplementationAddress(
-      moneyMarketInterface,
-      moneyMarketManager.options.address,
+      jarvisBrrrrrInterface,
+      jarvisBrrrrr.options.address,
     )
     .send({ from: maintainer });
-  console.log('MoneyMarketManager added to SynthereumFinder');
+  console.log('JarvisBrrrrr added to SynthereumFinder');
 }
