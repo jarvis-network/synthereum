@@ -1,9 +1,7 @@
-import {
-  IDerivative,
-  SynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract,
-} from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
+import { ISynthereumPoolOnChainPriceFeed as SynthereumPoolOnChainPriceFeedContract } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import { assertIncludes } from '@jarvis-network/core-utils/dist/base/asserts';
 import {
+  ContractInfo,
   ContractInstance,
   TokenInstance,
 } from '@jarvis-network/core-utils/dist/eth/contracts/types';
@@ -14,6 +12,7 @@ import type {
   SupportedSynthereumSymbol,
 } from '@jarvis-network/synthereum-config';
 import { priceFeed } from '@jarvis-network/synthereum-config';
+import { BaseContract } from 'libs/core-utils/dist/eth/contracts/typechain/types';
 
 export const poolVersions = ['v4'] as const;
 export type PoolVersions = typeof poolVersions;
@@ -42,7 +41,7 @@ export interface SynthereumPool<
   priceFeed: typeof priceFeed[SynthSymbol];
   collateralToken: TokenInstance<Net>;
   syntheticToken: TokenInstance<Net>;
-  derivative: ContractInstance<Net, IDerivative>;
+  derivative: ContractInfo<Net, BaseContract>;
 }
 
 export type PoolsForVersion<

@@ -145,11 +145,7 @@ export async function loadPoolInfo<
 
   const poolAddress = assertIsAddress(lastPoolAddress) as AddressOn<Net>;
 
-  const { result: poolInstance, derivative } = await loadPool(
-    web3,
-    version,
-    poolAddress,
-  );
+  const { result: poolInstance } = await loadPool(web3, version, poolAddress);
 
   const collateralTokenAddress = assertIsAddress(
     await poolInstance.instance.methods.collateralToken().call(),
@@ -175,6 +171,11 @@ export async function loadPoolInfo<
     ...poolInstance,
     syntheticToken: await getTokenInfo(web3, syntheticTokenAddress),
     collateralToken: await getTokenInfo(web3, collateralTokenAddress),
-    derivative,
+    derivative: {
+      address: assertIsAddress(
+        (await poolInstance.instance.methods.getAllDerivatives().call())[0],
+      ) as AddressOn<Net>,
+      connect: () => throwError('Unsupported function'),
+    },
   };
 }

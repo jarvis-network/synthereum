@@ -10,7 +10,7 @@ import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
  * @title SelfMintingPerpetualMultiParty Contract.
  * @notice Convenient wrapper for Liquidatable.
  */
-interface ISelfMintingPerpetualPositionManagerMultiParty {
+interface ISelfMintingMultiParty {
   //----------------------------------------
   // Events
   //----------------------------------------
@@ -54,6 +54,22 @@ interface ISelfMintingPerpetualPositionManagerMultiParty {
     uint256 indexed collateralReturned,
     uint256 indexed tokensBurned
   );
+
+  struct PositionData {
+    FixedPoint.Unsigned tokensOutstanding;
+    uint256 withdrawalRequestPassTimestamp;
+    FixedPoint.Unsigned withdrawalRequestAmount;
+    FixedPoint.Unsigned rawCollateral;
+  }
+
+  struct LiquidatableData {
+    FixedPoint.Unsigned rawLiquidationCollateral;
+    uint256 liquidationLiveness;
+    FixedPoint.Unsigned collateralRequirement;
+    FixedPoint.Unsigned disputeBondPct;
+    FixedPoint.Unsigned sponsorDisputeRewardPct;
+    FixedPoint.Unsigned disputerDisputeRewardPct;
+  }
 
   //----------------------------------------
   // External functions
@@ -277,4 +293,14 @@ interface ISelfMintingPerpetualPositionManagerMultiParty {
    * @return collateral The collateral currency
    */
   function collateralCurrency() external view returns (IERC20 collateral);
+
+  function positions(address tokenSponsor)
+    external
+    view
+    returns (PositionData memory tsPosition);
+
+  function liquidatableData()
+    external
+    view
+    returns (LiquidatableData memory data);
 }

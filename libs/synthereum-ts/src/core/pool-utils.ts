@@ -1,17 +1,9 @@
 import BN from 'bn.js';
-import {
-  IDerivative_Abi,
-  ISynthereumPoolOnChainPriceFeed_Abi,
-} from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
-import {
-  IDerivative,
-  NonPayableTransactionObject,
-} from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
+import { ISynthereumPoolOnChainPriceFeed_Abi } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import {
   assertNotNull,
   throwError,
 } from '@jarvis-network/core-utils/dist/base/asserts';
-import { last } from '@jarvis-network/core-utils/dist/base/array-fp-utils';
 import { Amount } from '@jarvis-network/core-utils/dist/base/big-number';
 import { t, OneOf, keysOf } from '@jarvis-network/core-utils/dist/base/meta';
 import {
@@ -27,22 +19,13 @@ import { Web3On } from '@jarvis-network/core-utils/dist/eth/web3-instance';
 
 import { TransactionReceipt } from 'web3-core';
 
-import {
-  FullTxOptions,
-  TxOptions,
-  sendTxAndLog,
-} from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
+import { TxOptions } from '@jarvis-network/core-utils/dist/eth/contracts/send-tx';
 
 import { executeInSequence } from '@jarvis-network/core-utils/dist/base/async';
 
 import { ContractInstance } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 
-import {
-  SupportedNetworkId,
-  SupportedNetworkName,
-  SupportedSynthereumSymbol,
-  synthereumConfig,
-} from '../config';
+import { SupportedNetworkName, SupportedSynthereumSymbol } from '../config';
 
 import {
   PoolContract,
@@ -124,9 +107,9 @@ export interface PoolAddressWithDerivatives<
   Version extends PoolVersion
 > {
   result: ContractInstance<Net, PoolContract<Version>>;
-  derivative: ContractInstance<Net, IDerivative>;
 }
 
+// eslint-disable-next-line require-await
 export async function loadPool<
   Net extends SupportedNetworkName,
   Version extends PoolVersion
@@ -141,13 +124,9 @@ export async function loadPool<
       ISynthereumPoolOnChainPriceFeed_Abi,
       poolAddress,
     );
-    const derivativeAddresses = (await result.instance.methods
-      .getAllDerivatives()
-      .call()) as AddressOn<Net>[];
 
     return {
       result: result as ContractInstance<Net, PoolContract<Version>>,
-      derivative: getContract(web3, IDerivative_Abi, last(derivativeAddresses)),
     };
   }
   throwError(`Unsupported pool version: '${version}'`);
@@ -187,7 +166,7 @@ export function depositInAllPools<Net extends SupportedNetworkName>(
   );
 }
 
-interface RoleChange<Net extends SupportedNetworkName> {
+/* interface RoleChange<Net extends SupportedNetworkName> {
   previousAddress: AddressOn<Net>;
   newAddress: AddressOn<Net>;
 }
@@ -309,4 +288,4 @@ function sendTxWithMsg<T>(
 //   const array: Result[] = [];
 //   foreachSelfMintingPool(realm, version, (derivate, idx) => array.push(callback(derivate, idx)));
 //   return array;
-// }
+// } */

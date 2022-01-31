@@ -84,20 +84,20 @@ export class SelfMintingRealmAgent<
       .positions(this.agentAddress)
       .call();
     const positionTokens = scaleTokenAmountToWei({
-      amount: wei(userPositionsData.tokensOutstanding[0]),
+      amount: wei(userPositionsData[0][0]),
       decimals: asset.static.syntheticToken.decimals,
     });
     const positionCollateral = scaleTokenAmountToWei({
-      amount: wei(userPositionsData.rawCollateral[0]),
+      amount: wei(userPositionsData[3][0]),
       decimals: asset.static.collateralToken.decimals,
     });
     const positionWithdrawalRequestAmount = scaleTokenAmountToWei({
-      amount: wei(userPositionsData.withdrawalRequestAmount[0]),
+      amount: wei(userPositionsData[2][0]),
       decimals: asset.static.collateralToken.decimals,
     });
 
     const positionWithdrawalRequestPassTimestamp = parseInt(
-      userPositionsData.withdrawalRequestPassTimestamp,
+      userPositionsData[2][0],
       10,
     );
     return {
@@ -110,8 +110,7 @@ export class SelfMintingRealmAgent<
 
   async collateralRequirement(synthetic: SupportedSelfMintingPairExact<Net>) {
     const asset = this.activeDerivatives[synthetic]!.instance;
-    return (await asset.methods.liquidatableData().call())
-      .collateralRequirement[0];
+    return (await asset.methods.liquidatableData().call())[2][0];
   }
 
   async getAllBalances(

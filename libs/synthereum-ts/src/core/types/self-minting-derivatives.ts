@@ -8,7 +8,7 @@ import {
   TokenInfo,
 } from '@jarvis-network/core-utils/dist/eth/contracts/types';
 import { ToNetworkId } from '@jarvis-network/core-utils/dist/eth/networks';
-import { SelfMintingPerpetualMultiParty } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
+import { ISelfMintingMultiParty } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   SyntheticSymbolOf,
   CollateralOf,
@@ -19,7 +19,7 @@ export const selfMintingVersions = ['v1'] as const;
 export type SelfMintingVersions = typeof selfMintingVersions;
 export type SelfMintingVersion = SelfMintingVersions[number];
 
-export type SelfMintingDerivativeContract = SelfMintingPerpetualMultiParty;
+export type SelfMintingDerivativeContract = ISelfMintingMultiParty;
 export interface SelfMintingDerivativeInfo<
   Version extends SelfMintingVersion,
   Net extends SupportedNetworkName = SupportedNetworkName,

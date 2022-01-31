@@ -1,10 +1,10 @@
 import {
   ISynthereumRegistry_Abi,
-  SelfMintingPerpetualMultiParty_Abi,
+  ISelfMintingMultiParty_Abi,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/abi';
 import {
   ISynthereumRegistry,
-  SelfMintingPerpetualMultiParty,
+  ISelfMintingMultiParty,
 } from '@jarvis-network/synthereum-contracts/dist/contracts/typechain';
 import {
   parseInteger,
@@ -169,7 +169,7 @@ export async function loadDerivativesInfo<
 
   const derivative = getContract(
     web3,
-    SelfMintingPerpetualMultiParty_Abi,
+    ISelfMintingMultiParty_Abi,
     derivativeAddress,
   );
 
@@ -223,7 +223,7 @@ export async function getDerivativeData<
   Pair extends SupportedSelfMintingPairExact<Net>,
   Net extends SupportedNetworkName
 >(
-  derivate: ContractInstance<Net, SelfMintingPerpetualMultiParty>,
+  derivate: ContractInstance<Net, ISelfMintingMultiParty>,
   collateralToken: TokenInstance<Net, CollateralOf<Pair>>,
   syntheticToken: TokenInstance<Net, SyntheticSymbolOf<Pair>>,
 ): Promise<SelfMintingDerivativeData> {
@@ -238,7 +238,7 @@ export async function getDerivativeData<
 
   const feePercentage = wei(fp.feePercentage) as Amount;
   const capDepositRatio = wei(cdr) as Amount;
-  const collateralRequirement = wei(cr.collateralRequirement[0]) as Amount;
+  const collateralRequirement = wei(cr[2][0]) as Amount;
   const capMintAmount = wei(cma) as Amount;
 
   const totalTokensOutstanding = scaleTokenAmountToWei({
