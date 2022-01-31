@@ -58,6 +58,7 @@ import '../core/registries/PoolRegistry.sol';
 import '../derivative/self-minting/common/interfaces/ISelfMintingDerivativeDeployment.sol';
 import '../derivative/self-minting/common/interfaces/ISelfMintingController.sol';
 import '../derivative/self-minting/common/SelfMintingController.sol';
+import '../derivative/self-minting/v1/interfaces/ISelfMintingPerpetualPositionManagerMultiParty.sol';
 import '../derivative/self-minting/v1/SelfMintingDerivativeFactory.sol';
 import '../derivative/self-minting/v1/SelfMintingPerpetualPositionManagerMultiPartyLib.sol';
 import '../derivative/self-minting/v1/SelfMintingPerpetualLiquidatableMultiParty.sol';
