@@ -5,17 +5,52 @@ import {
   FixedPoint
 } from '@uma/core/contracts/common/implementation/FixedPoint.sol';
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import {
-  IDerivative
-} from '../../../derivative/common/interfaces/IDerivative.sol';
-import {ISynthereumDeployer} from '../../../core/interfaces/IDeployer.sol';
 import {ISynthereumFinder} from '../../../core/interfaces/IFinder.sol';
-import {ISynthereumPoolGeneral} from './IPoolGeneral.sol';
 
 /**
  * @title Token Issuer Contract Interface
  */
-interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
+interface ISynthereumPoolOnChainPriceFeed {
+  event Mint(
+    address indexed account,
+    address indexed pool,
+    uint256 collateralSent,
+    uint256 numTokensReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
+  event Redeem(
+    address indexed account,
+    address indexed pool,
+    uint256 numTokensSent,
+    uint256 collateralReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
+  event Exchange(
+    address indexed account,
+    address indexed sourcePool,
+    address indexed destPool,
+    uint256 numTokensSent,
+    uint256 destNumTokensReceived,
+    uint256 feePaid,
+    address recipient
+  );
+
+  event Settlement(
+    address indexed account,
+    address indexed pool,
+    uint256 numTokens,
+    uint256 collateralSettled
+  );
+
+  event SetFeePercentage(uint256 feePercentage);
+  event SetFeeRecipients(address[] feeRecipients, uint32[] feeProportions);
+  // We may omit the pool from event since we can recover it from the address of smart contract emitting event, but for query convenience we include it in the event
+  event AddDerivative(address indexed pool, address indexed derivative);
+  event RemoveDerivative(address indexed pool, address indexed derivative);
   // Describe fee structure
   struct Fee {
     // Fees charged when a user mints, redeem and exchanges tokens
@@ -33,7 +68,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
 
   struct MintParams {
     // Derivative to use
-    IDerivative derivative;
+    address derivative;
     // Minimum amount of synthetic tokens that a user wants to mint using collateral (anti-slippage)
     uint256 minNumTokens;
     // Amount of collateral that a user wants to spend for minting
@@ -48,7 +83,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
 
   struct RedeemParams {
     // Derivative to use
-    IDerivative derivative;
+    address derivative;
     // Amount of synthetic tokens that user wants to use for redeeming
     uint256 numTokens;
     // Minimium amount of collateral that user wants to redeem (anti-slippage)
@@ -63,11 +98,11 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
 
   struct ExchangeParams {
     // Derivative of source pool
-    IDerivative derivative;
+    address derivative;
     // Destination pool
-    ISynthereumPoolGeneral destPool;
+    ISynthereumPoolOnChainPriceFeed destPool;
     // Derivative of destination pool
-    IDerivative destDerivative;
+    address destDerivative;
     // Amount of source synthetic tokens that user wants to use for exchanging
     uint256 numTokens;
     // Minimum Amount of destination synthetic tokens that user wants to receive (anti-slippage)
@@ -84,13 +119,13 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @notice Add a derivate to be controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function addDerivative(IDerivative derivative) external;
+  function addDerivative(address derivative) external;
 
   /**
    * @notice Remove a derivative controlled by this pool
    * @param derivative A perpetual derivative
    */
-  function removeDerivative(IDerivative derivative) external;
+  function removeDerivative(address derivative) external;
 
   /**
    * @notice Mint synthetic tokens using fixed amount of collateral
@@ -139,10 +174,8 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param derivative Derivative on which to deposit collateral
    * @param collateralAmount The amount of collateral to move into derivative
    */
-  function depositIntoDerivative(
-    IDerivative derivative,
-    uint256 collateralAmount
-  ) external;
+  function depositIntoDerivative(address derivative, uint256 collateralAmount)
+    external;
 
   /**
    * @notice Start a slow withdrawal request
@@ -150,7 +183,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param derivative Derivative from which collateral withdrawal is requested
    * @param collateralAmount The amount of excess collateral to withdraw
    */
-  function slowWithdrawRequest(IDerivative derivative, uint256 collateralAmount)
+  function slowWithdrawRequest(address derivative, uint256 collateralAmount)
     external;
 
   /**
@@ -158,7 +191,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param derivative Derivative from which collateral withdrawal is requested
    * @return amountWithdrawn Amount of collateral withdrawn by slow withdrawal
    */
-  function slowWithdrawPassedRequest(IDerivative derivative)
+  function slowWithdrawPassedRequest(address derivative)
     external
     returns (uint256 amountWithdrawn);
 
@@ -168,7 +201,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param collateralAmount The amount of excess collateral to withdraw
    * @return amountWithdrawn Amount of collateral withdrawn by fast withdrawal
    */
-  function fastWithdraw(IDerivative derivative, uint256 collateralAmount)
+  function fastWithdraw(address derivative, uint256 collateralAmount)
     external
     returns (uint256 amountWithdrawn);
 
@@ -177,7 +210,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @param derivative Derivative for which settlement is requested
    * @return amountSettled Amount of collateral withdrawn after emergency shutdown
    */
-  function settleEmergencyShutdown(IDerivative derivative)
+  function settleEmergencyShutdown(address derivative)
     external
     returns (uint256 amountSettled);
 
@@ -214,7 +247,7 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
    * @notice Get all the derivatives associated to this pool
    * @return Return list of all derivatives
    */
-  function getAllDerivatives() external view returns (IDerivative[] memory);
+  function getAllDerivatives() external view returns (address[] memory);
 
   /**
    * @notice Get the starting collateral ratio of the pool
@@ -240,4 +273,65 @@ interface ISynthereumPoolOnChainPriceFeed is ISynthereumPoolGeneral {
     external
     view
     returns (uint256 fee);
+
+  /**
+   * @notice Called by a source Pool's `exchange` function to mint destination tokens
+   * @notice This functon can be called only by a pool registered in the PoolRegister contract
+   * @param srcDerivative Derivative used by the source pool
+   * @param derivative The derivative of the destination pool to use for mint
+   * @param collateralAmount The amount of collateral to use from the source Pool
+   * @param numTokens The number of new tokens to mint
+   */
+  function exchangeMint(
+    address srcDerivative,
+    address derivative,
+    uint256 collateralAmount,
+    uint256 numTokens
+  ) external;
+
+  /**
+   * @notice Returns price identifier of the pool
+   * @return identifier Price identifier
+   */
+  function getPriceFeedIdentifier() external view returns (bytes32 identifier);
+
+  /**
+   * @notice Check that a derivative is admitted in the pool
+   * @param derivative Address of the derivative to be checked
+   * @return isAdmitted true if derivative is admitted otherwise false
+   */
+  function isDerivativeAdmitted(address derivative)
+    external
+    view
+    returns (bool isAdmitted);
+
+  /**
+   * @notice Get Synthereum finder of the pool
+   * @return finder Returns finder contract
+   */
+  function synthereumFinder() external view returns (ISynthereumFinder finder);
+
+  /**
+   * @notice Get Synthereum version
+   * @return poolVersion Returns the version of this Synthereum pool
+   */
+  function version() external view returns (uint8 poolVersion);
+
+  /**
+   * @notice Get the collateral token
+   * @return collateralCurrency The ERC20 collateral token
+   */
+  function collateralToken() external view returns (IERC20 collateralCurrency);
+
+  /**
+   * @notice Get the synthetic token associated to this pool
+   * @return syntheticCurrency The ERC20 synthetic token
+   */
+  function syntheticToken() external view returns (IERC20 syntheticCurrency);
+
+  /**
+   * @notice Get the synthetic token symbol associated to this pool
+   * @return symbol The ERC20 synthetic token symbol
+   */
+  function syntheticTokenSymbol() external view returns (string memory symbol);
 }
