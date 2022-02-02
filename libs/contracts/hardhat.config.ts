@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { resolve } from 'path';
 
+import '@nomiclabs/hardhat-ethers';
+
 import { addPublicNetwork } from '@jarvis-network/hardhat-utils/dist/networks';
 import { addEtherscanApiKeys } from '@jarvis-network/hardhat-utils/dist/etherscan';
 import {
