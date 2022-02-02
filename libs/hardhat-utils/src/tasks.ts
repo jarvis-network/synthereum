@@ -3,6 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./string.prototype.replaceall.d.ts" />
 
+import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-web3';
