@@ -11,7 +11,7 @@ const MintableBurnableSyntheticToken = artifacts.require(
 const JarvisBrrrrr = artifacts.require('JarvisBrrrrr');
 const { assert } = require('chai');
 
-contract('LiquidityPool', async accounts => {
+contract('JarvisBrrrrr', async accounts => {
   let jEURAddress, jarvisBrrrrr, networkId, finder, DAOAddress;
   let roles = {
     admin: accounts[0],
@@ -141,9 +141,9 @@ contract('LiquidityPool', async accounts => {
     let newSupply = await jarvisBrrrrr.maxSupply.call(jEURAddress);
     assert.equal(newSupply, 10);
 
-    truffleAssert.reverts(
+    await truffleAssert.reverts(
       jarvisBrrrrr.setMaxSupply(jEURAddress, 10, { from: accounts[3] }),
-      'Only contract maintainer can call this function',
+      'Sender must be the maintainer',
     );
   });
 });
