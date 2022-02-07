@@ -19,7 +19,6 @@
     "test": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=8192 hardhat test",
     "coverage": "MIGRATION_TYPE=all NODE_OPTIONS=--max-old-space-size=16384 hardhat coverage --solcoverjs ./test/.solcover.js",
     "deploy": "hardhat deploy",
-    "deploy:fixed-rate": "hardhat deploy_fixed_rate_currency",
     "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"
   },
