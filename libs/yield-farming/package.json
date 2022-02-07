@@ -9,9 +9,9 @@
     "build:solidity": "hardhat compile",
     "build:nx-necessary": "mkdir ./dist && cp ./package.json ./dist/",
     "compile": "hardhat compile",
-    "migrate-elysianfields": "MIGRATION_TYPE=elysianfields hardhat test ./test/correct-migration.js",
-    "migrate-storage": "MIGRATION_TYPE=storage hardhat test ./test/correct-migration.js",
-    "migrate": "MIGRATION_TYPE=all hardhat test ./test/correct-migration.js",
+    "deploy-elysianfields": "MIGRATION_TYPE=elysianfields hardhat test ./test/correct-migration.js",
+    "deploy-storage": "MIGRATION_TYPE=storage hardhat test ./test/correct-migration.js",
+    "deploy": "MIGRATION_TYPE=all hardhat test ./test/correct-migration.js",
     "test": "echo No test defined",
     "start:local-fork": "../../scripts/local-fork.sh",
     "verify": "hardhat verify"

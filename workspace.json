@@ -177,6 +177,15 @@
             "parallel": false
           }
         },
+        "coverage": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "yarn coverage",
+            "cwd": "libs/contracts",
+            "color": true,
+            "parallel": false
+          }
+        },
         "build": {
           "executor": "@nrwl/workspace:run-commands",
           "outputs": ["libs/contracts/dist"],
@@ -555,6 +564,14 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "command": "yarn test",
+            "cwd": "libs/atomic-swap",
+            "color": true
+          }
+        },
+        "coverage": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "yarn coverage",
             "cwd": "libs/atomic-swap",
             "color": true
           }

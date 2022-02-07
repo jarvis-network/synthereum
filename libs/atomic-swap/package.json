@@ -10,7 +10,7 @@
     "build:tsc": "tsc -p ./tsconfig.lib.json",
     "build:nx-necessary": "cp ./package.json ./dist/",
     "compile": "hardhat compile",
-    "migrate-OCLR": "MIGRATION_TYPE=OCLR_poolV5 hardhat test ./test/correct-migration.js",
+    "deploy": "MIGRATION_TYPE=OCLR_poolV5 hardhat test ./test/correct-migration.js",
     "start:local-fork": "../../scripts/local-fork.sh",
     "test": "yarn run test:v3",
     "test:v3": "MIGRATION_TYPE=OCLR_poolV5 FORKCHAINID=3 NODE_OPTIONS=--max-old-space-size=8192 hardhat test ./test/v3/*",
