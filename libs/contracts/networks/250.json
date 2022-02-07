@@ -11,8 +11,8 @@
   },
   {
     "contractName": "SynthereumPoolRegistry",
-    "address": "0x553fD35edF71C6fE1c700aa0a008986DEEAD41D7",
-    "transactionHash": "0x839505f921968ef27f080d6742a28db2dd91b0fdd0c215e163b21999fb7440bd"
+    "address": "0xD43509074b41824bc51c50B71D7694ab8d2568aB",
+    "transactionHash": "0x7d70b8e793b2c359e54c7ca49bd5a8a1f9be3ebff67bc49f20379cb2a551edb0"
   },
   {
     "contractName": "SynthereumFactoryVersioning",
