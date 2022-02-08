@@ -1,120 +1,207 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.10;
 
 import {ILendingProxy} from './interfaces/ILendingProxy.sol';
-
+import {IPool} from '@aave/core-v3/contracts/interfaces/IPool.sol';
 import {
-  IPool,
   IScaledBalanceToken
-} from '@aave/aave-v3-core/contracts/interfaces/IPool.sol';
-import {
-  SynthereumInterfaces
-} from '@jarvis-network/synthereum-contracts/contracts/core/Constants.sol';
+} from '@aave/core-v3/contracts/interfaces/IScaledBalanceToken.sol';
 import {
   ISynthereumFinder
 } from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IFinder.sol';
 import {
   ISynthereumDeployment
-} from '@jarvis-network/synthereum-contracts/contracts/core/interfaces/IDeployment.sol';
+} from '@jarvis-network/synthereum-contracts/contracts/common/interfaces/IDeployment.sol';
+import {
+  IUniswapV2Router02
+} from '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {
+  SafeERC20
+} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract LendingProxy is ILendingProxy {
-  address public maintainer;
+  using Address for address;
+  using SafeERC20 for IERC20;
 
-  mapping(address => address) public poolModule;
-  mapping(address => uint256) public poolCurrentCollateralDeposited;
-  mapping(address => uint256) public poolDaoInterestShare;
-  mapping(address => address) public poolInterestBearingToken;
-  mapping(address => uint256) public unclaimedDaoInterest;
-  mapping(address => uint256) public JRTBuybackShare;
+  address public maintainer;
+  address immutable finder;
+
+  struct PoolStorage {
+    address moneyMarket;
+    address lendingModule;
+    address interestBearingToken;
+    address swapRouter;
+    uint256 collateralDeposited;
+    uint256 daoInterestShare;
+    uint256 unclaimedDaoInterest;
+    uint256 JRTBuybackShare;
+  }
+
+  mapping(address => PoolStorage) public poolStorage;
 
   modifier onlyPool() {
-    require(poolModule[msg.sender] != address(0), 'Not allowed');
+    require(poolStorage[msg.sender].lendingModule != address(0), 'Not allowed');
     _;
   }
 
   modifier onlyMaintainer() {
     require(msg.sender == maintainer, 'Only maintainter');
+    _;
   }
 
-  constructor(address _maintainer) {
+  constructor(address _maintainer, address _finder) {
     maintainer = _maintainer;
+    finder = _finder;
   }
 
-  function claimCommission(address pool) public override onlyMaintainer {
+  function claimCommission(address pool)
+    external
+    override
+    onlyMaintainer
+    returns (uint256 amountClaimed)
+  {
     // withdraw % of commission from unclaimed interest
-    uint256 amount =
-      unclaimedDaoInterest[msg.sender] * (100 - JRTBuybackShare[msg.sender]);
+    PoolStorage memory poolData = poolStorage[pool];
+    amountClaimed =
+      poolData.unclaimedDaoInterest *
+      (100 - poolData.JRTBuybackShare);
+    poolData.unclaimedDaoInterest -= amountClaimed;
+    IERC20 collateral = ISynthereumDeployment(pool).collateralToken();
+    // pull tokens from pool
+    collateral.safeTransferFrom(pool, address(this), amountClaimed);
+    collateral.safeIncreaseAllowance(poolData.moneyMarket, amountClaimed);
+    // redeem them on aave and forward to commission receiver
+    address recipient =
+      ISynthereumFinder(finder).getImplementationAddress('CommissionReceiver');
+    IPool(poolData.moneyMarket).withdraw(
+      address(collateral),
+      amountClaimed,
+      recipient
+    );
+  }
+
+  function executeBuyback(
+    address pool,
+    address JRTAddress,
+    uint256 expiration
+  ) external override onlyMaintainer returns (uint256 amountClaimed) {
+    // withdraw % of commission from unclaimed interest and swap it to JRT
+    PoolStorage memory poolData = poolStorage[pool];
+    amountClaimed = poolData.unclaimedDaoInterest * (poolData.JRTBuybackShare);
+    poolData.unclaimedDaoInterest -= amountClaimed;
+    // pull tokens from pool
+    IERC20 collateral = ISynthereumDeployment(pool).collateralToken();
+    collateral.safeTransferFrom(pool, address(this), amountClaimed);
+    // redeem on aave
+    IPool(poolData.moneyMarket).withdraw(
+      address(collateral),
+      amountClaimed,
+      address(this)
+    );
+    // swap to JRT to final recipient
+    IUniswapV2Router02 router = IUniswapV2Router02(poolData.swapRouter);
+    address recipient =
+      ISynthereumFinder(finder).getImplementationAddress(
+        'BuybackProgramReceiver'
+      );
+
+    address[] memory tokenSwapPath = new address[](2);
+    tokenSwapPath[0] = address(collateral);
+    tokenSwapPath[1] = JRTAddress;
+
+    collateral.safeIncreaseAllowance(address(router), amountClaimed);
+    router.swapExactTokensForTokens(
+      amountClaimed,
+      0,
+      tokenSwapPath,
+      recipient,
+      expiration
+    );
   }
 
   function deposit(uint256 amount)
-    public
+    external
     override
     onlyPool
     returns (uint256 poolInterest)
   {
+    PoolStorage memory poolData = poolStorage[msg.sender];
+
     // retrievve pool collateral
     IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
     collateral.safeTransferFrom(msg.sender, address(this), amount);
 
     // calculate interest splitting on delta deposit
     uint256 daoInterest;
-    (poolInterest, daoInterest) = calculateGeneratedInterest(amount);
+    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
     // delegate call aave deposit - approve
-    IPool(poolModule[msg.sender]).deposit(collateral, amount, msg.sender, '');
+    IPool(poolData.moneyMarket).deposit(
+      address(collateral),
+      amount,
+      msg.sender,
+      uint16(0)
+    );
 
     // update poolLastDeposit
-    poolCurrentCollateralDeposited[msg.sender] += amount;
+    poolData.collateralDeposited += amount;
 
     // update unclaimed interest
-    unclaimedDaoInterest[msg.sender] += daoInterest;
+    poolData.unclaimedDaoInterest += daoInterest;
   }
 
   function withdraw(uint256 amount, address recipient)
-    public
+    external
     override
     onlyPool
-    returns (poolInterest)
+    returns (uint256 poolInterest)
   {
+    PoolStorage memory poolData = poolStorage[msg.sender];
     IERC20 collateral = ISynthereumDeployment(msg.sender).collateralToken();
 
-    // retrieve aTokens - amount ?
-    IScaledBalanceToken(poolInterestBearingToken[msg.sender]).safeTransferFrom(
+    // retrieve aTokens
+    IERC20(poolData.interestBearingToken).safeTransferFrom(
       msg.sender,
       address(this),
       amount
     );
 
     // delegate call aave withdraw - approve
-    IPool(poolModule[msg.sender].withdraw(collateral, amount, recipient));
+    IPool(poolData.moneyMarket).withdraw(
+      address(collateral),
+      amount,
+      recipient
+    );
 
     // calculate interest splitting on delta deposit
     uint256 daoInterest;
-    (poolInterest, daoInterest) = calculateGeneratedInterest(amount);
+    (poolInterest, daoInterest) = calculateGeneratedInterest(poolData);
 
     // update poolLastDeposit
-    poolCurrentCollateralDeposited[msg.sender] -= amount;
+    poolData.collateralDeposited -= amount;
 
     // update unclaimed interest
-    unclaimedDaoInterest[msg.sender] += daoInterest;
+    poolData.unclaimedDaoInterest += daoInterest;
   }
 
-  function calculateGeneratedInterest()
+  function calculateGeneratedInterest(PoolStorage memory pool)
     internal
     view
     returns (uint256 poolInterest, uint256 daoInterest)
   {
-    uint256 ratio = poolDaoInterestShare[msg.sender];
-    uint256 lastBalance = poolCurrentCollateralDeposited[msg.sender];
+    uint256 ratio = pool.daoInterestShare;
 
     // get current pool scaled balance of collateral (excluding daoShare of it)
     uint256 poolBalance =
-      IScaledBalanceToken(poolInterestBearingToken[msg.sender]).scaledBalanceOf(
+      IScaledBalanceToken(pool.interestBearingToken).scaledBalanceOf(
         msg.sender
-      ) - unclaimedDaoInterest[msg.sender];
+      );
 
     // the total interest is delta between current balance and lastBalance
-    uint256 totalInterestGenerated = poolBalance - lastBalance;
+    uint256 totalInterestGenerated =
+      poolBalance - pool.collateralDeposited - pool.unclaimedDaoInterest;
     daoInterest = (totalInterestGenerated * ratio) / 100;
     poolInterest = (totalInterestGenerated * (100 - ratio)) / 100;
   }

@@ -2,13 +2,19 @@
 pragma solidity ^0.8.4;
 
 interface ILendingProxy {
-  function deposit(uint256 amount) external returns (uint256 returnTokenAmount);
+  function deposit(uint256 amount) external returns (uint256 poolInterest);
 
-  function withdraw(uint256 amount)
+  function withdraw(uint256 amount, address recipient)
     external
-    returns (uint256 returnTokenAmount);
+    returns (uint256 poolInterest);
 
   function claimCommission(address pool)
     external
     returns (uint256 amountClaimed);
+
+  function executeBuyback(
+    address pool,
+    address JRTAddress,
+    uint256 expiration
+  ) external returns (uint256 amountClaimed);
 }

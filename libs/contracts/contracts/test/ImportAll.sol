@@ -79,3 +79,5 @@ import '../fixed-rate/v1/FixedRateCreator.sol';
 import '../fixed-rate/v1/FixedRateFactory.sol';
 import '../fixed-rate/v1/FixedRateWrapper.sol';
 import '../fixed-rate/v1/interfaces/IFixedRateWrapper.sol';
+// import '../lending-module/interfaces/ILendingProxy.sol';
+import '../lending-module/LendingProxy.sol';
